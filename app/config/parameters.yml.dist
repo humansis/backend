@@ -2,11 +2,11 @@
 # Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
 # https://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
-    database_host: reliefappsdb.cw55z72zqag4.eu-central-1.rds.amazonaws.com
+    database_host: reliefappsdb2.cw55z72zqag4.eu-central-1.rds.amazonaws.com
     database_port: 3306
-    database_name: dbbms1
+    database_name: bmsdb
     database_user: reliefapps
-    database_password: Ym4VPmyB3lqkJ6xqKDqX
+    database_password: password
 
     mailer_transport: smtp
     mailer_host: 127.0.0.1
