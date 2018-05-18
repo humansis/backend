@@ -50,7 +50,7 @@ class UserController extends Controller
     */
     public function getLapinAction()
     {
-		$json = json_encode(array('email' => "lapin"));
+		$json = json_encode(array(array('email' => "lapin")));
 
         return new Response($json, Response::HTTP_OK);
     }
