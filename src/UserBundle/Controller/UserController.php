@@ -29,9 +29,28 @@ class UserController extends Controller
     public function getUsersAction()
     {
 		// TODO check user rights
-		
+
         $users = $this->get('user.user_service')->findAll();
         $json = $this->get('serializer')->serialize($users, 'json');
+
+        return new Response($json, Response::HTTP_OK);
+    }
+
+	/**
+    * Get lapin
+    * @Rest\Get("/lapin")
+    *
+    * @SWG\Response(
+    *     response=200,
+    *     description="OK",
+    * )
+    * @SWG\Tag(name="Users")
+    *
+    * @return Response
+    */
+    public function getLapinAction()
+    {
+		$json = json_encode(array('email' => "lapin"));
 
         return new Response($json, Response::HTTP_OK);
     }
