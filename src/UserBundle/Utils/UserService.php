@@ -23,6 +23,15 @@ class UserService
     }
 
 	/**
+	 * @param  string $username
+	 * @return User
+	 */
+	public function getUserByUsername(string $username)
+	{
+		return $this->getRepository()->findOneBy(array('username' => $username));
+	}
+
+	/**
      * @return \Doctrine\ORM\EntityRepository|\UserBundle\Repository\UserRepository
      */
     private function getRepository()

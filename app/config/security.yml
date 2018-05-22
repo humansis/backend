@@ -5,7 +5,8 @@ security:
     # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
 
     encoders:
-        FOS\UserBundle\Model\UserInterface: bcrypt
+        FOS\UserBundle\Model\UserInterface: sha512
+        UserBundle\Entity\User: sha512
 
     role_hierarchy:
         ROLE_ADMIN:       ROLE_USER
@@ -21,16 +22,27 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        # filter api routes
+        salt:
+            pattern:   ^/api/wsse/salt
+            security: false
+
+        wsse_secured:
+            pattern:   ^/api/wsse
+            stateless: true
+            wsse: true
+            anonymous : false
+            methods: [GET, PUT, POST, DELETE, OPTIONS]
+
         main:
             pattern: ^/
-            security: false
-            # form_login:
-            #     provider: fos_userbundle
-            #     csrf_token_generator: security.csrf.token_manager
-            #     login_path: fos_user_security_login
-            #     check_path: fos_user_security_check
-            # logout:
-            #     path: fos_user_security_logout
+            form_login:
+                provider: fos_userbundle
+                csrf_token_generator: security.csrf.token_manager
+                login_path: fos_user_security_login
+                check_path: fos_user_security_check
+            logout:
+                path: fos_user_security_logout
 
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
             #http_basic: ~
@@ -39,6 +51,5 @@ security:
 
     access_control:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin/, role: ROLE_ADMIN }

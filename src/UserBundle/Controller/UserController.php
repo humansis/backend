@@ -14,6 +14,81 @@ use UserBundle\Entity\User;
 
 class UserController extends Controller
 {
+
+	/**
+    * Get user's salt
+    * @Rest\Get("/salt")
+    *
+    * @SWG\Parameter(
+     *     name="username",
+     *     in="query",
+     *     type="string",
+     *     required=true,
+     *     description="username of the user"
+     * )
+    *
+    * @SWG\Response(
+    *     response=200,
+    *     description="SUCCESS",
+    *     @SWG\Schema(
+    *         type="string"
+    *     )
+    * )
+    * @SWG\Response(
+    *     response=400,
+    *     description="BAD_REQUEST"
+    * )
+    * @SWG\Response(
+    *     response=423,
+    *     description="LOCKED"
+    * )
+    *
+    * @SWG\Tag(name="Users")
+    *
+    * @param Request $request
+    *
+    * @return Response
+    */
+    public function getSaltAction(Request $request)
+    {
+		$username = $request->get('username');
+        $user = $this->get('user.user_service')->getUserByUsername($username);
+        if ($user) {
+            if ($user->isEnabled()) {
+                $json = $this->get('serializer')->serialize($user->getSalt(), 'json');
+
+                return new Response($json, Response::HTTP_OK);
+            }
+            return new Response(null, Response::HTTP_LOCKED);
+        }
+
+        return new Response(null, Response::HTTP_BAD_REQUEST);
+    }
+
+	/**
+    * Connection URL checking
+    * @Rest\Get("/check")
+    *
+    * @SWG\Response(
+    *     response=200,
+    *     description="SUCCESS"
+    * )
+    * @SWG\Response(
+    *     response=401,
+    *     description="UNAUTHORIZED"
+    * )
+    * @SWG\Tag(name="Users")
+    */
+    public function getCheckAction()
+    {
+        $user = $this->getUser();
+        if ($user) {
+			$user = $this->get('serializer')->serialize($user, 'json');
+            return new Response($user, Response::HTTP_OK);
+        }
+        return new Response(null, Response::HTTP_UNAUTHORIZED);
+    }
+
 	/**
     * Get users
     * @Rest\Get("/users")

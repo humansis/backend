@@ -18,7 +18,14 @@ services:
         alias: UserBundle\Utils\UserService
         public: true
 
-    # add more services, or override services that need manual wiring
-    # AppBundle\Service\ExampleService:
-    #     arguments:
-    #         $someArgument: 'some_value'
+    wsse.security.authentication.provider:
+        class: UserBundle\Security\Authentication\Provider\WsseProvider
+        arguments: ["@fos_user.user_provider.username", "%kernel.cache_dir%/security/nonces"]
+        public: false
+
+    wsse.security.authentication.listener:
+        class: UserBundle\Security\Firewall\WsseListener
+        arguments: ["@security.token_storage", "@wsse.security.authentication.provider"]
+        public: false
+        tags:
+            - { name: monolog.logger, channel: wsse }
