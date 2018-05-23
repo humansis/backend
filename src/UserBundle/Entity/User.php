@@ -27,6 +27,11 @@ class User extends BaseUser
      */
     private $countries;
 
+    /**
+     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="user")
+     */
+    private $userProjects;
+
 
 
     public function __construct()
@@ -68,5 +73,41 @@ class User extends BaseUser
     public function getCountries()
     {
         return $this->countries;
+    }
+
+    /**
+     * Add userProject.
+     *
+     * @param \UserBundle\Entity\UserProject $userProject
+     *
+     * @return User
+     */
+    public function addUserProject(\UserBundle\Entity\UserProject $userProject)
+    {
+        $this->userProjects[] = $userProject;
+
+        return $this;
+    }
+
+    /**
+     * Remove userProject.
+     *
+     * @param \UserBundle\Entity\UserProject $userProject
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeUserProject(\UserBundle\Entity\UserProject $userProject)
+    {
+        return $this->userProjects->removeElement($userProject);
+    }
+
+    /**
+     * Get userProjects.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUserProjects()
+    {
+        return $this->userProjects;
     }
 }
