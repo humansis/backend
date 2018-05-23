@@ -69,12 +69,12 @@ class Project
     private $usersProject;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Donor")
+     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Donor", inversedBy="projects")
      */
     private $donors;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector")
+     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects")
      */
     private $sectors;
 

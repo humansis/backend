@@ -28,6 +28,11 @@ class Sector
      */
     private $name;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", mappedBy="sectors")
+     */
+    private $projects;
+
 
     /**
      * Get id.
@@ -61,5 +66,48 @@ class Sector
     public function getName()
     {
         return $this->name;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->projects = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add project.
+     *
+     * @param \ProjectBundle\Entity\Project $project
+     *
+     * @return Sector
+     */
+    public function addProject(\ProjectBundle\Entity\Project $project)
+    {
+        $this->projects[] = $project;
+
+        return $this;
+    }
+
+    /**
+     * Remove project.
+     *
+     * @param \ProjectBundle\Entity\Project $project
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeProject(\ProjectBundle\Entity\Project $project)
+    {
+        return $this->projects->removeElement($project);
+    }
+
+    /**
+     * Get projects.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getProjects()
+    {
+        return $this->projects;
     }
 }

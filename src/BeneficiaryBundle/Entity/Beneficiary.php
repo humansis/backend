@@ -56,6 +56,19 @@ class Beneficiary
      */
     private $updatedAt;
 
+    /**
+     * @var BeneficiaryProfile
+     *
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\BeneficiaryProfile")
+     */
+    private $beneficiaryProfile;
+
+    /**
+     * @var VulnerabilityCriteria
+     *
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriteria")
+     */
+    private $vulnerabilityCriteria;
 
     /**
      * Get id.
@@ -185,5 +198,53 @@ class Beneficiary
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set beneficiaryProfile.
+     *
+     * @param \BeneficiaryBundle\Entity\BeneficiaryProfile|null $beneficiaryProfile
+     *
+     * @return Beneficiary
+     */
+    public function setBeneficiaryProfile(\BeneficiaryBundle\Entity\BeneficiaryProfile $beneficiaryProfile = null)
+    {
+        $this->beneficiaryProfile = $beneficiaryProfile;
+
+        return $this;
+    }
+
+    /**
+     * Get beneficiaryProfile.
+     *
+     * @return \BeneficiaryBundle\Entity\BeneficiaryProfile|null
+     */
+    public function getBeneficiaryProfile()
+    {
+        return $this->beneficiaryProfile;
+    }
+
+    /**
+     * Set vulnerabilityCriteria.
+     *
+     * @param \BeneficiaryBundle\Entity\VulnerabilityCriteria|null $vulnerabilityCriteria
+     *
+     * @return Beneficiary
+     */
+    public function setVulnerabilityCriteria(\BeneficiaryBundle\Entity\VulnerabilityCriteria $vulnerabilityCriteria = null)
+    {
+        $this->vulnerabilityCriteria = $vulnerabilityCriteria;
+
+        return $this;
+    }
+
+    /**
+     * Get vulnerabilityCriteria.
+     *
+     * @return \BeneficiaryBundle\Entity\VulnerabilityCriteria|null
+     */
+    public function getVulnerabilityCriteria()
+    {
+        return $this->vulnerabilityCriteria;
     }
 }
