@@ -22,9 +22,51 @@ class User extends BaseUser
      */
     protected $id;
 
+    /**
+     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserCountry", mappedBy="user")
+     */
+    private $countries;
+
+
+
     public function __construct()
     {
         parent::__construct();
-        // your own logic
+    }
+
+    /**
+     * Add country.
+     *
+     * @param \UserBundle\Entity\UserCountry $country
+     *
+     * @return User
+     */
+    public function addCountry(\UserBundle\Entity\UserCountry $country)
+    {
+        $this->countries[] = $country;
+
+        return $this;
+    }
+
+    /**
+     * Remove country.
+     *
+     * @param \UserBundle\Entity\UserCountry $country
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeCountry(\UserBundle\Entity\UserCountry $country)
+    {
+        return $this->countries->removeElement($country);
+    }
+
+    /**
+     * Get countries.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCountries()
+    {
+        return $this->countries;
     }
 }
