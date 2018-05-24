@@ -64,7 +64,30 @@ class Project
     private $notes;
 
     /**
-     * Get id
+     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="project")
+     */
+    private $usersProject;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Donor", inversedBy="projects")
+     */
+    private $donors;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects")
+     */
+    private $sectors;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->usersProject = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get id.
      *
      * @return int
      */
@@ -74,7 +97,7 @@ class Project
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -88,7 +111,7 @@ class Project
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -98,7 +121,7 @@ class Project
     }
 
     /**
-     * Set startDate
+     * Set startDate.
      *
      * @param \DateTime $startDate
      *
@@ -112,7 +135,7 @@ class Project
     }
 
     /**
-     * Get startDate
+     * Get startDate.
      *
      * @return \DateTime
      */
@@ -122,7 +145,7 @@ class Project
     }
 
     /**
-     * Set endDate
+     * Set endDate.
      *
      * @param \DateTime $endDate
      *
@@ -136,7 +159,7 @@ class Project
     }
 
     /**
-     * Get endDate
+     * Get endDate.
      *
      * @return \DateTime
      */
@@ -146,9 +169,9 @@ class Project
     }
 
     /**
-     * Set numberOfHouseholds
+     * Set numberOfHouseholds.
      *
-     * @param integer $numberOfHouseholds
+     * @param int $numberOfHouseholds
      *
      * @return Project
      */
@@ -160,7 +183,7 @@ class Project
     }
 
     /**
-     * Get numberOfHouseholds
+     * Get numberOfHouseholds.
      *
      * @return int
      */
@@ -170,7 +193,7 @@ class Project
     }
 
     /**
-     * Set value
+     * Set value.
      *
      * @param float $value
      *
@@ -184,7 +207,7 @@ class Project
     }
 
     /**
-     * Get value
+     * Get value.
      *
      * @return float
      */
@@ -194,13 +217,13 @@ class Project
     }
 
     /**
-     * Set notes
+     * Set notes.
      *
-     * @param string $notes
+     * @param string|null $notes
      *
      * @return Project
      */
-    public function setNotes($notes)
+    public function setNotes($notes = null)
     {
         $this->notes = $notes;
 
@@ -208,12 +231,120 @@ class Project
     }
 
     /**
-     * Get notes
+     * Get notes.
      *
-     * @return string
+     * @return string|null
      */
     public function getNotes()
     {
         return $this->notes;
+    }
+
+    /**
+     * Add usersProject.
+     *
+     * @param \UserBundle\Entity\UserProject $usersProject
+     *
+     * @return Project
+     */
+    public function addUsersProject(\UserBundle\Entity\UserProject $usersProject)
+    {
+        $this->usersProject[] = $usersProject;
+
+        return $this;
+    }
+
+    /**
+     * Remove usersProject.
+     *
+     * @param \UserBundle\Entity\UserProject $usersProject
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeUsersProject(\UserBundle\Entity\UserProject $usersProject)
+    {
+        return $this->usersProject->removeElement($usersProject);
+    }
+
+    /**
+     * Get usersProject.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUsersProject()
+    {
+        return $this->usersProject;
+    }
+
+    /**
+     * Add donor.
+     *
+     * @param \ProjectBundle\Entity\Donor $donor
+     *
+     * @return Project
+     */
+    public function addDonor(\ProjectBundle\Entity\Donor $donor)
+    {
+        $this->donors[] = $donor;
+
+        return $this;
+    }
+
+    /**
+     * Remove donor.
+     *
+     * @param \ProjectBundle\Entity\Donor $donor
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeDonor(\ProjectBundle\Entity\Donor $donor)
+    {
+        return $this->donors->removeElement($donor);
+    }
+
+    /**
+     * Get donors.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDonors()
+    {
+        return $this->donors;
+    }
+
+    /**
+     * Add sector.
+     *
+     * @param \ProjectBundle\Entity\Sector $sector
+     *
+     * @return Project
+     */
+    public function addSector(\ProjectBundle\Entity\Sector $sector)
+    {
+        $this->sectors[] = $sector;
+
+        return $this;
+    }
+
+    /**
+     * Remove sector.
+     *
+     * @param \ProjectBundle\Entity\Sector $sector
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeSector(\ProjectBundle\Entity\Sector $sector)
+    {
+        return $this->sectors->removeElement($sector);
+    }
+
+    /**
+     * Get sectors.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSectors()
+    {
+        return $this->sectors;
     }
 }

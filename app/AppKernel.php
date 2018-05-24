@@ -26,6 +26,7 @@ class AppKernel extends Kernel
             new ProjectBundle\ProjectBundle(),
             new BeneficiaryBundle\BeneficiaryBundle(),
             new DistributionBundle\DistributionBundle(),
+            new TransactionBundle\TransactionBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

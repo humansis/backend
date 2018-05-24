@@ -1,0 +1,3 @@
+transaction_homepage:
+    path:     /
+    defaults: { _controller: TransactionBundle:Default:index }
