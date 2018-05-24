@@ -31,7 +31,7 @@ class DistributionBeneficiary
     /**
      * @var ProjectBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\ProjectBeneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\ProjectBeneficiary")
      */
     private $projectBeneficiary;
 
@@ -72,11 +72,11 @@ class DistributionBeneficiary
     /**
      * Set projectBeneficiary.
      *
-     * @param \DistributionBundle\Entity\ProjectBeneficiary|null $projectBeneficiary
+     * @param \BeneficiaryBundle\Entity\ProjectBeneficiary|null $projectBeneficiary
      *
      * @return DistributionBeneficiary
      */
-    public function setProjectBeneficiary(\DistributionBundle\Entity\ProjectBeneficiary $projectBeneficiary = null)
+    public function setProjectBeneficiary(\BeneficiaryBundle\Entity\ProjectBeneficiary $projectBeneficiary = null)
     {
         $this->projectBeneficiary = $projectBeneficiary;
 
@@ -86,7 +86,7 @@ class DistributionBeneficiary
     /**
      * Get projectBeneficiary.
      *
-     * @return \DistributionBundle\Entity\ProjectBeneficiary|null
+     * @return \BeneficiaryBundle\Entity\ProjectBeneficiary|null
      */
     public function getProjectBeneficiary()
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace DistributionBundle\Entity;
+namespace BeneficiaryBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\Mapping as ORM;
