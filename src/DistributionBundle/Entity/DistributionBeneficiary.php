@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Entity;
 
+use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
