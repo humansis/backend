@@ -4,12 +4,13 @@ namespace UserBundle\Entity;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * User
  *
  * @ORM\Table(name="`user")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="UserBundle\Repository\UserRepository")
  */
 class User extends BaseUser
 {
@@ -19,24 +20,52 @@ class User extends BaseUser
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullUser"})
      */
     protected $id;
 
     /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserCountry", mappedBy="user")
+     * @Groups({"FullUser"})
      */
     private $countries;
 
     /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="user")
+     * @Groups({"FullUser"})
      */
     private $userProjects;
+
+    /**
+     * @var string
+     * @Groups({"FullUser"})
+     */
+    protected $email;
+
+    /**
+     * @var string
+     * @Groups({"FullUser"})
+     */
+    protected $username;
 
 
 
     public function __construct()
     {
         parent::__construct();
+    }
+
+    /**
+     * Set id.
+     *
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

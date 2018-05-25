@@ -2,6 +2,8 @@
 
 namespace UserBundle\Controller;
 
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -52,19 +54,37 @@ class UserController extends Controller
     public function getSaltAction(Request $request)
     {
         $username = $request->get('username');
-        $user = $this->get('user.user_service')->getUserByUsername($username);
-        if ($user)
+        $salt = $this->get('user.user_service')->getSalt($username);
+
+        return new Response($salt);
+    }
+
+    /**
+     * @Rest\Put("/user", name="add_user")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function createAction(Request $request)
+    {
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+        $user = $serializer->deserialize(json_encode($request->request->all()), User::class, 'json');
+        try
         {
-            if ($user->isEnabled())
-            {
-                $json = $this->get('serializer')->serialize($user->getSalt(), 'json');
-
-                return new Response($json, Response::HTTP_OK);
-            }
-            return new Response(null, Response::HTTP_LOCKED);
+            $userSaved = $this->get('user.user_service')->create($user);
         }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage());
+        }
+        $userJson = $serializer->serialize(
+            $userSaved,
+            'json',
+            SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true)
+        );
 
-        return new Response(null, Response::HTTP_BAD_REQUEST);
+        return new Response($userJson);
     }
 
     /**
@@ -119,20 +139,14 @@ class UserController extends Controller
      *
      * @param Request $request
      * @param User $user
+     * @return Response
      */
     public function postAction(Request $request, User $user)
     {
+        $userData = $request->request->all();
+        $return = $this->get('user.user_service')->update($user, $userData);
 
-    }
-
-    /**
-     * @Rest\Put("/user", name="add_user")
-     *
-     * @param Request $request
-     */
-    public function addAction(Request $request)
-    {
-
+        return new Response(json_encode($return));
     }
 
     /**
