@@ -50,6 +50,7 @@ class TesterController extends Controller
             $userSearch->setSalt($salt);
             $userSearch->setEmail($username . "@" . $username . ".fr");
             $userSearch->setPassword("");
+            $userSearch->setEnabled(1);
             $entityManager->persist($userSearch);
         }
 

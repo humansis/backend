@@ -150,6 +150,35 @@ class UserController extends Controller
     }
 
     /**
+     * @Rest\Post("/user/{id}/password", name="edit_password_user")
+     *
+     * @param Request $request
+     * @param User $user
+     * @return Response
+     */
+    public function postPasswordAction(Request $request, User $user)
+    {
+        $oldPassword = $request->request->get('oldPassword');
+        $newPassword = $request->request->get('newPassword');
+        try
+        {
+            $user = $this->get('user.user_service')->updatePassword($user, $oldPassword, $newPassword);
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage());
+        }
+
+        $userJson = $this->get('jms_serializer')->serialize(
+            $user,
+            'json',
+            SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true)
+        );
+
+        return new Response(json_encode($userJson));
+    }
+
+    /**
      * Get lapin
      * @Rest\Get("/lapin")
      *

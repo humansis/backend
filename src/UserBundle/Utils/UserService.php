@@ -84,4 +84,23 @@ class UserService
 
         return $user;
     }
+
+    /**
+     * @param User $user
+     * @param $oldPassword
+     * @param $newPassword
+     * @return User
+     * @throws \Exception
+     */
+    public function updatePassword(User $user, $oldPassword, $newPassword)
+    {
+        if ($user->getPassword() !== $oldPassword)
+            throw new \Exception("The old password doesn't match.");
+
+        $user->setPassword($newPassword);
+        $this->em->merge($user);
+        $this->em->flush();
+
+        return $user;
+    }
 }
