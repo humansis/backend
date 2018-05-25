@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "b72d7c176a857addaad45e2de919beaa",
@@ -1527,16 +1527,16 @@
         },
         {
             "name": "jms/serializer-bundle",
-            "version": "2.3.1",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/JMSSerializerBundle.git",
-                "reference": "9dec7ab62248aa97f33cce70c301af15154f8f0b"
+                "reference": "507d2359857226b3188f6de96dae7e33584c1445"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/JMSSerializerBundle/zipball/9dec7ab62248aa97f33cce70c301af15154f8f0b",
-                "reference": "9dec7ab62248aa97f33cce70c301af15154f8f0b",
+                "url": "https://api.github.com/repos/schmittjoh/JMSSerializerBundle/zipball/507d2359857226b3188f6de96dae7e33584c1445",
+                "reference": "507d2359857226b3188f6de96dae7e33584c1445",
                 "shasum": ""
             },
             "require": {
@@ -1563,7 +1563,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.4-dev"
                 }
             },
             "autoload": {
@@ -1597,7 +1597,7 @@
                 "serialization",
                 "xml"
             ],
-            "time": "2017-12-08T19:49:08+00:00"
+            "time": "2018-05-20T07:28:26+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -2813,6 +2813,61 @@
             "time": "2018-04-26T10:06:28+00:00"
         },
         {
+            "name": "symfony/polyfill-ctype",
+            "version": "v1.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-ctype.git",
+                "reference": "7cc359f1b7b80fc25ed7796be7d96adc9b354bae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/7cc359f1b7b80fc25ed7796be7d96adc9b354bae",
+                "reference": "7cc359f1b7b80fc25ed7796be7d96adc9b354bae",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Ctype\\": ""
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                },
+                {
+                    "name": "Gert de Pagter",
+                    "email": "BackEndTea@gmail.com"
+                }
+            ],
+            "description": "Symfony polyfill for ctype functions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "ctype",
+                "polyfill",
+                "portable"
+            ],
+            "time": "2018-04-30T19:57:29+00:00"
+        },
+        {
             "name": "symfony/polyfill-intl-icu",
             "version": "v1.8.0",
             "source": {
@@ -3157,16 +3212,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v3.4.9",
+            "version": "v3.4.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "4babd75194d45f7a4412560038924f3008c67ef2"
+                "reference": "816bf5030e3ac7cf6a88575a27138a088d3041b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/4babd75194d45f7a4412560038924f3008c67ef2",
-                "reference": "4babd75194d45f7a4412560038924f3008c67ef2",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/816bf5030e3ac7cf6a88575a27138a088d3041b0",
+                "reference": "816bf5030e3ac7cf6a88575a27138a088d3041b0",
                 "shasum": ""
             },
             "require": {
@@ -3180,6 +3235,7 @@
                 "psr/log": "~1.0",
                 "psr/simple-cache": "^1.0",
                 "symfony/polyfill-apcu": "~1.1",
+                "symfony/polyfill-ctype": "~1.8",
                 "symfony/polyfill-intl-icu": "~1.0",
                 "symfony/polyfill-mbstring": "~1.0",
                 "symfony/polyfill-php56": "~1.0",
@@ -3307,7 +3363,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2018-04-30T19:27:18+00:00"
+            "time": "2018-05-21T13:44:23+00:00"
         },
         {
             "name": "twig/twig",
@@ -3744,16 +3800,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v3.4.9",
+            "version": "v3.4.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "7470518370113785f67a7fd8e6e1667661e88805"
+                "reference": "63cdae00a75862fa543b765ba63d55f6b6397d0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/7470518370113785f67a7fd8e6e1667661e88805",
-                "reference": "7470518370113785f67a7fd8e6e1667661e88805",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/63cdae00a75862fa543b765ba63d55f6b6397d0c",
+                "reference": "63cdae00a75862fa543b765ba63d55f6b6397d0c",
                 "shasum": ""
             },
             "require": {
@@ -3806,7 +3862,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2018-04-30T15:36:51+00:00"
+            "time": "2018-05-16T12:49:49+00:00"
         }
     ],
     "aliases": [],
