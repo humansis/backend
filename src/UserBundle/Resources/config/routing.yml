@@ -1,3 +1,9 @@
 users:
     type:     rest
     resource: UserBundle\Controller\UserController
+
+#Dev controllers
+user_dev:
+    type: rest
+    prefix: tester
+    resource: "UserBundle:Dev/Tester"

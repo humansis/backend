@@ -1,20 +1,14 @@
 # To get started with security, check out the documentation:
 # https://symfony.com/doc/current/security.html
 security:
-
-    # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
-
     encoders:
-        FOS\UserBundle\Model\UserInterface: sha512
-        UserBundle\Entity\User: sha512
-
-    role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
-        ROLE_SUPER_ADMIN: ROLE_ADMIN
+        FOS\UserBundle\Model\UserInterface: bcrypt
 
     providers:
-        fos_userbundle:
-            id: fos_user.user_provider.username
+        our_db_provider:
+            entity:
+                class: UserBundle:User
+                property: username
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -22,34 +16,30 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        # filter api routes
-        salt:
-            pattern:   ^/api/wsse/salt
+        # tester
+        tester_salt:
+            pattern:   ^/api/wsse/tester/user_salt
+            security: false
+
+        tester_login:
+            pattern:   ^/api/wsse/tester/login
             security: false
 
         wsse_secured:
-            pattern:   ^/api/wsse
+            pattern:   ^/api/
             stateless: true
             wsse: true
-            anonymous : false
+            anonymous: false
             methods: [GET, PUT, POST, DELETE, OPTIONS]
-
-        main:
-            pattern: ^/
-            form_login:
-                provider: fos_userbundle
-                csrf_token_generator: security.csrf.token_manager
-                login_path: fos_user_security_login
-                check_path: fos_user_security_check
-            logout:
-                path: fos_user_security_logout
-
-            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
-            #http_basic: ~
-
-            # https://symfony.com/doc/current/security/form_login_setup.html
+            provider: our_db_provider
 
     access_control:
+        - { path: /, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+
+
+        # ADMIN PART
         - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/, role: ROLE_USER }

@@ -19,7 +19,7 @@ class UserService
      */
     public function findAll()
     {
-        return $this->getRepository()->findAll();
+        return $this->em->getRepository(User::class)->findAll();
     }
 
 	/**
@@ -28,14 +28,11 @@ class UserService
 	 */
 	public function getUserByUsername(string $username)
 	{
-		return $this->getRepository()->findOneBy(array('username' => $username));
+		return $this->em->getRepository(User::class)->findOneByUsername($username);
 	}
 
-	/**
-     * @return \Doctrine\ORM\EntityRepository|\UserBundle\Repository\UserRepository
-     */
-    private function getRepository()
+	public function update(User $user, array $userData)
     {
-        return $this->em->getRepository('UserBundle:User');
+
     }
 }
