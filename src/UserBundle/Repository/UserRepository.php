@@ -14,6 +14,9 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 
     public function edit(User $user, array $arrayData)
     {
+        if (empty($arrayData))
+            return $user;
+
         $qb = $this->_em->createQueryBuilder();
         $builder = $qb->update("UserBundle:User", 'u');
         foreach ($arrayData as $column => $value)

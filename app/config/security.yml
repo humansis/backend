@@ -48,5 +48,5 @@ security:
 
 
         # ADMIN PART
-        - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/admin/, role: ROLE_USER }
         - { path: ^/, role: ROLE_USER }

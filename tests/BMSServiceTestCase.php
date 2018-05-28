@@ -100,7 +100,7 @@ class BMSServiceTestCase extends KernelTestCase
 
     /**
      * Mock the EntityManager with the given functions
-     * @param  array $requiredFunctions         [names of functions to setup on the mock]
+     * @param  array $requiredFunctions [names of functions to setup on the mock]
      * @return EntityManager {[MockClass]       [a mock instance of EntityManager]
      */
     protected function mockEntityManager(array $requiredFunctions)
@@ -167,7 +167,7 @@ class BMSServiceTestCase extends KernelTestCase
         $user = new User();
         $user->setUsername($username)
             ->setEmail($username)
-        ->setPassword("");
+            ->setPassword("");
         $this->em->persist($user);
         $this->em->flush();
 

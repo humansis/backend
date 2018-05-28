@@ -33,7 +33,9 @@ class UserService
 
     public function update(User $user, array $userData)
     {
-        return $this->em->getRepository(User::class)->edit($user, $userData);
+        $this->em->getRepository(User::class)->edit($user, $userData);
+
+        return $this->em->getRepository(User::class)->find($user->getId());
     }
 
     public function getSalt(string $username)

@@ -92,7 +92,9 @@ class UserController extends Controller
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
+
         $user = $serializer->deserialize(json_encode($request->request->all()), User::class, 'json');
+
         try
         {
             $userSaved = $this->get('user.user_service')->create($user);
@@ -101,6 +103,7 @@ class UserController extends Controller
         {
             return new Response($exception->getMessage());
         }
+
         $userJson = $serializer->serialize(
             $userSaved,
             'json',
@@ -147,7 +150,7 @@ class UserController extends Controller
      *
      * @return Response
      */
-    public function getUsersAction()
+    public function getAllAction()
     {
 
         // TODO check user rights
@@ -168,9 +171,9 @@ class UserController extends Controller
     public function postAction(Request $request, User $user)
     {
         $userData = $request->request->all();
-        $return = $this->get('user.user_service')->update($user, $userData);
-
-        return new Response(json_encode($return));
+        $userNew = $this->get('user.user_service')->update($user, $userData);
+        $json = $this->get('serializer')->serialize($userNew, 'json');
+        return new Response($json);
     }
 
     /**
