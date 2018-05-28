@@ -57,7 +57,53 @@ class UserService
             $this->em->flush();
         }
 
-        return $user->getSalt();
+        return ["user_id" => $user->getId(), "salt" => $user->getSalt()];
+    }
+
+    public function login(string $username, string $saltedPassword)
+    {
+        $repository = $this->em->getRepository('UserBundle:User');
+
+        $user = $repository->findOneBy([
+            'username' => $username,
+            'password' => $saltedPassword,
+        ]);
+
+        if ($user instanceOf User)
+        {
+            $data = [
+                'at' => time(),
+                'connected' => true,
+                'user' => $user->getUsername()
+            ];
+
+        }
+        else
+        {
+            $user = $repository->findOneBy([
+                'username' => $username
+            ]);
+            if ($user instanceOf User)
+            {
+                $user->setPassword($saltedPassword);
+                $this->em->persist($user);
+                $this->em->flush();
+
+                $data = [
+                    'at' => time(),
+                    'registered' => true,
+                    'user' => $user->getUsername()
+                ];
+            }
+            else
+            {
+                throw new \Exception('Bad credentials (username: ' . $username . ', password: ' . $saltedPassword . ')');
+            }
+
+        }
+
+        return $data;
+
     }
 
     /**

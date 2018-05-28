@@ -18,8 +18,31 @@ class UserController extends Controller
 {
 
     /**
+     * @Rest\Post("/login", name="user_login")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function LoginAction(Request $request)
+    {
+
+        $username = $request->request->get('username');
+        $saltedPassword = $request->request->get('salted_password');
+        try
+        {
+            $data = $this->container->get('user.user_service')->login($username, $saltedPassword);
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage(), $exception->getCode());
+        }
+
+        return new Response(json_encode($data));
+    }
+
+    /**
      * Get user's salt
-     * @Rest\Get("/salt")
+     * @Rest\Get("/salt/{username}")
      *
      * @SWG\Parameter(
      *     name="username",
@@ -56,7 +79,7 @@ class UserController extends Controller
         $username = $request->get('username');
         $salt = $this->get('user.user_service')->getSalt($username);
 
-        return new Response($salt);
+        return new Response(json_encode($salt));
     }
 
     /**
@@ -126,6 +149,7 @@ class UserController extends Controller
      */
     public function getUsersAction()
     {
+
         // TODO check user rights
 
         $users = $this->get('user.user_service')->findAll();

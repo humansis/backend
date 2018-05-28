@@ -12,17 +12,24 @@ security:
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
+
+        # Config without security but only for profiler and images/scripts
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        # Config without security.
+#        dev:
+#            pattern:  ^/
+#            security: false
+
         # tester
         tester_salt:
-            pattern:   ^/api/wsse/tester/user_salt
+            pattern:   ^/api/wsse/salt
             security: false
 
         tester_login:
-            pattern:   ^/api/wsse/tester/login
+            pattern:   ^/api/wsse/login
             security: false
 
         wsse_secured:
