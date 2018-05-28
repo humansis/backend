@@ -5,9 +5,7 @@ namespace UserBundle\Controller;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\View\View;
@@ -203,24 +201,5 @@ class UserController extends Controller
         );
 
         return new Response(json_encode($userJson));
-    }
-
-    /**
-     * Get lapin
-     * @Rest\Get("/lapin")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="OK",
-     * )
-     * @SWG\Tag(name="Users")
-     *
-     * @return Response
-     */
-    public function getLapinAction()
-    {
-        $json = json_encode(array(array('email' => "lapin")));
-
-        return new Response($json, Response::HTTP_OK);
     }
 }
