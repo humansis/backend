@@ -16,6 +16,7 @@ class UserController extends Controller
 {
 
     /**
+     * Log a user with its username and salted password. Create a new one if not in the db (remove this part for prod env)
      * @Rest\Post("/login", name="user_login")
      *
      * @param Request $request
@@ -40,6 +41,7 @@ class UserController extends Controller
 
     /**
      * Get user's salt
+     *
      * @Rest\Get("/salt/{username}")
      *
      * @SWG\Parameter(
@@ -81,6 +83,8 @@ class UserController extends Controller
     }
 
     /**
+     * Create a new User. You must have called getSalt before use this one
+     *
      * @Rest\Put("/user", name="add_user")
      *
      * @param Request $request
@@ -113,6 +117,7 @@ class UserController extends Controller
 
     /**
      * Connection URL checking
+     *
      * @Rest\Get("/check")
      *
      * @SWG\Response(
@@ -137,7 +142,8 @@ class UserController extends Controller
     }
 
     /**
-     * Get users
+     * Get all users
+     *
      * @Rest\Get("/users")
      *
      * @SWG\Response(
@@ -160,6 +166,8 @@ class UserController extends Controller
     }
 
     /**
+     * Edit a user {id} with data in the body
+     *
      * @Rest\Post("/user/{id}", name="edit_user")
      *
      * @param Request $request
@@ -175,6 +183,8 @@ class UserController extends Controller
     }
 
     /**
+     * Change the password of user {id}. Must send oldPassword and newPassword
+     *
      * @Rest\Post("/user/{id}/password", name="edit_password_user")
      *
      * @param Request $request
