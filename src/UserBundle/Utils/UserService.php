@@ -3,6 +3,9 @@
 namespace UserBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Validation;
 use UserBundle\Entity\User;
 
 class UserService
@@ -40,6 +43,23 @@ class UserService
 
     public function getSalt(string $username)
     {
+        $validator = Validation::createValidator();
+        $violations = $validator->validate($username, array(
+            new Length(array('min' => 2, 'max' => 50)),
+            new NotBlank(),
+        ));
+
+        if (0 !== count($violations))
+        {
+            $errors = [];
+            // there are errors, now you can show them
+            foreach ($violations as $violation)
+            {
+                $errors[] = $violation->getMessage();
+            }
+            return $errors;
+        }
+
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
 
         if (!$user instanceof User)
@@ -53,6 +73,7 @@ class UserService
                 ->setEmailCanonical($salt)
                 ->setSalt($salt)
                 ->setPassword("");
+
 
             $this->em->persist($user);
 

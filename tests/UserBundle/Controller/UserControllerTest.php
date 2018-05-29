@@ -45,7 +45,7 @@ class UserControllerTest extends BMSServiceTestCase
         $crawler = $this->client->request('GET', '/api/wsse/users');
         $users = json_decode($this->client->getResponse()->getContent(), true);
 
-        if (sizeof($users) > 0)
+        if (!empty($users))
         {
             $user = $users[0];
 

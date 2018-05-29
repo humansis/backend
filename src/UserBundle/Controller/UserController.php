@@ -143,7 +143,7 @@ class UserController extends Controller
     /**
      * Get all users
      *
-     * @Rest\Get("/users")
+     * @Rest\Get("/users", name="get_all_users")
      *
      * @SWG\Response(
      *     response=200,
