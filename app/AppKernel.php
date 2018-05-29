@@ -27,6 +27,7 @@ class AppKernel extends Kernel
             new BeneficiaryBundle\BeneficiaryBundle(),
             new DistributionBundle\DistributionBundle(),
             new TransactionBundle\TransactionBundle(),
+            new RA\RequestValidatorBundle\RARequestValidatorBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

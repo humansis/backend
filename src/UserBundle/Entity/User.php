@@ -39,12 +39,24 @@ class User extends BaseUser
     /**
      * @var string
      * @Groups({"FullUser"})
+     * @Assert\NotBlank(message="Email can't be empty")
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email.",
+     *     checkMX = true
+     * )
      */
     protected $email;
 
     /**
      * @var string
      * @Groups({"FullUser"})
+     * @Assert\NotBlank(message="Username can't be empty")
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Your username must be at least {{ limit }} characters long",
+     *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
+     * )
      */
     protected $username;
 

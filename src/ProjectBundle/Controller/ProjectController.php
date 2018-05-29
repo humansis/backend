@@ -15,22 +15,22 @@ use ProjectBundle\Entity\Project;
 
 class ProjectController extends Controller
 {
-	/**
-    * Get projects
-    * @Rest\Get("/projects")
-    *
-    * @SWG\Response(
-    *     response=200,
-    *     description="OK",
-    * )
-    *
-    * @SWG\Tag(name="Projects")
-    *
-    * @return Response
-    */
-    public function getProjectsAction()
+    /**
+     * Get projects
+     * @Rest\Get("/projects")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK",
+     * )
+     *
+     * @SWG\Tag(name="Projects")
+     *
+     * @return Response
+     */
+    public function getAllAction()
     {
-		// TODO check user rights
+        // TODO check user rights
 
         $projects = $this->get('project.project_service')->findAll();
         $json = $this->get('serializer')->serialize($projects, 'json');
@@ -38,41 +38,41 @@ class ProjectController extends Controller
         return new Response($json, Response::HTTP_OK);
     }
 
-	/**
-    * Create a project
-    * @Rest\Post("/projects")
-    *
-    * @SWG\Parameter(
-    * 	  name="body",
-    * 	  in="body",
-    * 	  type="object",
-    * 	  required=true,
-    * 	  description="Body of the request",
-    * 	  @SWG\Schema(ref=@Model(type=Project::class))
-    * )
-    *
-    * @SWG\Response(
-    *     response=200,
-    *     description="OK",
-    * )
-    *
-    * @SWG\Tag(name="Projects")
-    *
-    * @param Request $request
-    * @return Response
-    */
+    /**
+     * Create a project
+     * @Rest\Post("/projects")
+     *
+     * @SWG\Parameter(
+     *      name="body",
+     *      in="body",
+     *      type="object",
+     *      required=true,
+     *      description="Body of the request",
+     * 	  @SWG\Schema(ref=@Model(type=Project::class))
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK",
+     * )
+     *
+     * @SWG\Tag(name="Projects")
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function createProjectAction(Request $request)
     {
-		// TODO check user rights
-
-		try {
+        // TODO check user rights
+        try
+        {
             $project = $this->get('project.project_service')->createProject($request);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e)
+        {
             return new Response($e->getMessage());
         }
-
-		$json = $this->get('serializer')->serialize($project, 'json');
-
+        $json = $this->get('serializer')->serialize($project, 'json');
         return new Response($json, Response::HTTP_OK);
     }
 }

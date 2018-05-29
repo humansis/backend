@@ -24,7 +24,6 @@ class UserController extends Controller
      */
     public function LoginAction(Request $request)
     {
-
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('salted_password');
         try
