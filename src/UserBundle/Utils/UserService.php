@@ -3,18 +3,26 @@
 namespace UserBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 
 class UserService
 {
-    protected $em;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /** @var EntityManagerInterface $em */
+    private $em;
+
+    /** @var ValidatorInterface $validator */
+    private $validator;
+
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
         $this->em = $entityManager;
+        $this->validator = $validator;
     }
 
     /**
@@ -41,6 +49,11 @@ class UserService
         return $this->em->getRepository(User::class)->find($user->getId());
     }
 
+    /**
+     * @param string $username
+     * @return array
+     * @throws \Exception
+     */
     public function getSalt(string $username)
     {
         $validator = Validation::createValidator();
@@ -57,7 +70,7 @@ class UserService
             {
                 $errors[] = $violation->getMessage();
             }
-            return $errors;
+            throw new \Exception(json_encode($errors), Response::HTTP_BAD_REQUEST);
         }
 
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
@@ -147,6 +160,17 @@ class UserService
             ->setSalt($userSaved->getSalt())
             ->setEmailCanonical($user->getEmail())
             ->setEnabled(1);
+
+        $errors = $this->validator->validate($user);
+        if (count($errors) > 0)
+        {
+            $errorsArray = [];
+            foreach ($errors as $error)
+            {
+                $errorsArray[] = $error->getMessage();
+            }
+            return $errorsArray;
+        }
 
         $this->em->merge($user);
         $this->em->flush();

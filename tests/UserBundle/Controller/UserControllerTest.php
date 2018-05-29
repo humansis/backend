@@ -13,10 +13,8 @@ class UserControllerTest extends BMSServiceTestCase
 
     /** @var Client $client */
     private $client;
-
-    private $username = "TESTER_TMP";
-
-    private $end = false;
+    /** @var string $username */
+    private $username = "TESTER_PHPUNIT";
 
 
     /**
@@ -72,6 +70,11 @@ class UserControllerTest extends BMSServiceTestCase
 
         $this->assertArrayHasKey('user_id', $data);
         $this->assertArrayHasKey('salt', $data);
+
+        $crawler = $this->client->request('GET', '/api/wsse/salt/o');
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(!$this->client->getResponse()->isSuccessful());
     }
 
     /**
@@ -79,26 +82,35 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testCreateUser()
     {
-        $this->container->get('user.user_service')->getSalt($this->username);
+        // First step
+        // Get salt for a new user => save the username with the salt in database (user disabled for now)
+        $return = $this->container->get('user.user_service')->getSalt($this->username);
+        // Check if the first step has been done correctly
+        $this->assertArrayHasKey('user_id', $return);
+        $this->assertArrayHasKey('salt', $return);
 
         $body = [
             "username" => $this->username,
-            "email" => $this->username . "@gmail." . $this->username,
+            "email" => $this->username . "@gmail.com",
             "password" => "PSWUNITTEST"
         ];
 
+        // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->client->request('PUT', '/api/wsse/user', $body);
         $user = json_decode($this->client->getResponse()->getContent(), true);
 
+        // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertArrayHasKey('id', $user);
         $this->assertArrayHasKey('username', $user);
         $this->assertArrayHasKey('email', $user);
-        $this->assertSame($user['email'], $this->username . "@gmail." . $this->username);
+        $this->assertSame($user['email'], $this->username . "@gmail.com");
 
     }
 

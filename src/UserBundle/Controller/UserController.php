@@ -76,7 +76,14 @@ class UserController extends Controller
     public function getSaltAction(Request $request)
     {
         $username = $request->get('username');
-        $salt = $this->get('user.user_service')->getSalt($username);
+        try
+        {
+            $salt = $this->get('user.user_service')->getSalt($username);
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage(), $exception->getCode());
+        }
 
         return new Response(json_encode($salt));
     }
@@ -95,18 +102,21 @@ class UserController extends Controller
         $serializer = $this->get('jms_serializer');
 
         $user = $serializer->deserialize(json_encode($request->request->all()), User::class, 'json');
-
         try
         {
-            $userSaved = $this->get('user.user_service')->create($user);
+            $return = $this->get('user.user_service')->create($user);
         }
         catch (\Exception $exception)
         {
             return new Response($exception->getMessage());
         }
 
+        if (!$user instanceof User)
+            return new Response(json_encode($user));
+
+
         $userJson = $serializer->serialize(
-            $userSaved,
+            $return,
             'json',
             SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true)
         );
