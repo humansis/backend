@@ -69,9 +69,9 @@ class Project
     /**
      * @var string
      *
-     * @ORM\Column(name="country_iso3", type="text")
+     * @ORM\Column(name="iso3", type="text")
      */
-    private $countryIso3;
+    private $iso3;
 
     /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="project")
@@ -252,27 +252,27 @@ class Project
     }
 
     /**
-     * Set countryIso3.
+     * Set iso3.
      *
-     * @param string $countryIso3
+     * @param string $iso3
      *
      * @return Project
      */
-    public function setCountryIso3($countryIso3)
+    public function setIso3($iso3)
     {
-        $this->countryIso3 = $countryIso3;
+        $this->iso3 = $iso3;
 
         return $this;
     }
 
     /**
-     * Get countryIso3.
+     * Get iso3.
      *
      * @return string
      */
-    public function getCountryIso3()
+    public function getIso3()
     {
-        return $this->countryIso3;
+        return $this->iso3;
     }
 
     /**
