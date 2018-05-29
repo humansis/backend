@@ -98,6 +98,18 @@ class Project
     }
 
     /**
+     * Set id.
+     *
+     * @return Project
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Get id.
      *
      * @return int

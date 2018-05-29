@@ -61,14 +61,37 @@ class ProjectController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createProjectAction(Request $request)
+    public function createAction(Request $request)
     {
         // TODO check user rights
 
-        $project = $request->request->all();
+        $projectArray = $request->request->all();
         try
         {
-            $project = $this->get('project.project_service')->createProject($project);
+            $project = $this->get('project.project_service')->create($projectArray);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage());
+        }
+        $json = $this->get('serializer')->serialize($project, 'json');
+        return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
+     * Edit a project
+     * @Rest\Post("/project/{id}", name="edit_project")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function editAction(Request $request, Project $project)
+    {
+        // TODO check user rights
+        $projectArray = $request->request->all();
+        try
+        {
+            $project = $this->get('project.project_service')->edit($project, $projectArray);
         }
         catch (\Exception $e)
         {

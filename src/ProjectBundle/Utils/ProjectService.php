@@ -42,7 +42,7 @@ class ProjectService
      * @return Project
      * @throws \Exception
      */
-    public function createProject(array $projectArray)
+    public function create(array $projectArray)
     {
         $project = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
 
@@ -61,5 +61,23 @@ class ProjectService
         $this->em->flush();
 
         return $project;
+    }
+
+    /**
+     * @param Project $project
+     * @param array $projectArray
+     * @return Project
+     */
+    public function edit(Project $project, array $projectArray)
+    {
+        /** @var Project $editedProject */
+        $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
+
+        $editedProject->setId($project->getId());
+
+        $this->em->merge($editedProject);
+        $this->em->flush();
+
+        return $editedProject;
     }
 }
