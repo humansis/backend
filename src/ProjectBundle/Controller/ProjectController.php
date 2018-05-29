@@ -17,7 +17,7 @@ class ProjectController extends Controller
 {
     /**
      * Get projects
-     * @Rest\Get("/projects")
+     * @Rest\Get("/projects", name="get_all_projects")
      *
      * @SWG\Response(
      *     response=200,
@@ -40,7 +40,7 @@ class ProjectController extends Controller
 
     /**
      * Create a project
-     * @Rest\Post("/projects")
+     * @Rest\Put("/project", name="create_project")
      *
      * @SWG\Parameter(
      *      name="body",
@@ -64,9 +64,11 @@ class ProjectController extends Controller
     public function createProjectAction(Request $request)
     {
         // TODO check user rights
+
+        $project = $request->request->all();
         try
         {
-            $project = $this->get('project.project_service')->createProject($request);
+            $project = $this->get('project.project_service')->createProject($project);
         }
         catch (\Exception $e)
         {

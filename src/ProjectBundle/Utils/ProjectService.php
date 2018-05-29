@@ -3,17 +3,26 @@
 namespace ProjectBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
+use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Response;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProjectService
 {
     protected $em;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /** @var Serializer $serializer */
+    private $serializer;
+
+    /** @var ValidatorInterface $validator */
+    private $validator;
+
+    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator)
     {
         $this->em = $entityManager;
+        $this->serializer = $serializer;
+        $this->validator = $validator;
     }
 
     /**
@@ -23,61 +32,34 @@ class ProjectService
      */
     public function findAll()
     {
-        return $this->getRepository()->findAll();
+        return $this->em->getRepository(Project::class)->findAll();
     }
 
     /**
      * Create a project
      *
-     * @param  Request $request
+     * @param array $projectArray
      * @return Project
      * @throws \Exception
      */
-    public function createProject(Request $request)
+    public function createProject(array $projectArray)
     {
-        $name = $request->request->get('name');
-        $startDate = new \DateTime($request->request->get('startDate'));
-        $endDate = new \DateTime($request->request->get('endDate'));
-        $numberOfHouseholds = $request->request->get('numberOfHouseholds');
-        $value = $request->request->get('value');
-        $notes = $request->request->get('notes');
+        $project = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
 
-        if (empty($name) || empty($startDate) || empty($endDate) ||
-            empty($numberOfHouseholds) || empty($value))
+        $errors = $this->validator->validate($project);
+        if (count($errors) > 0)
         {
-            throw new \Exception(
-                "Supplied parameters do not match (name, startDate, endDate, numberOfHouseholds, value)",
-                Response::HTTP_BAD_REQUEST
-            );
+            $errorsArray = [];
+            foreach ($errors as $error)
+            {
+                $errorsArray[] = $error->getMessage();
+            }
+            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
-
-        // TODO check if project already exists
-        // $project = $this->getRepository()->getUniqueProject();
-        // if (!empty($project)) {
-        //     throw new \Exception("This project already exists", Response::HTTP_BAD_REQUEST);
-        // }
-
-        $project = new Project();
-        $project->setName($name);
-        $project->setStartDate($startDate);
-        $project->setEndDate($endDate);
-        $project->setEndDate($endDate);
-        $project->setNumberOfHouseholds($numberOfHouseholds);
-        $project->setValue($value);
-
-        $project->setNotes(!empty($notes) ? $notes : null);
 
         $this->em->persist($project);
         $this->em->flush();
 
         return $project;
-    }
-
-    /**
-     * @return \Doctrine\ORM\EntityRepository|\UserBundle\Repository\ProjectRepository
-     */
-    private function getRepository()
-    {
-        return $this->em->getRepository('ProjectBundle:Project');
     }
 }

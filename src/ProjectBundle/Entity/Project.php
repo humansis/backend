@@ -3,6 +3,7 @@
 namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * Project
@@ -31,14 +32,16 @@ class Project
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="startDate", type="datetime")
+     * @ORM\Column(name="startDate", type="date")
+     * @JMS_Type("DateTime<'Y-m-d'>")
      */
     private $startDate;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="endDate", type="datetime")
+     * @ORM\Column(name="endDate", type="date")
+     * @JMS_Type("DateTime<'Y-m-d'>")
      */
     private $endDate;
 
@@ -64,6 +67,13 @@ class Project
     private $notes;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="country_iso3", type="text")
+     */
+    private $countryIso3;
+
+    /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="project")
      */
     private $usersProject;
@@ -77,13 +87,14 @@ class Project
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects")
      */
     private $sectors;
-
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->usersProject = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->donors = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->sectors = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -238,6 +249,30 @@ class Project
     public function getNotes()
     {
         return $this->notes;
+    }
+
+    /**
+     * Set countryIso3.
+     *
+     * @param string $countryIso3
+     *
+     * @return Project
+     */
+    public function setCountryIso3($countryIso3)
+    {
+        $this->countryIso3 = $countryIso3;
+
+        return $this;
+    }
+
+    /**
+     * Get countryIso3.
+     *
+     * @return string
+     */
+    public function getCountryIso3()
+    {
+        return $this->countryIso3;
     }
 
     /**
