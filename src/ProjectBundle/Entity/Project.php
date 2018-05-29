@@ -74,11 +74,6 @@ class Project
     private $iso3;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="project")
-     */
-    private $usersProject;
-
-    /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Donor", inversedBy="projects")
      */
     private $donors;
@@ -87,6 +82,13 @@ class Project
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects")
      */
     private $sectors;
+
+    /**
+     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="project")
+     */
+    private $usersProject;
+
+
     /**
      * Constructor
      */
