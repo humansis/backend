@@ -7,14 +7,13 @@ namespace Tests\ProjectBundle\Controller;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
-use UserBundle\Entity\User;
 
 class ProjectControllerTest extends BMSServiceTestCase
 {
 
     /** @var Client $client */
     private $client;
-    /** @var string $username */
+    /** @var string $name */
     private $name = "TEST_PROJECT_NAME";
 
     private $body = [

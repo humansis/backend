@@ -68,7 +68,7 @@ class DonorController extends Controller
     }
 
     /**
-     * @Rest\Put("/donor/{id}", name="edit_donor")
+     * @Rest\Post("/donor/{id}", name="edit_donor")
      *
      * @param Request $request
      * @param Donor $donor
