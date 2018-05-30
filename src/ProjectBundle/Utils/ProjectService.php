@@ -2,6 +2,7 @@
 
 namespace ProjectBundle\Utils;
 
+use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use ProjectBundle\Entity\Donor;
@@ -9,6 +10,8 @@ use ProjectBundle\Entity\Sector;
 use Symfony\Component\HttpFoundation\Response;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use UserBundle\Entity\User;
+use UserBundle\Entity\UserProject;
 
 class ProjectService
 {
@@ -44,7 +47,7 @@ class ProjectService
      * @return Project
      * @throws \Exception
      */
-    public function create(array $projectArray)
+    public function create(array $projectArray, User $user)
     {
         /** @var Project $project */
         $project = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
@@ -85,8 +88,11 @@ class ProjectService
                     $project->addDonor($donorTmp);
             }
         }
+
         $this->em->persist($project);
         $this->em->flush();
+
+        $this->addUser($project, $user, UserProject::RIGHT_MANAGER);
 
         return $project;
     }
@@ -119,5 +125,43 @@ class ProjectService
         $this->em->flush();
 
         return $editedProject;
+    }
+
+    public function addUser(Project $project, User $user, int $right)
+    {
+        $userProject = new UserProject();
+        $userProject->setUser($user)
+            ->setProject($project)
+            ->setRights($right);
+
+        $this->em->persist($userProject);
+        $this->em->flush();
+    }
+
+    /**
+     * TODO : BETTER IF WE ADD A FIELD 'archived' INSTEAD OF REMOVE IT OF THE DB ?
+     * @param Project $project
+     */
+    public function delete(Project $project)
+    {
+//        $userProjects = $this->em->getRepository(UserProject::class)->findBy(["project" => $project]);
+//        if (!empty($userProjects))
+//        {
+//            foreach ($userProjects as $userProject)
+//            {
+//                $this->em->remove($userProject);
+//            }
+//        }
+//        $this->em->flush();
+//
+//        $beneficiaryProjects = $this->em->getRepository(ProjectBeneficiary::class)->findBy(["project" => $project]);
+//        if (!empty($beneficiaryProjects))
+//        {
+//            foreach ($beneficiaryProjects as $beneficiaryProject)
+//            {
+//                $this->em->remove($beneficiaryProject);
+//            }
+//        }
+//        $this->em->flush();
     }
 }

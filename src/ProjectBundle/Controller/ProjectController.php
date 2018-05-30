@@ -86,9 +86,11 @@ class ProjectController extends Controller
     public function createAction(Request $request)
     {
         $projectArray = $request->request->all();
+        $user = $this->getUser();
+
         try
         {
-            $project = $this->get('project.project_service')->create($projectArray);
+            $project = $this->get('project.project_service')->create($projectArray, $user);
         }
         catch (\Exception $e)
         {
@@ -121,5 +123,26 @@ class ProjectController extends Controller
         $json = $this->get('jms_serializer')
             ->serialize($project, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
         return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
+     * Edit a project
+     * @Rest\Delete("/project/{id}", name="delete_project")
+     *
+     * @param Project $project
+     * @return Response
+     */
+    public function deleteAction(Project $project)
+    {
+        try
+        {
+            $this->get('project.project_service')->delete($project);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return new Response("", Response::HTTP_OK);
     }
 }

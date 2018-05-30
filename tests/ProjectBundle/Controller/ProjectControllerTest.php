@@ -7,6 +7,7 @@ namespace Tests\ProjectBundle\Controller;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
+use UserBundle\Entity\UserProject;
 
 class ProjectControllerTest extends BMSServiceTestCase
 {
@@ -171,6 +172,9 @@ class ProjectControllerTest extends BMSServiceTestCase
         $project = $this->em->getRepository(Project::class)->findOneByName($name);
         if ($project instanceof Project)
         {
+            $userProject = $this->em->getRepository(UserProject::class)->findOneByProject($project);
+            $this->em->remove($userProject);
+            $this->em->flush();
             $this->em->remove($project);
             $this->em->flush();
         }
