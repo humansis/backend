@@ -16,7 +16,19 @@
     "number_of_households": 2,
     "value": 5,
     "notes": "This is a note",
-    "iso3": "FR"
+    "iso3": "FR",
+    "donors": 
+    [
+        {
+            "id":1
+        }
+    ],
+    "sectors": 
+    [
+        {
+            "id":1
+        }
+    ]
 }
 ```
 

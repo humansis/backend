@@ -4,6 +4,8 @@ namespace ProjectBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
+use ProjectBundle\Entity\Donor;
+use ProjectBundle\Entity\Sector;
 use Symfony\Component\HttpFoundation\Response;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -44,6 +46,7 @@ class ProjectService
      */
     public function create(array $projectArray)
     {
+        /** @var Project $project */
         $project = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
 
         $errors = $this->validator->validate($project);
@@ -57,6 +60,31 @@ class ProjectService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
+        $sectors = $project->getSectors();
+        if (null !== $sectors)
+        {
+            $project->cleanSectors();
+            /** @var Sector $sector */
+            foreach ($sectors as $sector)
+            {
+                $sectorTmp = $this->em->getRepository(Sector::class)->find($sector);
+                if ($sectorTmp instanceof Sector)
+                    $project->addSector($sectorTmp);
+            }
+        }
+
+        $donors = $project->getDonors();
+        if (null !== $donors)
+        {
+            $project->cleanDonors();
+            /** @var Donor $donor */
+            foreach ($donors as $donor)
+            {
+                $donorTmp = $this->em->getRepository(Donor::class)->find($donor);
+                if ($donorTmp instanceof Donor)
+                    $project->addDonor($donorTmp);
+            }
+        }
         $this->em->persist($project);
         $this->em->flush();
 

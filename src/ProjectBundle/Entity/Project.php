@@ -383,6 +383,18 @@ class Project
     }
 
     /**
+     * Clean donors.
+     *
+     * @return $this
+     */
+    public function cleanDonors()
+    {
+        $this->donors = new \Doctrine\Common\Collections\ArrayCollection();
+
+        return $this;
+    }
+
+    /**
      * Add sector.
      *
      * @param \ProjectBundle\Entity\Sector $sector
@@ -416,5 +428,17 @@ class Project
     public function getSectors()
     {
         return $this->sectors;
+    }
+
+    /**
+     * Clean sectors.
+     *
+     * @return $this
+     */
+    public function cleanSectors()
+    {
+        $this->sectors = new \Doctrine\Common\Collections\ArrayCollection();
+
+        return $this;
     }
 }

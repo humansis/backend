@@ -36,6 +36,7 @@ class SectorService
 
     /**
      * @param $sectorArray
+     * @return array|\JMS\Serializer\scalar|mixed|object
      * @throws \Exception
      */
     public function create($sectorArray)
