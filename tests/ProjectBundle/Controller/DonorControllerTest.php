@@ -82,20 +82,39 @@ class DonorControllerTest extends BMSServiceTestCase
         $project = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        $this->assertArrayHasKey('id', $project);
-        $this->assertArrayHasKey('fullname', $project);
-        $this->assertArrayHasKey('shortname', $project);
-        $this->assertArrayHasKey('date_added', $project);
-        $this->assertArrayHasKey('notes', $project);
-        $this->assertSame($project['fullname'], $this->namefullname);
+
+        try
+        {
+            $this->assertArrayHasKey('id', $project);
+            $this->assertArrayHasKey('fullname', $project);
+            $this->assertArrayHasKey('shortname', $project);
+            $this->assertArrayHasKey('date_added', $project);
+            $this->assertArrayHasKey('notes', $project);
+            $this->assertSame($project['fullname'], $this->namefullname);
+        }
+        catch (\Exception $exception)
+        {
+            print_r("\nThe mapping of fields of Donor entity is not correct.\n");
+            $this->remove($this->namefullname);
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * @depends testCreateDonor
      * @throws \Exception
      */
-    public function testEditDonor()
+    public function testEditDonor($isSuccess = true)
     {
+        if (!$isSuccess)
+        {
+            print_r("\nThe creation of donor failed. We can't test the update.\n");
+            $this->markTestIncomplete("The creation of donor failed. We can't test the update.");
+        }
+
+
         $this->em->clear();
         $donor = $this->em->getRepository(Donor::class)->findOneByFullname($this->namefullname);
         if (!$donor instanceof Donor)
@@ -115,16 +134,33 @@ class DonorControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         $this->em->clear();
+        try
+        {
+            $this->assertArrayHasKey('id', $donor);
+            $this->assertArrayHasKey('fullname', $donor);
+            $this->assertArrayHasKey('shortname', $donor);
+            $this->assertArrayHasKey('date_added', $donor);
+            $this->assertArrayHasKey('notes', $donor);
+            $this->assertSame($donor['fullname'], $this->namefullname . '(u)');
+        }
+        catch (\Exception $exception)
+        {
+        }
 
-        $this->assertArrayHasKey('id', $donor);
-        $this->assertArrayHasKey('fullname', $donor);
-        $this->assertArrayHasKey('shortname', $donor);
-        $this->assertArrayHasKey('date_added', $donor);
-        $this->assertArrayHasKey('notes', $donor);
-        $this->assertSame($donor['fullname'], $this->namefullname . '(u)');
+        return $this->remove($this->namefullname . '(u)');
+    }
 
+    /**
+     * @depends testEditDonor
+     *
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function remove($name)
+    {
         $this->em->clear();
-        $donor = $this->em->getRepository(Donor::class)->findOneByFullname($this->namefullname . "(u)");
+        $donor = $this->em->getRepository(Donor::class)->findOneByFullname($name);
         if ($donor instanceof Donor)
         {
             $this->em->remove($donor);
