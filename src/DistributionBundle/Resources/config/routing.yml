@@ -1,0 +1,4 @@
+distribution:
+    type:     annotation
+    defaults: { _format: 'json' }
+    resource: '@DistributionBundle/Controller'

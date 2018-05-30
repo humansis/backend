@@ -1,3 +1,4 @@
-projects:
-    type:     rest
-    resource: ProjectBundle\Controller\ProjectController
+project:
+    type:     annotation
+    defaults: { _format: 'json' }
+    resource: '@ProjectBundle/Controller'

@@ -1,3 +1,4 @@
-users:
-    type:     rest
-    resource: UserBundle\Controller\UserController
+user:
+    type:     annotation
+    defaults: { _format: 'json' }
+    resource: '@UserBundle/Controller'

@@ -1,4 +1,4 @@
-transaction:
+beneficiary:
     type:     annotation
     defaults: { _format: 'json' }
-    resource: '@TransactionBundle/Controller'
+    resource: '@BeneficiaryBundle/Controller'
