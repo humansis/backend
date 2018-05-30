@@ -17,8 +17,9 @@ class SectorController extends Controller
     /**
      * @Rest\Get("/sectors", name="get_sectors")
      */
-    public function getAllAction()
+    public function getAllAction(Request $request)
     {
+        dump($request->headers->get('country'));
         $sectors = $this->get('project.sector_service')->findAll();
 
         $json = $this->get('jms_serializer')
