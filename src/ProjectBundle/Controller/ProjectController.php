@@ -2,6 +2,7 @@
 
 namespace ProjectBundle\Controller;
 
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -33,7 +34,28 @@ class ProjectController extends Controller
         // TODO check user rights
 
         $projects = $this->get('project.project_service')->findAll();
-        $json = $this->get('serializer')->serialize($projects, 'json');
+        $json = $this->get('jms_serializer')
+            ->serialize($projects, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
+
+        return new Response($json, Response::HTTP_OK);
+    }
+    /**
+     * Get a project
+     * @Rest\Get("/project/{id}", name="get_project")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK",
+     * )
+     *
+     * @SWG\Tag(name="Project")
+     *
+     * @return Response
+     */
+    public function getAction(Project $project)
+    {
+        $json = $this->get('jms_serializer')
+            ->serialize($project, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
 
         return new Response($json, Response::HTTP_OK);
     }
@@ -63,8 +85,6 @@ class ProjectController extends Controller
      */
     public function createAction(Request $request)
     {
-        // TODO check user rights
-
         $projectArray = $request->request->all();
         try
         {
@@ -72,9 +92,10 @@ class ProjectController extends Controller
         }
         catch (\Exception $e)
         {
-            return new Response($e->getMessage());
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('serializer')->serialize($project, 'json');
+        $json = $this->get('jms_serializer')
+            ->serialize($project, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
         return new Response($json, Response::HTTP_OK);
     }
 
@@ -83,11 +104,11 @@ class ProjectController extends Controller
      * @Rest\Post("/project/{id}", name="edit_project")
      *
      * @param Request $request
+     * @param Project $project
      * @return Response
      */
     public function editAction(Request $request, Project $project)
     {
-        // TODO check user rights
         $projectArray = $request->request->all();
         try
         {
@@ -95,9 +116,10 @@ class ProjectController extends Controller
         }
         catch (\Exception $e)
         {
-            return new Response($e->getMessage());
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('serializer')->serialize($project, 'json');
+        $json = $this->get('jms_serializer')
+            ->serialize($project, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
         return new Response($json, Response::HTTP_OK);
     }
 }

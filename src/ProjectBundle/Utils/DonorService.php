@@ -35,7 +35,7 @@ class DonorService
      *
      * @return array
      */
-    public function getAll()
+    public function findAll()
     {
         return $this->em->getRepository(Donor::class)->findAll();
     }
@@ -49,7 +49,7 @@ class DonorService
      */
     public function create(array $donorArray)
     {
-        $donor = $this->serializer->deserialize($donorArray, Donor::class, 'json');
+        $donor = $this->serializer->deserialize(json_encode($donorArray), Donor::class, 'json');
 
 
         $errors = $this->validator->validate($donor);
@@ -69,4 +69,33 @@ class DonorService
         return $donor;
     }
 
+    /**
+     * @param Donor $donor
+     * @param array $donorArray
+     * @return Donor
+     * @throws \Exception
+     */
+    public function edit(Donor $donor, array $donorArray)
+    {
+        /** @var Donor $editedDonor */
+        $editedDonor = $this->serializer->deserialize(json_encode($donorArray), Donor::class, 'json');
+
+        $editedDonor->setId($donor->getId());
+
+        $errors = $this->validator->validate($editedDonor);
+        if (count($errors) > 0)
+        {
+            $errorsArray = [];
+            foreach ($errors as $error)
+            {
+                $errorsArray[] = $error->getMessage();
+            }
+            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->em->merge($editedDonor);
+        $this->em->flush();
+
+        return $editedDonor;
+    }
 }

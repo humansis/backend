@@ -1,9 +1,9 @@
 services:
-    # makes classes in src/ProjectBundle available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
-    ProjectBundle\:
-        resource: '../../*'
-
     project.project_service:
         class: ProjectBundle\Utils\ProjectService
         arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@debug.validator']
+        public: true
+    project.donor_service:
+        class: ProjectBundle\Utils\DonorService
+        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@debug.validator']
+        public: true

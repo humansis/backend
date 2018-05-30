@@ -67,6 +67,7 @@ class ProjectService
      * @param Project $project
      * @param array $projectArray
      * @return Project
+     * @throws \Exception
      */
     public function edit(Project $project, array $projectArray)
     {
@@ -74,6 +75,17 @@ class ProjectService
         $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
 
         $editedProject->setId($project->getId());
+
+        $errors = $this->validator->validate($editedProject);
+        if (count($errors) > 0)
+        {
+            $errorsArray = [];
+            foreach ($errors as $error)
+            {
+                $errorsArray[] = $error->getMessage();
+            }
+            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+        }
 
         $this->em->merge($editedProject);
         $this->em->flush();

@@ -4,6 +4,7 @@ namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Project
@@ -19,6 +20,8 @@ class Project
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @Groups({"FullProject"})
      */
     private $id;
 
@@ -26,6 +29,8 @@ class Project
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     *
+     * @Groups({"FullProject"})
      */
     private $name;
 
@@ -34,6 +39,8 @@ class Project
      *
      * @ORM\Column(name="startDate", type="date")
      * @JMS_Type("DateTime<'Y-m-d'>")
+     *
+     * @Groups({"FullProject"})
      */
     private $startDate;
 
@@ -42,6 +49,8 @@ class Project
      *
      * @ORM\Column(name="endDate", type="date")
      * @JMS_Type("DateTime<'Y-m-d'>")
+     *
+     * @Groups({"FullProject"})
      */
     private $endDate;
 
@@ -49,6 +58,8 @@ class Project
      * @var int
      *
      * @ORM\Column(name="numberOfHouseholds", type="integer")
+     *
+     * @Groups({"FullProject"})
      */
     private $numberOfHouseholds;
 
@@ -56,6 +67,8 @@ class Project
      * @var float
      *
      * @ORM\Column(name="value", type="float")
+     *
+     * @Groups({"FullProject"})
      */
     private $value;
 
@@ -63,6 +76,8 @@ class Project
      * @var string
      *
      * @ORM\Column(name="notes", type="text", nullable=true)
+     *
+     * @Groups({"FullProject"})
      */
     private $notes;
 
@@ -70,16 +85,22 @@ class Project
      * @var string
      *
      * @ORM\Column(name="iso3", type="text")
+     *
+     * @Groups({"FullProject"})
      */
     private $iso3;
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Donor", inversedBy="projects")
+     *
+     * @Groups({"FullProject"})
      */
     private $donors;
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects")
+     *
+     * @Groups({"FullProject"})
      */
     private $sectors;
 

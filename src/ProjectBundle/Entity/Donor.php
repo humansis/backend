@@ -3,6 +3,8 @@
 namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Type as JMS_Type;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Donor
@@ -18,6 +20,8 @@ class Donor
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @Groups({"FullDonor"})
      */
     private $id;
 
@@ -25,6 +29,8 @@ class Donor
      * @var string
      *
      * @ORM\Column(name="fullname", type="string", length=255)
+     *
+     * @Groups({"FullDonor"})
      */
     private $fullname;
 
@@ -32,6 +38,8 @@ class Donor
      * @var string
      *
      * @ORM\Column(name="shortname", type="string", length=255)
+     *
+     * @Groups({"FullDonor"})
      */
     private $shortname;
 
@@ -39,6 +47,9 @@ class Donor
      * @var \DateTime
      *
      * @ORM\Column(name="dateAdded", type="datetime")
+     * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
+     *
+     * @Groups({"FullDonor"})
      */
     private $dateAdded;
 
@@ -46,13 +57,31 @@ class Donor
      * @var string
      *
      * @ORM\Column(name="notes", type="string", length=255)
+     *
+     * @Groups({"FullDonor"})
      */
     private $notes;
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", mappedBy="donors")
+     *
+     * @Groups({"FullDonor"})
      */
     private $projects;
+
+
+    /**
+     * Set id.
+     *
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
 
     /**
