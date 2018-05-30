@@ -74,3 +74,34 @@
     "date_added": "2018-04-01 11:20:13",
     "notes": "This is a note (edited)"
 }
+```
+
+
+
+## Sector
+
+### Create
+
+- PUT("/sector")
+
+#### BODY
+
+```json
+{
+    "name": "example name"
+}
+```
+
+### Edit
+
+- POST("/sector/{id}")
+
+*id* : id of the sector to be edited
+
+#### BODY
+
+```json
+{
+    "name": "example name (edited)"
+}
+```

@@ -7,3 +7,7 @@ services:
         class: ProjectBundle\Utils\DonorService
         arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@debug.validator']
         public: true
+    project.sector_service:
+        class: ProjectBundle\Utils\SectorService
+        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@debug.validator']
+        public: true

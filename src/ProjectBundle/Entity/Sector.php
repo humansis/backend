@@ -3,6 +3,7 @@
 namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Sector
@@ -18,6 +19,8 @@ class Sector
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @Groups({"FullSector"})
      */
     private $id;
 
@@ -25,6 +28,7 @@ class Sector
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Groups({"FullSector"})
      */
     private $name;
 
@@ -32,6 +36,19 @@ class Sector
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", mappedBy="sectors")
      */
     private $projects;
+
+
+    /**
+     * Set id.
+     *
+     * @return int
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this->id;
+    }
 
 
     /**
