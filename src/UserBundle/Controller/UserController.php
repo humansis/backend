@@ -175,6 +175,27 @@ class UserController extends Controller
     }
 
     /**
+     * Get a user
+     *
+     * @Rest\Get("/user/{id}", name="get_user")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK",
+     * )
+     * @SWG\Tag(name="User")
+     *
+     * @return Response
+     */
+    public function getAction(User $user)
+    {
+        $json = $this->get('jms_serializer')
+            ->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+
+        return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
      * Edit a user {id} with data in the body
      *
      * @Rest\Post("/user/{id}", name="edit_user")
