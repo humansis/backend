@@ -242,4 +242,18 @@ class UserController extends Controller
 
         return new Response(json_encode($userJson));
     }
+
+    /**
+     * Delete an user with its links in the api
+     * @Rest\Delete("/users/{id}", name="delete_user")
+     *
+     * @param User $user
+     * @return Response
+     */
+    public function deleteAction(User $user)
+    {
+        $isSuccess = $this->get('user.user_service')->delete($user);
+
+        return new Response(json_encode($isSuccess));
+    }
 }

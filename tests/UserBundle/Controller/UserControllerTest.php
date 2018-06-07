@@ -112,6 +112,7 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('email', $user);
         $this->assertSame($user['email'], $this->username . "@gmail.com");
 
+        return $user;
     }
 
     /**
@@ -145,17 +146,27 @@ class UserControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @afterClass
+     * @depends testCreateUser
+     *
+     * @param $userToDelete
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function tearDown()
+    public function testDelete($userToDelete)
     {
-        $user = $this->em->getRepository(User::class)->findOneByUsername($this->username);
-        if ($user instanceof User)
-        {
-            $this->em->remove($user);
-            $this->em->flush();
-        }
+
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->client->request('DELETE', '/api/wsse/users/' . $userToDelete['id']);
+        $success = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($success);
     }
 }
