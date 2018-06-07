@@ -174,7 +174,6 @@ class ProjectService
         }
         catch (\Exception $exception)
         {
-            dump($exception);
             return false;
         }
 
