@@ -59,6 +59,14 @@ class DistributionData
     private $selectionCriteria;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
+     */
+    private $archived = 0;
+    
+
+    /**
      * Get id.
      *
      * @return int
@@ -114,6 +122,30 @@ class DistributionData
     public function getUpdatedOn()
     {
         return $this->updatedOn;
+    }
+
+    /**
+     * Set archived.
+     *
+     * @param bool $archived
+     *
+     * @return DistributionData
+     */
+    public function setArchived($archived)
+    {
+        $this->archived = $archived;
+
+        return $this;
+    }
+
+    /**
+     * Get archived.
+     *
+     * @return bool
+     */
+    public function getArchived()
+    {
+        return $this->archived;
     }
 
     /**

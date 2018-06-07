@@ -105,6 +105,14 @@ class Project
     private $sectors;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
+     * @Groups({"FullProject"})
+     */
+    private $archived = 0;
+
+    /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="project")
      */
     private $usersProject;
@@ -311,39 +319,27 @@ class Project
     }
 
     /**
-     * Add usersProject.
+     * Set archived.
      *
-     * @param \UserBundle\Entity\UserProject $usersProject
+     * @param bool $archived
      *
      * @return Project
      */
-    public function addUsersProject(\UserBundle\Entity\UserProject $usersProject)
+    public function setArchived($archived)
     {
-        $this->usersProject[] = $usersProject;
+        $this->archived = $archived;
 
         return $this;
     }
 
     /**
-     * Remove usersProject.
+     * Get archived.
      *
-     * @param \UserBundle\Entity\UserProject $usersProject
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool
      */
-    public function removeUsersProject(\UserBundle\Entity\UserProject $usersProject)
+    public function getArchived()
     {
-        return $this->usersProject->removeElement($usersProject);
-    }
-
-    /**
-     * Get usersProject.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getUsersProject()
-    {
-        return $this->usersProject;
+        return $this->archived;
     }
 
     /**
@@ -383,18 +379,6 @@ class Project
     }
 
     /**
-     * Clean donors.
-     *
-     * @return $this
-     */
-    public function cleanDonors()
-    {
-        $this->donors = new \Doctrine\Common\Collections\ArrayCollection();
-
-        return $this;
-    }
-
-    /**
      * Add sector.
      *
      * @param \ProjectBundle\Entity\Sector $sector
@@ -431,14 +415,38 @@ class Project
     }
 
     /**
-     * Clean sectors.
+     * Add usersProject.
      *
-     * @return $this
+     * @param \UserBundle\Entity\UserProject $usersProject
+     *
+     * @return Project
      */
-    public function cleanSectors()
+    public function addUsersProject(\UserBundle\Entity\UserProject $usersProject)
     {
-        $this->sectors = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->usersProject[] = $usersProject;
 
         return $this;
+    }
+
+    /**
+     * Remove usersProject.
+     *
+     * @param \UserBundle\Entity\UserProject $usersProject
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeUsersProject(\UserBundle\Entity\UserProject $usersProject)
+    {
+        return $this->usersProject->removeElement($usersProject);
+    }
+
+    /**
+     * Get usersProject.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUsersProject()
+    {
+        return $this->usersProject;
     }
 }

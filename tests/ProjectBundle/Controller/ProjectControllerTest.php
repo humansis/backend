@@ -44,40 +44,6 @@ class ProjectControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
-    public function testGetProjects()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $crawler = $this->client->request('GET', '/api/wsse/projects');
-        $projects = json_decode($this->client->getResponse()->getContent(), true);
-
-        if (!empty($projects))
-        {
-            $project = $projects[0];
-
-            $this->assertArrayHasKey('id', $project);
-            $this->assertArrayHasKey('iso3', $project);
-            $this->assertArrayHasKey('name', $project);
-            $this->assertArrayHasKey('notes', $project);
-            $this->assertArrayHasKey('value', $project);
-            $this->assertArrayHasKey('donors', $project);
-            $this->assertArrayHasKey('end_date', $project);
-            $this->assertArrayHasKey('start_date', $project);
-            $this->assertArrayHasKey('number_of_households', $project);
-            $this->assertArrayHasKey('sectors', $project);
-        }
-        else
-        {
-            $this->markTestIncomplete("You currently don't have any project in your database.");
-        }
-    }
-
-    /**
-     * @throws \Exception
-     */
     public function testCreateProject()
     {
         // Fake connection with a token for the user tester (ADMIN)
@@ -154,7 +120,53 @@ class ProjectControllerTest extends BMSServiceTestCase
         }
         catch (\Exception $exception)
         {
+            print_r("\n{$exception->getMessage()}\n");
+            $this->remove($this->name);
+            return false;
         }
+
+        return true;
+    }
+
+    /**
+     * @depends testEditProject
+     * @throws \Exception
+     */
+    public function testGetProjects($isSuccess)
+    {
+        if (!$isSuccess)
+        {
+            print_r("\nThe edition of project failed. We can't test the update.\n");
+            $this->markTestIncomplete("The edition of project failed. We can't test the update.");
+        }
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->client->request('GET', '/api/wsse/projects');
+        $projects = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (!empty($projects))
+        {
+            $project = $projects[0];
+
+            $this->assertArrayHasKey('id', $project);
+            $this->assertArrayHasKey('iso3', $project);
+            $this->assertArrayHasKey('name', $project);
+            $this->assertArrayHasKey('notes', $project);
+            $this->assertArrayHasKey('value', $project);
+            $this->assertArrayHasKey('donors', $project);
+            $this->assertArrayHasKey('end_date', $project);
+            $this->assertArrayHasKey('start_date', $project);
+            $this->assertArrayHasKey('number_of_households', $project);
+            $this->assertArrayHasKey('sectors', $project);
+        }
+        else
+        {
+            $this->markTestIncomplete("You currently don't have any project in your database.");
+        }
+
 
         return $this->remove($this->name . '(u)');
     }

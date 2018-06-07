@@ -38,32 +38,6 @@ class SectorControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
-    public function testGetSectors()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $crawler = $this->client->request('GET', '/api/wsse/sectors');
-        $sectors = json_decode($this->client->getResponse()->getContent(), true);
-
-        if (!empty($sectors))
-        {
-            $sector = $sectors[0];
-
-            $this->assertArrayHasKey('id', $sector);
-            $this->assertArrayHasKey('name', $sector);
-        }
-        else
-        {
-            $this->markTestIncomplete("You currently don't have any sector in your database.");
-        }
-    }
-
-    /**
-     * @throws \Exception
-     */
     public function testCreateSector()
     {
         // Fake connection with a token for the user tester (ADMIN)
@@ -131,8 +105,44 @@ class SectorControllerTest extends BMSServiceTestCase
         }
         catch (\Exception $exception)
         {
+            $this->remove($this->name);
+            return false;
         }
 
+        return true;
+    }
+
+    /**
+     * @depends testEditSector
+     * @throws \Exception
+     */
+    public function testGetSectors($isSuccess)
+    {
+        if (!$isSuccess)
+        {
+            print_r("\nThe creation of sector failed. We can't test the update.\n");
+            $this->markTestIncomplete("The creation of sector failed. We can't test the update.");
+        }
+
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->client->request('GET', '/api/wsse/sectors');
+        $sectors = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (!empty($sectors))
+        {
+            $sector = $sectors[0];
+
+            $this->assertArrayHasKey('id', $sector);
+            $this->assertArrayHasKey('name', $sector);
+        }
+        else
+        {
+            $this->markTestIncomplete("You currently don't have any sector in your database.");
+        }
         return $this->remove($this->name . '(u)');
     }
 
