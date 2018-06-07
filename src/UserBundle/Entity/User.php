@@ -61,6 +61,12 @@ class User extends BaseUser
      */
     protected $username;
 
+    /**
+     * @var array
+     * @Groups({"FullUser"})
+     */
+    protected $roles;
+
 
 
     public function __construct()

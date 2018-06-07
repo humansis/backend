@@ -91,7 +91,7 @@ class UserController extends Controller
     /**
      * Create a new User. You must have called getSalt before use this one
      *
-     * @Rest\Put("/user", name="add_user")
+     * @Rest\Put("/users", name="add_user")
      *
      * @param Request $request
      * @return Response
@@ -144,7 +144,7 @@ class UserController extends Controller
         $user = $this->getUser();
         if ($user instanceof User)
         {
-            $user = $this->get('serializer')->serialize($user, 'json');
+            $user = $this->get('jms_serializer')->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
             return new Response($user, Response::HTTP_OK);
         }
         return new Response(null, Response::HTTP_UNAUTHORIZED);
@@ -169,7 +169,7 @@ class UserController extends Controller
         // TODO check user rights
 
         $users = $this->get('user.user_service')->findAll();
-        $json = $this->get('serializer')->serialize($users, 'json');
+        $json = $this->get('jms_serializer')->serialize($users, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
 
         return new Response($json, Response::HTTP_OK);
     }
@@ -177,7 +177,7 @@ class UserController extends Controller
     /**
      * Get a user
      *
-     * @Rest\Get("/user/{id}", name="get_user")
+     * @Rest\Get("/users/{id}", name="get_user")
      *
      * @SWG\Response(
      *     response=200,
@@ -198,7 +198,7 @@ class UserController extends Controller
     /**
      * Edit a user {id} with data in the body
      *
-     * @Rest\Post("/user/{id}", name="edit_user")
+     * @Rest\Post("/users/{id}", name="edit_user")
      *
      * @param Request $request
      * @param User $user
@@ -208,14 +208,14 @@ class UserController extends Controller
     {
         $userData = $request->request->all();
         $userNew = $this->get('user.user_service')->update($user, $userData);
-        $json = $this->get('serializer')->serialize($userNew, 'json');
+        $json = $this->get('jms_serializer')->serialize($userNew, 'json', SerializationContext::create()->setGroups(['FullUser']));
         return new Response($json);
     }
 
     /**
      * Change the password of user {id}. Must send oldPassword and newPassword
      *
-     * @Rest\Post("/user/{id}/password", name="edit_password_user")
+     * @Rest\Post("/users/{id}/password", name="edit_password_user")
      *
      * @param Request $request
      * @param User $user

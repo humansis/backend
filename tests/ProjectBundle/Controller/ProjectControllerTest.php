@@ -51,7 +51,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('PUT', '/api/wsse/project', $this->body);
+        $crawler = $this->client->request('PUT', '/api/wsse/projects', $this->body);
         $project = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         try
@@ -99,7 +99,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->em->clear();
 
         $this->body['name'] .= '(u)';
-        $crawler = $this->client->request('POST', '/api/wsse/project/' . $project->getId(), $this->body);
+        $crawler = $this->client->request('POST', '/api/wsse/projects/' . $project->getId(), $this->body);
         $this->body['name'] = $this->name;
         $project = json_decode($this->client->getResponse()->getContent(), true);
 

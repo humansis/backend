@@ -52,7 +52,7 @@ class UserControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('email', $user);
             $this->assertArrayHasKey('roles', $user);
             $this->assertArrayHasKey('countries', $user);
-            $this->assertArrayHasKey('userProjects', $user);
+            $this->assertArrayHasKey('user_projects', $user);
         }
         else
         {
@@ -102,7 +102,7 @@ class UserControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->client->request('PUT', '/api/wsse/user', $body);
+        $crawler = $this->client->request('PUT', '/api/wsse/users', $body);
         $user = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -133,7 +133,7 @@ class UserControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('POST', '/api/wsse/user/' . $user->getId(), $body);
+        $crawler = $this->client->request('POST', '/api/wsse/users/' . $user->getId(), $body);
         $user = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());

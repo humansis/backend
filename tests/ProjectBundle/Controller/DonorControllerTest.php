@@ -49,7 +49,7 @@ class DonorControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('PUT', '/api/wsse/donor', $this->body);
+        $crawler = $this->client->request('PUT', '/api/wsse/donors', $this->body);
         $project = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -98,7 +98,7 @@ class DonorControllerTest extends BMSServiceTestCase
         $this->em->clear();
 
         $this->body['fullname'] .= '(u)';
-        $crawler = $this->client->request('POST', '/api/wsse/donor/' . $donor->getId(), $this->body);
+        $crawler = $this->client->request('POST', '/api/wsse/donors/' . $donor->getId(), $this->body);
         $this->body['fullname'] = $this->namefullname;
 
         $donor = json_decode($this->client->getResponse()->getContent(), true);
