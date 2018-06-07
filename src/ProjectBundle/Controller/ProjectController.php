@@ -39,9 +39,10 @@ class ProjectController extends Controller
 
         return new Response($json, Response::HTTP_OK);
     }
+
     /**
      * Get a project
-     * @Rest\Get("/project/{id}", name="get_project")
+     * @Rest\Get("/projects/{id}", name="get_project")
      *
      * @SWG\Response(
      *     response=200,
@@ -62,7 +63,7 @@ class ProjectController extends Controller
 
     /**
      * Create a project
-     * @Rest\Put("/project", name="create_project")
+     * @Rest\Put("/projects", name="create_project")
      *
      * @SWG\Parameter(
      *      name="body",
@@ -102,8 +103,9 @@ class ProjectController extends Controller
     }
 
     /**
+     * TODO VOTER POUR CHECKER QUE PROJECT EST PAS ARCHIVED
      * Edit a project
-     * @Rest\Post("/project/{id}", name="edit_project")
+     * @Rest\Post("/projects/{id}", name="edit_project")
      *
      * @param Request $request
      * @param Project $project
@@ -127,7 +129,7 @@ class ProjectController extends Controller
 
     /**
      * Edit a project
-     * @Rest\Delete("/project/{id}", name="delete_project")
+     * @Rest\Delete("/projects/{id}", name="delete_project")
      *
      * @param Project $project
      * @return Response
@@ -136,13 +138,16 @@ class ProjectController extends Controller
     {
         try
         {
-            $this->get('project.project_service')->delete($project);
+            $valid = $this->get('project.project_service')->delete($project);
         }
         catch (\Exception $e)
         {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return new Response("", Response::HTTP_OK);
+        if ($valid)
+            return new Response("", Response::HTTP_OK);
+        if (!$valid)
+            return new Response("", Response::HTTP_BAD_REQUEST);
     }
 }

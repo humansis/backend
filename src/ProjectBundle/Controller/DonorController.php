@@ -29,7 +29,7 @@ class DonorController extends Controller
 
     /**
      * Get a donor
-     * @Rest\Get("/donor/{id}", name="get_donor")
+     * @Rest\Get("/donors/{id}", name="get_donor")
      *
      * @param Donor $donor
      * @return Response
@@ -43,7 +43,7 @@ class DonorController extends Controller
     }
 
     /**
-     * @Rest\Put("/donor", name="create_donor")
+     * @Rest\Put("/donors", name="create_donor")
      *
      * @param Request $request
      * @return Response
@@ -68,7 +68,7 @@ class DonorController extends Controller
     }
 
     /**
-     * @Rest\Post("/donor/{id}", name="edit_donor")
+     * @Rest\Post("/donors/{id}", name="edit_donor")
      *
      * @param Request $request
      * @param Donor $donor

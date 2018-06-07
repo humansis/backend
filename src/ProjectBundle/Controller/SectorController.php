@@ -28,7 +28,7 @@ class SectorController extends Controller
     }
 
     /**
-     * @Rest\Put("/sector", name="create_sector")
+     * @Rest\Put("/sectors", name="create_sector")
      * @param Request $request
      * @return Response
      */
@@ -51,7 +51,7 @@ class SectorController extends Controller
     }
 
     /**
-     * @Rest\Post("/sector/{id}", name="edit_sector")
+     * @Rest\Post("/sectors/{id}", name="edit_sector")
      *
      * @param Request $request
      * @return Response

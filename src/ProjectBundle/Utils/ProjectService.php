@@ -3,6 +3,7 @@
 namespace ProjectBundle\Utils;
 
 use BeneficiaryBundle\Entity\ProjectBeneficiary;
+use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use ProjectBundle\Entity\Donor;
@@ -37,7 +38,7 @@ class ProjectService
      */
     public function findAll()
     {
-        return $this->em->getRepository(Project::class)->findAll();
+        return $this->em->getRepository(Project::class)->findByArchived(0);
     }
 
     /**
@@ -127,6 +128,11 @@ class ProjectService
         return $editedProject;
     }
 
+    /**
+     * @param Project $project
+     * @param User $user
+     * @param int $right
+     */
     public function addUser(Project $project, User $user, int $right)
     {
         $userProject = new UserProject();
@@ -139,29 +145,53 @@ class ProjectService
     }
 
     /**
-     * TODO : BETTER IF WE ADD A FIELD 'archived' INSTEAD OF REMOVE IT OF THE DB ?
      * @param Project $project
+     * @return bool
      */
     public function delete(Project $project)
     {
-//        $userProjects = $this->em->getRepository(UserProject::class)->findBy(["project" => $project]);
-//        if (!empty($userProjects))
-//        {
-//            foreach ($userProjects as $userProject)
-//            {
-//                $this->em->remove($userProject);
-//            }
-//        }
-//        $this->em->flush();
-//
-//        $beneficiaryProjects = $this->em->getRepository(ProjectBeneficiary::class)->findBy(["project" => $project]);
-//        if (!empty($beneficiaryProjects))
-//        {
-//            foreach ($beneficiaryProjects as $beneficiaryProject)
-//            {
-//                $this->em->remove($beneficiaryProject);
-//            }
-//        }
-//        $this->em->flush();
+        $projectBeneficiary = $this->em->getRepository(ProjectBeneficiary::class)->findByProject($project);
+        if (!empty($projectBeneficiary))
+            $this->archived($project);
+        $distributionData = $this->em->getRepository(DistributionData::class)->findByProject($project);
+        if (!empty($distributionData))
+            $this->archived($project);
+
+        $userProjects = $this->em->getRepository(UserProject::class)->findBy(["project" => $project]);
+        if (!empty($userProjects))
+        {
+            foreach ($userProjects as $userProject)
+            {
+                $this->em->remove($userProject);
+            }
+        }
+        $this->em->flush();
+
+        try
+        {
+            $this->em->remove($project);
+            $this->em->flush();
+        }
+        catch (\Exception $exception)
+        {
+            dump($exception);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param Project $project
+     * @return bool
+     */
+    public function archived(Project $project)
+    {
+        $project->setArchived(1);
+
+        $this->em->persist($project);
+        $this->em->flush();
+
+        return true;
     }
 }
