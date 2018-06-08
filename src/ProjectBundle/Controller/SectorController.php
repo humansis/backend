@@ -15,7 +15,7 @@ class SectorController extends Controller
 {
 
     /**
-     * @Rest\Get("/sectors", name="get_sectors")
+     * @Rest\Get("/sectors", name="get_all_sectors")
      */
     public function getAllAction(Request $request)
     {
@@ -28,11 +28,11 @@ class SectorController extends Controller
     }
 
     /**
-     * @Rest\Put("/sectors", name="create_sector")
+     * @Rest\Put("/sectors", name="add_sector")
      * @param Request $request
      * @return Response
      */
-    public function createAction(Request $request)
+    public function addAction(Request $request)
     {
         $sectorArray = $request->request->all();
         try
@@ -51,12 +51,12 @@ class SectorController extends Controller
     }
 
     /**
-     * @Rest\Post("/sectors/{id}", name="edit_sector")
+     * @Rest\Post("/sectors/{id}", name="update_sector")
      *
      * @param Request $request
      * @return Response
      */
-    public function editAction(Request $request, Sector $sector)
+    public function updateAction(Request $request, Sector $sector)
     {
         $sectorArray = $request->request->all();
         try
@@ -68,6 +68,20 @@ class SectorController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
+        $json = $this->get('jms_serializer')
+            ->serialize($sector, 'json', SerializationContext::create()->setGroups(['FullSector'])->setSerializeNull(true));
+
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Get("/sectors/{id}", name="show_sector")
+     *
+     * @param Sector $sector
+     * @return Response
+     */
+    public function showAction(Sector $sector)
+    {
         $json = $this->get('jms_serializer')
             ->serialize($sector, 'json', SerializationContext::create()->setGroups(['FullSector'])->setSerializeNull(true));
 

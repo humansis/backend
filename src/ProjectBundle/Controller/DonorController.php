@@ -29,12 +29,12 @@ class DonorController extends Controller
 
     /**
      * Get a donor
-     * @Rest\Get("/donors/{id}", name="get_donor")
+     * @Rest\Get("/donors/{id}", name="show_donor")
      *
      * @param Donor $donor
      * @return Response
      */
-    public function getAction(Donor $donor)
+    public function showAction(Donor $donor)
     {
         $json = $this->get('jms_serializer')
             ->serialize($donor, 'json', SerializationContext::create()->setGroups(['FullDonor'])->setSerializeNull(true));
@@ -68,13 +68,13 @@ class DonorController extends Controller
     }
 
     /**
-     * @Rest\Post("/donors/{id}", name="edit_donor")
+     * @Rest\Post("/donors/{id}", name="update_donor")
      *
      * @param Request $request
      * @param Donor $donor
      * @return Response
      */
-    public function editAction(Request $request, Donor $donor)
+    public function updateAction(Request $request, Donor $donor)
     {
         $donorArray = $request->request->all();
 

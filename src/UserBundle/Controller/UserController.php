@@ -22,7 +22,7 @@ class UserController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function LoginAction(Request $request)
+    public function loginAction(Request $request)
     {
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('salted_password');
@@ -96,7 +96,7 @@ class UserController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createAction(Request $request)
+    public function addAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -139,7 +139,7 @@ class UserController extends Controller
      * )
      * @SWG\Tag(name="Users")
      */
-    public function getCheckAction()
+    public function checkAction()
     {
         $user = $this->getUser();
         if ($user instanceof User)
@@ -177,7 +177,7 @@ class UserController extends Controller
     /**
      * Get a user
      *
-     * @Rest\Get("/users/{id}", name="get_user")
+     * @Rest\Get("/users/{id}", name="show_user")
      *
      * @SWG\Response(
      *     response=200,
@@ -187,7 +187,7 @@ class UserController extends Controller
      *
      * @return Response
      */
-    public function getAction(User $user)
+    public function showAction(User $user)
     {
         $json = $this->get('jms_serializer')
             ->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
@@ -198,13 +198,13 @@ class UserController extends Controller
     /**
      * Edit a user {id} with data in the body
      *
-     * @Rest\Post("/users/{id}", name="edit_user")
+     * @Rest\Post("/users/{id}", name="update_user")
      *
      * @param Request $request
      * @param User $user
      * @return Response
      */
-    public function postAction(Request $request, User $user)
+    public function updateAction(Request $request, User $user)
     {
         $userData = $request->request->all();
         $userNew = $this->get('user.user_service')->update($user, $userData);

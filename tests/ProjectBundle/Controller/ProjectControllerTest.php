@@ -73,25 +73,51 @@ class ProjectControllerTest extends BMSServiceTestCase
             return false;
         }
 
-        return true;
+        return $project;
     }
 
     /**
      * @depends testCreateProject
      * @throws \Exception
      */
-    public function testEditProject($isSuccess = true)
+    public function testShowProject($project)
     {
-        if (!$isSuccess)
-        {
-            print_r("\nThe creation of project failed. We can't test the update.\n");
-            $this->markTestIncomplete("The creation of project failed. We can't test the update.");
-        }
-        $this->em->clear();
-        $project = $this->em->getRepository(Project::class)->findOneByName($this->name);
-        if (!$project instanceof Project)
-            $this->fail("ISSUE : This test must be executed after the createTest");
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
 
+        $crawler = $this->client->request('GET', '/api/wsse/projects/' . $project['id'], $this->body);
+        $newProject = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        try
+        {
+            $this->assertArrayHasKey('id', $newProject);
+            $this->assertArrayHasKey('iso3', $newProject);
+            $this->assertArrayHasKey('name', $newProject);
+            $this->assertArrayHasKey('value', $newProject);
+            $this->assertArrayHasKey('notes', $newProject);
+            $this->assertArrayHasKey('end_date', $newProject);
+            $this->assertArrayHasKey('start_date', $newProject);
+            $this->assertArrayHasKey('number_of_households', $newProject);
+            $this->assertSame($newProject['name'], $this->name);
+        }
+        catch (\Exception $exception)
+        {
+            print_r("\nThe mapping of fields of Donor entity is not correct.\n");
+            $this->remove($this->name);
+            return false;
+        }
+
+        return $newProject;
+    }
+
+    /**
+     * @depends testShowProject
+     * @throws \Exception
+     */
+    public function testEditProject($project)
+    {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
@@ -99,9 +125,9 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->em->clear();
 
         $this->body['name'] .= '(u)';
-        $crawler = $this->client->request('POST', '/api/wsse/projects/' . $project->getId(), $this->body);
+        $crawler = $this->client->request('POST', '/api/wsse/projects/' . $project['id'], $this->body);
         $this->body['name'] = $this->name;
-        $project = json_decode($this->client->getResponse()->getContent(), true);
+        $newproject = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
@@ -132,13 +158,8 @@ class ProjectControllerTest extends BMSServiceTestCase
      * @depends testEditProject
      * @throws \Exception
      */
-    public function testGetProjects($isSuccess)
+    public function testGetProjects()
     {
-        if (!$isSuccess)
-        {
-            print_r("\nThe edition of project failed. We can't test the update.\n");
-            $this->markTestIncomplete("The edition of project failed. We can't test the update.");
-        }
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);

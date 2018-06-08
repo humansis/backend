@@ -119,12 +119,8 @@ class UserControllerTest extends BMSServiceTestCase
      * @depends testCreateUser
      * @throws \Exception
      */
-    public function testEditUser()
+    public function testEditUser($newuser)
     {
-        $user = $this->em->getRepository(User::class)->findOneByUsername(self::USER_TESTER);
-        if (!$user instanceof User)
-            $this->fail("ISSUE : This test must be executed after the createTest");
-
         $timestamp = (new \DateTime())->getTimestamp();
         $email = $this->username . "@gmailedited." . $timestamp;
 
@@ -134,19 +130,50 @@ class UserControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('POST', '/api/wsse/users/' . $user->getId(), $body);
-        $user = json_decode($this->client->getResponse()->getContent(), true);
+        $crawler = $this->client->request('POST', '/api/wsse/users/' . $newuser['id'], $body);
+        $newUserReceived = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         $this->em->clear();
 
-        $userSearch = $this->em->getRepository(User::class)->find($user['id']);
+        $userSearch = $this->em->getRepository(User::class)->find($newUserReceived['id']);
         $this->assertSame($userSearch->getEmail(), $email);
+
+        return $newUserReceived;
     }
 
     /**
-     * @depends testCreateUser
+     * @depends testEditUser
+     * @param $userToChange
+     * @return mixed
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testChangePassword($userToChange)
+    {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $body = ["oldPassword" => "PSWUNITTEST", "newPassword" => "PSWUNITTEST1"];
+
+        $crawler = $this->client->request('POST', '/api/wsse/users/' . $userToChange['id'] . '/password', $body);
+        $newUserReceived = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        $this->em->clear();
+
+        $userSearch = $this->em->getRepository(User::class)->find($userToChange['id']);
+        $this->assertSame($userSearch->getPassword(), "PSWUNITTEST1");
+
+        return $newUserReceived;
+    }
+
+    /**
+     * @depends testEditUser
      *
      * @param $userToDelete
      * @throws \Doctrine\ORM\ORMException
@@ -154,7 +181,6 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testDelete($userToDelete)
     {
-
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);

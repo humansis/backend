@@ -42,7 +42,7 @@ class ProjectController extends Controller
 
     /**
      * Get a project
-     * @Rest\Get("/projects/{id}", name="get_project")
+     * @Rest\Get("/projects/{id}", name="show_project")
      *
      * @SWG\Response(
      *     response=200,
@@ -53,7 +53,7 @@ class ProjectController extends Controller
      *
      * @return Response
      */
-    public function getAction(Project $project)
+    public function showAction(Project $project)
     {
         $json = $this->get('jms_serializer')
             ->serialize($project, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
@@ -63,7 +63,7 @@ class ProjectController extends Controller
 
     /**
      * Create a project
-     * @Rest\Put("/projects", name="create_project")
+     * @Rest\Put("/projects", name="add_project")
      *
      * @SWG\Parameter(
      *      name="body",
@@ -84,7 +84,7 @@ class ProjectController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createAction(Request $request)
+    public function addAction(Request $request)
     {
         $projectArray = $request->request->all();
         $user = $this->getUser();
@@ -105,13 +105,13 @@ class ProjectController extends Controller
     /**
      * TODO VOTER POUR CHECKER QUE PROJECT EST PAS ARCHIVED
      * Edit a project
-     * @Rest\Post("/projects/{id}", name="edit_project")
+     * @Rest\Post("/projects/{id}", name="update_project")
      *
      * @param Request $request
      * @param Project $project
      * @return Response
      */
-    public function editAction(Request $request, Project $project)
+    public function updateAction(Request $request, Project $project)
     {
         $projectArray = $request->request->all();
         try
