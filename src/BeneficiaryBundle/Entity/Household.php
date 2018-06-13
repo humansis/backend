@@ -6,12 +6,12 @@ use DistributionBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * BeneficiaryProfile
+ * Household
  *
- * @ORM\Table(name="beneficiary_profile")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\BeneficiaryProfileRepository")
+ * @ORM\Table(name="household")
+ * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdRepository")
  */
-class BeneficiaryProfile
+class Household
 {
     /**
      * @var int
@@ -21,13 +21,6 @@ class BeneficiaryProfile
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="photo", type="string", length=255)
-     */
-    private $photo;
 
     /**
      * @var string
@@ -65,6 +58,20 @@ class BeneficiaryProfile
     private $notes;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="lat", type="string", length=45)
+     */
+    private $lat;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="long", type="string", length=45)
+     */
+    private $long;
+
+    /**
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location")
@@ -74,7 +81,7 @@ class BeneficiaryProfile
     /**
      * @var CountrySpecificAnswer
      *
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="beneficiaryProfile")
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="Household")
      */
     private $countrySpecificAnswers;
     /**
@@ -100,7 +107,7 @@ class BeneficiaryProfile
      *
      * @param string $photo
      *
-     * @return BeneficiaryProfile
+     * @return Household
      */
     public function setPhoto($photo)
     {
@@ -124,7 +131,7 @@ class BeneficiaryProfile
      *
      * @param string $addressStreet
      *
-     * @return BeneficiaryProfile
+     * @return Household
      */
     public function setAddressStreet($addressStreet)
     {
@@ -148,7 +155,7 @@ class BeneficiaryProfile
      *
      * @param string $addressNumber
      *
-     * @return BeneficiaryProfile
+     * @return Household
      */
     public function setAddressNumber($addressNumber)
     {
@@ -172,7 +179,7 @@ class BeneficiaryProfile
      *
      * @param string $addressPostcode
      *
-     * @return BeneficiaryProfile
+     * @return Household
      */
     public function setAddressPostcode($addressPostcode)
     {
@@ -196,7 +203,7 @@ class BeneficiaryProfile
      *
      * @param int $livelihood
      *
-     * @return BeneficiaryProfile
+     * @return Household
      */
     public function setLivelihood($livelihood)
     {
@@ -220,7 +227,7 @@ class BeneficiaryProfile
      *
      * @param string $notes
      *
-     * @return BeneficiaryProfile
+     * @return Household
      */
     public function setNotes($notes)
     {
@@ -244,7 +251,7 @@ class BeneficiaryProfile
      *
      * @param \BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
      *
-     * @return BeneficiaryProfile
+     * @return Household
      */
     public function addCountrySpecificAnswer(\BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
     {
@@ -280,7 +287,7 @@ class BeneficiaryProfile
      *
      * @param \DistributionBundle\Entity\Location|null $location
      *
-     * @return BeneficiaryProfile
+     * @return Household
      */
     public function setLocation(\DistributionBundle\Entity\Location $location = null)
     {
@@ -297,5 +304,53 @@ class BeneficiaryProfile
     public function getLocation()
     {
         return $this->location;
+    }
+
+    /**
+     * Set lat.
+     *
+     * @param string $lat
+     *
+     * @return Household
+     */
+    public function setLat($lat)
+    {
+        $this->lat = $lat;
+
+        return $this;
+    }
+
+    /**
+     * Get lat.
+     *
+     * @return string
+     */
+    public function getLat()
+    {
+        return $this->lat;
+    }
+
+    /**
+     * Set long.
+     *
+     * @param string $long
+     *
+     * @return Household
+     */
+    public function setLong($long)
+    {
+        $this->long = $long;
+
+        return $this;
+    }
+
+    /**
+     * Get long.
+     *
+     * @return string
+     */
+    public function getLong()
+    {
+        return $this->long;
     }
 }

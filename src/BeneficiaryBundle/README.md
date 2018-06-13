@@ -9,7 +9,7 @@ PUT ("/beneficiaries")
 	"gender": "h",
 	"date_of_birth": "1976-10-06",
 	"updated_on": "2018-06-13",
-	"beneficiary_profile": {
+	"household": {
 		"photo": "photo.png",
 		"address_street": "addr",
 		"address_number": "12",
@@ -26,7 +26,7 @@ PUT ("/beneficiaries")
 			"adm4": "Ste Hélène sur Isère"
 		}
 	},
-	"vulnerability_criteria": {
+	"vulnerability_criterion": {
 		"pregnant": 0,
 		"lactating": 0,
 		"disabled": 1,
@@ -37,7 +37,7 @@ PUT ("/beneficiaries")
 		{
 			"gender": "f",
 			"date_of_birth": "1979-04-19",
-			"vulnerability_criteria": {
+			"vulnerability_criterion": {
 				"pregnant": 1,
 				"lactating": 0,
 				"disabled": 1,

@@ -44,6 +44,13 @@ class Beneficiary
     private $gender;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="household_head", type="boolean")
+     */
+    private $householdHead;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="dateOfBirth", type="datetime")
@@ -54,29 +61,31 @@ class Beneficiary
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="updatedAt", type="datetime", nullable=true)
+     * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
      */
-    private $updatedAt;
+    private $updatedOn;
 
     /**
-     * @var BeneficiaryProfile
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\BeneficiaryProfile")
+     * @ORM\Column(name="photo", type="string", length=255)
      */
-    private $beneficiaryProfile;
+    private $photo;
 
     /**
-     * @var VulnerabilityCriteria
+     * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriteria")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household")
      */
-    private $vulnerabilityCriteria;
+    private $household;
 
     /**
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\HHMember", mappedBy="beneficiary")
+     * @var VulnerabilityCriterion
+     *
+     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion")
      */
-    private $hhMembers;
+    private $vulnerabilityCriterions;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary")
@@ -87,13 +96,13 @@ class Beneficiary
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary")
      */
     private $nationalIds;
-
+    
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->hhMembers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->vulnerabilityCriterions = new \Doctrine\Common\Collections\ArrayCollection();
         $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nationalIds = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -181,6 +190,30 @@ class Beneficiary
     }
 
     /**
+     * Set householdHead.
+     *
+     * @param bool $householdHead
+     *
+     * @return Beneficiary
+     */
+    public function setHouseholdHead($householdHead)
+    {
+        $this->householdHead = $householdHead;
+
+        return $this;
+    }
+
+    /**
+     * Get householdHead.
+     *
+     * @return bool
+     */
+    public function getHouseholdHead()
+    {
+        return $this->householdHead;
+    }
+
+    /**
      * Set dateOfBirth.
      *
      * @param \DateTime $dateOfBirth
@@ -205,111 +238,111 @@ class Beneficiary
     }
 
     /**
-     * Set updatedAt.
+     * Set updatedOn.
      *
-     * @param \DateTime|null $updatedAt
+     * @param \DateTime|null $updatedOn
      *
      * @return Beneficiary
      */
-    public function setUpdatedAt($updatedAt = null)
+    public function setUpdatedOn($updatedOn = null)
     {
-        $this->updatedAt = $updatedAt;
+        $this->updatedOn = $updatedOn;
 
         return $this;
     }
 
     /**
-     * Get updatedAt.
+     * Get updatedOn.
      *
      * @return \DateTime|null
      */
-    public function getUpdatedAt()
+    public function getUpdatedOn()
     {
-        return $this->updatedAt;
+        return $this->updatedOn;
     }
 
     /**
-     * Set beneficiaryProfile.
+     * Set photo.
      *
-     * @param \BeneficiaryBundle\Entity\BeneficiaryProfile|null $beneficiaryProfile
+     * @param string $photo
      *
      * @return Beneficiary
      */
-    public function setBeneficiaryProfile(\BeneficiaryBundle\Entity\BeneficiaryProfile $beneficiaryProfile = null)
+    public function setPhoto($photo)
     {
-        $this->beneficiaryProfile = $beneficiaryProfile;
+        $this->photo = $photo;
 
         return $this;
     }
 
     /**
-     * Get beneficiaryProfile.
+     * Get photo.
      *
-     * @return \BeneficiaryBundle\Entity\BeneficiaryProfile|null
+     * @return string
      */
-    public function getBeneficiaryProfile()
+    public function getPhoto()
     {
-        return $this->beneficiaryProfile;
+        return $this->photo;
     }
 
     /**
-     * Set vulnerabilityCriteria.
+     * Set household.
      *
-     * @param \BeneficiaryBundle\Entity\VulnerabilityCriteria|null $vulnerabilityCriteria
+     * @param \BeneficiaryBundle\Entity\Household|null $household
      *
      * @return Beneficiary
      */
-    public function setVulnerabilityCriteria(\BeneficiaryBundle\Entity\VulnerabilityCriteria $vulnerabilityCriteria = null)
+    public function setHousehold(\BeneficiaryBundle\Entity\Household $household = null)
     {
-        $this->vulnerabilityCriteria = $vulnerabilityCriteria;
+        $this->household = $household;
 
         return $this;
     }
 
     /**
-     * Get vulnerabilityCriteria.
+     * Get household.
      *
-     * @return \BeneficiaryBundle\Entity\VulnerabilityCriteria|null
+     * @return \BeneficiaryBundle\Entity\Household|null
      */
-    public function getVulnerabilityCriteria()
+    public function getHousehold()
     {
-        return $this->vulnerabilityCriteria;
+        return $this->household;
     }
 
     /**
-     * Add hhMember.
+     * Add vulnerabilityCriterion.
      *
-     * @param \BeneficiaryBundle\Entity\HHMember $hhMember
+     * @param \BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion
      *
      * @return Beneficiary
      */
-    public function addHhMember(\BeneficiaryBundle\Entity\HHMember $hhMember)
+    public function addVulnerabilityCriterion(\BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion)
     {
-        $this->hhMembers[] = $hhMember;
+        $this->vulnerabilityCriterions[] = $vulnerabilityCriterion;
 
         return $this;
     }
 
     /**
-     * Remove hhMember.
+     * Remove vulnerabilityCriterion.
      *
-     * @param \BeneficiaryBundle\Entity\HHMember $hhMember
+     * @param \BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeHhMember(\BeneficiaryBundle\Entity\HHMember $hhMember)
+    public function removeVulnerabilityCriterion(\BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion)
     {
-        return $this->hhMembers->removeElement($hhMember);
+        return $this->vulnerabilityCriterions->removeElement($vulnerabilityCriterion);
     }
 
     /**
-     * Get hhMembers.
+     * Get vulnerabilityCriterions.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getHhMembers()
+    public function getVulnerabilityCriterions()
     {
-        return $this->hhMembers;
+        return $this->vulnerabilityCriterions;
     }
 
     /**

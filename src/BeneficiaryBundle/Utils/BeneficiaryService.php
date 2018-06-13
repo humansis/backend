@@ -3,11 +3,11 @@
 namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\BeneficiaryProfile;
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HHMember;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\VulnerabilityCriteria;
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 
@@ -34,8 +34,8 @@ class BeneficiaryService
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->serializer->deserialize(json_encode($beneficiaryArray), Beneficiary::class, 'json');
 
-        $beneficiaryProfile = $this->saveBeneficiaryProfile($beneficiary->getBeneficiaryProfile(), false);
-        $vulnerabilityCriteria = $this->saveVulnerabilityCriteria($beneficiary->getVulnerabilityCriteria(), false);
+        $household = $this->saveHousehold($beneficiary->getHousehold(), false);
+        $vulnerabilityCriterion = $this->saveVulnerabilityCriterion($beneficiary->getVulnerabilityCriterion(), false);
         $phones = $beneficiary->getPhones();
         $nationalIds = $beneficiary->getNationalIds();
         $hhMembers = $beneficiary->getHhMembers();
@@ -43,8 +43,8 @@ class BeneficiaryService
         dump($phones);
         dump($nationalIds);
         dump($hhMembers);
-        $beneficiary->setBeneficiaryProfile($beneficiaryProfile)
-            ->setVulnerabilityCriteria($vulnerabilityCriteria)
+        $beneficiary->setHousehold($household)
+            ->setVulnerabilityCriterion($vulnerabilityCriterion)
             ->setHhMembers(null);
 
         $this->em->persist($beneficiary);
@@ -68,9 +68,9 @@ class BeneficiaryService
 
     public function saveHHMember(Beneficiary $beneficiary, HHMember $HHMember, $flush)
     {
-        $vulnerabilityCriteria = $this->saveVulnerabilityCriteria($HHMember->getVulnerabilityCriteria());
+        $vulnerabilityCriterion = $this->saveVulnerabilityCriterion($HHMember->getVulnerabilityCriterion());
         $HHMember->setBeneficiary($beneficiary)
-            ->setVulnerabilityCriteria($vulnerabilityCriteria);
+            ->setVulnerabilityCriterion($vulnerabilityCriterion);
         $this->em->persist($HHMember);
         $this->em->flush();
 
@@ -78,29 +78,29 @@ class BeneficiaryService
     }
 
     /**
-     * @param BeneficiaryProfile $beneficiaryProfile
-     * @return BeneficiaryProfile
+     * @param Household $household
+     * @return Household
      */
-    public function saveBeneficiaryProfile(BeneficiaryProfile $beneficiaryProfile, $flush)
+    public function saveHousehold(Household $household, $flush)
     {
-        $location = $beneficiaryProfile->getLocation();
+        $location = $household->getLocation();
         $this->em->persist($location);
-        $beneficiaryProfile->setLocation($location);
-        $this->em->persist($beneficiaryProfile);
+        $household->setLocation($location);
+        $this->em->persist($household);
 
         $this->em->flush();
-        return $beneficiaryProfile;
+        return $household;
     }
 
     /**
-     * @param VulnerabilityCriteria $vulnerabilityCriteria
-     * @return VulnerabilityCriteria
+     * @param VulnerabilityCriterion $vulnerabilityCriterion
+     * @return VulnerabilityCriterion
      */
-    public function saveVulnerabilityCriteria(VulnerabilityCriteria $vulnerabilityCriteria, $flush)
+    public function saveVulnerabilityCriterion(VulnerabilityCriterion $vulnerabilityCriterion, $flush)
     {
-        $this->em->persist($vulnerabilityCriteria);
+        $this->em->persist($vulnerabilityCriterion);
         $this->em->flush();
-        return $vulnerabilityCriteria;
+        return $vulnerabilityCriterion;
     }
 
     /**
