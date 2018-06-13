@@ -74,6 +74,21 @@ class Beneficiary
     private $vulnerabilityCriteria;
 
     /**
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\HHMember", mappedBy="beneficiary")
+     */
+    private $hhMembers;
+
+    /**
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary")
+     */
+    private $phones;
+
+    /**
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary")
+     */
+    private $nationalIds;
+
+    /**
      * Get id.
      *
      * @return int
@@ -249,5 +264,120 @@ class Beneficiary
     public function getVulnerabilityCriteria()
     {
         return $this->vulnerabilityCriteria;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->hhMembers = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add hhMember.
+     *
+     * @param \BeneficiaryBundle\Entity\HHMember $hhMember
+     *
+     * @return Beneficiary
+     */
+    public function addHhMember(\BeneficiaryBundle\Entity\HHMember $hhMember)
+    {
+        $this->hhMembers[] = $hhMember;
+
+        return $this;
+    }
+
+    /**
+     * Remove hhMember.
+     *
+     * @param \BeneficiaryBundle\Entity\HHMember $hhMember
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeHhMember(\BeneficiaryBundle\Entity\HHMember $hhMember)
+    {
+        return $this->hhMembers->removeElement($hhMember);
+    }
+
+    /**
+     * Get hhMembers.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getHhMembers()
+    {
+        return $this->hhMembers;
+    }
+
+    /**
+     * Add phone.
+     *
+     * @param \BeneficiaryBundle\Entity\Phone $phone
+     *
+     * @return Beneficiary
+     */
+    public function addPhone(\BeneficiaryBundle\Entity\Phone $phone)
+    {
+        $this->phones[] = $phone;
+
+        return $this;
+    }
+
+    /**
+     * Remove phone.
+     *
+     * @param \BeneficiaryBundle\Entity\Phone $phone
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removePhone(\BeneficiaryBundle\Entity\Phone $phone)
+    {
+        return $this->phones->removeElement($phone);
+    }
+
+    /**
+     * Get phones.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPhones()
+    {
+        return $this->phones;
+    }
+
+    /**
+     * Add nationalId.
+     *
+     * @param \BeneficiaryBundle\Entity\NationalId $nationalId
+     *
+     * @return Beneficiary
+     */
+    public function addNationalId(\BeneficiaryBundle\Entity\NationalId $nationalId)
+    {
+        $this->nationalIds[] = $nationalId;
+
+        return $this;
+    }
+
+    /**
+     * Remove nationalId.
+     *
+     * @param \BeneficiaryBundle\Entity\NationalId $nationalId
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeNationalId(\BeneficiaryBundle\Entity\NationalId $nationalId)
+    {
+        return $this->nationalIds->removeElement($nationalId);
+    }
+
+    /**
+     * Get nationalIds.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getNationalIds()
+    {
+        return $this->nationalIds;
     }
 }

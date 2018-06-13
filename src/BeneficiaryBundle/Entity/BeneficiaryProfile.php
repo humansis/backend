@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use DistributionBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -62,6 +63,13 @@ class BeneficiaryProfile
      * @ORM\Column(name="notes", type="string", length=255)
      */
     private $notes;
+
+    /**
+     * @var Location
+     *
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location")
+     */
+    private $location;
 
     /**
      * @var CountrySpecificAnswer
@@ -265,5 +273,29 @@ class BeneficiaryProfile
     public function getCountrySpecificAnswers()
     {
         return $this->countrySpecificAnswers;
+    }
+
+    /**
+     * Set location.
+     *
+     * @param \DistributionBundle\Entity\Location|null $location
+     *
+     * @return BeneficiaryProfile
+     */
+    public function setLocation(\DistributionBundle\Entity\Location $location = null)
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Get location.
+     *
+     * @return \DistributionBundle\Entity\Location|null
+     */
+    public function getLocation()
+    {
+        return $this->location;
     }
 }
