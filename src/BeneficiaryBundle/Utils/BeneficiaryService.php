@@ -25,51 +25,63 @@ class BeneficiaryService
         $this->serializer = $serializer;
     }
 
-    // TODO END CREATE BENEFICIARY
+    /**
+     * @param array $beneficiaryArray
+     * @return Beneficiary
+     */
     public function create(array $beneficiaryArray)
     {
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->serializer->deserialize(json_encode($beneficiaryArray), Beneficiary::class, 'json');
 
-        $beneficiaryProfile = $this->saveBeneficiaryProfile($beneficiary->getBeneficiaryProfile());
-        $vulnerabilityCriteria = $this->saveVulnerabilityCriteria($beneficiary->getVulnerabilityCriteria());
+        $beneficiaryProfile = $this->saveBeneficiaryProfile($beneficiary->getBeneficiaryProfile(), false);
+        $vulnerabilityCriteria = $this->saveVulnerabilityCriteria($beneficiary->getVulnerabilityCriteria(), false);
         $phones = $beneficiary->getPhones();
         $nationalIds = $beneficiary->getNationalIds();
         $hhMembers = $beneficiary->getHhMembers();
 
+        dump($phones);
+        dump($nationalIds);
+        dump($hhMembers);
         $beneficiary->setBeneficiaryProfile($beneficiaryProfile)
-            ->setVulnerabilityCriteria($vulnerabilityCriteria);
+            ->setVulnerabilityCriteria($vulnerabilityCriteria)
+            ->setHhMembers(null);
 
         $this->em->persist($beneficiary);
         foreach ($phones as $phone)
         {
-            $this->savePhone($beneficiary, $phone);
+            $this->savePhone($beneficiary, $phone, false);
         }
         foreach ($nationalIds as $nationalId)
         {
-            $this->saveNationalId($beneficiary, $nationalId);
+            $this->saveNationalId($beneficiary, $nationalId, false);
         }
         foreach ($hhMembers as $hhMember)
         {
-            $this->saveHHMember($beneficiary, $hhMember);
+            $this->saveHHMember($beneficiary, $hhMember, false);
         }
+
 
         $this->em->flush();
         return $beneficiary;
     }
 
-    // TODO SAVE ALL HH MEMBERS
-    public function saveHHMember(Beneficiary $beneficiary, HHMember $HHMember)
+    public function saveHHMember(Beneficiary $beneficiary, HHMember $HHMember, $flush)
     {
         $vulnerabilityCriteria = $this->saveVulnerabilityCriteria($HHMember->getVulnerabilityCriteria());
+        $HHMember->setBeneficiary($beneficiary)
+            ->setVulnerabilityCriteria($vulnerabilityCriteria);
+        $this->em->persist($HHMember);
+        $this->em->flush();
 
+        return $HHMember;
     }
 
     /**
      * @param BeneficiaryProfile $beneficiaryProfile
      * @return BeneficiaryProfile
      */
-    public function saveBeneficiaryProfile(BeneficiaryProfile $beneficiaryProfile)
+    public function saveBeneficiaryProfile(BeneficiaryProfile $beneficiaryProfile, $flush)
     {
         $location = $beneficiaryProfile->getLocation();
         $this->em->persist($location);
@@ -84,7 +96,7 @@ class BeneficiaryService
      * @param VulnerabilityCriteria $vulnerabilityCriteria
      * @return VulnerabilityCriteria
      */
-    public function saveVulnerabilityCriteria(VulnerabilityCriteria $vulnerabilityCriteria)
+    public function saveVulnerabilityCriteria(VulnerabilityCriteria $vulnerabilityCriteria, $flush)
     {
         $this->em->persist($vulnerabilityCriteria);
         $this->em->flush();
@@ -96,7 +108,7 @@ class BeneficiaryService
      * @param Phone $phone
      * @return Phone
      */
-    public function savePhone(Beneficiary $beneficiary, Phone $phone)
+    public function savePhone(Beneficiary $beneficiary, Phone $phone, $flush)
     {
         $phone->setBeneficiary($beneficiary);
         $this->em->persist($phone);
@@ -109,7 +121,7 @@ class BeneficiaryService
      * @param NationalId $nationalId
      * @return NationalId
      */
-    public function saveNationalId(Beneficiary $beneficiary, NationalId $nationalId)
+    public function saveNationalId(Beneficiary $beneficiary, NationalId $nationalId, $flush)
     {
         $nationalId->setBeneficiary($beneficiary);
         $this->em->persist($nationalId);

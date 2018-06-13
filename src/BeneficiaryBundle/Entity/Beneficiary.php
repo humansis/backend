@@ -89,6 +89,16 @@ class Beneficiary
     private $nationalIds;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->hhMembers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->nationalIds = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * Get id.
      *
      * @return int
@@ -264,13 +274,6 @@ class Beneficiary
     public function getVulnerabilityCriteria()
     {
         return $this->vulnerabilityCriteria;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->hhMembers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**

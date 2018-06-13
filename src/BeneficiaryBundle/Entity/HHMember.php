@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * HHMember
@@ -32,6 +33,7 @@ class HHMember
      * @var \DateTime
      *
      * @ORM\Column(name="dateOfBirth", type="date")
+     * @JMS_Type("DateTime<'Y-m-d'>")
      */
     private $dateOfBirth;
 
