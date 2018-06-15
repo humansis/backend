@@ -1,24 +1,52 @@
 # To get started with security, check out the documentation:
 # https://symfony.com/doc/current/security.html
 security:
+    encoders:
+        FOS\UserBundle\Model\UserInterface: bcrypt
 
-    # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
-        in_memory:
-            memory: ~
+        our_db_provider:
+            entity:
+                class: UserBundle:User
+                property: username
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
+
+        # Config without security but only for profiler and images/scripts
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        main:
-            anonymous: ~
-            # activate different ways to authenticate
+        # Config without security.
+#        dev:
+#            pattern:  ^/
+#            security: false
 
-            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
-            #http_basic: ~
+        # tester
+        tester_salt:
+            pattern:   ^/api/wsse/salt
+            security: false
 
-            # https://symfony.com/doc/current/security/form_login_setup.html
-            #form_login: ~
+        tester_login:
+            pattern:   ^/api/wsse/login
+            security: false
+
+        wsse_secured:
+            pattern:   ^/api/
+            stateless: true
+            wsse: true
+            anonymous: false
+            methods: [GET, PUT, POST, DELETE, OPTIONS]
+            provider: our_db_provider
+
+    access_control:
+        - { path: /, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+
+
+        # ADMIN PART
+        - { path: ^/admin/, role: ROLE_USER }
+        - { path: ^/, role: ROLE_USER }

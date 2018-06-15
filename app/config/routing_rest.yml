@@ -1,0 +1,7 @@
+rest_user:
+    type: rest
+    resource: "@UserBundle/Resources/config/routing.yml"
+
+rest_project:
+    type: rest
+    resource: "@ProjectBundle/Resources/config/routing.yml"

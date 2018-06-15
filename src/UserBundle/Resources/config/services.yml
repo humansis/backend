@@ -1,0 +1,31 @@
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        # automatically injects dependencies in your services
+        autowire: true
+        # automatically registers your services as commands, event subscribers, etc.
+        autoconfigure: true
+        # this means you cannot fetch services directly from the container via $container->get()
+        # if you need to do this, you can override this setting on individual services
+        public: false
+
+    # makes classes in src/UserBundle available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    UserBundle\:
+        resource: '../../*'
+
+    user.user_service:
+        alias: UserBundle\Utils\UserService
+        public: true
+
+    wsse.security.authentication.provider:
+        class: UserBundle\Security\Authentication\Provider\WsseProvider
+        arguments: ["@fos_user.user_provider.username", "%kernel.cache_dir%/security/nonces"]
+        public: false
+
+    wsse.security.authentication.listener:
+        class: UserBundle\Security\Firewall\WsseListener
+        arguments: ["@security.token_storage", "@wsse.security.authentication.provider"]
+        public: false
+        tags:
+            - { name: monolog.logger, channel: wsse }
