@@ -1,0 +1,20 @@
+branch-defaults:
+  dev:
+    environment: ApiBms-env
+environment-defaults:
+  ApiBms-env:
+    branch: null
+    repository: null
+global:
+  application_name: API-BMS
+  default_ec2_keyname: null
+  default_platform: arn:aws:elasticbeanstalk:eu-central-1::platform/PHP 7.1 running
+    on 64bit Amazon Linux/2.6.6
+  default_region: eu-central-1
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: eb-cli
+  sc: git
+  workspace_type: Application
