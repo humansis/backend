@@ -3,3 +3,7 @@ services:
         class: BeneficiaryBundle\Utils\BeneficiaryService
         arguments: ["@doctrine.orm.entity_manager", "@jms_serializer"]
         public: true
+    beneficiary.household_service:
+        class: BeneficiaryBundle\Utils\HouseholdService
+        arguments: ["@doctrine.orm.entity_manager", "@jms_serializer"]
+        public: true

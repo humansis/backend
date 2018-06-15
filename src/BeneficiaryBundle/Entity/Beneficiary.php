@@ -67,11 +67,9 @@ class Beneficiary
     private $updatedOn;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="photo", type="string", length=255)
+     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Profile")
      */
-    private $photo;
+    private $profile;
 
     /**
      * @var Household
@@ -262,30 +260,6 @@ class Beneficiary
     }
 
     /**
-     * Set photo.
-     *
-     * @param string $photo
-     *
-     * @return Beneficiary
-     */
-    public function setPhoto($photo)
-    {
-        $this->photo = $photo;
-
-        return $this;
-    }
-
-    /**
-     * Get photo.
-     *
-     * @return string
-     */
-    public function getPhoto()
-    {
-        return $this->photo;
-    }
-
-    /**
      * Set household.
      *
      * @param \BeneficiaryBundle\Entity\Household|null $household
@@ -415,5 +389,41 @@ class Beneficiary
     public function getNationalIds()
     {
         return $this->nationalIds;
+    }
+
+    /**
+     * Add profile.
+     *
+     * @param \BeneficiaryBundle\Entity\Profile $profile
+     *
+     * @return Beneficiary
+     */
+    public function addProfile(\BeneficiaryBundle\Entity\Profile $profile)
+    {
+        $this->profile[] = $profile;
+
+        return $this;
+    }
+
+    /**
+     * Remove profile.
+     *
+     * @param \BeneficiaryBundle\Entity\Profile $profile
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeProfile(\BeneficiaryBundle\Entity\Profile $profile)
+    {
+        return $this->profile->removeElement($profile);
+    }
+
+    /**
+     * Get profile.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getProfile()
+    {
+        return $this->profile;
     }
 }
