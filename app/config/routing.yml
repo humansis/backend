@@ -22,6 +22,12 @@ app.swagger_ui:
     methods: GET
     defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
 
+acme_privacy:
+    path: /
+    defaults:
+        _controller: FrameworkBundle:Template:template
+        template:    default/index.html.twig
+
 rest:
     type: rest
     prefix: /api/{firewall}
