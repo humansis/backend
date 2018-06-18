@@ -1,13 +1,13 @@
 services:
     project.project_service:
         class: ProjectBundle\Utils\ProjectService
-        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@debug.validator']
+        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
         public: true
     project.donor_service:
         class: ProjectBundle\Utils\DonorService
-        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@debug.validator']
+        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
         public: true
     project.sector_service:
         class: ProjectBundle\Utils\SectorService
-        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@debug.validator']
+        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
         public: true

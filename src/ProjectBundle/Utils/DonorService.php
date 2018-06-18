@@ -1,8 +1,6 @@
 <?php
 
-
 namespace ProjectBundle\Utils;
-
 
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
