@@ -134,15 +134,15 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->em->clear();
         try
         {
-            $this->assertArrayHasKey('id', $project);
-            $this->assertArrayHasKey('iso3', $project);
-            $this->assertArrayHasKey('name', $project);
-            $this->assertArrayHasKey('value', $project);
-            $this->assertArrayHasKey('notes', $project);
-            $this->assertArrayHasKey('end_date', $project);
-            $this->assertArrayHasKey('start_date', $project);
-            $this->assertArrayHasKey('number_of_households', $project);
-            $this->assertSame($project['name'], $this->name . "(u)");
+            $this->assertArrayHasKey('id', $newproject);
+            $this->assertArrayHasKey('iso3', $newproject);
+            $this->assertArrayHasKey('name', $newproject);
+            $this->assertArrayHasKey('value', $newproject);
+            $this->assertArrayHasKey('notes', $newproject);
+            $this->assertArrayHasKey('end_date', $newproject);
+            $this->assertArrayHasKey('start_date', $newproject);
+            $this->assertArrayHasKey('number_of_households', $newproject);
+            $this->assertSame($newproject['name'], $this->name . "(u)");
         }
         catch (\Exception $exception)
         {
