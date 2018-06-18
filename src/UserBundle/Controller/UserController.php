@@ -19,6 +19,42 @@ class UserController extends Controller
      * Log a user with its username and salted password. Create a new one if not in the db (remove this part for prod env)
      * @Rest\Post("/login", name="user_login")
      *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *      response=200,
+     *      description="SUCCESS",
+     *      examples={
+     *      "application/json": {
+     *          "at"="2018-01-12 12:11:05",
+     *          "registered"="true",
+     *          "user"="username"
+     *     }
+     *   }
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="username",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="username of the user",
+     *     @SWG\Schema()
+     * )
+     * @SWG\Parameter(
+     *     name="salted_password",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="salted password of the user",
+     *     @SWG\Schema()
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="Bad credentials (username: myUsername)"
+     * )
+     *
      * @param Request $request
      * @return Response
      */
@@ -92,6 +128,7 @@ class UserController extends Controller
      * Create a new User. You must have called getSalt before use this one
      *
      * @Rest\Put("/users", name="add_user")
+     *
      *
      * @param Request $request
      * @return Response
@@ -183,7 +220,7 @@ class UserController extends Controller
      *     response=200,
      *     description="OK",
      * )
-     * @SWG\Tag(name="User")
+     * @SWG\Tag(name="Users")
      *
      * @return Response
      */

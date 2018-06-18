@@ -98,6 +98,12 @@ class UserService
         return ["user_id" => $user->getId(), "salt" => $user->getSalt()];
     }
 
+    /**
+     * @param string $username
+     * @param string $saltedPassword
+     * @return array
+     * @throws \Exception
+     */
     public function login(string $username, string $saltedPassword)
     {
         $repository = $this->em->getRepository('UserBundle:User');
@@ -135,7 +141,7 @@ class UserService
             }
             else
             {
-                throw new \Exception('Bad credentials (username: ' . $username . ', password: ' . $saltedPassword . ')');
+                throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
             }
 
         }
