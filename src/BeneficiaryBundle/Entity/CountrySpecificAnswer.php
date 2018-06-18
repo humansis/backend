@@ -36,11 +36,11 @@ class CountrySpecificAnswer
     private $countrySpecific;
 
     /**
-     * @var BeneficiaryProfile
+     * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\BeneficiaryProfile", inversedBy="countrySpecificAnswers")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="countrySpecificAnswers")
      */
-    private $beneficiaryProfile;
+    private $Household;
 
     /**
      * Get id.
@@ -101,26 +101,26 @@ class CountrySpecificAnswer
     }
 
     /**
-     * Set beneficiaryProfile.
+     * Set household.
      *
-     * @param \BeneficiaryBundle\Entity\BeneficiaryProfile|null $beneficiaryProfile
+     * @param \BeneficiaryBundle\Entity\Household|null $household
      *
      * @return CountrySpecificAnswer
      */
-    public function setBeneficiaryProfile(\BeneficiaryBundle\Entity\BeneficiaryProfile $beneficiaryProfile = null)
+    public function setHousehold(\BeneficiaryBundle\Entity\Household $household = null)
     {
-        $this->beneficiaryProfile = $beneficiaryProfile;
+        $this->household = $household;
 
         return $this;
     }
 
     /**
-     * Get beneficiaryProfile.
+     * Get household.
      *
-     * @return \BeneficiaryBundle\Entity\BeneficiaryProfile|null
+     * @return \BeneficiaryBundle\Entity\Household|null
      */
-    public function getBeneficiaryProfile()
+    public function getHousehold()
     {
-        return $this->beneficiaryProfile;
+        return $this->household;
     }
 }

@@ -9,6 +9,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
+use UserBundle\Entity\UserCountry;
+use UserBundle\Entity\UserProject;
 
 class UserService
 {
@@ -195,5 +197,43 @@ class UserService
         $this->em->flush();
 
         return $user;
+    }
+
+    /**
+     * Delete an user and its links in the api
+     *
+     * @param User $user
+     * @return bool
+     */
+    public function delete(User $user)
+    {
+        $userCountries = $this->em->getRepository(UserCountry::class)->findByUser($user);
+        if (!empty($userCountries))
+        {
+            foreach ($userCountries as $userCountry)
+            {
+                $this->em->remove($userCountry);
+            }
+        }
+        $userProjects = $this->em->getRepository(UserProject::class)->findByUser($user);
+        if (!empty($userProjects))
+        {
+            foreach ($userProjects as $userProject)
+            {
+                $this->em->remove($userProject);
+            }
+        }
+
+        try
+        {
+            $this->em->remove($user);
+            $this->em->flush();
+        }
+        catch (\Exception $exception)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

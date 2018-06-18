@@ -5,3 +5,7 @@ rest_user:
 rest_project:
     type: rest
     resource: "@ProjectBundle/Resources/config/routing.yml"
+
+rest_beneficiary:
+    type: rest
+    resource: "@BeneficiaryBundle/Resources/config/routing.yml"

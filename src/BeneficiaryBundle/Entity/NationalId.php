@@ -38,7 +38,7 @@ class NationalId
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="nationalIds")
      */
     private $beneficiary;
 

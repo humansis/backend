@@ -42,35 +42,6 @@ class DonorControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
-    public function testGetDonors()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $crawler = $this->client->request('GET', '/api/wsse/donors');
-        $donors = json_decode($this->client->getResponse()->getContent(), true);
-
-        if (!empty($donors))
-        {
-            $project = $donors[0];
-
-            $this->assertArrayHasKey('id', $project);
-            $this->assertArrayHasKey('fullname', $project);
-            $this->assertArrayHasKey('shortname', $project);
-            $this->assertArrayHasKey('date_added', $project);
-            $this->assertArrayHasKey('notes', $project);
-        }
-        else
-        {
-            $this->markTestIncomplete("You currently don't have any donor in your database.");
-        }
-    }
-
-    /**
-     * @throws \Exception
-     */
     public function testCreateDonor()
     {
         // Fake connection with a token for the user tester (ADMIN)
@@ -78,7 +49,7 @@ class DonorControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('PUT', '/api/wsse/donor', $this->body);
+        $crawler = $this->client->request('PUT', '/api/wsse/donors', $this->body);
         $project = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -127,7 +98,7 @@ class DonorControllerTest extends BMSServiceTestCase
         $this->em->clear();
 
         $this->body['fullname'] .= '(u)';
-        $crawler = $this->client->request('POST', '/api/wsse/donor/' . $donor->getId(), $this->body);
+        $crawler = $this->client->request('POST', '/api/wsse/donors/' . $donor->getId(), $this->body);
         $this->body['fullname'] = $this->namefullname;
 
         $donor = json_decode($this->client->getResponse()->getContent(), true);
@@ -145,13 +116,53 @@ class DonorControllerTest extends BMSServiceTestCase
         }
         catch (\Exception $exception)
         {
+            $this->remove($this->namefullname);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @depends testEditDonor
+     * @throws \Exception
+     */
+    public function testGetDonors($isSuccess)
+    {
+        if (!$isSuccess)
+        {
+            print_r("\nThe edition of donor failed. We can't test the update.\n");
+            $this->markTestIncomplete("The edition of donor failed. We can't test the update.");
+        }
+
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->client->request('GET', '/api/wsse/donors');
+        $donors = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (!empty($donors))
+        {
+            $project = $donors[0];
+
+            $this->assertArrayHasKey('id', $project);
+            $this->assertArrayHasKey('fullname', $project);
+            $this->assertArrayHasKey('shortname', $project);
+            $this->assertArrayHasKey('date_added', $project);
+            $this->assertArrayHasKey('notes', $project);
+        }
+        else
+        {
+            $this->markTestIncomplete("You currently don't have any donor in your database.");
         }
 
         return $this->remove($this->namefullname . '(u)');
     }
 
     /**
-     * @depends testEditDonor
+     * @depends testGetDonors
      *
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException

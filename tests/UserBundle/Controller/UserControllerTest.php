@@ -52,7 +52,7 @@ class UserControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('email', $user);
             $this->assertArrayHasKey('roles', $user);
             $this->assertArrayHasKey('countries', $user);
-            $this->assertArrayHasKey('userProjects', $user);
+            $this->assertArrayHasKey('user_projects', $user);
         }
         else
         {
@@ -102,7 +102,7 @@ class UserControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->client->request('PUT', '/api/wsse/user', $body);
+        $crawler = $this->client->request('PUT', '/api/wsse/users', $body);
         $user = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -112,18 +112,15 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('email', $user);
         $this->assertSame($user['email'], $this->username . "@gmail.com");
 
+        return $user;
     }
 
     /**
      * @depends testCreateUser
      * @throws \Exception
      */
-    public function testEditUser()
+    public function testEditUser($newuser)
     {
-        $user = $this->em->getRepository(User::class)->findOneByUsername(self::USER_TESTER);
-        if (!$user instanceof User)
-            $this->fail("ISSUE : This test must be executed after the createTest");
-
         $timestamp = (new \DateTime())->getTimestamp();
         $email = $this->username . "@gmailedited." . $timestamp;
 
@@ -133,29 +130,69 @@ class UserControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('POST', '/api/wsse/user/' . $user->getId(), $body);
-        $user = json_decode($this->client->getResponse()->getContent(), true);
+        $crawler = $this->client->request('POST', '/api/wsse/users/' . $newuser['id'], $body);
+        $newUserReceived = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         $this->em->clear();
 
-        $userSearch = $this->em->getRepository(User::class)->find($user['id']);
+        $userSearch = $this->em->getRepository(User::class)->find($newUserReceived['id']);
         $this->assertSame($userSearch->getEmail(), $email);
+
+        return $newUserReceived;
     }
 
     /**
-     * @afterClass
+     * @depends testEditUser
+     * @param $userToChange
+     * @return mixed
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function tearDown()
+    public function testChangePassword($userToChange)
     {
-        $user = $this->em->getRepository(User::class)->findOneByUsername($this->username);
-        if ($user instanceof User)
-        {
-            $this->em->remove($user);
-            $this->em->flush();
-        }
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $body = ["oldPassword" => "PSWUNITTEST", "newPassword" => "PSWUNITTEST1"];
+
+        $crawler = $this->client->request('POST', '/api/wsse/users/' . $userToChange['id'] . '/password', $body);
+        $newUserReceived = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        $this->em->clear();
+
+        $userSearch = $this->em->getRepository(User::class)->find($userToChange['id']);
+        $this->assertSame($userSearch->getPassword(), "PSWUNITTEST1");
+
+        return $newUserReceived;
+    }
+
+    /**
+     * @depends testEditUser
+     *
+     * @param $userToDelete
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testDelete($userToDelete)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->client->request('DELETE', '/api/wsse/users/' . $userToDelete['id']);
+        $success = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($success);
     }
 }

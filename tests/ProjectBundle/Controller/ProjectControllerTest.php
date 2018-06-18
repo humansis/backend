@@ -44,6 +44,120 @@ class ProjectControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
+    public function testCreateProject()
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->client->request('PUT', '/api/wsse/projects', $this->body);
+        $project = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        try
+        {
+            $this->assertArrayHasKey('id', $project);
+            $this->assertArrayHasKey('iso3', $project);
+            $this->assertArrayHasKey('name', $project);
+            $this->assertArrayHasKey('value', $project);
+            $this->assertArrayHasKey('notes', $project);
+            $this->assertArrayHasKey('end_date', $project);
+            $this->assertArrayHasKey('start_date', $project);
+            $this->assertArrayHasKey('number_of_households', $project);
+            $this->assertSame($project['name'], $this->name);
+        }
+        catch (\Exception $exception)
+        {
+            print_r("\nThe mapping of fields of Donor entity is not correct.\n");
+            $this->remove($this->name);
+            return false;
+        }
+
+        return $project;
+    }
+
+    /**
+     * @depends testCreateProject
+     * @throws \Exception
+     */
+    public function testShowProject($project)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->client->request('GET', '/api/wsse/projects/' . $project['id'], $this->body);
+        $newProject = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        try
+        {
+            $this->assertArrayHasKey('id', $newProject);
+            $this->assertArrayHasKey('iso3', $newProject);
+            $this->assertArrayHasKey('name', $newProject);
+            $this->assertArrayHasKey('value', $newProject);
+            $this->assertArrayHasKey('notes', $newProject);
+            $this->assertArrayHasKey('end_date', $newProject);
+            $this->assertArrayHasKey('start_date', $newProject);
+            $this->assertArrayHasKey('number_of_households', $newProject);
+            $this->assertSame($newProject['name'], $this->name);
+        }
+        catch (\Exception $exception)
+        {
+            print_r("\nThe mapping of fields of Donor entity is not correct.\n");
+            $this->remove($this->name);
+            return false;
+        }
+
+        return $newProject;
+    }
+
+    /**
+     * @depends testShowProject
+     * @throws \Exception
+     */
+    public function testEditProject($project)
+    {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->em->clear();
+
+        $this->body['name'] .= '(u)';
+        $crawler = $this->client->request('POST', '/api/wsse/projects/' . $project['id'], $this->body);
+        $this->body['name'] = $this->name;
+        $newproject = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        $this->em->clear();
+        try
+        {
+            $this->assertArrayHasKey('id', $newproject);
+            $this->assertArrayHasKey('iso3', $newproject);
+            $this->assertArrayHasKey('name', $newproject);
+            $this->assertArrayHasKey('value', $newproject);
+            $this->assertArrayHasKey('notes', $newproject);
+            $this->assertArrayHasKey('end_date', $newproject);
+            $this->assertArrayHasKey('start_date', $newproject);
+            $this->assertArrayHasKey('number_of_households', $newproject);
+            $this->assertSame($newproject['name'], $this->name . "(u)");
+        }
+        catch (\Exception $exception)
+        {
+            print_r("\n{$exception->getMessage()}\n");
+            $this->remove($this->name);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @depends testEditProject
+     * @throws \Exception
+     */
     public function testGetProjects()
     {
         // Log a user in order to go through the security firewall
@@ -73,88 +187,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         {
             $this->markTestIncomplete("You currently don't have any project in your database.");
         }
-    }
 
-    /**
-     * @throws \Exception
-     */
-    public function testCreateProject()
-    {
-        // Fake connection with a token for the user tester (ADMIN)
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $crawler = $this->client->request('PUT', '/api/wsse/project', $this->body);
-        $project = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
-        try
-        {
-            $this->assertArrayHasKey('id', $project);
-            $this->assertArrayHasKey('iso3', $project);
-            $this->assertArrayHasKey('name', $project);
-            $this->assertArrayHasKey('value', $project);
-            $this->assertArrayHasKey('notes', $project);
-            $this->assertArrayHasKey('end_date', $project);
-            $this->assertArrayHasKey('start_date', $project);
-            $this->assertArrayHasKey('number_of_households', $project);
-            $this->assertSame($project['name'], $this->name);
-        }
-        catch (\Exception $exception)
-        {
-            print_r("\nThe mapping of fields of Donor entity is not correct.\n");
-            $this->remove($this->name);
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * @depends testCreateProject
-     * @throws \Exception
-     */
-    public function testEditProject($isSuccess = true)
-    {
-        if (!$isSuccess)
-        {
-            print_r("\nThe creation of project failed. We can't test the update.\n");
-            $this->markTestIncomplete("The creation of project failed. We can't test the update.");
-        }
-        $this->em->clear();
-        $project = $this->em->getRepository(Project::class)->findOneByName($this->name);
-        if (!$project instanceof Project)
-            $this->fail("ISSUE : This test must be executed after the createTest");
-
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $this->em->clear();
-
-        $this->body['name'] .= '(u)';
-        $crawler = $this->client->request('POST', '/api/wsse/project/' . $project->getId(), $this->body);
-        $this->body['name'] = $this->name;
-        $project = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
-
-        $this->em->clear();
-        try
-        {
-            $this->assertArrayHasKey('id', $project);
-            $this->assertArrayHasKey('iso3', $project);
-            $this->assertArrayHasKey('name', $project);
-            $this->assertArrayHasKey('value', $project);
-            $this->assertArrayHasKey('notes', $project);
-            $this->assertArrayHasKey('end_date', $project);
-            $this->assertArrayHasKey('start_date', $project);
-            $this->assertArrayHasKey('number_of_households', $project);
-            $this->assertSame($project['name'], $this->name . "(u)");
-        }
-        catch (\Exception $exception)
-        {
-        }
 
         return $this->remove($this->name . '(u)');
     }
