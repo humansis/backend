@@ -42,6 +42,28 @@ class SectorController extends Controller
     }
 
     /**
+     * @Rest\Get("/sectors/{id}", name="show_sector")
+     *
+     * @SWG\Tag(name="Sectors")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Sector asked",
+     *     @Model(type=Sector::class)
+     * )
+     *
+     * @param Sector $sector
+     * @return Response
+     */
+    public function showAction(Sector $sector)
+    {
+        $json = $this->get('jms_serializer')
+            ->serialize($sector, 'json', SerializationContext::create()->setGroups(['FullSector'])->setSerializeNull(true));
+
+        return new Response($json);
+    }
+
+    /**
      * @Rest\Put("/sectors", name="add_sector")
      *
      * @SWG\Tag(name="Sectors")
@@ -50,7 +72,7 @@ class SectorController extends Controller
      *     name="sector",
      *     in="body",
      *     required=true,
-     *     @Model(type=Sector::class, groups={"FullDonor"})
+     *     @Model(type=Sector::class, groups={"FullSector"})
      * )
      *
      * @SWG\Response(
@@ -94,7 +116,7 @@ class SectorController extends Controller
      *     name="Sector",
      *     in="body",
      *     required=true,
-     *     @Model(type=Sector::class, groups={"FullDonor"})
+     *     @Model(type=Sector::class, groups={"FullSector"})
      * )
      *
      * @SWG\Response(
@@ -123,28 +145,6 @@ class SectorController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')
-            ->serialize($sector, 'json', SerializationContext::create()->setGroups(['FullSector'])->setSerializeNull(true));
-
-        return new Response($json);
-    }
-
-    /**
-     * @Rest\Get("/sectors/{id}", name="show_sector")
-     *
-     * @SWG\Tag(name="Sectors")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Sector asked",
-     *     @Model(type=Sector::class)
-     * )
-     *
-     * @param Sector $sector
-     * @return Response
-     */
-    public function showAction(Sector $sector)
-    {
         $json = $this->get('jms_serializer')
             ->serialize($sector, 'json', SerializationContext::create()->setGroups(['FullSector'])->setSerializeNull(true));
 

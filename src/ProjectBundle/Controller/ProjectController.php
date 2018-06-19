@@ -20,12 +20,16 @@ class ProjectController extends Controller
      * Get projects
      * @Rest\Get("/projects", name="get_all_projects")
      *
+     * @SWG\Tag(name="Projects")
+     *
      * @SWG\Response(
      *     response=200,
-     *     description="OK",
+     *     description="All Projects",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Project::class))
+     *     )
      * )
-     *
-     * @SWG\Tag(name="Projects")
      *
      * @return Response
      */
@@ -44,12 +48,13 @@ class ProjectController extends Controller
      * Get a project
      * @Rest\Get("/projects/{id}", name="show_project")
      *
+     * @SWG\Tag(name="Projects")
+     *
      * @SWG\Response(
      *     response=200,
-     *     description="OK",
+     *     description="Project asked",
+     *     @Model(type=Project::class)
      * )
-     *
-     * @SWG\Tag(name="Project")
      *
      * @return Response
      */
@@ -65,6 +70,8 @@ class ProjectController extends Controller
      * Create a project
      * @Rest\Put("/projects", name="add_project")
      *
+     * @SWG\Tag(name="Projects")
+     *
      * @SWG\Parameter(
      *      name="body",
      *      in="body",
@@ -76,10 +83,9 @@ class ProjectController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="OK",
+     *     description="Project created",
+     *     @Model(type=Project::class)
      * )
-     *
-     * @SWG\Tag(name="Projects")
      *
      * @param Request $request
      * @return Response
@@ -107,6 +113,26 @@ class ProjectController extends Controller
      * Edit a project
      * @Rest\Post("/projects/{id}", name="update_project")
      *
+     * @SWG\Tag(name="Projects")
+     *
+     * @SWG\Parameter(
+     *     name="Project",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Project::class, groups={"FullProject"})
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Project updated",
+     *     @Model(type=Project::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
      * @param Request $request
      * @param Project $project
      * @return Response
@@ -130,6 +156,18 @@ class ProjectController extends Controller
     /**
      * Edit a project
      * @Rest\Delete("/projects/{id}", name="delete_project")
+     *
+     * @SWG\Tag(name="Projects")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @param Project $project
      * @return Response
