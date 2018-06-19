@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\View\View;
 use Swagger\Annotations as SWG;
 use UserBundle\Entity\User;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 class UserController extends Controller
 {
@@ -25,12 +26,12 @@ class UserController extends Controller
      *      response=200,
      *      description="SUCCESS",
      *      examples={
-     *      "application/json": {
-     *          "at"="2018-01-12 12:11:05",
-     *          "registered"="true",
-     *          "user"="username"
-     *     }
-     *   }
+     *          "application/json": {
+     *              "at"="2018-01-12 12:11:05",
+     *              "registered"="true",
+     *              "user"="username"
+     *          }
+     *      }
      * )
      *
      * @SWG\Parameter(
@@ -79,6 +80,8 @@ class UserController extends Controller
      *
      * @Rest\Get("/salt/{username}")
      *
+     * @SWG\Tag(name="Users")
+     *
      * @SWG\Parameter(
      *     name="username",
      *     in="query",
@@ -90,20 +93,23 @@ class UserController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="SUCCESS",
-     *     @SWG\Schema(
-     *         type="string"
-     *     )
+     *      examples={
+     *          "application/json": {
+     *              "user_id" = 1,
+     *              "salt" = "fgrgfhjjgh21h5rt"
+     *          }
+     *      }
      * )
+     *
      * @SWG\Response(
      *     response=400,
      *     description="BAD_REQUEST"
      * )
+     *
      * @SWG\Response(
      *     response=423,
      *     description="LOCKED"
      * )
-     *
-     * @SWG\Tag(name="Users")
      *
      * @param Request $request
      *
@@ -129,6 +135,25 @@ class UserController extends Controller
      *
      * @Rest\Put("/users", name="add_user")
      *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Parameter(
+     *     name="user",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=User::class, groups={"FullUser"})
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="User created",
+     *     @Model(type=User::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @param Request $request
      * @return Response
@@ -192,11 +217,21 @@ class UserController extends Controller
      *
      * @Rest\Get("/users", name="get_all_users")
      *
+     * @SWG\Tag(name="Users")
+     *
      * @SWG\Response(
      *     response=200,
-     *     description="OK",
+     *     description="User created",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"FullUser"}))
+     *     )
      * )
-     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @return Response
      */
@@ -212,15 +247,22 @@ class UserController extends Controller
     }
 
     /**
-     * Get a user
+     * Show a user
      *
      * @Rest\Get("/users/{id}", name="show_user")
      *
+     * @SWG\Tag(name="Users")
+     *
      * @SWG\Response(
      *     response=200,
-     *     description="OK",
+     *     description="User created",
+     *     @Model(type=User::class)
      * )
-     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @return Response
      */
@@ -236,6 +278,28 @@ class UserController extends Controller
      * Edit a user {id} with data in the body
      *
      * @Rest\Post("/users/{id}", name="update_user")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Parameter(
+     *     name="user",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="fields of the user which must be updated",
+     *     @Model(type=User::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @Model(type=User::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @param Request $request
      * @param User $user
@@ -253,6 +317,37 @@ class UserController extends Controller
      * Change the password of user {id}. Must send oldPassword and newPassword
      *
      * @Rest\Post("/users/{id}/password", name="edit_password_user")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Parameter(
+     *     name="oldPassword",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="Current password",
+     *     @SWG\Schema(type="string")
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="newPassword",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="New password",
+     *     @SWG\Schema(type="string")
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @Model(type=User::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @param Request $request
      * @param User $user
@@ -277,12 +372,20 @@ class UserController extends Controller
             SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true)
         );
 
-        return new Response(json_encode($userJson));
+        return new Response($userJson);
     }
 
     /**
      * Delete an user with its links in the api
      * @Rest\Delete("/users/{id}", name="delete_user")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
      *
      * @param User $user
      * @return Response
