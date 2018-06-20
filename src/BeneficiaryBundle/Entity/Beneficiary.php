@@ -46,9 +46,9 @@ class Beneficiary
     /**
      * @var boolean
      *
-     * @ORM\Column(name="household_head", type="boolean")
+     * @ORM\Column(name="status", type="boolean")
      */
-    private $householdHead;
+    private $status;
 
     /**
      * @var \DateTime
@@ -74,7 +74,7 @@ class Beneficiary
     /**
      * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="beneficiaries")
      */
     private $household;
 
@@ -185,30 +185,6 @@ class Beneficiary
     public function getGender()
     {
         return $this->gender;
-    }
-
-    /**
-     * Set householdHead.
-     *
-     * @param bool $householdHead
-     *
-     * @return Beneficiary
-     */
-    public function setHouseholdHead($householdHead)
-    {
-        $this->householdHead = $householdHead;
-
-        return $this;
-    }
-
-    /**
-     * Get householdHead.
-     *
-     * @return bool
-     */
-    public function getHouseholdHead()
-    {
-        return $this->householdHead;
     }
 
     /**
@@ -425,5 +401,29 @@ class Beneficiary
     public function getProfile()
     {
         return $this->profile;
+    }
+
+    /**
+     * Set status.
+     *
+     * @param bool $status
+     *
+     * @return Beneficiary
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status.
+     *
+     * @return bool
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 }

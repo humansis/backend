@@ -40,7 +40,7 @@ class CountrySpecificAnswer
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="countrySpecificAnswers")
      */
-    private $Household;
+    private $household;
 
     /**
      * Get id.

@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Utils\BeneficiaryService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +23,9 @@ class BeneficiaryController extends Controller
     public function addAction(Request $request)
     {
         $beneficiaryArray = $request->request->all();
-        $beneficiary = $this->get('beneficiary.beneficiary_service')->create($beneficiaryArray);
+        /** @var BeneficiaryService $beneficiaryService */
+        $beneficiaryService = $this->get('beneficiary.beneficiary_service');
+        $beneficiary = $beneficiaryService->create($beneficiaryArray);
 
         $json = $this->get('jms_serializer')
             ->serialize($beneficiary, 'json', SerializationContext::create()->setSerializeNull(true));

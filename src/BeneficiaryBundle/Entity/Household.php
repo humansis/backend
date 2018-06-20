@@ -81,9 +81,14 @@ class Household
     /**
      * @var CountrySpecificAnswer
      *
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="Household")
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="household")
      */
     private $countrySpecificAnswers;
+
+    /**
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household")
+     */
+    private $beneficiaries;
     /**
      * Constructor
      */
@@ -352,5 +357,41 @@ class Household
     public function getLong()
     {
         return $this->long;
+    }
+
+    /**
+     * Add beneficiary.
+     *
+     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
+     *
+     * @return Household
+     */
+    public function addBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
+    {
+        $this->beneficiaries[] = $beneficiary;
+
+        return $this;
+    }
+
+    /**
+     * Remove beneficiary.
+     *
+     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
+    {
+        return $this->beneficiaries->removeElement($beneficiary);
+    }
+
+    /**
+     * Get beneficiaries.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBeneficiaries()
+    {
+        return $this->beneficiaries;
     }
 }

@@ -29,16 +29,11 @@ class BeneficiaryService
      * @param array $beneficiaryArray
      * @return Beneficiary
      */
-    public function create(array $beneficiaryArray)
+    public function create(Household $household, Beneficiary $beneficiary)
     {
-        /** @var Beneficiary $beneficiary */
-        $beneficiary = $this->serializer->deserialize(json_encode($beneficiaryArray), Beneficiary::class, 'json');
-
-        $household = $this->saveHousehold($beneficiary->getHousehold(), false);
         $vulnerabilityCriterion = $this->saveVulnerabilityCriterion($beneficiary->getVulnerabilityCriterion(), false);
         $phones = $beneficiary->getPhones();
         $nationalIds = $beneficiary->getNationalIds();
-        $hhMembers = $beneficiary->getHhMembers();
 
         dump($phones);
         dump($nationalIds);
