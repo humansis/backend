@@ -60,16 +60,16 @@ class Household
     /**
      * @var string
      *
-     * @ORM\Column(name="lat", type="string", length=45)
+     * @ORM\Column(name="latitude", type="string", length=45)
      */
-    private $lat;
+    private $latitude;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="long", type="string", length=45)
+     * @ORM\Column(name="longitude", type="string", length=45)
      */
-    private $long;
+    private $longitude;
 
     /**
      * @var Location
@@ -314,13 +314,13 @@ class Household
     /**
      * Set lat.
      *
-     * @param string $lat
+     * @param string $latitude
      *
      * @return Household
      */
-    public function setLat($lat)
+    public function setLatitude($latitude)
     {
-        $this->lat = $lat;
+        $this->latitude = $latitude;
 
         return $this;
     }
@@ -330,21 +330,21 @@ class Household
      *
      * @return string
      */
-    public function getLat()
+    public function getLatitude()
     {
-        return $this->lat;
+        return $this->latitude;
     }
 
     /**
      * Set long.
      *
-     * @param string $long
+     * @param string $longitude
      *
      * @return Household
      */
-    public function setLong($long)
+    public function setLongitude($longitude)
     {
-        $this->long = $long;
+        $this->longitude = $longitude;
 
         return $this;
     }
@@ -354,9 +354,9 @@ class Household
      *
      * @return string
      */
-    public function getLong()
+    public function getLongitude()
     {
-        return $this->long;
+        return $this->longitude;
     }
 
     /**

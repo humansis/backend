@@ -53,7 +53,7 @@ class Beneficiary
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dateOfBirth", type="datetime")
+     * @ORM\Column(name="dateOfBirth", type="date")
      * @JMS_Type("DateTime<'Y-m-d'>")
      */
     private $dateOfBirth;

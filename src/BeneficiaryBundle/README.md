@@ -10,8 +10,8 @@ PUT ("/households")
 	"address_postcode": "73460",
 	"livelihood": 10,
 	"notes": "this is just some notes",
-	"lat": "1.1544",
-	"long": "120.12",
+	"latitude": "1.1544",
+	"longitude": "120.12",
 	"location": {
 		"country_iso3": "FRA",
 		"adm1": "Auvergne Rhone-Alpes",

@@ -29,10 +29,8 @@ class HouseholdService
 
     public function create($householdArray)
     {
-        dump($householdArray);
         /** @var Household $householdDeserialized */
         $householdDeserialized = $this->serializer->deserialize(json_encode($householdArray), Household::class, 'json');
-        dump($householdDeserialized);
 
         $locationToSaved = $householdDeserialized->getLocation();
 
@@ -54,6 +52,11 @@ class HouseholdService
                 ->setAdm4($locationToSaved->getAdm4());
             $this->em->persist($location);
         }
+        else
+        {
+            $householdDeserialized->setLocation($location);
+        }
+
         $householdDeserialized->setLocation($location);
         $beneficiaries = $householdDeserialized->getBeneficiaries();
         $householdDeserialized->setBeneficiaries(null);
@@ -68,9 +71,6 @@ class HouseholdService
         }
 
         $this->em->flush();
-        dump($householdDeserialized);
-
-
         return $householdDeserialized;
     }
 }
