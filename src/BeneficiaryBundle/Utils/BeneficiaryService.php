@@ -4,7 +4,6 @@ namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HHMember;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
@@ -26,65 +25,46 @@ class BeneficiaryService
     }
 
     /**
-     * @param array $beneficiaryArray
+     * @param Household $household
+     * @param Beneficiary $beneficiary
      * @return Beneficiary
      */
-    public function create(Household $household, Beneficiary $beneficiary)
+    public function create(Household $household, Beneficiary $beneficiary, $flush)
     {
-        $vulnerabilityCriterion = $this->saveVulnerabilityCriterion($beneficiary->getVulnerabilityCriterion(), false);
-        $phones = $beneficiary->getPhones();
-        $nationalIds = $beneficiary->getNationalIds();
+        $vulnerabilityCriterions = $beneficiary->getVulnerabilityCriterions();
+        if (null !== $vulnerabilityCriterions)
+        {
+            foreach ($vulnerabilityCriterions as $vulnerabilityCriterion)
+            {
+                $this->saveVulnerabilityCriterion($vulnerabilityCriterion, false);
+            }
+        }
 
-        dump($phones);
-        dump($nationalIds);
-        dump($hhMembers);
-        $beneficiary->setHousehold($household)
-            ->setVulnerabilityCriterion($vulnerabilityCriterion)
-            ->setHhMembers(null);
+        $phones = $beneficiary->getPhones();
+        if (null !== $phones)
+        {
+            foreach ($phones as $phone)
+            {
+                $this->savePhone($beneficiary, $phone, false);
+            }
+        }
+
+        $nationalIds = $beneficiary->getNationalIds();
+        if (null !== $nationalIds)
+        {
+            foreach ($nationalIds as $nationalId)
+            {
+                $this->saveNationalId($beneficiary, $nationalId, false);
+            }
+        }
+        $beneficiary->setHousehold($household);
+
 
         $this->em->persist($beneficiary);
-        foreach ($phones as $phone)
-        {
-            $this->savePhone($beneficiary, $phone, false);
-        }
-        foreach ($nationalIds as $nationalId)
-        {
-            $this->saveNationalId($beneficiary, $nationalId, false);
-        }
-        foreach ($hhMembers as $hhMember)
-        {
-            $this->saveHHMember($beneficiary, $hhMember, false);
-        }
-
-
+        if ($flush)
         $this->em->flush();
         return $beneficiary;
-    }
 
-    public function saveHHMember(Beneficiary $beneficiary, HHMember $HHMember, $flush)
-    {
-        $vulnerabilityCriterion = $this->saveVulnerabilityCriterion($HHMember->getVulnerabilityCriterion());
-        $HHMember->setBeneficiary($beneficiary)
-            ->setVulnerabilityCriterion($vulnerabilityCriterion);
-        $this->em->persist($HHMember);
-        $this->em->flush();
-
-        return $HHMember;
-    }
-
-    /**
-     * @param Household $household
-     * @return Household
-     */
-    public function saveHousehold(Household $household, $flush)
-    {
-        $location = $household->getLocation();
-        $this->em->persist($location);
-        $household->setLocation($location);
-        $this->em->persist($household);
-
-        $this->em->flush();
-        return $household;
     }
 
     /**
@@ -94,7 +74,8 @@ class BeneficiaryService
     public function saveVulnerabilityCriterion(VulnerabilityCriterion $vulnerabilityCriterion, $flush)
     {
         $this->em->persist($vulnerabilityCriterion);
-        $this->em->flush();
+        if ($flush)
+            $this->em->flush();
         return $vulnerabilityCriterion;
     }
 
@@ -107,7 +88,8 @@ class BeneficiaryService
     {
         $phone->setBeneficiary($beneficiary);
         $this->em->persist($phone);
-        $this->em->flush();
+        if ($flush)
+            $this->em->flush();
         return $phone;
     }
 
@@ -120,12 +102,8 @@ class BeneficiaryService
     {
         $nationalId->setBeneficiary($beneficiary);
         $this->em->persist($nationalId);
-        $this->em->flush();
+        if ($flush)
+            $this->em->flush();
         return $nationalId;
-    }
-
-    public function update(Beneficiary $beneficiary, array $beneficiaryArray)
-    {
-
     }
 }

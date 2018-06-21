@@ -394,4 +394,16 @@ class Household
     {
         return $this->beneficiaries;
     }
+
+    /**
+     * Set beneficiaries.
+     *
+     * @return Household
+     */
+    public function setBeneficiaries(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->beneficiaries = $collection;
+
+        return $this;
+    }
 }

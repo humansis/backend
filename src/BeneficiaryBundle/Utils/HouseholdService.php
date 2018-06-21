@@ -55,8 +55,22 @@ class HouseholdService
             $this->em->persist($location);
         }
         $householdDeserialized->setLocation($location);
+        $beneficiaries = $householdDeserialized->getBeneficiaries();
+        $householdDeserialized->setBeneficiaries(null);
+        $this->em->persist($householdDeserialized);
+        if (!empty($beneficiaries))
+        {
+            foreach ($beneficiaries as $beneficiaryToSave)
+            {
+                $beneficiary = $this->beneficiaryService->create($householdDeserialized, $beneficiaryToSave, false);
+                $this->em->persist($beneficiary);
+            }
+        }
 
+        $this->em->flush();
         dump($householdDeserialized);
 
+
+        return $householdDeserialized;
     }
 }

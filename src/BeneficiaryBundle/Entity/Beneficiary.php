@@ -67,7 +67,7 @@ class Beneficiary
     private $updatedOn;
 
     /**
-     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Profile")
+     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist"})
      */
     private $profile;
 
@@ -81,17 +81,17 @@ class Beneficiary
     /**
      * @var VulnerabilityCriterion
      *
-     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion")
+     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
      */
     private $vulnerabilityCriterions;
 
     /**
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary")
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist"})
      */
     private $phones;
 
     /**
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary")
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist"})
      */
     private $nationalIds;
     
