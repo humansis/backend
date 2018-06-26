@@ -27,6 +27,12 @@ class HouseholdService
         $this->beneficiaryService = $beneficiaryService;
     }
 
+    public function getAll(string $iso3, array $filters)
+    {
+        $households = $this->em->getRepository(Household::class)->getAllBy($iso3, $filters);
+        return $households;
+    }
+
     public function create($householdArray)
     {
         /** @var Household $householdDeserialized */

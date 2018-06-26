@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Beneficiary
@@ -19,6 +20,7 @@ class Beneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullHousehold"})
      */
     private $id;
 
@@ -26,6 +28,7 @@ class Beneficiary
      * @var string
      *
      * @ORM\Column(name="givenName", type="string", length=255)
+     * @Groups({"FullHousehold"})
      */
     private $givenName;
 
@@ -33,6 +36,7 @@ class Beneficiary
      * @var string
      *
      * @ORM\Column(name="familyName", type="string", length=255)
+     * @Groups({"FullHousehold"})
      */
     private $familyName;
 
@@ -40,6 +44,7 @@ class Beneficiary
      * @var int
      *
      * @ORM\Column(name="gender", type="smallint")
+     * @Groups({"FullHousehold"})
      */
     private $gender;
 
@@ -47,6 +52,7 @@ class Beneficiary
      * @var boolean
      *
      * @ORM\Column(name="status", type="boolean")
+     * @Groups({"FullHousehold"})
      */
     private $status;
 
@@ -55,6 +61,7 @@ class Beneficiary
      *
      * @ORM\Column(name="dateOfBirth", type="date")
      * @JMS_Type("DateTime<'Y-m-d'>")
+     * @Groups({"FullHousehold"})
      */
     private $dateOfBirth;
 
@@ -63,11 +70,13 @@ class Beneficiary
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
+     * @Groups({"FullHousehold"})
      */
     private $updatedOn;
 
     /**
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist"})
+     * @Groups({"FullHousehold"})
      */
     private $profile;
 
@@ -87,11 +96,13 @@ class Beneficiary
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist"})
+     * @Groups({"FullHousehold"})
      */
     private $phones;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist"})
+     * @Groups({"FullHousehold"})
      */
     private $nationalIds;
     

@@ -32,4 +32,25 @@ class HouseholdController extends Controller
 
         return new Response($json);
     }
+
+    /**
+     * @Rest\Post("/households/all", name="all_households")
+     *
+     * @return Response
+     */
+    public function allAction(Request $request)
+    {
+        $filters = $request->request->all();
+        $iso3 = $request->attributes->get('iso3');
+        /** @var HouseholdService $householeService */
+        $householeService = $this->get('beneficiary.household_service');
+        $households = $householeService->getAll($iso3, $filters);
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $households,
+                'json',
+                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
 }

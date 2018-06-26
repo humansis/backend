@@ -1,4 +1,5 @@
 beneficiary:
     type:     annotation
     defaults: { _format: 'json' }
+    prefix: /{iso3}
     resource: '@BeneficiaryBundle/Controller'

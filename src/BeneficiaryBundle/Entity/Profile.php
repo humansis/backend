@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Profile
@@ -18,6 +19,7 @@ class Profile
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullHousehold"})
      */
     private $id;
 
@@ -25,6 +27,7 @@ class Profile
      * @var string
      *
      * @ORM\Column(name="photo", type="string", length=255)
+     * @Groups({"FullHousehold"})
      */
     private $photo;
 
