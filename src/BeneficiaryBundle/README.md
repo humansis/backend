@@ -26,7 +26,7 @@ PUT ("/households")
 			"gender": "h",
 			"status": 0,
 			"date_of_birth": "1976-10-06",
-			"updated_on": "2018-06-13",
+			"updated_on": "2018-06-13 12:12:12",
 			"profile": [
 				{
 					"photo": 1
