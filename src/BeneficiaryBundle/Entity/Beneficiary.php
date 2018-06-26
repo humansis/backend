@@ -46,14 +46,14 @@ class Beneficiary
     /**
      * @var boolean
      *
-     * @ORM\Column(name="household_head", type="boolean")
+     * @ORM\Column(name="status", type="boolean")
      */
-    private $householdHead;
+    private $status;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dateOfBirth", type="datetime")
+     * @ORM\Column(name="dateOfBirth", type="date")
      * @JMS_Type("DateTime<'Y-m-d'>")
      */
     private $dateOfBirth;
@@ -67,31 +67,31 @@ class Beneficiary
     private $updatedOn;
 
     /**
-     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Profile")
+     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist"})
      */
     private $profile;
 
     /**
      * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="beneficiaries")
      */
     private $household;
 
     /**
      * @var VulnerabilityCriterion
      *
-     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion")
+     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
      */
     private $vulnerabilityCriterions;
 
     /**
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary")
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist"})
      */
     private $phones;
 
     /**
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary")
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist"})
      */
     private $nationalIds;
     
@@ -185,30 +185,6 @@ class Beneficiary
     public function getGender()
     {
         return $this->gender;
-    }
-
-    /**
-     * Set householdHead.
-     *
-     * @param bool $householdHead
-     *
-     * @return Beneficiary
-     */
-    public function setHouseholdHead($householdHead)
-    {
-        $this->householdHead = $householdHead;
-
-        return $this;
-    }
-
-    /**
-     * Get householdHead.
-     *
-     * @return bool
-     */
-    public function getHouseholdHead()
-    {
-        return $this->householdHead;
     }
 
     /**
@@ -425,5 +401,29 @@ class Beneficiary
     public function getProfile()
     {
         return $this->profile;
+    }
+
+    /**
+     * Set status.
+     *
+     * @param bool $status
+     *
+     * @return Beneficiary
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status.
+     *
+     * @return bool
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 }

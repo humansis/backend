@@ -4,32 +4,35 @@ PUT ("/households")
 
 ```json
 {
-	"location": {
-		"country_iso3": "FRA"
-	},
-	"project": {
-		"id": 1
-	},
+	"photo": "photo.png",
 	"address_street": "addr",
 	"address_number": "12",
 	"address_postcode": "73460",
 	"livelihood": 10,
 	"notes": "this is just some notes",
-	"lat": "1.1544",
-	"long": "120.12",
+	"latitude": "1.1544",
+	"longitude": "120.12",
+	"location": {
+		"country_iso3": "FRA",
+		"adm1": "Auvergne Rhone-Alpes",
+		"adm2": "Savoie",
+		"adm3": "Chambery",
+		"adm4": "Ste Hélène sur Isère"
+	},
 	"beneficiaries": [
 		{
 			"given_name": "nameee",
 			"family_name": "family",
 			"gender": "h",
+			"status": 0,
 			"date_of_birth": "1976-10-06",
 			"updated_on": "2018-06-13",
 			"profile": [
 				{
-					"photo": "photo.png"
+					"photo": 1
 				}
 			],
-			"vulnerability_criterion": [
+			"vulnerability_criterion_answers": [
 				{
 					"id": 1
 				}

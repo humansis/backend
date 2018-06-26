@@ -60,16 +60,16 @@ class Household
     /**
      * @var string
      *
-     * @ORM\Column(name="lat", type="string", length=45)
+     * @ORM\Column(name="latitude", type="string", length=45)
      */
-    private $lat;
+    private $latitude;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="long", type="string", length=45)
+     * @ORM\Column(name="longitude", type="string", length=45)
      */
-    private $long;
+    private $longitude;
 
     /**
      * @var Location
@@ -81,9 +81,14 @@ class Household
     /**
      * @var CountrySpecificAnswer
      *
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="Household")
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="household")
      */
     private $countrySpecificAnswers;
+
+    /**
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household")
+     */
+    private $beneficiaries;
     /**
      * Constructor
      */
@@ -309,13 +314,13 @@ class Household
     /**
      * Set lat.
      *
-     * @param string $lat
+     * @param string $latitude
      *
      * @return Household
      */
-    public function setLat($lat)
+    public function setLatitude($latitude)
     {
-        $this->lat = $lat;
+        $this->latitude = $latitude;
 
         return $this;
     }
@@ -325,21 +330,21 @@ class Household
      *
      * @return string
      */
-    public function getLat()
+    public function getLatitude()
     {
-        return $this->lat;
+        return $this->latitude;
     }
 
     /**
      * Set long.
      *
-     * @param string $long
+     * @param string $longitude
      *
      * @return Household
      */
-    public function setLong($long)
+    public function setLongitude($longitude)
     {
-        $this->long = $long;
+        $this->longitude = $longitude;
 
         return $this;
     }
@@ -349,8 +354,56 @@ class Household
      *
      * @return string
      */
-    public function getLong()
+    public function getLongitude()
     {
-        return $this->long;
+        return $this->longitude;
+    }
+
+    /**
+     * Add beneficiary.
+     *
+     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
+     *
+     * @return Household
+     */
+    public function addBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
+    {
+        $this->beneficiaries[] = $beneficiary;
+
+        return $this;
+    }
+
+    /**
+     * Remove beneficiary.
+     *
+     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
+    {
+        return $this->beneficiaries->removeElement($beneficiary);
+    }
+
+    /**
+     * Get beneficiaries.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBeneficiaries()
+    {
+        return $this->beneficiaries;
+    }
+
+    /**
+     * Set beneficiaries.
+     *
+     * @return Household
+     */
+    public function setBeneficiaries(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->beneficiaries = $collection;
+
+        return $this;
     }
 }

@@ -9,12 +9,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
 
 class DonorController extends Controller
 {
 
     /**
      * @Rest\Get("/donors", name="get_all_donor")
+     *
+     * @SWG\Tag(name="Donors")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All donors",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Donor::class))
+     *     )
+     * )
      *
      * @return Response
      */
@@ -29,7 +42,16 @@ class DonorController extends Controller
 
     /**
      * Get a donor
+     *
      * @Rest\Get("/donors/{id}", name="show_donor")
+     *
+     * @SWG\Tag(name="Donors")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Donor asked",
+     *     @Model(type=Donor::class)
+     * )
      *
      * @param Donor $donor
      * @return Response
@@ -44,6 +66,26 @@ class DonorController extends Controller
 
     /**
      * @Rest\Put("/donors", name="create_donor")
+     *
+     * @SWG\Tag(name="Donors")
+     *
+     * @SWG\Parameter(
+     *     name="donor",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Donor::class, groups={"FullDonor"})
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Donor created",
+     *     @Model(type=Donor::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @param Request $request
      * @return Response
@@ -69,6 +111,27 @@ class DonorController extends Controller
 
     /**
      * @Rest\Post("/donors/{id}", name="update_donor")
+     *
+     *
+     * @SWG\Tag(name="Donors")
+     *
+     * @SWG\Parameter(
+     *     name="donor",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Donor::class, groups={"FullDonor"})
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Donor updated",
+     *     @Model(type=Donor::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @param Request $request
      * @param Donor $donor

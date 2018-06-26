@@ -4,6 +4,7 @@
 namespace BeneficiaryBundle\Controller;
 
 
+use BeneficiaryBundle\Utils\HouseholdService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +15,7 @@ class HouseholdController extends Controller
 {
 
     /**
-     * @Rest\Put("/beneficiaries", name="add_beneficiary")
+     * @Rest\Put("/households", name="add_household")
      *
      * @param Request $request
      * @return Response
@@ -22,7 +23,9 @@ class HouseholdController extends Controller
     public function addAction(Request $request)
     {
         $householdArray = $request->request->all();
-        $household = $this->get('beneficiary.household_service')->create($householdArray);
+        /** @var HouseholdService $householeService */
+        $householeService = $this->get('beneficiary.household_service');
+        $household = $householeService->create($householdArray);
 
         $json = $this->get('jms_serializer')
             ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true));
