@@ -32,9 +32,10 @@ PUT ("/households")
 					"photo": 1
 				}
 			],
-			"vulnerability_criterion_answers": [
+			"vulnerability_criterions": [
 				{
-					"id": 1
+					"id": 1,
+					"value": "1"
 				}
 			],
 			"phones": [
