@@ -18,6 +18,9 @@ class DistributionService {
     /** @var Serializer $serializer */
     private $serializer;
 
+    /** @var ValidatorInterface $validator */
+    private $validator;
+
 
     public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator)
     {

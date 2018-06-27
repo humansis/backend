@@ -129,7 +129,7 @@ class DistributionController extends Controller
 
     /**
      * Archive a distribution
-     * @Rest\Delete("/distributions/{id}", name="archived_project")
+     * @Rest\Post("/distributions/archive/{id}", name="archived_project")
      *
      * @SWG\Tag(name="distributions")
      *
