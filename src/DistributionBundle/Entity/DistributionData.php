@@ -5,6 +5,7 @@ namespace DistributionBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\Expr\Select;
 use ProjectBundle\Entity\Project;
+use JMS\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * DistributionData
@@ -34,6 +35,7 @@ class DistributionData
      * @var \DateTime
      *
      * @ORM\Column(name="UpdatedOn", type="datetime")
+     * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
      */
     private $updatedOn;
 
@@ -100,29 +102,6 @@ class DistributionData
         return $this->name;
     }
 
-    /**
-     * Set updatedOn.
-     *
-     * @param \DateTime $updatedOn
-     *
-     * @return DistributionData
-     */
-    public function setUpdatedOn($updatedOn)
-    {
-        $this->updatedOn = $updatedOn;
-
-        return $this;
-    }
-
-    /**
-     * Get updatedOn.
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedOn()
-    {
-        return $this->updatedOn;
-    }
 
     /**
      * Set archived.
@@ -218,5 +197,28 @@ class DistributionData
     public function getSelectionCriteria()
     {
         return $this->selectionCriteria;
+    }
+
+    /**
+     * Set updatedOn.
+     *
+     * @param \DateTime $updatedOn
+     *
+     * @return DistributionData
+     */
+    public function setUpdatedOn($updatedOn)
+    {
+        $this->updatedOn = $updatedOn;
+        return $this;
+    }
+
+    /**
+     * Get updatedOn.
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedOn()
+    {
+        return $this->updatedOn;
     }
 }
