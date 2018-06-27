@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use DistributionBundle\Entity\DistributionData;
 
 class DistributionService {
 
@@ -24,5 +25,12 @@ class DistributionService {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
+    }
+
+    public function create(array $distributionArray) 
+    {
+        /** @var Distribution $distribution */
+        $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
+        
     }
 }

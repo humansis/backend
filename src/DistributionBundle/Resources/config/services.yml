@@ -1,5 +1,5 @@
 services:
-    distribution.distribution:
+    distribution.distribution_service:
         class: DistributionBundle\Utils\DistributionService
         arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
         public: true
