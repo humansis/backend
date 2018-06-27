@@ -70,6 +70,9 @@ class DistributionController extends Controller
      *          @SWG\Items(ref=@Model(type=DistributionData::class))
      *     )
      * )
+     * 
+     * @param Request $request
+     * @return Response
      */
     public function getAllAction(Request $request)
     {
@@ -78,4 +81,51 @@ class DistributionController extends Controller
 
         return new Response($json);
     }
+
+
+    /**
+     * Edit a distribution
+     * @Rest\Post("/distributions/{id}", name="update_distribution")
+     *
+     * @SWG\Tag(name="distributions")
+     *
+     * @SWG\Parameter(
+     *     name="DistributionData",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=DistributionData::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="distribution updated",
+     *     @Model(type=DistributionData::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param DistributionData $DistributionData
+     * @return Response
+     */
+    public function updateAction(Request $request, DistributionData $DistributionData)
+    {
+        $distributionArray = $request->request->all();
+        try
+        {
+            $DistributionData = $this->get('distribution.distribution_service')->edit($DistributionData, $distributionArray);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        $json = $this->get('jms_serializer')
+            ->serialize($DistributionData, 'json', SerializationContext::create()->setSerializeNull(true));
+        return new Response($json, Response::HTTP_OK);
+    }
+
+
 }
