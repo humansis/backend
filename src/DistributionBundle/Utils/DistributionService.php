@@ -26,12 +26,16 @@ class DistributionService {
         $this->validator = $validator;
     }
 
+    /**
+     * Create a distribution
+     * 
+     * @param array $distributionArray
+     * @return DistributionData
+     */
     public function create(array $distributionArray) 
     {
         /** @var Distribution $distribution */
-        dump($distributionArray);
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
-        dump($distribution);
 
         $errors = $this->validator->validate($distribution);
         if (count($errors) > 0)
@@ -46,19 +50,16 @@ class DistributionService {
         
         $location = $distribution->getLocation();
         $locationTmp = $this->em->getRepository(Location::class)->find($location);
-        dump($locationTmp);
         if ($locationTmp instanceof Location)
             $distribution->setLocation($locationTmp);
 
         $project = $distribution->getProject();
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
-        dump($projectTmp);
         if ($projectTmp instanceof Project)
             $distribution->setProject($projectTmp);
 
         $selectionCriteria = $distribution->getSelectionCriteria();
         $selectionCriteriaTmp = $this->em->getRepository(SelectionCriteria::class)->find($selectionCriteria);
-        dump($selectionCriteriaTmp);
         if ($selectionCriteriaTmp instanceof SelectionCriteria)
             $distribution->setSelectionCriteria($selectionCriteriaTmp);
 

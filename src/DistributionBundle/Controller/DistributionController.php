@@ -41,7 +41,6 @@ class DistributionController extends Controller
     public function addAction(Request $request)
     {
         $distributionArray = $request->request->all();
-        dump($distributionArray);
 
         try
         {

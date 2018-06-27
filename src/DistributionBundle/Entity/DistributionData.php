@@ -209,8 +209,6 @@ class DistributionData
     public function setUpdatedOn($updatedOn)
     {
         $this->updatedOn = $updatedOn;
-        dump($updatedOn);
-        dump($this->updatedOn);
         return $this;
     }
 
