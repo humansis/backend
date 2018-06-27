@@ -9,3 +9,7 @@ rest_project:
 rest_beneficiary:
     type: rest
     resource: "@BeneficiaryBundle/Resources/config/routing.yml"
+
+rest_distribution:
+    type: rest
+    resource: "@DistributionBundle/Resources/config/routing.yml"

@@ -1,11 +1,16 @@
 <?php
 
-namespace DistributionBundle\UtilsController;
+namespace DistributionBundle\Controller;
+
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use DistributionBundle\Entity\DistributionData;
+
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
 
 class DistributionController extends Controller
 {
@@ -40,14 +45,37 @@ class DistributionController extends Controller
 
         try
         {
-            $distribution = $this->get('project.distribution_service')->create($distributionArray);
+            $distribution = $this->get('distribution.distribution_service')->create($distributionArray);
         }
         catch (\Exception $exception)
         {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($distribution, 'json');
+        $json = $this->get('jms_serializer')->serialize($distribution, 'json', SerializationContext::create()->setSerializeNull(true));
+
+        return new Response($json);
+    }
+
+
+    /**
+     * @Rest\Get("/distributions", name="get_all_distributions")
+     *
+     * @SWG\Tag(name="distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All distributions",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=DistributionData::class))
+     *     )
+     * )
+     */
+    public function getAllAction(Request $request)
+    {
+        $distributions = $this->get('distribution.distribution_service')->findAll();
+        $json = $this->get('jms_serializer')->serialize($distributions, 'json');
 
         return new Response($json);
     }
