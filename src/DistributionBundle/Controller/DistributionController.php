@@ -127,5 +127,41 @@ class DistributionController extends Controller
         return new Response($json, Response::HTTP_OK);
     }
 
+    /**
+     * Archive a distribution
+     * @Rest\Delete("/distributions/{id}", name="archived_project")
+     *
+     * @SWG\Tag(name="distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param DistributionData $distribution
+     * @return Response
+     */
+    public function archivedAction(DistributionData $distribution)
+    {
+        try
+        {
+            $valid = $this->get('distribution.distribution_service')->archived($distribution);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($valid)
+            return new Response("", Response::HTTP_OK);
+        if (!$valid)
+            return new Response("", Response::HTTP_BAD_REQUEST);
+    }
+
 
 }

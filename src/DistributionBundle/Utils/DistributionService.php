@@ -70,11 +70,24 @@ class DistributionService {
         return $distribution;
     }
 
+    /**
+     * Get all distributions
+     * 
+     * @return array
+     */
     public function findAll() 
     {
         return $this->em->getRepository(DistributionData::class)->findAll();
     }
 
+    /**
+     * Edit a distribution
+     *
+     * @param DistributionData $distributionData
+     * @param array $distributionArray
+     * @return DistributionData
+     * @throws \Exception
+    */
     public function edit(DistributionData $distributionData, array $distributionArray)
     {
         /** @var Distribution $distribution */
@@ -96,6 +109,25 @@ class DistributionService {
         $this->em->flush();
 
         return $editedDistribution;
+    }
+
+    /**
+     * Archived a distribution
+     * 
+     * @param DistributionData $distributionData
+     * @return bool
+    */
+    public function archived(DistributionData $distribution)
+    {
+        /** @var Distribution $distribution */
+        $distributionData = $this->em->getRepository(DistributionData::class)->findById($distribution->getId());
+        if (!empty($distributionData))
+            $distribution->setArchived(1);
+
+        $this->em->persist($distribution);
+        $this->em->flush();
+
+        return true;
     }
 
     
