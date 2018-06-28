@@ -23,3 +23,21 @@ PUT(/distributions)
     }
 }
 ```
+
+## Create
+PUT(/distributionBeneficiary)
+
+## Body
+
+```json
+{
+    "distribution_data": 
+    {
+        "id":4
+    },
+    "project_beneficiary":  
+    {
+        "id":1
+    }
+}
+```
