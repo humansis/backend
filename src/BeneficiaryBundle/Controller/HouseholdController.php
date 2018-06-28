@@ -17,6 +17,27 @@ class HouseholdController extends Controller
     /**
      * @Rest\Put("/households", name="add_household")
      *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Parameter(
+     *     name="household",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Household::class, groups={"FullHousehold"})
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Household created",
+     *     @Model(type=Household::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     *
      * @param Request $request
      * @return Response
      */
@@ -25,7 +46,14 @@ class HouseholdController extends Controller
         $householdArray = $request->request->all();
         /** @var HouseholdService $householeService */
         $householeService = $this->get('beneficiary.household_service');
-        $household = $householeService->create($householdArray);
+        try
+        {
+            $household = $householeService->create($householdArray);
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
 
         $json = $this->get('jms_serializer')
             ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true));
