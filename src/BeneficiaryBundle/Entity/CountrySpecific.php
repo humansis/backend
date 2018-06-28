@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * CountrySpecific
@@ -18,6 +19,7 @@ class CountrySpecific
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullCountrySpecific"})
      */
     private $id;
 
@@ -25,6 +27,7 @@ class CountrySpecific
      * @var string
      *
      * @ORM\Column(name="field", type="string", length=45)
+     * @Groups({"FullCountrySpecific"})
      */
     private $field;
 
@@ -32,6 +35,7 @@ class CountrySpecific
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=45)
+     * @Groups({"FullCountrySpecific"})
      */
     private $type;
 
@@ -39,6 +43,7 @@ class CountrySpecific
      * @var string
      *
      * @ORM\Column(name="country_iso3", type="string", length=45)
+     * @Groups({"FullCountrySpecific"})
      */
     private $countryIso3;
 

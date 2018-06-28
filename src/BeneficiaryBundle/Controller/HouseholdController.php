@@ -9,7 +9,12 @@ use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use BeneficiaryBundle\Entity\Household;
+
+//Annotations
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Swagger\Annotations as SWG;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 class HouseholdController extends Controller
 {
@@ -64,6 +69,17 @@ class HouseholdController extends Controller
     /**
      * @Rest\Post("/households/all", name="all_households")
      *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All households",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Household::class))
+     *     )
+     * )
+     *
      * @return Response
      */
     public function allAction(Request $request)
@@ -79,6 +95,29 @@ class HouseholdController extends Controller
                 'json',
                 SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
             );
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Post("/households/{id}")
+     *
+     * @param Request $request
+     * @param Household $household
+     * @return Response
+     */
+    public function editAction(Request $request, Household $household)
+    {
+        $arrayHousehold = $request->request->all();
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
+        $newHousehold = $householdService->update($household, $arrayHousehold);
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $newHousehold,
+                'json',
+                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+            );
+
         return new Response($json);
     }
 }

@@ -34,8 +34,7 @@ PUT ("/households")
 			],
 			"vulnerability_criterions": [
 				{
-					"id": 1,
-					"value": "1"
+					"id": 1
 				}
 			],
 			"phones": [
@@ -44,7 +43,7 @@ PUT ("/households")
 					"type": "type1"
 				}
 			],
-			"national_id": [
+			"national_ids": [
 				{
 					"id_number": "020254512",
 					"id_type": "type1"

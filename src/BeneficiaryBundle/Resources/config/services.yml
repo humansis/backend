@@ -7,3 +7,7 @@ services:
         class: BeneficiaryBundle\Utils\BeneficiaryService
         arguments: ["@doctrine.orm.entity_manager", "@jms_serializer"]
         public: true
+    beneficiary.country_specific_service:
+        class: BeneficiaryBundle\Utils\CountrySpecificService
+        arguments: ["@doctrine.orm.entity_manager"]
+        public: true

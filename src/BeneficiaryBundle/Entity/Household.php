@@ -84,7 +84,7 @@ class Household
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location", cascade={"persist"})
      * @Groups({"FullHousehold"})
      */
     private $location;
@@ -109,6 +109,19 @@ class Household
     public function __construct()
     {
         $this->countrySpecificAnswers = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Set id.
+     *
+     * @param $id
+     * @return Household
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

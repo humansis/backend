@@ -307,6 +307,18 @@ class Beneficiary
     }
 
     /**
+     * Set VulnerabilityCriterions.
+     *
+     * @return Beneficiary
+     */
+    public function setVulnerabilityCriterions(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->vulnerabilityCriterions = $collection;
+
+        return $this;
+    }
+
+    /**
      * Add phone.
      *
      * @param \BeneficiaryBundle\Entity\Phone $phone
