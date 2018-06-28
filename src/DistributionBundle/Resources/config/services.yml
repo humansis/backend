@@ -3,3 +3,8 @@ services:
         class: DistributionBundle\Utils\DistributionService
         arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
         public: true
+
+    distribution.distribution_beneficiary_service:
+        class: DistributionBundle\Utils\DistributionBeneficiaryService
+        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
+        public: true
