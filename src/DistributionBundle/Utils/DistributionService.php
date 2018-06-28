@@ -129,7 +129,7 @@ class DistributionService {
      * Archived a distribution
      * 
      * @param DistributionData $distributionData
-     * @return bool
+     * @return DistributionData
     */
     public function archived(DistributionData $distribution)
     {
@@ -141,7 +141,7 @@ class DistributionService {
         $this->em->persist($distribution);
         $this->em->flush();
 
-        return true;
+        return $distributionData;
     }
 
     

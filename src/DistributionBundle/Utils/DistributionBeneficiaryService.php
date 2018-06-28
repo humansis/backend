@@ -76,5 +76,26 @@ class DistributionBeneficiaryService
     {
         return $this->em->getRepository(DistributionBeneficiary::class)->findAll();
     }
+
+     /**
+     * @param DistributionBeneficiary $distributionBeneficiary
+     * @return bool
+     */
+    public function delete(DistributionBeneficiary $distributionBeneficiary)
+    {
+        $deleteDistributionBeneficiary = $this->em->getRepository(DistributionData::class)->find($distributionBeneficiary);
+
+        try
+        {
+            $this->em->remove($deleteDistributionBeneficiary);
+            $this->em->flush();
+        }
+        catch (\Exception $exception)
+        {
+            return false;
+        }
+
+        return true;
+    }
     
 }

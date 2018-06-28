@@ -176,17 +176,15 @@ class DistributionController extends Controller
     {
         try
         {
-            $valid = $this->get('distribution.distribution_service')->archived($distribution);
+            $archivedDistribution = $this->get('distribution.distribution_service')->archived($distribution);
         }
         catch (\Exception $e)
         {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-
-        if ($valid)
-            return new Response("", Response::HTTP_OK);
-        if (!$valid)
-            return new Response("", Response::HTTP_BAD_REQUEST);
+        $json = $this->get('jms_serializer')
+            ->serialize($archivedDistribution, 'json', SerializationContext::create()->setSerializeNull(true));
+        return new Response($json, Response::HTTP_OK);
     }
 
 
