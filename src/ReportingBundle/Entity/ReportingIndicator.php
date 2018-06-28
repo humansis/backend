@@ -3,6 +3,7 @@
 namespace ReportingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use  \ReportingBundle\Model\IndicatorInterface;
 
 /**
  * ReportingIndicator
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="reporting_indicator")
  * @ORM\Entity(repositoryClass="ReportingBundle\Repository\ReportingIndicatorRepository")
  */
-class ReportingIndicator
+class ReportingIndicator implements IndicatorInterface
 {
     /**
      * @var int
