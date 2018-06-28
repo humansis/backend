@@ -74,6 +74,17 @@ class DistributionService {
     }
 
     /**
+     * Get one distribution by id
+     * 
+     * @param DistributionData $distributionData
+     * @return array
+     */
+    public function findOne(DistributionData $distributionData) 
+    {
+        return $this->em->getRepository(DistributionData::class)->find($distributionData);
+    }
+
+    /**
      * Get all distributions
      * 
      * @return array

@@ -82,6 +82,32 @@ class DistributionController extends Controller
         return new Response($json);
     }
 
+    /**
+     * @Rest\Get("/distributions/{id}", name="get_one_distributions")
+     *
+     * @SWG\Tag(name="distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="one distribution",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=DistributionData::class))
+     *     )
+     * )
+     * 
+     * @param Request $request
+     * @return Response
+     */
+    public function getOneAction(DistributionData $DistributionData)
+    {
+        $distributions = $this->get('distribution.distribution_service')->findOne($DistributionData);
+        $json = $this->get('jms_serializer')->serialize($distributions, 'json');
+
+        return new Response($json);
+    }
+
+
 
     /**
      * Edit a distribution
