@@ -31,8 +31,8 @@ class DistributionBeneficiaryController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Project created",
-     *     @Model(type=Project::class)
+     *     description="Distribution Beneficiary created",
+     *     @Model(type=DistributionBeneficiary::class)
      * )
      * 
      * @param Request $request
@@ -52,6 +52,31 @@ class DistributionBeneficiaryController extends Controller
         }
 
         $json = $this->get('jms_serializer')->serialize($distribution, 'json', SerializationContext::create()->setSerializeNull(true));
+
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Get("/distribution/beneficiaries", name="get_all_distribution_benefeciaries")
+     *
+     * @SWG\Tag(name="DistributionBeneficiaries")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All distribution beneficiaries",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=DistributionBeneficiary::class))
+     *     )
+     * )
+     * 
+     * @param Request $request
+     * @return Response
+     */
+    public function getAllAction(Request $request)
+    {
+        $distributionBeneficiary = $this->get('distribution.distribution_beneficiary_service')->findAll();
+        $json = $this->get('jms_serializer')->serialize($distributionBeneficiary, 'json');
 
         return new Response($json);
     }
