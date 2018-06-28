@@ -10,7 +10,7 @@ use ProjectBundle\Entity\Project;
  * ProjectBeneficiary
  *
  * @ORM\Table(name="project_beneficiary")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\ProjectBeneficiaryRepository")
+ * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\ProjectBeneficiaryRepository")
  */
 class ProjectBeneficiary
 {
