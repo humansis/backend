@@ -3,6 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Location
@@ -18,6 +19,7 @@ class Location
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullHousehold"})
      */
     private $id;
 
@@ -25,6 +27,7 @@ class Location
      * @var string
      *
      * @ORM\Column(name="country_iso3", type="string", length=45)
+     * @Groups({"FullHousehold"})
      */
     private $countryIso3;
 
@@ -32,6 +35,7 @@ class Location
      * @var string
      *
      * @ORM\Column(name="adm1", type="string", length=255)
+     * @Groups({"FullHousehold"})
      */
     private $adm1;
 
@@ -39,6 +43,7 @@ class Location
      * @var string
      *
      * @ORM\Column(name="adm2", type="string", length=255)
+     * @Groups({"FullHousehold"})
      */
     private $adm2;
 
@@ -46,6 +51,7 @@ class Location
      * @var string
      *
      * @ORM\Column(name="adm3", type="string", length=255)
+     * @Groups({"FullHousehold"})
      */
     private $adm3;
 
@@ -53,6 +59,7 @@ class Location
      * @var string
      *
      * @ORM\Column(name="adm4", type="string", length=255)
+     * @Groups({"FullHousehold"})
      */
     private $adm4;
 

@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use DistributionBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Household
@@ -19,6 +20,8 @@ class Household
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @Groups({"FullHousehold"})
      */
     private $id;
 
@@ -26,6 +29,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="address_street", type="string", length=255)
+     * @Groups({"FullHousehold"})
      */
     private $addressStreet;
 
@@ -33,6 +37,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="address_number", type="string", length=255)
+     * @Groups({"FullHousehold"})
      */
     private $addressNumber;
 
@@ -40,6 +45,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="address_postcode", type="string", length=255)
+     * @Groups({"FullHousehold"})
      */
     private $addressPostcode;
 
@@ -47,6 +53,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="livelihood", type="integer")
+     * @Groups({"FullHousehold"})
      */
     private $livelihood;
 
@@ -54,6 +61,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="notes", type="string", length=255)
+     * @Groups({"FullHousehold"})
      */
     private $notes;
 
@@ -61,6 +69,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45)
+     * @Groups({"FullHousehold"})
      */
     private $latitude;
 
@@ -68,13 +77,15 @@ class Household
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45)
+     * @Groups({"FullHousehold"})
      */
     private $longitude;
 
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location", cascade={"persist"})
+     * @Groups({"FullHousehold"})
      */
     private $location;
 
@@ -87,14 +98,30 @@ class Household
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household")
+     * @Groups({"FullHousehold"})
      */
     private $beneficiaries;
+
+
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->countrySpecificAnswers = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Set id.
+     *
+     * @param $id
+     * @return Household
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -105,30 +132,6 @@ class Household
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set photo.
-     *
-     * @param string $photo
-     *
-     * @return Household
-     */
-    public function setPhoto($photo)
-    {
-        $this->photo = $photo;
-
-        return $this;
-    }
-
-    /**
-     * Get photo.
-     *
-     * @return string
-     */
-    public function getPhoto()
-    {
-        return $this->photo;
     }
 
     /**

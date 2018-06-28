@@ -1,0 +1,4 @@
+services:
+    CommonBundle\Listener\RequestListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }

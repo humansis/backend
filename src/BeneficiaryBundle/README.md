@@ -26,13 +26,13 @@ PUT ("/households")
 			"gender": "h",
 			"status": 0,
 			"date_of_birth": "1976-10-06",
-			"updated_on": "2018-06-13",
+			"updated_on": "2018-06-13 12:12:12",
 			"profile": [
 				{
 					"photo": 1
 				}
 			],
-			"vulnerability_criterion_answers": [
+			"vulnerability_criterions": [
 				{
 					"id": 1
 				}
@@ -43,7 +43,7 @@ PUT ("/households")
 					"type": "type1"
 				}
 			],
-			"national_id": [
+			"national_ids": [
 				{
 					"id_number": "020254512",
 					"id_type": "type1"
