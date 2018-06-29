@@ -64,9 +64,9 @@ class HouseholdService
         return $householdDeserialized;
     }
 
+    // TODO FINISH THIS FUNCTION
     public function update(Household $household, array $householdArray)
     {
-        dump($household);
         /** @var Household $householdDeserialized */
         $householdDeserialized = $this->serializer
             ->deserialize(json_encode($householdArray), Household::class, 'json');
@@ -88,11 +88,8 @@ class HouseholdService
             }
         }
 
-        dump($householdDeserialized);
         $this->em->merge($householdDeserialized);
-        dump($householdDeserialized);
         $this->em->flush();
-        dump($householdDeserialized);
         return $householdDeserialized;
     }
 
