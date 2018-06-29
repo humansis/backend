@@ -1,1 +1,5 @@
 
+reporting:
+    type:     annotation
+    defaults: { _format: 'json' }
+    resource: '@ReportingBundle/Controller'
