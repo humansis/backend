@@ -5,7 +5,7 @@ namespace ReportingBundle\Utils\DataFillers;
 use ReportingBundle\Utils\Model\IndicatorInterface;
 
 
-interface DataFillerInterface
+interface DataFillersInterface
 {
     public function fill(IndicatorInterface $indicator );
 }

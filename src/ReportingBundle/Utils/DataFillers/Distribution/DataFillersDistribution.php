@@ -2,7 +2,6 @@
 
 namespace ReportingBundle\Utils\DataFillers\Distribution;
 
-use ReportingBundle\Utils\DataFillers\DataFillerInterface;
 use ReportingBundle\Utils\Model\IndicatorInterface;
 
 use Doctrine\ORM\EntityManager;

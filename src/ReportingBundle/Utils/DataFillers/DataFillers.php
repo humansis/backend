@@ -1,8 +1,8 @@
 <?php
 
-namespace ReportingBundle\Utils\DataFillers\Project;
+namespace ReportingBundle\Utils\DataFillers;
 
-use ReportingBundle\Utils\DataFillers\DataFillerInterface;
+use ReportingBundle\Utils\DataFillers\DataFillersInterface;
 use ReportingBundle\Utils\DataFillers\Country\DataFillersCountry;
 use ReportingBundle\Utils\DataFillers\Project\DataFillersProject;
 use ReportingBundle\Utils\DataFillers\Distribution\DataFillersDistribution;
@@ -10,7 +10,7 @@ use ReportingBundle\Utils\Model\IndicatorInterface;
 
 use Doctrine\ORM\EntityManager;
 
-class DataFillers implements DataFillerInterface
+class DataFillers implements DataFillersInterface
 {
 
     private $em;
