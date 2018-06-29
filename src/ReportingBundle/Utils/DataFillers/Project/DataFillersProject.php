@@ -1,6 +1,6 @@
 <?php
 
-namespace ReportingBundle\Utils\DataFillersProject;
+namespace ReportingBundle\Utils\DataFillers\Project;
 
 use ReportingBundle\Utils\DataFillers\DataFillerInterface;
 use ReportingBundle\Utils\Model\IndicatorInterface;
