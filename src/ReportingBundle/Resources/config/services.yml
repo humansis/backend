@@ -1,5 +1,29 @@
 services:
+
+    ############################### Data Fillers ###############################
+    
     reporting.data_fillers.reference:
         class: ReportingBundle\Utils\DataFillers\DataFillersIndicator
         arguments: ['@doctrine.orm.entity_manager']
         public: true
+
+    reporting.data_fillers.default:
+        class: ReportingBundle\Utils\DataFillers\DataFillers
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    reporting.data_fillers.country:
+        class: ReportingBundle\Utils\DataFillers\DataFillersCountry
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    reporting.data_fillers.project:
+        class: ReportingBundle\Utils\DataFillers\DataFillersProject
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    reporting.data_fillers.distribution:
+        class: ReportingBundle\Utils\DataFillers\DataFillersDistribution
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
