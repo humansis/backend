@@ -1,11 +1,11 @@
 <?php
 
-namespace ReportingBundle\Utils\DataFillers;
+namespace ReportingBundle\Utils\DataFillers\Project;
 
 use ReportingBundle\Utils\DataFillers\DataFillerInterface;
-use ReportingBundle\Utils\DataFillers\DataFillersCountry;
-use ReportingBundle\Utils\DataFillers\DataFillersProject;
-use ReportingBundle\Utils\DataFillers\DataFillersDistribution;
+use ReportingBundle\Utils\DataFillers\Country\DataFillersCountry;
+use ReportingBundle\Utils\DataFillers\Project\DataFillersProject;
+use ReportingBundle\Utils\DataFillers\Distribution\DataFillersDistribution;
 use ReportingBundle\Utils\Model\IndicatorInterface;
 
 use Doctrine\ORM\EntityManager;

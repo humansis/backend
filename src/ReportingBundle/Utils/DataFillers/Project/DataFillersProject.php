@@ -1,13 +1,13 @@
 <?php
 
-namespace ReportingBundle\Utils\DataFillers;
+namespace ReportingBundle\Utils\DataFillersProject;
 
 use ReportingBundle\Utils\DataFillers\DataFillerInterface;
 use ReportingBundle\Utils\Model\IndicatorInterface;
 
 use Doctrine\ORM\EntityManager;
 
-class DataFillersProject implements DataFillerInterface
+class DataFillersProject 
 {
 
     private $em;
@@ -17,9 +17,5 @@ class DataFillersProject implements DataFillerInterface
         $this->em = $em;   
     }
 
-    public function fill(IndicatorInterface $indicator)
-    {
-
-    }
 
 }
