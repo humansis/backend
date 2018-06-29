@@ -42,6 +42,21 @@ class ReportingValue
      */
     private $creationDate;
 
+    /**
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingCountry", mappedBy="value", cascade={"persist"})
+     **/
+    private $reportingCountry;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingProject", mappedBy="value", cascade={"persist"})
+     **/
+    private $reportingProject;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingDistribution", mappedBy="value", cascade={"persist"})
+     **/
+    private $reportingDistribution;
+
 
     /**
      * Get id.
@@ -123,5 +138,75 @@ class ReportingValue
     public function getCreationDate()
     {
         return $this->creationDate;
+    }
+
+
+    /**
+     * Set reportingCountry
+     *
+     * @param string $reportingCountry
+     * @return ReportingValue
+     */
+    public function setReportingCountry($reportingCountry)
+    {
+        $this->reportingCountry= $reportingCountry;
+
+        return $this;
+    }
+
+    /**
+     * Get reportingCountry
+     *
+     * @return string
+     */
+    public function getReportingCountry()
+    {
+        return $this->reportingCountry;
+    }
+
+    /**
+     * Set reportingProject
+     *
+     * @param string $reportingProject
+     * @return ReportingValue
+     */
+    public function setReportingProject($reportingProject)
+    {
+        $this->reportingProject= $reportingProject;
+
+        return $this;
+    }
+
+    /**
+     * Get reportingProject
+     *
+     * @return string
+     */
+    public function getReportingProject()
+    {
+        return $this->reportingProject;
+    }
+
+    /**
+     * Set reportingDistribution
+     *
+     * @param string $reportingDistribution
+     * @return ReportingValue
+     */
+    public function setReportingDistribution($reportingDistribution)
+    {
+        $this->reportingDistribution= $reportingDistribution;
+
+        return $this;
+    }
+
+    /**
+     * Get reportingDistribution
+     *
+     * @return string
+     */
+    public function getReportingDistribution()
+    {
+        return $this->reportingDistribution;
     }
 }

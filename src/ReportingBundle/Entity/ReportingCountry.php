@@ -21,6 +21,24 @@ class ReportingCountry
      */
     private $id;
 
+    /**
+     *@ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location", inversedBy="reportingCountry")
+     * @ORM\JoinColumn(nullable=true)
+     **/
+    private $country;
+
+    /**
+     *@ORM\ManyToOne(targetEntity="ReportingBundle\Entity\ReportingIndicator", inversedBy="reportingCountry")
+     * @ORM\JoinColumn(nullable=true)
+     **/
+    private $indicator;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="ReportingBundle\Entity\ReportingValue", inversedBy="reportingCountry")
+     * @ORM\JoinColumn(nullable=false)
+     **/
+    private $value;
+
 
     /**
      * Get id.
@@ -31,4 +49,74 @@ class ReportingCountry
     {
         return $this->id;
     }
+
+    /**
+     * Set indicator
+     *
+     * @param ReportingBundle\Entity\ReportingIndicator $indicator
+     * @return ReportingCountry
+     */
+    public function setIndicator(ReportingBundle\Entity\ReportingIndicator $indicator)
+    {
+      $this->indicator = $indicator;
+
+      return $this;
+    }
+
+    /**
+     * Get indicator
+     *
+     * @return ReportingBundle\Entity\ReportingIndicator
+     */
+    public function getIndicator()
+    {
+      return $this->indicator;
+    }
+
+    /**
+     * Set value
+     *
+     * @param ReportingBundle\Entity\ReportingValue $value
+     * @return ReportingCountry
+     */
+    public function setValue(ReportingBundle\Entity\ReportingValue $value)
+    {
+      $this->value = $value;
+
+      return $this;
+    }
+
+    /**
+     * Get value
+     *
+     * @return ReportingBundle\Entity\ReportingValue
+     */
+    public function getValue()
+    {
+      return $this->value;
+    }
+
+    /**
+     * Set country
+     *
+     * @param DistributionBundle\Entity\Location $country
+     * @return ReportingCountry
+     */
+    public function setCountry($country)
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    /**
+     * Get country
+     *
+     * @return DistributionBundle\Entity\Location
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
 }

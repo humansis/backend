@@ -64,6 +64,11 @@ class Location
     private $adm4;
 
     /**
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingCountry", mappedBy="country", cascade={"persist"})
+     **/
+    private $reportingCountry;
+
+    /**
      * Get id.
      *
      * @return int
@@ -191,5 +196,15 @@ class Location
     public function getAdm4()
     {
         return $this->adm4;
+    }
+
+    /**
+     * Get reportingCountry
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getReportingCountry()
+    {
+        return $this->ReportingCountry;
     }
 }

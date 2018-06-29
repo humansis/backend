@@ -1,6 +1,6 @@
 <?php
 
-namespace ReportingBundle\Model;
+namespace ReportingBundle\Utils\Model;
 
 interface IndicatorInterface
 {

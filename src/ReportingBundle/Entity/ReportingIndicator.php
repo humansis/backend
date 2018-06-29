@@ -3,7 +3,7 @@
 namespace ReportingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use  \ReportingBundle\Model\IndicatorInterface;
+use  ReportingBundle\Utils\Model\IndicatorInterface;
 
 /**
  * ReportingIndicator
@@ -49,6 +49,21 @@ class ReportingIndicator implements IndicatorInterface
      * @ORM\Column(name="graphique", type="string", length=255, nullable=true)
      */
     private $graphique;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingCountry", mappedBy="indicator", cascade={"persist"})
+     **/
+    private $reportingCountry;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingProject", mappedBy="indicator", cascade={"persist"})
+     **/
+    private $reportingProject;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingDistribution", mappedBy="indicator", cascade={"persist"})
+     **/
+    private $reportingDistribution;
 
 
     /**
@@ -155,5 +170,74 @@ class ReportingIndicator implements IndicatorInterface
     public function getGraphique()
     {
         return $this->graphique;
+    }
+
+    /**
+     * Set reportingCountry
+     *
+     * @param string $reportingCountry
+     * @return ReportingReference
+     */
+    public function setReportingCountry($reportingCountry)
+    {
+        $this->reportingCountry= $reportingCountry;
+
+        return $this;
+    }
+
+    /**
+     * Get reportingCountry
+     *
+     * @return string
+     */
+    public function getReportingCountry()
+    {
+        return $this->reportingCountry;
+    }
+
+    /**
+     * Set reportingProject
+     *
+     * @param string $reportingProject
+     * @return ReportingReference
+     */
+    public function setReportingProject($reportingProject)
+    {
+        $this->reportingProject= $reportingProject;
+
+        return $this;
+    }
+
+    /**
+     * Get reportingProject
+     *
+     * @return string
+     */
+    public function getReportingProject()
+    {
+        return $this->reportingProject;
+    }
+
+    /**
+     * Set reportingDistribution
+     *
+     * @param string $reportingDistribution
+     * @return ReportingReference
+     */
+    public function setReportingDistribution($reportingDistribution)
+    {
+        $this->reportingDistribution= $reportingDistribution;
+
+        return $this;
+    }
+
+    /**
+     * Get reportingDistribution
+     *
+     * @return string
+     */
+    public function getReportingDistribution()
+    {
+        return $this->reportingDistribution;
     }
 }
