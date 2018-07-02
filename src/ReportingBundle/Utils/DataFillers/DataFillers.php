@@ -23,8 +23,9 @@ class DataFillers implements DataFillersInterface
     public function fill(IndicatorInterface $indicator)
     {
 
-        if(preg_match("#^EU?_C#", $indicator->getCode())) 
+        if(preg_match("#^BMSU?_C#", $indicator->getCode())) 
         {
+            
             if(is_callable(array(new DataFillersCountry($this->em), $indicator->getCode())))
             {
                 return call_user_func_array([new DataFillersCountry($this->em), $indicator->getCode()], []);
@@ -32,7 +33,7 @@ class DataFillers implements DataFillersInterface
             }
         }
 
-        if(preg_match("#^EU?_P#", $indicator->getCode())) 
+        if(preg_match("#^BMSU?_P#", $indicator->getCode())) 
         {
             if(is_callable(array(new DataFillersProject($this->em), $indicator->getCode())))
             {
@@ -40,7 +41,7 @@ class DataFillers implements DataFillersInterface
             }
         }
 
-        if(preg_match("#^EU?_D#", $indicator->getCode())) 
+        if(preg_match("#^BMSU?_D#", $indicator->getCode())) 
         {
             if(is_callable(array(new DataFillersDistribution($this->em), $indicator->getCode())))
             {
