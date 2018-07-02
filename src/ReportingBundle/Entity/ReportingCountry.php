@@ -53,10 +53,10 @@ class ReportingCountry
     /**
      * Set indicator
      *
-     * @param ReportingBundle\Entity\ReportingIndicator $indicator
+     * @param \ReportingBundle\Entity\ReportingIndicator $indicator
      * @return ReportingCountry
      */
-    public function setIndicator(ReportingBundle\Entity\ReportingIndicator $indicator)
+    public function setIndicator(\ReportingBundle\Entity\ReportingIndicator $indicator)
     {
       $this->indicator = $indicator;
 
@@ -66,7 +66,7 @@ class ReportingCountry
     /**
      * Get indicator
      *
-     * @return ReportingBundle\Entity\ReportingIndicator
+     * @return \ReportingBundle\Entity\ReportingIndicator
      */
     public function getIndicator()
     {
@@ -76,10 +76,10 @@ class ReportingCountry
     /**
      * Set value
      *
-     * @param ReportingBundle\Entity\ReportingValue $value
+     * @param \ReportingBundle\Entity\ReportingValue $value
      * @return ReportingCountry
      */
-    public function setValue(ReportingBundle\Entity\ReportingValue $value)
+    public function setValue(\ReportingBundle\Entity\ReportingValue $value)
     {
       $this->value = $value;
 
@@ -89,7 +89,7 @@ class ReportingCountry
     /**
      * Get value
      *
-     * @return ReportingBundle\Entity\ReportingValue
+     * @return \ReportingBundle\Entity\ReportingValue
      */
     public function getValue()
     {
@@ -99,7 +99,7 @@ class ReportingCountry
     /**
      * Set country
      *
-     * @param DistributionBundle\Entity\Location $country
+     * @param \DistributionBundle\Entity\Location $country
      * @return ReportingCountry
      */
     public function setCountry($country)
@@ -112,7 +112,7 @@ class ReportingCountry
     /**
      * Get country
      *
-     * @return DistributionBundle\Entity\Location
+     * @return \DistributionBundle\Entity\Location
      */
     public function getCountry()
     {
