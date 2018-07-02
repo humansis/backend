@@ -22,8 +22,8 @@ class ReportingController extends Controller
     {
 
 
-        $dataComputed = $this->get('reporting.data_fillers.country')->BMS_Country_TH();
-        dump($dataComputed);
+        $dataComputed = $this->get('reporting.data_fillers.country')->BMS_Country_TND();
+       
 
 
     }
