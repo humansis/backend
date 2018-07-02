@@ -1,8 +1,15 @@
 # Reporting Module
 
-## Fill Database
+## Table of database link to the reporting module
 
-### Command and DataFillers
+![alt text](https://raw.githubusercontent.com/ReliefApplications/bms_api/dev/src/ReportingBundle/Resources/img/BDD.png)
 
-![alt text](https://raw.githubusercontent.com/ReliefApplications/bms_api/dev-reportingBundle/src/ReportingBundle/Utils/img/Command_Fillers.png)
+## Fill Database with Command and DataFillers
+
+![alt text](https://raw.githubusercontent.com/ReliefApplications/bms_api/dev/src/ReportingBundle/Resources/img/CommandFillers.png)
+
+### Retrieve Data
+
+![alt text](https://raw.githubusercontent.com/ReliefApplications/bms_api/dev/src/ReportingBundle/Resources/img/BackEndConfiguration.png)
+
 
