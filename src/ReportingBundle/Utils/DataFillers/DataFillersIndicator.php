@@ -19,16 +19,15 @@ class DataFillersIndicator
     {  
         //get the content of csv
         $file = file_get_contents($csvFile);
-        //format content in array
-        $data = array_map("str_getcsv", preg_split('/\r*\n+|\r+/', $file));
-        return $data;
+        //format content in array and return it
+        return  array_map("str_getcsv", preg_split('/\r*\n+|\r+/', $file));
     }
 
 
 
     public function fillIndicator() 
     {
-        $filename = "/var/www/html/julie/BMS/bms_api/src/ReportingBundle/Utils/DataFillers/dataCSV/reportingReference.csv";
+        $filename = "/var/www/html/julie/BMS/bms_api/src/ReportingBundle/Resources/data/CSV/reportingReference.csv";
         $contentFile = $this->getCsv($filename);
         foreach($contentFile as $data) 
         {
