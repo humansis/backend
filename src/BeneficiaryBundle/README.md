@@ -4,7 +4,6 @@ PUT ("/households")
 
 ```json
 {
-	"photo": "photo.png",
 	"address_street": "addr",
 	"address_number": "12",
 	"address_postcode": "73460",

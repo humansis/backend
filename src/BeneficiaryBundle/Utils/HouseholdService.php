@@ -67,6 +67,7 @@ class HouseholdService
     // TODO FINISH THIS FUNCTION
     public function update(Household $household, array $householdArray)
     {
+        dump($householdArray);
         /** @var Household $householdDeserialized */
         $householdDeserialized = $this->serializer
             ->deserialize(json_encode($householdArray), Household::class, 'json');
