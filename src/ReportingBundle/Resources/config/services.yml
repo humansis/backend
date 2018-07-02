@@ -49,3 +49,14 @@ services:
         class: ReportingBundle\Utils\DataRetrievers\DistributionDataRetrievers
         arguments: ['@doctrine.orm.entity_manager']
         public: true
+
+    ################################## Formatters ##################################
+
+    reporting.formatter:
+        class: ReportingBundle\Utils\Formatters\Formatter
+
+    ################################## Finders ##################################
+
+    reporting.finder:
+        class: ReportingBundle\Utils\Finders\Finder
+        arguments: ['@doctrine.orm.entity_manager']
