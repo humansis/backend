@@ -22,9 +22,10 @@ class ReportingCountry
     private $id;
 
     /**
-     *@ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location", inversedBy="reportingCountry")
-     * @ORM\JoinColumn(nullable=true)
-     **/
+     * @var string
+     *
+     * @ORM\Column(name="country", type="string", length=255)
+     */
     private $country;
 
     /**
@@ -99,7 +100,7 @@ class ReportingCountry
     /**
      * Set country
      *
-     * @param \DistributionBundle\Entity\Location $country
+     * @param string $country
      * @return ReportingCountry
      */
     public function setCountry($country)
@@ -112,7 +113,7 @@ class ReportingCountry
     /**
      * Get country
      *
-     * @return \DistributionBundle\Entity\Location
+     * @return string
      */
     public function getCountry()
     {

@@ -48,7 +48,7 @@ class DataFillersCountry extends DataFillers
             $this->repository = $this->em->getRepository(Household::class);
             $qb = $this->repository->createQueryBuilder('h')
                                    ->leftjoin('h.location', 'l')
-                                   ->select('count(h) AS value', 'l.id AS country')
+                                   ->select('Distinct count(h) AS value', 'l.countryIso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
 
@@ -63,13 +63,10 @@ class DataFillersCountry extends DataFillers
                 $this->em->persist($new_value);
                 $this->em->flush();
 
-                $this->repository = $this->em->getRepository(Location::class);
-                $country = $this->repository->findOneBy(['id' => $result['country']]); 
-
                 $new_reportingCountry = new ReportingCountry();
                 $new_reportingCountry->setIndicator($reference);
                 $new_reportingCountry->setValue($new_value);
-                $new_reportingCountry->setcountry($country);
+                $new_reportingCountry->setcountry($result['country']);
 
                 $this->em->persist($new_reportingCountry);
                 $this->em->flush();   
@@ -91,7 +88,7 @@ class DataFillersCountry extends DataFillers
             $qb = $this->repository->createQueryBuilder('b')
                                    ->leftjoin('b.household', 'h')
                                    ->leftjoin('h.location', 'l')
-                                   ->select('count(b) AS value', 'l.id AS country')
+                                   ->select('count(b) AS value', 'l.countryIso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
 
@@ -106,13 +103,10 @@ class DataFillersCountry extends DataFillers
                 $this->em->persist($new_value);
                 $this->em->flush();
 
-                $this->repository = $this->em->getRepository(Location::class);
-                $country = $this->repository->findOneBy(['id' => $result['country']]); 
-
                 $new_reportingCountry = new ReportingCountry();
                 $new_reportingCountry->setIndicator($reference);
                 $new_reportingCountry->setValue($new_value);
-                $new_reportingCountry->setcountry($country);
+                $new_reportingCountry->setcountry($result['country']);
 
                 $this->em->persist($new_reportingCountry);
                 $this->em->flush();   
@@ -137,7 +131,7 @@ class DataFillersCountry extends DataFillers
                                    ->leftjoin('b.household', 'h')
                                    ->leftjoin('h.location', 'l')
                                    ->Where('p.endDate < CURRENT_DATE()')
-                                   ->select('count(p) AS value', 'l.id AS country')
+                                   ->select('count(p) AS value', 'l.countryIso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
 
@@ -152,13 +146,10 @@ class DataFillersCountry extends DataFillers
                 $this->em->persist($new_value);
                 $this->em->flush();
 
-                $this->repository = $this->em->getRepository(Location::class);
-                $country = $this->repository->findOneBy(['id' => $result['country']]); 
-
                 $new_reportingCountry = new ReportingCountry();
                 $new_reportingCountry->setIndicator($reference);
                 $new_reportingCountry->setValue($new_value);
-                $new_reportingCountry->setcountry($country);
+                $new_reportingCountry->setcountry($result['country']);
 
                 $this->em->persist($new_reportingCountry);
                 $this->em->flush();   
@@ -182,7 +173,7 @@ class DataFillersCountry extends DataFillers
                                    ->leftjoin('pb.beneficiary', 'b')
                                    ->leftjoin('b.household', 'h')
                                    ->leftjoin('h.location', 'l')
-                                   ->select('SUM(p.value) AS value', 'l.id AS country')
+                                   ->select('SUM(p.value) AS value', 'l.countryIso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
 
@@ -197,13 +188,10 @@ class DataFillersCountry extends DataFillers
                 $this->em->persist($new_value);
                 $this->em->flush();
 
-                $this->repository = $this->em->getRepository(Location::class);
-                $country = $this->repository->findOneBy(['id' => $result['country']]); 
-
                 $new_reportingCountry = new ReportingCountry();
                 $new_reportingCountry->setIndicator($reference);
                 $new_reportingCountry->setValue($new_value);
-                $new_reportingCountry->setcountry($country);
+                $new_reportingCountry->setcountry($result['country']);
 
                 $this->em->persist($new_reportingCountry);
                 $this->em->flush();   
@@ -227,7 +215,7 @@ class DataFillersCountry extends DataFillers
                                    ->leftjoin('pb.beneficiary', 'b')
                                    ->leftjoin('b.household', 'h')
                                    ->leftjoin('h.location', 'l')
-                                   ->select('count(db.id) AS value', 'l.id AS country')
+                                   ->select('count(db.id) AS value', 'l.countryIso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
 
@@ -242,13 +230,10 @@ class DataFillersCountry extends DataFillers
                 $this->em->persist($new_value);
                 $this->em->flush();
 
-                $this->repository = $this->em->getRepository(Location::class);
-                $country = $this->repository->findOneBy(['id' => $result['country']]); 
-
                 $new_reportingCountry = new ReportingCountry();
                 $new_reportingCountry->setIndicator($reference);
                 $new_reportingCountry->setValue($new_value);
-                $new_reportingCountry->setcountry($country);
+                $new_reportingCountry->setcountry($result['country']);
 
                 $this->em->persist($new_reportingCountry);
                 $this->em->flush();   
@@ -272,7 +257,7 @@ class DataFillersCountry extends DataFillers
                                    ->leftjoin('pb.beneficiary', 'b')
                                    ->leftjoin('b.household', 'h')
                                    ->leftjoin('h.location', 'l')
-                                   ->select('count(db.distributionData) AS value', 'l.id AS country')
+                                   ->select('count(db.distributionData) AS value', 'l.countryIso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMS_Country_TND");
@@ -286,13 +271,10 @@ class DataFillersCountry extends DataFillers
                 $this->em->persist($new_value);
                 $this->em->flush();
 
-                $this->repository = $this->em->getRepository(Location::class);
-                $country = $this->repository->findOneBy(['id' => $result['country']]); 
-
                 $new_reportingCountry = new ReportingCountry();
                 $new_reportingCountry->setIndicator($reference);
                 $new_reportingCountry->setValue($new_value);
-                $new_reportingCountry->setcountry($country);
+                $new_reportingCountry->setcountry($result['country']);
 
                 $this->em->persist($new_reportingCountry);
                 $this->em->flush();   
