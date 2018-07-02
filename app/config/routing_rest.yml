@@ -13,3 +13,6 @@ rest_beneficiary:
 rest_distribution:
     type: rest
     resource: "@DistributionBundle/Resources/config/routing.yml"
+
+rest_reporting:
+    resource: "@ReportingBundle/Resources/config/routing.yml"
