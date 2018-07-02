@@ -35,7 +35,7 @@ class DataFillersIndicator
             $new = new ReportingIndicator();
 
             $new->setreference($data[0]);
-            $new->setGraphique($data[3]);
+            $new->setGraph($data[3]);
             $new->setCode($data[1]);
             
             if(!empty($data[0]))

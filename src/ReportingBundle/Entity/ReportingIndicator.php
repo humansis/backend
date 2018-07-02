@@ -46,9 +46,9 @@ class ReportingIndicator implements IndicatorInterface
     /**
      * @var string|null
      *
-     * @ORM\Column(name="graphique", type="string", length=255, nullable=true)
+     * @ORM\Column(name="graph", type="string", length=255, nullable=true)
      */
-    private $graphique;
+    private $graph;
 
     /**
      * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingCountry", mappedBy="indicator", cascade={"persist"})
@@ -149,27 +149,27 @@ class ReportingIndicator implements IndicatorInterface
     }
 
     /**
-     * Set graphique.
+     * Set graph.
      *
-     * @param string|null $graphique
+     * @param string|null $graph
      *
      * @return ReportingIndicator
      */
-    public function setGraphique($graphique = null)
+    public function setGraph($graph = null)
     {
-        $this->graphique = $graphique;
+        $this->graph = $graph;
 
         return $this;
     }
 
     /**
-     * Get graphique.
+     * Get graph.
      *
      * @return string|null
      */
-    public function getGraphique()
+    public function getGraph()
     {
-        return $this->graphique;
+        return $this->graph;
     }
 
     /**

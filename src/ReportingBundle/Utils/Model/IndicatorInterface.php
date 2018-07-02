@@ -43,12 +43,12 @@ interface IndicatorInterface
     /**
      * set grpahique
     */
-    public function setGraphique($graphique = null);
+    public function setGraph($graph = null);
 
     /**
-     * get graphique
+     * get graph
     */
-    public function getGraphique();
+    public function getGraph();
 
 
 }
