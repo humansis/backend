@@ -117,6 +117,11 @@ class Project
      */
     private $usersProject;
 
+     /**
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingProject", mappedBy="project", cascade={"persist"})
+     **/
+    private $reportingProject;
+
 
     /**
      * Constructor
@@ -448,5 +453,15 @@ class Project
     public function getUsersProject()
     {
         return $this->usersProject;
+    }
+
+    /**
+     * Get reportingProject
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getReportingProject()
+    {
+        return $this->ReportingProject;
     }
 }

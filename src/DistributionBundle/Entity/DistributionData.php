@@ -66,6 +66,18 @@ class DistributionData
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
      */
     private $archived = 0;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="validated", type="boolean", options={"default" : 0})
+     */
+    private $validated = 0;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingDistribution", mappedBy="distribution", cascade={"persist"})
+     **/
+    private $reportingDistribution;
     
 
     /**
@@ -137,6 +149,30 @@ class DistributionData
     public function getArchived()
     {
         return $this->archived;
+    }
+
+    /**
+     * Set validated.
+     *
+     * @param bool $validated
+     *
+     * @return DistributionData
+     */
+    public function setValidated($validated)
+    {
+        $this->validated = $validated;
+
+        return $this;
+    }
+
+    /**
+     * Get validated.
+     *
+     * @return bool
+     */
+    public function getValidated()
+    {
+        return $this->validated;
     }
 
     /**
@@ -232,5 +268,15 @@ class DistributionData
     public function getUpdatedOn()
     {
         return $this->updatedOn;
+    }
+
+    /**
+     * Get reportingDistribution
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getReportingDistribution()
+    {
+        return $this->ReportingDistribution;
     }
 }

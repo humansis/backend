@@ -192,4 +192,5 @@ class Location
     {
         return $this->adm4;
     }
+
 }
