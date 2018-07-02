@@ -19,6 +19,7 @@ class ReportingController extends Controller
 {
 
      /**
+      * Send data formatted corresponding to code to display it in front
      * @Rest\Post("/indicators/serve/{id}")
      * 
      * @param ReportingIndicator $indicator
@@ -41,6 +42,7 @@ class ReportingController extends Controller
 
 
      /**
+      * Send list of all indicators to display in front
      * @Rest\Get("/indicators")
      * 
      * @param Request $request
