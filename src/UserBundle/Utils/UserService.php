@@ -46,9 +46,17 @@ class UserService
 
     public function update(User $user, array $userData)
     {
-        $this->em->getRepository(User::class)->edit($user, $userData);
+        $roles = $userData['roles'];
+        $user->setRoles([]);
+        foreach ($roles as $role)
+        {
+            $user->addRole($role);
+        }
 
-        return $this->em->getRepository(User::class)->find($user->getId());
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return $user;
     }
 
     /**
