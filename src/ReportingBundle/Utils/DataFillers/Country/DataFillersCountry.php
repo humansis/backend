@@ -14,6 +14,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Location;
 use ReportingBundle\Entity\ReportingCountry;
 use BeneficiaryBundle\Entity\ProjectBeneficiary;
+use ProjectBundle\Entity\Project;
 use DistributionBundle\Entity\DistributionBeneficiary;
 
 
@@ -124,14 +125,10 @@ class DataFillersCountry extends DataFillers
     public function BMS_Country_AP() {
         $this->em->getConnection()->beginTransaction();
         try {
-            $this->repository = $this->em->getRepository(ProjectBeneficiary::class);
-            $qb = $this->repository->createQueryBuilder('pb')
-                                   ->leftjoin('pb.project', 'p')
-                                   ->leftjoin('pb.beneficiary', 'b')
-                                   ->leftjoin('b.household', 'h')
-                                   ->leftjoin('h.location', 'l')
+            $this->repository = $this->em->getRepository(Project::class);
+            $qb = $this->repository->createQueryBuilder('p')
                                    ->Where('p.endDate < CURRENT_DATE()')
-                                   ->select('count(p) AS value', 'l.countryIso3 AS country')
+                                   ->select('count(p) AS value', 'p.iso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
 
@@ -167,13 +164,9 @@ class DataFillersCountry extends DataFillers
     public function BMS_Country_TF() {
         $this->em->getConnection()->beginTransaction();
         try {
-            $this->repository = $this->em->getRepository(ProjectBeneficiary::class);
-            $qb = $this->repository->createQueryBuilder('pb')
-                                   ->leftjoin('pb.project', 'p')
-                                   ->leftjoin('pb.beneficiary', 'b')
-                                   ->leftjoin('b.household', 'h')
-                                   ->leftjoin('h.location', 'l')
-                                   ->select('SUM(p.value) AS value', 'l.countryIso3 AS country')
+            $this->repository = $this->em->getRepository(Project::class);
+            $qb = $this->repository->createQueryBuilder('p')
+                                   ->select('SUM(p.value) AS value', 'p.iso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
 
@@ -212,10 +205,8 @@ class DataFillersCountry extends DataFillers
             $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
             $qb = $this->repository->createQueryBuilder('db')
                                    ->leftjoin('db.projectBeneficiary', 'pb')
-                                   ->leftjoin('pb.beneficiary', 'b')
-                                   ->leftjoin('b.household', 'h')
-                                   ->leftjoin('h.location', 'l')
-                                   ->select('count(db.id) AS value', 'l.countryIso3 AS country')
+                                   ->leftjoin('pb.project', 'p')
+                                   ->select('count(db.id) AS value', 'p.iso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
 
@@ -254,10 +245,8 @@ class DataFillersCountry extends DataFillers
             $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
             $qb = $this->repository->createQueryBuilder('db')
                                    ->leftjoin('db.projectBeneficiary', 'pb')
-                                   ->leftjoin('pb.beneficiary', 'b')
-                                   ->leftjoin('b.household', 'h')
-                                   ->leftjoin('h.location', 'l')
-                                   ->select('count(db.distributionData) AS value', 'l.countryIso3 AS country')
+                                   ->leftjoin('pb.project', 'p')
+                                   ->select('count(db.distributionData) AS value', 'p.iso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMS_Country_TND");
