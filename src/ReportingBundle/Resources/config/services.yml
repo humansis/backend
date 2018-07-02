@@ -27,3 +27,25 @@ services:
         arguments: ['@doctrine.orm.entity_manager']
         public: true
 
+    ################################## Computers ##################################
+
+    reporting.computer:
+        class: ReportingBundle\Utils\Computers\Computer
+        arguments: ['@doctrine.orm.entity_manager']
+
+    ############################### Data Retrievers ###############################
+
+    reporting.data_retrievers.country:
+        class: ReportingBundle\Utils\DataRetrievers\CountryDataRetrievers
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    reporting.data_retrievers.country:
+        class: ReportingBundle\Utils\DataRetrievers\ProjectDataRetrievers
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    reporting.data_retrievers.country:
+        class: ReportingBundle\Utils\DataRetrievers\DistributionDataRetrievers
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
