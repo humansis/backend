@@ -41,7 +41,7 @@ class DataFillersIndicator
             
             if(!empty($data[0]))
             {
-                $new->setFiltres($data[2]);
+                $new->setFilters($data[2]);
             }
 
             $this->em->persist($new);

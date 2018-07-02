@@ -39,9 +39,9 @@ class ReportingIndicator implements IndicatorInterface
     /**
      * @var array|null
      *
-     * @ORM\Column(name="filtres", type="simple_array", nullable=true)
+     * @ORM\Column(name="filters", type="simple_array", nullable=true)
      */
-    private $filtres;
+    private $filters;
 
     /**
      * @var string|null
@@ -125,27 +125,27 @@ class ReportingIndicator implements IndicatorInterface
     }
 
     /**
-     * Set filtres.
+     * Set filters.
      *
-     * @param array|null $filtres
+     * @param array|null $filters
      *
      * @return ReportingIndicator
      */
-    public function setFiltres($filtres = null)
+    public function setFilters($filters = null)
     {
-        $this->filtres = $filtres;
+        $this->filters = $filters;
 
         return $this;
     }
 
     /**
-     * Get filtres.
+     * Get filters.
      *
      * @return array|null
      */
-    public function getFiltres()
+    public function getFilters()
     {
-        return $this->filtres;
+        return $this->filters;
     }
 
     /**

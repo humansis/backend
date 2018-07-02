@@ -31,14 +31,14 @@ interface IndicatorInterface
     public function getCode();
 
     /**
-     * set filtres
+     * set filters
     */
-    public function setFiltres($filtres = null);
+    public function setFilters($filters = null);
 
     /**
-     * get filtres
+     * get filters
     */
-    public function getFiltres();
+    public function getFilters();
 
     /**
      * set grpahique
