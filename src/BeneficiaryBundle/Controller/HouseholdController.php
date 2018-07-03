@@ -74,6 +74,29 @@ class HouseholdController extends Controller
     /**
      * @Rest\Post("/households/{id}")
      *
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Parameter(
+     *     name="household",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="fields of the household which must be updated",
+     *     @Model(type=Household::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @Model(type=Household::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
      * @param Request $request
      * @param Household $household
      * @return Response
