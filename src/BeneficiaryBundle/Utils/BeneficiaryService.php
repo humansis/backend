@@ -60,7 +60,6 @@ class BeneficiaryService
             if (!$beneficiary instanceof Beneficiary)
                 throw new \Exception("Beneficiary was not found.");
             $beneficiary->setVulnerabilityCriterions(null);
-            $beneficiary->setProfile(null);
         }
         else
         {
@@ -89,11 +88,7 @@ class BeneficiaryService
             $this->getOrSaveNationalId($beneficiary, $nationalIdArray, false);
         }
 
-        foreach ($beneficiaryArray["profiles"] as $profileArray)
-        {
-            $profile = $this->getOrSaveProfile($profileArray, false);
-            $beneficiary->addProfile($profile);
-        }
+            $profile = $this->getOrSaveProfile($beneficiary, $beneficiaryArray["profile"], false);
 
         $this->em->persist($beneficiary);
         if ($flush)
@@ -186,12 +181,13 @@ class BeneficiaryService
     }
 
     /**
+     * @param Beneficiary $beneficiary
      * @param array $profileArray
      * @param $flush
      * @return Profile|null|object
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function getOrSaveProfile(array $profileArray, $flush)
+    public function getOrSaveProfile(Beneficiary $beneficiary, array $profileArray, $flush)
     {
         $this->requestValidator->validate(
             "profile",
@@ -199,18 +195,23 @@ class BeneficiaryService
             $profileArray,
             'any'
         );
-        if (array_key_exists("id", $profileArray))
-        {
-            $profile = $this->em->getRepository(Profile::class)->find($profileArray["id"]);
-        }
-        else
+
+        $profile = $beneficiary->getProfile();
+        if (null === $profile)
         {
             $profile = new Profile();
         }
+        else
+        {
+            $profile = $this->em->getRepository(Profile::class)->find($profile);
+        }
+
         /** @var Profile $profile */
         $profile->setPhoto($profileArray["photo"]);
-
         $this->em->persist($profile);
+
+        $beneficiary->setProfile($profile);
+        $this->em->persist($beneficiary);
 
         if ($flush)
             $this->em->flush();

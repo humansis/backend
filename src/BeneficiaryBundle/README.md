@@ -34,11 +34,9 @@ PUT ("/households")
 			"status": 0,
 			"date_of_birth": "1976-10-06",
 			"updated_on": "2018-06-13 12:12:12",
-			"profiles": [
-				{
-					"photo": "gkjghjk"
-				}
-			],
+			"profile": {
+				"photo": "gkjghjk"
+			},
 			"vulnerability_criterions": [
 				{
 					"id": 1
@@ -95,12 +93,9 @@ POST ("/households/{id_household}")
 			"status": 0,
 			"date_of_birth": "1976-10-06",
 			"updated_on": "2018-06-13 12:12:12",
-			"profiles": [
-				{
-					"id": 1,
-					"photo": "gkjghjk2"
-				}
-			],
+			"profile": {
+				"photo": "gkjghjk2"
+			},
 			"vulnerability_criterions": [
 				{
 					"id": 1
