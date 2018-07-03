@@ -124,3 +124,12 @@ POST ("/households/{id_household}")
 	]
 }
 ```
+
+
+PUT ("/country_specifics")
+```json
+{
+    "field": "field",
+    "type": "type"
+}
+```

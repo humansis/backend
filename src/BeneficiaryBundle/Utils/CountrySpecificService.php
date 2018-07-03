@@ -23,4 +23,17 @@ class CountrySpecificService
         return $this->em->getRepository(CountrySpecific::class)->findBy(["countryIso3" => $countryIso3]);
     }
 
+    public function create($countryIso3, array $countrySpecificArray)
+    {
+        $countrySpecific = new CountrySpecific();
+        $countrySpecific->setType($countrySpecificArray["type"])
+            ->setField($countrySpecificArray["field"])
+            ->setCountryIso3($countryIso3);
+
+        $this->em->persist($countrySpecific);
+        $this->em->flush();
+
+        return $countrySpecific;
+    }
+
 }

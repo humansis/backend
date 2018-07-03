@@ -17,13 +17,34 @@ class CountryController extends Controller
      *
      * @return Response
      */
-    public function getCountrySpecifics(Request $request)
+    public function getCountrySpecificsAction(Request $request)
     {
         $countrySpecifics = $this->get('beneficiary.country_specific_service')->getAll($request->get('__country'));
 
         $json = $this->get('jms_serializer')
             ->serialize(
                 $countrySpecifics,
+                'json',
+                SerializationContext::create()->setGroups(['FullCountrySpecific'])->setSerializeNull(true)
+            );
+
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Put("/country_specifics")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function createAction(Request $request)
+    {
+        $countrySpecific = $this->get('beneficiary.country_specific_service')
+            ->create($request->request->get('__country'), $request->request->all());
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $countrySpecific,
                 'json',
                 SerializationContext::create()->setGroups(['FullCountrySpecific'])->setSerializeNull(true)
             );
