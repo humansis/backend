@@ -6,6 +6,7 @@ namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Utils\HouseholdService;
 use JMS\Serializer\SerializationContext;
+use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,13 +56,53 @@ class HouseholdController extends Controller
         {
             $household = $householeService->create($householdArray);
         }
-        catch (\Exception $exception)
+        catch (ValidationException $exception)
         {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $json = $this->get('jms_serializer')
             ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true));
+
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Post("/households/{id}")
+     *
+     * @param Request $request
+     * @param Household $household
+     * @return Response
+     */
+    public function editAction(Request $request, Household $household)
+    {
+        $arrayHousehold = $request->request->all();
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
+
+        try
+        {
+            $newHousehold = $householdService->update($household, $arrayHousehold);
+        }
+        catch (ValidationException $exception)
+        {
+            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $newHousehold,
+                'json',
+                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+            );
 
         return new Response($json);
     }
@@ -95,29 +136,6 @@ class HouseholdController extends Controller
                 'json',
                 SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
             );
-        return new Response($json);
-    }
-
-    /**
-     * @Rest\Post("/households/{id}")
-     *
-     * @param Request $request
-     * @param Household $household
-     * @return Response
-     */
-    public function editAction(Request $request, Household $household)
-    {
-        $arrayHousehold = $request->request->all();
-        /** @var HouseholdService $householdService */
-        $householdService = $this->get('beneficiary.household_service');
-        $newHousehold = $householdService->update($household, $arrayHousehold);
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $newHousehold,
-                'json',
-                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
-            );
-
         return new Response($json);
     }
 }

@@ -333,6 +333,20 @@ class Beneficiary
     }
 
     /**
+     * Set phones.
+     *
+     * @param \BeneficiaryBundle\Entity\Phone $phone
+     *
+     * @return Beneficiary
+     */
+    public function setPhone(\BeneficiaryBundle\Entity\Phone $phone = null)
+    {
+        $this->phones = $phone;
+
+        return $this;
+    }
+
+    /**
      * Remove phone.
      *
      * @param \BeneficiaryBundle\Entity\Phone $phone
@@ -400,6 +414,20 @@ class Beneficiary
     public function addProfile(\BeneficiaryBundle\Entity\Profile $profile)
     {
         $this->profile[] = $profile;
+
+        return $this;
+    }
+
+    /**
+     * Set profile.
+     *
+     * @param \BeneficiaryBundle\Entity\Profile $profile
+     *
+     * @return Beneficiary
+     */
+    public function setProfile(\BeneficiaryBundle\Entity\Profile $profile = null)
+    {
+        $this->profile = $profile;
 
         return $this;
     }

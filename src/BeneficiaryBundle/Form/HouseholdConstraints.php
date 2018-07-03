@@ -15,8 +15,9 @@ class HouseholdConstraints extends RequestValidatorConstraints
     protected function configure() : array {
         $numeric = new Type('numeric');
         $string = new Type('string');
-        $optionalNumeric = new Optional([$numeric]);
-        $optionalString = new Optional([$string]);
+        $array = new Type('array');
+        $optionalNumeric = new Optional($numeric);
+
         $household = [
             "address_street" => $string,
             "address_number" => $string,
@@ -25,6 +26,9 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "notes" => $string,
             "latitude" => $string,
             "longitude" => $string,
+            "__country" => $string,
+            "location" =>$array,
+            "beneficiaries" =>$array,
         ];
         $location = [
             "country_iso3" => $string,
@@ -34,24 +38,32 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "adm4" => $string
         ];
         $beneficiary = [
+            "id" => $optionalNumeric,
             "given_name" => $string,
             "family_name" => $string,
             "gender" => $string,
             "status" => $numeric,
             "date_of_birth" => $string,
-            "updated_on" => $string
+            "updated_on" => $string,
+            "profiles" => $array,
+            "vulnerability_criterions" => $array,
+            "phones" => $array,
+            "national_ids" => $array
         ];
         $profile = [
+            "id" => $optionalNumeric,
             "photo" => $string,
         ];
         $vulnerabilityCriterion = [
             "id" => $numeric,
         ];
         $phone = [
+            "id" => $optionalNumeric,
             "number" => $string,
             "type" => $string,
         ];
         $nationalId = [
+            "id" => $optionalNumeric,
             "id_number" => $string,
             "id_type" => $string,
         ];
