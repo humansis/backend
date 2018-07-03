@@ -16,7 +16,8 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder("hh");
         $q = $qb->leftJoin("hh.location", "l")
             ->where("l.countryIso3 = :iso3")
-            ->setParameter("iso3", $iso3);
+            ->setParameter("iso3", $iso3)
+        ->andWhere("hh.archived = 0");
 
         return $q->getQuery()->getResult();
     }

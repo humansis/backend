@@ -172,4 +172,13 @@ class HouseholdService
 
         return $location;
     }
+
+    public function remove(Household $household)
+    {
+        $household->setArchived(true);
+        $this->em->persist($household);
+        $this->em->flush();
+
+        return $household;
+    }
 }

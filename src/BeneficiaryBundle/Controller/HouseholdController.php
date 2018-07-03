@@ -131,7 +131,7 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Post("/households/all", name="all_households")
+     * @Rest\Post("/households/get/all", name="all_households")
      *
      * @SWG\Tag(name="Households")
      *
@@ -158,6 +158,22 @@ class HouseholdController extends Controller
                 $households,
                 'json',
                 SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Delete("/households/{id}")
+     */
+    public function removeAction(Household $household)
+    {
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get("beneficiary.household_service");
+        $household = $householdService->remove($household);
+        $json = $this->get('jms_serializer')
+            ->serialize($household,
+                'json',
+            SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
             );
         return new Response($json);
     }

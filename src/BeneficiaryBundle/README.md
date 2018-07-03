@@ -20,7 +20,7 @@ PUT ("/households")
 	},
 	"beneficiaries": [
 		{
-			"given_name": "nameee",
+			"given_name": "name",
 			"family_name": "family",
 			"gender": "h",
 			"status": 0,
@@ -44,7 +44,7 @@ PUT ("/households")
 			],
 			"national_ids": [
 				{
-					"id_number": "020254512",
+					"id_number": "1212",
 					"id_type": "type1"
 				}
 			]
