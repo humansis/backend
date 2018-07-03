@@ -4,6 +4,8 @@
 namespace BeneficiaryBundle\Utils;
 
 
+use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
@@ -88,6 +90,14 @@ class HouseholdService
             }
         }
 
+        if (!empty($householdArray["country_specific_answers"]))
+        {
+            foreach ($householdArray["country_specific_answers"] as $country_specific_answer)
+            {
+                $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
+            }
+        }
+
         $this->em->flush();
 
         return $household;
@@ -132,6 +142,15 @@ class HouseholdService
                 $this->em->persist($beneficiary);
             }
         }
+
+        if (!empty($householdArray["country_specific_answers"]))
+        {
+            foreach ($householdArray["country_specific_answers"] as $country_specific_answer)
+            {
+                $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
+            }
+        }
+
         $this->em->flush();
 
         return $household;
@@ -171,6 +190,46 @@ class HouseholdService
         }
 
         return $location;
+    }
+
+    /**
+     * @param Household $household
+     * @param array $countrySpecificAnswerArray
+     * @return array|CountrySpecificAnswer
+     * @throws \Exception
+     */
+    public function addOrUpdateCountrySpecific(Household $household, array $countrySpecificAnswerArray, bool $flush)
+    {
+        $this->requestValidator->validate(
+            "country_specific_answer",
+            HouseholdConstraints::class,
+            $countrySpecificAnswerArray,
+            'any'
+        );
+        $countrySpecific = $this->em->getRepository(CountrySpecific::class)
+            ->find($countrySpecificAnswerArray["country_specific"]["id"]);
+        if (!$countrySpecific instanceof CountrySpecific)
+            throw new \Exception("This country specific is unknown");
+
+        $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
+            ->findBy([
+                "countrySpecific" => $countrySpecific,
+                "household" => $household
+            ]);
+        if (!$countrySpecificAnswer instanceof CountrySpecificAnswer)
+        {
+            $countrySpecificAnswer = new CountrySpecificAnswer();
+            $countrySpecificAnswer->setCountrySpecific($countrySpecific)
+                ->setHousehold($household);
+        }
+
+        $countrySpecificAnswer->setAnswer($countrySpecificAnswerArray["answer"]);
+
+        $this->em->persist($countrySpecificAnswer);
+        if ($flush)
+            $this->em->flush();
+
+        return $countrySpecificAnswer;
     }
 
     public function remove(Household $household)

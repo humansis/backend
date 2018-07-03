@@ -28,6 +28,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "longitude" => $string,
             "__country" => $string,
             "location" =>$array,
+            "country_specific_answers" =>$array,
             "beneficiaries" =>$array,
         ];
         $location = [
@@ -36,6 +37,10 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "adm2" => $string,
             "adm3" => $string,
             "adm4" => $string
+        ];
+        $countrySpecificAnswer = [
+            "answer" => $string,
+            "country_specific" => $array,
         ];
         $beneficiary = [
             "id" => $optionalNumeric,
@@ -71,6 +76,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
         return [
             'household' => new Collection($household),
             'location' => new Collection($location),
+            'country_specific_answer' => new Collection($countrySpecificAnswer),
             'beneficiary' => new Collection($beneficiary),
             'profile' => new Collection($profile),
             'vulnerabilityCriterion' => new Collection($vulnerabilityCriterion),

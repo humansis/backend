@@ -18,6 +18,14 @@ PUT ("/households")
 		"adm3": "Chambery",
 		"adm4": "Ste Hélène sur Isère"
 	},
+	"country_specific_answers": [
+		{
+			"answer": "my answer",
+			"country_specific": {
+				"id": 1
+			}
+		}
+	],
 	"beneficiaries": [
 		{
 			"given_name": "name",
@@ -71,6 +79,14 @@ POST ("/households/{id_household}")
 		"adm3": "Chambery",
 		"adm4": "Ste Hélène sur Isère"
 	},
+	"country_specific_answers": [
+		{
+			"answer": "my answer",
+			"country_specific": {
+				"id": 1
+			}
+		}
+	],
 	"beneficiaries": [
 		{
 			"id": 1,
