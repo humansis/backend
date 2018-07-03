@@ -36,4 +36,16 @@ class CountrySpecificService
         return $countrySpecific;
     }
 
+    public function update(CountrySpecific $countrySpecific, $countryIso3, array $countrySpecificArray)
+    {
+        $countrySpecific->setType($countrySpecificArray["type"])
+            ->setField($countrySpecificArray["field"])
+            ->setCountryIso3($countryIso3);
+
+        $this->em->persist($countrySpecific);
+        $this->em->flush();
+
+        return $countrySpecific;
+    }
+
 }

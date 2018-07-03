@@ -4,6 +4,7 @@
 namespace BeneficiaryBundle\Controller;
 
 
+use BeneficiaryBundle\Entity\CountrySpecific;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,6 +42,27 @@ class CountryController extends Controller
     {
         $countrySpecific = $this->get('beneficiary.country_specific_service')
             ->create($request->request->get('__country'), $request->request->all());
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $countrySpecific,
+                'json',
+                SerializationContext::create()->setGroups(['FullCountrySpecific'])->setSerializeNull(true)
+            );
+
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Post("/country_specifics/{id}")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function updateAction(Request $request, CountrySpecific $countrySpecific)
+    {
+        $countrySpecific = $this->get('beneficiary.country_specific_service')
+            ->update($countrySpecific, $request->request->get('__country'), $request->request->all());
 
         $json = $this->get('jms_serializer')
             ->serialize(
