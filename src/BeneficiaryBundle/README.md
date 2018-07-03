@@ -62,7 +62,6 @@ PUT ("/households")
 ```
 
 POST ("/households/{id_household}")
-
 ```json
 {
 	"address_street": "add$*r2",

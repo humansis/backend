@@ -6,6 +6,7 @@ namespace BeneficiaryBundle\Controller;
 
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
@@ -16,9 +17,9 @@ class CountryController extends Controller
      *
      * @return Response
      */
-    public function getCountrySpecifics()
+    public function getCountrySpecifics(Request $request)
     {
-        $countrySpecifics = $this->get('beneficiary.country_specific_service')->getAll();
+        $countrySpecifics = $this->get('beneficiary.country_specific_service')->getAll($request->get('__country'));
 
         $json = $this->get('jms_serializer')
             ->serialize(
