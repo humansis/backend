@@ -104,7 +104,6 @@ class UserControllerTest extends BMSServiceTestCase
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->client->request('PUT', '/api/wsse/users', $body);
         $user = json_decode($this->client->getResponse()->getContent(), true);
-
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertArrayHasKey('id', $user);
@@ -121,10 +120,9 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testEditUser($newuser)
     {
-        $timestamp = (new \DateTime())->getTimestamp();
-        $email = $this->username . "@gmailedited." . $timestamp;
+        $roles = ["ROLE_TEST", "ROLE_USER"];
 
-        $body = ["email" => $email];
+        $body = ["roles" => $roles];
 
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -138,7 +136,7 @@ class UserControllerTest extends BMSServiceTestCase
         $this->em->clear();
 
         $userSearch = $this->em->getRepository(User::class)->find($newUserReceived['id']);
-        $this->assertSame($userSearch->getEmail(), $email);
+        $this->assertEquals($userSearch->getRoles(), $roles);
 
         return $newUserReceived;
     }
