@@ -73,7 +73,7 @@ class BeneficiaryService
             ->setStatus($beneficiaryArray["status"])
             ->setUpdatedOn(new \DateTime($beneficiaryArray["updated_on"]));
 
-        foreach ($beneficiaryArray["vulnerability_criterions"] as $vulnerability_criterion)
+        foreach ($beneficiaryArray["vulnerability_criterion"] as $vulnerability_criterion)
         {
             $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion["id"]));
         }
@@ -88,7 +88,7 @@ class BeneficiaryService
             $this->getOrSaveNationalId($beneficiary, $nationalIdArray, false);
         }
 
-            $profile = $this->getOrSaveProfile($beneficiary, $beneficiaryArray["profile"], false);
+        $this->getOrSaveProfile($beneficiary, $beneficiaryArray["profile"], false);
 
         $this->em->persist($beneficiary);
         if ($flush)

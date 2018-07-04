@@ -1,5 +1,15 @@
 # BeneficiaryBundle
 
+## INFOS
+
+### CSV 
+
+In column with multiple information (like phones, you can have multiple phone numbers), with a ';' as separator.
+
+
+## ROUTES
+
+
 PUT ("/households")
 
 ```json
@@ -37,7 +47,7 @@ PUT ("/households")
 			"profile": {
 				"photo": "gkjghjk"
 			},
-			"vulnerability_criterions": [
+			"vulnerability_criterion": [
 				{
 					"id": 1
 				}
@@ -96,7 +106,7 @@ POST ("/households/{id_household}")
 			"profile": {
 				"photo": "gkjghjk2"
 			},
-			"vulnerability_criterions": [
+			"vulnerability_criterion": [
 				{
 					"id": 1
 				}

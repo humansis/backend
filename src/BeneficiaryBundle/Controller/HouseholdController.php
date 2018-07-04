@@ -4,6 +4,7 @@
 namespace BeneficiaryBundle\Controller;
 
 
+use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use JMS\Serializer\SerializationContext;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
@@ -69,6 +70,40 @@ class HouseholdController extends Controller
             ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true));
 
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Post("/csv/households", name="add_csv_household")
+     *
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function addCSVAction(Request $request)
+    {
+        $fileCSV = $request->files->get('file');
+        $countryIso3 = $request->request->get('__country');
+        $countryIso3 = "KHM";
+        /** @var HouseholdCSVService $householeService */
+        $householeService = $this->get('beneficiary.household_csv_service');
+        try
+        {
+            $householeService->loadCSV($countryIso3, $fileCSV);
+        }
+        catch (ValidationException $exception)
+        {
+            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
+        }
+        catch (\Exception $e)
+        {
+            dump($e);
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+//        $json = $this->get('jms_serializer')
+//            ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true));
+
+        return new Response(json_encode(true));
     }
 
     /**

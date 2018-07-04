@@ -7,12 +7,16 @@ namespace BeneficiaryBundle\Utils;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use DistributionBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
+use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 
 class HouseholdService
 {
@@ -42,7 +46,11 @@ class HouseholdService
         $this->requestValidator = $requestValidator;
     }
 
-
+    /**
+     * @param string $iso3
+     * @param array $filters
+     * @return mixed
+     */
     public function getAll(string $iso3, array $filters)
     {
         $households = $this->em->getRepository(Household::class)->getAllBy($iso3, $filters);
@@ -52,11 +60,12 @@ class HouseholdService
 
     /**
      * @param array $householdArray
+     * @param bool $flush
      * @return Household
      * @throws ValidationException
      * @throws \Exception
      */
-    public function create(array $householdArray)
+    public function create(array $householdArray, bool $flush = true)
     {
         $this->requestValidator->validate(
             "household",
@@ -97,8 +106,8 @@ class HouseholdService
                 $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
             }
         }
-
-        $this->em->flush();
+        if ($flush)
+            $this->em->flush();
 
         return $household;
     }

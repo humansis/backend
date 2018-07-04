@@ -3,6 +3,10 @@ services:
         class: BeneficiaryBundle\Utils\HouseholdService
         arguments: ["@doctrine.orm.entity_manager", "@jms_serializer", "@beneficiary.beneficiary_service", "@request_validator"]
         public: true
+    beneficiary.household_csv_service:
+        class: BeneficiaryBundle\Utils\HouseholdCSVService
+        arguments: ["@doctrine.orm.entity_manager", "@beneficiary.household_service"]
+        public: true
     beneficiary.beneficiary_service:
         class: BeneficiaryBundle\Utils\BeneficiaryService
         arguments: ["@doctrine.orm.entity_manager", "@jms_serializer", "@request_validator"]
