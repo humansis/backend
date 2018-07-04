@@ -88,7 +88,7 @@ class HouseholdController extends Controller
         $householeService = $this->get('beneficiary.household_csv_service');
         try
         {
-            $householeService->loadCSV($countryIso3, $fileCSV);
+            $listHouseholds = $householeService->loadCSV($countryIso3, $fileCSV);
         }
         catch (ValidationException $exception)
         {
@@ -100,10 +100,11 @@ class HouseholdController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-//        $json = $this->get('jms_serializer')
-//            ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true));
-
-        return new Response(json_encode(true));
+        $json = $this->get('jms_serializer')
+            ->serialize($listHouseholds, 'json');
+dump($listHouseholds);
+dump($json);
+        return new Response($json);
     }
 
     /**

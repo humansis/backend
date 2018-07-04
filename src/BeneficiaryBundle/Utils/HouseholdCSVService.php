@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils;
 
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
@@ -21,6 +22,12 @@ class HouseholdCSVService
     /** @var HouseholdService $householdService */
     private $householdService;
 
+    private $percentSimilar = 90;
+
+    /**
+     * The row index of the header (with the name of country specifics)
+     * @var int
+     */
     private $indexRowHeader = 2;
 
     /**
@@ -73,11 +80,10 @@ class HouseholdCSVService
     }
 
 
-
-
     /**
      * @param $countryIso3
      * @param UploadedFile $uploadedFile
+     * @return array
      * @throws ValidationException
      * @throws \Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
@@ -85,15 +91,76 @@ class HouseholdCSVService
      */
     public function loadCSV($countryIso3, UploadedFile $uploadedFile)
     {
+        // LOADING CSV
         $reader = new Csv();
         $reader->setDelimiter(",");
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->toArray(null, true, true, true);
-        $household = null;
-        dump($sheetArray);
+
+        // Get the list of households with their beneficiaries
+        $listHouseholdsArray = $this->getListHouseholdArray($sheetArray, $countryIso3);
+
+        $listHouseholdsSaved = $this->em->getRepository(Household::class)->findAll();
+
+        $listHouseholdsWithSimilar = [];
+        foreach ($listHouseholdsArray as $householdArray)
+        {
+            $listSimilarHouseholds = $this->getSimilarBeneficiary($householdArray, $listHouseholdsSaved);
+            if (empty($listSimilarHouseholds))
+                $this->householdService->create($householdArray);
+            else
+                $listHouseholdsWithSimilar[] = [
+                    "new" => $householdArray,
+                    "old" => $listSimilarHouseholds
+                ];
+        }
+        return $listHouseholdsWithSimilar;
+    }
+
+    /**
+     * Return a list of household which are similar to the $newHouseholdarray
+     * @param array $newHouseholdarray
+     * @param array $listHousehold
+     * @return array
+     */
+    private function getSimilarBeneficiary(array $newHouseholdarray, array $listHousehold)
+    {
+        // Concatenation of fields to compare with
+        $stringToCompare = $newHouseholdarray["address_street"] .
+            $newHouseholdarray["address_number"] .
+            $newHouseholdarray["address_postcode"];
+
+        $listSimilarHouseholds = [];
+        /** @var Household $household */
+        foreach ($listHousehold as $household)
+        {
+            similar_text($stringToCompare,
+                $household->getAddressStreet() . $household->getAddressNumber() . $household->getAddressPostcode(),
+                $percent
+            );
+            if ($this->percentSimilar < $percent)
+            {
+                $listSimilarHouseholds[] = $household;
+            }
+        }
+        return $listSimilarHouseholds;
+    }
+
+    /**
+     * Get the list of households with their beneficiaries
+     * @param array $sheetArray
+     * @param $countryIso3
+     * @return array
+     */
+    private function getListHouseholdArray(array $sheetArray, $countryIso3)
+    {
+        // Get the mapping for the current country
         $mappingCSV = $this->loadMappingCSVOfCountry($countryIso3);
-        dump($mappingCSV);
+        $listHouseholdArray = [];
+        $householdArray = null;
         $rowHeader = null;
+        $formattedHouseholdArray = null;
+
         foreach ($sheetArray as $indexRow => $row)
         {
             if ($this->indexRowHeader === $indexRow)
@@ -101,15 +168,29 @@ class HouseholdCSVService
             if ($indexRow < $this->first_row)
                 continue;
 
-            if (null === $household || $row[$this->MAPPING_CSV["address_street"]] !== null)
+            // Load the household array for the current row
+            $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $row, $rowHeader);
+            // Check if it's a new household or just a new beneficiary in the current row
+            if ($formattedHouseholdArray["address_street"] !== "")
             {
-                // Create a formatted array from the csv row
-                $formattedArray = $this->mappingCSV($mappingCSV, $countryIso3, $row, $rowHeader);
-                dump($formattedArray);
-                $household = $this->householdService->create($formattedArray, false);
-                dump($household);
+                if (null !== $householdArray)
+                {
+                    $listHouseholdArray[] = $householdArray;
+                }
+                $householdArray = $formattedHouseholdArray;
+            }
+            else
+            {
+                $householdArray["beneficiaries"][] = current($formattedHouseholdArray["beneficiaries"]);
             }
         }
+
+        if (null !== $formattedHouseholdArray)
+        {
+            $listHouseholdArray[] = $householdArray;
+        }
+
+        return $listHouseholdArray;
     }
 
     /**
@@ -165,14 +246,14 @@ class HouseholdCSVService
         $formattedHouseholdArray["country_specific_answers"] = [];
         foreach ($formattedHouseholdArray as $indexFormatted => $value)
         {
-            if (substr( $indexFormatted, 0, 20 ) === "tmp_country_specific")
+            if (substr($indexFormatted, 0, 20) === "tmp_country_specific")
             {
                 $field = $rowHeader[$mappingCSV[$indexFormatted]];
                 $countrySpecific = $this->em->getRepository(CountrySpecific::class)
                     ->findOneByField($field);
                 $formattedHouseholdArray["country_specific_answers"][] = [
                     "answer" => $value,
-                    "country_specific" =>["id" => $countrySpecific->getId()]
+                    "country_specific" => ["id" => $countrySpecific->getId()]
                 ];
                 unset($formattedHouseholdArray[$indexFormatted]);
             }

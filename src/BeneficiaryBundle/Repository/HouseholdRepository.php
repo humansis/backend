@@ -21,4 +21,17 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
 
         return $q->getQuery()->getResult();
     }
+
+    public function getSimilar(array $householdArray)
+    {
+        $qb = $this->createQueryBuilder("hh");
+        $q = $qb->where("SOUNDEX(hh.addressStreet) = SOUNDEX(:addr_street)")
+            ->andWhere("SOUNDEX(hh.addressNumber) = SOUNDEX(:addr_number)")
+            ->andWhere("SOUNDEX(hh.addressPostcode) = SOUNDEX(:addr_postcode)")
+            ->setParameter("addr_street", $householdArray["address_street"])
+            ->setParameter("addr_number", $householdArray["address_number"])
+            ->setParameter("addr_postcode", $householdArray["address_postcode"]);
+
+        return $q->getQuery()->getResult();
+    }
 }

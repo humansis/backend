@@ -15,6 +15,7 @@
     },
     "require": {
         "php": ">=7.0",
+        "beberlei/DoctrineExtensions": "^1.0",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-migrations-bundle": "^1.0",
         "doctrine/orm": "^2.5",
@@ -24,6 +25,7 @@
         "jms/serializer-bundle": "^2.3",
         "nelmio/api-doc-bundle": "^3.0",
         "nelmio/cors-bundle": "^1.5",
+        "relief_applications/symfony-request-validator-bundle": "@dev",
         "sensio/distribution-bundle": "^5.0.19",
         "sensio/framework-extra-bundle": "^5.0.0",
         "symfony/monolog-bundle": "^3.1.0",
@@ -31,8 +33,7 @@
         "symfony/swiftmailer-bundle": "^2.6.4",
         "symfony/symfony": "3.4.*",
         "symfony/templating": "^3.4",
-        "twig/twig": "^1.0||^2.0",
-        "relief_applications/symfony-request-validator-bundle": "@dev"
+        "twig/twig": "^1.0||^2.0"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
