@@ -26,13 +26,13 @@ class DistributionController extends Controller
      *      type="object",
      *      required=true,
      *      description="Body of the request",
-     * 	  @SWG\Schema(ref=@Model(type=Project::class))
+     * 	  @SWG\Schema(ref=@Model(type=DistributionData::class))
      * )
      *
      * @SWG\Response(
      *     response=200,
      *     description="Project created",
-     *     @Model(type=Project::class)
+     *     @Model(type=DistributionData::class)
      * )
      * 
      * @param Request $request

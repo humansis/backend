@@ -6,10 +6,13 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Form\HouseholdConstraints;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use PhpOption\Tests\PhpOptionRepo;
+use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 
 class BeneficiaryService
 {
@@ -19,71 +22,90 @@ class BeneficiaryService
     /** @var Serializer $serializer */
     private $serializer;
 
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer)
+    /** @var RequestValidator $requestValidator */
+    private $requestValidator;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        Serializer $serializer,
+        RequestValidator $requestValidator
+    )
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
+        $this->requestValidator = $requestValidator;
     }
+
 
     /**
      * @param Household $household
-     * @param Beneficiary $beneficiary
+     * @param array $beneficiaryArray
      * @param $flush
-     * @return Beneficiary
+     * @return Beneficiary|null|object
      * @throws \Exception
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function create(Household $household, Beneficiary $beneficiary, $flush)
+    public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
-        $vulnerabilityCriterions = $beneficiary->getVulnerabilityCriterions();
-        $beneficiary->setVulnerabilityCriterions(null);
-        if (null !== $vulnerabilityCriterions)
+        $this->requestValidator->validate(
+            "beneficiary",
+            HouseholdConstraints::class,
+            $beneficiaryArray,
+            'any'
+        );
+
+        if (array_key_exists("id", $beneficiaryArray))
         {
-            foreach ($vulnerabilityCriterions as $vulnerabilityCriterion)
-            {
-                $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerabilityCriterion));
-            }
+            $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
+            if (!$beneficiary instanceof Beneficiary)
+                throw new \Exception("Beneficiary was not found.");
+            $beneficiary->setVulnerabilityCriterions(null);
+        }
+        else
+        {
+            $beneficiary = new Beneficiary();
+            $beneficiary->setHousehold($household);
+        }
+        $beneficiary->setGender($beneficiaryArray["gender"])
+            ->setDateOfBirth(new \DateTime($beneficiaryArray["date_of_birth"]))
+            ->setFamilyName($beneficiaryArray["family_name"])
+            ->setGivenName($beneficiaryArray["given_name"])
+            ->setStatus($beneficiaryArray["status"])
+            ->setUpdatedOn(new \DateTime($beneficiaryArray["updated_on"]));
+
+        foreach ($beneficiaryArray["vulnerability_criterion"] as $vulnerability_criterion)
+        {
+            $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion["id"]));
         }
 
-        $phones = $beneficiary->getPhones();
-        if (null !== $phones)
+        foreach ($beneficiaryArray["phones"] as $phoneArray)
         {
-            foreach ($phones as $phone)
-            {
-                $this->getOrSavePhone($beneficiary, $phone, false);
-            }
+            $this->getOrSavePhone($beneficiary, $phoneArray, false);
         }
 
-        $nationalIds = $beneficiary->getNationalIds();
-        if (null !== $nationalIds)
+        foreach ($beneficiaryArray["national_ids"] as $nationalIdArray)
         {
-            foreach ($nationalIds as $nationalId)
-            {
-                $this->getOrSaveNationalId($beneficiary, $nationalId, false);
-            }
+            $this->getOrSaveNationalId($beneficiary, $nationalIdArray, false);
         }
 
-        $beneficiary->setHousehold($household);
+        $this->getOrSaveProfile($beneficiary, $beneficiaryArray["profile"], false);
 
         $this->em->persist($beneficiary);
         if ($flush)
             $this->em->flush();
+
         return $beneficiary;
     }
 
-    public function update(Household $oldHousehold, Household $newHousehold, $flush)
-    {
-
-    }
-
     /**
-     * @param VulnerabilityCriterion $vulnerabilityCriterion
+     * @param $vulnerabilityCriterionId
      * @return VulnerabilityCriterion
      * @throws \Exception
      */
-    public function getVulnerabilityCriterion(VulnerabilityCriterion $vulnerabilityCriterion)
+    public function getVulnerabilityCriterion($vulnerabilityCriterionId)
     {
         /** @var VulnerabilityCriterion $vulnerabilityCriterion */
-        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->find($vulnerabilityCriterion);
+        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->find($vulnerabilityCriterionId);
 
         if (!$vulnerabilityCriterion instanceof VulnerabilityCriterion)
             throw new \Exception("This vulnerability doesn't exist.");
@@ -92,56 +114,108 @@ class BeneficiaryService
 
     /**
      * @param Beneficiary $beneficiary
-     * @param Phone $phone
-     * @return Phone
+     * @param array $phoneArray
+     * @param $flush
+     * @return Phone|null|object
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function getOrSavePhone(Beneficiary $beneficiary, Phone $phone, $flush)
+    public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
-        if ($phone->getId() != null)
+        $this->requestValidator->validate(
+            "phone",
+            HouseholdConstraints::class,
+            $phoneArray,
+            'any'
+        );
+        if (array_key_exists("id", $phoneArray))
         {
-            /** @var Phone $oldPhone */
-            $oldPhone = $this->em->getRepository(Phone::class)->find($phone);
-            $oldPhone->setType($phone->getType())
-                ->setNumber($phone->getNumber())
-                ->setBeneficiary($phone->getBeneficiary());
-
-            $this->em->persist($oldPhone);
-            if ($flush)
-                $this->em->flush();
-            return $oldPhone;
+            $phone = $this->em->getRepository(Phone::class)->find($phoneArray["id"]);
         }
-        $phone->setBeneficiary($beneficiary);
+        else
+        {
+            $phone = new Phone();
+        }
+        $phone->setBeneficiary($beneficiary)
+            ->setType($phoneArray["type"])
+            ->setNumber($phoneArray["number"]);
+
         $this->em->persist($phone);
         if ($flush)
             $this->em->flush();
+
         return $phone;
     }
 
     /**
      * @param Beneficiary $beneficiary
-     * @param NationalId $nationalId
-     * @return NationalId
+     * @param array $nationalIdArray
+     * @param $flush
+     * @return NationalId|null|object
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function getOrSaveNationalId(Beneficiary $beneficiary, NationalId $nationalId, $flush)
+    public function getOrSaveNationalId(Beneficiary $beneficiary, array $nationalIdArray, $flush)
     {
-        if ($nationalId->getId() != null)
+        $this->requestValidator->validate(
+            "nationalId",
+            HouseholdConstraints::class,
+            $nationalIdArray,
+            'any'
+        );
+        if (array_key_exists("id", $nationalIdArray))
         {
-            /** @var NationalId $oldNationalId */
-            $oldNationalId = $this->em->getRepository(NationalId::class)->find($nationalId);
-            $oldNationalId->setIdNumber($nationalId->getIdNumber())
-                ->setIdType($nationalId->getIdType())
-                ->setBeneficiary($nationalId->getBeneficiary());
-
-            $this->em->persist($oldNationalId);
-            if ($flush)
-                $this->em->flush();
-
-            return $oldNationalId;
+            $nationalId = $this->em->getRepository(NationalId::class)->find($nationalIdArray["id"]);
         }
-        $nationalId->setBeneficiary($beneficiary);
+        else
+        {
+            $nationalId = new NationalId();
+        }
+        $nationalId->setBeneficiary($beneficiary)
+            ->setIdType($nationalIdArray["id_type"])
+            ->setIdNumber($nationalIdArray["id_number"]);
+
         $this->em->persist($nationalId);
         if ($flush)
             $this->em->flush();
+
         return $nationalId;
+    }
+
+    /**
+     * @param Beneficiary $beneficiary
+     * @param array $profileArray
+     * @param $flush
+     * @return Profile|null|object
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     */
+    public function getOrSaveProfile(Beneficiary $beneficiary, array $profileArray, $flush)
+    {
+        $this->requestValidator->validate(
+            "profile",
+            HouseholdConstraints::class,
+            $profileArray,
+            'any'
+        );
+
+        $profile = $beneficiary->getProfile();
+        if (null === $profile)
+        {
+            $profile = new Profile();
+        }
+        else
+        {
+            $profile = $this->em->getRepository(Profile::class)->find($profile);
+        }
+
+        /** @var Profile $profile */
+        $profile->setPhoto($profileArray["photo"]);
+        $this->em->persist($profile);
+
+        $beneficiary->setProfile($profile);
+        $this->em->persist($beneficiary);
+
+        if ($flush)
+            $this->em->flush();
+
+        return $profile;
     }
 }

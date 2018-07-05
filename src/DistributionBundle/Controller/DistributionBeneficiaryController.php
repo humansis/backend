@@ -27,7 +27,7 @@ class DistributionBeneficiaryController extends Controller
      *      type="object",
      *      required=true,
      *      description="Body of the request",
-     * 	  @SWG\Schema(ref=@Model(type=Project::class))
+     * 	  @SWG\Schema(ref=@Model(type=DistributionBeneficiary::class))
      * )
      *
      * @SWG\Response(

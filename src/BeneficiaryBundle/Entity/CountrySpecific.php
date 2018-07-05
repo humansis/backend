@@ -56,8 +56,11 @@ class CountrySpecific
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($field, $type, $countryIso3)
     {
+        $this->setField($field)
+            ->setType($type)
+            ->setCountryIso3($countryIso3);
         $this->countrySpecificAnswers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 

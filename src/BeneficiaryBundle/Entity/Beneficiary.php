@@ -75,7 +75,7 @@ class Beneficiary
     private $updatedOn;
 
     /**
-     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist"})
      * @Groups({"FullHousehold"})
      */
     private $profile;
@@ -333,6 +333,20 @@ class Beneficiary
     }
 
     /**
+     * Set phones.
+     *
+     * @param \BeneficiaryBundle\Entity\Phone $phone
+     *
+     * @return Beneficiary
+     */
+    public function setPhone(\BeneficiaryBundle\Entity\Phone $phone = null)
+    {
+        $this->phones = $phone;
+
+        return $this;
+    }
+
+    /**
      * Remove phone.
      *
      * @param \BeneficiaryBundle\Entity\Phone $phone
@@ -391,42 +405,6 @@ class Beneficiary
     }
 
     /**
-     * Add profile.
-     *
-     * @param \BeneficiaryBundle\Entity\Profile $profile
-     *
-     * @return Beneficiary
-     */
-    public function addProfile(\BeneficiaryBundle\Entity\Profile $profile)
-    {
-        $this->profile[] = $profile;
-
-        return $this;
-    }
-
-    /**
-     * Remove profile.
-     *
-     * @param \BeneficiaryBundle\Entity\Profile $profile
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeProfile(\BeneficiaryBundle\Entity\Profile $profile)
-    {
-        return $this->profile->removeElement($profile);
-    }
-
-    /**
-     * Get profile.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getProfile()
-    {
-        return $this->profile;
-    }
-
-    /**
      * Set status.
      *
      * @param bool $status
@@ -448,5 +426,29 @@ class Beneficiary
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * Set profile.
+     *
+     * @param \BeneficiaryBundle\Entity\Profile|null $profile
+     *
+     * @return Beneficiary
+     */
+    public function setProfile(\BeneficiaryBundle\Entity\Profile $profile = null)
+    {
+        $this->profile = $profile;
+
+        return $this;
+    }
+
+    /**
+     * Get profile.
+     *
+     * @return \BeneficiaryBundle\Entity\Profile|null
+     */
+    public function getProfile()
+    {
+        return $this->profile;
     }
 }

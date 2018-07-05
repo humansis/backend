@@ -4,8 +4,11 @@
 namespace BeneficiaryBundle\Controller;
 
 
+use BeneficiaryBundle\Utils\ExportCSVService;
+use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use JMS\Serializer\SerializationContext;
+use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,9 +58,13 @@ class HouseholdController extends Controller
         {
             $household = $householeService->create($householdArray);
         }
-        catch (\Exception $exception)
+        catch (ValidationException $exception)
         {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $json = $this->get('jms_serializer')
@@ -67,7 +74,167 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Post("/households/all", name="all_households")
+     * @Rest\Post("/csv/households", name="add_csv_household")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Parameter(
+     *     name="file",
+     *     in="formData",
+     *     required=true,
+     *     type="file"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return Household (old and new) if similarity founded",
+     *      examples={
+     *          "application/json": {{
+     *              "old": @Model(type=Household::class),
+     *              "new": @Model(type=Household::class)
+     *          }}
+     *      }
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function addCSVAction(Request $request)
+    {
+        $fileCSV = $request->files->get('file');
+        $countryIso3 = $request->request->get('__country');
+//        $countryIso3 = "KHM";
+        /** @var HouseholdCSVService $householeService */
+        $householeService = $this->get('beneficiary.household_csv_service');
+        try
+        {
+            $listHouseholds = $householeService->loadCSV($countryIso3, $fileCSV);
+        }
+        catch (ValidationException $exception)
+        {
+            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize($listHouseholds, 'json');
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Get("/csv/households/export", name="get_pattern_csv_household")
+     *
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return Household (old and new) if similarity founded",
+     *      examples={
+     *          "application/json": {
+     *              {
+     *                  "'Household','','','','','','','','','','','Beneficiary','','','','','',''\n'Address street','Address number','Address postcode','Livelihood','Notes','Latitude','Longitude','Adm1','Adm2','Adm3','Adm4','Family name','Gender','Status','Date of birth','Vulnerability criteria','Phones','National IDs'\n",
+     *                  "pattern_household_fra.csv"
+     *              }
+     *          }
+     *      }
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getPatternCSVAction(Request $request)
+    {
+        $countryIso3 = $request->request->get('__country');
+//        $countryIso3 = "KHM";
+        /** @var ExportCSVService $exportCSVService */
+        $exportCSVService = $this->get('beneficiary.household_export_csv_service');
+        try
+        {
+            $fileCSV = $exportCSVService->generateCSV($countryIso3);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new Response(json_encode($fileCSV));
+    }
+
+    /**
+     * @Rest\Post("/households/{id}")
+     *
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Parameter(
+     *     name="household",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="fields of the household which must be updated",
+     *     @Model(type=Household::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @Model(type=Household::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Household $household
+     * @return Response
+     */
+    public function editAction(Request $request, Household $household)
+    {
+        $arrayHousehold = $request->request->all();
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
+
+        try
+        {
+            $newHousehold = $householdService->update($household, $arrayHousehold);
+        }
+        catch (ValidationException $exception)
+        {
+            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $newHousehold,
+                'json',
+                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+            );
+
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Post("/households/get/all", name="all_households")
      *
      * @SWG\Tag(name="Households")
      *
@@ -99,25 +266,18 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Post("/households/{id}")
-     *
-     * @param Request $request
-     * @param Household $household
-     * @return Response
+     * @Rest\Delete("/households/{id}")
      */
-    public function editAction(Request $request, Household $household)
+    public function removeAction(Household $household)
     {
-        $arrayHousehold = $request->request->all();
         /** @var HouseholdService $householdService */
-        $householdService = $this->get('beneficiary.household_service');
-        $newHousehold = $householdService->update($household, $arrayHousehold);
+        $householdService = $this->get("beneficiary.household_service");
+        $household = $householdService->remove($household);
         $json = $this->get('jms_serializer')
-            ->serialize(
-                $newHousehold,
+            ->serialize($household,
                 'json',
-                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
             );
-
         return new Response($json);
     }
 }

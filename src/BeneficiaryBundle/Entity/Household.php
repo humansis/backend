@@ -102,6 +102,13 @@ class Household
      */
     private $beneficiaries;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    private $archived = 0;
+
 
     /**
      * Constructor
@@ -408,5 +415,29 @@ class Household
         $this->beneficiaries = $collection;
 
         return $this;
+    }
+
+    /**
+     * Set archived.
+     *
+     * @param bool $archived
+     *
+     * @return Household
+     */
+    public function setArchived($archived)
+    {
+        $this->archived = $archived;
+
+        return $this;
+    }
+
+    /**
+     * Get archived.
+     *
+     * @return bool
+     */
+    public function getArchived()
+    {
+        return $this->archived;
     }
 }
