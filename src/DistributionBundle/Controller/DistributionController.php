@@ -60,7 +60,7 @@ class DistributionController extends Controller
     /**
      * @Rest\Get("/distributions", name="get_all_distributions")
      *
-     * @SWG\Tag(name="distributions")
+     * @SWG\Tag(name="Distributions")
      *
      * @SWG\Response(
      *     response=200,
@@ -85,7 +85,7 @@ class DistributionController extends Controller
     /**
      * @Rest\Get("/distributions/{id}", name="get_one_distributions")
      *
-     * @SWG\Tag(name="distributions")
+     * @SWG\Tag(name="Distributions")
      *
      * @SWG\Response(
      *     response=200,
@@ -112,7 +112,7 @@ class DistributionController extends Controller
      * Edit a distribution
      * @Rest\Post("/distributions/{id}", name="update_distribution")
      *
-     * @SWG\Tag(name="distributions")
+     * @SWG\Tag(name="Distributions")
      *
      * @SWG\Parameter(
      *     name="DistributionData",
@@ -156,7 +156,7 @@ class DistributionController extends Controller
      * Archive a distribution
      * @Rest\Post("/distributions/archive/{id}", name="archived_project")
      *
-     * @SWG\Tag(name="distributions")
+     * @SWG\Tag(name="Distributions")
      *
      * @SWG\Response(
      *     response=200,
