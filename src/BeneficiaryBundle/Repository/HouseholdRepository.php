@@ -2,6 +2,8 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use Doctrine\ORM\QueryBuilder;
+
 /**
  * HouseholdRepository
  *
@@ -17,7 +19,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         $q = $qb->leftJoin("hh.location", "l")
             ->where("l.countryIso3 = :iso3")
             ->setParameter("iso3", $iso3)
-        ->andWhere("hh.archived = 0");
+            ->andWhere("hh.archived = 0");
 
         return $q->getQuery()->getResult();
     }
@@ -33,5 +35,59 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter("addr_postcode", $householdArray["address_postcode"]);
 
         return $q->getQuery()->getResult();
+    }
+
+    public function findByCriteria($countryISO3, array $criteria)
+    {
+        $qb = $this->createQueryBuilder("hh")
+            ->leftJoin("hh.beneficiaries", "b");
+        $this->setCountry($qb, $countryISO3);
+
+        $i = 1;
+        foreach ($criteria as $criterion)
+        {
+            $this->whereBeneficiary($qb, $i, $countryISO3, $criterion['field'], $criterion['value'], $criterion['operator'], $criterion['group']);
+            $i++;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
+     *
+     * @param QueryBuilder $qb
+     * @param $i
+     * @param $countryISO3
+     * @param $field
+     * @param $value
+     * @param $operator
+     * @param bool|null $status
+     */
+    private function whereBeneficiary(QueryBuilder &$qb, $i, $countryISO3, $field, $value, $operator, bool $status = null)
+    {
+        $qbSub = $this->createQueryBuilder("hh$i");
+        $this->setCountry($qbSub, $countryISO3, $i);
+        $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
+            ->andWhere("b$i.$field $operator :val$i")
+            ->setParameter("val$i", $value)
+            ->andWhere("b$i.status = :status$i")
+            ->setParameter("status$i", $status);
+
+        $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
+            ->setParameter("val$i", $value)
+            ->setParameter("status$i", $status);
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @param $countryISO3
+     * @param string $i
+     */
+    private function setCountry(QueryBuilder &$qb, $countryISO3, $i = '')
+    {
+        $qb->leftJoin("hh$i.location", "l$i")
+            ->andWhere("l$i.countryIso3 = :countryIso3")
+            ->setParameter("countryIso3", $countryISO3);
     }
 }

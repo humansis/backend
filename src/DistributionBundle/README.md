@@ -1,5 +1,43 @@
 # DistributionBundle
 
+
+## Criteria for distribution
+
+
+- **distribution_type** : 'household' (for send distribution to every beneficiaries of a household)
+OR 'beneficiary' (to send distribution to a specific beneficiary)
+- **criteria** : list of criterion :
+    - **group** : 'beneficiary' (head of household) or 'dependent' (beneficiaries except head of household)
+    - **field** : name of a column of Beneficiary table
+    - **operator** : '=', '<', '>', '<=', '>='. It's the operator used for compare the wanted value with the value in database
+    - **value** : value to be compare with the database column
+    
+    
+If you want to get create a distribution for full household :
+
+```json
+{
+	"distribution_type": "household",
+	"criteria": [
+		{
+			"group": "beneficiary",
+			"field": "gender",
+			"operator": "=",
+			"value": "1"
+		},
+		{
+			"group": "dependent",
+			"field": "dateOfBirth",
+			"operator": ">",
+			"value": "1994-10-25"
+		}
+	]
+}
+```
+
+
+
+
 ## Create
 PUT(/distributions)
 

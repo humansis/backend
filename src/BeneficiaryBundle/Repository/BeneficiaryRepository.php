@@ -2,6 +2,8 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use Doctrine\ORM\QueryBuilder;
+
 /**
  * BeneficiaryRepository
  *
@@ -10,4 +12,30 @@ namespace BeneficiaryBundle\Repository;
  */
 class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    public function findByCriteria($countryISO3, array $criteria)
+    {
+        $qb = $this->createQueryBuilder("b");
+        $this->setCountry($qb, $countryISO3);
+
+        foreach ($criteria as $criterion)
+        {
+
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    private function whereBeneficiary(QueryBuilder &$qb, $field, $value, $operator, bool $status)
+    {
+        $qb->andWhere("");
+    }
+
+    private function setCountry(QueryBuilder &$qb, $countryISO3)
+    {
+        $qb->leftJoin("b.household", "hh")
+            ->leftJoin("hh.location", "l")
+            ->andWhere("l.countryIso3 = :countryIso3")
+            ->setParameter("countryIso3", $countryISO3);
+    }
 }
