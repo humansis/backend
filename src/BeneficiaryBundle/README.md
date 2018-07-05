@@ -2,6 +2,11 @@
 
 ## INFOS
 
+### Beneficiary
+
+- **Status** : 1 means that the beneficiary is the head of household, 0 in the other case
+
+
 ### CSV 
 
 In column with multiple information (like phones, you can have multiple phone numbers), with a ';' as separator.
