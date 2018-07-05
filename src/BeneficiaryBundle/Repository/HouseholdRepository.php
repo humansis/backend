@@ -45,12 +45,15 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * Get Households which respect criteria
+     *
      * @param $countryISO3
      * @param array $criteria
+     * @param string $groupGlobal => USELESS FOR THIS REPOSITORY, BUT IT'S OBLIGATORY
      * @return mixed
      * @throws \Exception
      */
-    public function findByCriteria($countryISO3, array $criteria)
+    public function findByCriteria($countryISO3, array $criteria, string $groupGlobal = null)
     {
         $qb = $this->createQueryBuilder("hh")
             ->leftJoin("hh.beneficiaries", "b");
@@ -167,6 +170,8 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * Set the country iso3 in the query on Household (with alias 'hh{id}'
+     *
      * @param QueryBuilder $qb
      * @param $countryISO3
      * @param string $i

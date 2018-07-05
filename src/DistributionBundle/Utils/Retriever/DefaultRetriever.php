@@ -29,19 +29,29 @@ class DefaultRetriever extends AbstractRetriever
      * @param string $countryISO3
      * @param string $distributionType
      * @param array $criteria
+     * @param string|null $groupGlobal
      * @return mixed
      * @throws \Exception
      */
-    public function getReceivers(string $countryISO3, string $distributionType, array $criteria)
+    public function getReceivers(string $countryISO3, string $distributionType, array $criteria, string $groupGlobal = null)
     {
-        $formattedCriteria = [];
-        foreach ($criteria as $criterion)
+        $groupCode = null;
+        if ($distributionType === 'household')
         {
-            $criterion["group"] = $this->getStatusBeneficiaryCriterion($criterion["group"]);
-            $formattedCriteria[] = $criterion;
+            foreach ($criteria as $criterion)
+            {
+                $criterion["group"] = $this->getStatusBeneficiaryCriterion($criterion["group"]);
+            }
         }
-
-        $receivers = $this->guessRepository($distributionType)->findByCriteria($countryISO3, $formattedCriteria);
+        elseif ($distributionType === 'beneficiary')
+        {
+            $groupCode = $this->getStatusBeneficiaryCriterion($groupGlobal);
+        }
+        else
+        {
+            throw new \Exception("The distribution type '$distributionType' is unknown.");
+        }
+        $receivers = $this->guessRepository($distributionType)->findByCriteria($countryISO3, $criteria, $groupCode);
         return $receivers;
     }
 

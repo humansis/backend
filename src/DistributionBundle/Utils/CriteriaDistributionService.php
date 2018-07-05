@@ -30,7 +30,8 @@ class CriteriaDistributionService
         $defaultRetriever = new DefaultRetriever($this->em);
         $countryISO3 = $filters['__country'];
         $distributionType = $filters['distribution_type'];
+        $groupGlobal = (array_key_exists('group', $filters) ? $filters['group'] : null);
 
-        return $defaultRetriever->getReceivers($countryISO3, $distributionType, $filters["criteria"]);
+        return $defaultRetriever->getReceivers($countryISO3, $distributionType, $filters["criteria"], $groupGlobal);
     }
 }

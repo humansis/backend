@@ -3,6 +3,7 @@
 
 ## Criteria for distribution
 
+### Household Distribution
 
 - **distribution_type** : 'household' (for send distribution to every beneficiaries of a household)
 OR 'beneficiary' (to send distribution to a specific beneficiary)
@@ -14,8 +15,7 @@ OR 'beneficiary' (to send distribution to a specific beneficiary)
     - **id** : *optional* '{id}' (id of the foreign key)
     
     
-If you want to get create a distribution for full household :
-
+Example :
 ```json
 {
 	"distribution_type": "household",
@@ -41,6 +41,54 @@ If you want to get create a distribution for full household :
 		},
 		{
 			"group": null,
+			"field": "idCountrySpecific",
+			"id": 1,
+			"operator": "<=",
+			"value": 3
+		}
+	]
+}
+```
+    
+    
+
+### Beneficiary Distribution
+
+
+- **distribution_type** : 'household' (for send distribution to every beneficiaries of a household)
+OR 'beneficiary' (to send distribution to a specific beneficiary)
+- **group** : 'beneficiary' (for send distribution to every beneficiaries of a household)
+OR 'dependent' (to send distribution to a specific beneficiary) OR 'null' (both)
+- **criteria** : list of criterion :
+    - **field** : name of a column of Beneficiary table or 'idCountrySpecific' or 'idVulnerabilityCriterion'
+    - **operator** : '=', '<', '>', '<=', '>='. It's the operator used for compare the wanted value with the value in database
+    - **value** : value to be compare with the database column
+    - **id** : *optional* '{id}' (id of the foreign key)
+    
+
+Example :
+```json
+{
+	"distribution_type": "beneficiary",
+	"group": "beneficiary",
+	"criteria": [
+		{
+			"field": "dateOfBirth",
+			"operator": ">",
+			"value": "1993-11-26"
+		},
+		{
+			"field": "gender",
+			"operator": "=",
+			"value": "1"
+		},
+		{
+			"field": "idVulnerabilityCriterion",
+			"id": 1,
+			"operator": null,
+			"value": null
+		},
+		{
 			"field": "idCountrySpecific",
 			"id": 1,
 			"operator": "<=",
