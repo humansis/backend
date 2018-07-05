@@ -22,6 +22,7 @@ class CriteriaDistributionService
 
     /**
      * @param array $filters
+     * @return mixed
      * @throws \Exception
      */
     public function load(array $filters)

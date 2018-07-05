@@ -12,6 +12,13 @@ use Doctrine\ORM\QueryBuilder;
  */
 class HouseholdRepository extends \Doctrine\ORM\EntityRepository
 {
+    private $FIELDS_MAPPING = [
+        "gender" => "beneficiary",
+        "dateOfBirth" => "beneficiary",
+        "idCountrySpecific" => "countrySpecific",
+        "idVulnerabilityCriterion" => "vulnerabilityCriterion"
+    ];
+
 
     public function getAllBy($iso3, $filters = [])
     {
@@ -37,6 +44,12 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getResult();
     }
 
+    /**
+     * @param $countryISO3
+     * @param array $criteria
+     * @return mixed
+     * @throws \Exception
+     */
     public function findByCriteria($countryISO3, array $criteria)
     {
         $qb = $this->createQueryBuilder("hh")
@@ -46,7 +59,25 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         $i = 1;
         foreach ($criteria as $criterion)
         {
-            $this->whereBeneficiary($qb, $i, $countryISO3, $criterion['field'], $criterion['value'], $criterion['operator'], $criterion['group']);
+            if (!array_key_exists($criterion['field'], $this->FIELDS_MAPPING))
+                throw new \Exception("The field '{$criterion['field']} is not implement yet");
+            switch ($this->FIELDS_MAPPING[$criterion['field']])
+            {
+                // Criterion on the field directly inside beneficiary table
+                case 'beneficiary':
+                    $this->whereBeneficiary($qb, $i, $countryISO3, $criterion['field'], $criterion['value'], $criterion['operator'], $criterion['group']);
+                    break;
+                // Criterion on the value of a country specific
+                case 'countrySpecific':
+                    $this->whereCountrySpecific($qb, $i, $countryISO3, $criterion['id'], $criterion['value'], $criterion['operator']);
+                    break;
+                // Criterion on vulnerability criterion (if the beneficiary has, or not)
+                case 'vulnerabilityCriterion':
+                    $this->whereVulnerabilityCriterion($qb, $i, $countryISO3, $criterion['id'], $criterion['group']);
+                    break;
+                default:
+                    throw new \Exception("The field '{$criterion['field']} is not implement yet");
+            }
             $i++;
         }
 
@@ -55,6 +86,60 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
 
     /**
      * Create sub request. The main request while found household inside the subrequest (and others subrequest)
+     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
+     *
+     * @param QueryBuilder $qb
+     * @param $i
+     * @param $countryISO3
+     * @param $idVulnerabilityCriterion
+     * @param bool|null $status
+     */
+    private function whereVulnerabilityCriterion(QueryBuilder &$qb, $i, $countryISO3, $idVulnerabilityCriterion, bool $status = null)
+    {
+        $qbSub = $this->createQueryBuilder("hh$i");
+        $this->setCountry($qbSub, $countryISO3, $i);
+        $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
+            ->leftJoin("b$i.vulnerabilityCriterions", "vc$i")
+            ->andWhere("vc$i.id = :idvc$i")
+            ->setParameter("idvc$i", $idVulnerabilityCriterion);
+        if (null !== $status)
+            $qbSub->andWhere("b$i.status = :status$i")
+                ->setParameter("status$i", $status);
+
+        $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
+            ->setParameter("idvc$i", $idVulnerabilityCriterion)
+            ->setParameter("status$i", $status);
+    }
+
+    /**
+     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
+     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
+     *
+     * @param QueryBuilder $qb
+     * @param $i
+     * @param $countryISO3
+     * @param $idCountrySpecific
+     * @param $value
+     * @param $operator
+     */
+    private function whereCountrySpecific(QueryBuilder &$qb, $i, $countryISO3, $idCountrySpecific, $value, $operator)
+    {
+        $qbSub = $this->createQueryBuilder("hh$i");
+        $this->setCountry($qbSub, $countryISO3, $i);
+        $qbSub->leftJoin("hh$i.countrySpecificAnswers", "csa$i")
+            ->andWhere("csa$i.countrySpecific = :countrySpecific$i")
+            ->setParameter("countrySpecific$i", $idCountrySpecific)
+            ->andWhere("csa$i.answer $operator :value$i")
+            ->setParameter("value$i", $value);
+
+        $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
+            ->setParameter("value$i", $value)
+            ->setParameter("countrySpecific$i", $idCountrySpecific);
+    }
+
+    /**
+     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
+     * The household must have at least one beneficiary with the condition respected ($field $operator $value / Example: gender = 0)
      *
      * @param QueryBuilder $qb
      * @param $i
@@ -70,9 +155,10 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         $this->setCountry($qbSub, $countryISO3, $i);
         $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
             ->andWhere("b$i.$field $operator :val$i")
-            ->setParameter("val$i", $value)
-            ->andWhere("b$i.status = :status$i")
-            ->setParameter("status$i", $status);
+            ->setParameter("val$i", $value);
+        if (null !== $status)
+            $qbSub->andWhere("b$i.status = :status$i")
+                ->setParameter("status$i", $status);
 
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
             ->setParameter("val$i", $value)

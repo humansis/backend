@@ -30,6 +30,20 @@ If you want to get create a distribution for full household :
 			"field": "dateOfBirth",
 			"operator": ">",
 			"value": "1994-10-25"
+		},
+		{
+			"group": "beneficiary",
+			"field": "idVulnerabilityCriterion",
+			"id": 2,
+			"operator": null,
+			"value": null
+		},
+		{
+			"group": null,
+			"field": "idCountrySpecific",
+			"id": 1,
+			"operator": "<=",
+			"value": 3
 		}
 	]
 }

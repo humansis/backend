@@ -79,6 +79,8 @@ class DefaultRetriever extends AbstractRetriever
                 return 1;
             case 'dependent':
                 return 0;
+            case null:
+                return null;
         }
 
         throw new \Exception("The group '$group' is not implemented yet.");
