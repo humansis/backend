@@ -161,8 +161,9 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter("status$i", $status);
 
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
-            ->setParameter("val$i", $value)
-            ->setParameter("status$i", $status);
+            ->setParameter("val$i", $value);
+        if (null !== $status)
+            $qb->setParameter("status$i", $status);
     }
 
     /**

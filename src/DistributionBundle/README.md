@@ -7,10 +7,11 @@
 - **distribution_type** : 'household' (for send distribution to every beneficiaries of a household)
 OR 'beneficiary' (to send distribution to a specific beneficiary)
 - **criteria** : list of criterion :
-    - **group** : 'beneficiary' (head of household) or 'dependent' (beneficiaries except head of household)
-    - **field** : name of a column of Beneficiary table
+    - **group** : 'beneficiary' (head of household) or 'dependent' (head of household dependents) or 'null' (both)
+    - **field** : name of a column of Beneficiary table or 'idCountrySpecific' or 'idVulnerabilityCriterion'
     - **operator** : '=', '<', '>', '<=', '>='. It's the operator used for compare the wanted value with the value in database
     - **value** : value to be compare with the database column
+    - **id** : *optional* '{id}' (id of the foreign key)
     
     
 If you want to get create a distribution for full household :
