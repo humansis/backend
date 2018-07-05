@@ -38,6 +38,15 @@ class BeneficiaryService
 
 
     /**
+     * Get all vulnerability criteria
+     * @return array
+     */
+    public function getAllVulnerabilityCriteria()
+    {
+        return $this->em->getRepository(VulnerabilityCriterion::class)->findAll();
+    }
+
+    /**
      * @param Household $household
      * @param array $beneficiaryArray
      * @param $flush
