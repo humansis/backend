@@ -4,6 +4,7 @@
 namespace BeneficiaryBundle\Controller;
 
 
+use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use JMS\Serializer\SerializationContext;
@@ -83,7 +84,7 @@ class HouseholdController extends Controller
     {
         $fileCSV = $request->files->get('file');
         $countryIso3 = $request->request->get('__country');
-        $countryIso3 = "KHM";
+//        $countryIso3 = "KHM";
         /** @var HouseholdCSVService $householeService */
         $householeService = $this->get('beneficiary.household_csv_service');
         try
@@ -96,15 +97,37 @@ class HouseholdController extends Controller
         }
         catch (\Exception $e)
         {
-            dump($e);
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $json = $this->get('jms_serializer')
             ->serialize($listHouseholds, 'json');
-dump($listHouseholds);
-dump($json);
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Get("/csv/households/export", name="get_pattern_csv_household")
+     *
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getPatternCSVAction(Request $request)
+    {
+        $countryIso3 = $request->request->get('__country');
+//        $countryIso3 = "KHM";
+        /** @var ExportCSVService $exportCSVService */
+        $exportCSVService = $this->get('beneficiary.household_export_csv_service');
+        try
+        {
+            $fileCSV = $exportCSVService->generateCSV($countryIso3);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new Response(json_encode($fileCSV));
     }
 
     /**
@@ -209,7 +232,7 @@ dump($json);
         $json = $this->get('jms_serializer')
             ->serialize($household,
                 'json',
-            SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
+                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
             );
         return new Response($json);
     }
