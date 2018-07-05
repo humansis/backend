@@ -95,14 +95,13 @@ class DistributionController extends Controller
      *          @SWG\Items(ref=@Model(type=DistributionData::class))
      *     )
      * )
-     * 
-     * @param Request $request
+     *
+     * @param DistributionData $DistributionData
      * @return Response
      */
     public function getOneAction(DistributionData $DistributionData)
     {
-        $distributions = $this->get('distribution.distribution_service')->findOne($DistributionData);
-        $json = $this->get('jms_serializer')->serialize($distributions, 'json');
+        $json = $this->get('jms_serializer')->serialize($DistributionData, 'json');
 
         return new Response($json);
     }
