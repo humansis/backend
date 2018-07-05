@@ -76,6 +76,30 @@ class HouseholdController extends Controller
     /**
      * @Rest\Post("/csv/households", name="add_csv_household")
      *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Parameter(
+     *     name="file",
+     *     in="formData",
+     *     required=true,
+     *     type="file"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return Household (old and new) if similarity founded",
+     *      examples={
+     *          "application/json": {{
+     *              "old": @Model(type=Household::class),
+     *              "new": @Model(type=Household::class)
+     *          }}
+     *      }
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @param Request $request
      * @return Response
@@ -108,6 +132,26 @@ class HouseholdController extends Controller
     /**
      * @Rest\Get("/csv/households/export", name="get_pattern_csv_household")
      *
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return Household (old and new) if similarity founded",
+     *      examples={
+     *          "application/json": {
+     *              {
+     *                  "'Household','','','','','','','','','','','Beneficiary','','','','','',''\n'Address street','Address number','Address postcode','Livelihood','Notes','Latitude','Longitude','Adm1','Adm2','Adm3','Adm4','Family name','Gender','Status','Date of birth','Vulnerability criteria','Phones','National IDs'\n",
+     *                  "pattern_household_fra.csv"
+     *              }
+     *          }
+     *      }
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @param Request $request
      * @return Response
