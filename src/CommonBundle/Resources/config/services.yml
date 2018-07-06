@@ -3,10 +3,23 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
-#    DataFixtures
+    ##########################################################################
+    ####                           DATAFIXTURES                           ####
+    ##########################################################################
     CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
         tags:
             - { name: doctrine.fixture.orm }
     CommonBundle\DataFixtures\CountrySpecificFixtures:
         tags:
             - { name: doctrine.fixture.orm }
+
+
+    ##########################################################################
+    ####                              VOTERS                              ####
+    ##########################################################################
+
+    voter_default:
+        class: CommonBundle\Voter\DefaultVoter
+        arguments: ["@security.role_hierarchy"]
+        tags:
+            - { name: security.voter }
