@@ -8,6 +8,7 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\Location;
 use DistributionBundle\Entity\SelectionCriteria;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DistributionService {
@@ -31,13 +32,14 @@ class DistributionService {
 
     /**
      * Create a distribution
-     * 
+     *
      * @param array $distributionArray
      * @return DistributionData
+     * @throws \Exception
      */
     public function create(array $distributionArray) 
     {
-        /** @var Distribution $distribution */
+        /** @var DistributionData $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
 
         $errors = $this->validator->validate($distribution);
@@ -77,7 +79,7 @@ class DistributionService {
      * Get one distribution by id
      * 
      * @param DistributionData $distributionData
-     * @return array
+     * @return DistributionData
      */
     public function findOne(DistributionData $distributionData) 
     {
@@ -104,7 +106,7 @@ class DistributionService {
     */
     public function edit(DistributionData $distributionData, array $distributionArray)
     {
-        /** @var Distribution $distribution */
+        /** @var DistributionData $distribution */
         $editedDistribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
         $editedDistribution->setId($distributionData->getId());
 
@@ -127,13 +129,13 @@ class DistributionService {
 
     /**
      * Archived a distribution
-     * 
-     * @param DistributionData $distributionData
+     *
+     * @param DistributionData $distribution
      * @return DistributionData
-    */
+     */
     public function archived(DistributionData $distribution)
     {
-        /** @var Distribution $distribution */
+        /** @var DistributionData $distribution */
         $distributionData = $this->em->getRepository(DistributionData::class)->findById($distribution->getId());
         if (!empty($distributionData))
             $distribution->setArchived(1);

@@ -4,6 +4,7 @@ namespace DistributionBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use DistributionBundle\Entity\DistributionData;
 use BeneficiaryBundle\Entity\ProjectBeneficiary;
@@ -31,14 +32,15 @@ class DistributionBeneficiaryService
 
     /**
      * Create a distributionBeneficiary
-     * 
+     *
      * @param array $distributionBeneficiaryArray
      * @return DistributionBeneficiary
+     * @throws \Exception
      */
     public function create(array $distributionBeneficiaryArray) 
     {
 
-        /** @var Distribution $distribution */
+        /** @var DistributionBeneficiary $distribution */
         $distributionBeneficiary = $this->serializer->deserialize(json_encode($distributionBeneficiaryArray), DistributionBeneficiary::class, 'json');
         $errors = $this->validator->validate($distributionBeneficiary);
         if (count($errors) > 0)
