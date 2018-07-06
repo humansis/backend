@@ -128,7 +128,8 @@ class UserService
             $data = [
                 'at' => time(),
                 'connected' => true,
-                'user' => $user->getUsername()
+                'username' => $user->getUsername(),
+                'salted_password' => $user->getPassword()
             ];
 
         }
@@ -147,7 +148,8 @@ class UserService
                 $data = [
                     'at' => time(),
                     'registered' => true,
-                    'user' => $user->getUsername()
+                    'username' => $user->getUsername(),
+                    'salted_password' => $user->getPassword()
                 ];
             }
             else
