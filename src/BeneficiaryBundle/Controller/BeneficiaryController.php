@@ -15,32 +15,15 @@ class BeneficiaryController extends Controller
 {
 
     /**
-     * @Rest\Put("/beneficiaries", name="add_beneficiary")
+     * @Rest\Get("/vulnerability_criteria", name="get_all_vulnerability_criteria")
      *
-     * @param Request $request
      * @return Response
      */
-    public function addAction(Request $request)
+    public function getAllVulnerabilityCriteria()
     {
-        $beneficiaryArray = $request->request->all();
-        /** @var BeneficiaryService $beneficiaryService */
-        $beneficiaryService = $this->get('beneficiary.beneficiary_service');
-        $beneficiary = $beneficiaryService->create($beneficiaryArray);
-
+        $vulnerabilityCriteria = $this->get('beneficiary.beneficiary_service')->getAllVulnerabilityCriteria();
         $json = $this->get('jms_serializer')
-            ->serialize($beneficiary, 'json', SerializationContext::create()->setSerializeNull(true));
-
+            ->serialize($vulnerabilityCriteria, 'json');
         return new Response($json);
-    }
-
-    /**
-     * @Rest\Post("/beneficiaries/{id}", name="update_beneficiary")
-     *
-     * @param Request $request
-     * @param Beneficiary $beneficiary
-     */
-    public function updateAction(Request $request, Beneficiary $beneficiary)
-    {
-
     }
 }

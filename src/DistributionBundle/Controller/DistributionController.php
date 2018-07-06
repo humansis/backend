@@ -26,13 +26,13 @@ class DistributionController extends Controller
      *      type="object",
      *      required=true,
      *      description="Body of the request",
-     * 	  @SWG\Schema(ref=@Model(type=Project::class))
+     * 	  @SWG\Schema(ref=@Model(type=DistributionData::class))
      * )
      *
      * @SWG\Response(
      *     response=200,
      *     description="Project created",
-     *     @Model(type=Project::class)
+     *     @Model(type=DistributionData::class)
      * )
      * 
      * @param Request $request
@@ -60,7 +60,7 @@ class DistributionController extends Controller
     /**
      * @Rest\Get("/distributions", name="get_all_distributions")
      *
-     * @SWG\Tag(name="distributions")
+     * @SWG\Tag(name="Distributions")
      *
      * @SWG\Response(
      *     response=200,
@@ -85,7 +85,7 @@ class DistributionController extends Controller
     /**
      * @Rest\Get("/distributions/{id}", name="get_one_distributions")
      *
-     * @SWG\Tag(name="distributions")
+     * @SWG\Tag(name="Distributions")
      *
      * @SWG\Response(
      *     response=200,
@@ -95,14 +95,13 @@ class DistributionController extends Controller
      *          @SWG\Items(ref=@Model(type=DistributionData::class))
      *     )
      * )
-     * 
-     * @param Request $request
+     *
+     * @param DistributionData $DistributionData
      * @return Response
      */
     public function getOneAction(DistributionData $DistributionData)
     {
-        $distributions = $this->get('distribution.distribution_service')->findOne($DistributionData);
-        $json = $this->get('jms_serializer')->serialize($distributions, 'json');
+        $json = $this->get('jms_serializer')->serialize($DistributionData, 'json');
 
         return new Response($json);
     }
@@ -113,7 +112,7 @@ class DistributionController extends Controller
      * Edit a distribution
      * @Rest\Post("/distributions/{id}", name="update_distribution")
      *
-     * @SWG\Tag(name="distributions")
+     * @SWG\Tag(name="Distributions")
      *
      * @SWG\Parameter(
      *     name="DistributionData",
@@ -157,7 +156,7 @@ class DistributionController extends Controller
      * Archive a distribution
      * @Rest\Post("/distributions/archive/{id}", name="archived_project")
      *
-     * @SWG\Tag(name="distributions")
+     * @SWG\Tag(name="Distributions")
      *
      * @SWG\Response(
      *     response=200,
