@@ -20,6 +20,6 @@ services:
 
     voter_default:
         class: CommonBundle\Voter\DefaultVoter
-        arguments: ["@security.role_hierarchy"]
+        arguments: ["@security.role_hierarchy", "@doctrine.orm.entity_manager", "@request_stack"]
         tags:
             - { name: security.voter }

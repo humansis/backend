@@ -4,24 +4,33 @@
 namespace CommonBundle\Voter;
 
 
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
 use UserBundle\Entity\User;
+use UserBundle\Entity\UserCountry;
 
 class DefaultVoter extends Voter
 {
 
-    /**
-     * @var RoleHierarchy $roleHierarchy
-     */
+    /** @var RoleHierarchy $roleHierarchy */
     private $roleHierarchy;
 
-    public function __construct(RoleHierarchy $roleHierarchy)
+    /** @var EntityManagerInterface $em */
+    private $em;
+
+    /** @var RequestStack $requestStack */
+    private $requestStack;
+
+    public function __construct(RoleHierarchy $roleHierarchy, EntityManagerInterface $entityManager, RequestStack $requestStack)
     {
         $this->roleHierarchy = $roleHierarchy;
+        $this->em = $entityManager;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -34,6 +43,7 @@ class DefaultVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
+        dump(true);
         return true;
     }
 
@@ -49,15 +59,42 @@ class DefaultVoter extends Voter
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
+        dump($this->requestStack);
         $user = $token->getUser();
         if (!$user instanceof User)
         {
-            return VoterInterface::ACCESS_DENIED;
+            return false;
         }
         /**
          * @var User $user
          */
-        return $this->canDoTask($user->getRoles(), $attribute);
+        if (!$this->hasRole($user->getRoles(), $attribute))
+            return false;
+
+        if(!$this->requestStack->getCurrentRequest()->request->has('__country'))
+            return false;
+
+        $countryISO3 = $this->requestStack->getCurrentRequest()->request->get('__country');
+        if (!$this->hasCountry($user, $countryISO3))
+            return false;
+
+        return true;
+    }
+
+    /**
+     * Check if the user is assigned on the country
+     * @param User $user
+     * @param $countryISO3
+     * @return bool
+     */
+    protected function hasCountry(User $user, $countryISO3)
+    {
+        $userCountry = $this->em->getRepository(UserCountry::class)
+            ->findBy([
+                "user" => $user,
+                "iso3" => $countryISO3
+            ]);
+        return ($userCountry instanceof UserCountry);
     }
 
     /**
@@ -65,7 +102,7 @@ class DefaultVoter extends Voter
      * @param string $attribute
      * @return bool
      */
-    protected function canDoTask(array $myRoles, string $attribute)
+    protected function hasRole(array $myRoles, string $attribute)
     {
         $myArrayRoles = $this->getMyReachableRoles($myRoles);
 
