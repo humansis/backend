@@ -63,9 +63,10 @@ class UserController extends Controller
     {
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('salted_password');
+        $isCreation = $request->query->get('creation');
         try
         {
-            $data = $this->container->get('user.user_service')->login($username, $saltedPassword);
+            $data = $this->container->get('user.user_service')->login($username, $saltedPassword, boolval($isCreation));
         }
         catch (\Exception $exception)
         {

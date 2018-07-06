@@ -109,16 +109,18 @@ class UserService
     /**
      * @param string $username
      * @param string $saltedPassword
+     * @param bool $isCreation
      * @return array
      * @throws \Exception
      */
-    public function login(string $username, string $saltedPassword)
+    public function login(string $username, string $saltedPassword, bool $isCreation)
     {
         $repository = $this->em->getRepository('UserBundle:User');
 
         $user = $repository->findOneBy([
             'username' => $username,
             'password' => $saltedPassword,
+            'enabled' => 1
         ]);
 
         if ($user instanceOf User)
@@ -130,14 +132,15 @@ class UserService
             ];
 
         }
-        else
+        elseif ($isCreation)
         {
             $user = $repository->findOneBy([
                 'username' => $username
             ]);
             if ($user instanceOf User)
             {
-                $user->setPassword($saltedPassword);
+                $user->setPassword($saltedPassword)
+                ->setEnabled(1);
                 $this->em->persist($user);
                 $this->em->flush();
 
@@ -152,6 +155,10 @@ class UserService
                 throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
             }
 
+        }
+        else
+        {
+            throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
         }
 
         return $data;
