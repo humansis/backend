@@ -61,13 +61,10 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
                     $this->whereVulnerabilityCriterion($qb, $i, $criterion['id']);
                     break;
                 default:
-                    throw new \Exception("The field '{$criterion['field']} is not implement yet");
+                    throw new \Exception("The field '{$criterion['field']} is not implemented yet");
             }
             $i++;
         }
-
-        dump($qb->getQuery());
-        dump($qb->getQuery()->getResult());
 
         return $qb->getQuery()->getResult();
     }
@@ -120,8 +117,6 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb->andWhere("b.$field $operator :val$i")
             ->setParameter("val$i", $value);
-        dump($qb->getQuery());
-        dump($qb->getQuery()->getResult());
     }
 
     /**

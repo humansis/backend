@@ -41,12 +41,23 @@ security:
             provider: our_db_provider
 
     access_control:
-        - { path: /, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: /,           role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login$,    role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register,  role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
 
 
         # ADMIN PART
-        - { path: ^/admin/, role: ROLE_USER }
-        - { path: ^/, role: ROLE_USER }
+        - { path: ^/admin/,    role: ROLE_USER }
+        - { path: ^/,          role: ROLE_USER }
+
+    role_hierarchy:
+        ROLE_REPORTING: [ROLE_REPORTING_READ, ROLE_REPORTING_WRITE]
+
+
+        ROLE_READ_ONLY:        []
+        ROLE_FIELD_OFFICER:    []
+        ROLE_PROJECT_OFFICER:  []
+        ROLE_PROJECT_MANAGER:  []
+        ROLE_COUNTRY_MANAGER:  []
+        ROLE_REGIONAL_MANAGER: []

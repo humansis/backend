@@ -79,7 +79,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
                     $this->whereVulnerabilityCriterion($qb, $i, $countryISO3, $criterion['id'], $criterion['group']);
                     break;
                 default:
-                    throw new \Exception("The field '{$criterion['field']} is not implement yet");
+                    throw new \Exception("The field '{$criterion['field']} is not implemented yet");
             }
             $i++;
         }
