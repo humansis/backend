@@ -12,6 +12,7 @@ use DistributionBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
+use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
@@ -60,12 +61,13 @@ class HouseholdService
 
     /**
      * @param array $householdArray
+     * @param $project
      * @param bool $flush
      * @return Household
      * @throws ValidationException
      * @throws \Exception
      */
-    public function create(array $householdArray, bool $flush = true)
+    public function create(array $householdArray, $project, bool $flush = true)
     {
         $this->requestValidator->validate(
             "household",
@@ -87,6 +89,10 @@ class HouseholdService
         // Save or update location instance
         $location = $this->getOrSaveLocation($householdArray["location"]);
         $household->setLocation($location);
+        $project = $this->em->getRepository(Project::class)->find($project);
+        if (!$project instanceof Project)
+            throw new \Exception("This project is not found");
+        $household->addProject($project);
 
         $this->em->persist($household);
 
@@ -119,7 +125,7 @@ class HouseholdService
      * @throws ValidationException
      * @throws \Exception
      */
-    public function update(Household $household, array $householdArray)
+    public function update(Household $household, $project, array $householdArray)
     {
         $this->requestValidator->validate(
             "household",
@@ -141,6 +147,7 @@ class HouseholdService
         // Save or update location instance
         $location = $this->getOrSaveLocation($householdArray["location"]);
         $household->setLocation($location);
+
         $this->em->persist($household);
 
         if (!empty($householdArray["beneficiaries"]))

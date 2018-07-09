@@ -52,11 +52,13 @@ class HouseholdController extends Controller
     public function addAction(Request $request)
     {
         $householdArray = $request->request->all();
+        $project = $householdArray['project'];
+        unset($householdArray['project']);
         /** @var HouseholdService $householeService */
         $householeService = $this->get('beneficiary.household_service');
         try
         {
-            $household = $householeService->create($householdArray);
+            $household = $householeService->create($householdArray, $project);
         }
         catch (ValidationException $exception)
         {
@@ -84,6 +86,12 @@ class HouseholdController extends Controller
      *     required=true,
      *     type="file"
      * )
+     * @SWG\Parameter(
+     *     name="project",
+     *     in="body",
+     *     required=true,
+     *     schema={"1"}
+     * )
      *
      * @SWG\Response(
      *     response=200,
@@ -106,14 +114,19 @@ class HouseholdController extends Controller
      */
     public function addCSVAction(Request $request)
     {
+        if (!$request->files->has('file'))
+            return new Response("You must upload a file.", 500);
         $fileCSV = $request->files->get('file');
+        if (!$request->request->has('project'))
+            return new Response("You must specify a project.", 500);
+        $project = $request->request->get('project');
         $countryIso3 = $request->request->get('__country');
 //        $countryIso3 = "KHM";
         /** @var HouseholdCSVService $householeService */
         $householeService = $this->get('beneficiary.household_csv_service');
         try
         {
-            $listHouseholds = $householeService->loadCSV($countryIso3, $fileCSV);
+            $listHouseholds = $householeService->loadCSV($countryIso3, $project, $fileCSV);
         }
         catch (ValidationException $exception)
         {
@@ -177,6 +190,7 @@ class HouseholdController extends Controller
     /**
      * @Rest\Post("/households/{id}")
      *
+     * NOTE : YOU CAN'T EDIT THE PROJECTS LIST OF THE HOUSEHOLD HERE
      *
      * @SWG\Tag(name="Households")
      *
