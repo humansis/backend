@@ -15,6 +15,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
     private $client;
 
     private $body = [
+        "project" => 1,
         "address_street" => "addr",
         "address_number" => "12",
         "address_postcode" => "73460",
