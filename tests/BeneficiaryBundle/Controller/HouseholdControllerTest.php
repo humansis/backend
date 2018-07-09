@@ -4,6 +4,7 @@
 namespace Tests\BeneficiaryBundle\Controller;
 
 
+use BeneficiaryBundle\Entity\Household;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 
@@ -93,10 +94,10 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
         $crawler = $this->client->request('PUT', '/api/wsse/households', $this->body, [], ['HTTP_COUNTRY' => 'KHM']);
         dump($this->client->getResponse()->getContent());
-        $household = json_decode($this->client->getResponse()->getContent(), true);
-        dump($household);
 
+        $household = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
+        dump($household);
         try
         {
             $this->assertArrayHasKey('id', $household);
@@ -105,7 +106,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('address_postcode', $household);
             $this->assertArrayHasKey('livelihood', $household);
             $this->assertArrayHasKey('notes', $household);
-            $this->assertArrayHasKey('latitpude', $household);
+            $this->assertArrayHasKey('latitude', $household);
             $this->assertArrayHasKey('longitude', $household);
             $this->assertArrayHasKey('location', $household);
             $this->assertArrayHasKey('country_specific_answers', $household);

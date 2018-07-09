@@ -107,7 +107,10 @@ class HouseholdService
             }
         }
         if ($flush)
+        {
             $this->em->flush();
+            $household = $this->em->getRepository(Household::class)->find($household);
+        }
 
         return $household;
     }
