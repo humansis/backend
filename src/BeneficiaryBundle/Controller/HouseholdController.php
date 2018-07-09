@@ -128,12 +128,10 @@ class HouseholdController extends Controller
         }
         catch (ValidationException $exception)
         {
-            dump($exception);
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         }
         catch (\Exception $e)
         {
-            dump($e);
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
