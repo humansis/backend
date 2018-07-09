@@ -93,6 +93,7 @@ class Household
      * @var CountrySpecificAnswer
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="household")
+     * @Groups({"FullHousehold"})
      */
     private $countrySpecificAnswers;
 
@@ -108,15 +109,6 @@ class Household
      * @ORM\Column(type="boolean", options={"default" : 0})
      */
     private $archived = 0;
-
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->countrySpecificAnswers = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Set id.
@@ -262,42 +254,6 @@ class Household
     }
 
     /**
-     * Add countrySpecificAnswer.
-     *
-     * @param \BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
-     *
-     * @return Household
-     */
-    public function addCountrySpecificAnswer(\BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
-    {
-        $this->countrySpecificAnswers[] = $countrySpecificAnswer;
-
-        return $this;
-    }
-
-    /**
-     * Remove countrySpecificAnswer.
-     *
-     * @param \BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeCountrySpecificAnswer(\BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
-    {
-        return $this->countrySpecificAnswers->removeElement($countrySpecificAnswer);
-    }
-
-    /**
-     * Get countrySpecificAnswers.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCountrySpecificAnswers()
-    {
-        return $this->countrySpecificAnswers;
-    }
-
-    /**
      * Set location.
      *
      * @param \DistributionBundle\Entity\Location|null $location
@@ -370,42 +326,6 @@ class Household
     }
 
     /**
-     * Add beneficiary.
-     *
-     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
-     *
-     * @return Household
-     */
-    public function addBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
-    {
-        $this->beneficiaries[] = $beneficiary;
-
-        return $this;
-    }
-
-    /**
-     * Remove beneficiary.
-     *
-     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
-    {
-        return $this->beneficiaries->removeElement($beneficiary);
-    }
-
-    /**
-     * Get beneficiaries.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getBeneficiaries()
-    {
-        return $this->beneficiaries;
-    }
-
-    /**
      * Set beneficiaries.
      *
      * @return Household
@@ -439,5 +359,85 @@ class Household
     public function getArchived()
     {
         return $this->archived;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->countrySpecificAnswers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->beneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add countrySpecificAnswer.
+     *
+     * @param \BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
+     *
+     * @return Household
+     */
+    public function addCountrySpecificAnswer(\BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
+    {
+        $this->countrySpecificAnswers[] = $countrySpecificAnswer;
+
+        return $this;
+    }
+
+    /**
+     * Remove countrySpecificAnswer.
+     *
+     * @param \BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeCountrySpecificAnswer(\BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
+    {
+        return $this->countrySpecificAnswers->removeElement($countrySpecificAnswer);
+    }
+
+    /**
+     * Get countrySpecificAnswers.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCountrySpecificAnswers()
+    {
+        return $this->countrySpecificAnswers;
+    }
+
+    /**
+     * Add beneficiary.
+     *
+     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
+     *
+     * @return Household
+     */
+    public function addBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
+    {
+        $this->beneficiaries[] = $beneficiary;
+
+        return $this;
+    }
+
+    /**
+     * Remove beneficiary.
+     *
+     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
+    {
+        return $this->beneficiaries->removeElement($beneficiary);
+    }
+
+    /**
+     * Get beneficiaries.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBeneficiaries()
+    {
+        return $this->beneficiaries;
     }
 }
