@@ -89,7 +89,7 @@ class HouseholdCSVService
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function loadCSV($countryIso3, UploadedFile $uploadedFile)
+    public function loadCSV($countryIso3, $project, UploadedFile $uploadedFile)
     {
         // LOADING CSV
         $reader = new Csv();
@@ -107,7 +107,7 @@ class HouseholdCSVService
         {
             $listSimilarHouseholds = $this->getSimilarBeneficiary($householdArray, $listHouseholdsSaved);
             if (empty($listSimilarHouseholds))
-                $this->householdService->create($householdArray);
+                $this->householdService->create($householdArray, $project);
             else
                 $listHouseholdsWithSimilar[] = [
                     "new" => $householdArray,

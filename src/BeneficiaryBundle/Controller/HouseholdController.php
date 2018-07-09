@@ -107,13 +107,14 @@ class HouseholdController extends Controller
     public function addCSVAction(Request $request)
     {
         $fileCSV = $request->files->get('file');
+        $project = $request->request->get('project');
         $countryIso3 = $request->request->get('__country');
 //        $countryIso3 = "KHM";
         /** @var HouseholdCSVService $householeService */
         $householeService = $this->get('beneficiary.household_csv_service');
         try
         {
-            $listHouseholds = $householeService->loadCSV($countryIso3, $fileCSV);
+            $listHouseholds = $householeService->loadCSV($countryIso3, $project, $fileCSV);
         }
         catch (ValidationException $exception)
         {
