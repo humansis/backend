@@ -29,10 +29,14 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
      * @return mixed
      * @throws \Exception
      */
-    public function findByCriteria($countryISO3, array $criteria, string $groupGlobal = null)
+    public function findByCriteria($countryISO3, array $criteria, bool $onlyCount = false, string $groupGlobal = null)
     {
-        $qb = $this->createQueryBuilder("b")
-            ->leftJoin("b.household", "hh");
+        $qb = $this->createQueryBuilder("b");
+
+        if ($onlyCount)
+            $qb->select("count(b)");
+
+        $qb->leftJoin("b.household", "hh");
         $this->setCountry($qb, $countryISO3);
 
         if (null !== $groupGlobal)

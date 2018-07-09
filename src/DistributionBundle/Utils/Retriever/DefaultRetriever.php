@@ -33,7 +33,7 @@ class DefaultRetriever extends AbstractRetriever
      * @return mixed
      * @throws \Exception
      */
-    public function getReceivers(string $countryISO3, string $distributionType, array $criteria, string $groupGlobal = null)
+    public function getReceivers(string $countryISO3, string $distributionType, array $criteria, bool $onlyCount = false, string $groupGlobal = null)
     {
         $groupCode = null;
         if ($distributionType === 'household')
@@ -51,7 +51,13 @@ class DefaultRetriever extends AbstractRetriever
         {
             throw new \Exception("The distribution type '$distributionType' is unknown.");
         }
-        $receivers = $this->guessRepository($distributionType)->findByCriteria($countryISO3, $criteria, $groupCode);
+        $receivers = $this->guessRepository($distributionType)->findByCriteria($countryISO3, $criteria,$onlyCount, $groupCode);
+
+        // If we only want the number of beneficiaries, return only the number
+        if ($onlyCount)
+        {
+            $receivers = ["number" => intval(current($receivers)[1])];
+        }
         return $receivers;
     }
 

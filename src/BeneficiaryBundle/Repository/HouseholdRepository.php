@@ -53,10 +53,14 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
      * @return mixed
      * @throws \Exception
      */
-    public function findByCriteria($countryISO3, array $criteria, string $groupGlobal = null)
+    public function findByCriteria($countryISO3, array $criteria, bool $onlyCount = false, string $groupGlobal = null)
     {
-        $qb = $this->createQueryBuilder("hh")
-            ->leftJoin("hh.beneficiaries", "b");
+        $qb = $this->createQueryBuilder("hh");
+
+        if ($onlyCount)
+            $qb->select("count(hh)");
+
+        $qb->leftJoin("hh.beneficiaries", "b");
         $this->setCountry($qb, $countryISO3);
 
         $i = 1;

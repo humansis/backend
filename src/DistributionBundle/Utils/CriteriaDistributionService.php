@@ -25,13 +25,13 @@ class CriteriaDistributionService
      * @return mixed
      * @throws \Exception
      */
-    public function load(array $filters)
+    public function load(array $filters, bool $onlyCount = false)
     {
         $defaultRetriever = new DefaultRetriever($this->em);
         $countryISO3 = $filters['__country'];
         $distributionType = $filters['distribution_type'];
         $groupGlobal = (array_key_exists('group', $filters) ? $filters['group'] : null);
 
-        return $defaultRetriever->getReceivers($countryISO3, $distributionType, $filters["criteria"], $groupGlobal);
+        return $defaultRetriever->getReceivers($countryISO3, $distributionType, $filters["criteria"], $onlyCount, $groupGlobal);
     }
 }
