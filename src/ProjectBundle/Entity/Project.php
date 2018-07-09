@@ -122,6 +122,12 @@ class Project
      **/
     private $reportingProject;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Household", mappedBy="projects")
+     * @Groups({"FullHousehold"})
+     */
+    private $households;
+
 
     /**
      * Constructor

@@ -104,6 +104,12 @@ class Household
     private $beneficiaries;
 
     /**
+     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households")
+     * @Groups({"FullHousehold"})
+     */
+    private $projects;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(type="boolean", options={"default" : 0})
@@ -439,5 +445,54 @@ class Household
     public function getBeneficiaries()
     {
         return $this->beneficiaries;
+    }
+
+    /**
+     * Add project.
+     *
+     * @param \ProjectBundle\Entity\Project $project
+     *
+     * @return Household
+     */
+    public function addProject(\ProjectBundle\Entity\Project $project)
+    {
+        $this->projects[] = $project;
+
+        return $this;
+    }
+
+    /**
+     * Remove project.
+     *
+     * @param \ProjectBundle\Entity\Project $project
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeProject(\ProjectBundle\Entity\Project $project)
+    {
+        return $this->projects->removeElement($project);
+    }
+
+    /**
+     * Set project.
+     *
+     * @param \Doctrine\Common\Collections\Collection|null $collection
+     * @return Household
+     */
+    public function setProject(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->projects = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Get projects.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getProjects()
+    {
+        return $this->projects;
     }
 }

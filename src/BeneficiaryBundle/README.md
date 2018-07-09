@@ -19,6 +19,7 @@ PUT ("/households")
 
 ```json
 {
+    "project": 1,
 	"address_street": "addr",
 	"address_number": "12",
 	"address_postcode": "73460",
