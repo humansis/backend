@@ -68,6 +68,8 @@ class BeneficiaryService
             $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
             if (!$beneficiary instanceof Beneficiary)
                 throw new \Exception("Beneficiary was not found.");
+            if ($beneficiary->getHousehold() !== $household)
+                throw new \Exception("You are trying to update a beneficiary in the wrong household.");
             $beneficiary->setVulnerabilityCriterions(null);
         }
         else
@@ -75,6 +77,7 @@ class BeneficiaryService
             $beneficiary = new Beneficiary();
             $beneficiary->setHousehold($household);
         }
+
         $beneficiary->setGender($beneficiaryArray["gender"])
             ->setDateOfBirth(new \DateTime($beneficiaryArray["date_of_birth"]))
             ->setFamilyName($beneficiaryArray["family_name"])

@@ -474,6 +474,19 @@ class Household
     }
 
     /**
+     * Set project.
+     *
+     * @param \Doctrine\Common\Collections\Collection|null $collection
+     * @return Household
+     */
+    public function setProject(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->projects = $collection;
+
+        return $this;
+    }
+
+    /**
      * Get projects.
      *
      * @return \Doctrine\Common\Collections\Collection

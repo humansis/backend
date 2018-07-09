@@ -52,11 +52,13 @@ class HouseholdController extends Controller
     public function addAction(Request $request)
     {
         $householdArray = $request->request->all();
+        $project = $householdArray['project'];
+        unset($householdArray['project']);
         /** @var HouseholdService $householeService */
         $householeService = $this->get('beneficiary.household_service');
         try
         {
-            $household = $householeService->create($householdArray);
+            $household = $householeService->create($householdArray, $project);
         }
         catch (ValidationException $exception)
         {
@@ -188,6 +190,7 @@ class HouseholdController extends Controller
     /**
      * @Rest\Post("/households/{id}")
      *
+     * NOTE : YOU CAN'T EDIT THE PROJECTS LIST OF THE HOUSEHOLD HERE
      *
      * @SWG\Tag(name="Households")
      *

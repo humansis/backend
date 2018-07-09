@@ -125,7 +125,7 @@ class HouseholdService
      * @throws ValidationException
      * @throws \Exception
      */
-    public function update(Household $household, array $householdArray)
+    public function update(Household $household, $project, array $householdArray)
     {
         $this->requestValidator->validate(
             "household",
@@ -147,6 +147,7 @@ class HouseholdService
         // Save or update location instance
         $location = $this->getOrSaveLocation($householdArray["location"]);
         $household->setLocation($location);
+
         $this->em->persist($household);
 
         if (!empty($householdArray["beneficiaries"]))
