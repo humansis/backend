@@ -3,6 +3,13 @@
 
 ## Criteria for distribution
 
+### Routes
+
+- **POST /distribution/criteria** : Get the list of beneficiaries of household
+
+- **POST /distribution/criteria/number** : Get the number of beneficiaries of household
+
+
 ### Household Distribution
 
 - **distribution_type** : 'household' (for send distribution to every beneficiaries of a household)
