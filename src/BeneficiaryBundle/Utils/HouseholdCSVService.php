@@ -66,7 +66,7 @@ class HouseholdCSVService
             "gender" => "N",
             "status" => "O",
             "date_of_birth" => "P",
-            "vulnerability_criterion" => "Q",
+            "vulnerability_criteria" => "Q",
             "phones" => "R",
             "national_ids" => "S"
         ]
@@ -81,7 +81,10 @@ class HouseholdCSVService
 
 
     /**
+     * Defined the reader and transform CSV to array
+     *
      * @param $countryIso3
+     * @param $project
      * @param UploadedFile $uploadedFile
      * @return array
      * @throws ValidationException
@@ -89,7 +92,7 @@ class HouseholdCSVService
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function loadCSV($countryIso3, $project, UploadedFile $uploadedFile)
+    public function saveCSV($countryIso3, $project, UploadedFile $uploadedFile)
     {
         // LOADING CSV
         $reader = new Csv();
@@ -97,6 +100,22 @@ class HouseholdCSVService
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->toArray(null, true, true, true);
 
+        return $this->loadCSV($countryIso3, $project, $sheetArray);
+    }
+
+    /**
+     * Transform the array to a list of household
+     * On each household, found similar household already saved
+     *
+     * @param $countryIso3
+     * @param $project
+     * @param array $sheetArray
+     * @return array
+     * @throws ValidationException
+     * @throws \Exception
+     */
+    public function loadCSV($countryIso3, $project, array $sheetArray)
+    {
         // Get the list of households with their beneficiaries
         $listHouseholdsArray = $this->getListHouseholdArray($sheetArray, $countryIso3);
 
@@ -114,7 +133,6 @@ class HouseholdCSVService
                     "old" => $listSimilarHouseholds
                 ];
         }
-        dump($listHouseholdsWithSimilar);
         return $listHouseholdsWithSimilar;
     }
 
@@ -226,7 +244,7 @@ class HouseholdCSVService
 
         // Traitment on field with multiple value or foreign key inside (switch name to id for example)
         $this->fieldCountrySpecifics($mappingCSV, $formattedHouseholdArray, $rowHeader);
-        $this->fieldVulnerabilityCriterion($formattedHouseholdArray);
+        $this->fieldVulnerabilityCriteria($formattedHouseholdArray);
         $this->fieldPhones($formattedHouseholdArray);
         $this->fieldNationalIds($formattedHouseholdArray);
         $this->fieldBeneficiary($formattedHouseholdArray);
@@ -265,17 +283,17 @@ class HouseholdCSVService
      * Reformat the field which contains vulnerability criteria => switch list of names to a list of ids
      * @param $formattedHouseholdArray
      */
-    private function fieldVulnerabilityCriterion(&$formattedHouseholdArray)
+    private function fieldVulnerabilityCriteria(&$formattedHouseholdArray)
     {
-        $vulnerability_criterion_string = $formattedHouseholdArray["beneficiaries"]["vulnerability_criterion"];
-        $vulnerability_criterion_array = array_map('trim', explode(";", $vulnerability_criterion_string));
-        $formattedHouseholdArray["beneficiaries"]["vulnerability_criterion"] = [];
-        foreach ($vulnerability_criterion_array as $item)
+        $vulnerability_criteria_string = $formattedHouseholdArray["beneficiaries"]["vulnerability_criteria"];
+        $vulnerability_criteria_array = array_map('trim', explode(";", $vulnerability_criteria_string));
+        $formattedHouseholdArray["beneficiaries"]["vulnerability_criteria"] = [];
+        foreach ($vulnerability_criteria_array as $item)
         {
             $vulnerability_criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneByValue($item);
             if (!$vulnerability_criterion instanceof VulnerabilityCriterion)
                 continue;
-            $formattedHouseholdArray["beneficiaries"]["vulnerability_criterion"][] = ["id" => $vulnerability_criterion->getId()];
+            $formattedHouseholdArray["beneficiaries"]["vulnerability_criteria"][] = ["id" => $vulnerability_criterion->getId()];
         }
     }
 

@@ -124,12 +124,12 @@ class HouseholdController extends Controller
             return new Response("You must specify a project.", 500);
         $project = $request->request->get('project');
         $countryIso3 = $request->request->get('__country');
-//        $countryIso3 = "KHM";
+        $countryIso3 = "KHM";
         /** @var HouseholdCSVService $householeService */
         $householeService = $this->get('beneficiary.household_csv_service');
         try
         {
-            $listHouseholds = $householeService->loadCSV($countryIso3, $project, $fileCSV);
+            $listHouseholds = $householeService->saveCSV($countryIso3, $project, $fileCSV);
         }
         catch (ValidationException $exception)
         {
