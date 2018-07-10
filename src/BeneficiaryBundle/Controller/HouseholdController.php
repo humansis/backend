@@ -129,7 +129,7 @@ class HouseholdController extends Controller
         $householeService = $this->get('beneficiary.household_csv_service');
         try
         {
-            $listHouseholds = $householeService->saveCSV($countryIso3, $project, $fileCSV);
+            [$statistic, $listHouseholds] = $householeService->saveCSV($countryIso3, $project, $fileCSV);
         }
         catch (ValidationException $exception)
         {
@@ -141,7 +141,7 @@ class HouseholdController extends Controller
         }
 
         $json = $this->get('jms_serializer')
-            ->serialize($listHouseholds, 'json');
+            ->serialize(["statistic" => $statistic, "list_of_households" => $listHouseholds], 'json');
         return new Response($json);
     }
 

@@ -7,6 +7,7 @@ namespace BeneficiaryBundle\Utils;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Model\ImportStatistic;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -104,6 +105,7 @@ class HouseholdCSVService
     }
 
     /**
+     * TODO CHECK NOT HOUSEHOLD BY HOUSEHOLD BUT BENEFICIARY BY BENEFICIARY
      * Transform the array to a list of household
      * On each household, found similar household already saved
      *
@@ -116,6 +118,7 @@ class HouseholdCSVService
      */
     public function loadCSV($countryIso3, $project, array $sheetArray)
     {
+        $statistic = new ImportStatistic();
         // Get the list of households with their beneficiaries
         $listHouseholdsArray = $this->getListHouseholdArray($sheetArray, $countryIso3);
 
@@ -124,16 +127,52 @@ class HouseholdCSVService
         $listHouseholdsWithSimilar = [];
         foreach ($listHouseholdsArray as $householdArray)
         {
+            if (!$this->isIncomplete($householdArray))
+            {
+                $statistic->incrementNbIncomplete();
+                continue;
+            }
             $listSimilarHouseholds = $this->getSimilarBeneficiary($householdArray, $listHouseholdsSaved);
             if (empty($listSimilarHouseholds))
+            {
                 $this->householdService->create($householdArray, $project);
+                $statistic->incrementNbAdded();
+            }
             else
+            {
                 $listHouseholdsWithSimilar[] = [
                     "new" => $householdArray,
                     "old" => $listSimilarHouseholds
                 ];
+                $statistic->incrementNbDuplicates();
+            }
         }
-        return $listHouseholdsWithSimilar;
+
+        return [$statistic, $listHouseholdsWithSimilar];
+    }
+
+    /**
+     * Check if a value is missing inside the array
+     *
+     * @param array $array
+     * @return bool
+     */
+    private function isIncomplete(array $array)
+    {
+        $isIncomplete = true;
+        foreach ($array as $key => $value)
+        {
+            if (is_array($value))
+                $isIncomplete = $this->isIncomplete($value);
+            if (!$isIncomplete || null === $value)
+            {
+                dump($key);
+                dump($value);
+                return false;
+            }
+        }
+
+        return $isIncomplete;
     }
 
     /**
@@ -190,7 +229,7 @@ class HouseholdCSVService
             // Load the household array for the current row
             $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $row, $rowHeader);
             // Check if it's a new household or just a new beneficiary in the current row
-            if ($formattedHouseholdArray["address_street"] !== "")
+            if ($formattedHouseholdArray["address_street"] !== null)
             {
                 if (null !== $householdArray)
                 {
@@ -231,12 +270,16 @@ class HouseholdCSVService
             {
                 foreach ($csvIndex as $formattedIndex2 => $csvIndex2)
                 {
-                    $formattedHouseholdArray[$formattedIndex][$formattedIndex2] = strval($row[$csvIndex2]);
+                    if (null !== $row[$csvIndex2])
+                        $row[$csvIndex2] = strval($row[$csvIndex2]);
+                    $formattedHouseholdArray[$formattedIndex][$formattedIndex2] = $row[$csvIndex2];
                 }
             }
             else
             {
-                $formattedHouseholdArray[$formattedIndex] = strval($row[$csvIndex]);
+                if (null !== $row[$csvIndex])
+                    $row[$csvIndex] = strval($row[$csvIndex]);
+                $formattedHouseholdArray[$formattedIndex] = $row[$csvIndex];
             }
         }
         // Add the country iso3 from the request

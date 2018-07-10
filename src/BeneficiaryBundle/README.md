@@ -46,12 +46,12 @@ PUT ("/households")
 		{
 			"given_name": "name",
 			"family_name": "family",
-			"gender": "h",
+			"gender": "m",
 			"status": 0,
 			"date_of_birth": "1976-10-06",
 			"updated_on": "2018-06-13 12:12:12",
 			"profile": {
-				"photo": "gkjghjk"
+				"photo": "photo1"
 			},
 			"vulnerability_criteria": [
 				{
@@ -60,7 +60,7 @@ PUT ("/households")
 			],
 			"phones": [
 				{
-					"number": "020254512",
+					"number": "0202514512",
 					"type": "type1"
 				}
 			],
@@ -68,6 +68,34 @@ PUT ("/households")
 				{
 					"id_number": "1212",
 					"id_type": "type1"
+				}
+			]
+		},
+		{
+			"given_name": "name222",
+			"family_name": "family2222",
+			"gender": "f",
+			"status": 0,
+			"date_of_birth": "1976-10-06",
+			"updated_on": "2018-06-13 12:12:12",
+			"profile": {
+				"photo": "photo2"
+			},
+			"vulnerability_criteria": [
+				{
+					"id": 1
+				}
+			],
+			"phones": [
+				{
+					"number": "5545544584",
+					"type": "type2"
+				}
+			],
+			"national_ids": [
+				{
+					"id_number": "2323",
+					"id_type": "type2"
 				}
 			]
 		}

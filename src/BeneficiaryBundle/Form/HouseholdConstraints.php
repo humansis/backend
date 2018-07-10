@@ -16,6 +16,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
         $numeric = new Type('numeric');
         $string = new Type('string');
         $array = new Type('array');
+        $null = new Type('null');
         $optionalNumeric = new Optional($numeric);
 
         $household = [
