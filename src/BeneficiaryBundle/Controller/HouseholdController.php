@@ -69,7 +69,6 @@ class HouseholdController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        dump($household);
         $json = $this->get('jms_serializer')
             ->serialize(
                 $household,
