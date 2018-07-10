@@ -4,7 +4,12 @@
 namespace Tests\BeneficiaryBundle\Controller;
 
 
+use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Phone;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 
@@ -14,25 +19,28 @@ class HouseholdControllerTest extends BMSServiceTestCase
     /** @var Client $client */
     private $client;
 
+    private $namefullname = "STREET_TEST";
+
+
     private $body = [
         "project" => 1,
-        "address_street" => "addr",
-        "address_number" => "12",
-        "address_postcode" => "73460",
+        "address_street" => "STREET_TEST",
+        "address_number" => "NUMBER_TEST",
+        "address_postcode" => "POSTCODE_TEST",
         "livelihood" => 10,
-        "notes" => "this is just some notes",
+        "notes" => "NOTES_TEST",
         "latitude" => "1.1544",
         "longitude" => "120.12",
         "location" => [
-            "country_iso3" => "FRA",
-            "adm1" => "Auvergne Rhone-Alpes",
-            "adm2" => "Savoie",
-            "adm3" => "Chambery",
-            "adm4" => "Ste Hélène sur Isère"
+            "country_iso3" => "COUNTRY_TEST",
+            "adm1" => "ADM1_TEST",
+            "adm2" => "ADM2_TEST",
+            "adm3" => "ADM3_TEST",
+            "adm4" => "ADM4_TEST"
         ],
         "country_specific_answers" => [
             [
-                "answer" => "my answer",
+                "answer" => "MY_ANSWER_TEST",
                 "country_specific" => [
                     "id" => 1
                 ]
@@ -40,30 +48,30 @@ class HouseholdControllerTest extends BMSServiceTestCase
         ],
         "beneficiaries" => [
             [
-                "given_name" => "name",
-                "family_name" => "family",
+                "given_name" => "FIRSTNAME_TEST",
+                "family_name" => "NAME_TEST",
                 "gender" => "h",
                 "status" => 0,
                 "date_of_birth" => "1976-10-06",
                 "updated_on" => "2018-06-13 12:12:12",
                 "profile" => [
-                    "photo" => "gkjghjk"
+                    "photo" => "PHOTO_TEST"
                 ],
-                "vulnerability_criterion" => [
+                "vulnerability_criteria" => [
                     [
                         "id" => 1
                     ]
                 ],
                 "phones" => [
                     [
-                        "number" => "020254512",
-                        "type" => "type1"
+                        "number" => "0000_TEST",
+                        "type" => "TYPE_TEST"
                     ]
                 ],
                 "national_ids" => [
                     [
-                        "id_number" => "1212",
-                        "id_type" => "type1"
+                        "id_number" => "0000_TEST",
+                        "id_type" => "ID_TYPE_TEST"
                     ]
                 ]
             ]
@@ -93,11 +101,17 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        $projects = $this->em->getRepository(Project::class)->findAll();
+        if (empty($projects))
+        {
+            print_r("There is no project inside your database");
+            return false;
+        }
+        $this->body['project'] = current($projects)->getId();
         $crawler = $this->client->request('PUT', '/api/wsse/households', $this->body, [], ['HTTP_COUNTRY' => 'KHM']);
         $household = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
-        dump($household);
         try
         {
             $this->assertArrayHasKey('id', $household);
@@ -128,28 +142,28 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('date_of_birth', $beneficiary);
             $this->assertArrayHasKey('updated_on', $beneficiary);
             $this->assertArrayHasKey('profile', $beneficiary);
-            $this->assertArrayHasKey('vulnerability_criterion', $beneficiary);
+            $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
             $this->assertArrayHasKey('phones', $beneficiary);
             $this->assertArrayHasKey('national_ids', $beneficiary);
-            $profile = $household["profile"];
+            $profile = $beneficiary["profile"];
             $this->assertArrayHasKey('photo', $profile);
-            $vulnerability_criterion = current($household["vulnerability_criterion"]);
+            $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
             $this->assertArrayHasKey('id', $vulnerability_criterion);
-            $phone = current($household["phones"]);
+            $phone = current($beneficiary["phones"]);
             $this->assertArrayHasKey('number', $phone);
             $this->assertArrayHasKey('type', $phone);
-            $national_ids = current($household["national_ids"]);
+            $national_ids = current($beneficiary["national_ids"]);
             $this->assertArrayHasKey('id_number', $national_ids);
             $this->assertArrayHasKey('id_type', $national_ids);
         }
         catch (\Exception $exception)
         {
             print_r("\nThe mapping of fields of Household entity is not correct.\n");
-//            $this->remove($this->namefullname);
+            $this->remove($this->namefullname);
             return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -164,9 +178,12 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $this->markTestIncomplete("The creation of household failed. We can't test the update.");
         }
 
-
         $this->em->clear();
-        $household = $this->em->getRepository(Household::class)->findOneByFullname($this->namefullname);
+        $household = $this->em->getRepository(Household::class)->findOneBy([
+            "addressStreet" => $this->body["address_street"],
+            "addressNumber" => $this->body["address_number"],
+            "addressPostcode" => $this->body["address_postcode"],
+        ]);
         if (!$household instanceof Household)
             $this->fail("ISSUE : This test must be executed after the createTest");
 
@@ -176,8 +193,31 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
         $this->em->clear();
 
-        $this->body['fullname'] .= '(u)';
-        $crawler = $this->client->request('POST', '/api/wsse/households/' . $household->getId(), $this->body);
+        $this->body['address_street'] .= '(u)';
+        unset($this->body['project']);
+
+        foreach ($this->body['beneficiaries'] as $index => $beneficiaryArray)
+        {
+            $beneficiary = $this->em->getRepository(Beneficiary::class)
+                ->findOneByGivenName($beneficiaryArray['given_name']);
+            $this->body['beneficiaries'][$index]['id'] = $beneficiary->getId();
+
+            foreach ($beneficiaryArray['phones'] as $index2 => $phoneArray)
+            {
+                $phone = $this->em->getRepository(Phone::class)
+                    ->findOneByNumber($phoneArray['number']);
+                $this->body['beneficiaries'][$index]['phones'][$index2]['id'] = $phone->getId();
+            }
+
+            foreach ($beneficiaryArray['national_ids'] as $index2 => $national_idArray)
+            {
+                $national_id = $this->em->getRepository(NationalId::class)
+                    ->findOneByIdNumber($national_idArray['id_number']);
+                $this->body['beneficiaries'][$index]['national_ids'][$index2]['id'] = $national_id->getId();
+            }
+        }
+
+        $crawler = $this->client->request('POST', '/api/wsse/households/' . $household->getId(), $this->body, [], ['HTTP_COUNTRY' => 'KHM']);
         $this->body['fullname'] = $this->namefullname;
 
         $household = json_decode($this->client->getResponse()->getContent(), true);
@@ -187,14 +227,53 @@ class HouseholdControllerTest extends BMSServiceTestCase
         try
         {
             $this->assertArrayHasKey('id', $household);
-            $this->assertArrayHasKey('fullname', $household);
-            $this->assertArrayHasKey('shortname', $household);
-            $this->assertArrayHasKey('date_added', $household);
+            $this->assertArrayHasKey('address_street', $household);
+            $this->assertArrayHasKey('address_number', $household);
+            $this->assertArrayHasKey('address_postcode', $household);
+            $this->assertArrayHasKey('livelihood', $household);
             $this->assertArrayHasKey('notes', $household);
-            $this->assertSame($household['fullname'], $this->namefullname . '(u)');
+            $this->assertArrayHasKey('latitude', $household);
+            $this->assertArrayHasKey('longitude', $household);
+            $this->assertArrayHasKey('location', $household);
+            $this->assertArrayHasKey('country_specific_answers', $household);
+            $this->assertArrayHasKey('beneficiaries', $household);
+            $location = $household["location"];
+            $this->assertArrayHasKey('country_iso3', $location);
+            $this->assertArrayHasKey('adm1', $location);
+            $this->assertArrayHasKey('adm2', $location);
+            $this->assertArrayHasKey('adm3', $location);
+            $this->assertArrayHasKey('adm4', $location);
+            $country_specific_answer = current($household["country_specific_answers"]);
+            $this->assertArrayHasKey('answer', $country_specific_answer);
+            $this->assertArrayHasKey('country_specific', $country_specific_answer);
+            $beneficiary = current($household["beneficiaries"]);
+            $this->assertArrayHasKey('given_name', $beneficiary);
+            $this->assertArrayHasKey('family_name', $beneficiary);
+            $this->assertArrayHasKey('gender', $beneficiary);
+            $this->assertArrayHasKey('status', $beneficiary);
+            $this->assertArrayHasKey('date_of_birth', $beneficiary);
+            $this->assertArrayHasKey('updated_on', $beneficiary);
+            $this->assertArrayHasKey('profile', $beneficiary);
+            $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
+            $this->assertArrayHasKey('phones', $beneficiary);
+            $this->assertArrayHasKey('national_ids', $beneficiary);
+            $profile = $beneficiary["profile"];
+            $this->assertArrayHasKey('photo', $profile);
+            $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
+            $this->assertArrayHasKey('id', $vulnerability_criterion);
+            $phone = current($beneficiary["phones"]);
+            $this->assertArrayHasKey('number', $phone);
+            $this->assertArrayHasKey('type', $phone);
+            $national_ids = current($beneficiary["national_ids"]);
+            $this->assertArrayHasKey('id_number', $national_ids);
+            $this->assertArrayHasKey('id_type', $national_ids);
+
+            $this->assertSame($household['address_street'], $this->namefullname . '(u)');
         }
         catch (\Exception $exception)
         {
+            dump($exception->getMessage());
+            print_r("\nThe mapping of fields of Household entity is not correct.\n");
             $this->remove($this->namefullname);
             return false;
         }
@@ -219,18 +298,62 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('GET', '/api/wsse/households');
+        $crawler = $this->client->request('POST', '/api/wsse/households/get/all', [], [], ['HTTP_COUNTRY' => 'COUNTRY_TEST']);
         $households = json_decode($this->client->getResponse()->getContent(), true);
 
         if (!empty($households))
         {
             $household = $households[0];
-
-            $this->assertArrayHasKey('id', $household);
-            $this->assertArrayHasKey('fullname', $household);
-            $this->assertArrayHasKey('shortname', $household);
-            $this->assertArrayHasKey('date_added', $household);
-            $this->assertArrayHasKey('notes', $household);
+            try
+            {
+                $this->assertArrayHasKey('id', $household);
+                $this->assertArrayHasKey('address_street', $household);
+                $this->assertArrayHasKey('address_number', $household);
+                $this->assertArrayHasKey('address_postcode', $household);
+                $this->assertArrayHasKey('livelihood', $household);
+                $this->assertArrayHasKey('notes', $household);
+                $this->assertArrayHasKey('latitude', $household);
+                $this->assertArrayHasKey('longitude', $household);
+                $this->assertArrayHasKey('location', $household);
+                $this->assertArrayHasKey('country_specific_answers', $household);
+                $this->assertArrayHasKey('beneficiaries', $household);
+                $location = $household["location"];
+                $this->assertArrayHasKey('country_iso3', $location);
+                $this->assertArrayHasKey('adm1', $location);
+                $this->assertArrayHasKey('adm2', $location);
+                $this->assertArrayHasKey('adm3', $location);
+                $this->assertArrayHasKey('adm4', $location);
+                $country_specific_answer = current($household["country_specific_answers"]);
+                $this->assertArrayHasKey('answer', $country_specific_answer);
+                $this->assertArrayHasKey('country_specific', $country_specific_answer);
+                $beneficiary = current($household["beneficiaries"]);
+                $this->assertArrayHasKey('given_name', $beneficiary);
+                $this->assertArrayHasKey('family_name', $beneficiary);
+                $this->assertArrayHasKey('gender', $beneficiary);
+                $this->assertArrayHasKey('status', $beneficiary);
+                $this->assertArrayHasKey('date_of_birth', $beneficiary);
+                $this->assertArrayHasKey('updated_on', $beneficiary);
+                $this->assertArrayHasKey('profile', $beneficiary);
+                $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
+                $this->assertArrayHasKey('phones', $beneficiary);
+                $this->assertArrayHasKey('national_ids', $beneficiary);
+                $profile = $beneficiary["profile"];
+                $this->assertArrayHasKey('photo', $profile);
+                $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
+                $this->assertArrayHasKey('id', $vulnerability_criterion);
+                $phone = current($beneficiary["phones"]);
+                $this->assertArrayHasKey('number', $phone);
+                $this->assertArrayHasKey('type', $phone);
+                $national_ids = current($beneficiary["national_ids"]);
+                $this->assertArrayHasKey('id_number', $national_ids);
+                $this->assertArrayHasKey('id_type', $national_ids);
+            }
+            catch (\Exception $exception)
+            {
+                print_r("\nThe mapping of fields of Household entity is not correct.\n");
+                $this->remove($this->namefullname);
+                return false;
+            }
         }
         else
         {
@@ -250,9 +373,40 @@ class HouseholdControllerTest extends BMSServiceTestCase
     public function remove($name)
     {
         $this->em->clear();
-        $household = $this->em->getRepository(Household::class)->findOneByFullname($name);
+        /** @var Household $household */
+        $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($name);
         if ($household instanceof Household)
         {
+            $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
+            if (!empty($beneficiaries))
+            {
+                /** @var Beneficiary $beneficiary */
+                foreach ($beneficiaries as $beneficiary)
+                {
+                    $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
+                    $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+                    foreach ($phones as $phone)
+                    {
+                        $this->em->remove($phone);
+                    }
+                    foreach ($nationalIds as $nationalId)
+                    {
+                        $this->em->remove($nationalId);
+                    }
+                    $this->em->remove($beneficiary->getProfile());
+                    $this->em->remove($beneficiary);
+                }
+            }
+            $location = $household->getLocation();
+            $this->em->remove($location);
+
+            $countrySpecificAnswers = $this->em->getRepository(CountrySpecificAnswer::class)
+                ->findByHousehold($household);
+            foreach ($countrySpecificAnswers as $countrySpecificAnswer)
+            {
+                $this->em->remove($countrySpecificAnswer);
+            }
+
             $this->em->remove($household);
             $this->em->flush();
         }

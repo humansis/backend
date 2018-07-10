@@ -83,7 +83,7 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
      */
     private function whereVulnerabilityCriterion(QueryBuilder &$qb, $i, $idVulnerabilityCriterion)
     {
-        $qb->leftJoin("b.vulnerabilityCriterions", "vc$i")
+        $qb->leftJoin("b.vulnerabilityCriteria", "vc$i")
             ->andWhere("vc$i.id = :idvc$i")
             ->setParameter("idvc$i", $idVulnerabilityCriterion);
     }

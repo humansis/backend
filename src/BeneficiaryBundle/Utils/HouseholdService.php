@@ -256,7 +256,7 @@ class HouseholdService
             throw new \Exception("This country specific is unknown");
 
         $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
-            ->findBy([
+            ->findOneBy([
                 "countrySpecific" => $countrySpecific,
                 "household" => $household
             ]);

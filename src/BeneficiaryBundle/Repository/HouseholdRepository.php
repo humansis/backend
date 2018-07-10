@@ -106,7 +106,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         $qbSub = $this->createQueryBuilder("hh$i");
         $this->setCountry($qbSub, $countryISO3, $i);
         $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
-            ->leftJoin("b$i.vulnerabilityCriterions", "vc$i")
+            ->leftJoin("b$i.vulnerabilityCriteria", "vc$i")
             ->andWhere("vc$i.id = :idvc$i")
             ->setParameter("idvc$i", $idVulnerabilityCriterion);
         if (null !== $status)

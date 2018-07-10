@@ -53,7 +53,7 @@ PUT ("/households")
 			"profile": {
 				"photo": "gkjghjk"
 			},
-			"vulnerability_criterion": [
+			"vulnerability_criteria": [
 				{
 					"id": 1
 				}
@@ -112,7 +112,7 @@ POST ("/households/{id_household}")
 			"profile": {
 				"photo": "gkjghjk2"
 			},
-			"vulnerability_criterion": [
+			"vulnerability_criteria": [
 				{
 					"id": 1
 				}

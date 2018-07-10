@@ -91,8 +91,9 @@ class Beneficiary
      * @var VulnerabilityCriterion
      *
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
+     * @Groups({"FullHousehold"})
      */
-    private $vulnerabilityCriterions;
+    private $vulnerabilityCriteria;
 
     /**
      * @var Phone
@@ -115,7 +116,7 @@ class Beneficiary
      */
     public function __construct()
     {
-        $this->vulnerabilityCriterions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->vulnerabilityCriteria = new \Doctrine\Common\Collections\ArrayCollection();
         $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nationalIds = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -283,7 +284,7 @@ class Beneficiary
      */
     public function addVulnerabilityCriterion(\BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion)
     {
-        $this->vulnerabilityCriterions[] = $vulnerabilityCriterion;
+        $this->vulnerabilityCriteria[] = $vulnerabilityCriterion;
 
         return $this;
     }
@@ -297,17 +298,17 @@ class Beneficiary
      */
     public function removeVulnerabilityCriterion(\BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion)
     {
-        return $this->vulnerabilityCriterions->removeElement($vulnerabilityCriterion);
+        return $this->vulnerabilityCriteria->removeElement($vulnerabilityCriterion);
     }
 
     /**
-     * Get vulnerabilityCriterions.
+     * Get vulnerabilityCriterion.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getVulnerabilityCriterions()
+    public function getVulnerabilityCriteria()
     {
-        return $this->vulnerabilityCriterions;
+        return $this->vulnerabilityCriteria;
     }
 
     /**
@@ -315,9 +316,9 @@ class Beneficiary
      *
      * @return Beneficiary
      */
-    public function setVulnerabilityCriterions(\Doctrine\Common\Collections\Collection $collection = null)
+    public function setVulnerabilityCriteria(\Doctrine\Common\Collections\Collection $collection = null)
     {
-        $this->vulnerabilityCriterions = $collection;
+        $this->vulnerabilityCriteria = $collection;
 
         return $this;
     }
