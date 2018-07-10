@@ -8,6 +8,8 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use DistributionBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
@@ -116,7 +118,6 @@ class HouseholdService
         if ($flush)
         {
             $this->em->flush();
-            /** @var Household $household */
             $household = $this->em->getRepository(Household::class)->find($household->getId());
             $country_specific_answers = $this->em->getRepository(CountrySpecificAnswer::class)->findByHousehold($household);
             $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
@@ -126,6 +127,18 @@ class HouseholdService
             }
             foreach ($beneficiaries as $beneficiary)
             {
+                $phones = $this->em->getRepository(Phone::class)
+                    ->findByBeneficiary($beneficiary);
+                $nationalIds = $this->em->getRepository(NationalId::class)
+                    ->findByBeneficiary($beneficiary);
+                foreach ($phones as $phone)
+                {
+                    $beneficiary->addPhone($phone);
+                }
+                foreach ($nationalIds as $nationalId)
+                {
+                    $beneficiary->addNationalId($nationalId);
+                }
                 $household->addBeneficiary($beneficiary);
             }
         }

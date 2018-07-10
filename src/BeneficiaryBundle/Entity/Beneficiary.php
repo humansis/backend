@@ -337,20 +337,6 @@ class Beneficiary
     }
 
     /**
-     * Set phones.
-     *
-     * @param \BeneficiaryBundle\Entity\Phone $phone
-     *
-     * @return Beneficiary
-     */
-    public function setPhone(\BeneficiaryBundle\Entity\Phone $phone = null)
-    {
-        $this->phones = $phone;
-
-        return $this;
-    }
-
-    /**
      * Remove phone.
      *
      * @param \BeneficiaryBundle\Entity\Phone $phone
@@ -370,6 +356,34 @@ class Beneficiary
     public function getPhones()
     {
         return $this->phones;
+    }
+
+    /**
+     * Set phones.
+     *
+     * @param $collection
+     *
+     * @return Beneficiary
+     */
+    public function setPhones(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->phones = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Set nationalId.
+     *
+     * @param  $collection
+     *
+     * @return Beneficiary
+     */
+    public function setNationalIds(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->nationalIds = $collection;
+
+        return $this;
     }
 
     /**

@@ -94,10 +94,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->client->request('PUT', '/api/wsse/households', $this->body, [], ['HTTP_COUNTRY' => 'KHM']);
-        dump($this->client->getResponse()->getContent());
-
         $household = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
+
         dump($household);
         try
         {
