@@ -71,8 +71,11 @@ class HouseholdController extends Controller
 
         dump($household);
         $json = $this->get('jms_serializer')
-            ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
-
+            ->serialize(
+                $household,
+                'json',
+                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+            );
         return new Response($json);
     }
 

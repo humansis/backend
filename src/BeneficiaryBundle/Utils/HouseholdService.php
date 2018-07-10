@@ -4,6 +4,7 @@
 namespace BeneficiaryBundle\Utils;
 
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
@@ -115,7 +116,18 @@ class HouseholdService
         if ($flush)
         {
             $this->em->flush();
-            $household = $this->em->getRepository(Household::class)->find($household);
+            /** @var Household $household */
+            $household = $this->em->getRepository(Household::class)->find($household->getId());
+            $country_specific_answers = $this->em->getRepository(CountrySpecificAnswer::class)->findByHousehold($household);
+            $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
+            foreach ($country_specific_answers as $country_specific_answer)
+            {
+                $household->addCountrySpecificAnswer($country_specific_answer);
+            }
+            foreach ($beneficiaries as $beneficiary)
+            {
+                $household->addBeneficiary($beneficiary);
+            }
         }
 
         return $household;
@@ -128,7 +140,7 @@ class HouseholdService
      * @throws ValidationException
      * @throws \Exception
      */
-    public function update(Household $household, $project, array $householdArray)
+    public function update(Household $household, array $householdArray)
     {
         $this->requestValidator->validate(
             "household",

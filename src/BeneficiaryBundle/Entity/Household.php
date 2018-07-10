@@ -98,6 +98,8 @@ class Household
     private $countrySpecificAnswers;
 
     /**
+     * @var Beneficiary
+     *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household")
      * @Groups({"FullHousehold"})
      */
@@ -105,7 +107,6 @@ class Household
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households")
-     * @Groups({"FullHousehold"})
      */
     private $projects;
 
@@ -115,6 +116,17 @@ class Household
      * @ORM\Column(type="boolean", options={"default" : 0})
      */
     private $archived = 0;
+
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->countrySpecificAnswers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->beneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
 
     /**
      * Set id.
@@ -332,18 +344,6 @@ class Household
     }
 
     /**
-     * Set beneficiaries.
-     *
-     * @return Household
-     */
-    public function setBeneficiaries(\Doctrine\Common\Collections\Collection $collection = null)
-    {
-        $this->beneficiaries = $collection;
-
-        return $this;
-    }
-
-    /**
      * Set archived.
      *
      * @param bool $archived
@@ -366,13 +366,44 @@ class Household
     {
         return $this->archived;
     }
+
     /**
-     * Constructor
+     * Set beneficiaries.
+     *
+     * @return Household
      */
-    public function __construct()
+    public function setBeneficiaries(\Doctrine\Common\Collections\Collection $collection = null)
     {
-        $this->countrySpecificAnswers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->beneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->beneficiaries = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Set project.
+     *
+     * @param \Doctrine\Common\Collections\Collection|null $collection
+     * @return Household
+     */
+    public function setProjects(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->projects = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Set countrySpecificAnswer.
+     *
+     * @param \Doctrine\Common\Collections\Collection $collection
+     *
+     * @return Household
+     */
+    public function setCountrySpecificAnswers(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->countrySpecificAnswers[] = $collection;
+
+        return $this;
     }
 
     /**
@@ -471,19 +502,6 @@ class Household
     public function removeProject(\ProjectBundle\Entity\Project $project)
     {
         return $this->projects->removeElement($project);
-    }
-
-    /**
-     * Set project.
-     *
-     * @param \Doctrine\Common\Collections\Collection|null $collection
-     * @return Household
-     */
-    public function setProject(\Doctrine\Common\Collections\Collection $collection = null)
-    {
-        $this->projects = $collection;
-
-        return $this;
     }
 
     /**

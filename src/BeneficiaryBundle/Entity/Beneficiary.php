@@ -95,12 +95,16 @@ class Beneficiary
     private $vulnerabilityCriterions;
 
     /**
+     * @var Phone
+     *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist"})
      * @Groups({"FullHousehold"})
      */
     private $phones;
 
     /**
+     * @var NationalId
+     *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist"})
      * @Groups({"FullHousehold"})
      */
