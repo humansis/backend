@@ -189,16 +189,16 @@ class HouseholdCSVTest extends BMSServiceTestCase
     /**
      * @depends testGetHouseholds
      *
-     * @param $name
+     * @param $addressStreet
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function remove($name)
+    public function remove($addressStreet)
     {
         $this->em->clear();
         /** @var Household $household */
-        $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($name);
+        $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($addressStreet);
         if ($household instanceof Household)
         {
             $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
