@@ -114,6 +114,7 @@ class HouseholdCSVService
                     "old" => $listSimilarHouseholds
                 ];
         }
+        dump($listHouseholdsWithSimilar);
         return $listHouseholdsWithSimilar;
     }
 
