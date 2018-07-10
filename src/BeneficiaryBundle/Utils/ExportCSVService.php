@@ -71,7 +71,7 @@ class ExportCSVService
         $countrySpecifics = $this->getCountrySpecifics($countryISO3);
         $columnsCountrySpecificsAdded = false;
 
-        $i = -1;
+        $i = 0;
         $worksheet->setCellValue('A' . 1, "Household");
         foreach ($this->MAPPING_CSV as $CSVIndex => $name)
         {
@@ -81,8 +81,8 @@ class ExportCSVService
                 /** @var CountrySpecific $countrySpecific */
                 foreach ($countrySpecifics as $countrySpecific)
                 {
-                    $i++;
                     $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 2, $countrySpecific->getField());
+                    $i++;
                 }
                 $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i + 1)) . 1, "Beneficiary");
                 $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 2, $name);
