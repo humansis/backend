@@ -17,13 +17,21 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class HouseholdCSVService
 {
 
-    /** @var EntityManagerInterface $em */
+    /**
+     * @var EntityManagerInterface $em
+     */
     private $em;
 
-    /** @var HouseholdService $householdService */
+    /**
+     * @var HouseholdService $householdService
+     */
     private $householdService;
 
-    private $percentSimilar = 90;
+    /**
+     * Minimum percent to detect a similar household
+     * @var int
+     */
+    private $minimumPercentSimilar = 90;
 
     /**
      * The row index of the header (with the name of country specifics)
@@ -43,7 +51,9 @@ class HouseholdCSVService
      */
     private $firstColumnNonStatic = 'L';
 
-    /** @var array $MAPPING_CSV */
+    /**
+     * @var array $MAPPING_CSV
+     */
     private $MAPPING_CSV = [
         // Household
         "address_street" => "A",
@@ -105,7 +115,6 @@ class HouseholdCSVService
     }
 
     /**
-     * TODO CHECK NOT HOUSEHOLD BY HOUSEHOLD BUT BENEFICIARY BY BENEFICIARY
      * Transform the array to a list of household
      * On each household, found similar household already saved
      *
@@ -122,22 +131,29 @@ class HouseholdCSVService
         // Get the list of households with their beneficiaries
         $listHouseholdsArray = $this->getListHouseholdArray($sheetArray, $countryIso3);
 
-        $listHouseholdsSaved = $this->em->getRepository(Household::class)->findAll();
+        // Get all household of the country
+        $listHouseholdsSaved = $this->em->getRepository(Household::class)->getAllBy($countryIso3);
 
         $listHouseholdsWithSimilar = [];
         foreach ($listHouseholdsArray as $householdArray)
         {
+            // If there is a field equal to null, we increment the number of incomplete household and we go to the next household
             if (!$this->isIncomplete($householdArray))
             {
                 $statistic->incrementNbIncomplete();
                 continue;
             }
-            $listSimilarHouseholds = $this->getSimilarBeneficiary($householdArray, $listHouseholdsSaved);
+            $listSimilarHouseholds = $this->foundSimilarBeneficiaryInHousehold($householdArray, $listHouseholdsSaved);
+            // If the list of similar household is empty, we save the household
             if (empty($listSimilarHouseholds))
             {
-                $this->householdService->create($householdArray, $project);
+                // We saved the household
+                $newHousehold = $this->householdService->create($householdArray, $project);
+                // We add it to the list of saved household in order to compare with the next households
+                $listHouseholdsSaved[] = $newHousehold;
                 $statistic->incrementNbAdded();
             }
+            // Else we return the household with the list of similar household
             else
             {
                 $listHouseholdsWithSimilar[] = [
@@ -166,8 +182,6 @@ class HouseholdCSVService
                 $isIncomplete = $this->isIncomplete($value);
             if (!$isIncomplete || null === $value)
             {
-                dump($key);
-                dump($value);
                 return false;
             }
         }
@@ -181,10 +195,10 @@ class HouseholdCSVService
      * @param array $listHousehold
      * @return array
      */
-    private function getSimilarBeneficiary(array $newHouseholdarray, array $listHousehold)
+    private function foundSimilarBeneficiaryInHousehold(array $newHouseholdarray, array $listHousehold)
     {
         // Concatenation of fields to compare with
-        $stringToCompare = $newHouseholdarray["address_street"] .
+        $stringHouseholdToCompare = $newHouseholdarray["address_street"] .
             $newHouseholdarray["address_number"] .
             $newHouseholdarray["address_postcode"];
 
@@ -192,11 +206,17 @@ class HouseholdCSVService
         /** @var Household $household */
         foreach ($listHousehold as $household)
         {
-            similar_text($stringToCompare,
+            similar_text(
+                $stringHouseholdToCompare,
                 $household->getAddressStreet() . $household->getAddressNumber() . $household->getAddressPostcode(),
                 $percent
             );
-            if ($this->percentSimilar < $percent)
+
+            if (100 == $percent)
+            {
+                return [$household];
+            }
+            elseif ($this->minimumPercentSimilar < $percent)
             {
                 $listSimilarHouseholds[] = $household;
             }

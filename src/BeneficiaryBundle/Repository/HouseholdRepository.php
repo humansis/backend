@@ -20,6 +20,13 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
     ];
 
 
+    /**
+     * Get all Household by country
+     * TODO IMPLEMENT THE FILTERS IN THE QUERY
+     * @param $iso3
+     * @param array $filters
+     * @return mixed
+     */
     public function getAllBy($iso3, $filters = [])
     {
         $qb = $this->createQueryBuilder("hh");
@@ -31,6 +38,11 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getResult();
     }
 
+    /**
+     * Get similar household
+     * @param array $householdArray
+     * @return mixed
+     */
     public function getSimilar(array $householdArray)
     {
         $qb = $this->createQueryBuilder("hh");

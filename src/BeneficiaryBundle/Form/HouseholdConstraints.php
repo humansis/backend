@@ -20,6 +20,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
         $optionalNumeric = new Optional($numeric);
 
         $household = [
+            "project" => $optionalNumeric,
             "address_street" => $string,
             "address_number" => $string,
             "address_postcode" => $string,
