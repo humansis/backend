@@ -22,6 +22,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
 
     /**
      * Get all Household by country
+     * Use $filters to add a offset and a limit. Default => offset = 0 and limit = 10
      * TODO IMPLEMENT THE FILTERS IN THE QUERY
      * @param $iso3
      * @param array $filters
@@ -29,11 +30,15 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getAllBy($iso3, $filters = [])
     {
+        $offset = (array_key_exists("offset", $filters)) ? $filters['offset'] : 0;
+        $limit = (array_key_exists("limit", $filters)) ? $filters['limit'] : 10;
         $qb = $this->createQueryBuilder("hh");
         $q = $qb->leftJoin("hh.location", "l")
             ->where("l.countryIso3 = :iso3")
             ->setParameter("iso3", $iso3)
-            ->andWhere("hh.archived = 0");
+            ->andWhere("hh.archived = 0")
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
 
         return $q->getQuery()->getResult();
     }
