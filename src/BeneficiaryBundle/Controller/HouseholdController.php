@@ -21,6 +21,22 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 
 class HouseholdController extends Controller
 {
+    /**
+     * @Rest\Get("/households/{id}")
+     *
+     * @param Household $household
+     * @return Response
+     */
+    public function showAction(Household $household)
+    {
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $household,
+                'json',
+                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
 
     /**
      * @Rest\Put("/households", name="add_household")
@@ -275,7 +291,7 @@ class HouseholdController extends Controller
             ->serialize(
                 $households,
                 'json',
-                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
             );
         return new Response($json);
     }

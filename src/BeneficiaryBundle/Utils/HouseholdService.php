@@ -58,6 +58,16 @@ class HouseholdService
     public function getAll(string $iso3, array $filters)
     {
         $households = $this->em->getRepository(Household::class)->getAllBy($iso3, $filters);
+        /** @var Household $household */
+        foreach ($households as $household)
+        {
+            /** @var Beneficiary $beneficiary */
+            foreach ($household->getBeneficiaries() as $beneficiary)
+            {
+                if ($beneficiary->getStatus() != 1)
+                    $household->removeBeneficiary($beneficiary);
+            }
+        }
         return $households;
     }
 

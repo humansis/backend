@@ -20,7 +20,7 @@ class Beneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $id;
 
@@ -28,7 +28,7 @@ class Beneficiary
      * @var string
      *
      * @ORM\Column(name="givenName", type="string", length=255)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $givenName;
 
@@ -36,7 +36,7 @@ class Beneficiary
      * @var string
      *
      * @ORM\Column(name="familyName", type="string", length=255)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $familyName;
 
@@ -91,7 +91,7 @@ class Beneficiary
      * @var VulnerabilityCriterion
      *
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $vulnerabilityCriteria;
 

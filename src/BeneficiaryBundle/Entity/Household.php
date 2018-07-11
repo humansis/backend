@@ -21,7 +21,7 @@ class Household
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $id;
 
@@ -85,7 +85,7 @@ class Household
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location", cascade={"persist"})
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $location;
 
@@ -101,7 +101,7 @@ class Household
      * @var Beneficiary
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household")
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $beneficiaries;
 
