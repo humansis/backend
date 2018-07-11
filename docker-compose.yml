@@ -20,7 +20,6 @@ services:
             MYSQL_USER: 'bms_user'
             MYSQL_PASSWORD: 'aA123'
 
-
     # PHP
     php:
         # docker-compose will search your Dockerfile in the folder Docker/php. It will build it and run it
@@ -32,7 +31,7 @@ services:
         links:
             - db:mysqldb
         volumes:
-            - ./:/var/www/symfony
+            - ./:/var/www/html/symfony
 
     # PHPMYADMIN (for developer)
     phpmyadmin:
