@@ -124,7 +124,6 @@ class HouseholdController extends Controller
             return new Response("You must specify a project.", 500);
         $project = $request->request->get('project');
         $countryIso3 = $request->request->get('__country');
-        $countryIso3 = "KHM";
         /** @var HouseholdCSVService $householeService */
         $householeService = $this->get('beneficiary.household_csv_service');
         try
@@ -175,7 +174,6 @@ class HouseholdController extends Controller
     public function getPatternCSVAction(Request $request)
     {
         $countryIso3 = $request->request->get('__country');
-//        $countryIso3 = "KHM";
         /** @var ExportCSVService $exportCSVService */
         $exportCSVService = $this->get('beneficiary.household_export_csv_service');
         try

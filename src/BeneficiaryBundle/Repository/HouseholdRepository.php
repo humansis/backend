@@ -30,8 +30,9 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getAllBy($iso3, $filters = [])
     {
-        $offset = (array_key_exists("offset", $filters)) ? $filters['offset'] : 0;
-        $limit = (array_key_exists("limit", $filters)) ? $filters['limit'] : 10;
+        $offset = (array_key_exists("offset", $filters)) ? intval($filters['offset']) : 0;
+        $limit = (array_key_exists("limit", $filters)) ? intval($filters['limit']) : 10;
+
         $qb = $this->createQueryBuilder("hh");
         $q = $qb->leftJoin("hh.location", "l")
             ->where("l.countryIso3 = :iso3")
