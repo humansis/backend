@@ -11,6 +11,7 @@ use BeneficiaryBundle\Model\ImportStatistic;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -103,7 +104,7 @@ class HouseholdCSVService
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function saveCSV($countryIso3, $project, UploadedFile $uploadedFile)
+    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile)
     {
         // LOADING CSV
         $reader = new Csv();
@@ -125,7 +126,7 @@ class HouseholdCSVService
      * @throws ValidationException
      * @throws \Exception
      */
-    public function loadCSV($countryIso3, $project, array $sheetArray)
+    public function loadCSV($countryIso3, Project $project, array $sheetArray)
     {
         $statistic = new ImportStatistic();
         // Get the list of households with their beneficiaries

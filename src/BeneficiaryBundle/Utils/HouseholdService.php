@@ -80,7 +80,7 @@ class HouseholdService
      * @throws ValidationException
      * @throws \Exception
      */
-    public function create(array $householdArray, $project, bool $flush = true)
+    public function create(array $householdArray, Project $project, bool $flush = true)
     {
         $this->requestValidator->validate(
             "household",
@@ -158,12 +158,13 @@ class HouseholdService
 
     /**
      * @param Household $household
+     * @param Project $project
      * @param array $householdArray
      * @return Household
      * @throws ValidationException
      * @throws \Exception
      */
-    public function update(Household $household, array $householdArray)
+    public function update(Household $household, Project $project, array $householdArray)
     {
         $this->requestValidator->validate(
             "household",
@@ -182,6 +183,14 @@ class HouseholdService
             ->setAddressPostcode($householdArray["address_postcode"])
             ->setAddressNumber($householdArray["address_number"]);
 
+        $project = $this->em->getRepository(Project::class)->find($project);
+        if (!$project instanceof Project)
+            throw new \Exception("This project is not found");
+
+
+        if (!in_array($project, $household->getProjects()->toArray()))
+            $household->addProject($project);
+
         // Save or update location instance
         $location = $this->getOrSaveLocation($householdArray["location"]);
         $household->setLocation($location);
@@ -193,6 +202,7 @@ class HouseholdService
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave)
             {
                 $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
+//                dump($beneficiary);
                 $this->em->persist($beneficiary);
             }
         }

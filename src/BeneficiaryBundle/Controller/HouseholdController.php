@@ -8,6 +8,7 @@ use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use JMS\Serializer\SerializationContext;
+use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +19,7 @@ use BeneficiaryBundle\Entity\Household;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class HouseholdController extends Controller
 {
@@ -39,7 +41,7 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Put("/households", name="add_household")
+     * @Rest\Put("/households/project/{id}", name="add_household")
      *
      * @SWG\Tag(name="Households")
      *
@@ -63,13 +65,12 @@ class HouseholdController extends Controller
      *
      *
      * @param Request $request
+     * @param Project $project
      * @return Response
      */
-    public function addAction(Request $request)
+    public function addAction(Request $request, Project $project)
     {
         $householdArray = $request->request->all();
-        $project = $householdArray['project'];
-        unset($householdArray['project']);
         /** @var HouseholdService $householeService */
         $householeService = $this->get('beneficiary.household_service');
         try
@@ -95,7 +96,7 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Post("/csv/households", name="add_csv_household")
+     * @Rest\Post("/csv/households/project/{id}", name="add_csv_household")
      *
      * @SWG\Tag(name="Households")
      *
@@ -104,12 +105,6 @@ class HouseholdController extends Controller
      *     in="formData",
      *     required=true,
      *     type="file"
-     * )
-     * @SWG\Parameter(
-     *     name="project",
-     *     in="body",
-     *     required=true,
-     *     schema={"1"}
      * )
      *
      * @SWG\Response(
@@ -129,16 +124,16 @@ class HouseholdController extends Controller
      * )
      *
      * @param Request $request
+     * @param Project $project
      * @return Response
      */
-    public function addCSVAction(Request $request)
+    public function addCSVAction(Request $request, Project $project)
     {
         if (!$request->files->has('file'))
             return new Response("You must upload a file.", 500);
         $fileCSV = $request->files->get('file');
         if (!$request->request->has('project'))
             return new Response("You must specify a project.", 500);
-        $project = $request->request->get('project');
         $countryIso3 = $request->request->get('__country');
         /** @var HouseholdCSVService $householeService */
         $householeService = $this->get('beneficiary.household_csv_service');
@@ -205,7 +200,8 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Post("/households/{id}")
+     * @Rest\Post("/households/{id}/project/{id_project}")
+     * @ParamConverter("project", options={"mapping": {"id_project" : "id"}})
      *
      * NOTE : YOU CAN'T EDIT THE PROJECTS LIST OF THE HOUSEHOLD HERE
      *
@@ -233,17 +229,21 @@ class HouseholdController extends Controller
      *
      * @param Request $request
      * @param Household $household
+     * @param Project $project
      * @return Response
      */
-    public function editAction(Request $request, Household $household)
+    public function editAction(Request $request, Household $household, Project $project)
     {
         $arrayHousehold = $request->request->all();
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
 
+        dump("here");
         try
         {
-            $newHousehold = $householdService->update($household, $arrayHousehold);
+            dump("here1");
+            $newHousehold = $householdService->update($household, $project, $arrayHousehold);
+            dump("here2");
         }
         catch (ValidationException $exception)
         {

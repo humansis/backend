@@ -135,8 +135,13 @@ class HouseholdControllerTest extends BMSServiceTestCase
             print_r("There is no project inside your database");
             return false;
         }
-        $this->body['project'] = current($projects)->getId();
-        $crawler = $this->client->request('PUT', '/api/wsse/households', $this->body, [], ['HTTP_COUNTRY' => 'COUNTRY_TEST']);
+        $crawler = $this->client->request(
+            'PUT',
+            '/api/wsse/households/project/' . current($projects)->getId(),
+            $this->body,
+            [],
+            ['HTTP_COUNTRY' => 'COUNTRY_TEST']
+        );
         $household = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
@@ -251,8 +256,14 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
         $this->em->clear();
 
+        $projects = $this->em->getRepository(Project::class)->findAll();
+        if (empty($projects))
+        {
+            print_r("There is no project inside your database");
+            return false;
+        }
+
         $this->body['address_street'] .= '(u)';
-        unset($this->body['project']);
 
         foreach ($this->body['beneficiaries'] as $index => $beneficiaryArray)
         {
@@ -275,7 +286,13 @@ class HouseholdControllerTest extends BMSServiceTestCase
             }
         }
 
-        $crawler = $this->client->request('POST', '/api/wsse/households/' . $household->getId(), $this->body, [], ['HTTP_COUNTRY' => 'KHM']);
+        $crawler = $this->client->request(
+            'POST',
+            '/api/wsse/households/' . $household->getId() . '/project/' . current($projects)->getId(),
+            $this->body,
+            [],
+            ['HTTP_COUNTRY' => 'KHM']
+        );
         $this->body['fullname'] = $this->namefullname;
 
         $household = json_decode($this->client->getResponse()->getContent(), true);

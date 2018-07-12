@@ -180,14 +180,14 @@ class HouseholdCSVTest extends BMSServiceTestCase
             return;
         }
         /** @var ImportStatistic $statistic */
-        [$statistic, $listSimilarHouseholds] = $this->hhCSVService->loadCSV($this->iso3, current($projects)->getId(), $this->SHEET_ARRAY);
+        [$statistic, $listSimilarHouseholds] = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
         try
         {
             $this->assertSame([], $listSimilarHouseholds);
             $this->assertSame(1, $statistic->getNbAdded());
             $this->assertSame(0, $statistic->getNbDuplicates());
             $this->assertSame(0, $statistic->getNbIncomplete());
-            [$statistic2, $listSimilarHouseholds2] = $this->hhCSVService->loadCSV($this->iso3, current($projects)->getId(), $this->SHEET_ARRAY);
+            [$statistic2, $listSimilarHouseholds2] = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
             $this->assertSame(0, $statistic2->getNbAdded());
             $this->assertSame(1, $statistic2->getNbDuplicates());
             $this->assertSame(0, $statistic2->getNbIncomplete());
@@ -195,7 +195,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             $this->assertArrayHasKey("old", current($listSimilarHouseholds2));
             $this->assertInstanceOf(Household::class, current(current($listSimilarHouseholds2)["old"]));
             $this->SHEET_ARRAY[4]["N"] = null;
-            [$statistic3, $listSimilarHouseholds3] = $this->hhCSVService->loadCSV($this->iso3, current($projects)->getId(), $this->SHEET_ARRAY);
+            [$statistic3, $listSimilarHouseholds3] = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
             $this->assertSame(0, $statistic3->getNbAdded());
             $this->assertSame(0, $statistic3->getNbDuplicates());
             $this->assertSame(1, $statistic3->getNbIncomplete());
