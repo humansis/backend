@@ -2,6 +2,9 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use BeneficiaryBundle\Entity\Household;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -21,10 +24,38 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
     ];
 
     /**
+     * Get the head of household
+     *
+     * @param Household $household
+     * @return mixed
+     */
+    public function getHeadOfHousehold(Household $household)
+    {
+        $qb = $this->createQueryBuilder("b");
+        $q = $qb->where("b.household = :household")
+            ->andWhere("b.status = 1")
+            ->setParameter("household", $household);
+
+        try
+        {
+            return $q->getQuery()->getSingleResult();
+        }
+        catch (NoResultException $e)
+        {
+            return null;
+        }
+        catch (NonUniqueResultException $e)
+        {
+            return null;
+        }
+    }
+
+    /**
      * Get Beneficiaries which respect criteria
      *
      * @param $countryISO3
      * @param array $criteria
+     * @param bool $onlyCount
      * @param string $groupGlobal
      * @return mixed
      * @throws \Exception

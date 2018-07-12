@@ -132,14 +132,12 @@ class HouseholdController extends Controller
         if (!$request->files->has('file'))
             return new Response("You must upload a file.", 500);
         $fileCSV = $request->files->get('file');
-        if (!$request->request->has('project'))
-            return new Response("You must specify a project.", 500);
         $countryIso3 = $request->request->get('__country');
         /** @var HouseholdCSVService $householeService */
         $householeService = $this->get('beneficiary.household_csv_service');
         try
         {
-            [$statistic, $listHouseholds] = $householeService->saveCSV($countryIso3, $project, $fileCSV);
+            $return = $householeService->saveCSV($countryIso3, $project, $fileCSV);
         }
         catch (ValidationException $exception)
         {
@@ -147,11 +145,12 @@ class HouseholdController extends Controller
         }
         catch (\Exception $e)
         {
+            dump($e);
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $json = $this->get('jms_serializer')
-            ->serialize(["statistic" => $statistic, "list_of_households" => $listHouseholds], 'json');
+            ->serialize($return, 'json');
         return new Response($json);
     }
 

@@ -186,7 +186,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             $this->assertSame([], $listSimilarHouseholds);
             $this->assertSame(1, $statistic->getNbAdded());
             $this->assertSame(0, $statistic->getNbDuplicates());
-            $this->assertSame(0, $statistic->getNbIncomplete());
+            $this->assertSame(0, $statistic->getIncompleteLine());
             [$statistic2, $listSimilarHouseholds2] = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
             $this->assertSame(0, $statistic2->getNbAdded());
             $this->assertSame(1, $statistic2->getNbDuplicates());

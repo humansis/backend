@@ -10,14 +10,9 @@ class ImportStatistic
     private $nbAdded = 0;
 
     /**
-     * @var int
+     * @var array
      */
-    private $nbIncomplete = 0;
-
-    /**
-     * @var int
-     */
-    private $nbDuplicates = 0;
+    private $incompleteLine = [];
 
 
     /**
@@ -50,60 +45,18 @@ class ImportStatistic
     }
 
     /**
-     * @return int
+     * @return array
      */
-    public function getNbIncomplete(): int
+    public function getIncompleteLine(): array
     {
-        return $this->nbIncomplete;
+        return $this->incompleteLine;
     }
 
     /**
-     * @param int $nbIncomplete
-     * @return ImportStatistic
+     * @param IncompleteLine $incompleteLine
      */
-    public function setNbIncomplete(int $nbIncomplete)
+    public function addIncompleteLine(IncompleteLine $incompleteLine)
     {
-        $this->nbIncomplete = $nbIncomplete;
-
-        return $this;
-    }
-
-    /**
-     * @return ImportStatistic
-     */
-    public function incrementNbIncomplete()
-    {
-        $this->nbIncomplete++;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getNbDuplicates(): int
-    {
-        return $this->nbDuplicates;
-    }
-
-    /**
-     * @param int $nbDuplicates
-     * @return ImportStatistic
-     */
-    public function setNbDuplicates(int $nbDuplicates)
-    {
-        $this->nbDuplicates = $nbDuplicates;
-
-        return $this;
-    }
-
-    /**
-     * @return ImportStatistic
-     */
-    public function incrementNbDuplicates()
-    {
-        $this->nbDuplicates++;
-
-        return $this;
+        $this->incompleteLine[] =  $incompleteLine;
     }
 }

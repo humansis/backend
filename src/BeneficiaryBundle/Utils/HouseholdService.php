@@ -202,7 +202,6 @@ class HouseholdService
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave)
             {
                 $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
-//                dump($beneficiary);
                 $this->em->persist($beneficiary);
             }
         }
@@ -218,6 +217,16 @@ class HouseholdService
         $this->em->flush();
 
         return $household;
+    }
+
+    public function addToProject(Household &$household, Project $project)
+    {
+        if (!in_array($project, $household->getProjects()->toArray()))
+        {
+            $household->addProject($project);
+            $this->em->persist($household);
+            $this->em->flush();
+        }
     }
 
     /**
