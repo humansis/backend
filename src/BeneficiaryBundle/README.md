@@ -15,11 +15,10 @@ In column with multiple information (like phones, you can have multiple phone nu
 ## ROUTES
 
 
-PUT ("/households")
+PUT ("/households/project/{id}")
 
 ```json
 {
-    "project": 1,
 	"address_street": "addr",
 	"address_number": "12",
 	"address_postcode": "73460",
@@ -103,7 +102,7 @@ PUT ("/households")
 }
 ```
 
-POST ("/households/{id_household}")
+POST ("/households/{id_household}/project/{id_project}")
 ```json
 {
 	"address_street": "add$*r2",
