@@ -31,6 +31,7 @@ class HouseholdCSVService
     private $householdService;
 
     /**
+     * TODO ADJUSTE
      * Minimum percent to detect a similar household
      * @var int
      */
@@ -163,6 +164,8 @@ class HouseholdCSVService
             // We have found a household similar to the current one
             if ($similarHousehold instanceof Household)
             {
+                dump($similarHousehold);
+                dump($percent);
                 // Its totally equal
                 if (100 === intval($percent))
                 {
@@ -277,6 +280,7 @@ class HouseholdCSVService
         /** @var Beneficiary $oldBeneficiary */
         foreach ($oldBeneficiaries as $oldBeneficiary)
         {
+            $isOk = false;
             foreach ($newBeneficiaries as $newBeneficiary)
             {
                 // If the both name are similar, go to the next oldBeneficiary
@@ -286,13 +290,15 @@ class HouseholdCSVService
                     trim($newBeneficiary['given_name']) . trim($newBeneficiary['family_name'])
                 )
                 {
+                    $isOk = true;
                     break;
                 }
             }
-            $oldBeneficiariesAreInNewBeneficiaries = false;
+            $oldBeneficiariesAreInNewBeneficiaries = !$isOk;
         }
         foreach ($newBeneficiaries as $newBeneficiary)
         {
+            $isOk = false;
             foreach ($oldBeneficiaries as $oldBeneficiary)
             {
                 // If the both name are similar, go to the next $newBeneficiary
@@ -302,12 +308,14 @@ class HouseholdCSVService
                     trim($newBeneficiary['given_name']) . trim($newBeneficiary['family_name'])
                 )
                 {
+                    $isOk = true;
                     break;
                 }
             }
-            $newBeneficiariesAreInOldBeneficiaries = false;
+            $newBeneficiariesAreInOldBeneficiaries = !$isOk;
         }
-
+dump($oldBeneficiariesAreInNewBeneficiaries);
+dump($newBeneficiariesAreInOldBeneficiaries);
         if ($oldBeneficiariesAreInNewBeneficiaries && $newBeneficiariesAreInOldBeneficiaries)
         {
             return true;
@@ -350,10 +358,10 @@ class HouseholdCSVService
             return null;
 
         // Concatenation of fields to compare with
-        $stringNewHouseholdToCompare = $newHouseholdArray["address_street"] .
-            $newHouseholdArray["address_number"] .
-            $newHouseholdArray["address_postcode"] .
-            $newHead["given_name"] .
+        $stringNewHouseholdToCompare = $newHouseholdArray["address_street"] . "//" .
+            $newHouseholdArray["address_number"] . "//" .
+            $newHouseholdArray["address_postcode"] . "//" .
+            $newHead["given_name"] . "//" .
             $newHead["family_name"];
 
         $similarHousehold = null;
@@ -367,14 +375,11 @@ class HouseholdCSVService
             if (!$oldHead instanceof Beneficiary)
                 continue;
 
-            $stringOldHouseholdToCompare = $oldHousehold->getAddressStreet() .
-                $oldHousehold->getAddressNumber() .
-                $oldHousehold->getAddressPostcode() .
-                $oldHead->getGivenName() .
+            $stringOldHouseholdToCompare = $oldHousehold->getAddressStreet() . "//" .
+                $oldHousehold->getAddressNumber() . "//" .
+                $oldHousehold->getAddressPostcode() . "//" .
+                $oldHead->getGivenName() . "//" .
                 $oldHead->getFamilyName();
-
-            dump($stringNewHouseholdToCompare);
-            dump($stringOldHouseholdToCompare);
 
             similar_text(
                 $stringNewHouseholdToCompare,
