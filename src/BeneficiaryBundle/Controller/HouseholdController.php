@@ -238,12 +238,9 @@ class HouseholdController extends Controller
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
 
-        dump("here");
         try
         {
-            dump("here1");
             $newHousehold = $householdService->update($household, $project, $arrayHousehold);
-            dump("here2");
         }
         catch (ValidationException $exception)
         {
