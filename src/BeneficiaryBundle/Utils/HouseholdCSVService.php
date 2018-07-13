@@ -134,6 +134,28 @@ class HouseholdCSVService
         dump($step);
         dump($contentJson);
 
+        // TODO DISPATCH 4 STEPS IN 4 CLASS OR NO ?
+
+        switch ($step)
+        {
+            // CASE FOUND TYPO ISSUES
+            case 1:
+                // We update the old with the new, we keep only the old or we add the new
+                break;
+            // CASE FOUND MORE ISSUES
+            case 2:
+                break;
+            // CASE FOUND LESS ISSUES
+            case 3:
+                break;
+            // CASE FOUND DUPLICATED ISSUES
+            case 4:
+                break;
+            // NOT FOUND CASE
+            default:
+                throw new \Exception("Step '$step' unknown.");
+        }
+
         $errorsArray = $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $listHouseholdsSaved, $step);
         return $errorsArray;
     }
@@ -150,21 +172,6 @@ class HouseholdCSVService
      */
     public function foundErrors($countryIso3, Project $project, array $listHouseholdsArray, array $listHouseholdsSaved, int $step)
     {
-        switch ($step)
-        {
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            default:
-                throw new \Exception("Step '$step' unknown.");
-        }
-
-
         $statistic = new ImportStatistic();
         // List of household which contains the household from the csv and the one which is similar from the database
         $listHouseholdsTypo = [];
@@ -358,7 +365,6 @@ class HouseholdCSVService
                 break;
             }
         }
-
         foreach ($newBeneficiaries as $newBeneficiary)
         {
             $newBeneficiariesAreInOldBeneficiaries = false;
@@ -428,7 +434,6 @@ class HouseholdCSVService
             $newHouseholdArray["address_postcode"] . "//" .
             $newHead["given_name"] . "//" .
             $newHead["family_name"];
-
 
         $similarHousehold = null;
         $percent = $this->minimumPercentSimilar;
