@@ -4,3 +4,4 @@ imports:
     - { resource: ../../src/ProjectBundle/Resources/config/services.yml }
     - { resource: ../../src/UserBundle/Resources/config/services.yml }
     - { resource: ../../src/ReportingBundle/Resources/config/services.yml }
+    - { resource: ../../src/CommonBundle/Resources/config/services.yml }

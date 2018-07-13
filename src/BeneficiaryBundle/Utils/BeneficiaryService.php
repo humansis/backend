@@ -70,7 +70,7 @@ class BeneficiaryService
                 throw new \Exception("Beneficiary was not found.");
             if ($beneficiary->getHousehold() !== $household)
                 throw new \Exception("You are trying to update a beneficiary in the wrong household.");
-            $beneficiary->setVulnerabilityCriterions(null);
+            $beneficiary->setVulnerabilityCriteria(null);
         }
         else
         {
@@ -85,7 +85,7 @@ class BeneficiaryService
             ->setStatus($beneficiaryArray["status"])
             ->setUpdatedOn(new \DateTime($beneficiaryArray["updated_on"]));
 
-        foreach ($beneficiaryArray["vulnerability_criterion"] as $vulnerability_criterion)
+        foreach ($beneficiaryArray["vulnerability_criteria"] as $vulnerability_criterion)
         {
             $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion["id"]));
         }

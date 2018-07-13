@@ -4,25 +4,38 @@
 namespace BeneficiaryBundle\Utils;
 
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Model\ImportStatistic;
+use BeneficiaryBundle\Model\IncompleteLine;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class HouseholdCSVService
 {
 
-    /** @var EntityManagerInterface $em */
+    /**
+     * @var EntityManagerInterface $em
+     */
     private $em;
 
-    /** @var HouseholdService $householdService */
+    /**
+     * @var HouseholdService $householdService
+     */
     private $householdService;
 
-    private $percentSimilar = 90;
+    /**
+     * TODO ADJUSTE
+     * Minimum percent to detect a similar household
+     * @var int
+     */
+    private $minimumPercentSimilar = 90;
 
     /**
      * The row index of the header (with the name of country specifics)
@@ -42,7 +55,9 @@ class HouseholdCSVService
      */
     private $firstColumnNonStatic = 'L';
 
-    /** @var array $MAPPING_CSV */
+    /**
+     * @var array $MAPPING_CSV
+     */
     private $MAPPING_CSV = [
         // Household
         "address_street" => "A",
@@ -66,7 +81,7 @@ class HouseholdCSVService
             "gender" => "N",
             "status" => "O",
             "date_of_birth" => "P",
-            "vulnerability_criterion" => "Q",
+            "vulnerability_criteria" => "Q",
             "phones" => "R",
             "national_ids" => "S"
         ]
@@ -81,15 +96,16 @@ class HouseholdCSVService
 
 
     /**
+     * Defined the reader and transform CSV to array
+     *
      * @param $countryIso3
+     * @param Project $project
      * @param UploadedFile $uploadedFile
      * @return array
-     * @throws ValidationException
-     * @throws \Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function loadCSV($countryIso3, $project, UploadedFile $uploadedFile)
+    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile)
     {
         // LOADING CSV
         $reader = new Csv();
@@ -97,53 +113,327 @@ class HouseholdCSVService
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->toArray(null, true, true, true);
 
-        // Get the list of households with their beneficiaries
-        $listHouseholdsArray = $this->getListHouseholdArray($sheetArray, $countryIso3);
-
-        $listHouseholdsSaved = $this->em->getRepository(Household::class)->findAll();
-
-        $listHouseholdsWithSimilar = [];
-        foreach ($listHouseholdsArray as $householdArray)
-        {
-            $listSimilarHouseholds = $this->getSimilarBeneficiary($householdArray, $listHouseholdsSaved);
-            if (empty($listSimilarHouseholds))
-                $this->householdService->create($householdArray, $project);
-            else
-                $listHouseholdsWithSimilar[] = [
-                    "new" => $householdArray,
-                    "old" => $listSimilarHouseholds
-                ];
-        }
-        return $listHouseholdsWithSimilar;
+        return $this->loadCSV($countryIso3, $project, $sheetArray);
     }
 
     /**
-     * Return a list of household which are similar to the $newHouseholdarray
-     * @param array $newHouseholdarray
-     * @param array $listHousehold
+     * Transform the array to a list of household
+     * On each household, found similar household already saved
+     *
+     * @param $countryIso3
+     * @param Project $project
+     * @param array $sheetArray
      * @return array
      */
-    private function getSimilarBeneficiary(array $newHouseholdarray, array $listHousehold)
+    public function loadCSV($countryIso3, Project $project, array $sheetArray)
     {
-        // Concatenation of fields to compare with
-        $stringToCompare = $newHouseholdarray["address_street"] .
-            $newHouseholdarray["address_number"] .
-            $newHouseholdarray["address_postcode"];
+        $statistic = new ImportStatistic();
+        // Get the list of households from csv with their beneficiaries
+        $listHouseholdsArray = $this->getListHouseholdArray($sheetArray, $countryIso3);
+        // Get the list of households from the database with their beneficiaries
+        $listHouseholdsSaved = $this->em->getRepository(Household::class)->getAllBy($countryIso3);
 
-        $listSimilarHouseholds = [];
-        /** @var Household $household */
-        foreach ($listHousehold as $household)
+        // List of household which contains the household from the csv and the one which is similar from the database
+        $listHouseholdsTypo = [];
+        // List of household which contains at least one beneficiary who is in another household (in the database)
+        $listHouseholdsDuplicated = [];
+        // List of household which contains more beneficiaries in the csv than is the db
+        $listHouseholdsMoreBeneficiaries = [];
+        // List of household which contains less beneficiaries in the csv than is the db
+        $listHouseholdsLessBeneficiaries = [];
+
+
+        // Variable to specify the line numero where a household is incomplete in CSV
+        $currentLine = $this->first_row;
+        foreach ($listHouseholdsArray as $index => $householdArray)
         {
-            similar_text($stringToCompare,
-                $household->getAddressStreet() . $household->getAddressNumber() . $household->getAddressPostcode(),
-                $percent
-            );
-            if ($this->percentSimilar < $percent)
+            // If there is a field equal to null, we increment the number of incomplete household and we go to the next household
+            if (!$this->isIncomplete($householdArray))
             {
-                $listSimilarHouseholds[] = $household;
+                $statistic->addIncompleteLine(new IncompleteLine($currentLine));
+                unset($listHouseholdsArray[$index]);
+                $currentLine += count($householdArray['beneficiaries']);
+                continue;
+            }
+            $percent = -1;
+            $similarHousehold = $this->foundSimilarHeadAndHousehold($householdArray, $listHouseholdsSaved, $percent);
+            // We have found a household similar to the current one
+            if ($similarHousehold instanceof Household)
+            {
+                // Its totally equal
+                if (100 === intval($percent))
+                {
+                    // Check if the beneficiary are all present in both new and old household, with the same name
+                    $similarity = $this->foundSimilarBeneficiaryInHousehold(
+                        $similarHousehold,
+                        $householdArray,
+                        $listHouseholdsMoreBeneficiaries,
+                        $listHouseholdsLessBeneficiaries
+                    );
+
+                    // The household is already in database, so we just add it to the project
+                    if (true === $similarity)
+                    {
+                        $this->householdService->addToProject($similarHousehold, $project);
+                        $statistic->incrementNbAdded();
+                    }
+                    // There is a problem of typo
+                    elseif (false === $similarity)
+                    {
+                        $listHouseholdsTypo[] = ["new" => $householdArray, "old" => $similarHousehold];
+                    }
+
+                    unset($listHouseholdsArray[$index]);
+                }
+                // They are not really the same, return both
+                else
+                {
+                    $listHouseholdsTypo[] = ["new" => $householdArray, "old" => $similarHousehold];
+                }
+            }
+            else
+            {
+                if (($householdDuplicated = $this->checkBeneficiaryInOtherHousehold($householdArray, $countryIso3)) instanceof Household)
+                {
+                    $listHouseholdsDuplicated[] = ["new" => $householdArray, "old" => $householdDuplicated];
+                }
+                else
+                {
+                    try
+                    {
+                        $this->householdService->create($householdArray, $project);
+                        $statistic->incrementNbAdded();
+                    }
+                    catch (\Exception $exception)
+                    {
+                        // If there is a problem during the creation of the household
+                        $statistic->addIncompleteLine(new IncompleteLine($currentLine));
+                    }
+                }
+
+            }
+            $currentLine += count($householdArray['beneficiaries']);
+        }
+
+        return [
+            "statistic" => $statistic,
+            "typo" => $listHouseholdsTypo,
+            "duplicate" => $listHouseholdsDuplicated,
+            "more" => $listHouseholdsMoreBeneficiaries,
+            "less" => $listHouseholdsLessBeneficiaries
+        ];
+    }
+
+
+    /**
+     * Check if at least one of beneficiary is not assigned to another household
+     *
+     * @param array $newHousehold
+     * @param $countryISO3
+     * @return Household || null
+     */
+    public function checkBeneficiaryInOtherHousehold(array $newHousehold, $countryISO3)
+    {
+        $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria($countryISO3, []);
+
+        foreach ($newHousehold['beneficiaries'] as $newBeneficiary)
+        {
+            $stringOldHousehold = strtolower(trim($newBeneficiary['given_name']) . "//" . trim($newBeneficiary['family_name']));
+            /** @var Beneficiary $oldBeneficiary */
+            foreach ($oldBeneficiaries as $oldBeneficiary)
+            {
+                if (
+                    strtolower(trim($oldBeneficiary->getGivenName()) . "//" . trim($oldBeneficiary->getFamilyName()))
+                    ===
+                    $stringOldHousehold
+                )
+                    return $oldBeneficiary->getHousehold();
+            }
+
+        }
+
+        return null;
+    }
+
+
+    /**
+     * If all beneficiaries are equals, return true
+     * If a difference is found in both side, return false
+     * If a difference is found only in one side, add the household to the corresponding array (more beneficiries or less)
+     *
+     * @param Household $oldHousehold
+     * @param array $newHouseholdArray
+     * @param array $listHouseholdsMoreBeneficiaries
+     * @param array $listHouseholdsLessBeneficiaries
+     * @return bool|null
+     */
+    private function foundSimilarBeneficiaryInHousehold(
+        Household $oldHousehold,
+        array $newHouseholdArray,
+        array &$listHouseholdsMoreBeneficiaries,
+        array &$listHouseholdsLessBeneficiaries
+    )
+    {
+        $oldBeneficiaries = $oldHousehold->getBeneficiaries();
+        $newBeneficiaries = $newHouseholdArray['beneficiaries'];
+
+        $oldBeneficiariesAreInNewBeneficiaries = true;
+        $newBeneficiariesAreInOldBeneficiaries = true;
+
+        /** @var Beneficiary $oldBeneficiary */
+        foreach ($oldBeneficiaries as $oldBeneficiary)
+        {
+            $oldBeneficiariesAreInNewBeneficiaries = false;
+            foreach ($newBeneficiaries as $newBeneficiary)
+            {
+                // If the both name are similar, go to the next oldBeneficiary
+                if (
+                    trim($oldBeneficiary->getGivenName()) . trim($oldBeneficiary->getFamilyName())
+                    ==
+                    trim($newBeneficiary['given_name']) . trim($newBeneficiary['family_name'])
+                )
+                {
+                    $oldBeneficiariesAreInNewBeneficiaries = true;
+                    break;
+                }
+            }
+            if (!$oldBeneficiariesAreInNewBeneficiaries)
+            {
+                break;
             }
         }
-        return $listSimilarHouseholds;
+
+        foreach ($newBeneficiaries as $newBeneficiary)
+        {
+            $newBeneficiariesAreInOldBeneficiaries = false;
+            foreach ($oldBeneficiaries as $oldBeneficiary)
+            {
+                // If the both name are similar, go to the next $newBeneficiary
+                if (
+                    trim($oldBeneficiary->getGivenName()) . trim($oldBeneficiary->getFamilyName())
+                    ==
+                    trim($newBeneficiary['given_name']) . trim($newBeneficiary['family_name'])
+                )
+                {
+                    $newBeneficiariesAreInOldBeneficiaries = true;
+                    break;
+                }
+            }
+            if (!$newBeneficiariesAreInOldBeneficiaries)
+            {
+                break;
+            }
+        }
+
+        if ($oldBeneficiariesAreInNewBeneficiaries && $newBeneficiariesAreInOldBeneficiaries)
+        {
+            return true;
+        }
+        elseif ($oldBeneficiariesAreInNewBeneficiaries)
+        {
+            $listHouseholdsMoreBeneficiaries[] = ["old" => $oldHousehold, "new" => $newHouseholdArray];
+            return null;
+        }
+        elseif ($newBeneficiariesAreInOldBeneficiaries)
+        {
+            $listHouseholdsLessBeneficiaries[] = ["old" => $oldHousehold, "new" => $newHouseholdArray];
+            return null;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Found if a household and its beneficiaries are similar to these from $newHouseholdArray
+     * @param array $newHouseholdArray
+     * @param array $listHouseholds
+     * @param int $percent
+     * @return array
+     */
+    private function foundSimilarHeadAndHousehold(array $newHouseholdArray, array $listHouseholds, int &$percent)
+    {
+        $newHead = null;
+        foreach ($newHouseholdArray['beneficiaries'] as $newBeneficiaryArray)
+        {
+            if (1 === intval($newBeneficiaryArray['status']))
+            {
+                $newHead = $newBeneficiaryArray;
+                break;
+            }
+        }
+        if (null === $newHead)
+            return null;
+
+        // Concatenation of fields to compare with
+        $stringNewHouseholdToCompare = $newHouseholdArray["address_street"] . "//" .
+            $newHouseholdArray["address_number"] . "//" .
+            $newHouseholdArray["address_postcode"] . "//" .
+            $newHead["given_name"] . "//" .
+            $newHead["family_name"];
+
+
+        $similarHousehold = null;
+        $percent = $this->minimumPercentSimilar;
+        /** @var Household $household */
+        foreach ($listHouseholds as $oldHousehold)
+        {
+            // Get the head of the current household
+            /** @var Beneficiary $oldHead */
+            $oldHead = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
+            if (!$oldHead instanceof Beneficiary)
+                continue;
+
+            $stringOldHouseholdToCompare = $oldHousehold->getAddressStreet() . "//" .
+                $oldHousehold->getAddressNumber() . "//" .
+                $oldHousehold->getAddressPostcode() . "//" .
+                $oldHead->getGivenName() . "//" .
+                $oldHead->getFamilyName();
+
+
+            similar_text(
+                $stringNewHouseholdToCompare,
+                $stringOldHouseholdToCompare,
+                $tmpPercent
+            );
+
+            if (100 == $tmpPercent)
+            {
+                $percent = $tmpPercent;
+                return $oldHousehold;
+            }
+            elseif ($percent < $tmpPercent)
+            {
+                $similarHousehold = $oldHousehold;
+                $percent = $tmpPercent;
+            }
+        }
+
+        return $similarHousehold;
+    }
+
+
+    /**
+     * Check if a value is missing inside the array
+     *
+     * @param array $array
+     * @return bool
+     */
+    private function isIncomplete(array $array)
+    {
+        $isIncomplete = true;
+        foreach ($array as $key => $value)
+        {
+            if (is_array($value))
+                $isIncomplete = $this->isIncomplete($value);
+            if (!$isIncomplete || null === $value)
+            {
+                return false;
+            }
+        }
+
+        return $isIncomplete;
     }
 
     /**
@@ -171,7 +461,7 @@ class HouseholdCSVService
             // Load the household array for the current row
             $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $row, $rowHeader);
             // Check if it's a new household or just a new beneficiary in the current row
-            if ($formattedHouseholdArray["address_street"] !== "")
+            if ($formattedHouseholdArray["address_street"] !== null)
             {
                 if (null !== $householdArray)
                 {
@@ -212,12 +502,16 @@ class HouseholdCSVService
             {
                 foreach ($csvIndex as $formattedIndex2 => $csvIndex2)
                 {
-                    $formattedHouseholdArray[$formattedIndex][$formattedIndex2] = strval($row[$csvIndex2]);
+                    if (null !== $row[$csvIndex2])
+                        $row[$csvIndex2] = strval($row[$csvIndex2]);
+                    $formattedHouseholdArray[$formattedIndex][$formattedIndex2] = $row[$csvIndex2];
                 }
             }
             else
             {
-                $formattedHouseholdArray[$formattedIndex] = strval($row[$csvIndex]);
+                if (null !== $row[$csvIndex])
+                    $row[$csvIndex] = strval($row[$csvIndex]);
+                $formattedHouseholdArray[$formattedIndex] = $row[$csvIndex];
             }
         }
         // Add the country iso3 from the request
@@ -225,7 +519,7 @@ class HouseholdCSVService
 
         // Traitment on field with multiple value or foreign key inside (switch name to id for example)
         $this->fieldCountrySpecifics($mappingCSV, $formattedHouseholdArray, $rowHeader);
-        $this->fieldVulnerabilityCriterion($formattedHouseholdArray);
+        $this->fieldVulnerabilityCriteria($formattedHouseholdArray);
         $this->fieldPhones($formattedHouseholdArray);
         $this->fieldNationalIds($formattedHouseholdArray);
         $this->fieldBeneficiary($formattedHouseholdArray);
@@ -264,17 +558,17 @@ class HouseholdCSVService
      * Reformat the field which contains vulnerability criteria => switch list of names to a list of ids
      * @param $formattedHouseholdArray
      */
-    private function fieldVulnerabilityCriterion(&$formattedHouseholdArray)
+    private function fieldVulnerabilityCriteria(&$formattedHouseholdArray)
     {
-        $vulnerability_criterion_string = $formattedHouseholdArray["beneficiaries"]["vulnerability_criterion"];
-        $vulnerability_criterion_array = array_map('trim', explode(";", $vulnerability_criterion_string));
-        $formattedHouseholdArray["beneficiaries"]["vulnerability_criterion"] = [];
-        foreach ($vulnerability_criterion_array as $item)
+        $vulnerability_criteria_string = $formattedHouseholdArray["beneficiaries"]["vulnerability_criteria"];
+        $vulnerability_criteria_array = array_map('trim', explode(";", $vulnerability_criteria_string));
+        $formattedHouseholdArray["beneficiaries"]["vulnerability_criteria"] = [];
+        foreach ($vulnerability_criteria_array as $item)
         {
             $vulnerability_criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneByValue($item);
             if (!$vulnerability_criterion instanceof VulnerabilityCriterion)
                 continue;
-            $formattedHouseholdArray["beneficiaries"]["vulnerability_criterion"][] = ["id" => $vulnerability_criterion->getId()];
+            $formattedHouseholdArray["beneficiaries"]["vulnerability_criteria"][] = ["id" => $vulnerability_criterion->getId()];
         }
     }
 

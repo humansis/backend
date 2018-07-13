@@ -77,14 +77,17 @@ class ExportCSVService
         {
             if (!$columnsCountrySpecificsAdded && $CSVIndex >= $this->firstColumnNonStatic)
             {
-                $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i+1)) . 1, "Country Specifics");
-                /** @var CountrySpecific $countrySpecific */
-                foreach ($countrySpecifics as $countrySpecific)
+                if (!empty($countrySpecifics))
                 {
-                    $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 2, $countrySpecific->getField());
-                    $i++;
+                    $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 1, "Country Specifics");
+                    /** @var CountrySpecific $countrySpecific */
+                    foreach ($countrySpecifics as $countrySpecific)
+                    {
+                        $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 2, $countrySpecific->getField());
+                        $i++;
+                    }
                 }
-                $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i + 1)) . 1, "Beneficiary");
+                $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 1, "Beneficiary");
                 $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 2, $name);
                 $columnsCountrySpecificsAdded = true;
             }

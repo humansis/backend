@@ -16,9 +16,11 @@ class HouseholdConstraints extends RequestValidatorConstraints
         $numeric = new Type('numeric');
         $string = new Type('string');
         $array = new Type('array');
+        $null = new Type('null');
         $optionalNumeric = new Optional($numeric);
 
         $household = [
+            "project" => $optionalNumeric,
             "address_street" => $string,
             "address_number" => $string,
             "address_postcode" => $string,
@@ -51,7 +53,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "date_of_birth" => $string,
             "updated_on" => $string,
             "profile" => $array,
-            "vulnerability_criterion" => $array,
+            "vulnerability_criteria" => $array,
             "phones" => $array,
             "national_ids" => $array
         ];

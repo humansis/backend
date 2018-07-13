@@ -15,11 +15,10 @@ In column with multiple information (like phones, you can have multiple phone nu
 ## ROUTES
 
 
-PUT ("/households")
+PUT ("/households/project/{id}")
 
 ```json
 {
-    "project": 1,
 	"address_street": "addr",
 	"address_number": "12",
 	"address_postcode": "73460",
@@ -46,21 +45,21 @@ PUT ("/households")
 		{
 			"given_name": "name",
 			"family_name": "family",
-			"gender": "h",
+			"gender": "m",
 			"status": 0,
 			"date_of_birth": "1976-10-06",
 			"updated_on": "2018-06-13 12:12:12",
 			"profile": {
-				"photo": "gkjghjk"
+				"photo": "photo1"
 			},
-			"vulnerability_criterion": [
+			"vulnerability_criteria": [
 				{
 					"id": 1
 				}
 			],
 			"phones": [
 				{
-					"number": "020254512",
+					"number": "0202514512",
 					"type": "type1"
 				}
 			],
@@ -70,12 +69,40 @@ PUT ("/households")
 					"id_type": "type1"
 				}
 			]
+		},
+		{
+			"given_name": "name222",
+			"family_name": "family2222",
+			"gender": "f",
+			"status": 0,
+			"date_of_birth": "1976-10-06",
+			"updated_on": "2018-06-13 12:12:12",
+			"profile": {
+				"photo": "photo2"
+			},
+			"vulnerability_criteria": [
+				{
+					"id": 1
+				}
+			],
+			"phones": [
+				{
+					"number": "5545544584",
+					"type": "type2"
+				}
+			],
+			"national_ids": [
+				{
+					"id_number": "2323",
+					"id_type": "type2"
+				}
+			]
 		}
 	]
 }
 ```
 
-POST ("/households/{id_household}")
+POST ("/households/{id_household}/project/{id_project}")
 ```json
 {
 	"address_street": "add$*r2",
@@ -112,7 +139,7 @@ POST ("/households/{id_household}")
 			"profile": {
 				"photo": "gkjghjk2"
 			},
-			"vulnerability_criterion": [
+			"vulnerability_criteria": [
 				{
 					"id": 1
 				}

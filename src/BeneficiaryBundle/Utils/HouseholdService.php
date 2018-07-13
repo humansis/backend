@@ -4,9 +4,12 @@
 namespace BeneficiaryBundle\Utils;
 
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use DistributionBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,6 +58,16 @@ class HouseholdService
     public function getAll(string $iso3, array $filters)
     {
         $households = $this->em->getRepository(Household::class)->getAllBy($iso3, $filters);
+        /** @var Household $household */
+        foreach ($households as $household)
+        {
+            /** @var Beneficiary $beneficiary */
+            foreach ($household->getBeneficiaries() as $beneficiary)
+            {
+                if ($beneficiary->getStatus() != 1)
+                    $household->removeBeneficiary($beneficiary);
+            }
+        }
         return $households;
     }
 
@@ -67,7 +80,7 @@ class HouseholdService
      * @throws ValidationException
      * @throws \Exception
      */
-    public function create(array $householdArray, $project, bool $flush = true)
+    public function create(array $householdArray, Project $project, bool $flush = true)
     {
         $this->requestValidator->validate(
             "household",
@@ -98,9 +111,16 @@ class HouseholdService
 
         if (!empty($householdArray["beneficiaries"]))
         {
+            $hasHead = false;
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave)
             {
                 $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
+                if ($beneficiary->getStatus())
+                {
+                    if ($hasHead)
+                        throw new \Exception("You have defined more than 1 head of household.");
+                    $hasHead = true;
+                }
                 $this->em->persist($beneficiary);
             }
         }
@@ -113,19 +133,45 @@ class HouseholdService
             }
         }
         if ($flush)
+        {
             $this->em->flush();
+            $household = $this->em->getRepository(Household::class)->find($household->getId());
+            $country_specific_answers = $this->em->getRepository(CountrySpecificAnswer::class)->findByHousehold($household);
+            $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
+            foreach ($country_specific_answers as $country_specific_answer)
+            {
+                $household->addCountrySpecificAnswer($country_specific_answer);
+            }
+            foreach ($beneficiaries as $beneficiary)
+            {
+                $phones = $this->em->getRepository(Phone::class)
+                    ->findByBeneficiary($beneficiary);
+                $nationalIds = $this->em->getRepository(NationalId::class)
+                    ->findByBeneficiary($beneficiary);
+                foreach ($phones as $phone)
+                {
+                    $beneficiary->addPhone($phone);
+                }
+                foreach ($nationalIds as $nationalId)
+                {
+                    $beneficiary->addNationalId($nationalId);
+                }
+                $household->addBeneficiary($beneficiary);
+            }
+        }
 
         return $household;
     }
 
     /**
      * @param Household $household
+     * @param Project $project
      * @param array $householdArray
      * @return Household
      * @throws ValidationException
      * @throws \Exception
      */
-    public function update(Household $household, $project, array $householdArray)
+    public function update(Household $household, Project $project, array $householdArray)
     {
         $this->requestValidator->validate(
             "household",
@@ -143,6 +189,14 @@ class HouseholdService
             ->setAddressStreet($householdArray["address_street"])
             ->setAddressPostcode($householdArray["address_postcode"])
             ->setAddressNumber($householdArray["address_number"]);
+
+        $project = $this->em->getRepository(Project::class)->find($project);
+        if (!$project instanceof Project)
+            throw new \Exception("This project is not found");
+
+
+        if (!in_array($project, $household->getProjects()->toArray()))
+            $household->addProject($project);
 
         // Save or update location instance
         $location = $this->getOrSaveLocation($householdArray["location"]);
@@ -170,6 +224,16 @@ class HouseholdService
         $this->em->flush();
 
         return $household;
+    }
+
+    public function addToProject(Household &$household, Project $project)
+    {
+        if (!in_array($project, $household->getProjects()->toArray()))
+        {
+            $household->addProject($project);
+            $this->em->persist($household);
+            $this->em->flush();
+        }
     }
 
     /**
@@ -228,7 +292,7 @@ class HouseholdService
             throw new \Exception("This country specific is unknown");
 
         $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
-            ->findBy([
+            ->findOneBy([
                 "countrySpecific" => $countrySpecific,
                 "household" => $household
             ]);
