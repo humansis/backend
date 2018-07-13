@@ -99,11 +99,9 @@ class HouseholdCSVService
      * Defined the reader and transform CSV to array
      *
      * @param $countryIso3
-     * @param $project
+     * @param Project $project
      * @param UploadedFile $uploadedFile
      * @return array
-     * @throws ValidationException
-     * @throws \Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
@@ -123,11 +121,9 @@ class HouseholdCSVService
      * On each household, found similar household already saved
      *
      * @param $countryIso3
-     * @param $project
+     * @param Project $project
      * @param array $sheetArray
      * @return array
-     * @throws ValidationException
-     * @throws \Exception
      */
     public function loadCSV($countryIso3, Project $project, array $sheetArray)
     {
@@ -164,8 +160,6 @@ class HouseholdCSVService
             // We have found a household similar to the current one
             if ($similarHousehold instanceof Household)
             {
-                dump($similarHousehold);
-                dump($percent);
                 // Its totally equal
                 if (100 === intval($percent))
                 {
@@ -205,8 +199,16 @@ class HouseholdCSVService
                 }
                 else
                 {
-                    $this->householdService->create($householdArray, $project);
-                    $statistic->incrementNbAdded();
+                    try
+                    {
+                        $this->householdService->create($householdArray, $project);
+                        $statistic->incrementNbAdded();
+                    }
+                    catch (\Exception $exception)
+                    {
+                        // If there is a problem during the creation of the household
+                        $statistic->addIncompleteLine(new IncompleteLine($currentLine));
+                    }
                 }
 
             }
@@ -277,10 +279,11 @@ class HouseholdCSVService
 
         $oldBeneficiariesAreInNewBeneficiaries = true;
         $newBeneficiariesAreInOldBeneficiaries = true;
+
         /** @var Beneficiary $oldBeneficiary */
         foreach ($oldBeneficiaries as $oldBeneficiary)
         {
-            $isOk = false;
+            $oldBeneficiariesAreInNewBeneficiaries = false;
             foreach ($newBeneficiaries as $newBeneficiary)
             {
                 // If the both name are similar, go to the next oldBeneficiary
@@ -290,15 +293,19 @@ class HouseholdCSVService
                     trim($newBeneficiary['given_name']) . trim($newBeneficiary['family_name'])
                 )
                 {
-                    $isOk = true;
+                    $oldBeneficiariesAreInNewBeneficiaries = true;
                     break;
                 }
             }
-            $oldBeneficiariesAreInNewBeneficiaries = !$isOk;
+            if (!$oldBeneficiariesAreInNewBeneficiaries)
+            {
+                break;
+            }
         }
+
         foreach ($newBeneficiaries as $newBeneficiary)
         {
-            $isOk = false;
+            $newBeneficiariesAreInOldBeneficiaries = false;
             foreach ($oldBeneficiaries as $oldBeneficiary)
             {
                 // If the both name are similar, go to the next $newBeneficiary
@@ -308,26 +315,28 @@ class HouseholdCSVService
                     trim($newBeneficiary['given_name']) . trim($newBeneficiary['family_name'])
                 )
                 {
-                    $isOk = true;
+                    $newBeneficiariesAreInOldBeneficiaries = true;
                     break;
                 }
             }
-            $newBeneficiariesAreInOldBeneficiaries = !$isOk;
+            if (!$newBeneficiariesAreInOldBeneficiaries)
+            {
+                break;
+            }
         }
-dump($oldBeneficiariesAreInNewBeneficiaries);
-dump($newBeneficiariesAreInOldBeneficiaries);
+
         if ($oldBeneficiariesAreInNewBeneficiaries && $newBeneficiariesAreInOldBeneficiaries)
         {
             return true;
         }
-        elseif (!$oldBeneficiariesAreInNewBeneficiaries)
-        {
-            $listHouseholdsLessBeneficiaries[] = ["old" => $oldHousehold, "new" => $newHouseholdArray];
-            return null;
-        }
-        elseif (!$newBeneficiariesAreInOldBeneficiaries)
+        elseif ($oldBeneficiariesAreInNewBeneficiaries)
         {
             $listHouseholdsMoreBeneficiaries[] = ["old" => $oldHousehold, "new" => $newHouseholdArray];
+            return null;
+        }
+        elseif ($newBeneficiariesAreInOldBeneficiaries)
+        {
+            $listHouseholdsLessBeneficiaries[] = ["old" => $oldHousehold, "new" => $newHouseholdArray];
             return null;
         }
         else
@@ -339,11 +348,11 @@ dump($newBeneficiariesAreInOldBeneficiaries);
     /**
      * Found if a household and its beneficiaries are similar to these from $newHouseholdArray
      * @param array $newHouseholdArray
-     * @param array $listHousehold
+     * @param array $listHouseholds
      * @param int $percent
      * @return array
      */
-    private function foundSimilarHeadAndHousehold(array $newHouseholdArray, array $listHousehold, int &$percent)
+    private function foundSimilarHeadAndHousehold(array $newHouseholdArray, array $listHouseholds, int &$percent)
     {
         $newHead = null;
         foreach ($newHouseholdArray['beneficiaries'] as $newBeneficiaryArray)
@@ -364,10 +373,11 @@ dump($newBeneficiariesAreInOldBeneficiaries);
             $newHead["given_name"] . "//" .
             $newHead["family_name"];
 
+
         $similarHousehold = null;
         $percent = $this->minimumPercentSimilar;
         /** @var Household $household */
-        foreach ($listHousehold as $oldHousehold)
+        foreach ($listHouseholds as $oldHousehold)
         {
             // Get the head of the current household
             /** @var Beneficiary $oldHead */
@@ -380,6 +390,7 @@ dump($newBeneficiariesAreInOldBeneficiaries);
                 $oldHousehold->getAddressPostcode() . "//" .
                 $oldHead->getGivenName() . "//" .
                 $oldHead->getFamilyName();
+
 
             similar_text(
                 $stringNewHouseholdToCompare,
