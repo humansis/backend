@@ -91,7 +91,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "N" => "FIRSTNAME TEST_IMPORT",
             "O" => "NAME TEST_IMPORT",
             "P" => "F",
-            "Q" => 0.0,
+            "Q" => 1,
             "R" => "1995-04-25",
             "S" => "lactating ; single family",
             "T" => "Type1 - 1",
@@ -114,7 +114,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "N" => "FIRSTNAME2 TEST_IMPORT",
             "O" => "NAME2 TEST_IMPORT",
             "P" => "M",
-            "Q" => 1.0,
+            "Q" => 0,
             "R" => "1995-04-25",
             "S" => "lactating",
             "T" => "Type1 - 2",
@@ -168,8 +168,9 @@ class HouseholdCSVTest extends BMSServiceTestCase
     }
 
     /**
-     * @throws \Exception
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function testImportCSV()
     {
@@ -180,31 +181,130 @@ class HouseholdCSVTest extends BMSServiceTestCase
             return;
         }
         /** @var ImportStatistic $statistic */
-        [$statistic, $listSimilarHouseholds] = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
+        $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
+
         try
         {
-            $this->assertSame([], $listSimilarHouseholds);
-            $this->assertSame(1, $statistic->getNbAdded());
-            $this->assertSame(0, $statistic->getNbDuplicates());
-            $this->assertSame(0, $statistic->getIncompleteLine());
-            [$statistic2, $listSimilarHouseholds2] = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
-            $this->assertSame(0, $statistic2->getNbAdded());
-            $this->assertSame(1, $statistic2->getNbDuplicates());
-            $this->assertSame(0, $statistic2->getNbIncomplete());
-            $this->assertArrayHasKey("new", current($listSimilarHouseholds2));
-            $this->assertArrayHasKey("old", current($listSimilarHouseholds2));
-            $this->assertInstanceOf(Household::class, current(current($listSimilarHouseholds2)["old"]));
+            // First adding should work
+            $this->assertSame([], $return["typo"]);
+            $this->assertSame([], $return["duplicate"]);
+            $this->assertSame([], $return["more"]);
+            $this->assertSame([], $return["less"]);
+            $this->assertSame(1, $return["statistic"]->getNbAdded());
+            $this->assertSame([], $return["statistic"]->getIncompleteLine());
+
+            // Adding same household, without any difference, so the function should only try to add the household to the project
+            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
+            $this->assertSame([], $return["typo"]);
+            $this->assertSame([], $return["duplicate"]);
+            $this->assertSame([], $return["more"]);
+            $this->assertSame([], $return["less"]);
+            $this->assertSame(1, $return["statistic"]->getNbAdded());
+            $this->assertSame([], $return["statistic"]->getIncompleteLine());
+
+            // Should return an issue => more beneficiaries in the CSV than in the db
+            $this->SHEET_ARRAY[5] = [
+                "A" => null,
+                "B" => null,
+                "C" => null,
+                "D" => null,
+                "E" => null,
+                "F" => null,
+                "G" => null,
+                "H" => null,
+                "I" => null,
+                "J" => null,
+                "K" => null,
+                "L" => null,
+                "M" => null,
+                "N" => "FIRSTNAME3 TEST_IMPORT",
+                "O" => "NAME3 TEST_IMPORT",
+                "P" => "M",
+                "Q" => 0,
+                "R" => "1995-04-25",
+                "S" => "lactating",
+                "T" => "Type1 - 2",
+                "U" => "id-45f",
+            ];
+            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
+            $this->assertArrayHasKey("new", current($return["more"]));
+            $this->assertArrayHasKey("old", current($return["more"]));
+            $this->assertSame([], $return["typo"]);
+            $this->assertSame([], $return["duplicate"]);
+            $this->assertSame([], $return["less"]);
+            $this->assertSame(0, $return["statistic"]->getNbAdded());
+            $this->assertSame([], $return["statistic"]->getIncompleteLine());
+
+            // Should return an issue => same number of beneficiaries but one with a difference in the typo
+            unset($this->SHEET_ARRAY[5]);
+            $this->SHEET_ARRAY[4]['N'] = 'A';
+            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
+            $this->assertArrayHasKey("new", current($return["typo"]));
+            $this->assertArrayHasKey("old", current($return["typo"]));
+            $this->assertSame([], $return["duplicate"]);
+            $this->assertSame([], $return["more"]);
+            $this->assertSame([], $return["less"]);
+            $this->assertSame(0, $return["statistic"]->getNbAdded());
+            $this->assertSame([], $return["statistic"]->getIncompleteLine());
+
+            // Should return a line incomplete
             $this->SHEET_ARRAY[4]["N"] = null;
-            [$statistic3, $listSimilarHouseholds3] = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
-            $this->assertSame(0, $statistic3->getNbAdded());
-            $this->assertSame(0, $statistic3->getNbDuplicates());
-            $this->assertSame(1, $statistic3->getNbIncomplete());
-            $this->assertSame([], $listSimilarHouseholds3);
+            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
+            $this->assertSame([], $return["typo"]);
+            $this->assertSame([], $return["duplicate"]);
+            $this->assertSame([], $return["more"]);
+            $this->assertSame([], $return["less"]);
+            $this->assertSame(0, $return["statistic"]->getNbAdded());
+            $this->assertSame(3, current($return["statistic"]->getIncompleteLine())->getLineIncomplete());
+
+            // Should return an issue => less beneficiaries in the CSV than in the db
+            unset($this->SHEET_ARRAY[4]);
+            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
+            $this->assertArrayHasKey("new", current($return["less"]));
+            $this->assertArrayHasKey("old", current($return["less"]));
+            $this->assertSame([], $return["typo"]);
+            $this->assertSame([], $return["duplicate"]);
+            $this->assertSame([], $return["more"]);
+            $this->assertSame(0, $return["statistic"]->getNbAdded());
+            $this->assertSame([], $return["statistic"]->getIncompleteLine());
+
+            // Should return an issue => duplicate beneficiary
+            $this->SHEET_ARRAY[3]['A'] = 'a';
+            $this->SHEET_ARRAY[3]['B'] = 'b';
+            $this->SHEET_ARRAY[4] = [
+                "A" => null,
+                "B" => null,
+                "C" => null,
+                "D" => null,
+                "E" => null,
+                "F" => null,
+                "G" => null,
+                "H" => null,
+                "I" => null,
+                "J" => null,
+                "K" => null,
+                "L" => null,
+                "M" => null,
+                "N" => "FIRSTNAME2 TEST_IMPORT",
+                "O" => "NAME2 TEST_IMPORT",
+                "P" => "M",
+                "Q" => 0,
+                "R" => "1995-04-25",
+                "S" => "lactating",
+                "T" => "Type1 - 2",
+                "U" => "id-45f",
+            ];
+            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
+            $this->assertArrayHasKey("new", current($return["duplicate"]));
+            $this->assertArrayHasKey("old", current($return["duplicate"]));
+            $this->assertSame([], $return["typo"]);
+            $this->assertSame([], $return["more"]);
+            $this->assertSame([], $return["less"]);
+            $this->assertSame(0, $return["statistic"]->getNbAdded());
+            $this->assertSame([], $return["statistic"]->getIncompleteLine());
         }
         catch (\Exception $exception)
         {
-            // "0;31"
-//            print_r("\n\n\033[1;31mERROR\033[0m\n");
             $this->remove($this->addressStreet);
             $this->fail($exception->getMessage() . "\n\n");
         }
