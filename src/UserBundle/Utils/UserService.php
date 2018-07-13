@@ -34,7 +34,6 @@ class UserService
      */
     public function findAll($limit, $offset)
     {
-        dump($offset, $limit);
         return $this->em->getRepository(User::class)->findBy([], [], $limit, $offset);
     }
 
