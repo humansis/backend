@@ -101,38 +101,52 @@ class HouseholdCSVService
      * @param $countryIso3
      * @param Project $project
      * @param UploadedFile $uploadedFile
+     * @param array $contentJson
+     * @param int $step
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile)
+    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, array $contentJson, int $step)
     {
-        // LOADING CSV
-        $reader = new Csv();
-        $reader->setDelimiter(",");
-        $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
-        $sheetArray = $worksheet->toArray(null, true, true, true);
+        if ($step === 1)
+        {
+            // LOADING CSV
+            $reader = new Csv();
+            $reader->setDelimiter(",");
+            $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
+            $sheetArray = $worksheet->toArray(null, true, true, true);
 
-        return $this->loadCSV($countryIso3, $project, $sheetArray);
-    }
-
-    /**
-     * Transform the array to a list of household
-     * On each household, found similar household already saved
-     *
-     * @param $countryIso3
-     * @param Project $project
-     * @param array $sheetArray
-     * @return array
-     */
-    public function loadCSV($countryIso3, Project $project, array $sheetArray)
-    {
-        $statistic = new ImportStatistic();
-        // Get the list of households from csv with their beneficiaries
-        $listHouseholdsArray = $this->getListHouseholdArray($sheetArray, $countryIso3);
+            // Get the list of households from csv with their beneficiaries
+            $listHouseholdsArray = $this->getListHouseholdArray($sheetArray, $countryIso3);
+        }
+        else
+        {
+            $listHouseholdsArray = $contentJson;
+        }
         // Get the list of households from the database with their beneficiaries
         $listHouseholdsSaved = $this->em->getRepository(Household::class)->getAllBy($countryIso3);
 
+        dump($step);
+        dump($contentJson);
+
+        $errorsArray = $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $listHouseholdsSaved, $step);
+
+        return $errorsArray;
+    }
+
+
+    /**
+     * @param $countryIso3
+     * @param Project $project
+     * @param array $listHouseholdsArray
+     * @param array $listHouseholdsSaved
+     * @param int $step
+     * @return array
+     */
+    public function foundErrors($countryIso3, Project $project, array $listHouseholdsArray, array $listHouseholdsSaved, int $step)
+    {
+        $statistic = new ImportStatistic();
         // List of household which contains the household from the csv and the one which is similar from the database
         $listHouseholdsTypo = [];
         // List of household which contains at least one beneficiary who is in another household (in the database)
@@ -232,9 +246,12 @@ class HouseholdCSVService
      * @param $countryISO3
      * @return Household || null
      */
-    public function checkBeneficiaryInOtherHousehold(array $newHousehold, $countryISO3)
+    public function checkBeneficiaryInOtherHousehold(array &$newHousehold, $countryISO3)
     {
         $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria($countryISO3, []);
+
+        $newBeneficiaryTmp = null;
+        $oldBeneficiaryTmp = null;
 
         foreach ($newHousehold['beneficiaries'] as $newBeneficiary)
         {
@@ -247,9 +264,29 @@ class HouseholdCSVService
                     ===
                     $stringOldHousehold
                 )
-                    return $oldBeneficiary->getHousehold();
+                {
+                    $newBeneficiaryTmp = $newBeneficiary;
+                    $oldBeneficiaryTmp = $oldBeneficiary;
+                    break;
+                }
             }
+            if (null !== $newBeneficiaryTmp)
+            {
+                $oldHousehold = $oldBeneficiaryTmp->getHousehold();
+                foreach ($oldHousehold->getBeneficiaries() as $beneficiary)
+                {
+                    if ($beneficiary !== $oldBeneficiaryTmp)
+                        $oldHousehold->removeBeneficiary($beneficiary);
+                }
 
+                foreach ($newHousehold['beneficiaries'] as $index => $beneficiary)
+                {
+                    if ($beneficiary !== $oldBeneficiaryTmp)
+                        unset($newHousehold['beneficiaries'][$index]);
+                }
+
+                return $oldHousehold;
+            }
         }
 
         return null;
@@ -288,9 +325,9 @@ class HouseholdCSVService
             {
                 // If the both name are similar, go to the next oldBeneficiary
                 if (
-                    trim($oldBeneficiary->getGivenName()) . trim($oldBeneficiary->getFamilyName())
+                    trim($oldBeneficiary->getGivenName()) . '//' . trim($oldBeneficiary->getFamilyName())
                     ==
-                    trim($newBeneficiary['given_name']) . trim($newBeneficiary['family_name'])
+                    trim($newBeneficiary['given_name']) . '//' . trim($newBeneficiary['family_name'])
                 )
                 {
                     $oldBeneficiariesAreInNewBeneficiaries = true;
@@ -310,9 +347,9 @@ class HouseholdCSVService
             {
                 // If the both name are similar, go to the next $newBeneficiary
                 if (
-                    trim($oldBeneficiary->getGivenName()) . trim($oldBeneficiary->getFamilyName())
+                    trim($oldBeneficiary->getGivenName()) . '//' . trim($oldBeneficiary->getFamilyName())
                     ==
-                    trim($newBeneficiary['given_name']) . trim($newBeneficiary['family_name'])
+                    trim($newBeneficiary['given_name']) . '//' . trim($newBeneficiary['family_name'])
                 )
                 {
                     $newBeneficiariesAreInOldBeneficiaries = true;

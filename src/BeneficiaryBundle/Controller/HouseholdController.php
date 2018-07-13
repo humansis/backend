@@ -96,7 +96,7 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Post("/csv/households/project/{id}", name="add_csv_household")
+     * @Rest\Post("/import/households/project/{id}", name="import_household")
      *
      * @SWG\Tag(name="Households")
      *
@@ -127,17 +127,30 @@ class HouseholdController extends Controller
      * @param Project $project
      * @return Response
      */
-    public function addCSVAction(Request $request, Project $project)
+    public function importAction(Request $request, Project $project)
     {
-        if (!$request->files->has('file'))
-            return new Response("You must upload a file.", 500);
-        $fileCSV = $request->files->get('file');
-        $countryIso3 = $request->request->get('__country');
+        if (!$request->query->has('step'))
+            return new Response('You must specify the current level.');
+        $step = $request->query->get('step');
+
+        if (1 === intval($step))
+        {
+            if (!$request->files->has('file'))
+                return new Response("You must upload a file.", 500);
+            $fileCSV = $request->files->get('file');
+        }
+        else
+        {
+            $fileCSV = null;
+        }
+        $contentJson = $request->request->all();
+        $countryIso3 = $contentJson['__country'];
+        unset($contentJson['__country']);
         /** @var HouseholdCSVService $householeService */
         $householeService = $this->get('beneficiary.household_csv_service');
         try
         {
-            $return = $householeService->saveCSV($countryIso3, $project, $fileCSV);
+            $return = $householeService->saveCSV($countryIso3, $project, $fileCSV, $contentJson, $step);
         }
         catch (ValidationException $exception)
         {
