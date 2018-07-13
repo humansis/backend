@@ -117,6 +117,13 @@ class Household
      */
     private $archived = 0;
 
+    /**
+     * Number of dependent beneficiaries
+     * @var int
+     * @Groups({"SmallHousehold"})
+     */
+    private $numberDependents;
+
 
     /**
      * Constructor
@@ -512,5 +519,24 @@ class Household
     public function getProjects()
     {
         return $this->projects;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberDependents(): int
+    {
+        return $this->numberDependents;
+    }
+
+    /**
+     * @param int $numberDependents
+     * @return Household
+     */
+    public function setNumberDependents(int $numberDependents)
+    {
+        $this->numberDependents = $numberDependents;
+
+        return $this;
     }
 }

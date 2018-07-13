@@ -61,12 +61,17 @@ class HouseholdService
         /** @var Household $household */
         foreach ($households as $household)
         {
+            $numberDependents = 0;
             /** @var Beneficiary $beneficiary */
             foreach ($household->getBeneficiaries() as $beneficiary)
             {
                 if ($beneficiary->getStatus() != 1)
+                {
+                    $numberDependents++;
                     $household->removeBeneficiary($beneficiary);
+                }
             }
+            $household->setNumberDependents($numberDependents);
         }
         return $households;
     }
