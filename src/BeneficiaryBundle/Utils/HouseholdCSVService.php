@@ -583,6 +583,8 @@ class HouseholdCSVService
         $formattedHouseholdArray["beneficiaries"]["phones"] = [];
         foreach ($phones_array as $item)
         {
+            if ("" == $item)
+                continue;
             $item_array = array_map('trim', explode("-", $item));
             $formattedHouseholdArray["beneficiaries"]["phones"][] = ["type" => $item_array[0], "number" => $item_array[1]];
         }
@@ -599,6 +601,8 @@ class HouseholdCSVService
         $formattedHouseholdArray["beneficiaries"]["national_ids"] = [];
         foreach ($national_ids_array as $item)
         {
+            if ("" == $item)
+                continue;
             $item_array = array_map('trim', explode("-", $item));
             $formattedHouseholdArray["beneficiaries"]["national_ids"][] = ["id_type" => $item_array[0], "id_number" => $item_array[1]];
         }
