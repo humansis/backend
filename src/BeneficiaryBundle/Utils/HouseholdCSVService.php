@@ -104,11 +104,13 @@ class HouseholdCSVService
      * @param array $contentJson
      * @param int $step
      * @return array
+     * @throws \Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, array $contentJson, int $step)
     {
+        // If it's the first step, we transform CSV to array mapped for corresponding to the entity Household
         if ($step === 1)
         {
             // LOADING CSV
@@ -120,10 +122,12 @@ class HouseholdCSVService
             // Get the list of households from csv with their beneficiaries
             $listHouseholdsArray = $this->getListHouseholdArray($sheetArray, $countryIso3);
         }
+        // Else we just get the list of households from the front
         else
         {
             $listHouseholdsArray = $contentJson;
         }
+
         // Get the list of households from the database with their beneficiaries
         $listHouseholdsSaved = $this->em->getRepository(Household::class)->getAllBy($countryIso3);
 
@@ -131,7 +135,6 @@ class HouseholdCSVService
         dump($contentJson);
 
         $errorsArray = $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $listHouseholdsSaved, $step);
-
         return $errorsArray;
     }
 
@@ -143,9 +146,25 @@ class HouseholdCSVService
      * @param array $listHouseholdsSaved
      * @param int $step
      * @return array
+     * @throws \Exception
      */
     public function foundErrors($countryIso3, Project $project, array $listHouseholdsArray, array $listHouseholdsSaved, int $step)
     {
+        switch ($step)
+        {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            default:
+                throw new \Exception("Step '$step' unknown.");
+        }
+
+
         $statistic = new ImportStatistic();
         // List of household which contains the household from the csv and the one which is similar from the database
         $listHouseholdsTypo = [];
