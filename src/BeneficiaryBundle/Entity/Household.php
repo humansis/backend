@@ -458,7 +458,7 @@ class Household
      */
     public function addBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
     {
-        $this->beneficiaries[] = $beneficiary;
+        $this->beneficiaries->add($beneficiary);
 
         return $this;
     }
@@ -483,6 +483,16 @@ class Household
     public function getBeneficiaries()
     {
         return $this->beneficiaries;
+    }
+
+    /**
+     * Reset the list of beneficiaries
+     */
+    public function resetBeneficiaries()
+    {
+        $this->beneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+
+        return $this;
     }
 
     /**
