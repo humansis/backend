@@ -55,7 +55,7 @@ class ReportingDistribution
      * @param \ReportingBundle\Entity\ReportingIndicator $indicator
      * @return reportingDistribution
      */
-    public function setIndicator(ReportingBundle\Entity\ReportingIndicator $indicator)
+    public function setIndicator(\ReportingBundle\Entity\ReportingIndicator $indicator)
     {
       $this->indicator = $indicator;
 
@@ -78,7 +78,7 @@ class ReportingDistribution
      * @param \ReportingBundle\Entity\ReportingValue $value
      * @return reportingDistribution
      */
-    public function setValue(ReportingBundle\Entity\ReportingValue $value)
+    public function setValue(\ReportingBundle\Entity\ReportingValue $value)
     {
       $this->value = $value;
 

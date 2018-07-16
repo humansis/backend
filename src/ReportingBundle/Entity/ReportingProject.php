@@ -56,7 +56,7 @@ class ReportingProject
      * @param \ReportingBundle\Entity\ReportingIndicator $indicator
      * @return ReportingProject
      */
-    public function setIndicator(ReportingBundle\Entity\ReportingIndicator $indicator)
+    public function setIndicator(\ReportingBundle\Entity\ReportingIndicator $indicator)
     {
       $this->indicator = $indicator;
 
@@ -79,7 +79,7 @@ class ReportingProject
      * @param \ReportingBundle\Entity\ReportingValue $value
      * @return ReportingProject
      */
-    public function setValue(ReportingBundle\Entity\ReportingValue $value)
+    public function setValue(\ReportingBundle\Entity\ReportingValue $value)
     {
       $this->value = $value;
 
