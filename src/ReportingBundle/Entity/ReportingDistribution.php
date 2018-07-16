@@ -52,7 +52,7 @@ class ReportingDistribution
     /**
      * Set indicator
      *
-     * @param ReportingBundle\Entity\ReportingIndicator $indicator
+     * @param \ReportingBundle\Entity\ReportingIndicator $indicator
      * @return reportingDistribution
      */
     public function setIndicator(ReportingBundle\Entity\ReportingIndicator $indicator)
@@ -65,7 +65,7 @@ class ReportingDistribution
     /**
      * Get indicator
      *
-     * @return ReportingBundle\Entity\ReportingIndicator
+     * @return \ReportingBundle\Entity\ReportingIndicator
      */
     public function getIndicator()
     {
@@ -75,7 +75,7 @@ class ReportingDistribution
     /**
      * Set value
      *
-     * @param ReportingBundle\Entity\ReportingValue $value
+     * @param \ReportingBundle\Entity\ReportingValue $value
      * @return reportingDistribution
      */
     public function setValue(ReportingBundle\Entity\ReportingValue $value)
@@ -88,7 +88,7 @@ class ReportingDistribution
     /**
      * Get value
      *
-     * @return ReportingBundle\Entity\ReportingValue
+     * @return \ReportingBundle\Entity\ReportingValue
      */
     public function getValue()
     {
@@ -98,7 +98,7 @@ class ReportingDistribution
     /**
      * Set distribution
      *
-     * @param DistributionBundle\Entity\DistributionData $distribution
+     * @param \DistributionBundle\Entity\DistributionData $distribution
      * @return ReportingDistribution
      */
     public function setDistribution($distribution)
@@ -111,7 +111,7 @@ class ReportingDistribution
     /**
      * Get distribution
      *
-     * @return DistributionBundle\Entity\DistributionData
+     * @return \DistributionBundle\Entity\DistributionData
      */
     public function getDistribution()
     {

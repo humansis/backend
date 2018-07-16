@@ -53,7 +53,7 @@ class ReportingProject
     /**
      * Set indicator
      *
-     * @param ReportingBundle\Entity\ReportingIndicator $indicator
+     * @param \ReportingBundle\Entity\ReportingIndicator $indicator
      * @return ReportingProject
      */
     public function setIndicator(ReportingBundle\Entity\ReportingIndicator $indicator)
@@ -66,7 +66,7 @@ class ReportingProject
     /**
      * Get indicator
      *
-     * @return ReportingBundle\Entity\ReportingIndicator
+     * @return \ReportingBundle\Entity\ReportingIndicator
      */
     public function getIndicator()
     {
@@ -76,7 +76,7 @@ class ReportingProject
     /**
      * Set value
      *
-     * @param ReportingBundle\Entity\ReportingValue $value
+     * @param \ReportingBundle\Entity\ReportingValue $value
      * @return ReportingProject
      */
     public function setValue(ReportingBundle\Entity\ReportingValue $value)
@@ -89,7 +89,7 @@ class ReportingProject
     /**
      * Get value
      *
-     * @return ReportingBundle\Entity\ReportingValue
+     * @return \ReportingBundle\Entity\ReportingValue
      */
     public function getValue()
     {
@@ -99,7 +99,7 @@ class ReportingProject
     /**
      * Set reportingProject
      *
-     * @param ProjectBundle\Entity\Project $project
+     * @param \ProjectBundle\Entity\Project $project
      * @return ReportingProject
      */
     public function setProject($project)
@@ -112,7 +112,7 @@ class ReportingProject
     /**
      * Get project
      *
-     * @return ProjectBundle\Entity\Project
+     * @return \ProjectBundle\Entity\Project
      */
     public function getProject()
     {
