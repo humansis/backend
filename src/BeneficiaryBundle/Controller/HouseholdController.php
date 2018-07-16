@@ -138,6 +138,7 @@ class HouseholdController extends Controller
             $token = null;
 
         $contentJson = $request->request->all();
+        dump($contentJson);
         $countryIso3 = $contentJson['__country'];
         unset($contentJson['__country']);
         /** @var HouseholdCSVService $householdService */

@@ -84,22 +84,14 @@ class HouseholdCSVService
     public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, array $contentJson, int $step, $token)
     {
         // If it's the first step, we transform CSV to array mapped for corresponding to the entity Household
-        if ($step === 1)
-        {
-            // LOADING CSV
-            $reader = new Csv();
-            $reader->setDelimiter(",");
-            $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
-            $sheetArray = $worksheet->toArray(null, true, true, true);
+        // LOADING CSV
+        $reader = new Csv();
+        $reader->setDelimiter(",");
+        $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
+        $sheetArray = $worksheet->toArray(null, true, true, true);
 
-            // Get the list of households from csv with their beneficiaries
-            $listHouseholdsArray = $this->mapper->getListHouseholdArray($sheetArray, $countryIso3);
-        }
-        // Else we just get the list of households from the front
-        else
-        {
-            $listHouseholdsArray = $contentJson;
-        }
+        // Get the list of households from csv with their beneficiaries
+        $listHouseholdsArray = $this->mapper->getListHouseholdArray($sheetArray, $countryIso3);
 
         return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $step, $token);
 
@@ -134,6 +126,7 @@ class HouseholdCSVService
         $currentLine = 3;
         foreach ($listHouseholdsArray as $index => $householdArray)
         {
+            dump(json_encode($householdArray));
             // If there is a field equal to null, we increment the number of incomplete household and we go to the next household
             if (!$this->isIncomplete($householdArray))
             {
@@ -144,13 +137,15 @@ class HouseholdCSVService
             }
 
             $returnTmp = $verifier->verify($countryIso3, $householdArray);
+            dump($returnTmp);
             // IF there is errors
-            if (null != $returnTmp)
+            if (null != $returnTmp && [] != $returnTmp)
             {
+                dump($returnTmp);
                 if ($returnTmp instanceof Household)
                     $return[] = ["old" => $returnTmp, "new" => $householdArray];
                 else
-                    $return[] = $returnTmp;
+                    $return[] = current($returnTmp);
                 unset($listHouseholdsArray[$index]);
             }
 
@@ -159,7 +154,7 @@ class HouseholdCSVService
 
         $this->saveInCache($step, json_encode($listHouseholdsArray));
 
-        return ["data" => $return, "token" => $token];
+        return ["data" => $return, "token" => $this->token];
     }
 
     /**

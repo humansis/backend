@@ -37,12 +37,12 @@ class DuplicateVerifier extends AbstractVerifier
                     break;
                 }
             }
-            if (!empty($listDuplicateBeneficiaries))
-            {
-                $listDuplicateBeneficiariesHousehold[] = ["new_household" => $newBeneficiary, "data" => $listDuplicateBeneficiaries];
-            }
         }
-dump($listDuplicateBeneficiariesHousehold);
+        if (!empty($listDuplicateBeneficiaries))
+        {
+            $listDuplicateBeneficiariesHousehold[] = ["new_household" => $newBeneficiary, "data" => $listDuplicateBeneficiaries];
+        }
+
         if (!empty($listDuplicateBeneficiariesHousehold))
             return $listDuplicateBeneficiariesHousehold;
         return null;
