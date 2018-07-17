@@ -109,15 +109,12 @@ class HouseholdCSVService
     public function foundErrors($countryIso3, Project $project, array $listHouseholdsArray, int $step, $token)
     {
         $this->token = $token;
-        dump($listHouseholdsArray);
         // If there is a treatment class for this step, call it
         $treatment = $this->guessTraitment($step);
         if ($treatment !== null)
             $listHouseholdsArray = $treatment->treat($project, $listHouseholdsArray);
-        dump($listHouseholdsArray);
 
         $this->getFromCache($step, $listHouseholdsArray);
-        dump($listHouseholdsArray);
 
         /** @var AbstractVerifier $verifier */
         $verifier = $this->guessVerifier($step);
@@ -126,7 +123,6 @@ class HouseholdCSVService
         $currentLine = 3;
         foreach ($listHouseholdsArray as $index => $householdArray)
         {
-            dump(json_encode($householdArray));
             // If there is a field equal to null, we increment the number of incomplete household and we go to the next household
             if (!$this->isIncomplete($householdArray))
             {
@@ -136,17 +132,18 @@ class HouseholdCSVService
                 continue;
             }
 
+            dump($householdArray);
             $returnTmp = $verifier->verify($countryIso3, $householdArray);
             dump($returnTmp);
             // IF there is errors
             if (null != $returnTmp && [] != $returnTmp)
             {
-                dump($returnTmp);
                 if ($returnTmp instanceof Household)
                     $return[] = ["old" => $returnTmp, "new" => $householdArray];
                 else
                     $return[] = current($returnTmp);
                 unset($listHouseholdsArray[$index]);
+                dump($return);
             }
 
             $currentLine += count($householdArray['beneficiaries']);

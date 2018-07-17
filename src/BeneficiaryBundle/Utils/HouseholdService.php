@@ -172,11 +172,12 @@ class HouseholdService
      * @param Household $household
      * @param Project $project
      * @param array $householdArray
+     * @param bool $onlyHead => If true, we update only the head of household (instead of every beneficiaries)
      * @return Household
      * @throws ValidationException
      * @throws \Exception
      */
-    public function update(Household $household, Project $project, array $householdArray)
+    public function update(Household $household, Project $project, array $householdArray, bool $onlyHead = false)
     {
         $this->requestValidator->validate(
             "household",
@@ -213,8 +214,11 @@ class HouseholdService
         {
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave)
             {
-                $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
-                $this->em->persist($beneficiary);
+                if (!$onlyHead || boolval($beneficiaryToSave["status"]))
+                {
+                    $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
+                    $this->em->persist($beneficiary);
+                }
             }
         }
 

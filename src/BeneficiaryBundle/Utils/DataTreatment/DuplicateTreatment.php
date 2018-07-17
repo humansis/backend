@@ -33,7 +33,7 @@ class DuplicateTreatment extends AbstractTreatment
                 {
                     if ($state === 0)
                     {
-                        $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryData['old_id']);
+                        $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryData['id_old']);
                         if (!$beneficiary instanceof Beneficiary)
                             throw new \Exception("Beneficiary not found.");
                         $deleted = $this->beneficiaryService->remove($beneficiary);

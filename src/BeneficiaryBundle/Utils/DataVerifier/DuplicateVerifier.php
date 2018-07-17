@@ -17,9 +17,9 @@ class DuplicateVerifier extends AbstractVerifier
         $oldBeneficiaryTmp = null;
 
         $listDuplicateBeneficiariesHousehold = [];
+        $listDuplicateBeneficiaries = [];
         foreach ($householdArray['beneficiaries'] as $newBeneficiary)
         {
-            $listDuplicateBeneficiaries = [];
             $stringOldHousehold = strtolower(trim($newBeneficiary['given_name']) . "//" . trim($newBeneficiary['family_name']));
             /** @var Beneficiary $oldBeneficiary */
             foreach ($oldBeneficiaries as $oldBeneficiary)
@@ -40,9 +40,10 @@ class DuplicateVerifier extends AbstractVerifier
         }
         if (!empty($listDuplicateBeneficiaries))
         {
-            $listDuplicateBeneficiariesHousehold[] = ["new_household" => $newBeneficiary, "data" => $listDuplicateBeneficiaries];
+            $listDuplicateBeneficiariesHousehold[] = ["new_household" => $householdArray, "data" => $listDuplicateBeneficiaries];
         }
 
+        dump($listDuplicateBeneficiariesHousehold);
         if (!empty($listDuplicateBeneficiariesHousehold))
             return $listDuplicateBeneficiariesHousehold;
         return null;

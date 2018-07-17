@@ -34,7 +34,6 @@ class TypoTreatment extends AbstractTreatment
     }
 
     /**
-     * TODO UPDATE DIRECT
      * ET RETURN ONLY IF WE ADD THE NEW
      * @param Project $project
      * @param array $householdsArray
@@ -46,18 +45,29 @@ class TypoTreatment extends AbstractTreatment
         $listHouseholds = [];
         foreach ($householdsArray as $index => $householdArray)
         {
-            if (boolval($householdArray['state']) && $householdArray['new'] === null)
+            // CASE STATE IS TRUE AND NEW IS MISSING => WE KEEP ONLY THE OLD HOUSEHOLD, AND WE ADD IT TO THE CURRENT PROJECT
+            if (boolval($householdArray['state']) && (!array_key_exists("new", $householdArray) || $householdArray['new'] === null))
             {
                 $this->householdService->addToProject($oldHousehold, $project);
                 unset($householdsArray[$index]);
+                continue;
             }
-            else
+            // IF STATE IS FALSE AND NEW CONTAINS A ARRAY OF HOUSEHOLD => WE UPDATE THE OLD WITH DATA FROM THE NEW
+            elseif (!boolval($householdArray['state']) && array_key_exists("new", $householdArray) && $householdArray['new'] !== null)
             {
-                $this->saveInCache('1b', $householdArray['new']);
-                $listHouseholds[] = $householdArray['new'];
+                $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
+                if ($oldHousehold instanceof Household)
+                    $this->householdService->update($oldHousehold, $project, $householdArray['new'], true);
             }
-        }
 
+            if (array_key_exists('__country', $householdArray['new']))
+                unset($householdArray['new']['__country']);
+
+            // WE SAVE EVERY HOUSEHOLD WHICH HAVE BEEN TREATED BY THIS FUNCTION BECAUSE IN NEXT STEP WE HAVE TO KNOW WHICH
+            // HOUSEHOLDS HAD TYPO ERRORS
+            $this->saveInCache('1b', $householdArray['new']);
+            $listHouseholds[] = $householdArray['new'];
+        }
         return $listHouseholds;
     }
 
