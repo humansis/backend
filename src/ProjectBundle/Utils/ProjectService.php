@@ -52,6 +52,7 @@ class ProjectService
     {
         /** @var Project $project */
         $project = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
+        $project->setIso3($projectArray['__country']);
 
         $errors = $this->validator->validate($project);
         if (count($errors) > 0)

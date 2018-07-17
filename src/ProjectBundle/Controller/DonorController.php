@@ -139,7 +139,6 @@ class DonorController extends Controller
      */
     public function updateAction(Request $request, Donor $donor)
     {
-        dump(1);
         $donorArray = $request->request->all();
 
         try

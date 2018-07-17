@@ -66,7 +66,7 @@ class Project
     /**
      * @var float
      *
-     * @ORM\Column(name="value", type="float")
+     * @ORM\Column(name="value", type="float", nullable=true)
      *
      * @Groups({"FullProject"})
      */

@@ -48,7 +48,7 @@ class DonorService
     public function create(array $donorArray)
     {
         $donor = $this->serializer->deserialize(json_encode($donorArray), Donor::class, 'json');
-
+        $donor->setDateAdded(new \DateTime());
 
         $errors = $this->validator->validate($donor);
         if (count($errors) > 0)
