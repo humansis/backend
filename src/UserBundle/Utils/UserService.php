@@ -46,9 +46,17 @@ class UserService
 
     public function update(User $user, array $userData)
     {
-        $this->em->getRepository(User::class)->edit($user, $userData);
+        $roles = $userData['roles'];
+        $user->setRoles([]);
+        foreach ($roles as $role)
+        {
+            $user->addRole($role);
+        }
 
-        return $this->em->getRepository(User::class)->find($user->getId());
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return $user;
     }
 
     /**
@@ -84,7 +92,7 @@ class UserService
             $user->setUsername($username)
                 ->setUsernameCanonical($username)
                 ->setEnabled(0)
-                ->setEmail($salt)
+                ->setEmail($username)
                 ->setEmailCanonical($salt)
                 ->setSalt($salt)
                 ->setPassword("");
@@ -101,16 +109,18 @@ class UserService
     /**
      * @param string $username
      * @param string $saltedPassword
+     * @param bool $isCreation
      * @return array
      * @throws \Exception
      */
-    public function login(string $username, string $saltedPassword)
+    public function login(string $username, string $saltedPassword, bool $isCreation)
     {
         $repository = $this->em->getRepository('UserBundle:User');
 
         $user = $repository->findOneBy([
             'username' => $username,
             'password' => $saltedPassword,
+            'enabled' => 1
         ]);
 
         if ($user instanceOf User)
@@ -118,28 +128,29 @@ class UserService
             $data = [
                 'at' => time(),
                 'connected' => true,
-                'username' => $user->getUsername(),
                 'user_id' => $user->getId(),
                 'salted_password' => $user->getPassword(),
-                'username' => $user->getUsername(),
+                'username' => $user->getUsername()
             ];
 
         }
-        else
+        elseif ($isCreation)
         {
             $user = $repository->findOneBy([
                 'username' => $username
             ]);
             if ($user instanceOf User)
             {
-                $user->setPassword($saltedPassword);
+                $user->setPassword($saltedPassword)
+                ->setEnabled(1);
                 $this->em->persist($user);
                 $this->em->flush();
 
                 $data = [
                     'at' => time(),
                     'registered' => true,
-                    'user' => $user->getUsername()
+                    'username' => $user->getUsername(),
+                    'salted_password' => $user->getPassword()
                 ];
             }
             else
@@ -147,6 +158,10 @@ class UserService
                 throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
             }
 
+        }
+        else
+        {
+            throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
         }
 
         return $data;
@@ -165,7 +180,7 @@ class UserService
             throw new \Exception("The user with username {$user->getUsername()} has been not preconfigured. You need to ask 
             the salt for this username before.");
         elseif ($userSaved->isEnabled())
-            throw new \Exception("The user with username {$user->getUsername()} has been already add");
+            throw new \Exception("The user with username {$user->getUsername()} has already been added");
 
         $user->setId($userSaved->getId())
             ->setSalt($userSaved->getSalt())

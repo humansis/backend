@@ -8,3 +8,8 @@ services:
         class: DistributionBundle\Utils\DistributionBeneficiaryService
         arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
         public: true
+
+    distribution.criteria_distribution_service:
+        class: DistributionBundle\Utils\CriteriaDistributionService
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true

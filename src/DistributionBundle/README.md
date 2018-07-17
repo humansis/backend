@@ -1,5 +1,113 @@
 # DistributionBundle
 
+
+## Criteria for distribution
+
+### Routes
+
+- **POST /distribution/criteria** : Get the list of beneficiaries of household
+
+- **POST /distribution/criteria/number** : Get the number of beneficiaries of household
+
+
+### Household Distribution
+
+- **distribution_type** : 'household' (for send distribution to every beneficiaries of a household)
+OR 'beneficiary' (to send distribution to a specific beneficiary)
+- **criteria** : list of criterion :
+    - **group** : 'beneficiary' (head of household) or 'dependent' (head of household dependents) or 'null' (both)
+    - **field** : name of a column of Beneficiary table or 'idCountrySpecific' or 'idVulnerabilityCriterion'
+    - **operator** : '=', '<', '>', '<=', '>='. It's the operator used for compare the wanted value with the value in database
+    - **value** : value to be compare with the database column
+    - **id** : *optional* '{id}' (id of the foreign key)
+    
+    
+Example :
+```json
+{
+	"distribution_type": "household",
+	"criteria": [
+		{
+			"group": "beneficiary",
+			"field": "gender",
+			"operator": "=",
+			"value": "1"
+		},
+		{
+			"group": "dependent",
+			"field": "dateOfBirth",
+			"operator": ">",
+			"value": "1994-10-25"
+		},
+		{
+			"group": "beneficiary",
+			"field": "idVulnerabilityCriterion",
+			"id": 2,
+			"operator": null,
+			"value": null
+		},
+		{
+			"group": null,
+			"field": "idCountrySpecific",
+			"id": 1,
+			"operator": "<=",
+			"value": 3
+		}
+	]
+}
+```
+    
+    
+
+### Beneficiary Distribution
+
+
+- **distribution_type** : 'household' (for send distribution to every beneficiaries of a household)
+OR 'beneficiary' (to send distribution to a specific beneficiary)
+- **group** : 'beneficiary' (for send distribution to every beneficiaries of a household)
+OR 'dependent' (to send distribution to a specific beneficiary) OR 'null' (both)
+- **criteria** : list of criterion :
+    - **field** : name of a column of Beneficiary table or 'idCountrySpecific' or 'idVulnerabilityCriterion'
+    - **operator** : '=', '<', '>', '<=', '>='. It's the operator used for compare the wanted value with the value in database
+    - **value** : value to be compare with the database column
+    - **id** : *optional* '{id}' (id of the foreign key)
+    
+
+Example :
+```json
+{
+	"distribution_type": "beneficiary",
+	"group": "beneficiary",
+	"criteria": [
+		{
+			"field": "dateOfBirth",
+			"operator": ">",
+			"value": "1993-11-26"
+		},
+		{
+			"field": "gender",
+			"operator": "=",
+			"value": "1"
+		},
+		{
+			"field": "idVulnerabilityCriterion",
+			"id": 1,
+			"operator": null,
+			"value": null
+		},
+		{
+			"field": "idCountrySpecific",
+			"id": 1,
+			"operator": "<=",
+			"value": 3
+		}
+	]
+}
+```
+
+
+
+
 ## Create
 PUT(/distributions)
 

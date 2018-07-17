@@ -20,7 +20,7 @@ class Beneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $id;
 
@@ -28,7 +28,7 @@ class Beneficiary
      * @var string
      *
      * @ORM\Column(name="givenName", type="string", length=255)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $givenName;
 
@@ -36,7 +36,7 @@ class Beneficiary
      * @var string
      *
      * @ORM\Column(name="familyName", type="string", length=255)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $familyName;
 
@@ -75,7 +75,7 @@ class Beneficiary
     private $updatedOn;
 
     /**
-     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist"})
      * @Groups({"FullHousehold"})
      */
     private $profile;
@@ -91,16 +91,21 @@ class Beneficiary
      * @var VulnerabilityCriterion
      *
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
-    private $vulnerabilityCriterions;
+    private $vulnerabilityCriteria;
 
     /**
+     * @var Phone
+     *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist"})
      * @Groups({"FullHousehold"})
      */
     private $phones;
 
     /**
+     * @var NationalId
+     *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist"})
      * @Groups({"FullHousehold"})
      */
@@ -111,7 +116,7 @@ class Beneficiary
      */
     public function __construct()
     {
-        $this->vulnerabilityCriterions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->vulnerabilityCriteria = new \Doctrine\Common\Collections\ArrayCollection();
         $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nationalIds = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -279,7 +284,7 @@ class Beneficiary
      */
     public function addVulnerabilityCriterion(\BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion)
     {
-        $this->vulnerabilityCriterions[] = $vulnerabilityCriterion;
+        $this->vulnerabilityCriteria[] = $vulnerabilityCriterion;
 
         return $this;
     }
@@ -293,17 +298,17 @@ class Beneficiary
      */
     public function removeVulnerabilityCriterion(\BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion)
     {
-        return $this->vulnerabilityCriterions->removeElement($vulnerabilityCriterion);
+        return $this->vulnerabilityCriteria->removeElement($vulnerabilityCriterion);
     }
 
     /**
-     * Get vulnerabilityCriterions.
+     * Get vulnerabilityCriterion.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getVulnerabilityCriterions()
+    public function getVulnerabilityCriteria()
     {
-        return $this->vulnerabilityCriterions;
+        return $this->vulnerabilityCriteria;
     }
 
     /**
@@ -311,9 +316,9 @@ class Beneficiary
      *
      * @return Beneficiary
      */
-    public function setVulnerabilityCriterions(\Doctrine\Common\Collections\Collection $collection = null)
+    public function setVulnerabilityCriteria(\Doctrine\Common\Collections\Collection $collection = null)
     {
-        $this->vulnerabilityCriterions = $collection;
+        $this->vulnerabilityCriteria = $collection;
 
         return $this;
     }
@@ -355,6 +360,34 @@ class Beneficiary
     }
 
     /**
+     * Set phones.
+     *
+     * @param $collection
+     *
+     * @return Beneficiary
+     */
+    public function setPhones(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->phones = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Set nationalId.
+     *
+     * @param  $collection
+     *
+     * @return Beneficiary
+     */
+    public function setNationalIds(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->nationalIds = $collection;
+
+        return $this;
+    }
+
+    /**
      * Add nationalId.
      *
      * @param \BeneficiaryBundle\Entity\NationalId $nationalId
@@ -391,42 +424,6 @@ class Beneficiary
     }
 
     /**
-     * Add profile.
-     *
-     * @param \BeneficiaryBundle\Entity\Profile $profile
-     *
-     * @return Beneficiary
-     */
-    public function addProfile(\BeneficiaryBundle\Entity\Profile $profile)
-    {
-        $this->profile[] = $profile;
-
-        return $this;
-    }
-
-    /**
-     * Remove profile.
-     *
-     * @param \BeneficiaryBundle\Entity\Profile $profile
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeProfile(\BeneficiaryBundle\Entity\Profile $profile)
-    {
-        return $this->profile->removeElement($profile);
-    }
-
-    /**
-     * Get profile.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getProfile()
-    {
-        return $this->profile;
-    }
-
-    /**
      * Set status.
      *
      * @param bool $status
@@ -448,5 +445,29 @@ class Beneficiary
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * Set profile.
+     *
+     * @param \BeneficiaryBundle\Entity\Profile|null $profile
+     *
+     * @return Beneficiary
+     */
+    public function setProfile(\BeneficiaryBundle\Entity\Profile $profile = null)
+    {
+        $this->profile = $profile;
+
+        return $this;
+    }
+
+    /**
+     * Get profile.
+     *
+     * @return \BeneficiaryBundle\Entity\Profile|null
+     */
+    public function getProfile()
+    {
+        return $this->profile;
     }
 }

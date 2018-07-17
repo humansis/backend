@@ -18,9 +18,34 @@ class CountrySpecificService
         $this->em = $entityManager;
     }
 
-    public function getAll()
+    public function getAll($countryIso3)
     {
-        return $this->em->getRepository(CountrySpecific::class)->findAll();
+        return $this->em->getRepository(CountrySpecific::class)->findBy(["countryIso3" => $countryIso3]);
+    }
+
+    public function create($countryIso3, array $countrySpecificArray)
+    {
+        $countrySpecific = new CountrySpecific();
+        $countrySpecific->setType($countrySpecificArray["type"])
+            ->setField($countrySpecificArray["field"])
+            ->setCountryIso3($countryIso3);
+
+        $this->em->persist($countrySpecific);
+        $this->em->flush();
+
+        return $countrySpecific;
+    }
+
+    public function update(CountrySpecific $countrySpecific, $countryIso3, array $countrySpecificArray)
+    {
+        $countrySpecific->setType($countrySpecificArray["type"])
+            ->setField($countrySpecificArray["field"])
+            ->setCountryIso3($countryIso3);
+
+        $this->em->persist($countrySpecific);
+        $this->em->flush();
+
+        return $countrySpecific;
     }
 
 }
