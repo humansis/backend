@@ -21,7 +21,7 @@ class Project
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullProject"})
+     * @Groups({"FullProject", "FullDonor"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Project
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @Groups({"FullProject"})
+     * @Groups({"FullProject", "FullDonor"})
      */
     private $name;
 

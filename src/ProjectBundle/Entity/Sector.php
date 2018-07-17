@@ -20,7 +20,7 @@ class Sector
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullSector"})
+     * @Groups({"FullSector", "FullProject"})
      */
     private $id;
 
@@ -28,7 +28,7 @@ class Sector
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"FullSector"})
+     * @Groups({"FullSector", "FullProject"})
      */
     private $name;
 

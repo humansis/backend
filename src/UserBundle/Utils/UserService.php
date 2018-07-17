@@ -118,7 +118,10 @@ class UserService
             $data = [
                 'at' => time(),
                 'connected' => true,
-                'user' => $user->getUsername()
+                'username' => $user->getUsername(),
+                'user_id' => $user->getId(),
+                'salted_password' => $user->getPassword(),
+                'username' => $user->getUsername(),
             ];
 
         }

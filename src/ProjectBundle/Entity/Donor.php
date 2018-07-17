@@ -37,7 +37,7 @@ class Donor
     /**
      * @var string
      *
-     * @ORM\Column(name="shortname", type="string", length=255)
+     * @ORM\Column(name="shortname", type="string", length=255, nullable=true)
      *
      * @Groups({"FullDonor"})
      */
