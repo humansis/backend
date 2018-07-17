@@ -15,6 +15,7 @@ use BeneficiaryBundle\Utils\DataTreatment\DuplicateTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\TypoTreatment;
 use BeneficiaryBundle\Utils\DataVerifier\AbstractVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
+use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
@@ -114,29 +115,14 @@ class HouseholdCSVService
         if ($treatment !== null)
             $listHouseholdsArray = $treatment->treat($project, $listHouseholdsArray);
 
-        $this->getFromCache($step, $listHouseholdsArray);
-
-//        dump($listHouseholdsArray);
         /** @var AbstractVerifier $verifier */
         $verifier = $this->guessVerifier($step);
         $return = [];
-        $statistic = new ImportStatistic();
-        $currentLine = 3;
+
         foreach ($listHouseholdsArray as $index => $householdArray)
         {
-//            dump(json_encode($householdArray));
-            // If there is a field equal to null, we increment the number of incomplete household and we go to the next household
-            if (!$this->isIncomplete($householdArray))
-            {
-                $statistic->addIncompleteLine(new IncompleteLine($currentLine));
-                unset($listHouseholdsArray[$index]);
-                $currentLine += count($householdArray['beneficiaries']);
-                continue;
-            }
-
-//            dump($householdArray);
+            dump(json_encode($householdArray));
             $returnTmp = $verifier->verify($countryIso3, $householdArray);
-//            dump($returnTmp);
             // IF there is errors
             if (null != $returnTmp && [] != $returnTmp)
             {
@@ -145,10 +131,7 @@ class HouseholdCSVService
                 else
                     $return[] = $returnTmp;
                 unset($listHouseholdsArray[$index]);
-//                dump($return);
             }
-
-            $currentLine += count($householdArray['beneficiaries']);
         }
 
         $this->saveInCache($step, json_encode($listHouseholdsArray));
@@ -170,15 +153,15 @@ class HouseholdCSVService
             case 1:
                 return new TypoVerifier($this->em);
                 break;
-            // CASE FOUND MORE ISSUES
+            // CASE FOUND DUPLICATED ISSUES
             case 2:
                 return new DuplicateVerifier($this->em);
                 break;
-            // CASE FOUND LESS ISSUES
+            // CASE FOUND MORE ISSUES
             case 3:
-                throw new \Exception("To be implemented");
+                return new MoreVerifier($this->em);
                 break;
-            // CASE FOUND DUPLICATED ISSUES
+            // CASE FOUND LESS ISSUES
             case 4:
                 throw new \Exception("To be implemented");
                 break;
@@ -208,7 +191,7 @@ class HouseholdCSVService
                 break;
             // CASE FOUND LESS ISSUES
             case 3:
-                return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService);
+                return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->token);
                 break;
             // CASE FOUND DUPLICATED ISSUES
             case 4:
@@ -222,32 +205,7 @@ class HouseholdCSVService
 
     /**
      * @param int $step
-     * @param array $listHouseholdsArray
-     * @param string $token
-     * @throws \Exception
-     */
-    private function getFromCache(int $step, array &$listHouseholdsArray)
-    {
-        if ($step <= 1 || null === $this->token)
-            return;
-
-        $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_var))
-            mkdir($dir_var);
-
-        $fileContent = file_get_contents($dir_var . '/step_' . strval($step - 1));
-        $householdsCached = json_decode($fileContent, true);
-        foreach ($householdsCached as $householdCached)
-        {
-            $listHouseholdsArray[] = $householdCached;
-        }
-    }
-
-    /**
-     * @param int $step
      * @param $dataToSave
-     * @param string|null $token
      * @throws \Exception
      */
     private function saveInCache(int $step, $dataToSave)

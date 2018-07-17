@@ -26,17 +26,33 @@ class DuplicateVerifier extends AbstractVerifier
                     $stringOldHousehold
                 )
                 {
-                    $listDuplicateBeneficiaries[] = [
+                    $arrayTmp = [
                         "new" => $newBeneficiary,
                         "old" => $oldBeneficiary->getHousehold()->resetBeneficiaries()->addBeneficiary($oldBeneficiary)
                     ];
+
+
+                    $listDuplicateBeneficiaries[] = $arrayTmp;
                     break;
                 }
             }
         }
 
         if (!empty($listDuplicateBeneficiaries))
-            return ["new_household" => $householdArray, "data" => $listDuplicateBeneficiaries];
+        {
+            if (array_key_exists("id_tmp_cache", $householdArray))
+                return [
+                    "new_household" => $householdArray,
+                    "id_tmp_cache" => $householdArray["id_tmp_cache"],
+                    "data" => $listDuplicateBeneficiaries
+                ];
+
+            return [
+                "new_household" => $householdArray,
+                "data" => $listDuplicateBeneficiaries
+            ];
+        }
+
         return null;
     }
 }

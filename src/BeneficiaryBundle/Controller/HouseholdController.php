@@ -138,7 +138,6 @@ class HouseholdController extends Controller
             $token = null;
 
         $contentJson = $request->request->all();
-//        dump($contentJson);
         $countryIso3 = $contentJson['__country'];
         unset($contentJson['__country']);
         /** @var HouseholdCSVService $householdService */
@@ -154,7 +153,7 @@ class HouseholdController extends Controller
             }
             catch (\Exception $e)
             {
-//                dump($e);
+                dump($e);
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         }
@@ -166,11 +165,10 @@ class HouseholdController extends Controller
             }
             catch (\Exception $e)
             {
-//                dump($e);
+                dump($e);
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         }
-//dump($return);
         $json = $this->get('jms_serializer')
             ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
         return new Response($json);

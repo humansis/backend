@@ -22,10 +22,11 @@ class DuplicateTreatment extends AbstractTreatment
     public function treat(Project $project, array $householdsArray)
     {
         $listHouseholds = [];
+        $listHouseholdsFromTypo = [];
+        $this->getFromCache('1_typo', $listHouseholdsFromTypo);
         foreach ($householdsArray as $householdData)
         {
             $newHousehold = $householdData['new_household'];
-//                dump($newHousehold);
             foreach ($householdData['data'] as $beneficiaryData)
             {
                 if (array_key_exists('new', $beneficiaryData))
@@ -54,10 +55,63 @@ class DuplicateTreatment extends AbstractTreatment
                     }
                 }
             }
+            //UPDATE THE NEW HH IN THE CACHE
+            if (array_key_exists("id_tmp_cache", $householdData))
+                $this->updateInCache($householdData["id_tmp_cache"], $newHousehold);
             $listHouseholds[] = $newHousehold;
         }
         $this->em->flush();
+        $listHouseholdsFromCache = [];
+        $this->getFromCache('1_typo', $listHouseholdsFromCache);
+        return $listHouseholdsFromCache;
+    }
 
-        return $listHouseholds;
+    /**
+     * @param $step
+     * @param array $listHouseholdsArray
+     * @throws \Exception
+     */
+    private function getFromCache($step, array &$listHouseholdsArray)
+    {
+        if (null === $this->token)
+            return;
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data/' . $this->token;
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+
+        $fileContent = file_get_contents($dir_var . '/step_' . $step);
+        $householdsCached = json_decode($fileContent, true);
+        foreach ($householdsCached as $householdCached)
+        {
+            $listHouseholdsArray[] = $householdCached;
+        }
+    }
+
+    /**
+     * @param $index
+     * @param array $newHouseholdArray
+     * @throws \Exception
+     */
+    private function updateInCache($index, array $newHouseholdArray)
+    {
+        if (null === $this->token)
+            return;
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data/' . $this->token;
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+        if (!is_file($dir_var . '/step_1_typo'))
+        {
+            file_put_contents($dir_var . '/step_1_typo', json_encode([$index => ["new" => $newHouseholdArray, "old" => null]]));
+        }
+        else
+        {
+            $listHH = json_decode(file_get_contents($dir_var . '/step_1_typo'), true);
+            $listHH[$index]["new"] = $newHouseholdArray;
+            file_put_contents($dir_var . '/step_1_typo', json_encode($listHH));
+        }
     }
 }

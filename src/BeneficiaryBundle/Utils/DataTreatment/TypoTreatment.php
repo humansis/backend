@@ -10,29 +10,12 @@ use BeneficiaryBundle\Utils\BeneficiaryService;
 use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\Container;
 
 class TypoTreatment extends AbstractTreatment
 {
-
-    /** @var string $token */
-    private $token;
-
-    /** @var Container $container */
-    private $container;
-
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        HouseholdService $householdService,
-        BeneficiaryService $beneficiaryService,
-        Container $container,
-        string &$token = null)
-    {
-        parent::__construct($entityManager, $householdService, $beneficiaryService);
-        $this->token = $token;
-        $this->container = $container;
-    }
 
     /**
      * ET RETURN ONLY IF WE ADD THE NEW
@@ -44,6 +27,7 @@ class TypoTreatment extends AbstractTreatment
     public function treat(Project $project, array $householdsArray)
     {
         $listHouseholds = [];
+        $id_tmp = 1;
         foreach ($householdsArray as $index => $householdArray)
         {
             // CASE STATE IS TRUE AND NEW IS MISSING => WE KEEP ONLY THE OLD HOUSEHOLD, AND WE ADD IT TO THE CURRENT PROJECT
@@ -81,27 +65,32 @@ class TypoTreatment extends AbstractTreatment
                             $this->beneficiaryService->updateOrCreate($oldHousehold, $newHeadHH, true);
                     }
                 }
+                $householdArray['new']['id_tmp_cache'] = $id_tmp;
+                $this->saveInCache('1_typo', $householdArray['new'], $oldHousehold, $id_tmp);
+                $id_tmp++;
             }
 
-            if (array_key_exists('__country', $householdArray['new']))
-                unset($householdArray['new']['__country']);
 
             // WE SAVE EVERY HOUSEHOLD WHICH HAVE BEEN TREATED BY THIS FUNCTION BECAUSE IN NEXT STEP WE HAVE TO KNOW WHICH
             // HOUSEHOLDS HAD TYPO ERRORS
-            $this->saveInCache('1b', $householdArray['new']);
             $listHouseholds[] = $householdArray['new'];
         }
+        $this->getFromCache($listHouseholds);
         return $listHouseholds;
     }
 
     /**
-     * @param int $step
-     * @param $dataToSave
-     * @param string|null $token
+     * @param string $step
+     * @param array $dataToSave
+     * @param Household $household
+     * @param $index
      * @throws \Exception
      */
-    private function saveInCache(string $step, array $dataToSave)
+    private function saveInCache(string $step, array $dataToSave, Household $household, $index)
     {
+        $arrayNewHousehold = json_decode($this->container->get('jms_serializer')
+            ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)), true);
+
         $sizeToken = 50;
         if (null === $this->token)
             $this->token = bin2hex(random_bytes($sizeToken));
@@ -112,14 +101,36 @@ class TypoTreatment extends AbstractTreatment
             mkdir($dir_var);
         if (!is_file($dir_var . '/step_' . $step))
         {
-            file_put_contents($dir_var . '/step_' . $step, json_encode([$dataToSave]));
+            file_put_contents($dir_var . '/step_' . $step, json_encode([$index => ["new" => $dataToSave, "old" => $arrayNewHousehold]]));
         }
         else
         {
             $listHH = json_decode(file_get_contents($dir_var . '/step_' . $step), true);
-            $listHH[] = $dataToSave;
-            file_put_contents($dir_var . '/step_' . $step, json_encode($dataToSave));
+            $listHH[$index] = ["new" => $dataToSave, "old" => $arrayNewHousehold];
+            file_put_contents($dir_var . '/step_' . $step, json_encode($listHH));
         }
 
+    }
+
+    /**
+     * @param array $listHouseholdsArray
+     * @throws \Exception
+     */
+    private function getFromCache(array &$listHouseholdsArray)
+    {
+        if (null === $this->token)
+            return;
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data/' . $this->token;
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+
+        $fileContent = file_get_contents($dir_var . '/step_1');
+        $householdsCached = json_decode($fileContent, true);
+        foreach ($householdsCached as $householdCached)
+        {
+            $listHouseholdsArray[] = $householdCached;
+        }
     }
 }

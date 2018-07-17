@@ -71,6 +71,15 @@ class BeneficiaryService
             if ($beneficiary->getHousehold() !== $household)
                 throw new \Exception("You are trying to update a beneficiary in the wrong household.");
             $beneficiary->setVulnerabilityCriteria(null);
+
+            foreach ($this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary) as $item)
+            {
+                $this->em->remove($item);
+            }
+            foreach ($this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary) as $item)
+            {
+                $this->em->remove($item);
+            }
         }
         else
         {
@@ -89,7 +98,6 @@ class BeneficiaryService
         {
             $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion["id"]));
         }
-
         foreach ($beneficiaryArray["phones"] as $phoneArray)
         {
             $this->getOrSavePhone($beneficiary, $phoneArray, false);
@@ -139,14 +147,7 @@ class BeneficiaryService
             $phoneArray,
             'any'
         );
-        if (array_key_exists("id", $phoneArray))
-        {
-            $phone = $this->em->getRepository(Phone::class)->find($phoneArray["id"]);
-        }
-        else
-        {
-            $phone = new Phone();
-        }
+        $phone = new Phone();
         $phone->setBeneficiary($beneficiary)
             ->setType($phoneArray["type"])
             ->setNumber($phoneArray["number"]);
@@ -173,14 +174,7 @@ class BeneficiaryService
             $nationalIdArray,
             'any'
         );
-        if (array_key_exists("id", $nationalIdArray))
-        {
-            $nationalId = $this->em->getRepository(NationalId::class)->find($nationalIdArray["id"]);
-        }
-        else
-        {
-            $nationalId = new NationalId();
-        }
+        $nationalId = new NationalId();
         $nationalId->setBeneficiary($beneficiary)
             ->setIdType($nationalIdArray["id_type"])
             ->setIdNumber($nationalIdArray["id_number"]);
