@@ -59,7 +59,9 @@ class TypoTreatment extends AbstractTreatment
                 $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
                 if ($oldHousehold instanceof Household)
                 {
+                    // Update only the object Household
                     $this->householdService->update($oldHousehold, $project, $householdArray['new'], false);
+                    // Found data in order to update the head of this household
                     $oldHeadHH = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
                     if ($oldHeadHH instanceof Beneficiary)
                     {
@@ -74,6 +76,7 @@ class TypoTreatment extends AbstractTreatment
                             }
                         }
                         if (null !== $newHeadHH)
+                            // Update the head
                             $this->beneficiaryService->updateOrCreate($oldHousehold, $newHeadHH, true);
                     }
                 }
