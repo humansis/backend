@@ -61,12 +61,17 @@ class HouseholdService
         /** @var Household $household */
         foreach ($households as $household)
         {
+            $numberDependents = 0;
             /** @var Beneficiary $beneficiary */
             foreach ($household->getBeneficiaries() as $beneficiary)
             {
                 if ($beneficiary->getStatus() != 1)
+                {
+                    $numberDependents++;
                     $household->removeBeneficiary($beneficiary);
+                }
             }
+            $household->setNumberDependents($numberDependents);
         }
         return $households;
     }
@@ -167,11 +172,12 @@ class HouseholdService
      * @param Household $household
      * @param Project $project
      * @param array $householdArray
+     * @param bool $updateBeneficiary => If true, we update the beneficiaries inside the array
      * @return Household
      * @throws ValidationException
      * @throws \Exception
      */
-    public function update(Household $household, Project $project, array $householdArray)
+    public function update(Household $household, Project $project, array $householdArray, bool $updateBeneficiary = true)
     {
         $this->requestValidator->validate(
             "household",
@@ -208,8 +214,11 @@ class HouseholdService
         {
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave)
             {
-                $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
-                $this->em->persist($beneficiary);
+                if ($updateBeneficiary)
+                {
+                    $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
+                    $this->em->persist($beneficiary);
+                }
             }
         }
 

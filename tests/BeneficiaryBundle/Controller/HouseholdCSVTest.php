@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Tests\BeneficiaryBundle\Controller;
-
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
@@ -16,6 +14,7 @@ use BeneficiaryBundle\Utils\HouseholdCSVService;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\BMSServiceTestCase;
+
 
 class HouseholdCSVTest extends BMSServiceTestCase
 {
@@ -168,6 +167,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
     }
 
     /**
+     * @deprecated since v3 import CSV
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException

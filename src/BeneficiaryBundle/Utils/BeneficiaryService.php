@@ -230,4 +230,17 @@ class BeneficiaryService
 
         return $profile;
     }
+
+    /**
+     * @param Beneficiary $beneficiary
+     * @return bool
+     */
+    public function remove(Beneficiary $beneficiary)
+    {
+        if ($beneficiary->getStatus() === 1)
+            return false;
+
+        $this->em->remove($beneficiary);
+        $this->em->flush();
+    }
 }
