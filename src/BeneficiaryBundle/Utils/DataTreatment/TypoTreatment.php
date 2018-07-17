@@ -4,6 +4,7 @@
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
@@ -57,7 +58,25 @@ class TypoTreatment extends AbstractTreatment
             {
                 $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
                 if ($oldHousehold instanceof Household)
-                    $this->householdService->update($oldHousehold, $project, $householdArray['new'], true);
+                {
+                    $this->householdService->update($oldHousehold, $project, $householdArray['new'], false);
+                    $oldHeadHH = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
+                    if ($oldHeadHH instanceof Beneficiary)
+                    {
+                        $newHeadHH = null;
+                        foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary)
+                        {
+                            if (boolval($newBeneficiary['status']))
+                            {
+                                $newHeadHH = $newBeneficiary;
+                                $newHeadHH['id'] = $oldHeadHH->getId();
+                                break;
+                            }
+                        }
+                        if (null !== $newHeadHH)
+                            $this->beneficiaryService->updateOrCreate($oldHousehold, $newHeadHH, true);
+                    }
+                }
             }
 
             if (array_key_exists('__country', $householdArray['new']))

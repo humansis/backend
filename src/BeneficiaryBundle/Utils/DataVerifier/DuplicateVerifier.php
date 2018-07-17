@@ -13,10 +13,6 @@ class DuplicateVerifier extends AbstractVerifier
     {
         $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria($countryISO3, []);
 
-        $newBeneficiaryTmp = null;
-        $oldBeneficiaryTmp = null;
-
-        $listDuplicateBeneficiariesHousehold = [];
         $listDuplicateBeneficiaries = [];
         foreach ($householdArray['beneficiaries'] as $newBeneficiary)
         {
@@ -38,14 +34,9 @@ class DuplicateVerifier extends AbstractVerifier
                 }
             }
         }
-        if (!empty($listDuplicateBeneficiaries))
-        {
-            $listDuplicateBeneficiariesHousehold[] = ["new_household" => $householdArray, "data" => $listDuplicateBeneficiaries];
-        }
 
-        dump($listDuplicateBeneficiariesHousehold);
-        if (!empty($listDuplicateBeneficiariesHousehold))
-            return $listDuplicateBeneficiariesHousehold;
+        if (!empty($listDuplicateBeneficiaries))
+            return ["new_household" => $householdArray, "data" => $listDuplicateBeneficiaries];
         return null;
     }
 }
