@@ -116,6 +116,7 @@ class HouseholdCSVService
 
         $this->getFromCache($step, $listHouseholdsArray);
 
+        dump($listHouseholdsArray);
         /** @var AbstractVerifier $verifier */
         $verifier = $this->guessVerifier($step);
         $return = [];
@@ -123,6 +124,7 @@ class HouseholdCSVService
         $currentLine = 3;
         foreach ($listHouseholdsArray as $index => $householdArray)
         {
+            dump(json_encode($householdArray));
             // If there is a field equal to null, we increment the number of incomplete household and we go to the next household
             if (!$this->isIncomplete($householdArray))
             {
@@ -141,7 +143,7 @@ class HouseholdCSVService
                 if ($returnTmp instanceof Household)
                     $return[] = ["old" => $returnTmp, "new" => $householdArray];
                 else
-                    $return[] = current($returnTmp);
+                    $return[] = $returnTmp;
                 unset($listHouseholdsArray[$index]);
                 dump($return);
             }

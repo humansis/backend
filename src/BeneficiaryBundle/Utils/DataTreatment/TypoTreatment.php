@@ -49,6 +49,7 @@ class TypoTreatment extends AbstractTreatment
             // CASE STATE IS TRUE AND NEW IS MISSING => WE KEEP ONLY THE OLD HOUSEHOLD, AND WE ADD IT TO THE CURRENT PROJECT
             if (boolval($householdArray['state']) && (!array_key_exists("new", $householdArray) || $householdArray['new'] === null))
             {
+                $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
                 $this->householdService->addToProject($oldHousehold, $project);
                 unset($householdsArray[$index]);
                 continue;

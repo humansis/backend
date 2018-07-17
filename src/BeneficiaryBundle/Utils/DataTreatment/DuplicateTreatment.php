@@ -28,10 +28,9 @@ class DuplicateTreatment extends AbstractTreatment
                 dump($newHousehold);
             foreach ($householdData['data'] as $beneficiaryData)
             {
-                $state = intval($beneficiaryData['state']);
                 if (array_key_exists('new', $beneficiaryData))
                 {
-                    if ($state === 0)
+                    if (intval($beneficiaryData['state']) === 0)
                     {
                         $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryData['id_old']);
                         if (!$beneficiary instanceof Beneficiary)
