@@ -25,7 +25,7 @@ class DuplicateTreatment extends AbstractTreatment
         foreach ($householdsArray as $householdData)
         {
             $newHousehold = $householdData['new_household'];
-                dump($newHousehold);
+//                dump($newHousehold);
             foreach ($householdData['data'] as $beneficiaryData)
             {
                 if (array_key_exists('new', $beneficiaryData))
