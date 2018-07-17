@@ -92,7 +92,7 @@ class UserService
             $user->setUsername($username)
                 ->setUsernameCanonical($username)
                 ->setEnabled(0)
-                ->setEmail($salt)
+                ->setEmail($username)
                 ->setEmailCanonical($salt)
                 ->setSalt($salt)
                 ->setPassword("");
@@ -179,7 +179,7 @@ class UserService
             throw new \Exception("The user with username {$user->getUsername()} has been not preconfigured. You need to ask 
             the salt for this username before.");
         elseif ($userSaved->isEnabled())
-            throw new \Exception("The user with username {$user->getUsername()} has been already add");
+            throw new \Exception("The user with username {$user->getUsername()} has already been added");
 
         $user->setId($userSaved->getId())
             ->setSalt($userSaved->getSalt())
