@@ -67,7 +67,7 @@ class ProjectService
         $sectors = $project->getSectors();
         if (null !== $sectors)
         {
-            $project->cleanSectors();
+            $project->getSectors()->clear();
             /** @var Sector $sector */
             foreach ($sectors as $sector)
             {
@@ -80,7 +80,7 @@ class ProjectService
         $donors = $project->getDonors();
         if (null !== $donors)
         {
-            $project->cleanDonors();
+            $project->getDonors()->clear();
             /** @var Donor $donor */
             foreach ($donors as $donor)
             {
