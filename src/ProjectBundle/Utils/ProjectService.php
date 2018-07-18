@@ -3,6 +3,7 @@
 namespace ProjectBundle\Utils;
 
 use BeneficiaryBundle\Entity\ProjectBeneficiary;
+use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
@@ -38,7 +39,14 @@ class ProjectService
      */
     public function findAll()
     {
-        return $this->em->getRepository(Project::class)->findByArchived(0);
+        $projects = $this->em->getRepository(Project::class)->findByArchived(0);
+        $houseHoldsRepository = $this->em->getRepository(Household::class);
+        foreach($projects as $project){
+            $project->setNumberOfHouseholds($houseHoldsRepository->countByProject($project)[1]);
+            $this->em->merge($project);
+        }
+        $this->em->flush();
+        return $projects;
     }
 
     /**

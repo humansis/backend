@@ -57,8 +57,6 @@ class Project
     /**
      * @var int
      *
-     * @ORM\Column(name="numberOfHouseholds", type="integer", nullable=true)
-     *
      * @Groups({"FullProject"})
      */
     private $numberOfHouseholds;
