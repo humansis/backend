@@ -38,14 +38,20 @@ class LessTreatment extends AbstractTreatment
     /**
      * @param Project $project
      * @throws \Exception
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
     public function addHouseholds(Project $project)
     {
         $householdsToAdd = $this->getHouseholdOfStep1();
         foreach ($householdsToAdd as $householdToAdd)
         {
-            $this->householdService->create($householdToAdd, $project);
+            try
+            {
+                $this->householdService->create($householdToAdd, $project);
+            }
+            catch (\Exception $exception)
+            {
+                continue;
+            }
         }
     }
 

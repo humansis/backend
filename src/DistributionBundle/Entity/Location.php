@@ -34,7 +34,7 @@ class Location
     /**
      * @var string
      *
-     * @ORM\Column(name="adm1", type="string", length=255)
+     * @ORM\Column(name="adm1", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $adm1;
@@ -42,7 +42,7 @@ class Location
     /**
      * @var string
      *
-     * @ORM\Column(name="adm2", type="string", length=255)
+     * @ORM\Column(name="adm2", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $adm2;
@@ -50,7 +50,7 @@ class Location
     /**
      * @var string
      *
-     * @ORM\Column(name="adm3", type="string", length=255)
+     * @ORM\Column(name="adm3", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $adm3;
@@ -58,7 +58,7 @@ class Location
     /**
      * @var string
      *
-     * @ORM\Column(name="adm4", type="string", length=255)
+     * @ORM\Column(name="adm4", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $adm4;
