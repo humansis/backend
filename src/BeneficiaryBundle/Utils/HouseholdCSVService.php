@@ -12,9 +12,12 @@ use BeneficiaryBundle\Model\ImportStatistic;
 use BeneficiaryBundle\Model\IncompleteLine;
 use BeneficiaryBundle\Utils\DataTreatment\AbstractTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\DuplicateTreatment;
+use BeneficiaryBundle\Utils\DataTreatment\LessTreatment;
+use BeneficiaryBundle\Utils\DataTreatment\MoreTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\TypoTreatment;
 use BeneficiaryBundle\Utils\DataVerifier\AbstractVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
+use BeneficiaryBundle\Utils\DataVerifier\LessVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -74,7 +77,6 @@ class HouseholdCSVService
      * @param $countryIso3
      * @param Project $project
      * @param UploadedFile $uploadedFile
-     * @param array $contentJson
      * @param int $step
      * @param $token
      * @return array
@@ -82,7 +84,7 @@ class HouseholdCSVService
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, array $contentJson, int $step, $token)
+    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, int $step, $token)
     {
         // If it's the first step, we transform CSV to array mapped for corresponding to the entity Household
         // LOADING CSV
@@ -104,32 +106,34 @@ class HouseholdCSVService
      * @param array $listHouseholdsArray
      * @param int $step
      * @param $token
-     * @return array
+     * @return array|bool
      * @throws \Exception
      */
     public function foundErrors($countryIso3, Project $project, array $listHouseholdsArray, int $step, $token)
     {
         $this->token = $token;
         // If there is a treatment class for this step, call it
-        $treatment = $this->guessTraitment($step);
+        $treatment = $this->guessTreatment($step);
         if ($treatment !== null)
             $listHouseholdsArray = $treatment->treat($project, $listHouseholdsArray);
 
         /** @var AbstractVerifier $verifier */
         $verifier = $this->guessVerifier($step);
         $return = [];
+        if (null === $verifier)
+            return true;
 
         foreach ($listHouseholdsArray as $index => $householdArray)
         {
-            dump(json_encode($householdArray));
             $returnTmp = $verifier->verify($countryIso3, $householdArray);
             // IF there is errors
-            if (null != $returnTmp && [] != $returnTmp)
+            if (null !== $returnTmp && [] !== $returnTmp)
             {
                 if ($returnTmp instanceof Household)
                     $return[] = ["old" => $returnTmp, "new" => $householdArray];
-                else
+                elseif ($returnTmp !== false)
                     $return[] = $returnTmp;
+
                 unset($listHouseholdsArray[$index]);
             }
         }
@@ -137,6 +141,20 @@ class HouseholdCSVService
         $this->saveInCache($step, json_encode($listHouseholdsArray));
 
         return ["data" => $return, "token" => $this->token];
+    }
+
+    /**
+     * If the token is null, create a new one
+     * return the token
+     * @return string
+     */
+    public function initOrGetToken()
+    {
+        $sizeToken = 50;
+        if (null === $this->token)
+            $this->token = bin2hex(random_bytes($sizeToken));
+
+        return $this->token;
     }
 
     /**
@@ -151,11 +169,11 @@ class HouseholdCSVService
         {
             // CASE FOUND TYPO ISSUES
             case 1:
-                return new TypoVerifier($this->em);
+                return new TypoVerifier($this->em, $this->container, $this->initOrGetToken());
                 break;
             // CASE FOUND DUPLICATED ISSUES
             case 2:
-                return new DuplicateVerifier($this->em);
+                return new DuplicateVerifier($this->em, $this->container, $this->initOrGetToken());
                 break;
             // CASE FOUND MORE ISSUES
             case 3:
@@ -163,7 +181,11 @@ class HouseholdCSVService
                 break;
             // CASE FOUND LESS ISSUES
             case 4:
-                throw new \Exception("To be implemented");
+                return new LessVerifier($this->em);
+                break;
+            // CASE FOUND LESS ISSUES
+            case 5:
+                return null;
                 break;
             // NOT FOUND CASE
             default:
@@ -177,25 +199,28 @@ class HouseholdCSVService
      * @return AbstractTreatment
      * @throws \Exception
      */
-    private function guessTraitment(int $step)
+    private function guessTreatment(int $step)
     {
         switch ($step)
         {
-            // CASE FOUND TYPO ISSUES
             case 1:
                 return null;
                 break;
-            // CASE FOUND MORE ISSUES
+            // CASE FOUND TYPO ISSUES
             case 2:
-                return new TypoTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->token);
-                break;
-            // CASE FOUND LESS ISSUES
-            case 3:
-                return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->token);
+                return new TypoTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
                 break;
             // CASE FOUND DUPLICATED ISSUES
+            case 3:
+                return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND MORE ISSUES
             case 4:
-                throw new \Exception("To be implemented");
+                return new MoreTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND LESS ISSUES
+            case 5:
+                return new LessTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
                 break;
             // NOT FOUND CASE
             default:
@@ -210,9 +235,7 @@ class HouseholdCSVService
      */
     private function saveInCache(int $step, $dataToSave)
     {
-        $sizeToken = 50;
-        if (null === $this->token)
-            $this->token = bin2hex(random_bytes($sizeToken));
+        $this->initOrGetToken();
 
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data/' . $this->token;

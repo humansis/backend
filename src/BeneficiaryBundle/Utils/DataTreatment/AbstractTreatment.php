@@ -32,7 +32,7 @@ abstract class AbstractTreatment implements InterfaceTreatment
         HouseholdService $householdService,
         BeneficiaryService $beneficiaryService,
         Container $container,
-        &$token
+        $token
     )
     {
         $this->em = $entityManager;

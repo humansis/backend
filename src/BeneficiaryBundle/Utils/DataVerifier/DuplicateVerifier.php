@@ -5,15 +5,41 @@ namespace BeneficiaryBundle\Utils\DataVerifier;
 
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Container;
 
 class DuplicateVerifier extends AbstractVerifier
 {
 
+    private $token;
+
+    private $container;
+
+    public function __construct(EntityManagerInterface $entityManager, Container $container, $token)
+    {
+        parent::__construct($entityManager);
+        $this->token = $token;
+        $this->container = $container;
+    }
+
+    /**
+     * @param string $countryISO3
+     * @param array $householdArray
+     * @return array|null
+     * @throws \Exception
+     */
     public function verify(string $countryISO3, array $householdArray)
     {
         $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria($countryISO3, []);
+        // GET THE SIMILAR HOUSEHOLD FROM THE DB, IF ISSET
+        if (array_key_exists('id_tmp_cache', $householdArray))
+            $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache']);
+        else
+            $similarOldHousehold = null;
 
         $listDuplicateBeneficiaries = [];
+        $newHouseholdEmpty = $householdArray;
+        $newHouseholdEmpty['beneficiaries'] = [];
         foreach ($householdArray['beneficiaries'] as $newBeneficiary)
         {
             $stringOldHousehold = strtolower(trim($newBeneficiary['given_name']) . "//" . trim($newBeneficiary['family_name']));
@@ -21,13 +47,16 @@ class DuplicateVerifier extends AbstractVerifier
             foreach ($oldBeneficiaries as $oldBeneficiary)
             {
                 if (
+                    $oldBeneficiary->getHousehold()->getId() !== $similarOldHousehold['id']
+                    &&
                     strtolower(trim($oldBeneficiary->getGivenName()) . "//" . trim($oldBeneficiary->getFamilyName()))
                     ===
                     $stringOldHousehold
                 )
                 {
+                    $newHouseholdEmpty['beneficiaries'][] = $newBeneficiary;
                     $arrayTmp = [
-                        "new" => $newBeneficiary,
+                        "new" => $newHouseholdEmpty,
                         "old" => $oldBeneficiary->getHousehold()->resetBeneficiaries()->addBeneficiary($oldBeneficiary)
                     ];
 
@@ -36,6 +65,7 @@ class DuplicateVerifier extends AbstractVerifier
                     break;
                 }
             }
+            $newHouseholdEmpty['beneficiaries'] = [];
         }
 
         if (!empty($listDuplicateBeneficiaries))
@@ -52,6 +82,29 @@ class DuplicateVerifier extends AbstractVerifier
                 "data" => $listDuplicateBeneficiaries
             ];
         }
+
+        return null;
+    }
+
+    /**
+     * @param $id_tmp_cache
+     * @return null
+     * @throws \Exception
+     */
+    private function getOldHouseholdFromCache($id_tmp_cache)
+    {
+        if (null === $this->token)
+            return null;
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data/' . $this->token;
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+
+        $fileContent = file_get_contents($dir_var . '/mapping_new_old');
+        $householdsCached = json_decode($fileContent, true);
+        if (array_key_exists($id_tmp_cache, $householdsCached))
+            return $householdsCached[$id_tmp_cache]['old'];
 
         return null;
     }

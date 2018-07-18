@@ -23,7 +23,7 @@ class DuplicateTreatment extends AbstractTreatment
     {
         $listHouseholds = [];
         $listHouseholdsFromTypo = [];
-        $this->getFromCache('1_typo', $listHouseholdsFromTypo);
+        $this->getFromCache('mapping_new_old', $listHouseholdsFromTypo);
         foreach ($householdsArray as $householdData)
         {
             $newHousehold = $householdData['new_household'];
@@ -62,7 +62,7 @@ class DuplicateTreatment extends AbstractTreatment
         }
         $this->em->flush();
         $listHouseholdsFromCache = [];
-        $this->getFromCache('1_typo', $listHouseholdsFromCache);
+        $this->getFromCache('mapping_new_old', $listHouseholdsFromCache);
         return $listHouseholdsFromCache;
     }
 
@@ -81,7 +81,7 @@ class DuplicateTreatment extends AbstractTreatment
         if (!is_dir($dir_var))
             mkdir($dir_var);
 
-        $fileContent = file_get_contents($dir_var . '/step_' . $step);
+        $fileContent = file_get_contents($dir_var . '/' . $step);
         $householdsCached = json_decode($fileContent, true);
         foreach ($householdsCached as $householdCached)
         {
@@ -103,15 +103,15 @@ class DuplicateTreatment extends AbstractTreatment
         $dir_var = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_var))
             mkdir($dir_var);
-        if (!is_file($dir_var . '/step_1_typo'))
+        if (!is_file($dir_var . '/mapping_new_old'))
         {
-            file_put_contents($dir_var . '/step_1_typo', json_encode([$index => ["new" => $newHouseholdArray, "old" => null]]));
+            file_put_contents($dir_var . '/mapping_new_old', json_encode([$index => ["new" => $newHouseholdArray, "old" => null]]));
         }
         else
         {
-            $listHH = json_decode(file_get_contents($dir_var . '/step_1_typo'), true);
+            $listHH = json_decode(file_get_contents($dir_var . '/mapping_new_old'), true);
             $listHH[$index]["new"] = $newHouseholdArray;
-            file_put_contents($dir_var . '/step_1_typo', json_encode($listHH));
+            file_put_contents($dir_var . '/mapping_new_old', json_encode($listHH));
         }
     }
 }
