@@ -184,7 +184,8 @@ class UserService
 
         $user->setId($userSaved->getId())
             ->setSalt($userSaved->getSalt())
-            ->setEmailCanonical($user->getEmail())
+            ->setEmail($user->getUsername())
+            ->setEmailCanonical($user->getUsername())
             ->setEnabled(1);
 
         $errors = $this->validator->validate($user);
