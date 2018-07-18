@@ -5,7 +5,6 @@ namespace BeneficiaryBundle\Utils\DataTreatment;
 
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
 use ProjectBundle\Entity\Project;
 
 class LessTreatment extends AbstractTreatment
@@ -16,7 +15,6 @@ class LessTreatment extends AbstractTreatment
      * @param array $householdsArray
      * @return array
      * @throws \Exception
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
     public function treat(Project $project, array $householdsArray)
     {

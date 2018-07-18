@@ -119,21 +119,27 @@ class TypoVerifier extends AbstractVerifier
             $this->token = bin2hex(random_bytes($sizeToken));
 
         $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data/' . $this->token;
+
+        $dir_var = $dir_root . '/../var/data';
         if (!is_dir($dir_var))
             mkdir($dir_var);
-        if (!is_file($dir_var . '/' . $step))
+
+        $dir_var_token = $dir_var . '/' . $this->token;
+        if (!is_dir($dir_var_token))
+            mkdir($dir_var_token);
+
+        if (!is_file($dir_var_token . '/' . $step))
         {
             $dataToSave['id_tmp_cache'] = 0;
-            file_put_contents($dir_var . '/' . $step, json_encode([["new" => $dataToSave, "old" => $arrayNewHousehold]]));
+            file_put_contents($dir_var_token . '/' . $step, json_encode([["new" => $dataToSave, "old" => $arrayNewHousehold]]));
         }
         else
         {
-            $listHH = json_decode(file_get_contents($dir_var . '/' . $step), true);
+            $listHH = json_decode(file_get_contents($dir_var_token . '/' . $step), true);
             $index = count($listHH);
             $dataToSave['id_tmp_cache'] = $index;
             $listHH[$index] = ["new" => $dataToSave, "old" => $arrayNewHousehold];
-            file_put_contents($dir_var . '/' . $step, json_encode($listHH));
+            file_put_contents($dir_var_token . '/' . $step, json_encode($listHH));
         }
 
     }

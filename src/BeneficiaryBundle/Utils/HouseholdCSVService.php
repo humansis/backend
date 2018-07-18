@@ -32,14 +32,10 @@ use Symfony\Component\HttpKernel\Kernel;
 class HouseholdCSVService
 {
 
-    /**
-     * @var EntityManagerInterface $em
-     */
+    /** @var EntityManagerInterface $em */
     private $em;
 
-    /**
-     * @var HouseholdService $householdService
-     */
+    /** @var HouseholdService $householdService */
     private $householdService;
 
     /** @var Mapper $mapper */
@@ -111,7 +107,10 @@ class HouseholdCSVService
      */
     public function foundErrors($countryIso3, Project $project, array $listHouseholdsArray, int $step, $token)
     {
+        $this->clearData();
         $this->token = $token;
+        if (!$this->checkTokenAndStep($step))
+            throw new \Exception("Your session for this import has expired");
         // If there is a treatment class for this step, call it
         $treatment = $this->guessTreatment($step);
         if ($treatment !== null)
@@ -139,8 +138,30 @@ class HouseholdCSVService
         }
 
         $this->saveInCache($step, json_encode($listHouseholdsArray));
-
+        $this->setTimeExpiry();
         return ["data" => $return, "token" => $this->token];
+    }
+
+    /**
+     * @param $step
+     * @return bool
+     * @throws \Exception
+     */
+    private function checkTokenAndStep($step)
+    {
+        if (intval($step) === 1)
+            return true;
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_token = $dir_root . '/../var/data/' . $this->token;
+        if (!is_dir($dir_token))
+            return false;
+
+        $dir_file_step = $dir_token . '/step_' . strval(intval($step) - 1);
+        if (!is_file($dir_file_step))
+            return false;
+
+        return true;
     }
 
     /**
@@ -238,10 +259,100 @@ class HouseholdCSVService
         $this->initOrGetToken();
 
         $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data/' . $this->token;
+        $dir_var = $dir_root . '/../var/data';
         if (!is_dir($dir_var))
             mkdir($dir_var);
-        file_put_contents($dir_var . '/step_' . $step, $dataToSave);
+        $dir_var_token = $dir_var . '/' . $this->token;
+        if (!is_dir($dir_var_token))
+            mkdir($dir_var_token);
+        file_put_contents($dir_var_token . '/step_' . $step, $dataToSave);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function setTimeExpiry()
+    {
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+        $dir_file = $dir_var . '/timestamp_token';
+        if (is_file($dir_file))
+        {
+            $timestampByToken = json_decode(file_get_contents($dir_file), true);
+        }
+        else
+        {
+            $timestampByToken = [];
+        }
+
+        $index = null;
+        $timestamp = null;
+        $dateExpiry = new \DateTime();
+        $dateExpiry->add(new \DateInterval('PT10M'));
+        $timestampByToken[$this->token] = [
+            'timestamp' => $dateExpiry->getTimestamp()
+        ];
+
+        file_put_contents($dir_var . '/timestamp_token', json_encode($timestampByToken));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function clearData()
+    {
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+        $dir_file = $dir_var . '/timestamp_token';
+        if (is_file($dir_file))
+        {
+            $timestampByToken = json_decode(file_get_contents($dir_file), true);
+        }
+        else
+        {
+            $this->rrmdir($dir_var);
+            return;
+        }
+
+        foreach ($timestampByToken as $token => $item)
+        {
+            if ((new \DateTime())->getTimestamp() > $item['timestamp'])
+            {
+                $this->rrmdir($dir_var . '/' . $token);
+                unset($timestampByToken[$token]);
+            }
+        }
+
+        file_put_contents($dir_var . '/timestamp_token', json_encode($timestampByToken));
+    }
+
+    /**
+     * @param $src
+     */
+    private function rrmdir($src)
+    {
+        $dir = opendir($src);
+        while (false !== ($file = readdir($dir)))
+        {
+            if (($file != '.') && ($file != '..'))
+            {
+                $full = $src . '/' . $file;
+                if (is_dir($full))
+                {
+                    $this->rrmdir($full);
+                }
+                else
+                {
+                    unlink($full);
+                }
+            }
+        }
+        closedir($dir);
+        rmdir($src);
     }
 
     /**
