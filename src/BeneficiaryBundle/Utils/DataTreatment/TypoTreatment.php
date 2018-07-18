@@ -141,8 +141,10 @@ class TypoTreatment extends AbstractTreatment
         $dir_var = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_var))
             mkdir($dir_var);
-
-        $fileContent = file_get_contents($dir_var . '/' . $step);
+        $dir_file = $dir_var . '/' . $step;
+        if (!is_file($dir_file))
+            return;
+        $fileContent = file_get_contents($dir_file);
         $householdsCached = json_decode($fileContent, true);
         foreach ($householdsCached as $householdCached)
         {

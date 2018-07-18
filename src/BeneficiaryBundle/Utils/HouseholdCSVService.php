@@ -89,11 +89,23 @@ class HouseholdCSVService
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->toArray(null, true, true, true);
 
+        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $step, $token);
+    }
+
+    /**
+     * @param $countryIso3
+     * @param Project $project
+     * @param array $sheetArray
+     * @param int $step
+     * @param $token
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, int $step, $token)
+    {
         // Get the list of households from csv with their beneficiaries
         $listHouseholdsArray = $this->mapper->getListHouseholdArray($sheetArray, $countryIso3);
-
         return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $step, $token);
-
     }
 
     /**
