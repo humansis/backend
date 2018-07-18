@@ -67,6 +67,19 @@ OR
 - **state** = false & **new** = Household object : keep the new beneficiary and remove the old beneficiary (if it's not a head of household)
 
 
+### More treatment
+
+```json
+{
+  "new": "Household object",
+  "id_old": 1,
+  "data": "ARRAY OF BENEFICIARIES OBJECT"
+}
+```
+
+- Add every beneficiaries inside data array to the household (in database) with the id "id_old"
+
+
 
 ## ROUTES
 
