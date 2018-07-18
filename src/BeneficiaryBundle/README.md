@@ -12,6 +12,62 @@
 In column with multiple information (like phones, you can have multiple phone numbers), with a ';' as separator.
 
 
+## DATA VERIFICATION
+
+### Typo treatment
+
+```json
+{
+  "new" : "either empty or household object",
+  "id_old": 1,
+  "state": "true or false"
+}
+```
+
+- **state** = true & **new** = empty : ignore new, new is the same than the old
+- **state** = true & **new** = Household object : ignore old, new is not the same than the old
+- **state** = false & **new** = Household object : update old with data from the new (update only the Household and the beneficiary head of household)
+
+
+### Duplicate treatment
+
+```json
+{
+	"new_household": "either empty or household object",
+	"data": [
+		{
+			"id_old": 1,
+			"state": "true or false",
+			"to_delete": {
+				"given_name": "givenName",
+				"family_name": "familyName"
+			}
+		}
+	]
+}
+```
+
+OR 
+
+```json
+{
+	"new_household": "either empty or household object",
+	"data": [
+		{
+			"id_old": 1,
+			"state": "true or false",
+			"new": "Household object"
+		}
+	]
+}
+```
+
+- **to_delete** isset : delete the beneficiary in the new household
+- **state** = true & **new** = Household object : keep the new and the old beneficiary
+- **state** = false & **new** = Household object : keep the new beneficiary and remove the old beneficiary (if it's not a head of household)
+
+
+
 ## ROUTES
 
 

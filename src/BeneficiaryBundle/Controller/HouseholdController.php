@@ -96,7 +96,7 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Post("/csv/households/project/{id}", name="add_csv_household")
+     * @Rest\Post("/import/households/project/{id}", name="import_household")
      *
      * @SWG\Tag(name="Households")
      *
@@ -127,29 +127,52 @@ class HouseholdController extends Controller
      * @param Project $project
      * @return Response
      */
-    public function addCSVAction(Request $request, Project $project)
+    public function importAction(Request $request, Project $project)
     {
-        if (!$request->files->has('file'))
-            return new Response("You must upload a file.", 500);
-        $fileCSV = $request->files->get('file');
-        $countryIso3 = $request->request->get('__country');
-        /** @var HouseholdCSVService $householeService */
-        $householeService = $this->get('beneficiary.household_csv_service');
-        try
-        {
-            $return = $householeService->saveCSV($countryIso3, $project, $fileCSV);
-        }
-        catch (ValidationException $exception)
-        {
-            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-        }
-        catch (\Exception $e)
-        {
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        if (!$request->query->has('step'))
+            return new Response('You must specify the current level.');
+        $step = $request->query->get('step');
+        if ($request->query->has('token'))
+            $token = $request->query->get('token');
+        else
+            $token = null;
 
+        $contentJson = $request->request->all();
+//        dump($contentJson);
+        $countryIso3 = $contentJson['__country'];
+        unset($contentJson['__country']);
+        /** @var HouseholdCSVService $householdService */
+        $householdService = $this->get('beneficiary.household_csv_service');
+
+        if (1 === intval($step))
+        {
+            if (!$request->files->has('file'))
+                return new Response("You must upload a file.", 500);
+            try
+            {
+                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $contentJson, $step, $token);
+            }
+            catch (\Exception $e)
+            {
+//                dump($e);
+                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+        }
+        else
+        {
+            try
+            {
+                $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $step, $token);
+            }
+            catch (\Exception $e)
+            {
+//                dump($e);
+                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+        }
+//dump($return);
         $json = $this->get('jms_serializer')
-            ->serialize($return, 'json');
+            ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
         return new Response($json);
     }
 
