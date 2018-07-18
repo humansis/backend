@@ -48,7 +48,7 @@ class DonorService
     public function create(array $donorArray)
     {
         $donor = $this->serializer->deserialize(json_encode($donorArray), Donor::class, 'json');
-
+        $donor->setDateAdded(new \DateTime());
 
         $errors = $this->validator->validate($donor);
         if (count($errors) > 0)
@@ -95,5 +95,24 @@ class DonorService
         $this->em->flush();
 
         return $editedDonor;
+    }
+
+    /**
+     * @param Donor $donor
+     * @return bool
+     */
+    public function delete(Donor $donor)
+    {
+        try
+        {
+            $this->em->remove($donor);
+            $this->em->flush();
+        }
+        catch (\Exception $exception)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -19,6 +19,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 
         $qb = $this->_em->createQueryBuilder();
         $builder = $qb->update("UserBundle:User", 'u');
+
         foreach ($arrayData as $column => $value)
         {
             $builder->set("u.$column", $qb->expr()->literal($value));
