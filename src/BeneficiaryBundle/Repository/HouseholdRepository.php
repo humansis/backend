@@ -204,4 +204,20 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere("l$i.countryIso3 = :countryIso3")
             ->setParameter("countryIso3", $countryISO3);
     }
+
+    /**
+     * count the number of housholds linked to a project
+     *
+     * @param $projet
+     */
+    public function countByProject($project)
+    {
+        $qb = $this->createQueryBuilder("hh");
+        $qb->select("count(hh)")
+            ->leftJoin("hh.projects", "p")
+            ->andWhere("p = :project")
+            ->setParameter("project", $project);
+
+        return $qb->getQuery()->getResult()[0];
+    }
 }

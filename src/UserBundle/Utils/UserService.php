@@ -130,8 +130,9 @@ class UserService
             $data = [
                 'at' => time(),
                 'connected' => true,
-                'username' => $user->getUsername(),
-                'salted_password' => $user->getPassword()
+                'user_id' => $user->getId(),
+                'salted_password' => $user->getPassword(),
+                'username' => $user->getUsername()
             ];
 
         }
@@ -185,7 +186,8 @@ class UserService
 
         $user->setId($userSaved->getId())
             ->setSalt($userSaved->getSalt())
-            ->setEmailCanonical($user->getEmail())
+            ->setEmail($user->getUsername())
+            ->setEmailCanonical($user->getUsername())
             ->setEnabled(1);
 
         $errors = $this->validator->validate($user);

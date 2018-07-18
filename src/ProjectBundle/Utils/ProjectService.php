@@ -3,6 +3,7 @@
 namespace ProjectBundle\Utils;
 
 use BeneficiaryBundle\Entity\ProjectBeneficiary;
+use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
@@ -38,7 +39,14 @@ class ProjectService
      */
     public function findAll()
     {
-        return $this->em->getRepository(Project::class)->findByArchived(0);
+        $projects = $this->em->getRepository(Project::class)->findByArchived(0);
+        $houseHoldsRepository = $this->em->getRepository(Household::class);
+        foreach($projects as $project){
+            $project->setNumberOfHouseholds($houseHoldsRepository->countByProject($project)[1]);
+            $this->em->merge($project);
+        }
+        $this->em->flush();
+        return $projects;
     }
 
     /**
@@ -51,7 +59,12 @@ class ProjectService
     public function create(array $projectArray, User $user)
     {
         /** @var Project $project */
-        $project = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
+        $newProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
+        $project = new Project();
+        $project->setName($newProject->getName())
+                ->setStartDate($newProject->getStartDate())        
+                ->setEndDate($newProject->getEndDate());
+        $project->setIso3($projectArray['__country']);
 
         $errors = $this->validator->validate($project);
         if (count($errors) > 0)
@@ -64,10 +77,10 @@ class ProjectService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        $sectors = $project->getSectors();
+        $sectors = $newProject->getSectors();
         if (null !== $sectors)
         {
-            $project->cleanSectors();
+            $project->getSectors()->clear();
             /** @var Sector $sector */
             foreach ($sectors as $sector)
             {
@@ -77,10 +90,10 @@ class ProjectService
             }
         }
 
-        $donors = $project->getDonors();
+        $donors = $newProject->getDonors();
         if (null !== $donors)
         {
-            $project->cleanDonors();
+            $project->getDonors()->clear();
             /** @var Donor $donor */
             foreach ($donors as $donor)
             {
@@ -108,10 +121,38 @@ class ProjectService
     {
         /** @var Project $editedProject */
         $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
+        $project->setName($editedProject->getName())
+                ->setStartDate($editedProject->getStartDate())        
+                ->setEndDate($editedProject->getEndDate());
 
-        $editedProject->setId($project->getId());
+        $sectors = clone $editedProject->getSectors();
+        if (null !== $sectors)
+        {
+            $project->removeSectors();
+            /** @var Sector $sector */
+            foreach ($sectors as $sector)
+            {
+                $sectorTmp = $this->em->getRepository(Sector::class)->find($sector);
+                if ($sectorTmp instanceof Sector)
+                    $project->addSector($sectorTmp);
+            }
+        }
 
-        $errors = $this->validator->validate($editedProject);
+        $donors = clone $editedProject->getDonors();
+
+        if (null !== $donors)
+        {
+            $project->removeDonors();
+            /** @var Donor $donor */
+            foreach ($donors as $donor)
+            {
+                $donorTmp = $this->em->getRepository(Donor::class)->find($donor);
+                if ($donorTmp instanceof Donor)
+                    $project->addDonor($donorTmp);
+            }
+        }
+
+        $errors = $this->validator->validate($project);
         if (count($errors) > 0)
         {
             $errorsArray = [];
@@ -122,10 +163,15 @@ class ProjectService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        $this->em->merge($editedProject);
-        $this->em->flush();
+        $this->em->merge($project);
+        try{
+            $this->em->flush();
 
-        return $editedProject;
+        } catch (\Exception $e){
+            dump($e);
+        }
+
+        return $project;
     }
 
     /**

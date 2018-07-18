@@ -155,4 +155,40 @@ class DonorController extends Controller
 
         return new Response($donorJson);
     }
+
+    /**
+     * Edit a donor
+     * @Rest\Delete("/donors/{id}", name="delete_donor")
+     *
+     * @SWG\Tag(name="Donors")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Donor $donor
+     * @return Response
+     */
+    public function deleteAction(Donor $donor)
+    {
+        try
+        {
+            $valid = $this->get('project.donor_service')->delete($donor);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($valid)
+            return new Response("", Response::HTTP_OK);
+        if (!$valid)
+            return new Response("", Response::HTTP_BAD_REQUEST);
+    }
 }

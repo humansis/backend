@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Swagger\Annotations as SWG;
 
 class CountryController extends Controller
 {
@@ -72,5 +73,41 @@ class CountryController extends Controller
             );
 
         return new Response($json);
+    }
+
+    /**
+     * Edit a countrySpecific
+     * @Rest\Delete("/country_specifics/{id}", name="delete_country_specific")
+     *
+     * @SWG\Tag(name="CountrySpecifics")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param CountrySpecific $countrySpecific
+     * @return Response
+     */
+    public function deleteAction(CountrySpecific $countrySpecific)
+    {
+        try
+        {
+            $valid = $this->get('beneficiary.country_specific_service')->delete($countrySpecific);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($valid)
+            return new Response("", Response::HTTP_OK);
+        if (!$valid)
+            return new Response("", Response::HTTP_BAD_REQUEST);
     }
 }
