@@ -25,10 +25,7 @@ class CountrySpecificService
 
     public function create($countryIso3, array $countrySpecificArray)
     {
-        $countrySpecific = new CountrySpecific();
-        $countrySpecific->setType($countrySpecificArray["type"])
-            ->setField($countrySpecificArray["field"])
-            ->setCountryIso3($countryIso3);
+        $countrySpecific = new CountrySpecific($countrySpecificArray["field"], $countrySpecificArray["type"], $countryIso3);
 
         $this->em->persist($countrySpecific);
         $this->em->flush();
@@ -48,4 +45,22 @@ class CountrySpecificService
         return $countrySpecific;
     }
 
+    /**
+     * @param CountrySpecific $countrySpecific
+     * @return bool
+     */
+    public function delete(CountrySpecific $countrySpecific)
+    {
+        try
+        {
+            $this->em->remove($countrySpecific);
+            $this->em->flush();
+        }
+        catch (\Exception $exception)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }

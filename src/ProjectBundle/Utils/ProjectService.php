@@ -131,6 +131,7 @@ class ProjectService
         }
 
         $donors = clone $editedProject->getDonors();
+
         if (null !== $donors)
         {
             $project->removeDonors();

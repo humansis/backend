@@ -96,4 +96,23 @@ class DonorService
 
         return $editedDonor;
     }
+
+    /**
+     * @param Donor $donor
+     * @return bool
+     */
+    public function delete(Donor $donor)
+    {
+        try
+        {
+            $this->em->remove($donor);
+            $this->em->flush();
+        }
+        catch (\Exception $exception)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
