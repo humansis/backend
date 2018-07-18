@@ -28,11 +28,13 @@ class UserService
     }
 
     /**
+     * @param $offset
+     * @param $limit
      * @return array
      */
-    public function findAll()
+    public function findAll($limit, $offset)
     {
-        return $this->em->getRepository(User::class)->findAll();
+        return $this->em->getRepository(User::class)->findBy([], [], $limit, $offset);
     }
 
     /**

@@ -110,7 +110,8 @@ class Beneficiary
      * @Groups({"FullHousehold"})
      */
     private $nationalIds;
-    
+
+
     /**
      * Constructor
      */
