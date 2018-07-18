@@ -98,7 +98,7 @@ class Project
     private $donors;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects")
+     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects", cascade={"persist"})
      *
      * @Groups({"FullProject"})
      */
@@ -362,7 +362,7 @@ class Project
      */
     public function addDonor(\ProjectBundle\Entity\Donor $donor)
     {
-        $this->donors[] = $donor;
+        $this->donors->add($donor);
 
         return $this;
     }
@@ -377,6 +377,18 @@ class Project
     public function removeDonor(\ProjectBundle\Entity\Donor $donor)
     {
         return $this->donors->removeElement($donor);
+    }
+
+    /**
+     * Remove donors.
+     *
+     * @return Project
+     */
+    public function removeDonors()
+    {
+        $this->donors->clear();
+
+        return $this;
     }
 
     /**
@@ -398,7 +410,7 @@ class Project
      */
     public function addSector(\ProjectBundle\Entity\Sector $sector)
     {
-        $this->sectors[] = $sector;
+        $this->sectors->add($sector);
 
         return $this;
     }
@@ -413,6 +425,18 @@ class Project
     public function removeSector(\ProjectBundle\Entity\Sector $sector)
     {
         return $this->sectors->removeElement($sector);
+    }
+
+    /**
+     * Remove sectors.
+     *
+     * @return Project
+     */
+    public function removeSectors()
+    {
+        $this->sectors->clear();
+
+        return $this;
     }
 
     /**

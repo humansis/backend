@@ -39,7 +39,7 @@ class ProjectController extends Controller
         $projects = $this->get('project.project_service')->findAll();
         $json = $this->get('jms_serializer')
             ->serialize($projects, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
-
+dump($projects);
         return new Response($json, Response::HTTP_OK);
     }
 
