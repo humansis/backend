@@ -39,15 +39,16 @@ class LessTreatment extends AbstractTreatment
      */
     public function addHouseholds(Project $project)
     {
-        $householdsToAdd = $this->getHouseholdOfStep1();
+        $householdsToAdd = $this->getHouseholdsNoTypo();
         foreach ($householdsToAdd as $householdToAdd)
         {
             try
             {
-                $this->householdService->create($householdToAdd, $project);
+                $this->householdService->create($householdToAdd['new'], $project);
             }
             catch (\Exception $exception)
             {
+                dump($exception);
                 continue;
             }
         }
@@ -57,7 +58,7 @@ class LessTreatment extends AbstractTreatment
      * @return mixed|null
      * @throws \Exception
      */
-    private function getHouseholdOfStep1()
+    private function getHouseholdsNoTypo()
     {
         if (null === $this->token)
             return null;
@@ -67,7 +68,7 @@ class LessTreatment extends AbstractTreatment
         if (!is_dir($dir_var))
             mkdir($dir_var);
 
-        $fileContent = file_get_contents($dir_var . '/step_1');
+        $fileContent = file_get_contents($dir_var . '/no_typo');
         return json_decode($fileContent, true);
     }
 }

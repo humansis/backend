@@ -104,8 +104,15 @@ class HouseholdCSVService
     public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, int $step, $token)
     {
         // Get the list of households from csv with their beneficiaries
-        $listHouseholdsArray = $this->mapper->getListHouseholdArray($sheetArray, $countryIso3);
-        return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $step, $token);
+        if (1 === $step)
+        {
+            $listHouseholdsArray = $this->mapper->getListHouseholdArray($sheetArray, $countryIso3);
+            return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $step, $token);
+        }
+        else
+        {
+            return $this->foundErrors($countryIso3, $project, $sheetArray, $step, $token);
+        }
     }
 
     /**
@@ -132,62 +139,34 @@ class HouseholdCSVService
         $verifier = $this->guessVerifier($step);
         $return = [];
         if (null === $verifier)
+        {
+//            $this->clearCacheToken($this->token);
             return true;
-
+        }
+        $cache_id = 1;
+        $householdsToSave = [];
         foreach ($listHouseholdsArray as $index => $householdArray)
         {
-            $returnTmp = $verifier->verify($countryIso3, $householdArray);
+//            dump(json_encode($householdArray));
+            $returnTmp = $verifier->verify($countryIso3, $householdArray, $cache_id);
             // IF there is errors
             if (null !== $returnTmp && [] !== $returnTmp)
             {
-                if ($returnTmp instanceof Household)
-                    $return[] = ["old" => $returnTmp, "new" => $householdArray];
-                elseif ($returnTmp !== false)
+                if ($returnTmp !== false)
                     $return[] = $returnTmp;
-
-                unset($listHouseholdsArray[$index]);
             }
+            else
+            {
+                $householdsToSave[$cache_id] = $householdArray;
+            }
+
+            $cache_id++;
+            unset($listHouseholdsArray[$index]);
         }
 
-        $this->saveInCache($step, json_encode($listHouseholdsArray));
+        $this->saveInCache($step, json_encode($householdsToSave));
         $this->setTimeExpiry();
         return ["data" => $return, "token" => $this->token];
-    }
-
-    /**
-     * @param $step
-     * @return bool
-     * @throws \Exception
-     */
-    private function checkTokenAndStep($step)
-    {
-        if (intval($step) === 1)
-            return true;
-
-        $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_token = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_token))
-            return false;
-
-        $dir_file_step = $dir_token . '/step_' . strval(intval($step) - 1);
-        if (!is_file($dir_file_step))
-            return false;
-
-        return true;
-    }
-
-    /**
-     * If the token is null, create a new one
-     * return the token
-     * @return string
-     */
-    public function initOrGetToken()
-    {
-        $sizeToken = 50;
-        if (null === $this->token)
-            $this->token = bin2hex(random_bytes($sizeToken));
-
-        return $this->token;
     }
 
     /**
@@ -262,6 +241,42 @@ class HouseholdCSVService
     }
 
     /**
+     * @param $step
+     * @return bool
+     * @throws \Exception
+     */
+    private function checkTokenAndStep($step)
+    {
+        if (intval($step) === 1)
+            return true;
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_token = $dir_root . '/../var/data/' . $this->token;
+        if (!is_dir($dir_token))
+            return false;
+
+        $dir_file_step = $dir_token . '/step_' . strval(intval($step) - 1);
+        if (!is_file($dir_file_step))
+            return false;
+
+        return true;
+    }
+
+    /**
+     * If the token is null, create a new one
+     * return the token
+     * @return string
+     */
+    public function initOrGetToken()
+    {
+        $sizeToken = 50;
+        if (null === $this->token)
+            $this->token = bin2hex(random_bytes($sizeToken));
+
+        return $this->token;
+    }
+
+    /**
      * @param int $step
      * @param $dataToSave
      * @throws \Exception
@@ -269,7 +284,6 @@ class HouseholdCSVService
     private function saveInCache(int $step, $dataToSave)
     {
         $this->initOrGetToken();
-
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data';
         if (!is_dir($dir_var))
@@ -338,6 +352,35 @@ class HouseholdCSVService
                 unset($timestampByToken[$token]);
             }
         }
+
+        file_put_contents($dir_var . '/timestamp_token', json_encode($timestampByToken));
+    }
+
+    /**
+     * @param $token
+     * @throws \Exception
+     */
+    private function clearCacheToken($token)
+    {
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+        $dir_file = $dir_var . '/timestamp_token';
+        if (is_file($dir_file))
+        {
+            $timestampByToken = json_decode(file_get_contents($dir_file), true);
+        }
+        else
+        {
+            $this->rrmdir($dir_var);
+            return;
+        }
+
+        if (is_dir($dir_var . '/' . $token))
+            $this->rrmdir($dir_var . '/' . $token);
+        if (array_key_exists($token, $timestampByToken))
+            unset($timestampByToken[$token]);
 
         file_put_contents($dir_var . '/timestamp_token', json_encode($timestampByToken));
     }

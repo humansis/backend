@@ -19,9 +19,13 @@ class TypoVerifier extends AbstractVerifier
      */
     private $minimumPercentSimilar = 90;
 
+    /** @var Container $container */
+    private $container;
+
     private $token;
 
-    private $container;
+    /** @var array $listHouseholdsSaved */
+    private $listHouseholdsSaved;
 
 
     public function __construct(EntityManagerInterface $entityManager, Container $container, $token)
@@ -36,12 +40,14 @@ class TypoVerifier extends AbstractVerifier
     /**
      * @param string $countryISO3
      * @param array $householdArray
-     * @return Household|bool|null
+     * @param int $cacheId
+     * @return array|bool
      * @throws \Exception
      */
-    public function verify(string $countryISO3, array $householdArray)
+    public function verify(string $countryISO3, array $householdArray, int $cacheId)
     {
-        $listHouseholdsSaved = $this->em->getRepository(Household::class)->getAllBy($countryISO3);
+        if (null === $this->listHouseholdsSaved)
+            $this->listHouseholdsSaved = $this->em->getRepository(Household::class)->getAllBy($countryISO3);
         $newHead = null;
         foreach ($householdArray['beneficiaries'] as $newBeneficiaryArray)
         {
@@ -64,7 +70,7 @@ class TypoVerifier extends AbstractVerifier
         $similarHousehold = null;
         $percent = $this->minimumPercentSimilar;
         /** @var Household $oldHousehold */
-        foreach ($listHouseholdsSaved as $oldHousehold)
+        foreach ($this->listHouseholdsSaved as $oldHousehold)
         {
             // Get the head of the current household
             /** @var Beneficiary $oldHead */
@@ -88,7 +94,7 @@ class TypoVerifier extends AbstractVerifier
             if (100 == $tmpPercent)
             {
                 // SAVE 100% SIMILAR IN 1_typo
-                $this->saveInCache('mapping_new_old', $householdArray, $oldHousehold);
+                $this->saveInCache('mapping_new_old', $cacheId, $householdArray, $oldHousehold);
                 return false;
             }
             elseif ($percent < $tmpPercent)
@@ -98,21 +104,28 @@ class TypoVerifier extends AbstractVerifier
             }
         }
         if ($this->minimumPercentSimilar < $percent)
-            return $similarHousehold;
-        else
-            return null;
+        {
+            $return = ["old" => $similarHousehold, "new" => $householdArray, "id_tmp_cache" => $cacheId];
+            return $return;
+        }
+        $this->saveInCache('no_typo', $cacheId, $householdArray, null);
+        return null;
     }
 
     /**
      * @param string $step
+     * @param int $cacheId
      * @param array $dataToSave
-     * @param Household $household
+     * @param Household|null $household
      * @throws \Exception
      */
-    private function saveInCache(string $step, array $dataToSave, Household $household)
+    private function saveInCache(string $step, int $cacheId, array $dataToSave, Household $household = null)
     {
-        $arrayNewHousehold = json_decode($this->container->get('jms_serializer')
-            ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)), true);
+        if (null !== $household)
+            $arrayNewHousehold = json_decode($this->container->get('jms_serializer')
+                ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)), true);
+        else
+            $arrayNewHousehold = json_encode([]);
 
         $sizeToken = 50;
         if (null === $this->token)
@@ -128,19 +141,17 @@ class TypoVerifier extends AbstractVerifier
         if (!is_dir($dir_var_token))
             mkdir($dir_var_token);
 
-        if (!is_file($dir_var_token . '/' . $step))
+        if (is_file($dir_var_token . '/' . $step))
         {
-            $dataToSave['id_tmp_cache'] = 0;
-            file_put_contents($dir_var_token . '/' . $step, json_encode([["new" => $dataToSave, "old" => $arrayNewHousehold]]));
+            $listHH = json_decode(file_get_contents($dir_var_token . '/' . $step), true);
         }
         else
         {
-            $listHH = json_decode(file_get_contents($dir_var_token . '/' . $step), true);
-            $index = count($listHH);
-            $dataToSave['id_tmp_cache'] = $index;
-            $listHH[$index] = ["new" => $dataToSave, "old" => $arrayNewHousehold];
-            file_put_contents($dir_var_token . '/' . $step, json_encode($listHH));
+            $listHH = [];
         }
+
+        $listHH[$cacheId] = ["new" => $dataToSave, "old" => $arrayNewHousehold, "id_tmp_cache" => $cacheId];
+        file_put_contents($dir_var_token . '/' . $step, json_encode($listHH));
 
     }
 }
