@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/ReliefApplications/bms_api.svg?branch=dev)](https://travis-ci.org/ReliefApplications/bms_api)
+
+
 BMS API
 ==============
 
