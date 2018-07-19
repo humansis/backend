@@ -20,5 +20,5 @@ before that the controller process.
 
 #### Inside Docker
 
-- `cleanAndTest` : Delete your database, create a new one, migrate migrations, load fixtures and execute unit tests
-- `clean` : Delete your database, create a new one, migrate migrations and load fixtures
+- `cleanAndTest` : Delete your database, create a new one, migrate migrations, load fixtures, clean cache of import CSV and execute unit tests
+- `clean` : Delete your database, create a new one, migrate migrations, load fixtures and clean cache of import CSV

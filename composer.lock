@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "beberlei/DoctrineExtensions",
-            "version": "v1.1.2",
+            "version": "v1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/beberlei/DoctrineExtensions.git",
-                "reference": "5b1d5e4d97cf908baa353755533f2f3174185769"
+                "reference": "51d93393ddced649da6066db233bc8e285a6588c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/beberlei/DoctrineExtensions/zipball/5b1d5e4d97cf908baa353755533f2f3174185769",
-                "reference": "5b1d5e4d97cf908baa353755533f2f3174185769",
+                "url": "https://api.github.com/repos/beberlei/DoctrineExtensions/zipball/51d93393ddced649da6066db233bc8e285a6588c",
+                "reference": "51d93393ddced649da6066db233bc8e285a6588c",
                 "shasum": ""
             },
             "require": {
@@ -59,7 +59,7 @@
                 "doctrine",
                 "orm"
             ],
-            "time": "2018-07-06 10:33:58"
+            "time": "2018-07-14 09:31:10"
         },
         {
             "name": "composer/ca-bundle",

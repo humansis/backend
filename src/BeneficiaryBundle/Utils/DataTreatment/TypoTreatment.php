@@ -27,6 +27,7 @@ class TypoTreatment extends AbstractTreatment
     public function treat(Project $project, array $householdsArray)
     {
         $listHouseholds = [];
+        // Get the list of household which are already saved in database (100% similar in typoVerifier)
         $households100Percent = [];
         $this->getFromCache('mapping_new_old', $households100Percent);
         foreach ($householdsArray as $index => $householdArray)
@@ -66,16 +67,17 @@ class TypoTreatment extends AbstractTreatment
                             $this->beneficiaryService->updateOrCreate($oldHousehold, $newHeadHH, true);
                     }
                 }
-                $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['new'], $oldHousehold);
+                // ADD TO THE MAPPING FILE
+                $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold);
                 $householdArray['new']['id_tmp_cache'] = $id_tmp;
             }
 
 
             // WE SAVE EVERY HOUSEHOLD WHICH HAVE BEEN TREATED BY THIS FUNCTION BECAUSE IN NEXT STEP WE HAVE TO KNOW WHICH
             // HOUSEHOLDS HAD TYPO ERRORS
-            $listHouseholds[] = $householdArray['new'];
+            $listHouseholds[] = $householdArray;
         }
-        $this->getFromCache('step_1', $listHouseholds);
+        $this->getFromCache('no_typo', $listHouseholds);
 
         return $this->mergeListHHSimilarAndNoTypo($listHouseholds, $households100Percent);
     }
@@ -84,19 +86,20 @@ class TypoTreatment extends AbstractTreatment
     {
         foreach ($households100Percent as $household100Percent)
         {
-            $listHouseholds[] = $household100Percent['new'];
+            $listHouseholds[] = $household100Percent;
         }
         return $listHouseholds;
     }
 
     /**
      * @param string $step
+     * @param int $idCache
      * @param array $dataToSave
      * @param Household $household
      * @return int
      * @throws \Exception
      */
-    private function saveInCache(string $step, array $dataToSave, Household $household)
+    private function saveInCache(string $step, int $idCache, array $dataToSave, Household $household)
     {
         $arrayNewHousehold = json_decode($this->container->get('jms_serializer')
             ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)), true);
@@ -109,44 +112,21 @@ class TypoTreatment extends AbstractTreatment
         $dir_var = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_var))
             mkdir($dir_var);
-        if (!is_file($dir_var . '/' . $step))
+
+        $dir_var_step = $dir_var . '/' . $step;
+
+        if (is_file($dir_var_step))
         {
-            $dataToSave['id_tmp_cache'] = 0;
-            file_put_contents($dir_var . '/' . $step, json_encode([0 => ["new" => $dataToSave, "old" => $arrayNewHousehold]]));
-            return 0;
+            $listHH = json_decode(file_get_contents($dir_var_step), true);
         }
         else
         {
-            $listHH = json_decode(file_get_contents($dir_var . '/' . $step), true);
-            $index = count($listHH);
-            $dataToSave['id_tmp_cache'] = $index;
-            $listHH[$index] = ["new" => $dataToSave, "old" => $arrayNewHousehold];
-            file_put_contents($dir_var . '/' . $step, json_encode($listHH));
-            return $index;
+            $listHH = [];
         }
 
-    }
+        $listHH[$idCache] = ["new" => $dataToSave, "old" => $arrayNewHousehold, "id_tmp_cache" => $idCache];
+        file_put_contents($dir_var_step, json_encode($listHH));
 
-    /**
-     * @param $step
-     * @param array $listHouseholdsArray
-     * @throws \Exception
-     */
-    private function getFromCache($step, array &$listHouseholdsArray)
-    {
-        if (null === $this->token)
-            return;
-
-        $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_var))
-            mkdir($dir_var);
-
-        $fileContent = file_get_contents($dir_var . '/' . $step);
-        $householdsCached = json_decode($fileContent, true);
-        foreach ($householdsCached as $householdCached)
-        {
-            $listHouseholdsArray[] = $householdCached;
-        }
+        return $idCache;
     }
 }

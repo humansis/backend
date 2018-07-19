@@ -23,7 +23,9 @@ class DuplicateTreatment extends AbstractTreatment
     {
         $listHouseholds = [];
         $listHouseholdsFromTypo = [];
+        $listHouseholdsFromNotTypo = [];
         $this->getFromCache('mapping_new_old', $listHouseholdsFromTypo);
+        $this->getFromCache('no_typo', $listHouseholdsFromNotTypo);
         foreach ($householdsArray as $householdData)
         {
             $newHousehold = $householdData['new_household'];
@@ -67,34 +69,11 @@ class DuplicateTreatment extends AbstractTreatment
     }
 
     /**
-     * @param $step
-     * @param array $listHouseholdsArray
-     * @throws \Exception
-     */
-    private function getFromCache($step, array &$listHouseholdsArray)
-    {
-        if (null === $this->token)
-            return;
-
-        $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_var))
-            mkdir($dir_var);
-
-        $fileContent = file_get_contents($dir_var . '/' . $step);
-        $householdsCached = json_decode($fileContent, true);
-        foreach ($householdsCached as $householdCached)
-        {
-            $listHouseholdsArray[] = $householdCached;
-        }
-    }
-
-    /**
-     * @param $index
+     * @param $idCache
      * @param array $newHouseholdArray
      * @throws \Exception
      */
-    private function updateInCache($index, array $newHouseholdArray)
+    private function updateInCache($idCache, array $newHouseholdArray)
     {
         if (null === $this->token)
             return;
@@ -103,15 +82,29 @@ class DuplicateTreatment extends AbstractTreatment
         $dir_var = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_var))
             mkdir($dir_var);
-        if (!is_file($dir_var . '/mapping_new_old'))
+
+        $dir_file_mapping = $dir_var . '/mapping_new_old';
+        if (is_file($dir_file_mapping))
         {
-            file_put_contents($dir_var . '/mapping_new_old', json_encode([$index => ["new" => $newHouseholdArray, "old" => null]]));
+            $listHH = json_decode(file_get_contents($dir_file_mapping), true);
+            if (array_key_exists($idCache, $listHH))
+            {
+                $listHH[$idCache]["new"] = $newHouseholdArray;
+                file_put_contents($dir_file_mapping, json_encode($listHH));
+                return;
+            }
         }
-        else
+
+        $dir_file_not_typo = $dir_var . '/no_typo';
+        if (is_file($dir_file_not_typo))
         {
-            $listHH = json_decode(file_get_contents($dir_var . '/mapping_new_old'), true);
-            $listHH[$index]["new"] = $newHouseholdArray;
-            file_put_contents($dir_var . '/mapping_new_old', json_encode($listHH));
+            $listHH = json_decode(file_get_contents($dir_file_not_typo), true);
+            if (array_key_exists($idCache, $listHH))
+            {
+                $listHH[$idCache]["new"] = $newHouseholdArray;
+                file_put_contents($dir_file_not_typo, json_encode($listHH));
+                return;
+            }
         }
     }
 }

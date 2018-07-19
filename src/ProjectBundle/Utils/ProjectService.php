@@ -41,7 +41,8 @@ class ProjectService
     {
         $projects = $this->em->getRepository(Project::class)->findByArchived(0);
         $houseHoldsRepository = $this->em->getRepository(Household::class);
-        foreach($projects as $project){
+        foreach ($projects as $project)
+        {
             $project->setNumberOfHouseholds($houseHoldsRepository->countByProject($project)[1]);
             $this->em->merge($project);
         }
@@ -62,8 +63,8 @@ class ProjectService
         $newProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
         $project = new Project();
         $project->setName($newProject->getName())
-                ->setStartDate($newProject->getStartDate())        
-                ->setEndDate($newProject->getEndDate());
+            ->setStartDate($newProject->getStartDate())
+            ->setEndDate($newProject->getEndDate());
         $project->setIso3($projectArray['__country']);
 
         $errors = $this->validator->validate($project);
@@ -122,12 +123,12 @@ class ProjectService
         /** @var Project $editedProject */
         $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
         $project->setName($editedProject->getName())
-                ->setStartDate($editedProject->getStartDate())        
-                ->setEndDate($editedProject->getEndDate());
+            ->setStartDate($editedProject->getStartDate())
+            ->setEndDate($editedProject->getEndDate());
 
-        $sectors = clone $editedProject->getSectors();
-        if (null !== $sectors)
+        if (null !== $editedProject->getSectors())
         {
+            $sectors = clone $editedProject->getSectors();
             $project->removeSectors();
             /** @var Sector $sector */
             foreach ($sectors as $sector)
@@ -138,10 +139,10 @@ class ProjectService
             }
         }
 
-        $donors = clone $editedProject->getDonors();
 
-        if (null !== $donors)
+        if (null !== $editedProject->getDonors())
         {
+            $donors = clone $editedProject->getDonors();
             $project->removeDonors();
             /** @var Donor $donor */
             foreach ($donors as $donor)
@@ -164,11 +165,13 @@ class ProjectService
         }
 
         $this->em->merge($project);
-        try{
+        try
+        {
             $this->em->flush();
 
-        } catch (\Exception $e){
-            dump($e);
+        }
+        catch (\Exception $e)
+        {
         }
 
         return $project;

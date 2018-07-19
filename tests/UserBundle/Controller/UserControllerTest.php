@@ -14,7 +14,7 @@ class UserControllerTest extends BMSServiceTestCase
     /** @var Client $client */
     private $client;
     /** @var string $username */
-    private $username = "TESTER_PHPUNIT";
+    private $username = "TESTER_PHPUNIT@gmail.com";
 
 
     /**
@@ -91,7 +91,7 @@ class UserControllerTest extends BMSServiceTestCase
 
         $body = [
             "username" => $this->username,
-            "email" => $this->username . "@gmail.com",
+            "email" => $this->username,
             "password" => "PSWUNITTEST"
         ];
 
@@ -109,7 +109,7 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $user);
         $this->assertArrayHasKey('username', $user);
         $this->assertArrayHasKey('email', $user);
-        $this->assertSame($user['email'], $this->username . "@gmail.com");
+        $this->assertSame($user['email'], $this->username);
 
         return $user;
     }

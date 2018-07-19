@@ -25,6 +25,9 @@ class HouseholdCSVTest extends BMSServiceTestCase
 
     private $iso3 = "KHM";
     private $addressStreet = "ADDR TEST_IMPORT";
+    private $addressStreet2 = "ADDR2 TEST_IMPORT_TEST_IMPORT";
+    private $addressStreet3 = "ADDR3 UNIT TEST UNIT";
+    private $addressStreet4 = "ADDR4 UNIT4";
 
     private $SHEET_ARRAY = [
         1 => [
@@ -120,6 +123,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "U" => "id-45f",
         ]
     ];
+    private $UPDATED_GIVEN_NAME = "FIRSTNAME TEST_IMPORT1";
 
     /**
      * @throws \Exception
@@ -167,148 +171,361 @@ class HouseholdCSVTest extends BMSServiceTestCase
     }
 
     /**
-     * @deprecated since v3 import CSV
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Exception
      */
     public function testImportCSV()
     {
+        $this->remove($this->addressStreet);
+        $this->remove($this->addressStreet2);
+        $this->remove($this->addressStreet3);
+        $this->remove($this->addressStreet4);
         $projects = $this->em->getRepository(Project::class)->findAll();
         if (empty($projects))
         {
             print_r("\nThere is no project in your database.\n\n");
             return;
         }
-        /** @var ImportStatistic $statistic */
-        $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
 
-        try
-        {
-            // First adding should work
-            $this->assertSame([], $return["typo"]);
-            $this->assertSame([], $return["duplicate"]);
-            $this->assertSame([], $return["more"]);
-            $this->assertSame([], $return["less"]);
-            $this->assertSame(1, $return["statistic"]->getNbAdded());
-            $this->assertSame([], $return["statistic"]->getIncompleteLine());
 
-            // Adding same household, without any difference, so the function should only try to add the household to the project
-            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
-            $this->assertSame([], $return["typo"]);
-            $this->assertSame([], $return["duplicate"]);
-            $this->assertSame([], $return["more"]);
-            $this->assertSame([], $return["less"]);
-            $this->assertSame(1, $return["statistic"]->getNbAdded());
-            $this->assertSame([], $return["statistic"]->getIncompleteLine());
+        // TRY TO ADD CSV WITH HOUSEHOLD WITHOUT ANY KIND OF ISSUE
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $token = $return["token"];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
+        $this->assertSame(true, $return);
 
-            // Should return an issue => more beneficiaries in the CSV than in the db
-            $this->SHEET_ARRAY[5] = [
-                "A" => null,
-                "B" => null,
-                "C" => null,
-                "D" => null,
-                "E" => null,
-                "F" => null,
-                "G" => null,
-                "H" => null,
-                "I" => null,
-                "J" => null,
-                "K" => null,
-                "L" => null,
-                "M" => null,
-                "N" => "FIRSTNAME3 TEST_IMPORT",
-                "O" => "NAME3 TEST_IMPORT",
-                "P" => "M",
-                "Q" => 0,
-                "R" => "1995-04-25",
-                "S" => "lactating",
-                "T" => "Type1 - 2",
-                "U" => "id-45f",
-            ];
-            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
-            $this->assertArrayHasKey("new", current($return["more"]));
-            $this->assertArrayHasKey("old", current($return["more"]));
-            $this->assertSame([], $return["typo"]);
-            $this->assertSame([], $return["duplicate"]);
-            $this->assertSame([], $return["less"]);
-            $this->assertSame(0, $return["statistic"]->getNbAdded());
-            $this->assertSame([], $return["statistic"]->getIncompleteLine());
 
-            // Should return an issue => same number of beneficiaries but one with a difference in the typo
-            unset($this->SHEET_ARRAY[5]);
-            $this->SHEET_ARRAY[4]['N'] = 'A';
-            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
-            $this->assertArrayHasKey("new", current($return["typo"]));
-            $this->assertArrayHasKey("old", current($return["typo"]));
-            $this->assertSame([], $return["duplicate"]);
-            $this->assertSame([], $return["more"]);
-            $this->assertSame([], $return["less"]);
-            $this->assertSame(0, $return["statistic"]->getNbAdded());
-            $this->assertSame([], $return["statistic"]->getIncompleteLine());
+        // TRY TO ADD CSV WITH TYPO ERROR => UPDATE THE OLD 'GIVEN_NAME' OF THE HEAD IN DATABASE
+        $this->SHEET_ARRAY[3]['N'] = $this->UPDATED_GIVEN_NAME;
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
+        $token = $return["token"];
+        $this->assertArrayHasKey("token", $return);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertArrayHasKey("new", current($return["data"]));
+        $this->assertArrayHasKey("old", current($return["data"]));
+        $oldHousehold = current($return["data"])["old"];
+        $request = [
+            [
+                "new" => current($return["data"])["new"],
+                "id_tmp_cache" => current($return["data"])["id_tmp_cache"],
+                "id_old" => $oldHousehold->getId(),
+                "state" => 0
+            ]
+        ];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $request, 2, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
+        $this->assertSame(true, $return);
+        /** @var Beneficiary $headOldHousehold */
+        $headOldHousehold = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
+        $this->assertSame($this->UPDATED_GIVEN_NAME, $headOldHousehold->getGivenName());
 
-            // Should return a line incomplete
-            $this->SHEET_ARRAY[4]["N"] = null;
-            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
-            $this->assertSame([], $return["typo"]);
-            $this->assertSame([], $return["duplicate"]);
-            $this->assertSame([], $return["more"]);
-            $this->assertSame([], $return["less"]);
-            $this->assertSame(0, $return["statistic"]->getNbAdded());
-            $this->assertSame(3, current($return["statistic"]->getIncompleteLine())->getLineIncomplete());
 
-            // Should return an issue => less beneficiaries in the CSV than in the db
-            unset($this->SHEET_ARRAY[4]);
-            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
-            $this->assertArrayHasKey("new", current($return["less"]));
-            $this->assertArrayHasKey("old", current($return["less"]));
-            $this->assertSame([], $return["typo"]);
-            $this->assertSame([], $return["duplicate"]);
-            $this->assertSame([], $return["more"]);
-            $this->assertSame(0, $return["statistic"]->getNbAdded());
-            $this->assertSame([], $return["statistic"]->getIncompleteLine());
+        // TRY TO ADD CSV WITH DUPLICATE ERROR => REMOVE THE DUPLICATE IN THE CSV
+        $this->SHEET_ARRAY[5] = [
+            "A" => $this->addressStreet2,
+            "B" => 2,
+            "C" => 2,
+            "D" => 2,
+            "E" => "this is just some notes",
+            "F" => 1.1544,
+            "G" => 120.12,
+            "H" => "TEST_IMPORT22",
+            "I" => "TEST_IMPORT222",
+            "J" => "TEST_IMPORT22",
+            "K" => "TEST_IMPORT222",
+            "L" => 4.0,
+            "M" => "my wash",
+            "N" => "FIRSTNAME3 UNIT_TEST",
+            "O" => "FNAME33 UNIT_TEST",
+            "P" => "F",
+            "Q" => 1,
+            "R" => "1995-04-25",
+            "S" => "lactating ; single family",
+            "T" => "Type1 - 1",
+            "U" => "card-152a",
+        ];
+        $this->SHEET_ARRAY[6] = [
+            "A" => null,
+            "B" => null,
+            "C" => null,
+            "D" => null,
+            "E" => null,
+            "F" => null,
+            "G" => null,
+            "H" => null,
+            "I" => null,
+            "J" => null,
+            "K" => null,
+            "L" => null,
+            "M" => null,
+            "N" => "FIRSTNAME2 TEST_IMPORT",
+            "O" => "NAME2 TEST_IMPORT",
+            "P" => "M",
+            "Q" => 0,
+            "R" => "1995-04-25",
+            "S" => "lactating",
+            "T" => "Type1 - 2",
+            "U" => "id-45f",
+        ];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $token = $return["token"];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertArrayHasKey("token", $return);
+        $this->assertArrayHasKey("new_household", current($return["data"]));
+        $this->assertArrayHasKey("data", current($return["data"]));
+        $this->assertArrayHasKey("new", current(current($return["data"])["data"]));
+        $this->assertArrayHasKey("old", current(current($return["data"])["data"]));
+        $requestDuplicate = [
+            [
+                "id_tmp_cache" => current($return["data"])["id_tmp_cache"],
+                "new_household" => current($return["data"])["new_household"],
+                "data" => [
+                    [
+                        "to_delete" => [
+                            "given_name" => current(current(current($return["data"])["data"])["new"]["beneficiaries"])["given_name"],
+                            "family_name" => current(current(current($return["data"])["data"])["new"]["beneficiaries"])["family_name"]
+                        ],
+                        "id_old" => current(current($return["data"])["data"])["old"]->getId()
+                    ]
+                ]
+            ]
+        ];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestDuplicate, 3, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
+        $this->assertSame(true, $return);
+        $household2 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet2);
+        $beneficiariesOfHH2 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household2);
+        $this->assertSame(1, count($beneficiariesOfHH2));
 
-            // Should return an issue => duplicate beneficiary
-            $this->SHEET_ARRAY[3]['A'] = 'a';
-            $this->SHEET_ARRAY[3]['B'] = 'b';
-            $this->SHEET_ARRAY[4] = [
-                "A" => null,
-                "B" => null,
-                "C" => null,
-                "D" => null,
-                "E" => null,
-                "F" => null,
-                "G" => null,
-                "H" => null,
-                "I" => null,
-                "J" => null,
-                "K" => null,
-                "L" => null,
-                "M" => null,
-                "N" => "FIRSTNAME2 TEST_IMPORT",
-                "O" => "NAME2 TEST_IMPORT",
-                "P" => "M",
-                "Q" => 0,
-                "R" => "1995-04-25",
-                "S" => "lactating",
-                "T" => "Type1 - 2",
-                "U" => "id-45f",
-            ];
-            $return = $this->hhCSVService->loadCSV($this->iso3, current($projects), $this->SHEET_ARRAY);
-            $this->assertArrayHasKey("new", current($return["duplicate"]));
-            $this->assertArrayHasKey("old", current($return["duplicate"]));
-            $this->assertSame([], $return["typo"]);
-            $this->assertSame([], $return["more"]);
-            $this->assertSame([], $return["less"]);
-            $this->assertSame(0, $return["statistic"]->getNbAdded());
-            $this->assertSame([], $return["statistic"]->getIncompleteLine());
-        }
-        catch (\Exception $exception)
-        {
-            $this->remove($this->addressStreet);
-            $this->fail($exception->getMessage() . "\n\n");
-        }
+
+        // TRY TO ADD CSV WITH DUPLICATE ERROR => KEEP THE DUPLICATE IN THE CSV
+        $this->SHEET_ARRAY[6] = [
+            "A" => $this->addressStreet3,
+            "B" => 3,
+            "C" => 3,
+            "D" => 3,
+            "E" => "this is just some notes",
+            "F" => 1.1544,
+            "G" => 120.12,
+            "H" => "TEST_IMPORT223333",
+            "I" => "TEST_IMPORT222333",
+            "J" => "TEST_IMPORT223",
+            "K" => "TEST_IMPORT2223",
+            "L" => 4.0,
+            "M" => "my wash",
+            "N" => "FIRSTNAME44444444 UNIT_TEST",
+            "O" => "FNAME44444444444444 UNIT_TEST",
+            "P" => "F",
+            "Q" => 1,
+            "R" => "1995-04-25",
+            "S" => "lactating ; single family",
+            "T" => "Type1 - 1",
+            "U" => "card-152a",
+        ];
+        $this->SHEET_ARRAY[7] = [
+            "A" => null,
+            "B" => null,
+            "C" => null,
+            "D" => null,
+            "E" => null,
+            "F" => null,
+            "G" => null,
+            "H" => null,
+            "I" => null,
+            "J" => null,
+            "K" => null,
+            "L" => null,
+            "M" => null,
+            "N" => "FIRSTNAME2 TEST_IMPORT",
+            "O" => "NAME2 TEST_IMPORT",
+            "P" => "M",
+            "Q" => 0,
+            "R" => "1995-04-25",
+            "S" => "lactating",
+            "T" => "Type1 - 2",
+            "U" => "id-45f",
+        ];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $token = $return["token"];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertArrayHasKey("token", $return);
+        $this->assertArrayHasKey("new_household", current($return["data"]));
+        $this->assertArrayHasKey("data", current($return["data"]));
+        $this->assertArrayHasKey("new", current(current($return["data"])["data"]));
+        $this->assertArrayHasKey("old", current(current($return["data"])["data"]));
+        $requestDuplicate = [
+            [
+                "id_tmp_cache" => current($return["data"])["id_tmp_cache"],
+                "new_household" => current($return["data"])["new_household"],
+                "data" => [
+                    [
+                        "state" => true,
+                        "new" => current(current($return["data"])["data"])["new"],
+                        "id_old" => current(current($return["data"])["data"])["old"]->getId()
+                    ]
+                ]
+            ]
+        ];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestDuplicate, 3, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
+        $this->assertSame(true, $return);
+        $household3 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet3);
+        $beneficiariesOfHH3 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household3);
+        $this->assertSame(2, count($beneficiariesOfHH3));
+
+
+        // TRY TO ADD CSV WITH DUPLICATE ERROR (=> REMOVE THE DUPLICATE IN THE DB) AND MORE ERROR (=> ADD IT TO THE DATABASE)
+        $this->SHEET_ARRAY[8] = [
+            "A" => $this->addressStreet4,
+            "B" => 4,
+            "C" => 4,
+            "D" => 4,
+            "E" => "this is just some notes",
+            "F" => 1.1544,
+            "G" => 120.12,
+            "H" => "TEST_IMPORT4",
+            "I" => "TEST_IMPORT4",
+            "J" => "TEST_IMPORT4",
+            "K" => "TEST_IMPORT4",
+            "L" => 4.0,
+            "M" => "my wash",
+            "N" => "FI5 UNIT_TEST",
+            "O" => "FNA5 UNIT_TEST",
+            "P" => "F",
+            "Q" => 1,
+            "R" => "1995-04-25",
+            "S" => "lactating ; single family",
+            "T" => "Type1 - 1",
+            "U" => "card-152a",
+        ];
+        $this->SHEET_ARRAY[9] = [
+            "A" => null,
+            "B" => null,
+            "C" => null,
+            "D" => null,
+            "E" => null,
+            "F" => null,
+            "G" => null,
+            "H" => null,
+            "I" => null,
+            "J" => null,
+            "K" => null,
+            "L" => null,
+            "M" => null,
+            "N" => "FIRSTNAME2 TEST_IMPORT",
+            "O" => "NAME2 TEST_IMPORT",
+            "P" => "M",
+            "Q" => 0,
+            "R" => "1995-04-25",
+            "S" => "lactating",
+            "T" => "Type1 - 2",
+            "U" => "id-45f",
+        ];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $token = $return["token"];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertArrayHasKey("token", $return);
+        $this->assertArrayHasKey("new_household", current($return["data"]));
+        $this->assertArrayHasKey("data", current($return["data"]));
+        $this->assertArrayHasKey("new", current(current($return["data"])["data"]));
+        $this->assertArrayHasKey("old", current(current($return["data"])["data"]));
+        $requestDuplicate = [
+            [
+                "id_tmp_cache" => current($return["data"])["id_tmp_cache"],
+                "new_household" => current($return["data"])["new_household"],
+                "data" => [
+                    [
+                        "state" => false,
+                        "new" => current(current($return["data"])["data"])["new"],
+                        "id_old" => current(current(current(current($return["data"])["data"])["old"]->getBeneficiaries()))->getId()
+                    ]
+                ]
+            ]
+        ];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestDuplicate, 3, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertArrayHasKey("token", $return);
+        $this->assertArrayHasKey("new", current($return["data"]));
+        $this->assertArrayHasKey("old", current($return["data"]));
+        $requestMore = [
+            [
+                "id_old" => current($return["data"])['old']->getId(),
+                "data" => [
+                    current($return["data"])['new']["beneficiaries"][1]
+                ]
+            ]
+        ];
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestMore, 4, $token);
+        $this->assertArrayHasKey("data", $return);
+        $this->assertSame([], $return["data"]);
+        $this->assertArrayHasKey("token", $return);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
+        $this->assertSame(true, $return);
+        $household4 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet4);
+        $beneficiariesOfHH4 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household4);
+        $this->assertSame(2, count($beneficiariesOfHH4));
+        $household1 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet);
+        $beneficiariesOfHH1 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household1);
+        $this->assertSame(2, count($beneficiariesOfHH1));
+
         $this->remove($this->addressStreet);
+        $this->remove($this->addressStreet2);
+        $this->remove($this->addressStreet3);
+        $this->remove($this->addressStreet4);
     }
 
     /**

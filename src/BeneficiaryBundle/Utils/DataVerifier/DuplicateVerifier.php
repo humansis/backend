@@ -25,10 +25,11 @@ class DuplicateVerifier extends AbstractVerifier
     /**
      * @param string $countryISO3
      * @param array $householdArray
+     * @param int $cacheId
      * @return array|null
      * @throws \Exception
      */
-    public function verify(string $countryISO3, array $householdArray)
+    public function verify(string $countryISO3, array $householdArray, int $cacheId)
     {
         $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria($countryISO3, []);
         // GET THE SIMILAR HOUSEHOLD FROM THE DB, IF ISSET
@@ -38,9 +39,9 @@ class DuplicateVerifier extends AbstractVerifier
             $similarOldHousehold = null;
 
         $listDuplicateBeneficiaries = [];
-        $newHouseholdEmpty = $householdArray;
+        $newHouseholdEmpty = $householdArray['new'];
         $newHouseholdEmpty['beneficiaries'] = [];
-        foreach ($householdArray['beneficiaries'] as $newBeneficiary)
+        foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary)
         {
             $stringOldHousehold = strtolower(trim($newBeneficiary['given_name']) . "//" . trim($newBeneficiary['family_name']));
             /** @var Beneficiary $oldBeneficiary */
@@ -72,13 +73,13 @@ class DuplicateVerifier extends AbstractVerifier
         {
             if (array_key_exists("id_tmp_cache", $householdArray))
                 return [
-                    "new_household" => $householdArray,
+                    "new_household" => $householdArray['new'],
                     "id_tmp_cache" => $householdArray["id_tmp_cache"],
                     "data" => $listDuplicateBeneficiaries
                 ];
 
             return [
-                "new_household" => $householdArray,
+                "new_household" => $householdArray['new'],
                 "data" => $listDuplicateBeneficiaries
             ];
         }
@@ -100,6 +101,9 @@ class DuplicateVerifier extends AbstractVerifier
         $dir_var = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_var))
             mkdir($dir_var);
+        $dir_mapping = $dir_var . '/mapping_new_old';
+        if (!is_file($dir_mapping))
+            return null;
 
         $fileContent = file_get_contents($dir_var . '/mapping_new_old');
         $householdsCached = json_decode($fileContent, true);

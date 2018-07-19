@@ -36,7 +36,7 @@ In column with multiple information (like phones, you can have multiple phone nu
 	"new_household": "either empty or household object",
 	"data": [
 		{
-			"id_old": 1,
+			"id_old": "id du beneficiary",
 			"state": "true or false",
 			"to_delete": {
 				"given_name": "givenName",
@@ -54,7 +54,7 @@ OR
 	"new_household": "either empty or household object",
 	"data": [
 		{
-			"id_old": 1,
+			"id_old": "id du beneficiary",
 			"state": "true or false",
 			"new": "Household object"
 		}
@@ -71,13 +71,24 @@ OR
 
 ```json
 {
-  "new": "Household object",
   "id_old": 1,
   "data": "ARRAY OF BENEFICIARIES OBJECT"
 }
 ```
 
 - Add every beneficiaries inside data array to the household (in database) with the id "id_old"
+
+
+### LEss treatment
+
+```json
+{
+  "id_old": 1,
+  "data": "ARRAY OF ID BENEFICIARY TO REMOVE"
+}
+```
+
+- Remove every beneficiaries inside data array in the household (in database) with the id "id_old"
 
 
 
