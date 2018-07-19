@@ -16,7 +16,7 @@ In column with multiple information (like phones, you can have multiple phone nu
 
 ### Concept
 
-![Import fichier CSV : steps](./import_household.png)
+![Import CSV file : steps](./import_household.png)
 
 
 ### Typo treatment
