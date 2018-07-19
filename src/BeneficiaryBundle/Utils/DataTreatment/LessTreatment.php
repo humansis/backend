@@ -48,7 +48,6 @@ class LessTreatment extends AbstractTreatment
             }
             catch (\Exception $exception)
             {
-                dump($exception);
                 continue;
             }
         }
@@ -67,8 +66,9 @@ class LessTreatment extends AbstractTreatment
         $dir_var = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_var))
             mkdir($dir_var);
-
-        $fileContent = file_get_contents($dir_var . '/no_typo');
-        return json_decode($fileContent, true);
+        $dir_no_typo = $dir_var . '/no_typo';
+        if (!is_file($dir_no_typo))
+            return [];
+        return json_decode(file_get_contents($dir_no_typo), true);
     }
 }

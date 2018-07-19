@@ -140,7 +140,7 @@ class HouseholdCSVService
         $return = [];
         if (null === $verifier)
         {
-//            $this->clearCacheToken($this->token);
+            $this->clearCacheToken($this->token);
             return true;
         }
         $cache_id = 1;

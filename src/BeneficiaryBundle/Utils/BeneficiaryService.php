@@ -234,7 +234,19 @@ class BeneficiaryService
         if ($beneficiary->getStatus() === 1)
             return false;
 
+        $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+        foreach ($nationalIds as $nationalId)
+        {
+            $this->em->remove($nationalId);
+        }
+
+        $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
+        foreach ($phones as $phone)
+        {
+            $this->em->remove($phone);
+        }
         $this->em->remove($beneficiary);
         $this->em->flush();
+        return true;
     }
 }

@@ -26,7 +26,6 @@ class TypoTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array $householdsArray)
     {
-        dump($householdsArray);
         $listHouseholds = [];
         // Get the list of household which are already saved in database (100% similar in typoVerifier)
         $households100Percent = [];
@@ -76,7 +75,7 @@ class TypoTreatment extends AbstractTreatment
 
             // WE SAVE EVERY HOUSEHOLD WHICH HAVE BEEN TREATED BY THIS FUNCTION BECAUSE IN NEXT STEP WE HAVE TO KNOW WHICH
             // HOUSEHOLDS HAD TYPO ERRORS
-            $listHouseholds[] = $householdArray['new'];
+            $listHouseholds[] = $householdArray;
         }
         $this->getFromCache('no_typo', $listHouseholds);
 
@@ -89,7 +88,6 @@ class TypoTreatment extends AbstractTreatment
         {
             $listHouseholds[] = $household100Percent;
         }
-        dump($listHouseholds);
         return $listHouseholds;
     }
 

@@ -31,7 +31,6 @@ class DuplicateVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId)
     {
-        dump($householdArray);
         $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria($countryISO3, []);
         // GET THE SIMILAR HOUSEHOLD FROM THE DB, IF ISSET
         if (array_key_exists('id_tmp_cache', $householdArray))
