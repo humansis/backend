@@ -36,8 +36,8 @@ before-install:
 # Install composer dependencies,
 # Create database, schema and fixtures
 install:
-  - composer install
   - cp app/config/parameters.yml.travis app/config/parameters.yml
+  - composer install
   - php bin/console doctrine:database:create --env=test
   - php bin/console doctrine:m:m --env=test
   - php bin/console doctrine:fixtures:load -n --env=test
