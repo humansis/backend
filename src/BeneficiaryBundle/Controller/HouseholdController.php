@@ -153,7 +153,6 @@ class HouseholdController extends Controller
             }
             catch (\Exception $e)
             {
-                dump($e);
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         }
@@ -165,7 +164,6 @@ class HouseholdController extends Controller
             }
             catch (\Exception $e)
             {
-                dump($e);
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         }

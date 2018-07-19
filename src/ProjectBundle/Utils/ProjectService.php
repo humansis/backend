@@ -168,7 +168,6 @@ class ProjectService
             $this->em->flush();
 
         } catch (\Exception $e){
-            dump($e);
         }
 
         return $project;

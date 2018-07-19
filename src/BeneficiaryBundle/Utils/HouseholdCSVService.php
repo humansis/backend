@@ -147,7 +147,6 @@ class HouseholdCSVService
         $householdsToSave = [];
         foreach ($listHouseholdsArray as $index => $householdArray)
         {
-//            dump(json_encode($householdArray));
             $returnTmp = $verifier->verify($countryIso3, $householdArray, $cache_id);
             // IF there is errors
             if (null !== $returnTmp && [] !== $returnTmp)
