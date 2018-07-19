@@ -14,6 +14,11 @@ In column with multiple information (like phones, you can have multiple phone nu
 
 ## DATA VERIFICATION
 
+### Concept
+
+![Import fichier CSV : steps](./import_household.png)
+
+
 ### Typo treatment
 
 ```json
