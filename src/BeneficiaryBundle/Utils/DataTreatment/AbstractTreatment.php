@@ -41,4 +41,29 @@ abstract class AbstractTreatment implements InterfaceTreatment
         $this->container = $container;
         $this->token = $token;
     }
+
+    /**
+     * @param $step
+     * @param array $listHouseholdsArray
+     * @throws \Exception
+     */
+    protected function getFromCache($step, array &$listHouseholdsArray)
+    {
+        if (null === $this->token)
+            return;
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data/' . $this->token;
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+        $dir_file = $dir_var . '/' . $step;
+        if (!is_file($dir_file))
+            return;
+        $fileContent = file_get_contents($dir_file);
+        $householdsCached = json_decode($fileContent, true);
+        foreach ($householdsCached as $householdCached)
+        {
+            $listHouseholdsArray[] = $householdCached;
+        }
+    }
 }
