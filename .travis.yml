@@ -21,7 +21,7 @@ matrix:
   include:
     - php: 7.1
     - php: 7.2
-    - php: fpm
+    - php: hhvm
   allow_failures:
     - php: hhvm
 
@@ -39,7 +39,7 @@ install:
   - cp app/config/parameters.yml.travis app/config/parameters.yml
   - composer install
   - php bin/console doctrine:database:create --env=test
-  - php bin/console doctrine:m:m --env=test
+  - php bin/console doctrine:m:m -n --env=test
   - php bin/console doctrine:fixtures:load -n --env=test
 
 # Run script
