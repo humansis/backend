@@ -4,6 +4,8 @@
 namespace Tests\DistributionBundle\Controller;
 
 
+use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Location;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
@@ -19,6 +21,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
     private $body = [
         "name" => "TEST_DISTRIBUTION_NAME_PHPUNIT",
+        "type" => 0,
         "location" => [
             "country_iso3" => "KHM",
             "adm1" => "ADMIN FAKED",
@@ -73,8 +76,6 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
-        try
-        {
             $this->assertArrayHasKey('id', $distribution);
             $this->assertArrayHasKey('name', $distribution);
             $this->assertSame($distribution['name'], $this->namefullname);
@@ -83,14 +84,20 @@ class DistributionControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('project', $distribution);
             $this->assertArrayHasKey('selection_criteria', $distribution);
             $this->assertArrayHasKey('validated', $distribution);
-        }
-        catch (\Exception $exception)
+
+        $location = $this->em->getRepository(Location::class)->findOneByAdm1("ADMIN FAKED");
+        if ($location instanceof Location)
         {
-            print_r("\nThe mapping of fields of Distribution entity is not correct.\n");
-            $this->remove($this->namefullname);
-            return false;
+            $this->em->remove($location);
         }
 
+        $distribution = $this->em->getRepository(DistributionData::class)->find($distribution['id']);
+        if ($distribution instanceof DistributionData)
+        {
+            $this->em->remove($distribution);
+        }
+
+        $this->em->flush();
         return true;
     }
 }

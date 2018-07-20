@@ -79,6 +79,13 @@ class DistributionData
      **/
     private $reportingDistribution;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", name="type_distribution")
+     */
+    private $type;
+
 
     /**
      * Constructor
@@ -313,5 +320,29 @@ class DistributionData
     public function removeReportingDistribution(\ReportingBundle\Entity\ReportingDistribution $reportingDistribution)
     {
         return $this->reportingDistribution->removeElement($reportingDistribution);
+    }
+
+    /**
+     * Set type.
+     *
+     * @param int $type
+     *
+     * @return DistributionData
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type.
+     *
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }

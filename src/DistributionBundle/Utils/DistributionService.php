@@ -80,6 +80,14 @@ class DistributionService
         return $distribution;
     }
 
+    public function createListBeneficiaries(DistributionData $distributionData, array $beneficiaries)
+    {
+        foreach ($beneficiaries as $beneficiary)
+        {
+
+        }
+    }
+
     /**
      * Get one distribution by id
      *
