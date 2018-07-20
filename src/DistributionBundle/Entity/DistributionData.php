@@ -279,4 +279,37 @@ class DistributionData
     {
         return $this->ReportingDistribution;
     }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->reportingDistribution = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add reportingDistribution.
+     *
+     * @param \ReportingBundle\Entity\ReportingDistribution $reportingDistribution
+     *
+     * @return DistributionData
+     */
+    public function addReportingDistribution(\ReportingBundle\Entity\ReportingDistribution $reportingDistribution)
+    {
+        $this->reportingDistribution[] = $reportingDistribution;
+
+        return $this;
+    }
+
+    /**
+     * Remove reportingDistribution.
+     *
+     * @param \ReportingBundle\Entity\ReportingDistribution $reportingDistribution
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeReportingDistribution(\ReportingBundle\Entity\ReportingDistribution $reportingDistribution)
+    {
+        return $this->reportingDistribution->removeElement($reportingDistribution);
+    }
 }
