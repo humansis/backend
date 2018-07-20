@@ -171,7 +171,7 @@ class UserController extends Controller
         }
         catch (\Exception $exception)
         {
-            return new Response($exception->getMessage());
+            return new Response($exception->getMessage(), 500);
         }
 
         if (!$user instanceof User)
