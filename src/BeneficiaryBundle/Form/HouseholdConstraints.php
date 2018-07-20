@@ -18,6 +18,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
         $array = new Type('array');
         $null = new Type('null');
         $optionalNumeric = new Optional($numeric);
+        $optionalString = new Optional($string);
 
         $household = [
             "project" => $optionalNumeric,
@@ -46,6 +47,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
         ];
         $beneficiary = [
             "id" => $optionalNumeric,
+            "id_tmp" => $optionalString,
             "given_name" => $string,
             "family_name" => $string,
             "gender" => $string,
