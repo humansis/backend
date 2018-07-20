@@ -12,6 +12,7 @@ use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use DistributionBundle\Entity\Location;
+use DistributionBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
@@ -36,18 +37,23 @@ class HouseholdService
     /** @var RequestValidator $requestValidator */
     private $requestValidator;
 
+    /** @var LocationService $locationService */
+    private $locationService;
+
 
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
         BeneficiaryService $beneficiaryService,
-        RequestValidator $requestValidator
+        RequestValidator $requestValidator,
+        LocationService $locationService
     )
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->beneficiaryService = $beneficiaryService;
         $this->requestValidator = $requestValidator;
+        $this->locationService = $locationService;
     }
 
     /**
@@ -105,7 +111,7 @@ class HouseholdService
             ->setAddressNumber($householdArray["address_number"]);
 
         // Save or update location instance
-        $location = $this->getOrSaveLocation($householdArray["location"]);
+        $location = $this->locationService->getOrSaveLocation($householdArray["location"]);
         $household->setLocation($location);
         $project = $this->em->getRepository(Project::class)->find($project);
         if (!$project instanceof Project)
@@ -205,7 +211,7 @@ class HouseholdService
             $household->addProject($project);
 
         // Save or update location instance
-        $location = $this->getOrSaveLocation($householdArray["location"]);
+        $location = $this->locationService->getOrSaveLocation($householdArray["location"]);
         $household->setLocation($location);
 
         $this->em->persist($household);
@@ -243,42 +249,6 @@ class HouseholdService
             $this->em->persist($household);
             $this->em->flush();
         }
-    }
-
-    /**
-     * @param array $locationArray
-     * @return Location|null|object
-     * @throws ValidationException
-     */
-    public function getOrSaveLocation(array $locationArray)
-    {
-        $this->requestValidator->validate(
-            "location",
-            HouseholdConstraints::class,
-            $locationArray,
-            'any'
-        );
-
-        $location = $this->em->getRepository(Location::class)->findOneBy([
-            "countryIso3" => $locationArray["country_iso3"],
-            "adm1" => $locationArray["adm1"],
-            "adm2" => $locationArray["adm2"],
-            "adm3" => $locationArray["adm3"],
-            "adm4" => $locationArray["adm4"],
-        ]);
-
-        if (!$location instanceof Location)
-        {
-            $location = new Location();
-            $location->setCountryIso3($locationArray["country_iso3"])
-                ->setAdm1($locationArray["adm1"])
-                ->setAdm2($locationArray["adm2"])
-                ->setAdm3($locationArray["adm3"])
-                ->setAdm4($locationArray["adm4"]);
-            $this->em->persist($location);
-        }
-
-        return $location;
     }
 
     /**

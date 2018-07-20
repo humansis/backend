@@ -56,7 +56,7 @@ class DistributionData
     /**
      * @var SelectionCriteria
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\SelectionCriteria")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\SelectionCriteria", cascade={"persist"})
      */
     private $selectionCriteria;
 
@@ -78,7 +78,16 @@ class DistributionData
      * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingDistribution", mappedBy="distribution", cascade={"persist"})
      **/
     private $reportingDistribution;
-    
+
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->reportingDistribution = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setUpdatedOn(new \DateTime());
+    }
 
     /**
      * Set id.
@@ -277,14 +286,7 @@ class DistributionData
      */
     public function getReportingDistribution()
     {
-        return $this->ReportingDistribution;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->reportingDistribution = new \Doctrine\Common\Collections\ArrayCollection();
+        return $this->reportingDistribution;
     }
 
     /**
