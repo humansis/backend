@@ -586,6 +586,16 @@ class HouseholdCSVTest extends BMSServiceTestCase
      */
     public function testTime()
     {
+        $this->remove($this->addressStreet);
+        $this->remove($this->addressStreet2);
+        $this->remove($this->addressStreet3);
+        $this->remove($this->addressStreet4);
+        $this->remove($this->addressStreet5);
+        $this->remove($this->addressStreet6);
+        $this->remove($this->addressStreet7);
+        $this->remove($this->addressStreet8);
+        $this->remove($this->addressStreet9);
+        $this->remove($this->addressStreet10);
         $projects = $this->em->getRepository(Project::class)->findAll();
         if (empty($projects))
         {
@@ -1056,6 +1066,17 @@ class HouseholdCSVTest extends BMSServiceTestCase
 
         print_r($this->color->getColoredString("\n\n4- Execution time :\n", "light_red"));
         print_r($this->color->getColoredString(($executionEndTime - $executionStartTime) . "\n"));
+
+        $this->remove($this->addressStreet);
+        $this->remove($this->addressStreet2);
+        $this->remove($this->addressStreet3);
+        $this->remove($this->addressStreet4);
+        $this->remove($this->addressStreet5);
+        $this->remove($this->addressStreet6);
+        $this->remove($this->addressStreet7);
+        $this->remove($this->addressStreet8);
+        $this->remove($this->addressStreet9);
+        $this->remove($this->addressStreet10);
     }
 
     /**
