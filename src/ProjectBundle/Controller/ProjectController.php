@@ -43,6 +43,11 @@ class ProjectController extends Controller
         return new Response($json, Response::HTTP_OK);
     }
 
+    public function getDistributions(Project $project)
+    {
+
+    }
+
     /**
      * Get a project
      * @Rest\Get("/projects/{id}", name="show_project")

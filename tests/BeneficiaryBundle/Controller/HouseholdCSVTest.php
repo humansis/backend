@@ -1041,32 +1041,6 @@ class HouseholdCSVTest extends BMSServiceTestCase
         print_r($this->color->getColoredString("\n\n2- Execution time :\n", "light_red"));
         print_r($this->color->getColoredString(($executionEndTime - $executionStartTime) . "\n"));
 
-
-        $executionStartTime = microtime(true);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
-        $token = $return["token"];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $executionEndTime = microtime(true);
-
-        print_r($this->color->getColoredString("\n\n3- Execution time :\n", "light_red"));
-        print_r($this->color->getColoredString(($executionEndTime - $executionStartTime) . "\n"));
-
-
-        $executionStartTime = microtime(true);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
-        $token = $return["token"];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $executionEndTime = microtime(true);
-
-        print_r($this->color->getColoredString("\n\n4- Execution time :\n", "light_red"));
-        print_r($this->color->getColoredString(($executionEndTime - $executionStartTime) . "\n"));
-
         $this->remove($this->addressStreet);
         $this->remove($this->addressStreet2);
         $this->remove($this->addressStreet3);
