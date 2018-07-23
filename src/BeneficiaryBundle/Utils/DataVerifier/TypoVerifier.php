@@ -49,7 +49,6 @@ class TypoVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId)
     {
-        dump($householdArray);
         if (null === $this->listHouseholdsSaved)
         {
             $this->listHouseholdsSaved = $this->em->getRepository(Household::class)
@@ -60,7 +59,6 @@ class TypoVerifier extends AbstractVerifier
                     'hh.addressPostcode'
                 ]);
         }
-        dump($this->listHouseholdsSaved);
         $newHead = null;
         foreach ($householdArray['beneficiaries'] as $newBeneficiaryArray)
         {
