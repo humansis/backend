@@ -29,15 +29,18 @@ class ReportingController extends Controller
     public function serveAction(Request $request, ReportingIndicator $indicator)
     {
         $filters = $request->request->get('filters');
+        $contentJson = $request->request->all();
+        $filters['country'] = $contentJson['__country'];
+
         try {   
             $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
-            // $dataFormatted = $this->get('ra_reporting.formatter')->format($dataComputed, $indicator->getGraphique());
+            $dataFormatted = $this->get('reporting.formatter')->format($dataComputed, $indicator->getGraph());
         }
         catch (\Exception $e)
         {
             return new Response($e->getMessage(), $e->getCode() > 200 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
         }
-        return new Response($dataComputed, Response::HTTP_OK);   
+        return new Response($dataFormatted, Response::HTTP_OK);   
     }
 
 
@@ -54,6 +57,6 @@ class ReportingController extends Controller
         $indicatorFinded = $this->get('reporting.finder')->findIndicator();
         $json = json_encode($indicatorFinded);
         return new Response($json, Response::HTTP_OK);
-        
+
     }
 }
