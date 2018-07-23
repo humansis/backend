@@ -27,23 +27,18 @@ class DistributionService
     /** @var LocationService $locationService */
     private $locationService;
 
-    /** @var CriteriaDistributionService $criteriaDistributionService */
-    private $criteriaDistributionService;
-
 
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
         ValidatorInterface $validator,
-        LocationService $locationService,
-        CriteriaDistributionService $criteriaDistributionService
+        LocationService $locationService
     )
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->locationService = $locationService;
-        $this->criteriaDistributionService = $criteriaDistributionService;
     }
 
     /**
@@ -79,7 +74,6 @@ class DistributionService
             $distribution->setProject($projectTmp);
 
         $this->em->persist($distribution);
-
         $this->em->flush();
 
         return $distribution;

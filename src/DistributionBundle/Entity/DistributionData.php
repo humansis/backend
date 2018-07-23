@@ -101,6 +101,7 @@ class DistributionData
     /**
      * Set id.
      *
+     * @param $id
      * @return DistributionData
      */
     public function setId($id)
@@ -322,5 +323,29 @@ class DistributionData
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Set selectionCriteria.
+     *
+     * @param \DistributionBundle\Entity\SelectionCriteria|null $selectionCriteria
+     *
+     * @return DistributionData
+     */
+    public function setSelectionCriteria(\DistributionBundle\Entity\SelectionCriteria $selectionCriteria = null)
+    {
+        $this->selectionCriteria = $selectionCriteria;
+
+        return $this;
+    }
+
+    /**
+     * Get selectionCriteria.
+     *
+     * @return \DistributionBundle\Entity\SelectionCriteria|null
+     */
+    public function getSelectionCriteria()
+    {
+        return $this->selectionCriteria;
     }
 }
