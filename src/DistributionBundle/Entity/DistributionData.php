@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\Expr\Select;
 use ProjectBundle\Entity\Project;
 use JMS\Serializer\Annotation\Type as JMS_Type;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * DistributionData
@@ -25,6 +26,8 @@ class DistributionData
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @Groups({"FullDistribution"})
      */
     private $id;
 
@@ -32,6 +35,8 @@ class DistributionData
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=45)
+     *
+     * @Groups({"FullDistribution"})
      */
     private $name;
 
@@ -40,6 +45,8 @@ class DistributionData
      *
      * @ORM\Column(name="UpdatedOn", type="datetime")
      * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
+     *
+     * @Groups({"FullDistribution"})
      */
     private $updatedOn;
 
@@ -47,18 +54,22 @@ class DistributionData
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location")
+     *
+     * @Groups({"FullDistribution"})
      */
     private $location;
 
     /**
      * @var Project
      *
-     * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
+     * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="distributions")
      */
     private $project;
 
     /**
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\SelectionCriteria", cascade={"persist"})
+     *
+     * @Groups({"FullDistribution"})
      */
     private $selectionCriteria;
 
@@ -66,6 +77,8 @@ class DistributionData
      * @var boolean
      *
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
+     *
+     * @Groups({"FullDistribution"})
      */
     private $archived = 0;
 
@@ -73,6 +86,8 @@ class DistributionData
      * @var boolean
      *
      * @ORM\Column(name="validated", type="boolean", options={"default" : 0})
+     *
+     * @Groups({"FullDistribution"})
      */
     private $validated = 0;
 
@@ -85,6 +100,8 @@ class DistributionData
      * @var int
      *
      * @ORM\Column(type="integer", name="type_distribution")
+     *
+     * @Groups({"FullDistribution"})
      */
     private $type;
 
