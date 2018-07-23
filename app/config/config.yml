@@ -61,6 +61,7 @@ doctrine:
         dql:
             string_functions:
                  soundex: DoctrineExtensions\Query\Mysql\Soundex
+                 date_format: DoctrineExtensions\Query\Mysql\DateFormat
 
 # Swiftmailer Configuration
 swiftmailer:

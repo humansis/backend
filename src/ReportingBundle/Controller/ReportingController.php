@@ -57,6 +57,6 @@ class ReportingController extends Controller
         $indicatorFinded = $this->get('reporting.finder')->findIndicator();
         $json = json_encode($indicatorFinded);
         return new Response($json, Response::HTTP_OK);
-
+        
     }
 }
