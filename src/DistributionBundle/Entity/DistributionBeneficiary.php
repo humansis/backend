@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Entity;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -30,11 +31,11 @@ class DistributionBeneficiary
     private $distributionData;
 
     /**
-     * @var ProjectBeneficiary
+     * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\ProjectBeneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
      */
-    private $projectBeneficiary;
+    private $beneficiary;
 
     /**
      * Get id.
@@ -71,26 +72,26 @@ class DistributionBeneficiary
     }
 
     /**
-     * Set projectBeneficiary.
+     * Set beneficiary.
      *
-     * @param \BeneficiaryBundle\Entity\ProjectBeneficiary|null $projectBeneficiary
+     * @param \BeneficiaryBundle\Entity\Beneficiary|null $beneficiary
      *
      * @return DistributionBeneficiary
      */
-    public function setProjectBeneficiary(\BeneficiaryBundle\Entity\ProjectBeneficiary $projectBeneficiary = null)
+    public function setBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary = null)
     {
-        $this->projectBeneficiary = $projectBeneficiary;
+        $this->beneficiary = $beneficiary;
 
         return $this;
     }
 
     /**
-     * Get projectBeneficiary.
+     * Get beneficiary.
      *
-     * @return \BeneficiaryBundle\Entity\ProjectBeneficiary|null
+     * @return \BeneficiaryBundle\Entity\Beneficiary|null
      */
-    public function getProjectBeneficiary()
+    public function getBeneficiary()
     {
-        return $this->projectBeneficiary;
+        return $this->beneficiary;
     }
 }

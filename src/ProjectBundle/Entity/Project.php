@@ -126,6 +126,11 @@ class Project
      */
     private $households;
 
+    /**
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionData", mappedBy="project")
+     */
+    private $distributions;
+
 
     /**
      * Constructor
@@ -491,5 +496,103 @@ class Project
     public function getReportingProject()
     {
         return $this->ReportingProject;
+    }
+
+    /**
+     * Add reportingProject.
+     *
+     * @param \ReportingBundle\Entity\ReportingProject $reportingProject
+     *
+     * @return Project
+     */
+    public function addReportingProject(\ReportingBundle\Entity\ReportingProject $reportingProject)
+    {
+        $this->reportingProject[] = $reportingProject;
+
+        return $this;
+    }
+
+    /**
+     * Remove reportingProject.
+     *
+     * @param \ReportingBundle\Entity\ReportingProject $reportingProject
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeReportingProject(\ReportingBundle\Entity\ReportingProject $reportingProject)
+    {
+        return $this->reportingProject->removeElement($reportingProject);
+    }
+
+    /**
+     * Add household.
+     *
+     * @param \BeneficiaryBundle\Entity\Household $household
+     *
+     * @return Project
+     */
+    public function addHousehold(\BeneficiaryBundle\Entity\Household $household)
+    {
+        $this->households[] = $household;
+
+        return $this;
+    }
+
+    /**
+     * Remove household.
+     *
+     * @param \BeneficiaryBundle\Entity\Household $household
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeHousehold(\BeneficiaryBundle\Entity\Household $household)
+    {
+        return $this->households->removeElement($household);
+    }
+
+    /**
+     * Get households.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getHouseholds()
+    {
+        return $this->households;
+    }
+
+    /**
+     * Add distribution.
+     *
+     * @param \DistributionBundle\Entity\DistributionData $distribution
+     *
+     * @return Project
+     */
+    public function addDistribution(\DistributionBundle\Entity\DistributionData $distribution)
+    {
+        $this->distributions[] = $distribution;
+
+        return $this;
+    }
+
+    /**
+     * Remove distribution.
+     *
+     * @param \DistributionBundle\Entity\DistributionData $distribution
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeDistribution(\DistributionBundle\Entity\DistributionData $distribution)
+    {
+        return $this->distributions->removeElement($distribution);
+    }
+
+    /**
+     * Get distributions.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDistributions()
+    {
+        return $this->distributions;
     }
 }
