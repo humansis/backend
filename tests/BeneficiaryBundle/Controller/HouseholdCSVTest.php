@@ -212,6 +212,8 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
         $this->assertSame([], $return);
+        $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet);
+        $this->assertInstanceOf(Household::class, $household);
 
 
         // TRY TO ADD CSV WITH TYPO ERROR => UPDATE THE OLD 'GIVEN_NAME' OF THE HEAD IN DATABASE

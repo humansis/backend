@@ -27,6 +27,9 @@ class TypoVerifier extends AbstractVerifier
     /** @var array $listHouseholdsSaved */
     private $listHouseholdsSaved;
 
+    /** @var array $mappingHouseholdAndHead */
+    private $mappingHouseholdAndHead;
+
 
     public function __construct(EntityManagerInterface $entityManager, Container $container, $token)
     {
@@ -46,8 +49,18 @@ class TypoVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId)
     {
+        dump($householdArray);
         if (null === $this->listHouseholdsSaved)
-            $this->listHouseholdsSaved = $this->em->getRepository(Household::class)->getAllBy($countryISO3);
+        {
+            $this->listHouseholdsSaved = $this->em->getRepository(Household::class)
+                ->getAllBy($countryISO3, [], [
+                    'hh.id',
+                    'hh.addressStreet',
+                    'hh.addressNumber',
+                    'hh.addressPostcode'
+                ]);
+        }
+        dump($this->listHouseholdsSaved);
         $newHead = null;
         foreach ($householdArray['beneficiaries'] as $newBeneficiaryArray)
         {
@@ -61,10 +74,10 @@ class TypoVerifier extends AbstractVerifier
             return null;
 
         // Concatenation of fields to compare with
-        $stringNewHouseholdToCompare = $householdArray["address_street"] . "//" .
-            $householdArray["address_number"] . "//" .
-            $householdArray["address_postcode"] . "//" .
-            $newHead["given_name"] . "//" .
+        $stringNewHouseholdToCompare = $householdArray["address_street"] . "/" .
+            $householdArray["address_number"] . "/" .
+            $householdArray["address_postcode"] . "/" .
+            $newHead["given_name"] . "/" .
             $newHead["family_name"];
 
         $similarHousehold = null;
@@ -72,29 +85,37 @@ class TypoVerifier extends AbstractVerifier
         /** @var Household $oldHousehold */
         foreach ($this->listHouseholdsSaved as $oldHousehold)
         {
-            // Get the head of the current household
-            /** @var Beneficiary $oldHead */
-            $oldHead = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
-            if (!$oldHead instanceof Beneficiary)
-                continue;
+            if (null === $this->mappingHouseholdAndHead || !array_key_exists($oldHousehold['id'], $this->mappingHouseholdAndHead))
+            {
+                // Get the head of the current household
+                /** @var Beneficiary $oldHead */
+                $oldHead = $this->em->getRepository(Beneficiary::class)->getHeadOfHouseholdId($oldHousehold['id']);
+                if (!$oldHead instanceof Beneficiary)
+                    continue;
+                $this->mappingHouseholdAndHead['id'] = $oldHead;
+            }
 
-            $stringOldHouseholdToCompare = $oldHousehold->getAddressStreet() . "//" .
-                $oldHousehold->getAddressNumber() . "//" .
-                $oldHousehold->getAddressPostcode() . "//" .
-                $oldHead->getGivenName() . "//" .
-                $oldHead->getFamilyName();
-
+            $oldHead = $this->mappingHouseholdAndHead['id'];
 
             similar_text(
                 $stringNewHouseholdToCompare,
-                $stringOldHouseholdToCompare,
+                $oldHousehold['addressStreet'] . "/" .
+                $oldHousehold['addressNumber'] . "/" .
+                $oldHousehold['addressPostcode'] . "/" .
+                $oldHead->getGivenName() . "/" .
+                $oldHead->getFamilyName(),
                 $tmpPercent
             );
 
             if (100 == $tmpPercent)
             {
                 // SAVE 100% SIMILAR IN 1_typo
-                $this->saveInCache('mapping_new_old', $cacheId, $householdArray, $oldHousehold);
+                $this->saveInCache(
+                    'mapping_new_old',
+                    $cacheId,
+                    $householdArray,
+                    $this->em->getRepository(Household::class)->find($oldHousehold['id'])
+                );
                 return false;
             }
             elseif ($percent < $tmpPercent)
@@ -105,7 +126,10 @@ class TypoVerifier extends AbstractVerifier
         }
         if ($this->minimumPercentSimilar < $percent)
         {
-            $return = ["old" => $similarHousehold, "new" => $householdArray, "id_tmp_cache" => $cacheId];
+            $return = [
+                "old" => $this->em->getRepository(Household::class)->find($similarHousehold['id']),
+                "new" => $householdArray, "id_tmp_cache" => $cacheId
+            ];
             return $return;
         }
         $this->saveInCache('no_typo', $cacheId, $householdArray, null);
