@@ -31,7 +31,7 @@ class CountryDataRetrievers implements DataRetrieverInterface
                                     ->setParameter('code', 'BMS_Country_TH')
                                   ->andWhere('rc.country = :country')
                                     ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', 'rv.creationDate AS date');
+                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
         return $qb->getQuery()->getArrayResult();
     }
 
@@ -48,7 +48,7 @@ class CountryDataRetrievers implements DataRetrieverInterface
                                     ->setParameter('code', 'BMS_Country_TB')
                                   ->andWhere('rc.country = :country')
                                     ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', 'rv.creationDate AS date');
+                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
         return $qb->getQuery()->getArrayResult();
     }
 
@@ -64,7 +64,7 @@ class CountryDataRetrievers implements DataRetrieverInterface
                                     ->setParameter('code', 'BMS_Country_AP')
                                   ->andWhere('rc.country = :country')
                                     ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', 'rv.creationDate AS date');
+                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
         return $qb->getQuery()->getArrayResult();
     }
 
@@ -80,7 +80,7 @@ class CountryDataRetrievers implements DataRetrieverInterface
                                     ->setParameter('code', 'BMS_Country_TF')
                                   ->andWhere('rc.country = :country')
                                     ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', 'rv.creationDate AS date');
+                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
         return $qb->getQuery()->getArrayResult();
     }
 
@@ -96,7 +96,7 @@ class CountryDataRetrievers implements DataRetrieverInterface
                                     ->setParameter('code', 'BMS_Country_EB')
                                   ->andWhere('rc.country = :country')
                                     ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', 'rv.creationDate AS date');
+                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
         return $qb->getQuery()->getArrayResult();
     }
 
@@ -112,7 +112,7 @@ class CountryDataRetrievers implements DataRetrieverInterface
                                     ->setParameter('code', 'BMS_Country_TND')
                                   ->andWhere('rc.country = :country')
                                     ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', 'rv.creationDate AS date');
+                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
         return $qb->getQuery()->getArrayResult();
     }
 

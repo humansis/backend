@@ -110,7 +110,7 @@ class Formatter implements FormatterInterface {
             ];
             foreach($dataComputed as $indicator) {
                 $value = [
-                    'name' => $indicator['date']->format('Y-m-d H:i'),
+                    'name' => $indicator['date'],
                     'value' => intval($indicator['value']),
                     'unity' => $indicator['unity']
                 ];
