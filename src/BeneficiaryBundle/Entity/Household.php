@@ -52,7 +52,7 @@ class Household
     /**
      * @var int
      *
-     * @ORM\Column(name="livelihood", type="integer")
+     * @ORM\Column(name="livelihood", type="integer", nullable=true)
      * @Groups({"FullHousehold"})
      */
     private $livelihood;
@@ -60,7 +60,7 @@ class Household
     /**
      * @var string
      *
-     * @ORM\Column(name="notes", type="string", length=255)
+     * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold"})
      */
     private $notes;
@@ -68,7 +68,7 @@ class Household
     /**
      * @var string
      *
-     * @ORM\Column(name="latitude", type="string", length=45)
+     * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
      * @Groups({"FullHousehold"})
      */
     private $latitude;
@@ -76,7 +76,7 @@ class Household
     /**
      * @var string
      *
-     * @ORM\Column(name="longitude", type="string", length=45)
+     * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
      * @Groups({"FullHousehold"})
      */
     private $longitude;

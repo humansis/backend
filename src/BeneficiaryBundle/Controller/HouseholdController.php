@@ -167,6 +167,7 @@ class HouseholdController extends Controller
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         }
+
         $json = $this->get('jms_serializer')
             ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
         return new Response($json);

@@ -116,15 +116,16 @@ class HouseholdCSVService
     }
 
     /**
+     * TODO STEP 1 CHECK INCOMPLETE LINES
      * @param $countryIso3
      * @param Project $project
-     * @param array $listHouseholdsArray
+     * @param array $treatReturned
      * @param int $step
      * @param $token
      * @return array|bool
      * @throws \Exception
      */
-    public function foundErrors($countryIso3, Project $project, array $listHouseholdsArray, int $step, $token)
+    public function foundErrors($countryIso3, Project $project, array $treatReturned, int $step, $token)
     {
         $this->clearData();
         $this->token = $token;
@@ -133,7 +134,7 @@ class HouseholdCSVService
         // If there is a treatment class for this step, call it
         $treatment = $this->guessTreatment($step);
         if ($treatment !== null)
-            $listHouseholdsArray = $treatment->treat($project, $listHouseholdsArray);
+            $treatReturned = $treatment->treat($project, $treatReturned);
 
         /** @var AbstractVerifier $verifier */
         $verifier = $this->guessVerifier($step);
@@ -141,11 +142,11 @@ class HouseholdCSVService
         if (null === $verifier)
         {
             $this->clearCacheToken($this->token);
-            return true;
+            return $treatReturned;
         }
         $cache_id = 1;
         $householdsToSave = [];
-        foreach ($listHouseholdsArray as $index => $householdArray)
+        foreach ($treatReturned as $index => $householdArray)
         {
             $returnTmp = $verifier->verify($countryIso3, $householdArray, $cache_id);
             // IF there is errors
@@ -160,7 +161,7 @@ class HouseholdCSVService
             }
 
             $cache_id++;
-            unset($listHouseholdsArray[$index]);
+            unset($treatReturned[$index]);
         }
 
         $this->saveInCache($step, json_encode($householdsToSave));

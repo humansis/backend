@@ -28,18 +28,19 @@ class LessTreatment extends AbstractTreatment
                 $this->beneficiaryService->remove($oldBeneficiary);
             }
         }
-        $listHouseholds = [];
-        $this->addHouseholds($project);
-        return $listHouseholds;
+        $errors = $this->addHouseholds($project);
+        return $errors;
     }
 
     /**
      * @param Project $project
+     * @return array
      * @throws \Exception
      */
     public function addHouseholds(Project $project)
     {
         $householdsToAdd = $this->getHouseholdsNoTypo();
+        $errors = [];
         foreach ($householdsToAdd as $householdToAdd)
         {
             try
@@ -48,9 +49,13 @@ class LessTreatment extends AbstractTreatment
             }
             catch (\Exception $exception)
             {
-                continue;
+                $errors[] = [
+                    "household" => $householdToAdd,
+                    "error" => "The creation of the household failed. Please check your CSV file."
+                ];
             }
         }
+        return $errors;
     }
 
     /**

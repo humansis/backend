@@ -90,7 +90,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             {
                 // Criterion on the field directly inside beneficiary table
                 case 'beneficiary':
-                    $this->whereBeneficiary($qb, $i, $countryISO3, $criterion['field'], $criterion['value'], $criterion['operator'], $criterion['group']);
+                    $this->whereBeneficiary($qb, $i, $countryISO3, $criterion['field'], $criterion['value'], $criterion['operator'], $criterion['kind_beneficiary']);
                     break;
                 // Criterion on the value of a country specific
                 case 'countrySpecific':
@@ -98,7 +98,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
                     break;
                 // Criterion on vulnerability criterion (if the beneficiary has, or not)
                 case 'vulnerabilityCriterion':
-                    $this->whereVulnerabilityCriterion($qb, $i, $countryISO3, $criterion['id'], $criterion['group']);
+                    $this->whereVulnerabilityCriterion($qb, $i, $countryISO3, $criterion['id'], $criterion['kind_beneficiary']);
                     break;
                 default:
                     throw new \Exception("The field '{$criterion['field']} is not implemented yet");

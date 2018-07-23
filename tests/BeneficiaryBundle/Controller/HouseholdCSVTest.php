@@ -211,7 +211,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame(true, $return);
+        $this->assertSame([], $return);
 
 
         // TRY TO ADD CSV WITH TYPO ERROR => UPDATE THE OLD 'GIVEN_NAME' OF THE HEAD IN DATABASE
@@ -244,7 +244,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame(true, $return);
+        $this->assertSame([], $return);
         /** @var Beneficiary $headOldHousehold */
         $headOldHousehold = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
         $this->assertSame($this->UPDATED_GIVEN_NAME, $headOldHousehold->getGivenName());
@@ -335,7 +335,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame(true, $return);
+        $this->assertSame([], $return);
         $household2 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet2);
         $beneficiariesOfHH2 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household2);
         $this->assertSame(1, count($beneficiariesOfHH2));
@@ -422,7 +422,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame(true, $return);
+        $this->assertSame([], $return);
         $household3 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet3);
         $beneficiariesOfHH3 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household3);
         $this->assertSame(2, count($beneficiariesOfHH3));
@@ -518,7 +518,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame(true, $return);
+        $this->assertSame([], $return);
         $household4 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet4);
         $beneficiariesOfHH4 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household4);
         $this->assertSame(2, count($beneficiariesOfHH4));
@@ -558,7 +558,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame(true, $return);
+        $this->assertSame([], $return);
         /** @var Beneficiary $headOldHousehold */
         $headOldHousehold = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
         $this->assertSame($this->UPDATED_GIVEN_NAME, $headOldHousehold->getGivenName());

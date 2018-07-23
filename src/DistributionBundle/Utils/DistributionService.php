@@ -3,6 +3,7 @@
 namespace DistributionBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use DoctrineExtensions\Query\Mysql\Date;
 use JMS\Serializer\Serializer;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\Location;
@@ -11,7 +12,8 @@ use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class DistributionService {
+class DistributionService
+{
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -22,12 +24,21 @@ class DistributionService {
     /** @var ValidatorInterface $validator */
     private $validator;
 
+    /** @var LocationService $locationService */
+    private $locationService;
 
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator)
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        Serializer $serializer,
+        ValidatorInterface $validator,
+        LocationService $locationService
+    )
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->locationService = $locationService;
     }
 
     /**
@@ -37,11 +48,12 @@ class DistributionService {
      * @return DistributionData
      * @throws \Exception
      */
-    public function create(array $distributionArray) 
+    public function create(array $distributionArray)
     {
         /** @var DistributionData $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
 
+        $distribution->setUpdatedOn(new \DateTime());
         $errors = $this->validator->validate($distribution);
         if (count($errors) > 0)
         {
@@ -52,46 +64,36 @@ class DistributionService {
             }
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
-        
-        $location = $distribution->getLocation();
-        $locationTmp = $this->em->getRepository(Location::class)->find($location);
-        if ($locationTmp instanceof Location)
-            $distribution->setLocation($locationTmp);
+
+        $location = $this->locationService->getOrSaveLocation($distributionArray['location']);
+        $distribution->setLocation($location);
 
         $project = $distribution->getProject();
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
         if ($projectTmp instanceof Project)
             $distribution->setProject($projectTmp);
 
-        $selectionCriteria = $distribution->getSelectionCriteria();
-        $selectionCriteriaTmp = $this->em->getRepository(SelectionCriteria::class)->find($selectionCriteria);
-        if ($selectionCriteriaTmp instanceof SelectionCriteria)
-            $distribution->setSelectionCriteria($selectionCriteriaTmp);
-
         $this->em->persist($distribution);
-
         $this->em->flush();
 
         return $distribution;
     }
 
-    /**
-     * Get one distribution by id
-     * 
-     * @param DistributionData $distributionData
-     * @return DistributionData
-     */
-    public function findOne(DistributionData $distributionData) 
+
+    public function createListBeneficiaries(DistributionData $distributionData, array $beneficiaries)
     {
-        return $this->em->getRepository(DistributionData::class)->find($distributionData);
+        foreach ($beneficiaries as $beneficiary)
+        {
+
+        }
     }
 
     /**
      * Get all distributions
-     * 
+     *
      * @return array
      */
-    public function findAll() 
+    public function findAll()
     {
         return $this->em->getRepository(DistributionData::class)->findAll();
     }
@@ -103,7 +105,7 @@ class DistributionService {
      * @param array $distributionArray
      * @return DistributionData
      * @throws \Exception
-    */
+     */
     public function edit(DistributionData $distributionData, array $distributionArray)
     {
         /** @var DistributionData $distribution */
@@ -136,7 +138,7 @@ class DistributionService {
     public function archived(DistributionData $distribution)
     {
         /** @var DistributionData $distribution */
-        $distributionData = $this->em->getRepository(DistributionData::class)->findById($distribution->getId());
+        $distributionData = $this->em->getRepository(DistributionData::class)->find($distribution);
         if (!empty($distributionData))
             $distribution->setArchived(1);
 
@@ -146,5 +148,5 @@ class DistributionService {
         return $distributionData;
     }
 
-    
+
 }
