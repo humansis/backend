@@ -29,29 +29,35 @@ class DefaultRetriever extends AbstractRetriever
      * @param string $countryISO3
      * @param string $distributionType
      * @param array $criteria
-     * @param string|null $groupGlobal
+     * @param string|null $kindBeneficiaryGlobal
      * @return mixed
      * @throws \Exception
      */
-    public function getReceivers(string $countryISO3, string $distributionType, array $criteria, string $groupGlobal = null)
+    public function getReceivers(string $countryISO3, string $distributionType, array $criteria, bool $onlyCount = false, string $kindBeneficiaryGlobal = null)
     {
-        $groupCode = null;
+        $kindBeneficiaryCode = null;
         if ($distributionType === 'household')
         {
             foreach ($criteria as $criterion)
             {
-                $criterion["group"] = $this->getStatusBeneficiaryCriterion($criterion["group"]);
+                $criterion["kind_beneficiary"] = $this->getStatusBeneficiaryCriterion($criterion["kind_beneficiary"]);
             }
         }
         elseif ($distributionType === 'beneficiary')
         {
-            $groupCode = $this->getStatusBeneficiaryCriterion($groupGlobal);
+            $kindBeneficiaryCode = $this->getStatusBeneficiaryCriterion($kindBeneficiaryGlobal);
         }
         else
         {
             throw new \Exception("The distribution type '$distributionType' is unknown.");
         }
-        $receivers = $this->guessRepository($distributionType)->findByCriteria($countryISO3, $criteria, $groupCode);
+        $receivers = $this->guessRepository($distributionType)->findByCriteria($countryISO3, $criteria,$onlyCount, $kindBeneficiaryCode);
+
+        // If we only want the number of beneficiaries, return only the number
+        if ($onlyCount)
+        {
+            $receivers = ["number" => intval(current($receivers)[1])];
+        }
         return $receivers;
     }
 
@@ -76,14 +82,14 @@ class DefaultRetriever extends AbstractRetriever
     /**
      * Return the value of the beneficiary status (is head of household or not)
      *
-     * @param $group
+     * @param $kindBeneficiary
      * @return int
      * @throws \Exception
      */
-    private function getStatusBeneficiaryCriterion($group)
+    private function getStatusBeneficiaryCriterion($kindBeneficiary)
     {
-        $group = trim(strtolower(strval($group)));
-        switch ($group)
+        $kindBeneficiary = trim(strtolower(strval($kindBeneficiary)));
+        switch ($kindBeneficiary)
         {
             case 'beneficiary':
                 return 1;
@@ -93,6 +99,6 @@ class DefaultRetriever extends AbstractRetriever
                 return null;
         }
 
-        throw new \Exception("The group '$group' is not implemented yet.");
+        throw new \Exception("The kindBeneficiary '$kindBeneficiary' is not implemented yet.");
     }
 }

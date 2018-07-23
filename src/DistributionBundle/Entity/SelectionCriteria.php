@@ -31,23 +31,37 @@ class SelectionCriteria
     /**
      * @var string
      *
+     * @ORM\Column(name="kind_beneficiary", type="string", length=255, nullable=true)
+     */
+    private $kindBeneficiary;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="field_string", type="string", length=255)
      */
     private $fieldString;
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="value_string", type="string", length=255)
+     * @ORM\Column(name="field_id", type="integer", nullable=true)
      */
-    private $valueString;
+    private $idField;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="condition_string", type="string", length=255)
+     * @ORM\Column(name="condition_string", type="string", length=255, nullable=true)
      */
     private $conditionString;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="value_string", type="string", length=255, nullable=true)
+     */
+    private $valueString;
 
     /**
      * Get id.
@@ -153,5 +167,53 @@ class SelectionCriteria
     public function getConditionString()
     {
         return $this->conditionString;
+    }
+
+    /**
+     * Set kindBeneficiary.
+     *
+     * @param string|null $kindBeneficiary
+     *
+     * @return SelectionCriteria
+     */
+    public function setKindBeneficiary($kindBeneficiary = null)
+    {
+        $this->kindBeneficiary = $kindBeneficiary;
+
+        return $this;
+    }
+
+    /**
+     * Get kindBeneficiary.
+     *
+     * @return string|null
+     */
+    public function getKindBeneficiary()
+    {
+        return $this->kindBeneficiary;
+    }
+
+    /**
+     * Set idField.
+     *
+     * @param int|null $idField
+     *
+     * @return SelectionCriteria
+     */
+    public function setIdField($idField = null)
+    {
+        $this->idField = $idField;
+
+        return $this;
+    }
+
+    /**
+     * Get idField.
+     *
+     * @return int|null
+     */
+    public function getIdField()
+    {
+        return $this->idField;
     }
 }

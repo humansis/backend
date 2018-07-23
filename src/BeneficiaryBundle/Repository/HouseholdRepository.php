@@ -20,17 +20,35 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
     ];
 
 
+    /**
+     * Get all Household by country
+     * Use $filters to add a offset and a limit. Default => offset = 0 and limit = 10
+     * @param $iso3
+     * @param array $filters
+     * @return mixed
+     */
     public function getAllBy($iso3, $filters = [])
     {
+        $offset = (array_key_exists("offset", $filters)) ? intval($filters['offset']) : 0;
+        $limit = (array_key_exists("limit", $filters)) ? intval($filters['limit']) : 10;
+
         $qb = $this->createQueryBuilder("hh");
         $q = $qb->leftJoin("hh.location", "l")
+
             ->where("l.countryIso3 = :iso3")
             ->setParameter("iso3", $iso3)
-            ->andWhere("hh.archived = 0");
+            ->andWhere("hh.archived = 0")
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
 
         return $q->getQuery()->getResult();
     }
 
+    /**
+     * Get similar household
+     * @param array $householdArray
+     * @return mixed
+     */
     public function getSimilar(array $householdArray)
     {
         $qb = $this->createQueryBuilder("hh");
@@ -53,10 +71,14 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
      * @return mixed
      * @throws \Exception
      */
-    public function findByCriteria($countryISO3, array $criteria, string $groupGlobal = null)
+    public function findByCriteria($countryISO3, array $criteria, bool $onlyCount = false, string $groupGlobal = null)
     {
-        $qb = $this->createQueryBuilder("hh")
-            ->leftJoin("hh.beneficiaries", "b");
+        $qb = $this->createQueryBuilder("hh");
+
+        if ($onlyCount)
+            $qb->select("count(hh)");
+
+        $qb->leftJoin("hh.beneficiaries", "b");
         $this->setCountry($qb, $countryISO3);
 
         $i = 1;
@@ -68,7 +90,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             {
                 // Criterion on the field directly inside beneficiary table
                 case 'beneficiary':
-                    $this->whereBeneficiary($qb, $i, $countryISO3, $criterion['field'], $criterion['value'], $criterion['operator'], $criterion['group']);
+                    $this->whereBeneficiary($qb, $i, $countryISO3, $criterion['field'], $criterion['value'], $criterion['operator'], $criterion['kind_beneficiary']);
                     break;
                 // Criterion on the value of a country specific
                 case 'countrySpecific':
@@ -76,7 +98,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
                     break;
                 // Criterion on vulnerability criterion (if the beneficiary has, or not)
                 case 'vulnerabilityCriterion':
-                    $this->whereVulnerabilityCriterion($qb, $i, $countryISO3, $criterion['id'], $criterion['group']);
+                    $this->whereVulnerabilityCriterion($qb, $i, $countryISO3, $criterion['id'], $criterion['kind_beneficiary']);
                     break;
                 default:
                     throw new \Exception("The field '{$criterion['field']} is not implemented yet");
@@ -102,7 +124,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         $qbSub = $this->createQueryBuilder("hh$i");
         $this->setCountry($qbSub, $countryISO3, $i);
         $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
-            ->leftJoin("b$i.vulnerabilityCriterions", "vc$i")
+            ->leftJoin("b$i.vulnerabilityCriteria", "vc$i")
             ->andWhere("vc$i.id = :idvc$i")
             ->setParameter("idvc$i", $idVulnerabilityCriterion);
         if (null !== $status)
@@ -181,5 +203,21 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         $qb->leftJoin("hh$i.location", "l$i")
             ->andWhere("l$i.countryIso3 = :countryIso3")
             ->setParameter("countryIso3", $countryISO3);
+    }
+
+    /**
+     * count the number of housholds linked to a project
+     *
+     * @param $projet
+     */
+    public function countByProject($project)
+    {
+        $qb = $this->createQueryBuilder("hh");
+        $qb->select("count(hh)")
+            ->leftJoin("hh.projects", "p")
+            ->andWhere("p = :project")
+            ->setParameter("project", $project);
+
+        return $qb->getQuery()->getResult()[0];
     }
 }

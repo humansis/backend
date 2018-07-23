@@ -62,4 +62,50 @@ class CriteriaDistributionController extends Controller
 
         return new Response($json);
     }
+
+    /**
+     * @Rest\Post("/distribution/criteria/number")
+     *
+     *
+     * @SWG\Tag(name="CriteriaDistributions")
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     required=true,
+     *     schema={}
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     * @throws \Exception
+     */
+    public function getBeneficiariesNumberAction(Request $request)
+    {
+        /** @var CriteriaDistributionService $criteriaDistributionService */
+        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
+        try
+        {
+            $receivers = $criteriaDistributionService->load($request->request->all(), true);
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage(), 500);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize($receivers, 'json');
+
+        return new Response($json);
+    }
 }

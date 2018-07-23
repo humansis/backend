@@ -12,6 +12,12 @@ services:
     CommonBundle\DataFixtures\CountrySpecificFixtures:
         tags:
             - { name: doctrine.fixture.orm }
+    CommonBundle\DataFixtures\ProjectFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+    CommonBundle\DataFixtures\SectorFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
 
 
     ##########################################################################

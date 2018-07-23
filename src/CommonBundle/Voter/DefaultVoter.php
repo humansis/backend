@@ -43,7 +43,6 @@ class DefaultVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        dump(true);
         return true;
     }
 
@@ -59,7 +58,6 @@ class DefaultVoter extends Voter
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
-        dump($this->requestStack);
         $user = $token->getUser();
         if (!$user instanceof User)
         {

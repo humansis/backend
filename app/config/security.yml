@@ -6,7 +6,7 @@ security:
         our_db_provider:
             entity:
                 class: UserBundle:User
-                property: username
+                property: id
 
     firewalls:
         dev:

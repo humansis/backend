@@ -21,10 +21,9 @@ class ProjectControllerTest extends BMSServiceTestCase
         "name" => "TEST_PROJECT_NAME",
         "start_date" => "2018-02-01",
         "end_date" => "2018-03-03",
-        "number_of_households" => 2,
         "value" => 5,
         "notes" => "This is a note",
-        "iso3" => "FR"
+        "__country" => "FRA"
     ];
 
 

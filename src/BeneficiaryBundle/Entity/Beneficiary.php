@@ -20,7 +20,7 @@ class Beneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $id;
 
@@ -28,7 +28,7 @@ class Beneficiary
      * @var string
      *
      * @ORM\Column(name="givenName", type="string", length=255)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $givenName;
 
@@ -36,7 +36,7 @@ class Beneficiary
      * @var string
      *
      * @ORM\Column(name="familyName", type="string", length=255)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $familyName;
 
@@ -91,8 +91,9 @@ class Beneficiary
      * @var VulnerabilityCriterion
      *
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
-    private $vulnerabilityCriterions;
+    private $vulnerabilityCriteria;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist"})
@@ -105,13 +106,14 @@ class Beneficiary
      * @Groups({"FullHousehold"})
      */
     private $nationalIds;
-    
+
+
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->vulnerabilityCriterions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->vulnerabilityCriteria = new \Doctrine\Common\Collections\ArrayCollection();
         $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nationalIds = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -279,7 +281,7 @@ class Beneficiary
      */
     public function addVulnerabilityCriterion(\BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion)
     {
-        $this->vulnerabilityCriterions[] = $vulnerabilityCriterion;
+        $this->vulnerabilityCriteria[] = $vulnerabilityCriterion;
 
         return $this;
     }
@@ -293,17 +295,17 @@ class Beneficiary
      */
     public function removeVulnerabilityCriterion(\BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion)
     {
-        return $this->vulnerabilityCriterions->removeElement($vulnerabilityCriterion);
+        return $this->vulnerabilityCriteria->removeElement($vulnerabilityCriterion);
     }
 
     /**
-     * Get vulnerabilityCriterions.
+     * Get vulnerabilityCriterion.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getVulnerabilityCriterions()
+    public function getVulnerabilityCriteria()
     {
-        return $this->vulnerabilityCriterions;
+        return $this->vulnerabilityCriteria;
     }
 
     /**
@@ -311,9 +313,9 @@ class Beneficiary
      *
      * @return Beneficiary
      */
-    public function setVulnerabilityCriterions(\Doctrine\Common\Collections\Collection $collection = null)
+    public function setVulnerabilityCriteria(\Doctrine\Common\Collections\Collection $collection = null)
     {
-        $this->vulnerabilityCriterions = $collection;
+        $this->vulnerabilityCriteria = $collection;
 
         return $this;
     }
@@ -328,20 +330,6 @@ class Beneficiary
     public function addPhone(\BeneficiaryBundle\Entity\Phone $phone)
     {
         $this->phones[] = $phone;
-
-        return $this;
-    }
-
-    /**
-     * Set phones.
-     *
-     * @param \BeneficiaryBundle\Entity\Phone $phone
-     *
-     * @return Beneficiary
-     */
-    public function setPhone(\BeneficiaryBundle\Entity\Phone $phone = null)
-    {
-        $this->phones = $phone;
 
         return $this;
     }
@@ -366,6 +354,34 @@ class Beneficiary
     public function getPhones()
     {
         return $this->phones;
+    }
+
+    /**
+     * Set phones.
+     *
+     * @param $collection
+     *
+     * @return Beneficiary
+     */
+    public function setPhones(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->phones = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Set nationalId.
+     *
+     * @param  $collection
+     *
+     * @return Beneficiary
+     */
+    public function setNationalIds(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->nationalIds = $collection;
+
+        return $this;
     }
 
     /**

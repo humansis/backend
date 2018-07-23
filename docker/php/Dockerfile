@@ -32,10 +32,23 @@ RUN rm /etc/localtime
 RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
 RUN "date"
 
-RUN echo 'alias sf="php bin/console"' >> ~/.bashrc
-
 RUN useradd -ms /bin/bash symfony
+
+RUN /bin/bash -c  "echo 'devsymfony:x:407:symfony' >> /etc/group"
+RUN /bin/bash -c  "echo '%devsymfony ALL=NOPASSWD: /sbin/cleanAndTest /sbin/clean' >> /etc/sudoers"
+
+
+RUN /bin/bash -c  "echo 'alias sf=\"php bin/console\"' >> /home/symfony/.bashrc"
+WORKDIR /var/www/html/symfony
+COPY cleanAndTest.sh /usr/bin/cleanAndTest
+
+RUN chgrp devsymfony /usr/bin/cleanAndTest
+RUN chmod g+x /usr/bin/cleanAndTest
+
+COPY clean.sh /usr/bin/clean
+
+RUN chgrp devsymfony /usr/bin/clean
+RUN chmod g+x /usr/bin/clean
 
 USER symfony
 
-WORKDIR /var/www/symfony

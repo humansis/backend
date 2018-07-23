@@ -1,7 +1,7 @@
 services:
     distribution.distribution_service:
         class: DistributionBundle\Utils\DistributionService
-        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
+        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator', '@location_service']
         public: true
 
     distribution.distribution_beneficiary_service:
@@ -12,4 +12,9 @@ services:
     distribution.criteria_distribution_service:
         class: DistributionBundle\Utils\CriteriaDistributionService
         arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    location_service:
+        class: DistributionBundle\Utils\LocationService
+        arguments: ['@doctrine.orm.entity_manager', "@request_validator"]
         public: true

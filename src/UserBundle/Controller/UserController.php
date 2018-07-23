@@ -171,7 +171,7 @@ class UserController extends Controller
         }
         catch (\Exception $exception)
         {
-            return new Response($exception->getMessage());
+            return new Response($exception->getMessage(), 500);
         }
 
         if (!$user instanceof User)
@@ -234,14 +234,17 @@ class UserController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
+     * @param Request $request
      * @return Response
      */
-    public function getAllAction()
+    public function getAllAction(Request $request)
     {
+        $limit = ($request->query->has('limit'))? $request->query->get('limit') : null;
+        $offset = ($request->query->has('offset'))? $request->query->get('offset') : null;
 
         // TODO check user rights
 
-        $users = $this->get('user.user_service')->findAll();
+        $users = $this->get('user.user_service')->findAll($limit, $offset);
         $json = $this->get('jms_serializer')->serialize($users, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
 
         return new Response($json, Response::HTTP_OK);

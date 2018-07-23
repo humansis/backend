@@ -8,6 +8,7 @@ use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use JMS\Serializer\SerializationContext;
+use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,12 +19,29 @@ use BeneficiaryBundle\Entity\Household;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class HouseholdController extends Controller
 {
+    /**
+     * @Rest\Get("/households/{id}")
+     *
+     * @param Household $household
+     * @return Response
+     */
+    public function showAction(Household $household)
+    {
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $household,
+                'json',
+                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
 
     /**
-     * @Rest\Put("/households", name="add_household")
+     * @Rest\Put("/households/project/{id}", name="add_household")
      *
      * @SWG\Tag(name="Households")
      *
@@ -47,16 +65,17 @@ class HouseholdController extends Controller
      *
      *
      * @param Request $request
+     * @param Project $project
      * @return Response
      */
-    public function addAction(Request $request)
+    public function addAction(Request $request, Project $project)
     {
         $householdArray = $request->request->all();
         /** @var HouseholdService $householeService */
         $householeService = $this->get('beneficiary.household_service');
         try
         {
-            $household = $householeService->create($householdArray);
+            $household = $householeService->create($householdArray, $project);
         }
         catch (ValidationException $exception)
         {
@@ -68,13 +87,16 @@ class HouseholdController extends Controller
         }
 
         $json = $this->get('jms_serializer')
-            ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true));
-
+            ->serialize(
+                $household,
+                'json',
+                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+            );
         return new Response($json);
     }
 
     /**
-     * @Rest\Post("/csv/households", name="add_csv_household")
+     * @Rest\Post("/import/households/project/{id}", name="import_household")
      *
      * @SWG\Tag(name="Households")
      *
@@ -102,30 +124,52 @@ class HouseholdController extends Controller
      * )
      *
      * @param Request $request
+     * @param Project $project
      * @return Response
      */
-    public function addCSVAction(Request $request)
+    public function importAction(Request $request, Project $project)
     {
-        $fileCSV = $request->files->get('file');
-        $countryIso3 = $request->request->get('__country');
-//        $countryIso3 = "KHM";
-        /** @var HouseholdCSVService $householeService */
-        $householeService = $this->get('beneficiary.household_csv_service');
-        try
+        if (!$request->query->has('step'))
+            return new Response('You must specify the current level.');
+        $step = $request->query->get('step');
+        if ($request->query->has('token'))
+            $token = $request->query->get('token');
+        else
+            $token = null;
+
+        $contentJson = $request->request->all();
+        $countryIso3 = $contentJson['__country'];
+        unset($contentJson['__country']);
+        /** @var HouseholdCSVService $householdService */
+        $householdService = $this->get('beneficiary.household_csv_service');
+
+        if (1 === intval($step))
         {
-            $listHouseholds = $householeService->loadCSV($countryIso3, $fileCSV);
+            if (!$request->files->has('file'))
+                return new Response("You must upload a file.", 500);
+            try
+            {
+                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $step, $token);
+            }
+            catch (\Exception $e)
+            {
+                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
         }
-        catch (ValidationException $exception)
+        else
         {
-            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-        }
-        catch (\Exception $e)
-        {
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            try
+            {
+                $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $step, $token);
+            }
+            catch (\Exception $e)
+            {
+                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
         }
 
         $json = $this->get('jms_serializer')
-            ->serialize($listHouseholds, 'json');
+            ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
         return new Response($json);
     }
 
@@ -159,7 +203,6 @@ class HouseholdController extends Controller
     public function getPatternCSVAction(Request $request)
     {
         $countryIso3 = $request->request->get('__country');
-//        $countryIso3 = "KHM";
         /** @var ExportCSVService $exportCSVService */
         $exportCSVService = $this->get('beneficiary.household_export_csv_service');
         try
@@ -175,8 +218,10 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Post("/households/{id}")
+     * @Rest\Post("/households/{id}/project/{id_project}")
+     * @ParamConverter("project", options={"mapping": {"id_project" : "id"}})
      *
+     * NOTE : YOU CAN'T EDIT THE PROJECTS LIST OF THE HOUSEHOLD HERE
      *
      * @SWG\Tag(name="Households")
      *
@@ -202,9 +247,10 @@ class HouseholdController extends Controller
      *
      * @param Request $request
      * @param Household $household
+     * @param Project $project
      * @return Response
      */
-    public function editAction(Request $request, Household $household)
+    public function editAction(Request $request, Household $household, Project $project)
     {
         $arrayHousehold = $request->request->all();
         /** @var HouseholdService $householdService */
@@ -212,7 +258,7 @@ class HouseholdController extends Controller
 
         try
         {
-            $newHousehold = $householdService->update($household, $arrayHousehold);
+            $newHousehold = $householdService->update($household, $project, $arrayHousehold);
         }
         catch (ValidationException $exception)
         {
@@ -260,7 +306,7 @@ class HouseholdController extends Controller
             ->serialize(
                 $households,
                 'json',
-                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
             );
         return new Response($json);
     }

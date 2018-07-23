@@ -2,6 +2,9 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use BeneficiaryBundle\Entity\Household;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -21,18 +24,50 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
     ];
 
     /**
+     * Get the head of household
+     *
+     * @param Household $household
+     * @return mixed
+     */
+    public function getHeadOfHousehold(Household $household)
+    {
+        $qb = $this->createQueryBuilder("b");
+        $q = $qb->where("b.household = :household")
+            ->andWhere("b.status = 1")
+            ->setParameter("household", $household);
+
+        try
+        {
+            return $q->getQuery()->getSingleResult();
+        }
+        catch (NoResultException $e)
+        {
+            return null;
+        }
+        catch (NonUniqueResultException $e)
+        {
+            return null;
+        }
+    }
+
+    /**
      * Get Beneficiaries which respect criteria
      *
      * @param $countryISO3
      * @param array $criteria
+     * @param bool $onlyCount
      * @param string $groupGlobal
      * @return mixed
      * @throws \Exception
      */
-    public function findByCriteria($countryISO3, array $criteria, string $groupGlobal = null)
+    public function findByCriteria($countryISO3, array $criteria, bool $onlyCount = false, string $groupGlobal = null)
     {
-        $qb = $this->createQueryBuilder("b")
-            ->leftJoin("b.household", "hh");
+        $qb = $this->createQueryBuilder("b");
+
+        if ($onlyCount)
+            $qb->select("count(b)");
+
+        $qb->leftJoin("b.household", "hh");
         $this->setCountry($qb, $countryISO3);
 
         if (null !== $groupGlobal)
@@ -79,7 +114,7 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
      */
     private function whereVulnerabilityCriterion(QueryBuilder &$qb, $i, $idVulnerabilityCriterion)
     {
-        $qb->leftJoin("b.vulnerabilityCriterions", "vc$i")
+        $qb->leftJoin("b.vulnerabilityCriteria", "vc$i")
             ->andWhere("vc$i.id = :idvc$i")
             ->setParameter("idvc$i", $idVulnerabilityCriterion);
     }

@@ -15,6 +15,10 @@ use JMS\Serializer\Annotation\Type as JMS_Type;
  */
 class DistributionData
 {
+
+    const TYPE_BENEFICIARY = 0;
+    const TYPE_HOUSEHOLD = 1;
+
     /**
      * @var int
      *
@@ -54,9 +58,7 @@ class DistributionData
     private $project;
 
     /**
-     * @var SelectionCriteria
-     *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\SelectionCriteria")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\SelectionCriteria", cascade={"persist"})
      */
     private $selectionCriteria;
 
@@ -78,11 +80,28 @@ class DistributionData
      * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingDistribution", mappedBy="distribution", cascade={"persist"})
      **/
     private $reportingDistribution;
-    
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", name="type_distribution")
+     */
+    private $type;
+
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->reportingDistribution = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setUpdatedOn(new \DateTime());
+    }
 
     /**
      * Set id.
      *
+     * @param $id
      * @return DistributionData
      */
     public function setId($id)
@@ -224,30 +243,6 @@ class DistributionData
     }
 
     /**
-     * Set selectionCriteria.
-     *
-     * @param \DistributionBundle\Entity\SelectionCriteria|null $selectionCriteria
-     *
-     * @return DistributionData
-     */
-    public function setSelectionCriteria(\DistributionBundle\Entity\SelectionCriteria $selectionCriteria = null)
-    {
-        $this->selectionCriteria = $selectionCriteria;
-
-        return $this;
-    }
-
-    /**
-     * Get selectionCriteria.
-     *
-     * @return \DistributionBundle\Entity\SelectionCriteria|null
-     */
-    public function getSelectionCriteria()
-    {
-        return $this->selectionCriteria;
-    }
-
-    /**
      * Set updatedOn.
      *
      * @param \DateTime $updatedOn
@@ -277,6 +272,80 @@ class DistributionData
      */
     public function getReportingDistribution()
     {
-        return $this->ReportingDistribution;
+        return $this->reportingDistribution;
+    }
+
+    /**
+     * Add reportingDistribution.
+     *
+     * @param \ReportingBundle\Entity\ReportingDistribution $reportingDistribution
+     *
+     * @return DistributionData
+     */
+    public function addReportingDistribution(\ReportingBundle\Entity\ReportingDistribution $reportingDistribution)
+    {
+        $this->reportingDistribution[] = $reportingDistribution;
+
+        return $this;
+    }
+
+    /**
+     * Remove reportingDistribution.
+     *
+     * @param \ReportingBundle\Entity\ReportingDistribution $reportingDistribution
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeReportingDistribution(\ReportingBundle\Entity\ReportingDistribution $reportingDistribution)
+    {
+        return $this->reportingDistribution->removeElement($reportingDistribution);
+    }
+
+    /**
+     * Set type.
+     *
+     * @param int $type
+     *
+     * @return DistributionData
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type.
+     *
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set selectionCriteria.
+     *
+     * @param \DistributionBundle\Entity\SelectionCriteria|null $selectionCriteria
+     *
+     * @return DistributionData
+     */
+    public function setSelectionCriteria(\DistributionBundle\Entity\SelectionCriteria $selectionCriteria = null)
+    {
+        $this->selectionCriteria = $selectionCriteria;
+
+        return $this;
+    }
+
+    /**
+     * Get selectionCriteria.
+     *
+     * @return \DistributionBundle\Entity\SelectionCriteria|null
+     */
+    public function getSelectionCriteria()
+    {
+        return $this->selectionCriteria;
     }
 }

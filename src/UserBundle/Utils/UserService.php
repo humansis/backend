@@ -28,11 +28,13 @@ class UserService
     }
 
     /**
+     * @param $offset
+     * @param $limit
      * @return array
      */
-    public function findAll()
+    public function findAll($limit, $offset)
     {
-        return $this->em->getRepository(User::class)->findAll();
+        return $this->em->getRepository(User::class)->findBy([], [], $limit, $offset);
     }
 
     /**
@@ -92,7 +94,7 @@ class UserService
             $user->setUsername($username)
                 ->setUsernameCanonical($username)
                 ->setEnabled(0)
-                ->setEmail($salt)
+                ->setEmail($username)
                 ->setEmailCanonical($salt)
                 ->setSalt($salt)
                 ->setPassword("");
@@ -128,8 +130,9 @@ class UserService
             $data = [
                 'at' => time(),
                 'connected' => true,
-                'username' => $user->getUsername(),
-                'salted_password' => $user->getPassword()
+                'user_id' => $user->getId(),
+                'salted_password' => $user->getPassword(),
+                'username' => $user->getUsername()
             ];
 
         }
@@ -179,11 +182,12 @@ class UserService
             throw new \Exception("The user with username {$user->getUsername()} has been not preconfigured. You need to ask 
             the salt for this username before.");
         elseif ($userSaved->isEnabled())
-            throw new \Exception("The user with username {$user->getUsername()} has been already add");
+            throw new \Exception("The user with username {$user->getUsername()} has already been added");
 
         $user->setId($userSaved->getId())
             ->setSalt($userSaved->getSalt())
-            ->setEmailCanonical($user->getEmail())
+            ->setEmail($user->getUsername())
+            ->setEmailCanonical($user->getUsername())
             ->setEnabled(1);
 
         $errors = $this->validator->validate($user);

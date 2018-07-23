@@ -68,13 +68,29 @@ class BeneficiaryService
             $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
             if (!$beneficiary instanceof Beneficiary)
                 throw new \Exception("Beneficiary was not found.");
-            $beneficiary->setVulnerabilityCriterions(null);
+            if ($beneficiary->getHousehold() !== $household)
+                throw new \Exception("You are trying to update a beneficiary in the wrong household.");
+            $beneficiary->setVulnerabilityCriteria(null);
+            $items = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
+            foreach ($items as $item)
+            {
+                $this->em->remove($item);
+            }
+            $items = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+            foreach ($items as $item)
+            {
+                $this->em->remove($item);
+            }
+
+            if ($flush)
+                $this->em->flush();
         }
         else
         {
             $beneficiary = new Beneficiary();
             $beneficiary->setHousehold($household);
         }
+
         $beneficiary->setGender($beneficiaryArray["gender"])
             ->setDateOfBirth(new \DateTime($beneficiaryArray["date_of_birth"]))
             ->setFamilyName($beneficiaryArray["family_name"])
@@ -82,11 +98,10 @@ class BeneficiaryService
             ->setStatus($beneficiaryArray["status"])
             ->setUpdatedOn(new \DateTime($beneficiaryArray["updated_on"]));
 
-        foreach ($beneficiaryArray["vulnerability_criterion"] as $vulnerability_criterion)
+        foreach ($beneficiaryArray["vulnerability_criteria"] as $vulnerability_criterion)
         {
             $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion["id"]));
         }
-
         foreach ($beneficiaryArray["phones"] as $phoneArray)
         {
             $this->getOrSavePhone($beneficiary, $phoneArray, false);
@@ -136,14 +151,7 @@ class BeneficiaryService
             $phoneArray,
             'any'
         );
-        if (array_key_exists("id", $phoneArray))
-        {
-            $phone = $this->em->getRepository(Phone::class)->find($phoneArray["id"]);
-        }
-        else
-        {
-            $phone = new Phone();
-        }
+        $phone = new Phone();
         $phone->setBeneficiary($beneficiary)
             ->setType($phoneArray["type"])
             ->setNumber($phoneArray["number"]);
@@ -170,14 +178,7 @@ class BeneficiaryService
             $nationalIdArray,
             'any'
         );
-        if (array_key_exists("id", $nationalIdArray))
-        {
-            $nationalId = $this->em->getRepository(NationalId::class)->find($nationalIdArray["id"]);
-        }
-        else
-        {
-            $nationalId = new NationalId();
-        }
+        $nationalId = new NationalId();
         $nationalId->setBeneficiary($beneficiary)
             ->setIdType($nationalIdArray["id_type"])
             ->setIdNumber($nationalIdArray["id_number"]);
@@ -226,5 +227,30 @@ class BeneficiaryService
             $this->em->flush();
 
         return $profile;
+    }
+
+    /**
+     * @param Beneficiary $beneficiary
+     * @return bool
+     */
+    public function remove(Beneficiary $beneficiary)
+    {
+        if ($beneficiary->getStatus() === 1)
+            return false;
+
+        $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+        foreach ($nationalIds as $nationalId)
+        {
+            $this->em->remove($nationalId);
+        }
+
+        $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
+        foreach ($phones as $phone)
+        {
+            $this->em->remove($phone);
+        }
+        $this->em->remove($beneficiary);
+        $this->em->flush();
+        return true;
     }
 }

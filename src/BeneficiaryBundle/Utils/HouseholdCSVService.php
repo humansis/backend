@@ -4,14 +4,30 @@
 namespace BeneficiaryBundle\Utils;
 
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Model\ImportStatistic;
+use BeneficiaryBundle\Model\IncompleteLine;
+use BeneficiaryBundle\Utils\DataTreatment\AbstractTreatment;
+use BeneficiaryBundle\Utils\DataTreatment\DuplicateTreatment;
+use BeneficiaryBundle\Utils\DataTreatment\LessTreatment;
+use BeneficiaryBundle\Utils\DataTreatment\MoreTreatment;
+use BeneficiaryBundle\Utils\DataTreatment\TypoTreatment;
+use BeneficiaryBundle\Utils\DataVerifier\AbstractVerifier;
+use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
+use BeneficiaryBundle\Utils\DataVerifier\LessVerifier;
+use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
+use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Kernel;
 
 class HouseholdCSVService
 {
@@ -22,397 +38,397 @@ class HouseholdCSVService
     /** @var HouseholdService $householdService */
     private $householdService;
 
-    private $percentSimilar = 90;
+    /** @var Mapper $mapper */
+    private $mapper;
 
-    /**
-     * The row index of the header (with the name of country specifics)
-     * @var int
-     */
-    private $indexRowHeader = 2;
+    /** @var Container $container */
+    private $container;
 
-    /**
-     * First row with data
-     * @var int $first_row
-     */
-    private $first_row = 3;
+    /** @var BeneficiaryService $beneficiaryService */
+    private $beneficiaryService;
 
-    /**
-     * First value with a column in the csv which can move, depends on the number of country specifics
-     * @var string
-     */
-    private $firstColumnNonStatic = 'L';
-
-    /** @var array $MAPPING_CSV */
-    private $MAPPING_CSV = [
-        // Household
-        "address_street" => "A",
-        "address_number" => "B",
-        "address_postcode" => "C",
-        "livelihood" => "D",
-        "notes" => "E",
-        "latitude" => "F",
-        "longitude" => "G",
-        "location" => [
-            // Location
-            "adm1" => "H",
-            "adm2" => "I",
-            "adm3" => "J",
-            "adm4" => "K"
-        ],
-        // Beneficiary
-        "beneficiaries" => [
-            "given_name" => "L",
-            "family_name" => "M",
-            "gender" => "N",
-            "status" => "O",
-            "date_of_birth" => "P",
-            "vulnerability_criterion" => "Q",
-            "phones" => "R",
-            "national_ids" => "S"
-        ]
-    ];
+    /** @var string $token */
+    private $token;
 
 
-    public function __construct(EntityManagerInterface $entityManager, HouseholdService $householdService)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        HouseholdService $householdService,
+        BeneficiaryService $beneficiaryService,
+        Mapper $mapper,
+        Container $container
+    )
     {
         $this->em = $entityManager;
         $this->householdService = $householdService;
+        $this->beneficiaryService = $beneficiaryService;
+        $this->mapper = $mapper;
+        $this->container = $container;
     }
 
 
     /**
+     * Defined the reader and transform CSV to array
+     *
      * @param $countryIso3
+     * @param Project $project
      * @param UploadedFile $uploadedFile
+     * @param int $step
+     * @param $token
      * @return array
-     * @throws ValidationException
      * @throws \Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function loadCSV($countryIso3, UploadedFile $uploadedFile)
+    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, int $step, $token)
     {
+        // If it's the first step, we transform CSV to array mapped for corresponding to the entity Household
         // LOADING CSV
         $reader = new Csv();
         $reader->setDelimiter(",");
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->toArray(null, true, true, true);
 
-        // Get the list of households with their beneficiaries
-        $listHouseholdsArray = $this->getListHouseholdArray($sheetArray, $countryIso3);
-
-        $listHouseholdsSaved = $this->em->getRepository(Household::class)->findAll();
-
-        $listHouseholdsWithSimilar = [];
-        foreach ($listHouseholdsArray as $householdArray)
-        {
-            $listSimilarHouseholds = $this->getSimilarBeneficiary($householdArray, $listHouseholdsSaved);
-            if (empty($listSimilarHouseholds))
-                $this->householdService->create($householdArray);
-            else
-                $listHouseholdsWithSimilar[] = [
-                    "new" => $householdArray,
-                    "old" => $listSimilarHouseholds
-                ];
-        }
-        return $listHouseholdsWithSimilar;
+        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $step, $token);
     }
 
     /**
-     * Return a list of household which are similar to the $newHouseholdarray
-     * @param array $newHouseholdarray
-     * @param array $listHousehold
-     * @return array
-     */
-    private function getSimilarBeneficiary(array $newHouseholdarray, array $listHousehold)
-    {
-        // Concatenation of fields to compare with
-        $stringToCompare = $newHouseholdarray["address_street"] .
-            $newHouseholdarray["address_number"] .
-            $newHouseholdarray["address_postcode"];
-
-        $listSimilarHouseholds = [];
-        /** @var Household $household */
-        foreach ($listHousehold as $household)
-        {
-            similar_text($stringToCompare,
-                $household->getAddressStreet() . $household->getAddressNumber() . $household->getAddressPostcode(),
-                $percent
-            );
-            if ($this->percentSimilar < $percent)
-            {
-                $listSimilarHouseholds[] = $household;
-            }
-        }
-        return $listSimilarHouseholds;
-    }
-
-    /**
-     * Get the list of households with their beneficiaries
+     * @param $countryIso3
+     * @param Project $project
      * @param array $sheetArray
-     * @param $countryIso3
-     * @return array
+     * @param int $step
+     * @param $token
+     * @return array|bool
+     * @throws \Exception
      */
-    private function getListHouseholdArray(array $sheetArray, $countryIso3)
+    public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, int $step, $token)
     {
-        // Get the mapping for the current country
-        $mappingCSV = $this->loadMappingCSVOfCountry($countryIso3);
-        $listHouseholdArray = [];
-        $householdArray = null;
-        $rowHeader = null;
-        $formattedHouseholdArray = null;
-
-        foreach ($sheetArray as $indexRow => $row)
+        // Get the list of households from csv with their beneficiaries
+        if (1 === $step)
         {
-            if ($this->indexRowHeader === $indexRow)
-                $rowHeader = $row;
-            if ($indexRow < $this->first_row)
-                continue;
+            $listHouseholdsArray = $this->mapper->getListHouseholdArray($sheetArray, $countryIso3);
+            return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $step, $token);
+        }
+        else
+        {
+            return $this->foundErrors($countryIso3, $project, $sheetArray, $step, $token);
+        }
+    }
 
-            // Load the household array for the current row
-            $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $row, $rowHeader);
-            // Check if it's a new household or just a new beneficiary in the current row
-            if ($formattedHouseholdArray["address_street"] !== "")
+    /**
+     * TODO STEP 1 CHECK INCOMPLETE LINES
+     * @param $countryIso3
+     * @param Project $project
+     * @param array $treatReturned
+     * @param int $step
+     * @param $token
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function foundErrors($countryIso3, Project $project, array $treatReturned, int $step, $token)
+    {
+        $this->clearData();
+        $this->token = $token;
+        if (!$this->checkTokenAndStep($step))
+            throw new \Exception("Your session for this import has expired");
+        // If there is a treatment class for this step, call it
+        $treatment = $this->guessTreatment($step);
+        if ($treatment !== null)
+            $treatReturned = $treatment->treat($project, $treatReturned);
+
+        /** @var AbstractVerifier $verifier */
+        $verifier = $this->guessVerifier($step);
+        $return = [];
+        if (null === $verifier)
+        {
+            $this->clearCacheToken($this->token);
+            return $treatReturned;
+        }
+        $cache_id = 1;
+        $householdsToSave = [];
+        foreach ($treatReturned as $index => $householdArray)
+        {
+            $returnTmp = $verifier->verify($countryIso3, $householdArray, $cache_id);
+            // IF there is errors
+            if (null !== $returnTmp && [] !== $returnTmp)
             {
-                if (null !== $householdArray)
-                {
-                    $listHouseholdArray[] = $householdArray;
-                }
-                $householdArray = $formattedHouseholdArray;
+                if ($returnTmp !== false)
+                    $return[] = $returnTmp;
             }
             else
             {
-                $householdArray["beneficiaries"][] = current($formattedHouseholdArray["beneficiaries"]);
+                $householdsToSave[$cache_id] = $householdArray;
             }
+
+            $cache_id++;
+            unset($treatReturned[$index]);
         }
 
-        if (null !== $formattedHouseholdArray)
-        {
-            $listHouseholdArray[] = $householdArray;
-        }
-
-        return $listHouseholdArray;
+        $this->saveInCache($step, json_encode($householdsToSave));
+        $this->setTimeExpiry();
+        return ["data" => $return, "token" => $this->token];
     }
 
     /**
-     * Transform the array from the CSV (with index 'A', 'B') to a formatted array which can be compatible with the
-     * function save of a household (with correct index names and correct deep array)
-     *
-     * @param array $mappingCSV
-     * @param $countryIso3
-     * @param array $row
-     * @param array $rowHeader
-     * @return array
+     * Depends on the step, guess which verifier used
+     * @param int $step
+     * @return AbstractVerifier
+     * @throws \Exception
      */
-    private function mappingCSV(array $mappingCSV, $countryIso3, array $row, array $rowHeader)
+    private function guessVerifier(int $step)
     {
-        $formattedHouseholdArray = [];
-        foreach ($mappingCSV as $formattedIndex => $csvIndex)
+        switch ($step)
         {
-            if (is_array($csvIndex))
-            {
-                foreach ($csvIndex as $formattedIndex2 => $csvIndex2)
-                {
-                    $formattedHouseholdArray[$formattedIndex][$formattedIndex2] = strval($row[$csvIndex2]);
-                }
-            }
-            else
-            {
-                $formattedHouseholdArray[$formattedIndex] = strval($row[$csvIndex]);
-            }
-        }
-        // Add the country iso3 from the request
-        $formattedHouseholdArray["location"]["country_iso3"] = $countryIso3;
-
-        // Traitment on field with multiple value or foreign key inside (switch name to id for example)
-        $this->fieldCountrySpecifics($mappingCSV, $formattedHouseholdArray, $rowHeader);
-        $this->fieldVulnerabilityCriterion($formattedHouseholdArray);
-        $this->fieldPhones($formattedHouseholdArray);
-        $this->fieldNationalIds($formattedHouseholdArray);
-        $this->fieldBeneficiary($formattedHouseholdArray);
-
-        // ADD THE FIELD COUNTRY ONLY FOR THE CHECKING BY THE REQUEST VALIDATOR
-        $formattedHouseholdArray["__country"] = $countryIso3;
-        return $formattedHouseholdArray;
-    }
-
-    /**
-     * Reformat the fields countries_specific_answers
-     * @param array $mappingCSV
-     * @param $formattedHouseholdArray
-     * @param array $rowHeader
-     */
-    private function fieldCountrySpecifics(array $mappingCSV, &$formattedHouseholdArray, array $rowHeader)
-    {
-        $formattedHouseholdArray["country_specific_answers"] = [];
-        foreach ($formattedHouseholdArray as $indexFormatted => $value)
-        {
-            if (substr($indexFormatted, 0, 20) === "tmp_country_specific")
-            {
-                $field = $rowHeader[$mappingCSV[$indexFormatted]];
-                $countrySpecific = $this->em->getRepository(CountrySpecific::class)
-                    ->findOneByField($field);
-                $formattedHouseholdArray["country_specific_answers"][] = [
-                    "answer" => $value,
-                    "country_specific" => ["id" => $countrySpecific->getId()]
-                ];
-                unset($formattedHouseholdArray[$indexFormatted]);
-            }
+            // CASE FOUND TYPO ISSUES
+            case 1:
+                return new TypoVerifier($this->em, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND DUPLICATED ISSUES
+            case 2:
+                return new DuplicateVerifier($this->em, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND MORE ISSUES
+            case 3:
+                return new MoreVerifier($this->em);
+                break;
+            // CASE FOUND LESS ISSUES
+            case 4:
+                return new LessVerifier($this->em);
+                break;
+            // CASE FOUND LESS ISSUES
+            case 5:
+                return null;
+                break;
+            // NOT FOUND CASE
+            default:
+                throw new \Exception("Step '$step' unknown.");
         }
     }
 
     /**
-     * Reformat the field which contains vulnerability criteria => switch list of names to a list of ids
-     * @param $formattedHouseholdArray
+     * Depends on the step, guess which verifier used
+     * @param int $step
+     * @return AbstractTreatment
+     * @throws \Exception
      */
-    private function fieldVulnerabilityCriterion(&$formattedHouseholdArray)
+    private function guessTreatment(int $step)
     {
-        $vulnerability_criterion_string = $formattedHouseholdArray["beneficiaries"]["vulnerability_criterion"];
-        $vulnerability_criterion_array = array_map('trim', explode(";", $vulnerability_criterion_string));
-        $formattedHouseholdArray["beneficiaries"]["vulnerability_criterion"] = [];
-        foreach ($vulnerability_criterion_array as $item)
+        switch ($step)
         {
-            $vulnerability_criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneByValue($item);
-            if (!$vulnerability_criterion instanceof VulnerabilityCriterion)
-                continue;
-            $formattedHouseholdArray["beneficiaries"]["vulnerability_criterion"][] = ["id" => $vulnerability_criterion->getId()];
+            case 1:
+                return null;
+                break;
+            // CASE FOUND TYPO ISSUES
+            case 2:
+                return new TypoTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND DUPLICATED ISSUES
+            case 3:
+                return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND MORE ISSUES
+            case 4:
+                return new MoreTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND LESS ISSUES
+            case 5:
+                return new LessTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // NOT FOUND CASE
+            default:
+                throw new \Exception("Step '$step' unknown.");
         }
     }
 
     /**
-     * Reformat the field phones => switch string 'type-number' to [type => type, number => number]
-     * @param $formattedHouseholdArray
+     * @param $step
+     * @return bool
+     * @throws \Exception
      */
-    private function fieldPhones(&$formattedHouseholdArray)
+    private function checkTokenAndStep($step)
     {
-        $phones_string = $formattedHouseholdArray["beneficiaries"]["phones"];
-        $phones_array = array_map('trim', explode(";", $phones_string));
-        $formattedHouseholdArray["beneficiaries"]["phones"] = [];
-        foreach ($phones_array as $item)
-        {
-            $item_array = array_map('trim', explode("-", $item));
-            $formattedHouseholdArray["beneficiaries"]["phones"][] = ["type" => $item_array[0], "number" => $item_array[1]];
-        }
+        if (intval($step) === 1)
+            return true;
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_token = $dir_root . '/../var/data/' . $this->token;
+        if (!is_dir($dir_token))
+            return false;
+
+        $dir_file_step = $dir_token . '/step_' . strval(intval($step) - 1);
+        if (!is_file($dir_file_step))
+            return false;
+
+        return true;
     }
 
     /**
-     * Reformat the field nationalids => switch string 'idtype-idnumber' to [id_type => idtype, id_number => idnumber]
-     * @param $formattedHouseholdArray
-     */
-    private function fieldNationalIds(&$formattedHouseholdArray)
-    {
-        $national_ids_string = $formattedHouseholdArray["beneficiaries"]["national_ids"];
-        $national_ids_array = array_map('trim', explode(";", $national_ids_string));
-        $formattedHouseholdArray["beneficiaries"]["national_ids"] = [];
-        foreach ($national_ids_array as $item)
-        {
-            $item_array = array_map('trim', explode("-", $item));
-            $formattedHouseholdArray["beneficiaries"]["national_ids"][] = ["id_type" => $item_array[0], "id_number" => $item_array[1]];
-        }
-    }
-
-    /**
-     * Load the mapping CSV for a specific country. Some columns can move because on the number of country specifics
-     *
-     * @param $countryIso3
-     * @return array
-     */
-    private function loadMappingCSVOfCountry($countryIso3)
-    {
-        $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($countryIso3);
-        // Get the number of country specific for the specific country countryIso3
-        $nbCountrySpecific = count($countrySpecifics);
-        $mappingCSVCountry = [];
-        $countrySpecificsAreLoaded = false;
-        foreach ($this->MAPPING_CSV as $indexFormatted => $indexCSV)
-        {
-            // For recursive array (allowed only 1 level of recursivity)
-            if (is_array($indexCSV))
-            {
-                foreach ($indexCSV as $indexFormatted2 => $indexCSV2)
-                {
-                    // If the column is before the non-static columns, change nothing
-                    if ($indexCSV2 < $this->firstColumnNonStatic)
-                        $mappingCSVCountry[$indexFormatted][$indexFormatted2] = $indexCSV2;
-                    // Else we increment the column.
-                    // Example : if $nbCountrySpecific = 1, we shift the column by 1 (if the column is X, it will became Y)
-                    else
-                    {
-                        // If we have not added the country specific column in the mapping
-                        if (!$countrySpecificsAreLoaded)
-                        {
-                            // Add each country specific column in the mapping
-                            for ($i = 0; $i < $nbCountrySpecific; $i++)
-                            {
-                                $mappingCSVCountry["tmp_country_specific" . $i] =
-                                    $this->SUMOfLetter($indexCSV2, $i);
-                            }
-                            $countrySpecificsAreLoaded = true;
-                        }
-                        $mappingCSVCountry[$indexFormatted][$indexFormatted2] = $this->SUMOfLetter($indexCSV2, $nbCountrySpecific);
-                    }
-                }
-            }
-            else
-            {
-                // Same process than in the if
-                if ($indexCSV < $this->firstColumnNonStatic)
-                    $mappingCSVCountry[$indexFormatted] = $indexCSV;
-                else
-                {
-                    // If we have not added the country specific column in the mapping
-                    if (!$countrySpecificsAreLoaded)
-                    {
-                        // Add each country specific column in the mapping
-                        for ($i = 0; $i < $nbCountrySpecific; $i++)
-                        {
-                            $mappingCSVCountry["tmp_country_specific" . $i] =
-                                $this->SUMOfLetter($indexCSV, $i);
-                        }
-                        $countrySpecificsAreLoaded = true;
-                    }
-                    $mappingCSVCountry[$indexFormatted] = $this->SUMOfLetter($indexCSV, $nbCountrySpecific);
-                }
-            }
-        }
-
-        return $mappingCSVCountry;
-    }
-
-    /**
-     * Reformat the field beneficiary
-     * @param $formattedHouseholdArray
-     */
-    private function fieldBeneficiary(&$formattedHouseholdArray)
-    {
-        $beneficiary = $formattedHouseholdArray["beneficiaries"];
-        $beneficiary["profile"] = ["photo" => ""];
-        $beneficiary["updated_on"] = (new \DateTime())->format('Y-m-d H:m:i');
-        unset($formattedHouseholdArray["beneficiaries"]);
-        $formattedHouseholdArray["beneficiaries"][] = $beneficiary;
-    }
-
-    /**
-     * Make an addition of a letter and a number
-     * Example : A + 2 = C  Or  Z + 1 = AA  OR  AY + 2 = BA
-     * @param $letter1
-     * @param $number
+     * If the token is null, create a new one
+     * return the token
      * @return string
      */
-    private function SUMOfLetter($letter1, $number)
+    public function initOrGetToken()
     {
-        $ascii = ord($letter1) + $number;
-        $prefix = '';
-        if ($ascii > 90)
-        {
-            $prefix = 'A';
-            $ascii -= 26;
-            while ($ascii > 90)
-            {
-                $prefix++;
-                $ascii -= 90;
-            }
-        }
-        return $prefix . chr($ascii);
+        $sizeToken = 50;
+        if (null === $this->token)
+            $this->token = bin2hex(random_bytes($sizeToken));
+
+        return $this->token;
     }
 
+    /**
+     * @param int $step
+     * @param $dataToSave
+     * @throws \Exception
+     */
+    private function saveInCache(int $step, $dataToSave)
+    {
+        $this->initOrGetToken();
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+        $dir_var_token = $dir_var . '/' . $this->token;
+        if (!is_dir($dir_var_token))
+            mkdir($dir_var_token);
+        file_put_contents($dir_var_token . '/step_' . $step, $dataToSave);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function setTimeExpiry()
+    {
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+        $dir_file = $dir_var . '/timestamp_token';
+        if (is_file($dir_file))
+        {
+            $timestampByToken = json_decode(file_get_contents($dir_file), true);
+        }
+        else
+        {
+            $timestampByToken = [];
+        }
+
+        $index = null;
+        $timestamp = null;
+        $dateExpiry = new \DateTime();
+        $dateExpiry->add(new \DateInterval('PT10M'));
+        $timestampByToken[$this->token] = [
+            'timestamp' => $dateExpiry->getTimestamp()
+        ];
+
+        file_put_contents($dir_var . '/timestamp_token', json_encode($timestampByToken));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function clearData()
+    {
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+        $dir_file = $dir_var . '/timestamp_token';
+        if (is_file($dir_file))
+        {
+            $timestampByToken = json_decode(file_get_contents($dir_file), true);
+        }
+        else
+        {
+            $this->rrmdir($dir_var);
+            return;
+        }
+
+        foreach ($timestampByToken as $token => $item)
+        {
+            if ((new \DateTime())->getTimestamp() > $item['timestamp'])
+            {
+                $this->rrmdir($dir_var . '/' . $token);
+                unset($timestampByToken[$token]);
+            }
+        }
+
+        file_put_contents($dir_var . '/timestamp_token', json_encode($timestampByToken));
+    }
+
+    /**
+     * @param $token
+     * @throws \Exception
+     */
+    private function clearCacheToken($token)
+    {
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (!is_dir($dir_var))
+            mkdir($dir_var);
+        $dir_file = $dir_var . '/timestamp_token';
+        if (is_file($dir_file))
+        {
+            $timestampByToken = json_decode(file_get_contents($dir_file), true);
+        }
+        else
+        {
+            $this->rrmdir($dir_var);
+            return;
+        }
+
+        if (is_dir($dir_var . '/' . $token))
+            $this->rrmdir($dir_var . '/' . $token);
+        if (array_key_exists($token, $timestampByToken))
+            unset($timestampByToken[$token]);
+
+        file_put_contents($dir_var . '/timestamp_token', json_encode($timestampByToken));
+    }
+
+    /**
+     * @param $src
+     */
+    private function rrmdir($src)
+    {
+        $dir = opendir($src);
+        while (false !== ($file = readdir($dir)))
+        {
+            if (($file != '.') && ($file != '..'))
+            {
+                $full = $src . '/' . $file;
+                if (is_dir($full))
+                {
+                    $this->rrmdir($full);
+                }
+                else
+                {
+                    unlink($full);
+                }
+            }
+        }
+        closedir($dir);
+        rmdir($src);
+    }
+
+    /**
+     * Check if a value is missing inside the array
+     *
+     * @param array $array
+     * @return bool
+     */
+    private function isIncomplete(array $array)
+    {
+        $isIncomplete = true;
+        foreach ($array as $key => $value)
+        {
+            if (is_array($value))
+                $isIncomplete = $this->isIncomplete($value);
+            if (!$isIncomplete || null === $value)
+            {
+                return false;
+            }
+        }
+
+        return $isIncomplete;
+    }
 }

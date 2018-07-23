@@ -3,12 +3,19 @@
 
 ## Criteria for distribution
 
+### Routes
+
+- **POST /distribution/criteria** : Get the list of beneficiaries of household
+
+- **POST /distribution/criteria/number** : Get the number of beneficiaries of household
+
+
 ### Household Distribution
 
 - **distribution_type** : 'household' (for send distribution to every beneficiaries of a household)
 OR 'beneficiary' (to send distribution to a specific beneficiary)
 - **criteria** : list of criterion :
-    - **group** : 'beneficiary' (head of household) or 'dependent' (head of household dependents) or 'null' (both)
+    - **kind_beneficiary** : 'beneficiary' (head of household) or 'dependent' (head of household dependents) or 'null' (both)
     - **field** : name of a column of Beneficiary table or 'idCountrySpecific' or 'idVulnerabilityCriterion'
     - **operator** : '=', '<', '>', '<=', '>='. It's the operator used for compare the wanted value with the value in database
     - **value** : value to be compare with the database column
@@ -21,26 +28,26 @@ Example :
 	"distribution_type": "household",
 	"criteria": [
 		{
-			"group": "beneficiary",
+			"kind_beneficiary": "beneficiary",
 			"field": "gender",
 			"operator": "=",
 			"value": "1"
 		},
 		{
-			"group": "dependent",
+			"kind_beneficiary": "dependent",
 			"field": "dateOfBirth",
 			"operator": ">",
 			"value": "1994-10-25"
 		},
 		{
-			"group": "beneficiary",
+			"kind_beneficiary": "beneficiary",
 			"field": "idVulnerabilityCriterion",
 			"id": 2,
 			"operator": null,
 			"value": null
 		},
 		{
-			"group": null,
+			"kind_beneficiary": null,
 			"field": "idCountrySpecific",
 			"id": 1,
 			"operator": "<=",
@@ -57,7 +64,7 @@ Example :
 
 - **distribution_type** : 'household' (for send distribution to every beneficiaries of a household)
 OR 'beneficiary' (to send distribution to a specific beneficiary)
-- **group** : 'beneficiary' (for send distribution to every beneficiaries of a household)
+- **kind_beneficiary** : 'beneficiary' (for send distribution to every beneficiaries of a household)
 OR 'dependent' (to send distribution to a specific beneficiary) OR 'null' (both)
 - **criteria** : list of criterion :
     - **field** : name of a column of Beneficiary table or 'idCountrySpecific' or 'idVulnerabilityCriterion'
@@ -70,7 +77,7 @@ Example :
 ```json
 {
 	"distribution_type": "beneficiary",
-	"group": "beneficiary",
+	"kind_beneficiary": "beneficiary",
 	"criteria": [
 		{
 			"field": "dateOfBirth",

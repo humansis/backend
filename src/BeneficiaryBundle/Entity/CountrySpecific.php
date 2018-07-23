@@ -19,7 +19,7 @@ class CountrySpecific
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullCountrySpecific"})
+     * @Groups({"FullCountrySpecific", "FullHousehold"})
      */
     private $id;
 
@@ -27,7 +27,7 @@ class CountrySpecific
      * @var string
      *
      * @ORM\Column(name="field", type="string", length=45)
-     * @Groups({"FullCountrySpecific"})
+     * @Groups({"FullCountrySpecific", "FullHousehold"})
      */
     private $field;
 
@@ -35,7 +35,7 @@ class CountrySpecific
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=45)
-     * @Groups({"FullCountrySpecific"})
+     * @Groups({"FullCountrySpecific", "FullHousehold"})
      */
     private $type;
 
@@ -43,7 +43,7 @@ class CountrySpecific
      * @var string
      *
      * @ORM\Column(name="country_iso3", type="string", length=45)
-     * @Groups({"FullCountrySpecific"})
+     * @Groups({"FullCountrySpecific", "FullHousehold"})
      */
     private $countryIso3;
 

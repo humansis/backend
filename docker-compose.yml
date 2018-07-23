@@ -9,7 +9,7 @@ services:
         image: mysql:5.7.16
         # Declare it on your port 3308 and mapped it on the port 3307 in the container
         ports:
-            - 3308:3307
+            - 3309:3307
         # Create volume for the db
         volumes:
             - "./.data/db:/var/lib/mysql"
@@ -20,25 +20,25 @@ services:
             MYSQL_USER: 'bms_user'
             MYSQL_PASSWORD: 'aA123'
 
-
     # PHP
     php:
         # docker-compose will search your Dockerfile in the folder Docker/php. It will build it and run it
         build: docker/php/
         # Use the port 9000 for php
         ports:
-            - 9000:8000
+            - 9001:8000
         # PHP links MySQL, so you can access to your db with php container
         links:
             - db:mysqldb
         volumes:
-            - ./:/var/www/symfony
+            - ./:/var/www/html/symfony
+            - ./docker/php/php-ini-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
 
     # PHPMYADMIN (for developer)
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         ports:
-            - "8080:80"
+            - "8081:80"
         links:
             - db
 
@@ -48,7 +48,7 @@ services:
         image: nginx
         # The server will listen on port 8086 (so on your computer you will use 8086 in order to access at your app)
         ports:
-            - 8086:80
+            - 8087:80
         volumes:
             - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
         volumes_from:
