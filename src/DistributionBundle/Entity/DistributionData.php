@@ -15,6 +15,10 @@ use JMS\Serializer\Annotation\Type as JMS_Type;
  */
 class DistributionData
 {
+
+    const TYPE_BENEFICIARY = 0;
+    const TYPE_HOUSEHOLD = 1;
+
     /**
      * @var int
      *
@@ -54,8 +58,6 @@ class DistributionData
     private $project;
 
     /**
-     * @var SelectionCriteria
-     *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\SelectionCriteria", cascade={"persist"})
      */
     private $selectionCriteria;
@@ -237,30 +239,6 @@ class DistributionData
     public function getProject()
     {
         return $this->project;
-    }
-
-    /**
-     * Set selectionCriteria.
-     *
-     * @param \DistributionBundle\Entity\SelectionCriteria|null $selectionCriteria
-     *
-     * @return DistributionData
-     */
-    public function setSelectionCriteria(\DistributionBundle\Entity\SelectionCriteria $selectionCriteria = null)
-    {
-        $this->selectionCriteria = $selectionCriteria;
-
-        return $this;
-    }
-
-    /**
-     * Get selectionCriteria.
-     *
-     * @return \DistributionBundle\Entity\SelectionCriteria|null
-     */
-    public function getSelectionCriteria()
-    {
-        return $this->selectionCriteria;
     }
 
     /**

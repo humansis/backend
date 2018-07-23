@@ -26,7 +26,7 @@ class CountrySpecificAnswer
     /**
      * @var string
      *
-     * @ORM\Column(name="answer", type="string", length=255)
+     * @ORM\Column(name="answer", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold"})
      */
     private $answer;

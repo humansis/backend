@@ -4,6 +4,7 @@
 namespace DistributionBundle\Utils;
 
 
+use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\Retriever\DefaultRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -33,5 +34,13 @@ class CriteriaDistributionService
         $kindBeneficiaryGlobal = (array_key_exists('kind_beneficiary', $filters) ? $filters['kind_beneficiary'] : null);
 
         return $defaultRetriever->getReceivers($countryISO3, $distributionType, $filters["criteria"], $onlyCount, $kindBeneficiaryGlobal);
+    }
+
+    public function save(SelectionCriteria $selectionCriteria, bool $flush)
+    {
+        $this->em->persist($selectionCriteria);
+        if ($flush)
+            $this->em->flush();
+        return $selectionCriteria;
     }
 }

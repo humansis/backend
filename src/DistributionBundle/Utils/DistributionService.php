@@ -27,18 +27,23 @@ class DistributionService
     /** @var LocationService $locationService */
     private $locationService;
 
+    /** @var CriteriaDistributionService $criteriaDistributionService */
+    private $criteriaDistributionService;
+
 
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
         ValidatorInterface $validator,
-        LocationService $locationService
+        LocationService $locationService,
+        CriteriaDistributionService $criteriaDistributionService
     )
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->locationService = $locationService;
+        $this->criteriaDistributionService = $criteriaDistributionService;
     }
 
     /**
@@ -80,23 +85,13 @@ class DistributionService
         return $distribution;
     }
 
+
     public function createListBeneficiaries(DistributionData $distributionData, array $beneficiaries)
     {
         foreach ($beneficiaries as $beneficiary)
         {
 
         }
-    }
-
-    /**
-     * Get one distribution by id
-     *
-     * @param DistributionData $distributionData
-     * @return DistributionData
-     */
-    public function findOne(DistributionData $distributionData)
-    {
-        return $this->em->getRepository(DistributionData::class)->find($distributionData);
     }
 
     /**
@@ -149,7 +144,7 @@ class DistributionService
     public function archived(DistributionData $distribution)
     {
         /** @var DistributionData $distribution */
-        $distributionData = $this->em->getRepository(DistributionData::class)->findById($distribution->getId());
+        $distributionData = $this->em->getRepository(DistributionData::class)->find($distribution);
         if (!empty($distributionData))
             $distribution->setArchived(1);
 

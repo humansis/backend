@@ -84,7 +84,7 @@ OR
 - Add every beneficiaries inside data array to the household (in database) with the id "id_old"
 
 
-### LEss treatment
+### Less treatment
 
 ```json
 {
@@ -95,7 +95,14 @@ OR
 
 - Remove every beneficiaries inside data array in the household (in database) with the id "id_old"
 
-
+This step may return array with list of errors (or empty array if everything gone well).
+The model of the return :
+```json
+{
+  "household": "OBJECT HOUSEHOLD",
+  "error": "a small text to explain the error"
+}
+``` 
 
 ## ROUTES
 
