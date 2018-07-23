@@ -558,7 +558,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame(true, $return);
+        $this->assertSame([], $return);
         /** @var Beneficiary $headOldHousehold */
         $headOldHousehold = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
         $this->assertSame($this->UPDATED_GIVEN_NAME, $headOldHousehold->getGivenName());
