@@ -71,15 +71,19 @@ class BeneficiaryService
             if ($beneficiary->getHousehold() !== $household)
                 throw new \Exception("You are trying to update a beneficiary in the wrong household.");
             $beneficiary->setVulnerabilityCriteria(null);
+            $items = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
+            foreach ($items as $item)
+            {
+                $this->em->remove($item);
+            }
+            $items = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+            foreach ($items as $item)
+            {
+                $this->em->remove($item);
+            }
 
-            foreach ($this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary) as $item)
-            {
-                $this->em->remove($item);
-            }
-            foreach ($this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary) as $item)
-            {
-                $this->em->remove($item);
-            }
+            if ($flush)
+                $this->em->flush();
         }
         else
         {
