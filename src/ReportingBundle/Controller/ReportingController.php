@@ -43,7 +43,7 @@ class ReportingController extends Controller
 
      /**
       * Send list of all indicators to display in front
-     * @Rest\Get("/indicators")
+     * @Rest\Post("/indicators")
      * 
      * @param Request $request
      * @return Response
@@ -51,7 +51,7 @@ class ReportingController extends Controller
     public function getAction(Request $request)
     {
         $indicatorFinded = [];
-        // $indicatorFinded = $this->get('ra_reporting.finder')->findIndicator();
+        $indicatorFinded = $this->get('reporting.finder')->findIndicator();
         $json = json_encode($indicatorFinded);
         return new Response($json, Response::HTTP_OK);
         

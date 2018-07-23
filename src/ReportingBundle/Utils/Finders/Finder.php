@@ -3,7 +3,7 @@
 namespace ReportingBundle\Utils\Finders;
 
 use ReportingBundle\Utils\Finders\FinderInterface;
-use ReportingBundle\Entity\Reporting\ReportingIndicator;
+use ReportingBundle\Entity\ReportingIndicator;
 
 use Doctrine\ORM\EntityManager;
 
@@ -28,15 +28,16 @@ class Finder implements FinderInterface {
         $data = [];
         $this->repository = $this->em->getRepository(ReportingIndicator::class);
          $indicators = $this->repository->findAll();
+         dump($indicators);
   
          foreach($indicators as $indicator) {
-            if(preg_match("#^E_#", $indicator->getCode())) 
+            if(preg_match("#^BMS_#", $indicator->getCode())) 
             {
                 $type = explode('_', $indicator->getCode());
                 $infoIndicator = [
                             'type_graph' => $indicator->getGraph(),
                             'id' => $indicator->getId(),
-                            'full_name' => $indicator->getIndicator(),
+                            'full_name' => $indicator->getReference(),
                             'filter' => $indicator->getFilters(),
                             'type' => $type[1]
                         ];
