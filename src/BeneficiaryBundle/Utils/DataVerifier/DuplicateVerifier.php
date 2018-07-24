@@ -61,7 +61,6 @@ class DuplicateVerifier extends AbstractVerifier
                         "old" => $oldBeneficiary->getHousehold()->resetBeneficiaries()->addBeneficiary($oldBeneficiary)
                     ];
 
-
                     $listDuplicateBeneficiaries[] = $arrayTmp;
                     break;
                 }

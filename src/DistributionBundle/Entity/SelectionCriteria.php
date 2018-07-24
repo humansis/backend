@@ -3,6 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * SelectionCriteria
@@ -18,6 +19,7 @@ class SelectionCriteria
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullDistribution"})
      */
     private $id;
 
@@ -25,6 +27,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="table_string", type="string", length=255)
+     * @Groups({"FullDistribution"})
      */
     private $tableString;
 
@@ -32,6 +35,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="kind_beneficiary", type="string", length=255, nullable=true)
+     * @Groups({"FullDistribution"})
      */
     private $kindBeneficiary;
 
@@ -39,6 +43,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="field_string", type="string", length=255)
+     * @Groups({"FullDistribution"})
      */
     private $fieldString;
 
@@ -46,6 +51,7 @@ class SelectionCriteria
      * @var int
      *
      * @ORM\Column(name="field_id", type="integer", nullable=true)
+     * @Groups({"FullDistribution"})
      */
     private $idField;
 
@@ -53,6 +59,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="condition_string", type="string", length=255, nullable=true)
+     * @Groups({"FullDistribution"})
      */
     private $conditionString;
 
@@ -60,6 +67,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="value_string", type="string", length=255, nullable=true)
+     * @Groups({"FullDistribution"})
      */
     private $valueString;
 

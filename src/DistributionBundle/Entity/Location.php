@@ -19,7 +19,7 @@ class Location
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
      */
     private $id;
 
@@ -27,7 +27,7 @@ class Location
      * @var string
      *
      * @ORM\Column(name="country_iso3", type="string", length=45)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
      */
     private $countryIso3;
 
@@ -35,7 +35,7 @@ class Location
      * @var string
      *
      * @ORM\Column(name="adm1", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
      */
     private $adm1;
 
@@ -43,7 +43,7 @@ class Location
      * @var string
      *
      * @ORM\Column(name="adm2", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
      */
     private $adm2;
 
@@ -51,7 +51,7 @@ class Location
      * @var string
      *
      * @ORM\Column(name="adm3", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
      */
     private $adm3;
 
@@ -59,7 +59,7 @@ class Location
      * @var string
      *
      * @ORM\Column(name="adm4", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
      */
     private $adm4;
 

@@ -25,21 +25,29 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
      * Use $filters to add a offset and a limit. Default => offset = 0 and limit = 10
      * @param $iso3
      * @param array $filters
+     * @param array $selects
      * @return mixed
      */
-    public function getAllBy($iso3, $filters = [])
+    public function getAllBy($iso3, $filters = [], $selects = [])
     {
-        $offset = (array_key_exists("offset", $filters)) ? intval($filters['offset']) : 0;
-        $limit = (array_key_exists("limit", $filters)) ? intval($filters['limit']) : 10;
-
         $qb = $this->createQueryBuilder("hh");
         $q = $qb->leftJoin("hh.location", "l")
-
             ->where("l.countryIso3 = :iso3")
             ->setParameter("iso3", $iso3)
-            ->andWhere("hh.archived = 0")
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
+            ->andWhere("hh.archived = 0");
+        if (array_key_exists("offset", $filters))
+            $q->setMaxResults(intval($filters['limit']));
+        if (array_key_exists("limit", $filters))
+            $q->setFirstResult(intval($filters['offset']));
+
+        if (!empty($selects))
+        {
+            $q->select(current($selects));
+            while (next($selects) !== false ?: key($selects) !== null)
+            {
+                $q->addSelect($selects);
+            }
+        }
 
         return $q->getQuery()->getResult();
     }
