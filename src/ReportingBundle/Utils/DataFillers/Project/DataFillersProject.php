@@ -10,7 +10,9 @@ use \ReportingBundle\Entity\ReportingProject;
 
 use \DistributionBundle\Entity\DistributionBeneficiary;
 use \ProjectBundle\Entity\Project;
+use \ProjectBundle\Entity\Donor;
 use \BeneficiaryBundle\Entity\Beneficiary;
+use \BeneficiaryBundle\Entity\Household;
 use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
 
 use Doctrine\ORM\EntityManager;
@@ -43,7 +45,7 @@ class DataFillersProject
     }
 
     /**
-     * Fill in ReportingValue and ReportingCountry with number of Men in a project
+     * Fill in ReportingValue and ReportingProject with number of Men in a project
      */
     public function BMSU_Project_NM() {
         $projects = $this->getProject();
@@ -99,7 +101,7 @@ class DataFillersProject
     }
 
     /**
-     * Fill in ReportingValue and ReportingCountry with number of women in a project
+     * Fill in ReportingValue and ReportingProject with number of women in a project
      */
     public function BMSU_Project_NW() {
         $projects = $this->getProject();
@@ -155,7 +157,7 @@ class DataFillersProject
     }
 
      /**
-     * Fill in ReportingValue and ReportingCountry with the total of vulnerabilities served by vulnerabily in a project
+     * Fill in ReportingValue and ReportingProject with the total of vulnerabilities served by vulnerabily in a project
      */
     public function BMSU_Project_TVSV() {
         $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
@@ -235,7 +237,7 @@ class DataFillersProject
     }
 
          /**
-     * Fill in ReportingValue and ReportingCountry with the total of vulnerabilities served in a project
+     * Fill in ReportingValue and ReportingProject with the total of vulnerabilities served in a project
      */
     public function BMSU_Project_TVS() {
         $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
@@ -295,6 +297,227 @@ class DataFillersProject
             $results = [];
         }  
     }
+
+    /**
+     * Fill in ReportingValue and ReportingProject with name of donors
+     */
+    public function BMS_Project_D() {
+        $projects = $this->getProject();
+        foreach($projects as $project) {
+            $byProject = [];
+            foreach($project->getDonors() as $donor) {
+                $this->repository = $this->em->getRepository(Donor::class);
+                $qb = $this->repository->createQueryBuilder('d')
+                                        ->where('d.id = :donor')
+                                            ->setParameter('donor', $donor->getId())
+                                        ->select("CONCAT(d.fullname,' ',d.shortname) as value");
+                $results = $qb->getQuery()->getArrayResult();  
+                $this->em->getConnection()->beginTransaction();
+                try {
+                    $reference = $this->getReferenceId("BMS_Project_D");
+                    foreach ($results as $result) 
+                    {
+                        $new_value = new ReportingValue();
+                        $new_value->setValue($result['value']);
+                        $new_value->setUnity($project->getName());
+                        $new_value->setCreationDate(new \DateTime());
+
+                        $this->em->persist($new_value);
+                        $this->em->flush();
+
+                        $new_reportingProject = new ReportingProject();
+                        $new_reportingProject->setIndicator($reference);
+                        $new_reportingProject->setValue($new_value);
+                        $new_reportingProject->setProject($project);
+
+                        $this->em->persist($new_reportingProject);
+                        $this->em->flush();   
+                    }
+                    $this->em->getConnection()->commit();
+                }catch (Exception $e) {
+                    $this->em->getConnection()->rollback();
+                    throw $e;
+                }              
+            }
+            
+        }
+    }
+
+    /**
+     * Fill in ReportingValue and ReportingProject with number of household served in a project
+     */
+    public function BMS_Project_HS() {
+        $projects = $this->getProject();
+        foreach($projects as $project) {
+            $byProject = [];
+            $results = [];
+            foreach($project->getHouseholds() as $household) {
+                $this->repository = $this->em->getRepository(Household::class);
+                $qb = $this->repository->createQueryBuilder('h')
+                                        ->where('h.id = :household')
+                                            ->setParameter('household', $household->getId())
+                                        ->select("count(h.id) as value"); 
+                $result = $qb->getQuery()->getArrayResult();
+                if((sizeof($result)) > 0) {
+                    if((sizeof($results)) == 0) {
+                        $results = $result;
+                    } else {
+                        (int)$results[0]['value'] += (int)$result[0]['value'];
+                    }   
+                }    
+                            
+            }
+
+            $this->em->getConnection()->beginTransaction();
+                try {
+                    $reference = $this->getReferenceId("BMS_Project_HS");
+                    foreach ($results as $result) 
+                    {
+                        $new_value = new ReportingValue();
+                        $new_value->setValue($result['value']);
+                        $new_value->setUnity('households');
+                        $new_value->setCreationDate(new \DateTime());
+
+                        $this->em->persist($new_value);
+                        $this->em->flush();
+
+                        $new_reportingProject = new ReportingProject();
+                        $new_reportingProject->setIndicator($reference);
+                        $new_reportingProject->setValue($new_value);
+                        $new_reportingProject->setProject($project);
+
+                        $this->em->persist($new_reportingProject);
+                        $this->em->flush();   
+                    }
+                    $this->em->getConnection()->commit();
+                }catch (Exception $e) {
+                    $this->em->getConnection()->rollback();
+                    throw $e;
+                }       
+            $results = [];
+        }
+    }
+
+     /**
+     * Fill in ReportingValue and ReportingProject with number of household served in a project
+     */
+    public function BMS_Project_AB() {
+        $projects = $this->getProject();
+        foreach($projects as $project) {
+            $results = [];
+            foreach($project->getHouseholds() as $household) {
+                $this->repository = $this->em->getRepository(Beneficiary::class);
+                $qb = $this->repository->createQueryBuilder('b')
+                                        ->leftjoin('b.household', 'h')
+                                        ->where('h.id = :household')
+                                            ->setParameter('household', $household->getId())
+                                        ->select("TIMESTAMPDIFF(YEAR, b.dateOfBirth, CURRENT_DATE()) as value"); 
+                $result = $qb->getQuery()->getArrayResult();
+                if((sizeof($result)) > 0) {
+                    array_push($results, $result);
+                }                       
+            }
+            $byInterval = $this->sortByAge($results);
+            foreach($byInterval as $ageBreakdown) {
+                $this->em->getConnection()->beginTransaction();
+                try {
+                    $reference = $this->getReferenceId("BMS_Project_HS");
+                    foreach ($results as $result) 
+                    {
+                        $new_value = new ReportingValue();
+                        $new_value->setValue($ageBreakdown['value']);
+                        $new_value->setUnity($ageBreakdown['unity']);
+                        $new_value->setCreationDate(new \DateTime());
+
+                        $this->em->persist($new_value);
+                        $this->em->flush();
+
+                        $new_reportingProject = new ReportingProject();
+                        $new_reportingProject->setIndicator($reference);
+                        $new_reportingProject->setValue($new_value);
+                        $new_reportingProject->setProject($project);
+
+                        $this->em->persist($new_reportingProject);
+                        $this->em->flush();   
+                    }
+                    $this->em->getConnection()->commit();
+                }catch (Exception $e) {
+                    $this->em->getConnection()->rollback();
+                    throw $e;
+                }    
+            }
+            $results = [];
+        }
+    }
+
+
+    public function sortByAge($ages) {
+        $byInterval= []; 
+        foreach($ages as $age) {
+            foreach($age as $value) {
+                if ((int)$value['value'] > 0 && (int)$value['value'] <= 10 ) {
+                    if(!array_key_exists('zeroTen', $byInterval)) {
+                        $byInterval['zeroTen'] = [];
+                        $byInterval['zeroTen']['unity'] = '[0-10]';
+                        $byInterval['zeroTen']['value'] = 1;
+                    } else {
+                        $byInterval['zeroTen']['value'] += 1;
+                    }
+                    break 1;
+                } else if ((int)$value['value'] > 10 && (int)$value['value'] <= 18 ) {
+                    if(!array_key_exists('TenEighteen', $byInterval)) {
+                        $byInterval['TenEighteen'] = [];
+                        $byInterval['TenEighteen']['unity'] = '[11-18]';
+                        $byInterval['TenEighteen']['value'] = 1;
+                    } else {
+                        $byInterval['TenEighteen']['value'] += 1;
+                    }
+                    break 1;
+                } else if ((int)$value['value'] > 18 && (int)$value['value'] <= 30 ) {
+                    if(!array_key_exists('EighteenThirty', $byInterval)) {
+                        $byInterval['EighteenThirty'] = [];
+                        $byInterval['EighteenThirty']['unity'] = '[19-30]';
+                        $byInterval['EighteenThirty']['value'] = 1;
+                    } else {
+                        $byInterval['EighteenThirty']['value'] += 1;
+                    }
+                    break 1;
+                } else if ((int)$value['value'] > 30 && (int)$value['value'] <= 50 ) {
+                    if(!array_key_exists('ThirtyFifty', $byInterval)) {
+                        $byInterval['ThirtyFifty'] = [];
+                        $byInterval['ThirtyFifty']['unity'] = '[31-50]';
+                        $byInterval['ThirtyFifty']['value'] = 1;
+                    } else {
+                        $byInterval['ThirtyFifty']['value'] += 1;
+                    }
+                    break 1;
+                } else if ((int)$value['value'] > 50 && (int)$value['value'] <= 70 ) {
+                    if(!array_key_exists('FiftySeventy', $byInterval)) {
+                        $byInterval['FiftySeventy'] = [];
+                        $byInterval['FiftySeventy']['unity'] = '[51-70]';
+                        $byInterval['FiftySeventy']['value'] = 1;
+                    } else {
+                        $byInterval['FiftySeventy']['value'] += 1;
+                    }
+                    break 1;
+                } else {
+                    if(!array_key_exists('MoreSeventy', $byInterval)) {
+                        $byInterval['MoreSeventy'] = [];
+                        $byInterval['MoreSeventy']['unity'] = '[70+]';
+                        $byInterval['MoreSeventy']['value'] = 1;
+                    } else {
+                        $byInterval['MoreSeventy']['value'] += 1;
+                    }
+                    break 1;
+                }
+            }
+        }
+        return $byInterval;
+    }
+
+    
+
+
 
 
 

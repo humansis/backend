@@ -66,8 +66,8 @@ class ReportingController extends Controller
     public function test(Request $request) {
 
         $indicator = new ReportingIndicator;
-        $indicator->setReference('BMSU_Project_NM');
-        $indicator->setCode('BMSU_Project_NM');
+        $indicator->setReference('BMS_Project_AB');
+        $indicator->setCode('BMS_Project_AB');
         $dataFilters = [
             'filters' => [
                 'typeGraphique'  => "histogramme"
