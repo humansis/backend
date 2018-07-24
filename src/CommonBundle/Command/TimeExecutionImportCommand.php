@@ -16,6 +16,7 @@ use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 
 class TimeExecutionImportCommand extends ContainerAwareCommand
 {
@@ -28,16 +29,21 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
 
     private $iso3 = "KHM";
     private $addressStreet = "ADDR TEST_IMPORT";
-    private $addressStreet2 = "ADDR2 TEST_IMPORT_TEST_IMPORT";
-    private $addressStreet3 = "ADDR3 UNIT TEST UNIT";
-    private $addressStreet4 = "ADDR4 UNIT4";
-    private $addressStreet5 = "ADDR4 UNIT555";
-    private $addressStreet6 = "ADDR4 UNIT666";
-    private $addressStreet7 = "ADDR4 UNIT77777";
-    private $addressStreet8 = "ADDR4 UNIT888888888";
-    private $addressStreet9 = "ADDR4 UNIT999999999";
-    private $addressStreet10 = "ADDR4 UNIT10000000";
+    private $addressStreet2 = "ADDR2_TEST_IMPORT_TEST_IMPORT";
+    private $addressStreet3 = "ADDR3_UNIT_TEST_UNIT";
+    private $addressStreet4 = "ADDR4_UNIT4";
+    private $addressStreet5 = "ADDR4_UNIT555";
+    private $addressStreet6 = "ADDR4_UNIT666";
+    private $addressStreet7 = "ADDR4_UNIT77777";
+    private $addressStreet8 = "ADDR4_UNIT888888888";
+    private $addressStreet9 = "ADDR4_UNIT999999999";
+    private $addressStreet10 = "ADDR4_UNIT10000000";
 
+    private $sumStep1 = 0;
+    private $sumStep2 = 0;
+    private $sumStep3 = 0;
+    private $sumStep4 = 0;
+    private $sumStep5 = 0;
 
     private $SHEET_ARRAY = [
         1 => [
@@ -131,53 +137,9 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating",
             "T" => "Type1 - 2",
             "U" => "id-45f",
-        ]
-    ];
-
-    protected function configure()
-    {
-        $this
-            ->setName('ra:import:test')
-            ->setDescription('Display execution time of import csv')
-            ->setHelp('Display the execution time for the 5 steps of the csv import of households');
-        $this->em = $this->getContainer()->get('doctrine')->getManager();
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|null|void
-     * @throws \Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $output->writeln([
-            '',
-            '============================================================',
-            "Execution time of csv import",
-            '============================================================',
-            '',
-        ]);
-
-
-        $this->remove($this->addressStreet);
-        $this->remove($this->addressStreet2);
-        $this->remove($this->addressStreet3);
-        $this->remove($this->addressStreet4);
-        $this->remove($this->addressStreet5);
-        $this->remove($this->addressStreet6);
-        $this->remove($this->addressStreet7);
-        $this->remove($this->addressStreet8);
-        $this->remove($this->addressStreet9);
-        $this->remove($this->addressStreet10);
-        $projects = $this->em->getRepository(Project::class)->findAll();
-        if (empty($projects))
-        {
-            print_r("\nThere is no project in your database.\n\n");
-            return;
-        }
-        $this->SHEET_ARRAY[5] = [
-            "A" => $this->addressStreet2,
+        ],
+        5 => [
+            "A" => "ADDR2_TEST_IMPORT_TEST_IMPORT",
             "B" => 2,
             "C" => 2,
             "D" => 2,
@@ -198,8 +160,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating ; single family",
             "T" => "Type1 - 1",
             "U" => "card-152a",
-        ];
-        $this->SHEET_ARRAY[6] = [
+        ],
+        6 => [
             "A" => null,
             "B" => null,
             "C" => null,
@@ -221,9 +183,9 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating",
             "T" => "Type1 - 2",
             "U" => "id-45f",
-        ];
-        $this->SHEET_ARRAY[7] = [
-            "A" => $this->addressStreet3,
+        ],
+        7 => [
+            "A" => "ADDR3_UNIT_TEST_UNIT",
             "B" => 3,
             "C" => 3,
             "D" => 3,
@@ -244,8 +206,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating ; single family",
             "T" => "Type1 - 1",
             "U" => "card-152a",
-        ];
-        $this->SHEET_ARRAY[8] = [
+        ],
+        8 => [
             "A" => null,
             "B" => null,
             "C" => null,
@@ -267,9 +229,9 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating",
             "T" => "Type1 - 2",
             "U" => "id-45f",
-        ];
-        $this->SHEET_ARRAY[9] = [
-            "A" => $this->addressStreet4,
+        ],
+        9 => [
+            "A" => "ADDR4_UNIT4",
             "B" => 4,
             "C" => 4,
             "D" => 4,
@@ -290,8 +252,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating ; single family",
             "T" => "Type1 - 1",
             "U" => "card-152a",
-        ];
-        $this->SHEET_ARRAY[10] = [
+        ],
+        10 => [
             "A" => null,
             "B" => null,
             "C" => null,
@@ -313,9 +275,9 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating",
             "T" => "Type1 - 2",
             "U" => "id-45f",
-        ];
-        $this->SHEET_ARRAY[11] = [
-            "A" => $this->addressStreet5,
+        ],
+        11 => [
+            "A" => "ADDR4_UNIT555",
             "B" => 4,
             "C" => 4,
             "D" => 4,
@@ -336,8 +298,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating ; single family",
             "T" => "Type1 - 1",
             "U" => "card-152a",
-        ];
-        $this->SHEET_ARRAY[12] = [
+        ],
+        12 => [
             "A" => null,
             "B" => null,
             "C" => null,
@@ -359,9 +321,9 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating",
             "T" => "Type1 - 2",
             "U" => "id-45f",
-        ];
-        $this->SHEET_ARRAY[13] = [
-            "A" => $this->addressStreet6,
+        ],
+        13 => [
+            "A" => "ADDR4_UNIT666",
             "B" => 4,
             "C" => 4,
             "D" => 4,
@@ -382,8 +344,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating ; single family",
             "T" => "Type1 - 1",
             "U" => "card-152a",
-        ];
-        $this->SHEET_ARRAY[14] = [
+        ],
+        14 => [
             "A" => null,
             "B" => null,
             "C" => null,
@@ -405,9 +367,9 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating",
             "T" => "Type1 - 2",
             "U" => "id-45f",
-        ];
-        $this->SHEET_ARRAY[15] = [
-            "A" => $this->addressStreet7,
+        ],
+        15 => [
+            "A" => "ADDR4_UNIT77777",
             "B" => 4,
             "C" => 4,
             "D" => 4,
@@ -428,8 +390,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating ; single family",
             "T" => "Type1 - 1",
             "U" => "card-152a",
-        ];
-        $this->SHEET_ARRAY[16] = [
+        ],
+        16 => [
             "A" => null,
             "B" => null,
             "C" => null,
@@ -451,9 +413,9 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating",
             "T" => "Type1 - 2",
             "U" => "id-45f",
-        ];
-        $this->SHEET_ARRAY[17] = [
-            "A" => $this->addressStreet8,
+        ],
+        17 => [
+            "A" => "ADDR4_UNIT888888888",
             "B" => 4,
             "C" => 4,
             "D" => 4,
@@ -474,8 +436,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating ; single family",
             "T" => "Type1 - 1",
             "U" => "card-152a",
-        ];
-        $this->SHEET_ARRAY[18] = [
+        ],
+        18 => [
             "A" => null,
             "B" => null,
             "C" => null,
@@ -497,9 +459,9 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating",
             "T" => "Type1 - 2",
             "U" => "id-45f",
-        ];
-        $this->SHEET_ARRAY[19] = [
-            "A" => $this->addressStreet9,
+        ],
+        19 => [
+            "A" => "ADDR4_UNIT999999999",
             "B" => 4,
             "C" => 4,
             "D" => 4,
@@ -520,8 +482,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating ; single family",
             "T" => "Type1 - 1",
             "U" => "card-152a",
-        ];
-        $this->SHEET_ARRAY[20] = [
+        ],
+        20 => [
             "A" => null,
             "B" => null,
             "C" => null,
@@ -543,9 +505,9 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating",
             "T" => "Type1 - 2",
             "U" => "id-45f",
-        ];
-        $this->SHEET_ARRAY[21] = [
-            "A" => $this->addressStreet10,
+        ],
+        21 => [
+            "A" => "ADDR4_UNIT10000000",
             "B" => 4,
             "C" => 4,
             "D" => 4,
@@ -566,8 +528,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating ; single family",
             "T" => "Type1 - 1",
             "U" => "card-152a",
-        ];
-        $this->SHEET_ARRAY[22] = [
+        ],
+        22 => [
             "A" => null,
             "B" => null,
             "C" => null,
@@ -589,59 +551,156 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "S" => "lactating",
             "T" => "Type1 - 2",
             "U" => "id-45f",
-        ];
+        ]
+    ];
 
-        print_r($this->color->getColoredString("\n\n1-\n"));
+    protected function configure()
+    {
+        $this
+            ->setName('ra:import:test')
+            ->setDescription('Display execution time of import csv')
+            ->setHelp('Display the execution time for the 5 steps of the csv import of households');
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     * @throws \Exception
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $this->em = $this->getContainer()->get('doctrine')->getManager();
+        $this->color = new Color();
+        $this->hhCSVService = $this->getContainer()->get('beneficiary.household_csv_service');
+        $output->writeln([
+            '',
+            '============================================================',
+            "Execution time of csv import",
+            '============================================================',
+            '',
+        ]);
+
+        $this->removeAll();
+
+        $projects = $this->em->getRepository(Project::class)->findAll();
+        if (empty($projects))
+        {
+            print_r("\nThere is no project in your database.\n\n");
+            return;
+        }
+
+        $helper = $this->getHelper('question');
+        $questionNumber = new Question('How many import : ');
+        $number = $helper->ask($input, $output, $questionNumber);
+
+        for ($i = 1; $i <= intval($number); $i++)
+        {
+            $this->calcExecTime($input, $projects, $i);
+        }
+
+        unset($helper);
+        unset($questionNumber);
+
+
+        print_r($this->color->getColoredString("\n\n-----------------"));
+        print_r($this->color->getColoredString("\nRESUME", "light_red"));
+        print_r($this->color->getColoredString("\nStep 1 - Average : ", "yellow"));
+        print_r($this->color->getColoredString(number_format(($this->sumStep1 / $number), 3)));
+        print_r($this->color->getColoredString("\nStep 2 - Average : ", "yellow"));
+        print_r($this->color->getColoredString(number_format(($this->sumStep2 / $number), 3)));
+        print_r($this->color->getColoredString("\nStep 3 - Average : ", "yellow"));
+        print_r($this->color->getColoredString(number_format(($this->sumStep3 / $number), 3)));
+        print_r($this->color->getColoredString("\nStep 4 - Average : ", "yellow"));
+        print_r($this->color->getColoredString(number_format(($this->sumStep4 / $number), 3)));
+        print_r($this->color->getColoredString("\nStep 5 - Average : ", "yellow"));
+        print_r($this->color->getColoredString(number_format(($this->sumStep5 / $number), 3)) . "\n\n");
+        
+        unset($number);
+
+        $this->removeAll();
+
+        $output->writeln([
+            'END'
+        ]);
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param $projects
+     * @param $step
+     * @throws \Exception
+     */
+    public function calcExecTime(InputInterface $input, $projects, $step)
+    {
+        $totalTime = 0;
+        print_r($this->color->getColoredString("\n\n$step-"));
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
-        $execution1Time = microtime(true);
-        if(in_array('--verbose', $_SERVER['argv'], true) || in_array('-v', $_SERVER['argv'], true)) {
-            print_r($this->color->getColoredString("\n\nstep 1 : Execution time :\n", "light_red"));
-            print_r($this->color->getColoredString(($execution1Time - $executionStartTime) . "\n"));
+        $executionTime = microtime(true);
+        if ($input->hasOption('verbose'))
+        {
+            print_r($this->color->getColoredString("\nstep 1 - Execution time : ", "yellow"));
+            print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
+        $totalTime += ($executionTime - $executionStartTime);
+        $this->sumStep1 += ($executionTime - $executionStartTime);
         $token = $return["token"];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
-        $execution2Time = microtime(true);
-        if(in_array('--verbose', $_SERVER['argv'], true) || in_array('-v', $_SERVER['argv'], true)) {
-            print_r($this->color->getColoredString("\n\nstep 2 : Execution time :\n", "light_red"));
-            print_r($this->color->getColoredString(($execution2Time - $executionStartTime) . "\n"));
-        }
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
-        $execution3Time = microtime(true);
-        if(in_array('--verbose', $_SERVER['argv'], true) || in_array('-v', $_SERVER['argv'], true)) {
-            print_r($this->color->getColoredString("\n\nstep 3 : Execution time :\n", "light_red"));
-            print_r($this->color->getColoredString(($execution3Time - $executionStartTime) . "\n"));
-        }
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
-        $execution4Time = microtime(true);
-        if(in_array('--verbose', $_SERVER['argv'], true) || in_array('-v', $_SERVER['argv'], true)) {
-            print_r($this->color->getColoredString("\n\nstep 4 : Execution time :\n", "light_red"));
-            print_r($this->color->getColoredString(($execution4Time - $executionStartTime) . "\n"));
-        }
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $execution5Time = microtime(true);
-        if(in_array('--verbose', $_SERVER['argv'], true) || in_array('-v', $_SERVER['argv'], true)) {
-            print_r($this->color->getColoredString("\n\nstep 5 : Execution time :\n", "light_red"));
-            print_r($this->color->getColoredString(($execution5Time - $executionStartTime) . "\n"));
-        }
-        $executionEndTime = microtime(true);
-
-        print_r($this->color->getColoredString("\n\nExecution time :\n", "light_red"));
-        print_r($this->color->getColoredString(($executionEndTime - $executionStartTime) . "\n"));
-
-
         $executionStartTime = microtime(true);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
-        $token = $return["token"];
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
+        $executionTime = microtime(true);
+        if ($input->hasOption('verbose'))
+        {
+            print_r($this->color->getColoredString("\nstep 2 - Execution time : ", "yellow"));
+            print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
+        }
+        $totalTime += ($executionTime - $executionStartTime);
+        $this->sumStep2 += ($executionTime - $executionStartTime);
+        $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
+        $executionTime = microtime(true);
+        if ($input->hasOption('verbose'))
+        {
+            print_r($this->color->getColoredString("\nstep 3 - Execution time : ", "yellow"));
+            print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
+        }
+        $totalTime += ($executionTime - $executionStartTime);
+        $this->sumStep3 += ($executionTime - $executionStartTime);
+        $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
+        $executionTime = microtime(true);
+        if ($input->hasOption('verbose'))
+        {
+            print_r($this->color->getColoredString("\nstep 4 - Execution time : ", "yellow"));
+            print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
+        }
+        $totalTime += ($executionTime - $executionStartTime);
+        $this->sumStep4 += ($executionTime - $executionStartTime);
+        $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $executionEndTime = microtime(true);
+        $executionTime = microtime(true);
+        if ($input->hasOption('verbose'))
+        {
+            print_r($this->color->getColoredString("\nstep 5 - Execution time : ", "yellow"));
+            print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
+        }
+        $totalTime += ($executionTime - $executionStartTime);
+        $this->sumStep5 += ($executionTime - $executionStartTime);
+        print_r($this->color->getColoredString("\nExecution time : ", "light_red"));
+        print_r($this->color->getColoredString(number_format($totalTime, 3) . " s\n"));
+        print_r($this->color->getColoredString("\n---------------------------------------"));
+        unset($totalTime);
+        unset($executionTime);
+        unset($executionStartTime);
+    }
 
-        print_r($this->color->getColoredString("\n\n2- Execution time :\n", "light_red"));
-        print_r($this->color->getColoredString(($executionEndTime - $executionStartTime) . "\n"));
-
+    /**
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function removeAll()
+    {
         $this->remove($this->addressStreet);
         $this->remove($this->addressStreet2);
         $this->remove($this->addressStreet3);
@@ -652,11 +711,6 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
         $this->remove($this->addressStreet8);
         $this->remove($this->addressStreet9);
         $this->remove($this->addressStreet10);
-
-
-        $output->writeln([
-            'END'
-        ]);
     }
 
     /**
