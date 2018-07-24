@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use DistributionBundle\Entity\DistributionData;
+use ProjectBundle\Entity\Project;
 
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
@@ -186,5 +187,26 @@ class DistributionController extends Controller
         return new Response($json, Response::HTTP_OK);
     }
 
+    /**
+     * @Rest\Get("/distributions/projects/{id}", name="get_distributions_of_project")
+     *
+     * @param Project $project
+     * @return Response
+     */
+    public function getDistributions(Project $project)
+    {
+        try
+        {
+        $distributions = $project->getDistributions();
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        $json = $this->get('jms_serializer')
+            ->serialize($distributions, 'json', SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true));
+
+        return new Response($json, Response::HTTP_OK);
+    }
 
 }
