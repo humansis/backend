@@ -27,9 +27,7 @@ class Finder implements FinderInterface {
     {
         $data = [];
         $this->repository = $this->em->getRepository(ReportingIndicator::class);
-         $indicators = $this->repository->findAll();
-         dump($indicators);
-  
+         $indicators = $this->repository->findAll();  
          foreach($indicators as $indicator) {
             if(preg_match("#^BMS_#", $indicator->getCode())) 
             {
