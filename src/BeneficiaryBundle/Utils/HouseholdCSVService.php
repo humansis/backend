@@ -149,12 +149,13 @@ class HouseholdCSVService
         foreach ($treatReturned as $index => $householdArray)
         {
             $returnTmp = $verifier->verify($countryIso3, $householdArray, $cache_id);
-            // IF there is errors
+            // IF there are errors
             if (null !== $returnTmp && [] !== $returnTmp)
             {
                 if ($returnTmp !== false)
                     $return[] = $returnTmp;
             }
+            // If no error we saved the household with a cache id (used to map household between front and back)
             else
             {
                 $householdsToSave[$cache_id] = $householdArray;
@@ -165,6 +166,7 @@ class HouseholdCSVService
         }
 
         $this->saveInCache($step, json_encode($householdsToSave));
+        unset($householdsToSave);
         $this->setTimeExpiry();
         return ["data" => $return, "token" => $this->token];
     }

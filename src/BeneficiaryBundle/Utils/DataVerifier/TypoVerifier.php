@@ -71,13 +71,6 @@ class TypoVerifier extends AbstractVerifier
         if (null === $newHead)
             return null;
 
-        // Concatenation of fields to compare with
-        $stringNewHouseholdToCompare = $householdArray["address_street"] . "/" .
-            $householdArray["address_number"] . "/" .
-            $householdArray["address_postcode"] . "/" .
-            $newHead["given_name"] . "/" .
-            $newHead["family_name"];
-
         $similarHousehold = null;
         $percent = $this->minimumPercentSimilar;
         /** @var Household $oldHousehold */
@@ -96,7 +89,11 @@ class TypoVerifier extends AbstractVerifier
             $oldHead = $this->mappingHouseholdAndHead['id'];
 
             similar_text(
-                $stringNewHouseholdToCompare,
+                $householdArray["address_street"] . "/" .
+                $householdArray["address_number"] . "/" .
+                $householdArray["address_postcode"] . "/" .
+                $newHead["given_name"] . "/" .
+                $newHead["family_name"],
                 $oldHousehold['addressStreet'] . "/" .
                 $oldHousehold['addressNumber'] . "/" .
                 $oldHousehold['addressPostcode'] . "/" .
