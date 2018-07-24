@@ -126,9 +126,10 @@ class ProjectService
                 ->setStartDate($editedProject->getStartDate())        
                 ->setEndDate($editedProject->getEndDate());
 
-        $sectors = clone $editedProject->getSectors();
+        $sectors = $editedProject->getSectors();
         if (null !== $sectors)
         {
+            $sectors = clone $editedProject->getSectors();
             $project->removeSectors();
             /** @var Sector $sector */
             foreach ($sectors as $sector)
@@ -139,10 +140,11 @@ class ProjectService
             }
         }
 
-        $donors = clone $editedProject->getDonors();
+        $donors = $editedProject->getDonors();
 
         if (null !== $donors)
         {
+            $donors = clone $editedProject->getDonors();
             $project->removeDonors();
             /** @var Donor $donor */
             foreach ($donors as $donor)

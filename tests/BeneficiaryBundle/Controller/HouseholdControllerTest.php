@@ -42,7 +42,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             [
                 "answer" => "MY_ANSWER_TEST",
                 "country_specific" => [
-                    "id" => 1
+                    "id" => 9
                 ]
             ]
         ],
@@ -59,7 +59,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 ],
                 "vulnerability_criteria" => [
                     [
-                        "id" => 1
+                        "id" => 21
                     ]
                 ],
                 "phones" => [
@@ -87,7 +87,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 ],
                 "vulnerability_criteria" => [
                     [
-                        "id" => 1
+                        "id" => 21
                     ]
                 ],
                 "phones" => [
@@ -143,6 +143,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             ['HTTP_COUNTRY' => 'COUNTRY_TEST']
         );
         $household = json_decode($this->client->getResponse()->getContent(), true);
+
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         try

@@ -109,7 +109,7 @@ class HouseholdService
             ->setAddressStreet($householdArray["address_street"])
             ->setAddressPostcode($householdArray["address_postcode"])
             ->setAddressNumber($householdArray["address_number"]);
-
+        
         // Save or update location instance
         $location = $this->locationService->getOrSaveLocation($householdArray["location"]);
         $household->setLocation($location);
