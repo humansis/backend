@@ -450,7 +450,9 @@ class DataFillersProject
         }
     }
 
-
+    /**
+     * Use to sort beneficiary by age interval
+     */
     public function sortByAge($ages) {
         $byInterval= []; 
         foreach($ages as $age) {
