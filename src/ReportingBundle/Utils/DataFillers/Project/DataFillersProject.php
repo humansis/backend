@@ -128,7 +128,7 @@ class DataFillersProject
             }
             $this->em->getConnection()->beginTransaction();
             try {
-                $reference = $this->getReferenceId("BMSU_Project_NM");
+                $reference = $this->getReferenceId("BMSU_Project_NW");
                 foreach ($results as $result) 
                 {
                     $new_value = new ReportingValue();

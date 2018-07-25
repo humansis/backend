@@ -66,12 +66,11 @@ class ReportingController extends Controller
     public function test(Request $request) {
 
         $indicator = new ReportingIndicator;
-        $indicator->setReference('BMS_Project_AB');
-        $indicator->setCode('BMS_Project_AB');
+        $indicator->setReference('BMS_Project_PVS');
+        $indicator->setCode('BMS_Project_PVS');
         $dataFilters = [
-            'filters' => [
-                'typeGraphique'  => "histogramme"
-            ]   
+                'typeGraphique'  => "nombre",
+                'project'        => [1]  
         ];
         $Receivefilters = $this->get('serializer')->serialize($dataFilters,'json');
 
@@ -81,12 +80,12 @@ class ReportingController extends Controller
         $contentJson = $request->request->all();
         $filters['country'] = $contentJson['__country'];
 
-        // $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
-        // dump($dataComputed);
-        // $dataFormatted = $this->get('reporting.formatter')->format($dataComputed, 'histogramme');
-        // dump($dataFormatted);
+        $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
+        dump($dataComputed);
+        $dataFormatted = $this->get('reporting.formatter')->format($dataComputed, 'nombre');
+        dump($dataFormatted);
 
-        $this->get('reporting.data_fillers.default')->fill($indicator);
+        // $this->get('reporting.data_fillers.default')->fill($indicator);
     }
 
 }
