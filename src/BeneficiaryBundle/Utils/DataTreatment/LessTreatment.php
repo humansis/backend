@@ -50,6 +50,8 @@ class LessTreatment extends AbstractTreatment
             {
                 $this->householdService->create($householdToAdd['new'], $project);
                 $numberAdded++;
+                $this->container->get('doctrine')->resetManager();
+                $this->em = $this->container->get('doctrine')->getManager();
             }
             catch (\Exception $exception)
             {
@@ -60,7 +62,7 @@ class LessTreatment extends AbstractTreatment
                 }
                 $errors[] = [
                     "household" => $householdToAdd,
-                    "error" => "The creation of the household failed. Please check your CSV file."
+                    "error" => $exception->getMessage()
                 ];
             }
         }

@@ -7,10 +7,15 @@ services:
             - "@beneficiary.beneficiary_service"
             - "@request_validator"
             - "@location_service"
+            - "@validator"
         public: true
     beneficiary.beneficiary_service:
         class: BeneficiaryBundle\Utils\BeneficiaryService
-        arguments: ["@doctrine.orm.entity_manager", "@jms_serializer", "@request_validator"]
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@jms_serializer"
+            - "@request_validator"
+            - "@validator"
         public: true
     beneficiary.country_specific_service:
         class: BeneficiaryBundle\Utils\CountrySpecificService
