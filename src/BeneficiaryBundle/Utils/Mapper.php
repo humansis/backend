@@ -95,7 +95,14 @@ class Mapper
                 continue;
 
             // Load the household array for the current row
-            $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $row, $rowHeader);
+            try
+            {
+                $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $row, $rowHeader);
+            }
+            catch (\Exception $exception)
+            {
+                throw new \Exception("Your pattern file is not correct. Please used the last template of your country.");
+            }
             // Check if it's a new household or just a new beneficiary in the current row
             if ($formattedHouseholdArray["address_street"] !== null)
             {

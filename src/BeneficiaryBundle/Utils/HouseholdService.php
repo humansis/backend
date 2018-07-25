@@ -20,7 +20,10 @@ use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
 class HouseholdService
@@ -40,13 +43,17 @@ class HouseholdService
     /** @var LocationService $locationService */
     private $locationService;
 
+    /** @var ValidatorInterface $validator */
+    private $validator;
+
 
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
         BeneficiaryService $beneficiaryService,
         RequestValidator $requestValidator,
-        LocationService $locationService
+        LocationService $locationService,
+    ValidatorInterface $validator
     )
     {
         $this->em = $entityManager;
@@ -54,6 +61,7 @@ class HouseholdService
         $this->beneficiaryService = $beneficiaryService;
         $this->requestValidator = $requestValidator;
         $this->locationService = $locationService;
+        $this->validator = $validator;
     }
 
     /**
@@ -109,7 +117,21 @@ class HouseholdService
             ->setAddressStreet($householdArray["address_street"])
             ->setAddressPostcode($householdArray["address_postcode"])
             ->setAddressNumber($householdArray["address_number"]);
-        
+
+        $errors = $this->validator->validate($household);
+        if (count($errors) > 0) {
+            $errorsMessage = "";
+            /** @var ConstraintViolation $error */
+            foreach ($errors as $error)
+            {
+                if ("" !== $errorsMessage)
+                    $errorsMessage .= " ";
+                $errorsMessage .= $error->getMessage();
+            }
+
+            throw new \Exception($errorsMessage);
+        }
+
         // Save or update location instance
         $location = $this->locationService->getOrSaveLocation($householdArray["location"]);
         $household->setLocation($location);
@@ -118,18 +140,31 @@ class HouseholdService
             throw new \Exception("This project is not found");
         $household->addProject($project);
 
+
+
         $this->em->persist($household);
 
         if (!empty($householdArray["beneficiaries"]))
         {
             $hasHead = false;
+            $beneficiariesPersisted = [];
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave)
             {
-                $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
+                try
+                {
+                    $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
+                    $beneficiariesPersisted[] = $beneficiary;
+                }
+                catch (\Exception $exception)
+                {
+                    throw new \Exception($exception->getMessage());
+                }
                 if ($beneficiary->getStatus())
                 {
                     if ($hasHead)
+                    {
                         throw new \Exception("You have defined more than 1 head of household.");
+                    }
                     $hasHead = true;
                 }
                 $this->em->persist($beneficiary);
