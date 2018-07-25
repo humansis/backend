@@ -28,8 +28,7 @@ class LessTreatment extends AbstractTreatment
                 $this->beneficiaryService->remove($oldBeneficiary);
             }
         }
-        $errors = $this->addHouseholds($project);
-        return $errors;
+        return $this->addHouseholds($project);
     }
 
     /**
@@ -41,11 +40,13 @@ class LessTreatment extends AbstractTreatment
     {
         $householdsToAdd = $this->getHouseholdsNoTypo();
         $errors = [];
+        $numberAdded = 0;
         foreach ($householdsToAdd as $householdToAdd)
         {
             try
             {
                 $this->householdService->create($householdToAdd['new'], $project);
+                $numberAdded++;
             }
             catch (\Exception $exception)
             {
@@ -55,7 +56,7 @@ class LessTreatment extends AbstractTreatment
                 ];
             }
         }
-        return $errors;
+        return ["number_added" => $numberAdded, "error" => $errors];
     }
 
     /**

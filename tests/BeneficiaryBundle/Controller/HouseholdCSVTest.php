@@ -221,7 +221,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame([], $return);
+        $this->assertSame([], $return['error']);
         $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet);
         $this->assertInstanceOf(Household::class, $household);
 
@@ -256,7 +256,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame([], $return);
+        $this->assertSame([], $return['error']);
         /** @var Beneficiary $headOldHousehold */
         $headOldHousehold = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
         $this->assertSame($this->UPDATED_GIVEN_NAME, $headOldHousehold->getGivenName());
@@ -347,7 +347,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame([], $return);
+        $this->assertSame([], $return['error']);
         $household2 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet2);
         $beneficiariesOfHH2 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household2);
         $this->assertSame(1, count($beneficiariesOfHH2));
@@ -434,7 +434,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame([], $return);
+        $this->assertSame([], $return['error']);
         $household3 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet3);
         $beneficiariesOfHH3 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household3);
         $this->assertSame(2, count($beneficiariesOfHH3));
@@ -530,7 +530,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame([], $return);
+        $this->assertSame([], $return['error']);
         $household4 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet4);
         $beneficiariesOfHH4 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household4);
         $this->assertSame(2, count($beneficiariesOfHH4));
@@ -570,7 +570,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-        $this->assertSame([], $return);
+        $this->assertSame([], $return['error']);
         /** @var Beneficiary $headOldHousehold */
         $headOldHousehold = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
         $this->assertSame($this->UPDATED_GIVEN_NAME, $headOldHousehold->getGivenName());
@@ -579,478 +579,6 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->remove($this->addressStreet2);
         $this->remove($this->addressStreet3);
         $this->remove($this->addressStreet4);
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function testTime()
-    {
-//        $this->remove($this->addressStreet);
-//        $this->remove($this->addressStreet2);
-//        $this->remove($this->addressStreet3);
-//        $this->remove($this->addressStreet4);
-//        $this->remove($this->addressStreet5);
-//        $this->remove($this->addressStreet6);
-//        $this->remove($this->addressStreet7);
-//        $this->remove($this->addressStreet8);
-//        $this->remove($this->addressStreet9);
-//        $this->remove($this->addressStreet10);
-//        $projects = $this->em->getRepository(Project::class)->findAll();
-//        if (empty($projects))
-//        {
-//            print_r("\nThere is no project in your database.\n\n");
-//            return;
-//        }
-//        $this->SHEET_ARRAY[5] = [
-//            "A" => $this->addressStreet2,
-//            "B" => 2,
-//            "C" => 2,
-//            "D" => 2,
-//            "E" => "this is just some notes",
-//            "F" => 1.1544,
-//            "G" => 120.12,
-//            "H" => "TEST_IMPORT22",
-//            "I" => "TEST_IMPORT222",
-//            "J" => "TEST_IMPORT22",
-//            "K" => "TEST_IMPORT222",
-//            "L" => 4.0,
-//            "M" => "my wash",
-//            "N" => "FIRSTNAME3 UNIT_TEST",
-//            "O" => "FNAME33 UNIT_TEST",
-//            "P" => "F",
-//            "Q" => 1,
-//            "R" => "1995-04-25",
-//            "S" => "lactating ; single family",
-//            "T" => "Type1 - 1",
-//            "U" => "card-152a",
-//        ];
-//        $this->SHEET_ARRAY[6] = [
-//            "A" => null,
-//            "B" => null,
-//            "C" => null,
-//            "D" => null,
-//            "E" => null,
-//            "F" => null,
-//            "G" => null,
-//            "H" => null,
-//            "I" => null,
-//            "J" => null,
-//            "K" => null,
-//            "L" => null,
-//            "M" => null,
-//            "N" => "FIRSTNAME2 TEST_IMPORT",
-//            "O" => "NAME2 TEST_IMPORT",
-//            "P" => "M",
-//            "Q" => 0,
-//            "R" => "1995-04-25",
-//            "S" => "lactating",
-//            "T" => "Type1 - 2",
-//            "U" => "id-45f",
-//        ];
-//        $this->SHEET_ARRAY[7] = [
-//            "A" => $this->addressStreet3,
-//            "B" => 3,
-//            "C" => 3,
-//            "D" => 3,
-//            "E" => "this is just some notes",
-//            "F" => 1.1544,
-//            "G" => 120.12,
-//            "H" => "TEST_IMPORT22",
-//            "I" => "TEST_IMPORT222",
-//            "J" => "TEST_IMPORT22",
-//            "K" => "TEST_IMPORT222",
-//            "L" => 4.0,
-//            "M" => "my wash",
-//            "N" => "FI4 UNIT_TEST",
-//            "O" => "FN43 UNIT_TEST",
-//            "P" => "F",
-//            "Q" => 1,
-//            "R" => "1995-04-25",
-//            "S" => "lactating ; single family",
-//            "T" => "Type1 - 1",
-//            "U" => "card-152a",
-//        ];
-//        $this->SHEET_ARRAY[8] = [
-//            "A" => null,
-//            "B" => null,
-//            "C" => null,
-//            "D" => null,
-//            "E" => null,
-//            "F" => null,
-//            "G" => null,
-//            "H" => null,
-//            "I" => null,
-//            "J" => null,
-//            "K" => null,
-//            "L" => null,
-//            "M" => null,
-//            "N" => "FIRSTNAME244 TEST_IMPORT",
-//            "O" => "NAME2 T4EST_IMPORT",
-//            "P" => "M",
-//            "Q" => 0,
-//            "R" => "1995-04-25",
-//            "S" => "lactating",
-//            "T" => "Type1 - 2",
-//            "U" => "id-45f",
-//        ];
-//        $this->SHEET_ARRAY[9] = [
-//            "A" => $this->addressStreet4,
-//            "B" => 4,
-//            "C" => 4,
-//            "D" => 4,
-//            "E" => "this is just some notes",
-//            "F" => 1.1544,
-//            "G" => 120.12,
-//            "H" => "TEST_IMPORT22",
-//            "I" => "TEST_IMPORT222",
-//            "J" => "TEST_IMPORT22",
-//            "K" => "TEST_IMPORT222",
-//            "L" => 4.0,
-//            "M" => "my wash",
-//            "N" => "FIRS4M5E3 UNIT_TEST",
-//            "O" => "FN5A4UNIT_TEST",
-//            "P" => "F",
-//            "Q" => 1,
-//            "R" => "1995-04-25",
-//            "S" => "lactating ; single family",
-//            "T" => "Type1 - 1",
-//            "U" => "card-152a",
-//        ];
-//        $this->SHEET_ARRAY[10] = [
-//            "A" => null,
-//            "B" => null,
-//            "C" => null,
-//            "D" => null,
-//            "E" => null,
-//            "F" => null,
-//            "G" => null,
-//            "H" => null,
-//            "I" => null,
-//            "J" => null,
-//            "K" => null,
-//            "L" => null,
-//            "M" => null,
-//            "N" => "FIRSTNA55M56E2 TEST_IMPORT",
-//            "O" => "NAME2 T5556EST_IMPORT",
-//            "P" => "M",
-//            "Q" => 0,
-//            "R" => "1995-04-25",
-//            "S" => "lactating",
-//            "T" => "Type1 - 2",
-//            "U" => "id-45f",
-//        ];
-//        $this->SHEET_ARRAY[11] = [
-//            "A" => $this->addressStreet5,
-//            "B" => 4,
-//            "C" => 4,
-//            "D" => 4,
-//            "E" => "this is just some notes",
-//            "F" => 1.1544,
-//            "G" => 120.12,
-//            "H" => "TEST_IMPORT22",
-//            "I" => "TEST_IMPORT222",
-//            "J" => "TEST_IMPORT22",
-//            "K" => "TEST_IMPORT222",
-//            "L" => 4.0,
-//            "M" => "my wash",
-//            "N" => "FIRS4M5E3 U55NIT_TEST",
-//            "O" => "FN5A4UNIT_TES5555T",
-//            "P" => "F",
-//            "Q" => 1,
-//            "R" => "1995-04-25",
-//            "S" => "lactating ; single family",
-//            "T" => "Type1 - 1",
-//            "U" => "card-152a",
-//        ];
-//        $this->SHEET_ARRAY[12] = [
-//            "A" => null,
-//            "B" => null,
-//            "C" => null,
-//            "D" => null,
-//            "E" => null,
-//            "F" => null,
-//            "G" => null,
-//            "H" => null,
-//            "I" => null,
-//            "J" => null,
-//            "K" => null,
-//            "L" => null,
-//            "M" => null,
-//            "N" => "FIRSTNA55M56E662 TEST_IMPORT",
-//            "O" => "NAME2 T5556EST_IM666PORT",
-//            "P" => "M",
-//            "Q" => 0,
-//            "R" => "1995-04-25",
-//            "S" => "lactating",
-//            "T" => "Type1 - 2",
-//            "U" => "id-45f",
-//        ];
-//        $this->SHEET_ARRAY[13] = [
-//            "A" => $this->addressStreet6,
-//            "B" => 4,
-//            "C" => 4,
-//            "D" => 4,
-//            "E" => "this is just some notes",
-//            "F" => 1.1544,
-//            "G" => 120.12,
-//            "H" => "TEST_IMPORT22",
-//            "I" => "TEST_IMPORT222",
-//            "J" => "TEST_IMPORT22",
-//            "K" => "TEST_IMPORT222",
-//            "L" => 4.0,
-//            "M" => "my wash",
-//            "N" => "FIRS4M5E377777 UNIT_TEST",
-//            "O" => "FN5A4UNIT_T777777EST",
-//            "P" => "F",
-//            "Q" => 1,
-//            "R" => "1995-04-25",
-//            "S" => "lactating ; single family",
-//            "T" => "Type1 - 1",
-//            "U" => "card-152a",
-//        ];
-//        $this->SHEET_ARRAY[14] = [
-//            "A" => null,
-//            "B" => null,
-//            "C" => null,
-//            "D" => null,
-//            "E" => null,
-//            "F" => null,
-//            "G" => null,
-//            "H" => null,
-//            "I" => null,
-//            "J" => null,
-//            "K" => null,
-//            "L" => null,
-//            "M" => null,
-//            "N" => "FIRSTNA55M56E8882 TEST_IMPORT",
-//            "O" => "NAME2 T5556E888888ST_IMPORT",
-//            "P" => "M",
-//            "Q" => 0,
-//            "R" => "1995-04-25",
-//            "S" => "lactating",
-//            "T" => "Type1 - 2",
-//            "U" => "id-45f",
-//        ];
-//        $this->SHEET_ARRAY[15] = [
-//            "A" => $this->addressStreet7,
-//            "B" => 4,
-//            "C" => 4,
-//            "D" => 4,
-//            "E" => "this is just some notes",
-//            "F" => 1.1544,
-//            "G" => 120.12,
-//            "H" => "TEST_IMPORT22",
-//            "I" => "TEST_IMPORT222",
-//            "J" => "TEST_IMPORT22",
-//            "K" => "TEST_IMPORT222",
-//            "L" => 4.0,
-//            "M" => "my wash",
-//            "N" => "FIRS4M5E3 UN999999IT_TEST",
-//            "O" => "FN5A4UNI999T_TEST",
-//            "P" => "F",
-//            "Q" => 1,
-//            "R" => "1995-04-25",
-//            "S" => "lactating ; single family",
-//            "T" => "Type1 - 1",
-//            "U" => "card-152a",
-//        ];
-//        $this->SHEET_ARRAY[16] = [
-//            "A" => null,
-//            "B" => null,
-//            "C" => null,
-//            "D" => null,
-//            "E" => null,
-//            "F" => null,
-//            "G" => null,
-//            "H" => null,
-//            "I" => null,
-//            "J" => null,
-//            "K" => null,
-//            "L" => null,
-//            "M" => null,
-//            "N" => "FIRSTNA55M561000000E2 TEST_IMPORT",
-//            "O" => "NAME2 T5556E11111000000000000ST_IMPORT",
-//            "P" => "M",
-//            "Q" => 0,
-//            "R" => "1995-04-25",
-//            "S" => "lactating",
-//            "T" => "Type1 - 2",
-//            "U" => "id-45f",
-//        ];
-//        $this->SHEET_ARRAY[17] = [
-//            "A" => $this->addressStreet8,
-//            "B" => 4,
-//            "C" => 4,
-//            "D" => 4,
-//            "E" => "this is just some notes",
-//            "F" => 1.1544,
-//            "G" => 120.12,
-//            "H" => "TEST_IMPORT22",
-//            "I" => "TEST_IMPORT222",
-//            "J" => "TEST_IMPORT22",
-//            "K" => "TEST_IMPORT222",
-//            "L" => 4.0,
-//            "M" => "my wash",
-//            "N" => "FIRS4M5E3 U11111111111NIT_TEST",
-//            "O" => "FN5A4UNIT_T1111111111111111111EST",
-//            "P" => "F",
-//            "Q" => 1,
-//            "R" => "1995-04-25",
-//            "S" => "lactating ; single family",
-//            "T" => "Type1 - 1",
-//            "U" => "card-152a",
-//        ];
-//        $this->SHEET_ARRAY[18] = [
-//            "A" => null,
-//            "B" => null,
-//            "C" => null,
-//            "D" => null,
-//            "E" => null,
-//            "F" => null,
-//            "G" => null,
-//            "H" => null,
-//            "I" => null,
-//            "J" => null,
-//            "K" => null,
-//            "L" => null,
-//            "M" => null,
-//            "N" => "FIRSTNA55M56E2 121212121TEST_IMPORT",
-//            "O" => "NAME2 T5556EST12121212_IMPORT",
-//            "P" => "M",
-//            "Q" => 0,
-//            "R" => "1995-04-25",
-//            "S" => "lactating",
-//            "T" => "Type1 - 2",
-//            "U" => "id-45f",
-//        ];
-//        $this->SHEET_ARRAY[19] = [
-//            "A" => $this->addressStreet9,
-//            "B" => 4,
-//            "C" => 4,
-//            "D" => 4,
-//            "E" => "this is just some notes",
-//            "F" => 1.1544,
-//            "G" => 120.12,
-//            "H" => "TEST_IMPORT22",
-//            "I" => "TEST_IMPORT222",
-//            "J" => "TEST_IMPORT22",
-//            "K" => "TEST_IMPORT222",
-//            "L" => 4.0,
-//            "M" => "my wash",
-//            "N" => "FIRS4M5E3 UNI13131313131T_TEST",
-//            "O" => "FN5A4UNIT_131313131313TEST",
-//            "P" => "F",
-//            "Q" => 1,
-//            "R" => "1995-04-25",
-//            "S" => "lactating ; single family",
-//            "T" => "Type1 - 1",
-//            "U" => "card-152a",
-//        ];
-//        $this->SHEET_ARRAY[20] = [
-//            "A" => null,
-//            "B" => null,
-//            "C" => null,
-//            "D" => null,
-//            "E" => null,
-//            "F" => null,
-//            "G" => null,
-//            "H" => null,
-//            "I" => null,
-//            "J" => null,
-//            "K" => null,
-//            "L" => null,
-//            "M" => null,
-//            "N" => "FIRSTNA55M561331313131313E2 TEST_IMPORT",
-//            "O" => "NAME2 T5556ES1313131313T_IMPORT",
-//            "P" => "M",
-//            "Q" => 0,
-//            "R" => "1995-04-25",
-//            "S" => "lactating",
-//            "T" => "Type1 - 2",
-//            "U" => "id-45f",
-//        ];
-//        $this->SHEET_ARRAY[21] = [
-//            "A" => $this->addressStreet10,
-//            "B" => 4,
-//            "C" => 4,
-//            "D" => 4,
-//            "E" => "this is just some notes",
-//            "F" => 1.1544,
-//            "G" => 120.12,
-//            "H" => "TEST_IMPORT22",
-//            "I" => "TEST_IMPORT222",
-//            "J" => "TEST_IMPORT22",
-//            "K" => "TEST_IMPORT222",
-//            "L" => 4.0,
-//            "M" => "my wash",
-//            "N" => "FIRS4M5E3 U131344413131NIT_TEST",
-//            "O" => "FN5A4UNIT_T3131344441313EST",
-//            "P" => "F",
-//            "Q" => 1,
-//            "R" => "1995-04-25",
-//            "S" => "lactating ; single family",
-//            "T" => "Type1 - 1",
-//            "U" => "card-152a",
-//        ];
-//        $this->SHEET_ARRAY[22] = [
-//            "A" => null,
-//            "B" => null,
-//            "C" => null,
-//            "D" => null,
-//            "E" => null,
-//            "F" => null,
-//            "G" => null,
-//            "H" => null,
-//            "I" => null,
-//            "J" => null,
-//            "K" => null,
-//            "L" => null,
-//            "M" => null,
-//            "N" => "FIRSTNA55M56E21141414141414 TEST_IMPORT",
-//            "O" => "NAME2 T5556ES4141414141414T_IMPORT",
-//            "P" => "M",
-//            "Q" => 0,
-//            "R" => "1995-04-25",
-//            "S" => "lactating",
-//            "T" => "Type1 - 2",
-//            "U" => "id-45f",
-//        ];
-//        $executionStartTime = microtime(true);
-//        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
-//        $token = $return["token"];
-//        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
-//        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
-//        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
-//        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-//        $executionEndTime = microtime(true);
-//
-//        print_r($this->color->getColoredString("\n\n1- Execution time :\n", "light_red"));
-//        print_r($this->color->getColoredString(($executionEndTime - $executionStartTime) . "\n"));
-//
-//
-//        $executionStartTime = microtime(true);
-//        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
-//        $token = $return["token"];
-//        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
-//        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
-//        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
-//        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
-//        $executionEndTime = microtime(true);
-//
-//        print_r($this->color->getColoredString("\n\n2- Execution time :\n", "light_red"));
-//        print_r($this->color->getColoredString(($executionEndTime - $executionStartTime) . "\n"));
-//
-//        $this->remove($this->addressStreet);
-//        $this->remove($this->addressStreet2);
-//        $this->remove($this->addressStreet3);
-//        $this->remove($this->addressStreet4);
-//        $this->remove($this->addressStreet5);
-//        $this->remove($this->addressStreet6);
-//        $this->remove($this->addressStreet7);
-//        $this->remove($this->addressStreet8);
-//        $this->remove($this->addressStreet9);
-//        $this->remove($this->addressStreet10);
     }
 
     /**
