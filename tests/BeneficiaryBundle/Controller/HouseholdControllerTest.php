@@ -6,9 +6,11 @@ namespace Tests\BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
+use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
@@ -42,7 +44,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             [
                 "answer" => "MY_ANSWER_TEST",
                 "country_specific" => [
-                    "id" => 9
+                    "id" => 1
                 ]
             ]
         ],
@@ -59,7 +61,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 ],
                 "vulnerability_criteria" => [
                     [
-                        "id" => 21
+                        "id" => 1
                     ]
                 ],
                 "phones" => [
@@ -87,7 +89,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 ],
                 "vulnerability_criteria" => [
                     [
-                        "id" => 21
+                        "id" => 1
                     ]
                 ],
                 "phones" => [
@@ -129,12 +131,34 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        
         $projects = $this->em->getRepository(Project::class)->findAll();
         if (empty($projects))
         {
             print_r("There is no project inside your database");
             return false;
         }
+        
+        $vulnerabilityCriterion =  $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
+            "value" => "disabled"
+        ]);
+        $beneficiaries = $this->body["beneficiaries"];
+        $vulnerabilityId = $vulnerabilityCriterion->getId();
+        foreach($beneficiaries as $index => $b){
+            $this->body["beneficiaries"][$index]["vulnerability_criteria"] = [["id" => $vulnerabilityId]];
+        }
+
+        $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
+            "field" => 'ID Poor',
+            "type" => 'Number',
+            "countryIso3" => 'KHM'
+        ]);
+        $country_specific_answers = $this->body["country_specific_answers"];
+        $countrySpecificId = $countrySpecific->getId();
+        foreach($country_specific_answers as $index => $c){
+            $this->body["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
+        }
+
         $crawler = $this->client->request(
             'PUT',
             '/api/wsse/households/project/' . current($projects)->getId(),
@@ -143,7 +167,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
             ['HTTP_COUNTRY' => 'COUNTRY_TEST']
         );
         $household = json_decode($this->client->getResponse()->getContent(), true);
-
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         try
@@ -285,6 +308,26 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     ->findOneByIdNumber($national_idArray['id_number']);
                 $this->body['beneficiaries'][$index]['national_ids'][$index2]['id'] = $national_id->getId();
             }
+        }
+
+        $vulnerabilityCriterion =  $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
+            "value" => "disabled"
+        ]);
+        $beneficiaries = $this->body["beneficiaries"];
+        $vulnerabilityId = $vulnerabilityCriterion->getId();
+        foreach($beneficiaries as $index => $b){
+            $this->body["beneficiaries"][$index]["vulnerability_criteria"] = [["id" => $vulnerabilityId]];
+        }
+
+        $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
+            "field" => 'ID Poor',
+            "type" => 'Number',
+            "countryIso3" => 'KHM'
+        ]);
+        $country_specific_answers = $this->body["country_specific_answers"];
+        $countrySpecificId = $countrySpecific->getId();
+        foreach($country_specific_answers as $index => $c){
+            $this->body["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
         }
 
         $crawler = $this->client->request(

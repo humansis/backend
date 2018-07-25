@@ -188,8 +188,20 @@ class DistributionController extends Controller
     }
 
     /**
+     * Get distributions of one project
      * @Rest\Get("/distributions/projects/{id}", name="get_distributions_of_project")
      *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      * @param Project $project
      * @return Response
      */

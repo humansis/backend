@@ -581,11 +581,11 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->remove($this->addressStreet4);
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function testTime()
-    {
+    // /**
+    //  * @throws \Exception
+    //  */
+    // public function testTime()
+    // {
 //        $this->remove($this->addressStreet);
 //        $this->remove($this->addressStreet2);
 //        $this->remove($this->addressStreet3);
@@ -1051,7 +1051,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
 //        $this->remove($this->addressStreet8);
 //        $this->remove($this->addressStreet9);
 //        $this->remove($this->addressStreet10);
-    }
+    // }
 
     /**
      * @depends testGetHouseholds
