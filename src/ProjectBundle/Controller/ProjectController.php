@@ -44,22 +44,6 @@ class ProjectController extends Controller
     }
 
     /**
-     * @Rest\Get("/projects/{id}/distributions", name="get_distributions_of_project")
-     *
-     * @param Project $project
-     * @return Response
-     */
-    public function getDistributions(Project $project)
-    {
-        $distributions = $project->getDistributions();
-
-        $json = $this->get('jms_serializer')
-            ->serialize($distributions, 'json', SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true));
-
-        return new Response($json, Response::HTTP_OK);
-    }
-
-    /**
      * Get a project
      * @Rest\Get("/projects/{id}", name="show_project")
      *

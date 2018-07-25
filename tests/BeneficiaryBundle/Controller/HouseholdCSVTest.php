@@ -581,7 +581,6 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $this->remove($this->addressStreet4);
     }
 
-
     /**
      * @depends testGetHouseholds
      *

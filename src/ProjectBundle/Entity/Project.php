@@ -21,7 +21,7 @@ class Project
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullProject", "FullDonor"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Project
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @Groups({"FullProject", "FullDonor"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution"})
      */
     private $name;
 
@@ -98,7 +98,7 @@ class Project
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects", cascade={"persist"})
      *
-     * @Groups({"FullProject"})
+     * @Groups({"FullProject", "FullDistribution"})
      */
     private $sectors;
 
