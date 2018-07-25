@@ -1,7 +1,12 @@
 services:
     beneficiary.household_service:
         class: BeneficiaryBundle\Utils\HouseholdService
-        arguments: ["@doctrine.orm.entity_manager", "@jms_serializer", "@beneficiary.beneficiary_service", "@request_validator", '@location_service']
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@jms_serializer"
+            - "@beneficiary.beneficiary_service"
+            - "@request_validator"
+            - "@location_service"
         public: true
     beneficiary.beneficiary_service:
         class: BeneficiaryBundle\Utils\BeneficiaryService
