@@ -70,7 +70,7 @@ class ReportingController extends Controller
         $indicator->setCode('BMS_Project_PVS');
         $dataFilters = [
                 'typeGraphique'  => "nombre",
-                'project'        => [1]  
+                'project'        => [1, 2]  
         ];
         $Receivefilters = $this->get('serializer')->serialize($dataFilters,'json');
 

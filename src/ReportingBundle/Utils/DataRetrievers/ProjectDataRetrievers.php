@@ -140,12 +140,8 @@ class ProjectDataRetrievers
      */
     public function BMS_Project_PVS(array $filters) {
         $vulnerabilitiesPercentage = [];
-        $totalVulnerabilities = $this->BMSU_Project_TVSV($filters);
-        $totalVulnerabilitiesByVulnerabilities = $this->BMSU_Project_TVS($filters);
-        dump($totalVulnerabilites);
-        dump($totalVulnerabilitesByVulnerabilities);
-
-
+        $totalVulnerabilities = $this->BMSU_Project_TVS($filters);
+        $totalVulnerabilitiesByVulnerabilities = $this->BMSU_Project_TVSV($filters);
         $lastDate = $totalVulnerabilities[0]['date'];
         foreach($totalVulnerabilities as $totalVulnerability) {
             if ($totalVulnerability['date'] > $lastDate) {
@@ -155,23 +151,19 @@ class ProjectDataRetrievers
         foreach ($totalVulnerabilities as $totalVulnerability) { 
             if ($totalVulnerability["date"] == $lastDate) {
                 foreach ($totalVulnerabilitiesByVulnerabilities as $vulnerability) {
-
                     if ($vulnerability["date"] == $lastDate) {
                         $percent = ($vulnerability["value"]/$totalVulnerability["value"])*100;
                         $result = [
                             'name' => $vulnerability["unity"],
                             'value' => $percent,
-                            'date' => $women['date']
+                            'date' => $vulnerability['date']
                         ]; 
                         array_push($vulnerabilitiesPercentage, $result);
-                        break 1;
-                    }
-                     
+                    }   
                 }                
             }   
         }
         return $vulnerabilitiesPercentage; 
-
     }
 
     /**
