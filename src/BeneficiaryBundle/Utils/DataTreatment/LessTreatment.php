@@ -50,8 +50,7 @@ class LessTreatment extends AbstractTreatment
             {
                 $this->householdService->create($householdToAdd['new'], $project);
                 $numberAdded++;
-                $this->container->get('doctrine')->resetManager();
-                $this->em = $this->container->get('doctrine')->getManager();
+                $this->em->clear();
             }
             catch (\Exception $exception)
             {
@@ -60,6 +59,7 @@ class LessTreatment extends AbstractTreatment
                     $this->container->get('doctrine')->resetManager();
                     $this->em = $this->container->get('doctrine')->getManager();
                 }
+                $this->em->clear();
                 $errors[] = [
                     "household" => $householdToAdd,
                     "error" => $exception->getMessage()

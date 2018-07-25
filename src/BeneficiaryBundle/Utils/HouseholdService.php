@@ -147,22 +147,24 @@ class HouseholdService
         if (!empty($householdArray["beneficiaries"]))
         {
             $hasHead = false;
+            $beneficiariesPersisted = [];
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave)
             {
                 try
                 {
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
+                    $beneficiariesPersisted[] = $beneficiary;
                 }
                 catch (\Exception $exception)
                 {
-                    $this->em->remove($household);
-                    $this->em->remove($location);
                     throw new \Exception($exception->getMessage());
                 }
                 if ($beneficiary->getStatus())
                 {
                     if ($hasHead)
+                    {
                         throw new \Exception("You have defined more than 1 head of household.");
+                    }
                     $hasHead = true;
                 }
                 $this->em->persist($beneficiary);
