@@ -14,15 +14,23 @@ class CriteriaDistributionService
     /** @var EntityManagerInterface $em */
     private $em;
 
+    /** @var ConfigurationLoader $configurationLoader */
+    private $configurationLoader;
 
-    public function __construct(EntityManagerInterface $entityManager)
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ConfigurationLoader $configurationLoader
+    )
     {
         $this->em = $entityManager;
+        $this->configurationLoader = $configurationLoader;
     }
 
 
     /**
      * @param array $filters
+     * @param bool $onlyCount
      * @return mixed
      * @throws \Exception
      */
@@ -42,5 +50,12 @@ class CriteriaDistributionService
         if ($flush)
             $this->em->flush();
         return $selectionCriteria;
+    }
+
+    public function getAll($countryISO3)
+    {
+        $criteria = $this->configurationLoader->load();
+
+        return $criteria;
     }
 }

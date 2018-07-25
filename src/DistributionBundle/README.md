@@ -3,6 +3,9 @@
 
 ## Criteria for distribution
 
+# Configuration
+
+
 ### Routes
 
 - **POST /distribution/criteria** : Get the list of beneficiaries of household

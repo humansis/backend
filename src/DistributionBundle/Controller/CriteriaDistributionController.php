@@ -18,6 +18,21 @@ class CriteriaDistributionController extends Controller
 {
 
     /**
+     * @Rest\Get("/distribution/criteria", name="get_criteria_celection")
+     *
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getCriteriaAction(Request $request)
+    {
+        /** @var CriteriaDistributionService $criteriaDistributionService */
+        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
+        $criteria = $criteriaDistributionService->getAll($request->request->get('__country'));
+        return new Response(json_encode($criteria));
+    }
+
+    /**
      * @Rest\Post("/distribution/criteria")
      *
      *
