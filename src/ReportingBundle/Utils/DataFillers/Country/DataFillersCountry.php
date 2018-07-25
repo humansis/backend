@@ -127,7 +127,7 @@ class DataFillersCountry extends DataFillers
         try {
             $this->repository = $this->em->getRepository(Project::class);
             $qb = $this->repository->createQueryBuilder('p')
-                                   ->where("DATE_FORMAT(p.endDate, '%Y-%m-%d') < CURRENT_DATE()")
+                                   ->where("DATE_FORMAT(p.endDate, '%Y-%m-%d') > CURRENT_DATE()")
                                    ->select('count(p) AS value', 'p.iso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
@@ -199,80 +199,80 @@ class DataFillersCountry extends DataFillers
     /**
      * Fill in ReportingValue and ReportingCountry with enrolled beneficiaries
      */
-    public function BMS_Country_EB() {
-        $this->em->getConnection()->beginTransaction();
-        try {
-            $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
-            $qb = $this->repository->createQueryBuilder('db')
-                                   ->leftjoin('db.projectBeneficiary', 'pb')
-                                   ->leftjoin('pb.project', 'p')
-                                   ->select('count(db.id) AS value', 'p.iso3 AS country')
-                                   ->groupBy('country');
-            $results = $qb->getQuery()->getArrayResult();
-            $reference = $this->getReferenceId("BMS_Country_EB");
-            foreach ($results as $result) 
-            {
-                $new_value = new ReportingValue();
-                $new_value->setValue($result['value']);
-                $new_value->setUnity('enrolled beneficiary');
-                $new_value->setCreationDate(new \DateTime());
+    // public function BMS_Country_EB() {
+    //     $this->em->getConnection()->beginTransaction();
+    //     try {
+    //         $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+    //         $qb = $this->repository->createQueryBuilder('db')
+    //                                ->leftjoin('db.projectBeneficiary', 'pb')
+    //                                ->leftjoin('pb.project', 'p')
+    //                                ->select('count(db.id) AS value', 'p.iso3 AS country')
+    //                                ->groupBy('country');
+    //         $results = $qb->getQuery()->getArrayResult();
+    //         $reference = $this->getReferenceId("BMS_Country_EB");
+    //         foreach ($results as $result) 
+    //         {
+    //             $new_value = new ReportingValue();
+    //             $new_value->setValue($result['value']);
+    //             $new_value->setUnity('enrolled beneficiary');
+    //             $new_value->setCreationDate(new \DateTime());
 
-                $this->em->persist($new_value);
-                $this->em->flush();
+    //             $this->em->persist($new_value);
+    //             $this->em->flush();
 
-                $new_reportingCountry = new ReportingCountry();
-                $new_reportingCountry->setIndicator($reference);
-                $new_reportingCountry->setValue($new_value);
-                $new_reportingCountry->setcountry($result['country']);
+    //             $new_reportingCountry = new ReportingCountry();
+    //             $new_reportingCountry->setIndicator($reference);
+    //             $new_reportingCountry->setValue($new_value);
+    //             $new_reportingCountry->setcountry($result['country']);
 
-                $this->em->persist($new_reportingCountry);
-                $this->em->flush();   
-            }
-            $this->em->getConnection()->commit();
-        }catch (Exception $e) {
-            $this->em->getConnection()->rollback();
-            throw $e;
-        }
-    }
+    //             $this->em->persist($new_reportingCountry);
+    //             $this->em->flush();   
+    //         }
+    //         $this->em->getConnection()->commit();
+    //     }catch (Exception $e) {
+    //         $this->em->getConnection()->rollback();
+    //         throw $e;
+    //     }
+    // }
 
      /**
      * Fill in ReportingValue and ReportingCountry with total number of distributions
      */
-    public function BMS_Country_TND() {
-        $this->em->getConnection()->beginTransaction();
-        try {
-            $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
-            $qb = $this->repository->createQueryBuilder('db')
-                                   ->leftjoin('db.projectBeneficiary', 'pb')
-                                   ->leftjoin('pb.project', 'p')
-                                   ->select('count(db.distributionData) AS value', 'p.iso3 AS country')
-                                   ->groupBy('country');
-            $results = $qb->getQuery()->getArrayResult();
-            $reference = $this->getReferenceId("BMS_Country_TND");
-            foreach ($results as $result) 
-            {
-                $new_value = new ReportingValue();
-                $new_value->setValue($result['value']);
-                $new_value->setUnity('distributions');
-                $new_value->setCreationDate(new \DateTime());
+    // public function BMS_Country_TND() {
+    //     $this->em->getConnection()->beginTransaction();
+    //     try {
+    //         $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+    //         $qb = $this->repository->createQueryBuilder('db')
+    //                                ->leftjoin('db.projectBeneficiary', 'pb')
+    //                                ->leftjoin('pb.project', 'p')
+    //                                ->select('count(db.distributionData) AS value', 'p.iso3 AS country')
+    //                                ->groupBy('country');
+    //         $results = $qb->getQuery()->getArrayResult();
+    //         $reference = $this->getReferenceId("BMS_Country_TND");
+    //         foreach ($results as $result) 
+    //         {
+    //             $new_value = new ReportingValue();
+    //             $new_value->setValue($result['value']);
+    //             $new_value->setUnity('distributions');
+    //             $new_value->setCreationDate(new \DateTime());
 
-                $this->em->persist($new_value);
-                $this->em->flush();
+    //             $this->em->persist($new_value);
+    //             $this->em->flush();
 
-                $new_reportingCountry = new ReportingCountry();
-                $new_reportingCountry->setIndicator($reference);
-                $new_reportingCountry->setValue($new_value);
-                $new_reportingCountry->setcountry($result['country']);
+    //             $new_reportingCountry = new ReportingCountry();
+    //             $new_reportingCountry->setIndicator($reference);
+    //             $new_reportingCountry->setValue($new_value);
+    //             $new_reportingCountry->setcountry($result['country']);
 
-                $this->em->persist($new_reportingCountry);
-                $this->em->flush();   
-            }
-            $this->em->getConnection()->commit();
-        }catch (Exception $e) {
-            $this->em->getConnection()->rollback();
-            throw $e;
-        }
-    }
+    //             $this->em->persist($new_reportingCountry);
+    //             $this->em->flush();   
+    //         }
+    //         $this->em->getConnection()->commit();
+    //     }catch (Exception $e) {
+    //         $this->em->getConnection()->rollback();
+    //         throw $e;
+    //     }
+    // }
 
 
 

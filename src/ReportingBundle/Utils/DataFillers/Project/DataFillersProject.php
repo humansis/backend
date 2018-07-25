@@ -406,40 +406,41 @@ class DataFillersProject
         foreach($projects as $project) {
             $results = [];
             foreach($project->getHouseholds() as $household) {
-                $this->repository = $this->em->getRepository(Beneficiary::class);
-                $qb = $this->repository->createQueryBuilder('b')
+                foreach($household->getBeneficiaries() as $beneficiary) {
+                    $this->repository = $this->em->getRepository(Beneficiary::class);
+                    $qb = $this->repository->createQueryBuilder('b')
                                         ->leftjoin('b.household', 'h')
                                         ->where('h.id = :household')
                                             ->setParameter('household', $household->getId())
+                                        ->andWhere('b.id = :beneficiary')
+                                            ->setParameter('beneficiary', $beneficiary->getId())
                                         ->select("TIMESTAMPDIFF(YEAR, b.dateOfBirth, CURRENT_DATE()) as value"); 
-                $result = $qb->getQuery()->getArrayResult();
-                if((sizeof($result)) > 0) {
-                    array_push($results, $result);
-                }                       
+                     $result = $qb->getQuery()->getArrayResult();
+                        if((sizeof($result)) > 0) {
+                         array_push($results, $result);
+                        }        
+                }                      
             }
             $byInterval = $this->sortByAge($results);
             foreach($byInterval as $ageBreakdown) {
                 $this->em->getConnection()->beginTransaction();
                 try {
-                    $reference = $this->getReferenceId("BMS_Project_HS");
-                    foreach ($results as $result) 
-                    {
-                        $new_value = new ReportingValue();
-                        $new_value->setValue($ageBreakdown['value']);
-                        $new_value->setUnity($ageBreakdown['unity']);
-                        $new_value->setCreationDate(new \DateTime());
+                    $reference = $this->getReferenceId("BMS_Project_AB");
+                    $new_value = new ReportingValue();
+                    $new_value->setValue($ageBreakdown['value']);
+                    $new_value->setUnity($ageBreakdown['unity']);
+                    $new_value->setCreationDate(new \DateTime());
 
-                        $this->em->persist($new_value);
-                        $this->em->flush();
+                    $this->em->persist($new_value);
+                    $this->em->flush();
 
-                        $new_reportingProject = new ReportingProject();
-                        $new_reportingProject->setIndicator($reference);
-                        $new_reportingProject->setValue($new_value);
-                        $new_reportingProject->setProject($project);
+                    $new_reportingProject = new ReportingProject();
+                    $new_reportingProject->setIndicator($reference);
+                    $new_reportingProject->setValue($new_value);
+                    $new_reportingProject->setProject($project);
 
-                        $this->em->persist($new_reportingProject);
-                        $this->em->flush();   
-                    }
+                    $this->em->persist($new_reportingProject);
+                    $this->em->flush();   
                     $this->em->getConnection()->commit();
                 }catch (Exception $e) {
                     $this->em->getConnection()->rollback();
@@ -447,6 +448,7 @@ class DataFillersProject
                 }    
             }
             $results = [];
+            $byInterval = [];
         }
     }
 
