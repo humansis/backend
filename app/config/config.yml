@@ -141,5 +141,5 @@ nelmio_cors:
 distribution:
     criteria: { gender: boolean,
                 dateOfBirth: date,
-                vulnerabilityCriteria: DistributionBundle,
-                countrySpecific: table }
+                vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
+                countrySpecific: BeneficiaryBundle\Entity\CountrySpecific }
