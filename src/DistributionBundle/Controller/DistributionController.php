@@ -42,10 +42,9 @@ class DistributionController extends Controller
     public function addAction(Request $request)
     {
         $distributionArray = $request->request->all();
-
         try
         {
-            $distribution = $this->get('distribution.distribution_service')->create($distributionArray);
+            $distribution = $this->get('distribution.distribution_service')->create($distributionArray['__country'], $distributionArray);
         }
         catch (\Exception $exception)
         {

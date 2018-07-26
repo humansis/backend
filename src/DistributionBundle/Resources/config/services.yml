@@ -8,6 +8,7 @@ services:
             - '@validator'
             - '@location_service'
             - '@distribution.commodity_service'
+            - '@distribution.configuration_loader'
 
     distribution.distribution_beneficiary_service:
         class: DistributionBundle\Utils\DistributionBeneficiaryService

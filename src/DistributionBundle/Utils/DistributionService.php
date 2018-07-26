@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Utils;
 
+use DistributionBundle\Utils\Retriever\DefaultRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use DoctrineExtensions\Query\Mysql\Date;
 use JMS\Serializer\Serializer;
@@ -31,13 +32,17 @@ class DistributionService
     /** @var CommodityService $commodityService */
     private $commodityService;
 
+    /** @var ConfigurationLoader $configurationLoader */
+    private $configurationLoader;
+
 
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
         ValidatorInterface $validator,
         LocationService $locationService,
-        CommodityService $commodityService
+        CommodityService $commodityService,
+        ConfigurationLoader $configurationLoader
     )
     {
         $this->em = $entityManager;
@@ -45,6 +50,7 @@ class DistributionService
         $this->validator = $validator;
         $this->locationService = $locationService;
         $this->commodityService = $commodityService;
+        $this->configurationLoader = $configurationLoader;
     }
 
     /**
@@ -54,7 +60,7 @@ class DistributionService
      * @return DistributionData
      * @throws \Exception
      */
-    public function create(array $distributionArray)
+    public function create($countryISO3, array $distributionArray)
     {
         /** @var DistributionData $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
@@ -92,16 +98,50 @@ class DistributionService
         $this->em->persist($distribution);
         $this->em->flush();
 
+        $listReceivers = $this->guessBeneficiaries($countryISO3, $distribution);
+        dump($listReceivers);
+
         return $distribution;
     }
 
-
-    public function createListBeneficiaries(DistributionData $distributionData, array $beneficiaries)
+    /**
+     * @param $countryISO3
+     * @param DistributionData $distributionData
+     * @return mixed
+     * @throws \Exception
+     */
+    public function guessBeneficiaries($countryISO3, DistributionData $distributionData)
     {
-        foreach ($beneficiaries as $beneficiary)
+        $selectionCriteria = $distributionData->getSelectionCriteria();
+        $defaultRetriever = new DefaultRetriever($this->em);
+        $criteria = [];
+        foreach ($selectionCriteria as $selectionCriterion)
         {
-
+            $criteria[] = $this->getArrayOfCriteria($selectionCriterion);
         }
+        return $defaultRetriever->getReceivers(
+            $countryISO3,
+            $distributionData->getType(),
+            $criteria,
+            $this->configurationLoader->load(['__country' => $countryISO3])
+        );
+    }
+
+    public function guessTypeString(bool $type)
+    {
+        return ($type == 1)? 'beneficiary' : 'household';
+    }
+
+    public function getArrayOfCriteria(SelectionCriteria $selectionCriteria)
+    {
+        return [
+            "table_string" => $selectionCriteria->getTableString(),
+            "field_string" => $selectionCriteria->getFieldString(),
+            "value_string" => $selectionCriteria->getValueString(),
+            "condition_string" => $selectionCriteria->getConditionString(),
+            "kind_beneficiary" => $selectionCriteria->getKindBeneficiary(),
+            "id_field" => $selectionCriteria->getIdField()
+        ];
     }
 
     /**

@@ -86,8 +86,10 @@ class DistributionControllerTest extends BMSServiceTestCase
         }
         $this->body['commodities'][0]['modality_type']['id'] = current($modalityTypes)->getId();
 
-        $crawler = $this->client->request('PUT', '/api/wsse/distributions', $this->body);
+        $crawler = $this->client->request('PUT', '/api/wsse/distributions', $this->body, [], ['HTTP_COUNTRY' => 'KHM']);
         $distribution = json_decode($this->client->getResponse()->getContent(), true);
+        dump($this->client->getResponse());
+        dump($distribution);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
             $this->assertArrayHasKey('id', $distribution);
