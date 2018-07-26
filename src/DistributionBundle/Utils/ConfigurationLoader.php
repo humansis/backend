@@ -40,7 +40,7 @@ class ConfigurationLoader
         {
             if (in_array($type, $this->MAPPING_TYPE_DEFAULT))
             {
-                $criteriaFormatted[] = ["field" => $criterion, "type" => $type];
+                $criteriaFormatted[] = ["field_string" => $criterion, "type" => $type];
             }
             else
             {

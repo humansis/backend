@@ -85,84 +85,81 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
     /**
      * Create sub request. The main request while found household inside the subrequest (and others subrequest)
-     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
-     *
-     * @param QueryBuilder $qb
-     * @param $i
-     * @param $countryISO3
-     * @param $idVulnerabilityCriterion
-     * @param bool|null $status
-     */
-    protected function whereVulnerabilityCriterion(QueryBuilder &$qb, $i, $countryISO3, $idVulnerabilityCriterion, bool $status = null)
-    {
-        $qbSub = $this->createQueryBuilder("hh$i");
-        $this->setCountry($qbSub, $countryISO3, $i);
-        $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
-            ->leftJoin("b$i.vulnerabilityCriteria", "vc$i")
-            ->andWhere("vc$i.id = :idvc$i")
-            ->setParameter("idvc$i", $idVulnerabilityCriterion);
-        if (null !== $status)
-            $qbSub->andWhere("b$i.status = :status$i")
-                ->setParameter("status$i", $status);
-
-        $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
-            ->setParameter("idvc$i", $idVulnerabilityCriterion)
-            ->setParameter("status$i", $status);
-    }
-
-    /**
-     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
-     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
-     *
-     * @param QueryBuilder $qb
-     * @param $i
-     * @param $countryISO3
-     * @param $idCountrySpecific
-     * @param $value
-     * @param $operator
-     */
-    protected function whereCountrySpecific(QueryBuilder &$qb, $i, $countryISO3, $idCountrySpecific, $value, $operator)
-    {
-        $qbSub = $this->createQueryBuilder("hh$i");
-        $this->setCountry($qbSub, $countryISO3, $i);
-        $qbSub->leftJoin("hh$i.countrySpecificAnswers", "csa$i")
-            ->andWhere("csa$i.countrySpecific = :countrySpecific$i")
-            ->setParameter("countrySpecific$i", $idCountrySpecific)
-            ->andWhere("csa$i.answer $operator :value$i")
-            ->setParameter("value$i", $value);
-
-        $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
-            ->setParameter("value$i", $value)
-            ->setParameter("countrySpecific$i", $idCountrySpecific);
-    }
-
-    /**
-     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
      * The household must have at least one beneficiary with the condition respected ($field $operator $value / Example: gender = 0)
      *
      * @param QueryBuilder $qb
      * @param $i
      * @param $countryISO3
-     * @param $field
-     * @param $value
-     * @param $operator
-     * @param bool|null $status
+     * @param array $filters
      */
-    public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, $field, $value, $operator, bool $status = null)
+    public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
+        dump($filters);
         $qbSub = $this->createQueryBuilder("hh$i");
         $this->setCountry($qbSub, $countryISO3, $i);
         $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
-            ->andWhere("b$i.$field $operator :val$i")
-            ->setParameter("val$i", $value);
-        if (null !== $status)
+            ->andWhere("b$i.{$filters["field_string"]} {$filters["condition_string"]} :val$i")
+            ->setParameter("val$i", $filters["value_string"]);
+        if (null !== $filters["kind_beneficiary"])
             $qbSub->andWhere("b$i.status = :status$i")
-                ->setParameter("status$i", $status);
+                ->setParameter("status$i", $filters["kind_beneficiary"]);
 
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
-            ->setParameter("val$i", $value);
-        if (null !== $status)
-            $qb->setParameter("status$i", $status);
+            ->setParameter("val$i", $filters["value_string"]);
+        if (null !== $filters["kind_beneficiary"])
+            $qb->setParameter("status$i", $filters["kind_beneficiary"]);
+    }
+
+    /**
+     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
+     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
+     *
+     * @param QueryBuilder $qb
+     * @param $i
+     * @param $countryISO3
+     * @param array $filters
+     */
+    protected function whereVulnerabilityCriterion(QueryBuilder &$qb, $i, $countryISO3, array $filters)
+    {
+        dump($filters);
+        $qbSub = $this->createQueryBuilder("hh$i");
+        $this->setCountry($qbSub, $countryISO3, $i);
+        $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
+            ->leftJoin("b$i.vulnerabilityCriteria", "vc$i")
+            ->andWhere("vc$i.id = :idvc$i")
+            ->setParameter("idvc$i", $filters["id_field"]);
+        if (null !== $filters["kind_beneficiary"])
+            $qbSub->andWhere("b$i.status = :status$i")
+                ->setParameter("status$i", $filters["kind_beneficiary"]);
+
+        $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
+            ->setParameter("idvc$i", $filters["id_field"])
+            ->setParameter("status$i", $filters["kind_beneficiary"]);
+    }
+
+    /**
+     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
+     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
+     *
+     * @param QueryBuilder $qb
+     * @param $i
+     * @param $countryISO3
+     * @param array $filters
+     */
+    protected function whereCountrySpecific(QueryBuilder &$qb, $i, $countryISO3, array $filters)
+    {
+        dump($filters);
+        $qbSub = $this->createQueryBuilder("hh$i");
+        $this->setCountry($qbSub, $countryISO3, $i);
+        $qbSub->leftJoin("hh$i.countrySpecificAnswers", "csa$i")
+            ->andWhere("csa$i.countrySpecific = :countrySpecific$i")
+            ->setParameter("countrySpecific$i", $filters["id_field"])
+            ->andWhere("csa$i.answer {$filters["condition_string"]} :value$i")
+            ->setParameter("value$i", $filters["value_string"]);
+
+        $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
+            ->setParameter("value$i", $filters["value_string"])
+            ->setParameter("countrySpecific$i", $filters["id_field"]);
     }
 
     /**

@@ -36,7 +36,7 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
             if ("default" === strtolower($criterion["table_string"]))
             {
                 $configType = strtolower($criterion["table_string"]);
-                $this->whereDefault($qb, $i, $countryISO3, $criterion['field_string'], $criterion['value_string'], $criterion['condition_string'], $criterion['kind_beneficiary']);
+                $this->whereDefault($qb, $i, $countryISO3, $criterion);
             }
             else
             {
@@ -57,8 +57,8 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
                 $method = null;
                 if (!is_callable([$this, 'where' . $class->getShortName()],null, $method))
                     throw new \Exception("You must implement a method called 'where{$class->getShortName()}'.'");
-
-                call_user_func_array([$this, $method], [&$qb, $i, $countryISO3, $criterion['id_field'], $criterion['value_string'], $criterion['condition_string']]);
+dump($criterion);
+                call_user_func_array([$this, $method], [&$qb, $i, $countryISO3, $criterion]);
             }
             if (null === $configType)
                 throw new \Exception("The field '{$criterion['field_string']}' is not implement yet");
@@ -83,13 +83,10 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
      * @param QueryBuilder $qb
      * @param $i
      * @param $countryISO3
-     * @param $field
-     * @param $value
-     * @param $operator
-     * @param bool|null $status
+     * @param array $filters
      * @throws \Exception
      */
-    public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, $field, $value, $operator, bool $status = null)
+    public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
         throw new \Exception("whereDefault must de implemented.");
     }

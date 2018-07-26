@@ -99,54 +99,51 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
     /**
      * Create sub request. The main request while found household inside the subrequest (and others subrequest)
-     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
-     *
-     * @param QueryBuilder $qb
-     * @param $i
-     * @param $idVulnerabilityCriterion
-     */
-    protected function whereVulnerabilityCriterion(QueryBuilder &$qb, $i, $idVulnerabilityCriterion)
-    {
-        $qb->leftJoin("b.vulnerabilityCriteria", "vc$i")
-            ->andWhere("vc$i.id = :idvc$i")
-            ->setParameter("idvc$i", $idVulnerabilityCriterion);
-    }
-
-    /**
-     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
-     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
-     *
-     * @param QueryBuilder $qb
-     * @param $i
-     * @param $idCountrySpecific
-     * @param $value
-     * @param $operator
-     */
-    protected function whereCountrySpecific(QueryBuilder &$qb, $i, $idCountrySpecific, $value, $operator)
-    {
-        $qb->leftJoin("hh.countrySpecificAnswers", "csa$i")
-            ->andWhere("csa$i.countrySpecific = :countrySpecific$i")
-            ->setParameter("countrySpecific$i", $idCountrySpecific)
-            ->andWhere("csa$i.answer $operator :value$i")
-            ->setParameter("value$i", $value);
-    }
-
-    /**
-     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
      * The household must have at least one beneficiary with the condition respected ($field $operator $value / Example: gender = 0)
      *
      * @param QueryBuilder $qb
      * @param $i
      * @param $countryISO3
-     * @param $field
-     * @param $value
-     * @param $operator
-     * @param bool|null $status
+     * @param array $filters
      */
-    public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, $field, $value, $operator, bool $status = null)
+    public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
-        $qb->andWhere("b.$field $operator :val$i")
-            ->setParameter("val$i", $value);
+        $qb->andWhere("b.{$filters["field_string"]} {$filters["condition_string"]} :val$i")
+            ->setParameter("val$i", $filters["value_string"]);
+    }
+
+    /**
+     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
+     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
+     *
+     * @param QueryBuilder $qb
+     * @param $i
+     * @param $countryISO3
+     * @param array $filters
+     */
+    protected function whereVulnerabilityCriterion(QueryBuilder &$qb, $i, $countryISO3, array $filters)
+    {
+        $qb->leftJoin("b.vulnerabilityCriteria", "vc$i")
+            ->andWhere("vc$i.id = :idvc$i")
+            ->setParameter("idvc$i", $filters["id_field"]);
+    }
+
+    /**
+     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
+     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
+     *
+     * @param QueryBuilder $qb
+     * @param $i
+     * @param $countryISO3
+     * @param array $filters
+     */
+    protected function whereCountrySpecific(QueryBuilder &$qb, $i, $countryISO3, array $filters)
+    {
+        $qb->leftJoin("hh.countrySpecificAnswers", "csa$i")
+            ->andWhere("csa$i.countrySpecific = :countrySpecific$i")
+            ->setParameter("countrySpecific$i", $filters["id_field"])
+            ->andWhere("csa$i.answer {$filters["condition_string"]} :value$i")
+            ->setParameter("value$i", $filters["value_string"]);
     }
 
     /**

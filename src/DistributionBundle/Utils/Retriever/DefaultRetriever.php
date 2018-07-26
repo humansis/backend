@@ -47,9 +47,9 @@ class DefaultRetriever extends AbstractRetriever
         $kindBeneficiaryCode = null;
         if ($distributionType === 'household')
         {
-            foreach ($criteria as $criterion)
+            foreach ($criteria as $index => $criterion)
             {
-                $criterion["kind_beneficiary"] = $this->getStatusBeneficiaryCriterion($criterion["kind_beneficiary"]);
+                $criteria[$index]["kind_beneficiary"] = $this->getStatusBeneficiaryCriterion($criterion["kind_beneficiary"]);
             }
         }
         elseif ($distributionType === 'beneficiary')
