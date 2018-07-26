@@ -21,7 +21,7 @@ class ProjectDataRetrievers
      * Use to verify if a key project exist in filter
      * If this key exists, it means a project was selected in selector
      */
-    public function ifInProject($qb, $filters) {
+    public function ifInProject($qb, array $filters) {
         if(array_key_exists('project', $filters)) {
             $qb->andWhere('p.id IN (:projects)')
                     ->setParameter('projects', $filters['project']);
@@ -48,12 +48,33 @@ class ProjectDataRetrievers
     }
 
     /**
+     * Get the data with the more recent values
+     */
+    public function lastDate(array $values) {
+        $moreRecentValues = [];
+        dump($values);
+        $lastDate = $values[0]['date'];
+        foreach($values as $value) {
+            if ($value['date'] > $lastDate) {
+                $lastDate = $value['date'];
+            }
+        }
+        foreach($values as $value) {
+            if ($value['date'] === $lastDate) {
+                array_push($moreRecentValues, $value);
+            }
+        }
+        return $moreRecentValues;
+    }
+
+    /**
      * Get the name of all donors
      */
     public function BMS_Project_D(array $filters) {
         $qb = $this->getReportingValue('BMS_Project_D', $filters);
         $qb->select('p.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        return $qb->getQuery()->getArrayResult();
+        $result = $this->lastDate($qb->getQuery()->getArrayResult());;
+        return $result;
     }
 
     /**
@@ -62,7 +83,8 @@ class ProjectDataRetrievers
     public function BMS_Project_HS(array $filters) {
         $qb = $this->getReportingValue('BMS_Project_HS', $filters);
         $qb->select('p.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        return $qb->getQuery()->getArrayResult();
+        $result = $this->lastDate($qb->getQuery()->getArrayResult());;
+        return $result;
     }
 
     /**
@@ -72,7 +94,8 @@ class ProjectDataRetrievers
         $qb = $this->getReportingValue('BMS_Project_AB', $filters);
         $qb->select('SUM(rv.value) AS value', 'rv.unity AS name', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
            ->groupBy('name', 'date');
-        return $qb->getQuery()->getArrayResult();
+        $result = $this->lastDate($qb->getQuery()->getArrayResult());;
+        return $result;
     }
 
     /**
