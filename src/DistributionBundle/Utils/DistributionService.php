@@ -2,6 +2,9 @@
 
 namespace DistributionBundle\Utils;
 
+use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Utils\Retriever\DefaultRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use DoctrineExtensions\Query\Mysql\Date;
@@ -99,50 +102,79 @@ class DistributionService
         {
             $this->commodityService->create($distribution, $item, false);
         }
-
+        $criteria = [];
         foreach ($distribution->getSelectionCriteria() as $item)
         {
             $distribution->removeSelectionCriterion($item);
-            $this->criteriaDistributionService->save($distribution, $item, false);
+            $criteria[] = $this->criteriaDistributionService->save($distribution, $item, false);
         }
 
-
-
         $this->em->persist($distribution);
+
+        $listReceivers = $this->guessBeneficiaries($countryISO3, $distribution, $criteria);
+        $this->saveReceivers($distribution, $listReceivers);
+
         $this->em->flush();
-
-        $listReceivers = $this->guessBeneficiaries($countryISO3, $distribution);
-        dump($listReceivers);
-
         return $distribution;
     }
 
     /**
      * @param $countryISO3
      * @param DistributionData $distributionData
+     * @param array $criteria
      * @return mixed
      * @throws \Exception
      */
-    public function guessBeneficiaries($countryISO3, DistributionData $distributionData)
+    public function guessBeneficiaries($countryISO3, DistributionData $distributionData, array $criteria)
     {
-        $selectionCriteria = $distributionData->getSelectionCriteria();
         $defaultRetriever = new DefaultRetriever($this->em);
-        $criteria = [];
-        foreach ($selectionCriteria as $selectionCriterion)
+        $criteriaArray = [];
+        foreach ($criteria as $selectionCriterion)
         {
-            $criteria[] = $this->getArrayOfCriteria($selectionCriterion);
+            $criteriaArray[] = $this->getArrayOfCriteria($selectionCriterion);
         }
+
         return $defaultRetriever->getReceivers(
             $countryISO3,
             $this->guessTypeString($distributionData->getType()),
-            $criteria,
+            $criteriaArray,
             $this->configurationLoader->load(['__country' => $countryISO3])
         );
     }
 
+    /**
+     * @param DistributionData $distributionData
+     * @param array $listReceivers
+     * @throws \Exception
+     */
+    public function saveReceivers(DistributionData $distributionData, array $listReceivers)
+    {
+        foreach ($listReceivers as $receiver)
+        {
+            if ($receiver instanceof Household)
+            {
+                $head = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($receiver);
+                $distributionBeneficiary = new DistributionBeneficiary();
+                $distributionBeneficiary->setDistributionData($distributionData)
+                    ->setBeneficiary($head);
+            }
+            elseif ($receiver instanceof Beneficiary)
+            {
+                $distributionBeneficiary = new DistributionBeneficiary();
+                $distributionBeneficiary->setDistributionData($distributionData)
+                    ->setBeneficiary($receiver);
+            }
+            else
+            {
+                throw new \Exception("A problem was found. The distribution has no beneficiary");
+            }
+            $this->em->persist($distributionBeneficiary);
+        }
+    }
+
     public function guessTypeString(bool $type)
     {
-        return ($type == 1)? 'beneficiary' : 'household';
+        return ($type == 1) ? 'beneficiary' : 'household';
     }
 
     public function getArrayOfCriteria(SelectionCriteria $selectionCriteria)

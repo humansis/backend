@@ -33,7 +33,7 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
         foreach ($criteria as $criterion)
         {
             $configType = null;
-            if ("default" === strtolower($criterion["table_string"]))
+            if (!array_key_exists("table_string", $criterion) || "default" === strtolower($criterion["table_string"]))
             {
                 $configType = strtolower($criterion["table_string"]);
                 $this->whereDefault($qb, $i, $countryISO3, $criterion);

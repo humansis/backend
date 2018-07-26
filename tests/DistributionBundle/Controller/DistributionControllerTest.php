@@ -33,12 +33,12 @@ class DistributionControllerTest extends BMSServiceTestCase
             "adm4" => "ADMIN FAKED"
         ],
         "selection_criteria" => [[
-            "table_string" => "TEST UNIT_TEST",
-            "field_string" => "TEST UNIT_TEST FAKED",
-            "value_string" => "TEST UNIT_TEST FAKED",
-            "condition_string" => "TEST UNIT_TEST FAKED",
-            "kind_beneficiary" => "TEST UNIT_TEST FAKED",
-            "field_id" => "TEST UNIT_TEST FAKED"
+            "table_string" => "default",
+            "field_string" => "gender",
+            "value_string" => "0",
+            "condition_string" => "=",
+            "kind_beneficiary" => "beneficiary",
+            "field_id" => null
         ]],
         "commodities" => [[
             "unit" => "PHPUNIT TEST",

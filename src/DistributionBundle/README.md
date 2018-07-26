@@ -1,5 +1,9 @@
 # DistributionBundle
 
+## Definition
+
+**Distribution type** : 0 is for Household, 1 for Beneficiary
+
 ## Configuration
 
 ### Config.yml
@@ -118,7 +122,7 @@ Example :
       "field_string": null,
       "condition_string": "=",
       "value_string": 1,
-      "id": 1
+      "id_field": 1
     },
     {
       "table_string": "vulnerabilityCriteria",
@@ -126,7 +130,7 @@ Example :
       "field_string": null,
       "condition_string": "=",
       "value_string": "saluut",
-      "id": 1
+      "id_field": 1
     },
     {
       "table_string": "default",
@@ -153,8 +157,6 @@ Example :
 
 - **distribution_type** : 'household' (for send distribution to every beneficiaries of a household)
 OR 'beneficiary' (to send distribution to a specific beneficiary)
-- **kind_beneficiary** : 'beneficiary' (for send distribution to every beneficiaries of a household)
-OR 'dependent' (to send distribution to a specific beneficiary) OR 'null' (both)
 - **criteria** : list of criterion :
     - **field** : name of a column of Beneficiary table or 'idCountrySpecific' or 'idVulnerabilityCriterion'
     - **operator** : '=', '<', '>', '<=', '>='. It's the operator used for compare the wanted value with the value in database
@@ -166,34 +168,29 @@ Example :
 ```json
 {
   "distribution_type": "beneficiary",
-  "kind_beneficiary": "beneficiary",
   "criteria": [
     {
       "table_string": "countrySpecific",
-      "kind_beneficiary": "beneficiary",
       "field_string": "",
       "condition_string": "=",
       "value_string": 1,
-      "id": 1
+      "id_field": 1
     },
     {
       "table_string": "vulnerabilityCriteria",
-      "kind_beneficiary": "beneficiary",
       "field_string": "nutritional issues",
       "condition_string": "=",
       "value_string": "saluut",
-      "id": 1
+      "id_field": 1
     },
     {
       "table_string": "default",
-      "kind_beneficiary": "beneficiary",
       "field_string": "gender",
       "condition_string": "=",
       "value_string": 0
     },
     {
       "table_string": "default",
-      "kind_beneficiary": "beneficiary",
       "field_string": "dateOfBirth",
       "condition_string": "<",
       "value_string": "1975-11-30"
@@ -225,14 +222,22 @@ PUT(/distributions)
     "adm3": "ADMIN FAKED",
     "adm4": "ADMIN FAKED"
   },
-  "selection_criteria": {
-    "table_string": "TEST UNIT_TEST",
-    "field_string": "TEST UNIT_TEST FAKED",
-    "value_string": "TEST UNIT_TEST FAKED",
-    "condition_string": "TEST UNIT_TEST FAKED",
-    "kind_beneficiary": "TEST UNIT_TEST FAKED",
-    "field_id": "TEST UNIT_TEST FAKED"
-  },
+  "selection_criteria": [
+    {
+      "table_string": "default",
+      "kind_beneficiary": "beneficiary",
+      "field_string": "gender",
+      "condition_string": "=",
+      "value_string": 0
+    },
+    {
+      "table_string": "default",
+      "kind_beneficiary": "beneficiary",
+      "field_string": "dateOfBirth",
+      "condition_string": "=",
+      "value_string": "1975-11-30"
+    }
+    ],
   "commodities": [
     {
       "modality_type": {

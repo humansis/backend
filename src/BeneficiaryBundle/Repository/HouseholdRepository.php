@@ -125,13 +125,13 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
             ->leftJoin("b$i.vulnerabilityCriteria", "vc$i")
             ->andWhere("vc$i.id = :idvc$i")
-            ->setParameter("idvc$i", $filters["id"]);
+            ->setParameter("idvc$i", $filters["id_field"]);
         if (null !== $filters["kind_beneficiary"])
             $qbSub->andWhere("b$i.status = :status$i")
                 ->setParameter("status$i", $filters["kind_beneficiary"]);
 
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
-            ->setParameter("idvc$i", $filters["id"])
+            ->setParameter("idvc$i", $filters["id_field"])
             ->setParameter("status$i", $filters["kind_beneficiary"]);
     }
 
@@ -150,13 +150,13 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $this->setCountry($qbSub, $countryISO3, $i);
         $qbSub->leftJoin("hh$i.countrySpecificAnswers", "csa$i")
             ->andWhere("csa$i.countrySpecific = :countrySpecific$i")
-            ->setParameter("countrySpecific$i", $filters["id"])
+            ->setParameter("countrySpecific$i", $filters["id_field"])
             ->andWhere("csa$i.answer {$filters["condition_string"]} :value$i")
             ->setParameter("value$i", $filters["value_string"]);
 
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
             ->setParameter("value$i", $filters["value_string"])
-            ->setParameter("countrySpecific$i", $filters["id"]);
+            ->setParameter("countrySpecific$i", $filters["id_field"]);
     }
 
     /**

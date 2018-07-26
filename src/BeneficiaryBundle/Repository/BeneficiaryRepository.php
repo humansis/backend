@@ -119,7 +119,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         $qb->leftJoin("b.vulnerabilityCriteria", "vc$i")
             ->andWhere("vc$i.id = :idvc$i")
-            ->setParameter("idvc$i", $filters["id"]);
+            ->setParameter("idvc$i", $filters["id_field"]);
     }
 
     /**
@@ -135,7 +135,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         $qb->leftJoin("hh.countrySpecificAnswers", "csa$i")
             ->andWhere("csa$i.countrySpecific = :countrySpecific$i")
-            ->setParameter("countrySpecific$i", $filters["id"])
+            ->setParameter("countrySpecific$i", $filters["id_field"])
             ->andWhere("csa$i.answer {$filters["condition_string"]} :value$i")
             ->setParameter("value$i", $filters["value_string"]);
     }
