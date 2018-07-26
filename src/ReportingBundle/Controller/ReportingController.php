@@ -66,8 +66,8 @@ class ReportingController extends Controller
     public function test(Request $request) {
 
         $indicator = new ReportingIndicator;
-        $indicator->setReference('BMS_Project_AB');
-        $indicator->setCode('BMS_Project_AB');
+        $indicator->setReference('BMS_Country_TTC');
+        $indicator->setCode('BMS_Country_TTC');
         $dataFilters = [
                 'type_graph'  => "nombre",
                 'project'        => [1, 2]  
@@ -76,16 +76,16 @@ class ReportingController extends Controller
 
         // //***************************************************************************//
 
-        $filters = json_decode($Receivefilters, true);
-        $contentJson = $request->request->all();
-        $filters['country'] = $contentJson['__country'];
+        // $filters = json_decode($Receivefilters, true);
+        // $contentJson = $request->request->all();
+        // $filters['country'] = $contentJson['__country'];
 
-        $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
-        dump($dataComputed);
-        $dataFormatted = $this->get('reporting.formatter')->format($dataComputed, 'nombre');
-        dump($dataFormatted);
+        // $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
+        // dump($dataComputed);
+        // $dataFormatted = $this->get('reporting.formatter')->format($dataComputed, 'nombre');
+        // dump($dataFormatted);
 
-        // $this->get('reporting.data_fillers.default')->fill($indicator);
+        $this->get('reporting.data_fillers.default')->fill($indicator);
     }
 
 }

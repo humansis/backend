@@ -20,36 +20,29 @@ class CountryDataRetrievers implements DataRetrieverInterface
     }
 
     /**
+     * Use to make join and where in DQL
+     * Use in all project data retrievers
+     */
+    public function getReportingValue(string $code, array $filters) {
+      $qb = $this->reportingCountry->createQueryBuilder('rc')
+                                   ->leftjoin('rc.value', 'rv')
+                                   ->leftjoin('rc.indicator', 'ri')
+                                   ->where('ri.code = :code')
+                                      ->setParameter('code', $code)
+                                   ->andWhere('rc.country = :country')
+                                      ->setParameter('country', $filters['country']);
+      return $qb;
+  }
+
+
+    /**
      * Get total of household by country
      */
     public function BMS_Country_TH(array $filters)
     {
-       $qb = $this->reportingCountry->createQueryBuilder('rc')
-                                  ->leftjoin('rc.value', 'rv')
-                                  ->leftjoin('rc.indicator', 'ri')
-                                  ->where('ri.code = :code')
-                                    ->setParameter('code', 'BMS_Country_TH')
-                                  ->andWhere('rc.country = :country')
-                                    ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        return $qb->getQuery()->getArrayResult();
-    }
-
-
-    /**
-     * Get total of beneficiaries by country
-     */
-    public function BMS_Country_TB(array $filters)
-    {
-       $qb = $this->reportingCountry->createQueryBuilder('rc')
-                                  ->leftjoin('rc.value', 'rv')
-                                  ->leftjoin('rc.indicator', 'ri')
-                                  ->where('ri.code = :code')
-                                    ->setParameter('code', 'BMS_Country_TB')
-                                  ->andWhere('rc.country = :country')
-                                    ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        return $qb->getQuery()->getArrayResult();
+      $qb = $this->getReportingValue('BMS_Country_TH', $filters);
+      $qb ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+      return $qb->getQuery()->getArrayResult();
     }
 
     /**
@@ -57,15 +50,9 @@ class CountryDataRetrievers implements DataRetrieverInterface
      */
     public function BMS_Country_AP(array $filters)
     {
-       $qb = $this->reportingCountry->createQueryBuilder('rc')
-                                  ->leftjoin('rc.value', 'rv')
-                                  ->leftjoin('rc.indicator', 'ri')
-                                  ->where('ri.code = :code')
-                                    ->setParameter('code', 'BMS_Country_AP')
-                                  ->andWhere('rc.country = :country')
-                                    ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        return $qb->getQuery()->getArrayResult();
+      $qb = $this->getReportingValue('BMS_Country_AP', $filters);
+      $qb ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+      return $qb->getQuery()->getArrayResult();
     }
 
     /**
@@ -73,15 +60,9 @@ class CountryDataRetrievers implements DataRetrieverInterface
      */
     public function BMS_Country_TF(array $filters)
     {
-       $qb = $this->reportingCountry->createQueryBuilder('rc')
-                                  ->leftjoin('rc.value', 'rv')
-                                  ->leftjoin('rc.indicator', 'ri')
-                                  ->where('ri.code = :code')
-                                    ->setParameter('code', 'BMS_Country_TF')
-                                  ->andWhere('rc.country = :country')
-                                    ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        return $qb->getQuery()->getArrayResult();
+      $qb = $this->getReportingValue('BMS_Country_TF', $filters);
+      $qb ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+      return $qb->getQuery()->getArrayResult();
     }
 
     /**
@@ -89,15 +70,9 @@ class CountryDataRetrievers implements DataRetrieverInterface
      */
     public function BMS_Country_EB(array $filters)
     {
-       $qb = $this->reportingCountry->createQueryBuilder('rc')
-                                  ->leftjoin('rc.value', 'rv')
-                                  ->leftjoin('rc.indicator', 'ri')
-                                  ->where('ri.code = :code')
-                                    ->setParameter('code', 'BMS_Country_EB')
-                                  ->andWhere('rc.country = :country')
-                                    ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        return $qb->getQuery()->getArrayResult();
+      $qb = $this->getReportingValue('BMS_Country_EB', $filters);
+      $qb ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+      return $qb->getQuery()->getArrayResult();
     }
 
     /**
@@ -105,15 +80,20 @@ class CountryDataRetrievers implements DataRetrieverInterface
      */
     public function BMS_Country_TND(array $filters)
     {
-       $qb = $this->reportingCountry->createQueryBuilder('rc')
-                                  ->leftjoin('rc.value', 'rv')
-                                  ->leftjoin('rc.indicator', 'ri')
-                                  ->where('ri.code = :code')
-                                    ->setParameter('code', 'BMS_Country_TND')
-                                  ->andWhere('rc.country = :country')
-                                    ->setParameter('country', $filters['country'])
-                                  ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        return $qb->getQuery()->getArrayResult();
+      $qb = $this->getReportingValue('BMS_Country_TND', $filters);
+      $qb ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+      return $qb->getQuery()->getArrayResult();
+    }
+
+
+    /**
+     * Get total transactions completed
+     */
+    public function BMS_Country_TTC(array $filters)
+    {
+      $qb = $this->getReportingValue('BMS_Country_TTC', $filters);
+      $qb ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+      return $qb->getQuery()->getArrayResult();
     }
 
 
