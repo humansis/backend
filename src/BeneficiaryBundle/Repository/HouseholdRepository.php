@@ -94,7 +94,6 @@ class HouseholdRepository extends AbstractCriteriaRepository
      */
     public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
-        dump($filters);
         $qbSub = $this->createQueryBuilder("hh$i");
         $this->setCountry($qbSub, $countryISO3, $i);
         $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
@@ -121,7 +120,6 @@ class HouseholdRepository extends AbstractCriteriaRepository
      */
     protected function whereVulnerabilityCriterion(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
-        dump($filters);
         $qbSub = $this->createQueryBuilder("hh$i");
         $this->setCountry($qbSub, $countryISO3, $i);
         $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
@@ -148,7 +146,6 @@ class HouseholdRepository extends AbstractCriteriaRepository
      */
     protected function whereCountrySpecific(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
-        dump($filters);
         $qbSub = $this->createQueryBuilder("hh$i");
         $this->setCountry($qbSub, $countryISO3, $i);
         $qbSub->leftJoin("hh$i.countrySpecificAnswers", "csa$i")

@@ -57,7 +57,6 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
                 $method = null;
                 if (!is_callable([$this, 'where' . $class->getShortName()],null, $method))
                     throw new \Exception("You must implement a method called 'where{$class->getShortName()}'.'");
-dump($criterion);
                 call_user_func_array([$this, $method], [&$qb, $i, $countryISO3, $criterion]);
             }
             if (null === $configType)
