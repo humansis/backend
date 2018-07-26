@@ -27,26 +27,32 @@ class ConfigurationLoader
     }
 
 
-    public function load()
+    /**
+     * Get all data from the config file.
+     *
+     * @param array $filters : [$field => $value]
+     * @return array
+     */
+    public function load(array $filters)
     {
-        $criteriaFormatted = ["default" => [], "table" => []];
+        $criteriaFormatted = [];
         foreach ($this->criteria as $criterion => $type)
         {
             if (in_array($type, $this->MAPPING_TYPE_DEFAULT))
             {
-                $criteriaFormatted["default"][] = ["field" => $criterion, "type" => $type];
+                $criteriaFormatted[] = ["field" => $criterion, "type" => $type];
             }
             else
             {
-                $instances = $this->em->getRepository($type)->findAll();
+                $instances = $this->em->getRepository($type)->findForCriteria($filters);
                 dump($instances);
-                $criteriaFormatted["table"][] = ["field" => $criterion, "type" => $instances];
-
+                foreach ($instances as $instance)
+                {
+                    $instance->setTableString($criterion);
+                }
+                dump($instances);
+                $criteriaFormatted = array_merge($criteriaFormatted, $instances);
             }
-//            elseif ("id" === strval(strtolower($type)))
-//            {
-//
-//            }
         }
 
         return $criteriaFormatted;

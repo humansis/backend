@@ -41,7 +41,14 @@ class CriteriaDistributionService
         $distributionType = $filters['distribution_type'];
         $kindBeneficiaryGlobal = (array_key_exists('kind_beneficiary', $filters) ? $filters['kind_beneficiary'] : null);
 
-        return $defaultRetriever->getReceivers($countryISO3, $distributionType, $filters["criteria"], $onlyCount, $kindBeneficiaryGlobal);
+        return $defaultRetriever->getReceivers(
+            $countryISO3,
+            $distributionType,
+            $filters["criteria"],
+            $this->configurationLoader->load($filters),
+            $onlyCount,
+            $kindBeneficiaryGlobal
+        );
     }
 
     public function save(SelectionCriteria $selectionCriteria, bool $flush)
@@ -52,10 +59,9 @@ class CriteriaDistributionService
         return $selectionCriteria;
     }
 
-    public function getAll($countryISO3)
+    public function getAll(array $filters)
     {
-        $criteria = $this->configurationLoader->load();
-
+        $criteria = $this->configurationLoader->load($filters);
         return $criteria;
     }
 }

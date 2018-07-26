@@ -29,11 +29,11 @@ class CriteriaDistributionController extends Controller
     {
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        $criteria = $criteriaDistributionService->getAll($request->request->get('__country'));
+        $criteria = $criteriaDistributionService->getAll($request->request->all());
 
         $json = $this->get('jms_serializer')
             ->serialize($criteria, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["Criteria"]));
-        return new Response(json_encode($criteria));
+        return new Response($json);
     }
 
     /**
