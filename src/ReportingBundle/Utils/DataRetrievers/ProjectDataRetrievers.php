@@ -9,12 +9,12 @@ use ReportingBundle\Entity\ReportingProject;
 class ProjectDataRetrievers 
 {
     private $em;
-    private $reportingCountry;
+    private $reportingProject;
 
     public function __construct(EntityManager $em)
     {
         $this->em = $em;   
-        $this->reportingCountry = $em->getRepository(ReportingProject::class);
+        $this->reportingProject = $em->getRepository(ReportingProject::class);
     }
 
     /**
@@ -34,7 +34,7 @@ class ProjectDataRetrievers
      * Use in all project data retrievers
      */
     public function getReportingValue(string $code, array $filters) {
-        $qb = $this->reportingCountry->createQueryBuilder('rp')
+        $qb = $this->reportingProject->createQueryBuilder('rp')
                                     ->leftjoin('rp.value', 'rv')
                                     ->leftjoin('rp.indicator', 'ri')
                                     ->leftjoin('rp.project', 'p')
@@ -207,6 +207,18 @@ class ProjectDataRetrievers
            ->groupBy('unity', 'date');        
         return $qb->getQuery()->getArrayResult();
     }
+
+    /**
+     * Get the total of value in a project
+     */
+    public function BMSU_Project_PV(array $filters) {
+        $qb = $this->getReportingValue('BMSU_Project_PV', $filters);
+        $qb->select('SUM(rv.value) AS value', 'rv.unity AS unity',  "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
+           ->groupBy('unity', 'date');        
+        return $qb->getQuery()->getArrayResult();
+    }
+
+
 
 
 

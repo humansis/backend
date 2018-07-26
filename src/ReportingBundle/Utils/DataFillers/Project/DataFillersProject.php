@@ -177,7 +177,7 @@ class DataFillersProject
                 foreach($vulnerabilityCriterion as $vulnerabilityCriteria) {
                     $qb ->andWhere('vc.id = :criteria')
                             ->setParameter('criteria', $vulnerabilityCriteria->getId())
-                        ->select('count(b) as value', 'vc.value as unity')
+                        ->select('count(b) as value', 'vc.fieldString as unity')
                         ->groupBy('vc.id'); 
                     $result = $qb->getQuery()->getArrayResult();
                     $length = count($result);

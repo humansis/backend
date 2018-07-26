@@ -82,7 +82,7 @@ class DataFillersDistribution  extends DataFillers
      /**
      * Fill in ReportingValue and ReportingDistribution with total value of distribution
      */
-    public function BMS_Distribution_TTV() {
+    public function BMS_Distribution_TDV() {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(Commodity::class);
@@ -90,7 +90,7 @@ class DataFillersDistribution  extends DataFillers
                                    ->leftjoin('c.distributionData', 'dd')
                                    ->select('c.value AS value', 'c.unit as unity', 'dd.id as distribution');
             $results = $qb->getQuery()->getArrayResult();
-            $reference = $this->getReferenceId("BMS_Distribution_TTV");
+            $reference = $this->getReferenceId("BMS_Distribution_TDV");
             foreach ($results as $result) 
             {
                 $new_value = new ReportingValue();
@@ -163,40 +163,65 @@ class DataFillersDistribution  extends DataFillers
      * Fill in ReportingValue and ReportingDistribution with age breakdown
      */
     public function BMS_Distribution_AB() {
-        $this->em->getConnection()->beginTransaction();
-        try {
-            $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
-            $qb = $this->repository->createQueryBuilder('db')
-                                   ->leftjoin('db.beneficiary', 'b')
-                                   ->leftjoin('db.distributionData', 'dd')
-                                   ->select("TIMESTAMPDIFF(YEAR, b.dateOfBirth, CURRENT_DATE()) as value", 'dd.id as distribution');
-            $results = $qb->getQuery()->getArrayResult();
-            $reference = $this->getReferenceId("BMS_Distribution_AB");
-            foreach ($results as $result) 
-            {
-                $new_value = new ReportingValue();
-                $new_value->setValue($result['value']);
-                $new_value->setUnity('ans');
-                $new_value->setCreationDate(new \DateTime());
+        $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+        $beneficiaries = $this->repository->findAll();
 
-                $this->em->persist($new_value);
-                $this->em->flush();
+        $this->repository = $this->em->getRepository(DistributionData::class);
+        $distributions = $this->repository->findAll();
 
-                $this->repository = $this->em->getRepository(DistributionData::class);
-                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]); 
-
-                $new_reportingDistribution = new ReportingDistribution();
-                $new_reportingDistribution->setIndicator($reference);
-                $new_reportingDistribution->setValue($new_value);
-                $new_reportingDistribution->setDistribution($distribution);
-
-                $this->em->persist($new_reportingDistribution);
-                $this->em->flush();   
+        foreach($distributions as $distribution) {
+            $results = [];
+            foreach($beneficiaries as $beneficiary) {
+                if( $distribution->getId() === $beneficiary->getDistributionData()->getId()) {
+                    $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+                    $qb = $this->repository->createQueryBuilder('db')
+                                        ->leftjoin('db.beneficiary', 'b')
+                                        ->leftjoin('db.distributionData', 'dd')
+                                        ->where('b.id = :beneficiary')
+                                            ->setParameter('beneficiary', $beneficiary->getBeneficiary()->getId())
+                                        ->andWhere('dd.id = :distribution')
+                                            ->setParameter('distribution', $distribution->getId())
+                                        ->select("TIMESTAMPDIFF(YEAR, b.dateOfBirth, CURRENT_DATE()) as value", 'dd.id as distribution');
+                    $result = $qb->getQuery()->getArrayResult();
+                    if((sizeof($result)) > 0) {
+                        array_push($results, $result);
+                    }
+                }
             }
-            $this->em->getConnection()->commit();
-        }catch (Exception $e) {
-            $this->em->getConnection()->rollback();
-            throw $e;
+            $byInterval = $this->sortByAge($results);
+            dump($results);
+            dump($byInterval);
+            
+            foreach ($byInterval as $ageBreakdown) 
+            {
+                $this->em->getConnection()->beginTransaction();
+                try {
+                    $reference = $this->getReferenceId("BMS_Distribution_AB");
+                    $new_value = new ReportingValue();
+                    $new_value->setValue($ageBreakdown['value']);
+                    $new_value->setUnity($ageBreakdown['unity']);
+                    $new_value->setCreationDate(new \DateTime());
+
+                    $this->em->persist($new_value);
+                    $this->em->flush();
+
+                    $this->repository = $this->em->getRepository(DistributionData::class);
+                    $distribution = $this->repository->findOneBy(['id' => $results[0][0]['distribution']]); 
+
+                    $new_reportingDistribution = new ReportingDistribution();
+                    $new_reportingDistribution->setIndicator($reference);
+                    $new_reportingDistribution->setValue($new_value);
+                    $new_reportingDistribution->setDistribution($distribution);
+
+                    $this->em->persist($new_reportingDistribution);
+                    $this->em->flush();   
+                 $this->em->getConnection()->commit();
+                
+                }catch (Exception $e) {
+                $this->em->getConnection()->rollback();
+                throw $e;
+                }
+            }
         }
     }
 
@@ -398,7 +423,7 @@ class DataFillersDistribution  extends DataFillers
                     foreach($vulnerabilityCriterion as $vulnerabilityCriteria) { 
                     $qb ->andWhere('vc.id = :criteria')
                             ->setParameter('criteria', $vulnerabilityCriteria->getId())
-                        ->select("count(db.id) as value",'vc.value as unity', 'dd.id as distribution')
+                        ->select("count(db.id) as value",'vc.fieldString as unity', 'dd.id as distribution')
                         ->groupBy('unity, distribution');
                         $result = $qb->getQuery()->getArrayResult();
                         if((sizeof($result)) > 0) {
@@ -461,6 +486,73 @@ class DataFillersDistribution  extends DataFillers
             $results = [];
 
         }
+    }
+
+        /**
+     * Use to sort beneficiary by age interval
+     */
+    public function sortByAge($ages) {
+        $byInterval= []; 
+        foreach($ages as $age) {
+            foreach($age as $value) {
+                if ((int)$value['value'] > 0 && (int)$value['value'] <= 10 ) {
+                    if(!array_key_exists('zeroTen', $byInterval)) {
+                        $byInterval['zeroTen'] = [];
+                        $byInterval['zeroTen']['unity'] = '[0-10]';
+                        $byInterval['zeroTen']['value'] = 1;
+                    } else {
+                        $byInterval['zeroTen']['value'] += 1;
+                    }
+                    break 1;
+                } else if ((int)$value['value'] > 10 && (int)$value['value'] <= 18 ) {
+                    if(!array_key_exists('TenEighteen', $byInterval)) {
+                        $byInterval['TenEighteen'] = [];
+                        $byInterval['TenEighteen']['unity'] = '[11-18]';
+                        $byInterval['TenEighteen']['value'] = 1;
+                    } else {
+                        $byInterval['TenEighteen']['value'] += 1;
+                    }
+                    break 1;
+                } else if ((int)$value['value'] > 18 && (int)$value['value'] <= 30 ) {
+                    if(!array_key_exists('EighteenThirty', $byInterval)) {
+                        $byInterval['EighteenThirty'] = [];
+                        $byInterval['EighteenThirty']['unity'] = '[19-30]';
+                        $byInterval['EighteenThirty']['value'] = 1;
+                    } else {
+                        $byInterval['EighteenThirty']['value'] += 1;
+                    }
+                    break 1;
+                } else if ((int)$value['value'] > 30 && (int)$value['value'] <= 50 ) {
+                    if(!array_key_exists('ThirtyFifty', $byInterval)) {
+                        $byInterval['ThirtyFifty'] = [];
+                        $byInterval['ThirtyFifty']['unity'] = '[31-50]';
+                        $byInterval['ThirtyFifty']['value'] = 1;
+                    } else {
+                        $byInterval['ThirtyFifty']['value'] += 1;
+                    }
+                    break 1;
+                } else if ((int)$value['value'] > 50 && (int)$value['value'] <= 70 ) {
+                    if(!array_key_exists('FiftySeventy', $byInterval)) {
+                        $byInterval['FiftySeventy'] = [];
+                        $byInterval['FiftySeventy']['unity'] = '[51-70]';
+                        $byInterval['FiftySeventy']['value'] = 1;
+                    } else {
+                        $byInterval['FiftySeventy']['value'] += 1;
+                    }
+                    break 1;
+                } else {
+                    if(!array_key_exists('MoreSeventy', $byInterval)) {
+                        $byInterval['MoreSeventy'] = [];
+                        $byInterval['MoreSeventy']['unity'] = '[70+]';
+                        $byInterval['MoreSeventy']['value'] = 1;
+                    } else {
+                        $byInterval['MoreSeventy']['value'] += 1;
+                    }
+                    break 1;
+                }
+            }
+        }
+        return $byInterval;
     }
 
 
