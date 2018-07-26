@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Beneficiary
@@ -29,6 +30,7 @@ class Beneficiary
      *
      * @ORM\Column(name="givenName", type="string", length=255)
      * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Assert\NotBlank(message="The given name is required.")
      */
     private $givenName;
 
@@ -37,6 +39,7 @@ class Beneficiary
      *
      * @ORM\Column(name="familyName", type="string", length=255)
      * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Assert\NotBlank(message="The family name is required.")
      */
     private $familyName;
 
@@ -45,6 +48,7 @@ class Beneficiary
      *
      * @ORM\Column(name="gender", type="smallint")
      * @Groups({"FullHousehold"})
+     * @Assert\NotBlank(message="The gender is required.")
      */
     private $gender;
 
@@ -53,6 +57,7 @@ class Beneficiary
      *
      * @ORM\Column(name="status", type="boolean")
      * @Groups({"FullHousehold"})
+     * @Assert\NotBlank(message="The status is required.")
      */
     private $status;
 
@@ -62,6 +67,7 @@ class Beneficiary
      * @ORM\Column(name="dateOfBirth", type="date")
      * @JMS_Type("DateTime<'Y-m-d'>")
      * @Groups({"FullHousehold"})
+     * @Assert\NotBlank(message="The date of birth is required.")
      */
     private $dateOfBirth;
 

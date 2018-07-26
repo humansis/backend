@@ -13,6 +13,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use PhpOption\Tests\PhpOptionRepo;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class BeneficiaryService
 {
@@ -25,15 +27,20 @@ class BeneficiaryService
     /** @var RequestValidator $requestValidator */
     private $requestValidator;
 
+    /** @var ValidatorInterface $validator */
+    private $validator;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
-        RequestValidator $requestValidator
+        RequestValidator $requestValidator,
+        ValidatorInterface $validator
     )
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->requestValidator = $requestValidator;
+        $this->validator = $validator;
     }
 
 
@@ -97,6 +104,20 @@ class BeneficiaryService
             ->setGivenName($beneficiaryArray["given_name"])
             ->setStatus($beneficiaryArray["status"])
             ->setUpdatedOn(new \DateTime($beneficiaryArray["updated_on"]));
+
+        $errors = $this->validator->validate($beneficiary);
+        if (count($errors) > 0) {
+            $errorsMessage = "";
+            /** @var ConstraintViolation $error */
+            foreach ($errors as $error)
+            {
+                if ("" !== $errorsMessage)
+                    $errorsMessage .= " ";
+                $errorsMessage .= $error->getMessage();
+            }
+
+            throw new \Exception($errorsMessage);
+        }
 
         foreach ($beneficiaryArray["vulnerability_criteria"] as $vulnerability_criterion)
         {
