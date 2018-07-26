@@ -45,7 +45,7 @@ class Commodity
     /**
      * @var DistributionData
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="commodities")
      */
     private $distributionData;
 

@@ -41,8 +41,27 @@ class ModalityService
         }
         catch (\Exception $exception)
         {
-            throw new \Exception("An error ");
+            throw new \Exception("You can't create the modality '$name'.'");
         }
+
+        return $modality;
+    }
+
+    public function createType(Modality $modality, $name)
+    {
+        try
+        {
+            $modalityType = new ModalityType();
+            $modalityType->setName($name)
+                ->setModality($modality);
+            $this->em->persist($modalityType);
+            $this->em->flush();
+        }
+        catch (\Exception $exception)
+        {
+            throw new \Exception("You can't create the modality type '$name'.'");
+        }
+        return $modalityType;
     }
 
 }

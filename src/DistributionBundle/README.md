@@ -212,20 +212,36 @@ PUT(/distributions)
 
 ```json
 {
-    "name": "example name",
-    "updated_on": "2018-04-01 11:20:13",
-    "location": 
+  "name": "example name",
+  "type": 0,
+  "updated_on": "2018-04-01 11:20:13",
+  "project": {
+    "id": 1
+  },
+  "location": {
+    "country_iso3": "KHM",
+    "adm1": "ADMIN FAKED",
+    "adm2": "ADMIN FAKED",
+    "adm3": "ADMIN FAKED",
+    "adm4": "ADMIN FAKED"
+  },
+  "selection_criteria": {
+    "table_string": "TEST UNIT_TEST",
+    "field_string": "TEST UNIT_TEST FAKED",
+    "value_string": "TEST UNIT_TEST FAKED",
+    "condition_string": "TEST UNIT_TEST FAKED",
+    "kind_beneficiary": "TEST UNIT_TEST FAKED",
+    "field_id": "TEST UNIT_TEST FAKED"
+  },
+  "commodities": [
     {
-        "id":2
-    },
-    "project":  
-    {
-        "id":1
-    },
-    "selection_criteria": 
-    {
-        "id":1
+      "modality_type": {
+        "id": 1
+      },
+      "unit": "kg",
+      "value": 10
     }
+  ]
 }
 ```
 

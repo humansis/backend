@@ -107,6 +107,11 @@ class DistributionData
      */
     private $type;
 
+    /**
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="distributionData")
+     */
+    private $commodities;
+
 
     /**
      * Constructor
@@ -366,5 +371,41 @@ class DistributionData
     public function getSelectionCriteria()
     {
         return $this->selectionCriteria;
+    }
+
+    /**
+     * Add commodity.
+     *
+     * @param \DistributionBundle\Entity\Commodity $commodity
+     *
+     * @return DistributionData
+     */
+    public function addCommodity(\DistributionBundle\Entity\Commodity $commodity)
+    {
+        $this->commodities[] = $commodity;
+
+        return $this;
+    }
+
+    /**
+     * Remove commodity.
+     *
+     * @param \DistributionBundle\Entity\Commodity $commodity
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeCommodity(\DistributionBundle\Entity\Commodity $commodity)
+    {
+        return $this->commodities->removeElement($commodity);
+    }
+
+    /**
+     * Get commodities.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCommodities()
+    {
+        return $this->commodities;
     }
 }

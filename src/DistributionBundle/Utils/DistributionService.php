@@ -10,6 +10,7 @@ use DistributionBundle\Entity\Location;
 use DistributionBundle\Entity\SelectionCriteria;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Tests\Matcher\DumpedUrlMatcherTest;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DistributionService
@@ -27,18 +28,23 @@ class DistributionService
     /** @var LocationService $locationService */
     private $locationService;
 
+    /** @var CommodityService $commodityService */
+    private $commodityService;
+
 
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
         ValidatorInterface $validator,
-        LocationService $locationService
+        LocationService $locationService,
+        CommodityService $commodityService
     )
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->locationService = $locationService;
+        $this->commodityService = $commodityService;
     }
 
     /**
@@ -72,6 +78,16 @@ class DistributionService
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
         if ($projectTmp instanceof Project)
             $distribution->setProject($projectTmp);
+
+
+        foreach ($distribution->getCommodities() as $item)
+        {
+            $distribution->removeCommodity($item);
+        }
+        foreach ($distributionArray['commodities'] as $item)
+        {
+            $this->commodityService->create($distribution, $item, false);
+        }
 
         $this->em->persist($distribution);
         $this->em->flush();
