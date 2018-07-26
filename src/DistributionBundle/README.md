@@ -7,11 +7,85 @@
 
 ### Config.yml
 
+Example of configuration.
+Inside 'criteria', you must defined every criteria that can be used to determined if a person should be a beneficiary.
+**Model** => {"**key**" : "**type**"}
+
+Type : text, number, bool, date or entity name (with namespace)
+
+```yaml
+distribution:
+    criteria: {
+        gender: boolean,
+        dateOfBirth: date,
+        vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
+        countrySpecific: BeneficiaryBundle\Entity\CountrySpecific
+        }
+```
+
+If you set a class name in the type, when you will get the list of criteria, it will return the list of data inside the table
+of the entity.
+
+
+Example of criteria list :
+```json
+[
+  {
+    "field_string": "gender",
+    "type": "boolean"
+  },
+  {
+    "field_string": "dateOfBirth",
+    "type": "date"
+  },
+  {
+    "table_string": "vulnerabilityCriteria",
+    "id": 1,
+    "field_string": "disabled"
+  },
+  {
+    "table_string": "vulnerabilityCriteria",
+    "id": 2,
+    "field_string": "solo parent"
+  },
+  {
+    "table_string": "countrySpecific",
+    "id": 1,
+    "field_string": "ID Poor",
+    "type": "Number"
+  },
+  {
+    "table_string": "countrySpecific",
+    "id": 2,
+    "field_string": "WASH",
+    "type": "Text"
+  }
+]
+```
+
 
 ### Repository
 
+There is two types of distribution :
+- by person
+- by household
 
-### Retriever
+So we have two repositories which implement the AbstractCriteriaRepository.
+Inside these repositories, you must implement methods from the InterfaceCriteriaRepository and a method for each key
+specified in the config.yml file, with the pattern : whereClassName.
+
+**Example :**
+
+Config :
+```yaml
+vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
+``` 
+
+In each repositories (Household and Beneficiary), we have to create a method called whereVulnerabilityCriterion.
+
+
+These methods are used to add criteria on their field.
+
 
 
 

@@ -139,7 +139,9 @@ nelmio_cors:
             hosts: ['^api\.']
 
 distribution:
-    criteria: { gender: boolean,
-                dateOfBirth: date,
-                vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
-                countrySpecific: BeneficiaryBundle\Entity\CountrySpecific }
+    criteria: {
+        gender: boolean,
+        dateOfBirth: date,
+        vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
+        countrySpecific: BeneficiaryBundle\Entity\CountrySpecific
+        }
