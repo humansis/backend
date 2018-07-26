@@ -195,7 +195,7 @@ class Mapper
             {
                 $field = $rowHeader[$mappingCSV[$indexFormatted]];
                 $countrySpecific = $this->em->getRepository(CountrySpecific::class)
-                    ->findOneByField($field);
+                    ->findOneByFieldString($field);
                 $formattedHouseholdArray["country_specific_answers"][] = [
                     "answer" => $value,
                     "country_specific" => ["id" => $countrySpecific->getId()]
@@ -216,7 +216,7 @@ class Mapper
         $formattedHouseholdArray["beneficiaries"]["vulnerability_criteria"] = [];
         foreach ($vulnerability_criteria_array as $item)
         {
-            $vulnerability_criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneByValue($item);
+            $vulnerability_criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneByFieldString($item);
             if (!$vulnerability_criterion instanceof VulnerabilityCriterion)
                 continue;
             $formattedHouseholdArray["beneficiaries"]["vulnerability_criteria"][] = ["id" => $vulnerability_criterion->getId()];

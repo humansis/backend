@@ -11,10 +11,10 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Model\ImportStatistic;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
+use CommonBundle\Utils\Color;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\BMSServiceTestCase;
-use Tests\Color;
 
 
 class HouseholdCSVTest extends BMSServiceTestCase
@@ -31,12 +31,6 @@ class HouseholdCSVTest extends BMSServiceTestCase
     private $addressStreet2 = "ADDR2 TEST_IMPORT_TEST_IMPORT";
     private $addressStreet3 = "ADDR3 UNIT TEST UNIT";
     private $addressStreet4 = "ADDR4 UNIT4";
-    private $addressStreet5 = "ADDR4 UNIT555";
-    private $addressStreet6 = "ADDR4 UNIT666";
-    private $addressStreet7 = "ADDR4 UNIT77777";
-    private $addressStreet8 = "ADDR4 UNIT888888888";
-    private $addressStreet9 = "ADDR4 UNIT999999999";
-    private $addressStreet10 = "ADDR4 UNIT10000000";
 
     private $UPDATED_GIVEN_NAME = "FIRSTNAME TEST_IMPORT1";
 
@@ -177,7 +171,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
 
         foreach ($countrySpecifics as $countrySpecific)
         {
-            $this->assertContains($countrySpecific->getField(), $csvArray);
+            $this->assertContains($countrySpecific->getFieldString(), $csvArray);
         }
     }
 

@@ -5,6 +5,7 @@ namespace DistributionBundle\Controller;
 
 
 use DistributionBundle\Utils\CriteriaDistributionService;
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +17,24 @@ use Swagger\Annotations as SWG;
 
 class CriteriaDistributionController extends Controller
 {
+
+    /**
+     * @Rest\Get("/distribution/criteria", name="get_criteria_celection")
+     *
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getCriteriaAction(Request $request)
+    {
+        /** @var CriteriaDistributionService $criteriaDistributionService */
+        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
+        $criteria = $criteriaDistributionService->getAll($request->request->all());
+
+        $json = $this->get('jms_serializer')
+            ->serialize($criteria, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["Criteria"]));
+        return new Response($json);
+    }
 
     /**
      * @Rest\Post("/distribution/criteria")

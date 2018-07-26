@@ -25,7 +25,7 @@ class CountrySpecificService
 
     public function create($countryIso3, array $countrySpecificArray)
     {
-        $countrySpecific = new CountrySpecific($countrySpecificArray["field"], $countrySpecificArray["type"], $countryIso3);
+        $countrySpecific = new CountrySpecific($countrySpecificArray["field"], strtolower($countrySpecificArray["type"]), $countryIso3);
 
         $this->em->persist($countrySpecific);
         $this->em->flush();
@@ -36,7 +36,7 @@ class CountrySpecificService
     public function update(CountrySpecific $countrySpecific, $countryIso3, array $countrySpecificArray)
     {
         $countrySpecific->setType($countrySpecificArray["type"])
-            ->setField($countrySpecificArray["field"])
+            ->setFieldString($countrySpecificArray["field"])
             ->setCountryIso3($countryIso3);
 
         $this->em->persist($countrySpecific);

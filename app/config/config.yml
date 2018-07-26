@@ -139,3 +139,11 @@ nelmio_cors:
             allow_methods: ['POST', 'PUT', 'GET', 'DELETE']
             max_age: 3600
             hosts: ['^api\.']
+
+distribution:
+    criteria: {
+        gender: boolean,
+        dateOfBirth: date,
+        vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
+        countrySpecific: BeneficiaryBundle\Entity\CountrySpecific
+        }

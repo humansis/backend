@@ -140,7 +140,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         }
         
         $vulnerabilityCriterion =  $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
-            "value" => "disabled"
+            "fieldString" => "disabled"
         ]);
         $beneficiaries = $this->body["beneficiaries"];
         $vulnerabilityId = $vulnerabilityCriterion->getId();
@@ -149,7 +149,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         }
 
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
-            "field" => 'ID Poor',
+            "fieldString" => 'ID Poor',
             "type" => 'Number',
             "countryIso3" => 'KHM'
         ]);
@@ -311,7 +311,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         }
 
         $vulnerabilityCriterion =  $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
-            "value" => "disabled"
+            "fieldString" => "disabled"
         ]);
         $beneficiaries = $this->body["beneficiaries"];
         $vulnerabilityId = $vulnerabilityCriterion->getId();
@@ -320,7 +320,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         }
 
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
-            "field" => 'ID Poor',
+            "fieldString" => 'ID Poor',
             "type" => 'Number',
             "countryIso3" => 'KHM'
         ]);
@@ -440,7 +440,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 $this->assertSame("FIRSTNAME_TEST", $beneficiary["given_name"]);
                 $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
                 $this->assertArrayHasKey('id', $vulnerability_criterion);
-                $this->assertArrayHasKey('value', $vulnerability_criterion);
+                $this->assertArrayHasKey('field_string', $vulnerability_criterion);
             }
             catch (\Exception $exception)
             {

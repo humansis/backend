@@ -29,18 +29,27 @@ class DefaultRetriever extends AbstractRetriever
      * @param string $countryISO3
      * @param string $distributionType
      * @param array $criteria
+     * @param bool $onlyCount
+     * @param array $configurationCriteria
      * @param string|null $kindBeneficiaryGlobal
      * @return mixed
      * @throws \Exception
      */
-    public function getReceivers(string $countryISO3, string $distributionType, array $criteria, bool $onlyCount = false, string $kindBeneficiaryGlobal = null)
+    public function getReceivers(
+        string $countryISO3,
+        string $distributionType,
+        array $criteria,
+        array $configurationCriteria,
+        bool $onlyCount = false,
+        string $kindBeneficiaryGlobal = null
+    )
     {
         $kindBeneficiaryCode = null;
         if ($distributionType === 'household')
         {
-            foreach ($criteria as $criterion)
+            foreach ($criteria as $index => $criterion)
             {
-                $criterion["kind_beneficiary"] = $this->getStatusBeneficiaryCriterion($criterion["kind_beneficiary"]);
+                $criteria[$index]["kind_beneficiary"] = $this->getStatusBeneficiaryCriterion($criterion["kind_beneficiary"]);
             }
         }
         elseif ($distributionType === 'beneficiary')
@@ -51,7 +60,7 @@ class DefaultRetriever extends AbstractRetriever
         {
             throw new \Exception("The distribution type '$distributionType' is unknown.");
         }
-        $receivers = $this->guessRepository($distributionType)->findByCriteria($countryISO3, $criteria,$onlyCount, $kindBeneficiaryCode);
+        $receivers = $this->guessRepository($distributionType)->findByCriteria($countryISO3, $criteria, $configurationCriteria, $onlyCount, $kindBeneficiaryCode);
 
         // If we only want the number of beneficiaries, return only the number
         if ($onlyCount)

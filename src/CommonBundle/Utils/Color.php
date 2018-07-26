@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Tests;
+namespace CommonBundle\Utils;
 
 
 class Color
