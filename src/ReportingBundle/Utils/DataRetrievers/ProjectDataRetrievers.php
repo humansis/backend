@@ -72,7 +72,7 @@ class ProjectDataRetrievers
     public function BMS_Project_D(array $filters) {
         $qb = $this->getReportingValue('BMS_Project_D', $filters);
         $qb->select('p.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        $result = $this->lastDate($qb->getQuery()->getArrayResult());;
+        $result = $this->lastDate($qb->getQuery()->getArrayResult());
         return $result;
     }
 
@@ -82,7 +82,7 @@ class ProjectDataRetrievers
     public function BMS_Project_HS(array $filters) {
         $qb = $this->getReportingValue('BMS_Project_HS', $filters);
         $qb->select('p.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        $result = $this->lastDate($qb->getQuery()->getArrayResult());;
+        $result = $this->lastDate($qb->getQuery()->getArrayResult());
         return $result;
     }
 
@@ -93,7 +93,7 @@ class ProjectDataRetrievers
         $qb = $this->getReportingValue('BMS_Project_AB', $filters);
         $qb->select('SUM(rv.value) AS value', 'rv.unity AS name', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
            ->groupBy('name', 'date');
-        $result = $this->lastDate($qb->getQuery()->getArrayResult());;
+        $result = $this->lastDate($qb->getQuery()->getArrayResult());
         return $result;
     }
 
@@ -213,8 +213,7 @@ class ProjectDataRetrievers
      */
     public function BMSU_Project_PV(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_PV', $filters);
-        $qb->select('SUM(rv.value) AS value', 'rv.unity AS unity',  "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
-           ->groupBy('unity', 'date');        
+        $qb->select('rv.value AS value', 'p.name AS name', 'p.id as id',  "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");     
         return $qb->getQuery()->getArrayResult();
     }
 

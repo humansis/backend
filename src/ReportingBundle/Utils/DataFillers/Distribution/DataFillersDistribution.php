@@ -189,8 +189,6 @@ class DataFillersDistribution  extends DataFillers
                 }
             }
             $byInterval = $this->sortByAge($results);
-            dump($results);
-            dump($byInterval);
             
             foreach ($byInterval as $ageBreakdown) 
             {

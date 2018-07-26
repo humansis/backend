@@ -5,16 +5,20 @@ namespace ReportingBundle\Utils\DataRetrievers;
 use Doctrine\ORM\EntityManager;
 
 use ReportingBundle\Entity\ReportingDistribution;
+use \ProjectBundle\Entity\Project;
+use \DistributionBundle\Entity\DistributionData;
 
 class DistributionDataRetrievers
 {
     private $em;
     private $reportingDistribution;
+    private $project;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, ProjectDataRetrievers $project)
     {
         $this->em = $em;   
         $this->reportingDistribution = $em->getRepository(ReportingDistribution::class);
+        $this->project = $project;
     }
 
      /**
@@ -48,7 +52,6 @@ class DistributionDataRetrievers
      * Use in all distribution data retrievers
      */
     public function getReportingValue(string $code, array $filters) {
-        dump($code);
         $qb = $this->reportingDistribution->createQueryBuilder('rd')
                                           ->leftjoin('rd.value', 'rv')
                                           ->leftjoin('rd.indicator', 'ri')
@@ -59,8 +62,7 @@ class DistributionDataRetrievers
                                           ->andWhere('p.iso3 = :country')
                                           ->setParameter('country', $filters['country']);
         $qb = $this->ifInProject($qb, $filters);
-        dump($qb->getQuery()->getArrayResult())
-;        return $qb;
+        return $qb;
     }
 
     /**
@@ -97,9 +99,10 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_TDV(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_TDV', $filters);
-        $qb->select('d.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        $result = $this->lastDate($qb->getQuery()->getArrayResult());
-        return $result;
+        $qb->select('d.name AS name', 'd.id AS id','SUM(rv.value) AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
+            ->groupBy('name', 'id', 'date');
+        $results = $this->lastDate($qb->getQuery()->getArrayResult());
+        return $results;
     }
 
     /**
@@ -233,6 +236,52 @@ class DistributionDataRetrievers
             }   
         }
         return $vulnerabilitiesPercentage; 
+    }
+
+    /**
+     * Get the percent of value used in the project by the distribution
+     */
+    public function BMS_Distribution_PPV(array $filters) {
+        $projectDistributionValue =[];
+
+        $repositoryProject = $this->em->getRepository(Project::class);
+
+        $projectValue = $this->project->BMSU_Project_PV($filters);
+        $moreRecentProject = $this->lastDate($projectValue);
+
+        $distributionValue = $this->BMS_Distribution_TDV($filters);
+        $moreRecentDistribution = $this->lastDate($distributionValue);
+
+        $percentValueUsed = 0;
+        foreach($moreRecentProject as $project) { 
+            
+            $findProject = $repositoryProject->findOneBy(['id' => $project['id']]); 
+            foreach($moreRecentDistribution as $distribution) {
+                foreach($findProject->getDistributions() as $findDistribution) {
+                    if($distribution['id'] ===  $findDistribution->getId()) {
+                        $percent = ($distribution["value"]/$findProject->getValue())*100;
+                        $percentValueUsed = $percentValueUsed + $percent;
+                        $result = [
+                            'name' =>$findDistribution->getName(),
+                            'value' => $distribution["value"].' ('.$percent.'%)',
+                            'date' => $distribution['date']
+                        ]; 
+                        array_push($projectDistributionValue, $result);
+                    }
+                }    
+            }
+
+            $valueProjectUsed = ($findProject->getValue() * ($percentValueUsed/100));
+            $result = [
+                'name' => 'Value not used',
+                'value' => $valueProjectUsed.' ('.$percentValueUsed.'%)',
+                'date' => $project['date']
+            ];
+            array_push($projectDistributionValue, $result);
+        }
+         
+        return $projectDistributionValue;
+        
     }
 
 }

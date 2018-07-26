@@ -59,33 +59,4 @@ class ReportingController extends Controller
         return new Response($json, Response::HTTP_OK);
         
     }
-
-    /**
-     * @Rest\Get("/test")
-     */
-    public function test(Request $request) {
-
-        $indicator = new ReportingIndicator;
-        $indicator->setReference('BMSU_Distribution_TVS');
-        $indicator->setCode('BMSU_Distribution_TVS');
-        $dataFilters = [
-                'type_graph'  => "nombre",
-                'project'        => [1, 2]  
-        ];
-        $Receivefilters = $this->get('serializer')->serialize($dataFilters,'json');
-
-        // //***************************************************************************//
-
-        // $filters = json_decode($Receivefilters, true);
-        // $contentJson = $request->request->all();
-        // $filters['country'] = $contentJson['__country'];
-
-        // $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
-        // dump($dataComputed);
-        // $dataFormatted = $this->get('reporting.formatter')->format($dataComputed, 'nombre');
-        // dump($dataFormatted);
-
-        $this->get('reporting.data_fillers.default')->fill($indicator);
-    }
-
 }
