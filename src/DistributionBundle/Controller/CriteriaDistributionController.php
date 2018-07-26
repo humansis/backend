@@ -19,7 +19,7 @@ class CriteriaDistributionController extends Controller
 {
 
     /**
-     * @Rest\Get("/distribution/criteria", name="get_criteria_celection")
+     * @Rest\Get("/distributions/criteria", name="get_criteria_celection")
      *
      *
      * @param Request $request
@@ -37,7 +37,7 @@ class CriteriaDistributionController extends Controller
     }
 
     /**
-     * @Rest\Post("/distribution/criteria")
+     * @Rest\Post("/distributions/criteria")
      *
      *
      * @SWG\Tag(name="CriteriaDistributions")
@@ -83,7 +83,7 @@ class CriteriaDistributionController extends Controller
     }
 
     /**
-     * @Rest\Post("/distribution/criteria/number")
+     * @Rest\Post("/distributions/criteria/number")
      *
      *
      * @SWG\Tag(name="CriteriaDistributions")

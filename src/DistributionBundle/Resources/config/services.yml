@@ -23,3 +23,8 @@ services:
         class: DistributionBundle\Utils\ConfigurationLoader
         arguments: ['@doctrine.orm.entity_manager', '%distribution.criteria%']
         public: true
+
+    distribution.modality_service:
+        class: DistributionBundle\Utils\ModalityService
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
