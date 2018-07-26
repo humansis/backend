@@ -7,14 +7,19 @@ services:
     distribution.distribution_beneficiary_service:
         class: DistributionBundle\Utils\DistributionBeneficiaryService
         arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
-        public: true
-
-    distribution.criteria_distribution_service:
-        class: DistributionBundle\Utils\CriteriaDistributionService
-        arguments: ['@doctrine.orm.entity_manager']
-        public: true
 
     location_service:
         class: DistributionBundle\Utils\LocationService
         arguments: ['@doctrine.orm.entity_manager', "@request_validator"]
+        public: true
+        public: true
+
+    distribution.criteria_distribution_service:
+        class: DistributionBundle\Utils\CriteriaDistributionService
+        arguments: ['@doctrine.orm.entity_manager', '@distribution.configuration_loader']
+        public: true
+
+    distribution.configuration_loader:
+        class: DistributionBundle\Utils\ConfigurationLoader
+        arguments: ['@doctrine.orm.entity_manager', '%distribution.criteria%']
         public: true

@@ -10,4 +10,8 @@ namespace BeneficiaryBundle\Repository;
  */
 class CountrySpecificRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findForCriteria(array $filters)
+    {
+        return $this->findBy(["countryIso3" => $filters['__country']]);
+    }
 }

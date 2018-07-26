@@ -27,7 +27,7 @@ class CountrySpecificFixtures extends Fixture
         foreach ($this->data as $datum)
         {
             $countrySpecific = $manager->getRepository(CountrySpecific::class)->findBy([
-                "field" => $datum[0],
+                "fieldString" => $datum[0],
                 "type" => $datum[1],
                 "countryIso3" => $datum[2]
             ]);

@@ -22,3 +22,9 @@ before that the controller process.
 
 - `cleanAndTest` : Delete your database, create a new one, migrate migrations, load fixtures, clean cache of import CSV and execute unit tests
 - `clean` : Delete your database, create a new one, migrate migrations, load fixtures and clean cache of import CSV
+
+
+# Command
+
+- `php bin/console r:c:c` : clear cache files created for the import process of households
+- `php bin/console r:i:t` : test and display execution time of import process of households
