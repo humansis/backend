@@ -132,20 +132,21 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        
+
         $projects = $this->em->getRepository(Project::class)->findAll();
         if (empty($projects))
         {
             print_r("There is no project inside your database");
             return false;
         }
-        
-        $vulnerabilityCriterion =  $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
+
+        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
             "fieldString" => "disabled"
         ]);
         $beneficiaries = $this->body["beneficiaries"];
         $vulnerabilityId = $vulnerabilityCriterion->getId();
-        foreach($beneficiaries as $index => $b){
+        foreach ($beneficiaries as $index => $b)
+        {
             $this->body["beneficiaries"][$index]["vulnerability_criteria"] = [["id" => $vulnerabilityId]];
         }
 
@@ -156,7 +157,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         ]);
         $country_specific_answers = $this->body["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
-        foreach($country_specific_answers as $index => $c){
+        foreach ($country_specific_answers as $index => $c)
+        {
             $this->body["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
         }
 
@@ -311,12 +313,13 @@ class HouseholdControllerTest extends BMSServiceTestCase
             }
         }
 
-        $vulnerabilityCriterion =  $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
+        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
             "fieldString" => "disabled"
         ]);
         $beneficiaries = $this->body["beneficiaries"];
         $vulnerabilityId = $vulnerabilityCriterion->getId();
-        foreach($beneficiaries as $index => $b){
+        foreach ($beneficiaries as $index => $b)
+        {
             $this->body["beneficiaries"][$index]["vulnerability_criteria"] = [["id" => $vulnerabilityId]];
         }
 
@@ -327,7 +330,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         ]);
         $country_specific_answers = $this->body["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
-        foreach($country_specific_answers as $index => $c){
+        foreach ($country_specific_answers as $index => $c)
+        {
             $this->body["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
         }
 

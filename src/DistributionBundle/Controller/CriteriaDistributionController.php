@@ -21,7 +21,6 @@ class CriteriaDistributionController extends Controller
     /**
      * @Rest\Get("/distributions/criteria", name="get_criteria_celection")
      *
-     *
      * @param Request $request
      * @return Response
      */
@@ -32,13 +31,16 @@ class CriteriaDistributionController extends Controller
         $criteria = $criteriaDistributionService->getAll($request->request->all());
 
         $json = $this->get('jms_serializer')
-            ->serialize($criteria, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["Criteria"]));
+            ->serialize(
+                $criteria,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups(["Criteria"])
+            );
         return new Response($json);
     }
 
     /**
      * @Rest\Post("/distributions/criteria")
-     *
      *
      * @SWG\Tag(name="CriteriaDistributions")
      *
@@ -77,14 +79,16 @@ class CriteriaDistributionController extends Controller
         }
 
         $json = $this->get('jms_serializer')
-            ->serialize($receivers, 'json');
+            ->serialize(
+                $receivers,
+                'json'
+            );
 
         return new Response($json);
     }
 
     /**
      * @Rest\Post("/distributions/criteria/number")
-     *
      *
      * @SWG\Tag(name="CriteriaDistributions")
      *
@@ -123,7 +127,10 @@ class CriteriaDistributionController extends Controller
         }
 
         $json = $this->get('jms_serializer')
-            ->serialize($receivers, 'json');
+            ->serialize(
+                $receivers,
+                'json'
+            );
 
         return new Response($json);
     }

@@ -17,6 +17,7 @@ class ModalityController extends Controller
 
     /**
      * @Rest\Get("/modalities")
+     *
      * @return Response
      */
     public function getAllAction()
@@ -26,16 +27,18 @@ class ModalityController extends Controller
         $all = $modalityService->getAll();
 
         $json = $this->get('jms_serializer')
-            ->serialize($all,
+            ->serialize(
+                $all,
                 'json',
                 SerializationContext::create()->setGroups(["FullModality"])->setSerializeNull(true)
-                );
+            );
 
         return new Response($json);
     }
 
     /**
      * @Rest\Get("/modalities/{id}/types")
+     *
      * @param Modality $modality
      * @return Response
      */
@@ -46,10 +49,11 @@ class ModalityController extends Controller
         $all = $modalityService->getAllModalityTypes($modality);
 
         $json = $this->get('jms_serializer')
-            ->serialize($all,
+            ->serialize(
+                $all,
                 'json',
                 SerializationContext::create()->setGroups(["FullModalityType"])->setSerializeNull(true)
-                );
+            );
 
         return new Response($json);
     }
@@ -68,7 +72,8 @@ class ModalityController extends Controller
         $created = $modalityService->create($request->request->get('name'));
 
         $json = $this->get('jms_serializer')
-            ->serialize($created,
+            ->serialize(
+                $created,
                 'json',
                 SerializationContext::create()->setGroups(["FullModality"])->setSerializeNull(true)
             );
@@ -91,7 +96,8 @@ class ModalityController extends Controller
         $created = $modalityService->createType($modality, $request->request->get('name'));
 
         $json = $this->get('jms_serializer')
-            ->serialize($created,
+            ->serialize(
+                $created,
                 'json',
                 SerializationContext::create()->setGroups(["FullModalityType"])->setSerializeNull(true)
             );

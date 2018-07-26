@@ -15,13 +15,13 @@ use Swagger\Annotations as SWG;
 
 class DistributionBeneficiaryController extends Controller
 {
-      /**
+    /**
      * Create a distributionBeneficiary
      * @Rest\Put("/distribution/beneficiaries", name="add_distribution_benefeciaries")
-     * 
+     *
      * @SWG\Tag(name="DistributionBeneficiaries")
-     * 
-          * @SWG\Parameter(
+     *
+     * @SWG\Parameter(
      *      name="body",
      *      in="body",
      *      type="object",
@@ -35,7 +35,7 @@ class DistributionBeneficiaryController extends Controller
      *     description="Distribution Beneficiary created",
      *     @Model(type=DistributionBeneficiary::class)
      * )
-     * 
+     *
      * @param Request $request
      * @return Response
      */
@@ -45,14 +45,20 @@ class DistributionBeneficiaryController extends Controller
 
         try
         {
-            $distribution = $this->get('distribution.distribution_beneficiary_service')->create($distributionBeneficiaryArray);
+            $distribution = $this->get('distribution.distribution_beneficiary_service')
+                ->create($distributionBeneficiaryArray);
         }
         catch (\Exception $exception)
         {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($distribution, 'json', SerializationContext::create()->setSerializeNull(true));
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $distribution,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)
+            );
 
         return new Response($json);
     }
@@ -70,14 +76,19 @@ class DistributionBeneficiaryController extends Controller
      *          @SWG\Items(ref=@Model(type=DistributionBeneficiary::class))
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @return Response
      */
     public function getAllAction(Request $request)
     {
-        $distributionBeneficiary = $this->get('distribution.distribution_beneficiary_service')->findAll();
-        $json = $this->get('jms_serializer')->serialize($distributionBeneficiary, 'json');
+        $distributionBeneficiary = $this->get('distribution.distribution_beneficiary_service')
+            ->findAll();
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $distributionBeneficiary,
+                'json'
+            );
 
         return new Response($json);
     }
@@ -105,7 +116,8 @@ class DistributionBeneficiaryController extends Controller
     {
         try
         {
-            $valid = $this->get('distribution.distribution_beneficiary_service')->delete($distributionBeneficiary);
+            $valid = $this->get('distribution.distribution_beneficiary_service')
+                ->delete($distributionBeneficiary);
         }
         catch (\Exception $e)
         {
@@ -113,8 +125,8 @@ class DistributionBeneficiaryController extends Controller
         }
 
         if ($valid)
-            return new Response("", Response::HTTP_OK);
+            return new Response(json_encode([]), Response::HTTP_OK);
         if (!$valid)
-            return new Response("", Response::HTTP_BAD_REQUEST);
+            return new Response(json_encode([]), Response::HTTP_BAD_REQUEST);
     }
 }
