@@ -52,7 +52,6 @@ class ProjectDataRetrievers
      */
     public function lastDate(array $values) {
         $moreRecentValues = [];
-        dump($values);
         $lastDate = $values[0]['date'];
         foreach($values as $value) {
             if ($value['date'] > $lastDate) {

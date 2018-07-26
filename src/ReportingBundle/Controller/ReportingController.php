@@ -66,8 +66,8 @@ class ReportingController extends Controller
     public function test(Request $request) {
 
         $indicator = new ReportingIndicator;
-        $indicator->setReference('BMS_Country_TTC');
-        $indicator->setCode('BMS_Country_TTC');
+        $indicator->setReference('BMSU_Distribution_TVS');
+        $indicator->setCode('BMSU_Distribution_TVS');
         $dataFilters = [
                 'type_graph'  => "nombre",
                 'project'        => [1, 2]  

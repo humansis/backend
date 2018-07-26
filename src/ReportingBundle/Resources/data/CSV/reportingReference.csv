@@ -14,7 +14,7 @@ Number of Women,BMSU_Project_NW,,
 Total of Vulnerabilities  Served,BMSU_Project_TVS,,
 Total of Vulnerabilities Served by Vulnerabilities,BMSU_Project_TVSV,,
 Number of Enrolled Beneficiaries,BMS_Distribution_NEB,,nombre
-Total Transaction Value,BMS_Distribution_TTV,,nombre
+Total Distribution Value,BMS_Distribution_TDV,,nombre
 Percentage of Project Value,BMS_Distribution_PPV,,camembert
 Modality,BMS_Distribution_M,,nombre
 Number Men and Women,BMS_Distribution_NMW,,camembert
@@ -24,3 +24,4 @@ Number of Men,BMSU_Distribution_NM,,
 Number of Women,BMSU_Distribution_NW,,
 Total of Vulnerabilities  Served,BMSU_Distribution_TVS,,
 Total of Vulnerabilities Served by Vulnerabilities,BMSU_Distribution_TVSV,,
+Project Value,BMSU_Project_PV,,
