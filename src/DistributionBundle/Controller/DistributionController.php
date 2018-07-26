@@ -44,14 +44,19 @@ class DistributionController extends Controller
         $distributionArray = $request->request->all();
         try
         {
-            $distribution = $this->get('distribution.distribution_service')->create($distributionArray['__country'], $distributionArray);
+            $listReceivers = $this->get('distribution.distribution_service')->create($distributionArray['__country'], $distributionArray);
         }
         catch (\Exception $exception)
         {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($distribution, 'json', SerializationContext::create()->setSerializeNull(true));
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $listReceivers,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullReceivers", "FullDistribution"])
+            );
 
         return new Response($json);
     }

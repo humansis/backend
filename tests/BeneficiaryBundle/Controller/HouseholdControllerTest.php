@@ -10,6 +10,7 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
@@ -481,6 +482,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 {
                     $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
                     $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+                    $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
+                    if ($profile instanceof Profile)
+                        $this->em->remove($profile);
                     foreach ($phones as $phone)
                     {
                         $this->em->remove($phone);

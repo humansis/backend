@@ -65,7 +65,7 @@ class DistributionService
      *
      * @param $countryISO3
      * @param array $distributionArray
-     * @return DistributionData
+     * @return array
      * @throws \Exception
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
@@ -115,7 +115,7 @@ class DistributionService
         $this->saveReceivers($distribution, $listReceivers);
 
         $this->em->flush();
-        return $distribution;
+        return ["distribution" => $distribution, "data" => $listReceivers];
     }
 
     /**
