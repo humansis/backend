@@ -78,7 +78,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      * @param $groupGlobal
      * @return QueryBuilder
      */
-    public function configurationQueryBuilder($onlyCount, $countryISO3, $groupGlobal)
+    public function configurationQueryBuilder($onlyCount, $countryISO3)
     {
         $qb = $this->createQueryBuilder("b");
 
@@ -87,12 +87,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
         $qb->leftJoin("b.household", "hh");
         $this->setCountry($qb, $countryISO3);
-
-        if (null !== $groupGlobal)
-        {
-            $qb->andWhere("b.status = :status")
-                ->setParameter("status", $groupGlobal);
-        }
 
         return $qb;
     }

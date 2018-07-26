@@ -9,6 +9,7 @@ services:
             - '@location_service'
             - '@distribution.commodity_service'
             - '@distribution.configuration_loader'
+            - '@distribution.criteria_distribution_service'
 
     distribution.distribution_beneficiary_service:
         class: DistributionBundle\Utils\DistributionBeneficiaryService

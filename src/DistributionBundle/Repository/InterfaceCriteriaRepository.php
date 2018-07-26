@@ -19,6 +19,6 @@ interface InterfaceCriteriaRepository
 //    public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, $field, $value, $operator, bool $status = null);
     public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, array $filters);
 
-    public function configurationQueryBuilder($onlyCount, $countryISO3, $groupGlobal);
+    public function configurationQueryBuilder($onlyCount, $countryISO3);
 
 }

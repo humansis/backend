@@ -24,6 +24,13 @@ class SelectionCriteria
     private $id;
 
     /**
+     * @var DistributionData
+     *
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="selectionCriteria")
+     */
+    private $distributionData;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="table_string", type="string", length=255)
@@ -223,5 +230,29 @@ class SelectionCriteria
     public function getIdField()
     {
         return $this->idField;
+    }
+
+    /**
+     * Set distributionData.
+     *
+     * @param \DistributionBundle\Entity\DistributionData|null $distributionData
+     *
+     * @return SelectionCriteria
+     */
+    public function setDistributionData(\DistributionBundle\Entity\DistributionData $distributionData = null)
+    {
+        $this->distributionData = $distributionData;
+
+        return $this;
+    }
+
+    /**
+     * Get distributionData.
+     *
+     * @return \DistributionBundle\Entity\DistributionData|null
+     */
+    public function getDistributionData()
+    {
+        return $this->distributionData;
     }
 }

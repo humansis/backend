@@ -70,7 +70,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * @param $groupGlobal
      * @return QueryBuilder
      */
-    public function configurationQueryBuilder($onlyCount, $countryISO3, $groupGlobal)
+    public function configurationQueryBuilder($onlyCount, $countryISO3)
     {
         $qb = $this->createQueryBuilder("hh");
 

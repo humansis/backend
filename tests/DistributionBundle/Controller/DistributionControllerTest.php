@@ -8,6 +8,7 @@ use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\Location;
 use DistributionBundle\Entity\ModalityType;
+use DistributionBundle\Entity\SelectionCriteria;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
@@ -31,14 +32,14 @@ class DistributionControllerTest extends BMSServiceTestCase
             "adm3" => "ADMIN FAKED",
             "adm4" => "ADMIN FAKED"
         ],
-        "selection_criteria" => [
+        "selection_criteria" => [[
             "table_string" => "TEST UNIT_TEST",
             "field_string" => "TEST UNIT_TEST FAKED",
             "value_string" => "TEST UNIT_TEST FAKED",
             "condition_string" => "TEST UNIT_TEST FAKED",
             "kind_beneficiary" => "TEST UNIT_TEST FAKED",
             "field_id" => "TEST UNIT_TEST FAKED"
-        ],
+        ]],
         "commodities" => [[
             "unit" => "PHPUNIT TEST",
             "value" => 999999999,
@@ -88,19 +89,17 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $crawler = $this->client->request('PUT', '/api/wsse/distributions', $this->body, [], ['HTTP_COUNTRY' => 'KHM']);
         $distribution = json_decode($this->client->getResponse()->getContent(), true);
-        dump($this->client->getResponse());
-        dump($distribution);
+
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
-            $this->assertArrayHasKey('id', $distribution);
-            $this->assertArrayHasKey('name', $distribution);
-            $this->assertSame($distribution['name'], $this->namefullname);
-            $this->assertArrayHasKey('updated_on', $distribution);
-            $this->assertArrayHasKey('location', $distribution);
-            $this->assertArrayHasKey('project', $distribution);
-            $this->assertArrayHasKey('selection_criteria', $distribution);
-            $this->assertArrayHasKey('selection_criteria', $distribution);
-            $this->assertArrayHasKey('validated', $distribution);
+        $this->assertArrayHasKey('id', $distribution);
+        $this->assertArrayHasKey('name', $distribution);
+        $this->assertSame($distribution['name'], $this->namefullname);
+        $this->assertArrayHasKey('updated_on', $distribution);
+        $this->assertArrayHasKey('location', $distribution);
+        $this->assertArrayHasKey('project', $distribution);
+        $this->assertArrayHasKey('selection_criteria', $distribution);
+        $this->assertArrayHasKey('validated', $distribution);
 
         $location = $this->em->getRepository(Location::class)->findOneByAdm1("ADMIN FAKED");
         if ($location instanceof Location)
@@ -117,6 +116,13 @@ class DistributionControllerTest extends BMSServiceTestCase
         $distribution = $this->em->getRepository(DistributionData::class)->find($distribution['id']);
         if ($distribution instanceof DistributionData)
         {
+
+            $selectionCriteria = $this->em->getRepository(SelectionCriteria::class)->findByDistributionData($distribution);
+            foreach ($selectionCriteria as $selectionCriterion)
+            {
+                $this->em->remove($selectionCriterion);
+
+            }
             $this->em->remove($distribution);
         }
 

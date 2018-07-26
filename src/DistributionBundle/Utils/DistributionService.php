@@ -35,6 +35,8 @@ class DistributionService
     /** @var ConfigurationLoader $configurationLoader */
     private $configurationLoader;
 
+    /** @var CriteriaDistributionService $criteriaDistributionService */
+    private $criteriaDistributionService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -42,7 +44,8 @@ class DistributionService
         ValidatorInterface $validator,
         LocationService $locationService,
         CommodityService $commodityService,
-        ConfigurationLoader $configurationLoader
+        ConfigurationLoader $configurationLoader,
+        CriteriaDistributionService $criteriaDistributionService
     )
     {
         $this->em = $entityManager;
@@ -51,20 +54,22 @@ class DistributionService
         $this->locationService = $locationService;
         $this->commodityService = $commodityService;
         $this->configurationLoader = $configurationLoader;
+        $this->criteriaDistributionService = $criteriaDistributionService;
     }
 
     /**
      * Create a distribution
      *
+     * @param $countryISO3
      * @param array $distributionArray
      * @return DistributionData
      * @throws \Exception
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
     public function create($countryISO3, array $distributionArray)
     {
         /** @var DistributionData $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
-
         $distribution->setUpdatedOn(new \DateTime());
         $errors = $this->validator->validate($distribution);
         if (count($errors) > 0)
@@ -95,6 +100,14 @@ class DistributionService
             $this->commodityService->create($distribution, $item, false);
         }
 
+        foreach ($distribution->getSelectionCriteria() as $item)
+        {
+            $distribution->removeSelectionCriterion($item);
+            $this->criteriaDistributionService->save($distribution, $item, false);
+        }
+
+
+
         $this->em->persist($distribution);
         $this->em->flush();
 
@@ -121,7 +134,7 @@ class DistributionService
         }
         return $defaultRetriever->getReceivers(
             $countryISO3,
-            $distributionData->getType(),
+            $this->guessTypeString($distributionData->getType()),
             $criteria,
             $this->configurationLoader->load(['__country' => $countryISO3])
         );
