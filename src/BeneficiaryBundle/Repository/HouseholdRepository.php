@@ -84,7 +84,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
     public function findByCriteria(
         $countryISO3,
         array $criteria,
-        array $configurationCriteria,
+        array $configurationCriteria = [],
         bool $onlyCount = false,
         string $groupGlobal = null
     )
@@ -97,11 +97,9 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         $qb->leftJoin("hh.beneficiaries", "b");
         $this->setCountry($qb, $countryISO3);
 
-        dump($configurationCriteria);
         $i = 1;
         foreach ($criteria as $criterion)
         {
-            dump($criterion);
             if (!array_key_exists($criterion['field'], $this->FIELDS_MAPPING))
                 throw new \Exception("The field '{$criterion['field']} is not implement yet");
             switch ($this->FIELDS_MAPPING[$criterion['field']])

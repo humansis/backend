@@ -45,12 +45,10 @@ class ConfigurationLoader
             else
             {
                 $instances = $this->em->getRepository($type)->findForCriteria($filters);
-                dump($instances);
                 foreach ($instances as $instance)
                 {
                     $instance->setTableString($criterion);
                 }
-                dump($instances);
                 $criteriaFormatted = array_merge($criteriaFormatted, $instances);
             }
         }

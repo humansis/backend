@@ -83,7 +83,7 @@ class ExportCSVService
                     /** @var CountrySpecific $countrySpecific */
                     foreach ($countrySpecifics as $countrySpecific)
                     {
-                        $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 2, $countrySpecific->getField());
+                        $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 2, $countrySpecific->getFieldString());
                         $i++;
                     }
                 }
