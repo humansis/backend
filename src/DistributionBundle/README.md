@@ -104,7 +104,7 @@ OR 'beneficiary' (to send distribution to a specific beneficiary)
     - **field_string** : name of a column of Beneficiary table or null 
     - **condition_string** : '=', '<', '>', '<=', '>=', '!='. It's the operator used for compare the wanted value with the value in database
     - **value_string** : value to be compare with the database column
-    - **id_field** : *optional* '{id}' (id of the foreign key)
+    - **id** : *optional* '{id}' (id of the foreign key)
     
     
 Example :
@@ -118,7 +118,7 @@ Example :
       "field_string": null,
       "condition_string": "=",
       "value_string": 1,
-      "id_field": 1
+      "id": 1
     },
     {
       "table_string": "vulnerabilityCriteria",
@@ -126,7 +126,7 @@ Example :
       "field_string": null,
       "condition_string": "=",
       "value_string": "saluut",
-      "id_field": 1
+      "id": 1
     },
     {
       "table_string": "default",
@@ -174,7 +174,7 @@ Example :
       "field_string": "",
       "condition_string": "=",
       "value_string": 1,
-      "id_field": 1
+      "id": 1
     },
     {
       "table_string": "vulnerabilityCriteria",
@@ -182,7 +182,7 @@ Example :
       "field_string": "nutritional issues",
       "condition_string": "=",
       "value_string": "saluut",
-      "id_field": 1
+      "id": 1
     },
     {
       "table_string": "default",

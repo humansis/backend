@@ -30,4 +30,19 @@ class ModalityService
         return $modality->getModalityTypes();
     }
 
+    public function create($name)
+    {
+        try
+        {
+            $modality = new Modality();
+            $modality->setName($name);
+            $this->em->persist($modality);
+            $this->em->flush();
+        }
+        catch (\Exception $exception)
+        {
+            throw new \Exception("An error ");
+        }
+    }
+
 }
