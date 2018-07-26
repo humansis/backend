@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Entity;
 use DistributionBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Household
@@ -30,6 +31,7 @@ class Household
      *
      * @ORM\Column(name="address_street", type="string", length=255)
      * @Groups({"FullHousehold"})
+     * @Assert\NotBlank(message="The address street is required.")
      */
     private $addressStreet;
 
@@ -38,6 +40,7 @@ class Household
      *
      * @ORM\Column(name="address_number", type="string", length=255)
      * @Groups({"FullHousehold"})
+     * @Assert\NotBlank(message="The address number is required.")
      */
     private $addressNumber;
 
@@ -46,6 +49,7 @@ class Household
      *
      * @ORM\Column(name="address_postcode", type="string", length=255)
      * @Groups({"FullHousehold"})
+     * @Assert\NotBlank(message="The address postcode is required.")
      */
     private $addressPostcode;
 

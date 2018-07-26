@@ -5,11 +5,14 @@ namespace BeneficiaryBundle\Utils\DataTreatment;
 
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Utils\BeneficiaryService;
+use BeneficiaryBundle\Utils\HouseholdService;
+use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\DependencyInjection\Container;
 
 class LessTreatment extends AbstractTreatment
 {
-
     /**
      * @param Project $project
      * @param array $householdsArray
@@ -47,12 +50,19 @@ class LessTreatment extends AbstractTreatment
             {
                 $this->householdService->create($householdToAdd['new'], $project);
                 $numberAdded++;
+                $this->em->clear();
             }
             catch (\Exception $exception)
             {
+                if (!$this->em->isOpen())
+                {
+                    $this->container->get('doctrine')->resetManager();
+                    $this->em = $this->container->get('doctrine')->getManager();
+                }
+                $this->em->clear();
                 $errors[] = [
                     "household" => $householdToAdd,
-                    "error" => "The creation of the household failed. Please check your CSV file."
+                    "error" => $exception->getMessage()
                 ];
             }
         }

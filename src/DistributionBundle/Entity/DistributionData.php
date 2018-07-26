@@ -63,6 +63,8 @@ class DistributionData
      * @var Project
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="distributions")
+     * 
+     * @Groups({"FullDistribution"})
      */
     private $project;
 
