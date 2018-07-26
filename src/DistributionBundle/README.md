@@ -1,9 +1,6 @@
 # DistributionBundle
 
-
-## Criteria for distribution
-
-# Configuration
+## Configuration
 
 ### Config.yml
 
@@ -11,7 +8,7 @@ Example of configuration.
 Inside 'criteria', you must defined every criteria that can be used to determined if a person should be a beneficiary.
 **Model** => {"**key**" : "**type**"}
 
-Type : text, number, bool, date or entity name (with namespace)
+Type : **text**, **number**, **bool**, **date** or **entity name (with namespace)**
 
 ```yaml
 distribution:
