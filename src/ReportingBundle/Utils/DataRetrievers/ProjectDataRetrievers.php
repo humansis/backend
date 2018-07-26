@@ -116,17 +116,17 @@ class ProjectDataRetrievers
             if ($men["date"] == $lastDate) {
                 $result = [
                     'name' => $men["name"],
-                    'project' => substr($men["name"],2),
+                    'project' => substr($men["name"],4),
                     'value' => $men["value"],
                     'date' => $men['date']
                 ]; 
                 array_push($menAndWomen, $result);
                 foreach ($womens as $women) {
-                    if (substr($women["name"],2) == substr($men["name"],2)) {
+                    if (substr($women["name"],6) == substr($men["name"], 4)) {
                         if ($women["date"] == $lastDate) {
                             $result = [
                                 'name' => $women["name"],
-                                'project' => substr($women["name"],2),
+                                'project' => substr($women["name"],6),
                                 'value' => $women['value'],
                                 'date' => $women['date']
                             ]; 
@@ -145,7 +145,7 @@ class ProjectDataRetrievers
      */
     public function BMSU_Project_NM(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_NM', $filters);
-        $qb->select('rv.value AS value', "CONCAT(UPPER(SUBSTRING(rv.unity, 1, 1)), '-', p.name) AS name", "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+        $qb->select('rv.value AS value', "CONCAT(rv.unity, '/', p.name) AS name", "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
         return $qb->getQuery()->getArrayResult();
     }
 
@@ -154,7 +154,7 @@ class ProjectDataRetrievers
      */
     public function BMSU_Project_NW(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_NW', $filters);
-        $qb->select('rv.value AS value', "CONCAT(UPPER(SUBSTRING(rv.unity, 1, 1)), '-', p.name) AS name", "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+        $qb->select('rv.value AS value', "CONCAT(rv.unity, '/', p.name) AS name", "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
         return $qb->getQuery()->getArrayResult();
     }  
     

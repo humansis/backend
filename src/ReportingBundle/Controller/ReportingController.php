@@ -66,10 +66,10 @@ class ReportingController extends Controller
     public function test(Request $request) {
 
         $indicator = new ReportingIndicator;
-        $indicator->setReference('BMS_Project_PVS');
-        $indicator->setCode('BMS_Project_PVS');
+        $indicator->setReference('BMS_Project_AB');
+        $indicator->setCode('BMS_Project_AB');
         $dataFilters = [
-                'typeGraphique'  => "nombre",
+                'type_graph'  => "nombre",
                 'project'        => [1, 2]  
         ];
         $Receivefilters = $this->get('serializer')->serialize($dataFilters,'json');

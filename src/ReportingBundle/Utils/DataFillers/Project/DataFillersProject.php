@@ -77,7 +77,7 @@ class DataFillersProject
                 {
                     $new_value = new ReportingValue();
                     $new_value->setValue($result['value']);
-                    $new_value->setUnity('men');
+                    $new_value->setUnity('Men');
                     $new_value->setCreationDate(new \DateTime());
 
                     $this->em->persist($new_value);
@@ -133,7 +133,7 @@ class DataFillersProject
                 {
                     $new_value = new ReportingValue();
                     $new_value->setValue($result['value']);
-                    $new_value->setUnity('women');
+                    $new_value->setUnity('Women');
                     $new_value->setCreationDate(new \DateTime());
 
                     $this->em->persist($new_value);
