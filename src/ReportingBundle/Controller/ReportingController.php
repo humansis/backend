@@ -75,10 +75,7 @@ class ReportingController extends Controller
      * 
      * @SWG\Response(
      *      response=200,
-     *          description="Get code reporting",
-     *          @SWG\Schema(
-     *              type="array"
-     *          )   
+     *          description="Get code reporting",  
      * )
      * 
      * @SWG\Response(
