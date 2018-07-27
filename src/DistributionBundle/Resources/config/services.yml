@@ -1,25 +1,55 @@
 services:
     distribution.distribution_service:
         class: DistributionBundle\Utils\DistributionService
-        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator', '@location_service']
         public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@jms_serializer'
+            - '@validator'
+            - '@location_service'
+            - '@distribution.commodity_service'
+            - '@distribution.configuration_loader'
+            - '@distribution.criteria_distribution_service'
+            - '%distribution.retriever%'
 
     distribution.distribution_beneficiary_service:
         class: DistributionBundle\Utils\DistributionBeneficiaryService
-        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@jms_serializer'
+            - '@validator'
 
     location_service:
         class: DistributionBundle\Utils\LocationService
-        arguments: ['@doctrine.orm.entity_manager', "@request_validator"]
         public: true
-        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "@request_validator"
 
     distribution.criteria_distribution_service:
         class: DistributionBundle\Utils\CriteriaDistributionService
-        arguments: ['@doctrine.orm.entity_manager', '@distribution.configuration_loader']
         public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@distribution.configuration_loader'
+            - '%distribution.retriever%'
 
     distribution.configuration_loader:
         class: DistributionBundle\Utils\ConfigurationLoader
-        arguments: ['@doctrine.orm.entity_manager', '%distribution.criteria%']
         public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '%distribution.criteria%'
+
+    distribution.modality_service:
+        class: DistributionBundle\Utils\ModalityService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+
+    distribution.commodity_service:
+        class: DistributionBundle\Utils\CommodityService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'

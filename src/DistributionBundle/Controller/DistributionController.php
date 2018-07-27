@@ -18,10 +18,10 @@ class DistributionController extends Controller
     /**
      * Create a distribution
      * @Rest\Put("/distributions", name="add_distribution")
-     * 
+     *
      * @SWG\Tag(name="Distributions")
-     * 
-          * @SWG\Parameter(
+     *
+     * @SWG\Parameter(
      *      name="body",
      *      in="body",
      *      type="object",
@@ -35,24 +35,29 @@ class DistributionController extends Controller
      *     description="Project created",
      *     @Model(type=DistributionData::class)
      * )
-     * 
+     *
      * @param Request $request
      * @return Response
      */
     public function addAction(Request $request)
     {
         $distributionArray = $request->request->all();
-
         try
         {
-            $distribution = $this->get('distribution.distribution_service')->create($distributionArray);
+            $listReceivers = $this->get('distribution.distribution_service')
+                ->create($distributionArray['__country'], $distributionArray);
         }
         catch (\Exception $exception)
         {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($distribution, 'json', SerializationContext::create()->setSerializeNull(true));
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $listReceivers,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullReceivers", "FullDistribution"])
+            );
 
         return new Response($json);
     }
@@ -71,11 +76,10 @@ class DistributionController extends Controller
      *          @SWG\Items(ref=@Model(type=DistributionData::class))
      *     )
      * )
-     * 
-     * @param Request $request
+     *
      * @return Response
      */
-    public function getAllAction(Request $request)
+    public function getAllAction()
     {
         $distributions = $this->get('distribution.distribution_service')->findAll();
         $json = $this->get('jms_serializer')->serialize($distributions, 'json');
@@ -106,7 +110,6 @@ class DistributionController extends Controller
 
         return new Response($json);
     }
-
 
 
     /**
@@ -142,7 +145,8 @@ class DistributionController extends Controller
         $distributionArray = $request->request->all();
         try
         {
-            $DistributionData = $this->get('distribution.distribution_service')->edit($DistributionData, $distributionArray);
+            $DistributionData = $this->get('distribution.distribution_service')
+                ->edit($DistributionData, $distributionArray);
         }
         catch (\Exception $e)
         {
@@ -176,7 +180,8 @@ class DistributionController extends Controller
     {
         try
         {
-            $archivedDistribution = $this->get('distribution.distribution_service')->archived($distribution);
+            $archivedDistribution = $this->get('distribution.distribution_service')
+                ->archived($distribution);
         }
         catch (\Exception $e)
         {
@@ -209,14 +214,19 @@ class DistributionController extends Controller
     {
         try
         {
-        $distributions = $project->getDistributions();
+            $distributions = $project->getDistributions();
         }
         catch (\Exception $e)
         {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+
         $json = $this->get('jms_serializer')
-            ->serialize($distributions, 'json', SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true));
+            ->serialize(
+                $distributions,
+                'json',
+                SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
+            );
 
         return new Response($json, Response::HTTP_OK);
     }

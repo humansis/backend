@@ -22,18 +22,11 @@ class Commodity
     private $id;
 
     /**
-     * @var string
+     * @var ModalityType
      *
-     * @ORM\Column(name="modality", type="string", length=45)
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\ModalityType")
      */
-    private $modality;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="type", type="string", length=45)
-     */
-    private $type;
+    private $modalityType;
 
     /**
      * @var string
@@ -50,16 +43,9 @@ class Commodity
     private $value;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="conditions", type="string", length=45)
-     */
-    private $conditions;
-
-    /**
      * @var DistributionData
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="commodities")
      */
     private $distributionData;
 
@@ -71,54 +57,6 @@ class Commodity
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set modality.
-     *
-     * @param string $modality
-     *
-     * @return Commodity
-     */
-    public function setModality($modality)
-    {
-        $this->modality = $modality;
-
-        return $this;
-    }
-
-    /**
-     * Get modality.
-     *
-     * @return string
-     */
-    public function getModality()
-    {
-        return $this->modality;
-    }
-
-    /**
-     * Set type.
-     *
-     * @param string $type
-     *
-     * @return Commodity
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type.
-     *
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
     }
 
     /**
@@ -170,30 +108,6 @@ class Commodity
     }
 
     /**
-     * Set conditions.
-     *
-     * @param string $conditions
-     *
-     * @return Commodity
-     */
-    public function setConditions($conditions)
-    {
-        $this->conditions = $conditions;
-
-        return $this;
-    }
-
-    /**
-     * Get conditions.
-     *
-     * @return string
-     */
-    public function getConditions()
-    {
-        return $this->conditions;
-    }
-
-    /**
      * Set distributionData.
      *
      * @param \DistributionBundle\Entity\DistributionData|null $distributionData
@@ -215,5 +129,29 @@ class Commodity
     public function getDistributionData()
     {
         return $this->distributionData;
+    }
+
+    /**
+     * Set modalityType.
+     *
+     * @param \DistributionBundle\Entity\ModalityType|null $modalityType
+     *
+     * @return Commodity
+     */
+    public function setModalityType(\DistributionBundle\Entity\ModalityType $modalityType = null)
+    {
+        $this->modalityType = $modalityType;
+
+        return $this;
+    }
+
+    /**
+     * Get modalityType.
+     *
+     * @return \DistributionBundle\Entity\ModalityType|null
+     */
+    public function getModalityType()
+    {
+        return $this->modalityType;
     }
 }

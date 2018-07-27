@@ -4,8 +4,10 @@
 namespace DistributionBundle\Utils;
 
 
+use BeneficiaryBundle\Utils\Distribution\DefaultRetriever;
+use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\SelectionCriteria;
-use DistributionBundle\Utils\Retriever\DefaultRetriever;
+use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CriteriaDistributionService
@@ -17,14 +19,34 @@ class CriteriaDistributionService
     /** @var ConfigurationLoader $configurationLoader */
     private $configurationLoader;
 
+    /** @var AbstractRetriever $retriever */
+    private $retriever;
 
+
+    /**
+     * CriteriaDistributionService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param ConfigurationLoader $configurationLoader
+     * @param string $classRetrieverString
+     * @throws \Exception
+     */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ConfigurationLoader $configurationLoader
+        ConfigurationLoader $configurationLoader,
+        string $classRetrieverString
     )
     {
         $this->em = $entityManager;
         $this->configurationLoader = $configurationLoader;
+        try
+        {
+            $class = new \ReflectionClass($classRetrieverString);
+            $this->retriever = $class->newInstanceArgs([$this->em]);
+        }
+        catch (\Exception $exception)
+        {
+            throw new \Exception("Your class Retriever is malformed.");
+        }
     }
 
 
@@ -36,23 +58,21 @@ class CriteriaDistributionService
      */
     public function load(array $filters, bool $onlyCount = false)
     {
-        $defaultRetriever = new DefaultRetriever($this->em);
         $countryISO3 = $filters['__country'];
         $distributionType = $filters['distribution_type'];
-        $kindBeneficiaryGlobal = (array_key_exists('kind_beneficiary', $filters) ? $filters['kind_beneficiary'] : null);
 
-        return $defaultRetriever->getReceivers(
+        return $this->retriever->getReceivers(
             $countryISO3,
             $distributionType,
             $filters["criteria"],
             $this->configurationLoader->load($filters),
-            $onlyCount,
-            $kindBeneficiaryGlobal
+            $onlyCount
         );
     }
 
-    public function save(SelectionCriteria $selectionCriteria, bool $flush)
+    public function save(DistributionData $distributionData, SelectionCriteria $selectionCriteria, bool $flush)
     {
+        $selectionCriteria->setDistributionData($distributionData);
         $this->em->persist($selectionCriteria);
         if ($flush)
             $this->em->flush();

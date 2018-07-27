@@ -27,13 +27,13 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
         string $groupGlobal = null
     )
     {
-        $qb = $this->configurationQueryBuilder($onlyCount, $countryISO3, $groupGlobal);
+        $qb = $this->configurationQueryBuilder($onlyCount, $countryISO3);
 
         $i = 1;
         foreach ($criteria as $criterion)
         {
             $configType = null;
-            if ("default" === strtolower($criterion["table_string"]))
+            if (!array_key_exists("table_string", $criterion) || "default" === strtolower($criterion["table_string"]))
             {
                 $configType = strtolower($criterion["table_string"]);
                 $this->whereDefault($qb, $i, $countryISO3, $criterion);
@@ -73,7 +73,7 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
      * @param $groupGlobal
      * @throws \Exception
      */
-    public function configurationQueryBuilder($onlyCount, $countryISO3, $groupGlobal)
+    public function configurationQueryBuilder($onlyCount, $countryISO3)
     {
         throw new \Exception("configurationQueryBuilder must de implemented.");
     }

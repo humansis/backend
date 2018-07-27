@@ -2,6 +2,11 @@
 
 namespace DistributionBundle\Utils;
 
+use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Utils\Distribution\DefaultRetriever;
+use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use DoctrineExtensions\Query\Mysql\Date;
 use JMS\Serializer\Serializer;
@@ -10,6 +15,7 @@ use DistributionBundle\Entity\Location;
 use DistributionBundle\Entity\SelectionCriteria;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Tests\Matcher\DumpedUrlMatcherTest;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DistributionService
@@ -27,32 +33,72 @@ class DistributionService
     /** @var LocationService $locationService */
     private $locationService;
 
+    /** @var CommodityService $commodityService */
+    private $commodityService;
 
+    /** @var ConfigurationLoader $configurationLoader */
+    private $configurationLoader;
+
+    /** @var CriteriaDistributionService $criteriaDistributionService */
+    private $criteriaDistributionService;
+
+    /** @var AbstractRetriever $retriever */
+    private $retriever;
+
+    /**
+     * DistributionService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param Serializer $serializer
+     * @param ValidatorInterface $validator
+     * @param LocationService $locationService
+     * @param CommodityService $commodityService
+     * @param ConfigurationLoader $configurationLoader
+     * @param CriteriaDistributionService $criteriaDistributionService
+     * @param string $classRetrieverString
+     * @throws \Exception
+     */
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
         ValidatorInterface $validator,
-        LocationService $locationService
+        LocationService $locationService,
+        CommodityService $commodityService,
+        ConfigurationLoader $configurationLoader,
+        CriteriaDistributionService $criteriaDistributionService,
+        string $classRetrieverString
     )
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->locationService = $locationService;
+        $this->commodityService = $commodityService;
+        $this->configurationLoader = $configurationLoader;
+        $this->criteriaDistributionService = $criteriaDistributionService;
+        try
+        {
+            $class = new \ReflectionClass($classRetrieverString);
+            $this->retriever = $class->newInstanceArgs([$this->em]);
+        }
+        catch (\Exception $exception)
+        {
+            throw new \Exception("Your class Retriever is malformed.");
+        }
     }
 
     /**
      * Create a distribution
      *
+     * @param $countryISO3
      * @param array $distributionArray
-     * @return DistributionData
+     * @return array
      * @throws \Exception
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function create(array $distributionArray)
+    public function create($countryISO3, array $distributionArray)
     {
         /** @var DistributionData $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
-
         $distribution->setUpdatedOn(new \DateTime());
         $errors = $this->validator->validate($distribution);
         if (count($errors) > 0)
@@ -73,19 +119,99 @@ class DistributionService
         if ($projectTmp instanceof Project)
             $distribution->setProject($projectTmp);
 
-        $this->em->persist($distribution);
-        $this->em->flush();
 
-        return $distribution;
+        foreach ($distribution->getCommodities() as $item)
+        {
+            $distribution->removeCommodity($item);
+        }
+        foreach ($distributionArray['commodities'] as $item)
+        {
+            $this->commodityService->create($distribution, $item, false);
+        }
+        $criteria = [];
+        foreach ($distribution->getSelectionCriteria() as $item)
+        {
+            $distribution->removeSelectionCriterion($item);
+            $criteria[] = $this->criteriaDistributionService->save($distribution, $item, false);
+        }
+
+        $this->em->persist($distribution);
+
+        $listReceivers = $this->guessBeneficiaries($countryISO3, $distribution, $criteria);
+        $this->saveReceivers($distribution, $listReceivers);
+
+        $this->em->flush();
+        return ["distribution" => $distribution, "data" => $listReceivers];
     }
 
-
-    public function createListBeneficiaries(DistributionData $distributionData, array $beneficiaries)
+    /**
+     * @param $countryISO3
+     * @param DistributionData $distributionData
+     * @param array $criteria
+     * @return mixed
+     * @throws \Exception
+     */
+    public function guessBeneficiaries($countryISO3, DistributionData $distributionData, array $criteria)
     {
-        foreach ($beneficiaries as $beneficiary)
+        $criteriaArray = [];
+        foreach ($criteria as $selectionCriterion)
         {
-
+            $criteriaArray[] = $this->getArrayOfCriteria($selectionCriterion);
         }
+
+        return $this->retriever->getReceivers(
+            $countryISO3,
+            $this->guessTypeString($distributionData->getType()),
+            $criteriaArray,
+            $this->configurationLoader->load(['__country' => $countryISO3])
+        );
+    }
+
+    /**
+     * @param DistributionData $distributionData
+     * @param array $listReceivers
+     * @throws \Exception
+     */
+    public function saveReceivers(DistributionData $distributionData, array $listReceivers)
+    {
+        foreach ($listReceivers as $receiver)
+        {
+            if ($receiver instanceof Household)
+            {
+                $head = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($receiver);
+                $distributionBeneficiary = new DistributionBeneficiary();
+                $distributionBeneficiary->setDistributionData($distributionData)
+                    ->setBeneficiary($head);
+            }
+            elseif ($receiver instanceof Beneficiary)
+            {
+                $distributionBeneficiary = new DistributionBeneficiary();
+                $distributionBeneficiary->setDistributionData($distributionData)
+                    ->setBeneficiary($receiver);
+            }
+            else
+            {
+                throw new \Exception("A problem was found. The distribution has no beneficiary");
+            }
+            $this->em->persist($distributionBeneficiary);
+        }
+    }
+
+    public function guessTypeString(bool $type)
+    {
+        return ($type == 1) ? 'beneficiary' : 'household';
+    }
+
+    public function getArrayOfCriteria(SelectionCriteria $selectionCriteria)
+    {
+        return [
+            "table_string" => $selectionCriteria->getTableString(),
+            "field_string" => $selectionCriteria->getFieldString(),
+            "value_string" => $selectionCriteria->getValueString(),
+            "condition_string" => $selectionCriteria->getConditionString(),
+            "kind_beneficiary" => $selectionCriteria->getKindBeneficiary(),
+            "id_field" => $selectionCriteria->getIdField()
+        ];
     }
 
     /**

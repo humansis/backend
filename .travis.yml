@@ -21,9 +21,6 @@ matrix:
   include:
     - php: 7.1
     - php: 7.2
-    - php: hhvm
-  allow_failures:
-    - php: hhvm
 
 # Define an environment variable
 env:

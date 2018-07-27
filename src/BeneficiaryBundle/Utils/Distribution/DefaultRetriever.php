@@ -1,50 +1,38 @@
 <?php
 
 
-namespace DistributionBundle\Utils\Retriever;
+namespace BeneficiaryBundle\Utils\Distribution;
 
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Repository\HouseholdRepository;
+use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DefaultRetriever extends AbstractRetriever
 {
 
     /** @var BeneficiaryRepository $beneficiaryRepository */
-    private $beneficiaryRepository;
+    protected $beneficiaryRepository;
     /** @var HouseholdRepository $beneficiaryRepository */
-    private $householdRepository;
+    protected $householdRepository;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
+
         $this->beneficiaryRepository = $entityManager->getRepository(Beneficiary::class);
         $this->householdRepository = $entityManager->getRepository(Household::class);
     }
 
-
     /**
-     * @param string $countryISO3
      * @param string $distributionType
      * @param array $criteria
-     * @param bool $onlyCount
-     * @param array $configurationCriteria
-     * @param string|null $kindBeneficiaryGlobal
-     * @return mixed
      * @throws \Exception
      */
-    public function getReceivers(
-        string $countryISO3,
-        string $distributionType,
-        array $criteria,
-        array $configurationCriteria,
-        bool $onlyCount = false,
-        string $kindBeneficiaryGlobal = null
-    )
+    protected function preFinder(string $distributionType, array &$criteria)
     {
-        $kindBeneficiaryCode = null;
         if ($distributionType === 'household')
         {
             foreach ($criteria as $index => $criterion)
@@ -52,22 +40,10 @@ class DefaultRetriever extends AbstractRetriever
                 $criteria[$index]["kind_beneficiary"] = $this->getStatusBeneficiaryCriterion($criterion["kind_beneficiary"]);
             }
         }
-        elseif ($distributionType === 'beneficiary')
-        {
-            $kindBeneficiaryCode = $this->getStatusBeneficiaryCriterion($kindBeneficiaryGlobal);
-        }
-        else
+        elseif ($distributionType !== 'beneficiary')
         {
             throw new \Exception("The distribution type '$distributionType' is unknown.");
         }
-        $receivers = $this->guessRepository($distributionType)->findByCriteria($countryISO3, $criteria, $configurationCriteria, $onlyCount, $kindBeneficiaryCode);
-
-        // If we only want the number of beneficiaries, return only the number
-        if ($onlyCount)
-        {
-            $receivers = ["number" => intval(current($receivers)[1])];
-        }
-        return $receivers;
     }
 
     /**
@@ -75,7 +51,7 @@ class DefaultRetriever extends AbstractRetriever
      * @return BeneficiaryRepository|HouseholdRepository|\Doctrine\Common\Persistence\ObjectRepository
      * @throws \Exception
      */
-    private function guessRepository(string $distributionType)
+    protected function guessRepository(string $distributionType)
     {
         switch (strtolower($distributionType))
         {
@@ -87,7 +63,6 @@ class DefaultRetriever extends AbstractRetriever
         throw new \Exception("This distribution type '$distributionType' is not implemented yet.");
     }
 
-
     /**
      * Return the value of the beneficiary status (is head of household or not)
      *
@@ -95,7 +70,7 @@ class DefaultRetriever extends AbstractRetriever
      * @return int
      * @throws \Exception
      */
-    private function getStatusBeneficiaryCriterion($kindBeneficiary)
+    protected function getStatusBeneficiaryCriterion($kindBeneficiary)
     {
         $kindBeneficiary = trim(strtolower(strval($kindBeneficiary)));
         switch ($kindBeneficiary)

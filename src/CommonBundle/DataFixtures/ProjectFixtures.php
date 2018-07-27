@@ -25,7 +25,7 @@ class ProjectFixtures extends Fixture
     {
         foreach ($this->data as $datum)
         {
-            $project = $manager->getRepository(Project::class)->findByName($datum[0]);
+            $project = $manager->getRepository(Project::class)->findOneByName($datum[0]);
             if (!$project instanceof Project)
             {
                 $project = new Project();

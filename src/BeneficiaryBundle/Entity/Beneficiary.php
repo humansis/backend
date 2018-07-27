@@ -21,7 +21,7 @@ class Beneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $id;
 
@@ -29,7 +29,7 @@ class Beneficiary
      * @var string
      *
      * @ORM\Column(name="givenName", type="string", length=255)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      * @Assert\NotBlank(message="The given name is required.")
      */
     private $givenName;
@@ -38,7 +38,7 @@ class Beneficiary
      * @var string
      *
      * @ORM\Column(name="familyName", type="string", length=255)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      * @Assert\NotBlank(message="The family name is required.")
      */
     private $familyName;
@@ -47,7 +47,7 @@ class Beneficiary
      * @var int
      *
      * @ORM\Column(name="gender", type="smallint")
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers"})
      * @Assert\NotBlank(message="The gender is required.")
      */
     private $gender;
@@ -56,7 +56,7 @@ class Beneficiary
      * @var boolean
      *
      * @ORM\Column(name="status", type="boolean")
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers"})
      * @Assert\NotBlank(message="The status is required.")
      */
     private $status;
@@ -66,7 +66,7 @@ class Beneficiary
      *
      * @ORM\Column(name="dateOfBirth", type="date")
      * @JMS_Type("DateTime<'Y-m-d'>")
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers"})
      * @Assert\NotBlank(message="The date of birth is required.")
      */
     private $dateOfBirth;

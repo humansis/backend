@@ -22,7 +22,7 @@ class Household
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="address_street", type="string", length=255)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers"})
      * @Assert\NotBlank(message="The address street is required.")
      */
     private $addressStreet;
@@ -39,7 +39,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="address_number", type="string", length=255)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers"})
      * @Assert\NotBlank(message="The address number is required.")
      */
     private $addressNumber;
@@ -48,7 +48,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="address_postcode", type="string", length=255)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers"})
      * @Assert\NotBlank(message="The address postcode is required.")
      */
     private $addressPostcode;
@@ -105,7 +105,7 @@ class Household
      * @var Beneficiary
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household")
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $beneficiaries;
 
