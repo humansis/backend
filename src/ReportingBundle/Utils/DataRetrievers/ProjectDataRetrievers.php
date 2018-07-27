@@ -162,14 +162,20 @@ class ProjectDataRetrievers
      */
     public function BMS_Project_PVS(array $filters) {
         $vulnerabilitiesPercentage = [];
+
+        //call function to get total vulnerability and total by vulnerability
         $totalVulnerabilities = $this->BMSU_Project_TVS($filters);
         $totalVulnerabilitiesByVulnerabilities = $this->BMSU_Project_TVSV($filters);
+
+        //Get the more recent date
         $lastDate = $totalVulnerabilities[0]['date'];
         foreach($totalVulnerabilities as $totalVulnerability) {
             if ($totalVulnerability['date'] > $lastDate) {
                 $lastDate = $totalVulnerability['date'];
             }
         }
+
+        //Search the corresponding data and put them in an array after formatting them 
         foreach ($totalVulnerabilities as $totalVulnerability) { 
             if ($totalVulnerability["date"] == $lastDate) {
                 foreach ($totalVulnerabilitiesByVulnerabilities as $vulnerability) {

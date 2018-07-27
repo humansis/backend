@@ -150,14 +150,19 @@ class DistributionDataRetrievers
     public function BMS_Distribution_NMW(array $filters) {
 
         $menAndWomen = [];
+        //call function to get number of men and number of women
         $mens = $this->BMSU_Distribution_NM($filters);
         $womens = $this->BMSU_Distribution_NW($filters);
+
+        //search the more recent date
         $lastDate = $mens[0]['date'];
         foreach($mens as $men) {
             if ($men['date'] > $lastDate) {
                 $lastDate = $men['date'];
             }
         }
+
+        //Search the corresponding data and put them in an array after formatting them 
         foreach ($mens as $men) { 
             if ($men["date"] == $lastDate) {
                 $result = [
@@ -212,14 +217,20 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_PVS(array $filters) {
         $vulnerabilitiesPercentage = [];
+
+        //call function to get the total of vulnerability and to get the total by vulnerability
         $totalVulnerabilities = $this->BMSU_Distribution_TVS($filters);
         $totalVulnerabilitiesByVulnerabilities = $this->BMSU_Distribution_TVSV($filters);
+
+        //get the more recent data
         $lastDate = $totalVulnerabilities[0]['date'];
         foreach($totalVulnerabilities as $totalVulnerability) {
             if ($totalVulnerability['date'] > $lastDate) {
                 $lastDate = $totalVulnerability['date'];
             }
         }
+
+        //Search the corresponding data and put them in an array after formatting them 
         foreach ($totalVulnerabilities as $totalVulnerability) { 
             if ($totalVulnerability["date"] == $lastDate) {
                 foreach ($totalVulnerabilitiesByVulnerabilities as $vulnerability) {
@@ -244,6 +255,7 @@ class DistributionDataRetrievers
     public function BMS_Distribution_PPV(array $filters) {
         $projectDistributionValue =[];
 
+
         $repositoryProject = $this->em->getRepository(Project::class);
 
         $projectValue = $this->project->BMSU_Project_PV($filters);
@@ -253,12 +265,15 @@ class DistributionDataRetrievers
         $moreRecentDistribution = $this->lastDate($distributionValue);
 
         $percentValueUsed = 0;
+
+        //Search the corresponding data and put them in an array after formatting them 
         foreach($moreRecentProject as $project) { 
-            
             $findProject = $repositoryProject->findOneBy(['id' => $project['id']]); 
             foreach($moreRecentDistribution as $distribution) {
                 foreach($findProject->getDistributions() as $findDistribution) {
                     if($distribution['id'] ===  $findDistribution->getId()) {
+
+                        //calculate the percent of distribution value in a project 
                         $percent = ($distribution["value"]/$findProject->getValue())*100;
                         $percentValueUsed = $percentValueUsed + $percent;
                         $result = [
@@ -271,6 +286,7 @@ class DistributionDataRetrievers
                 }    
             }
 
+            //calculate the percent of project value not used
             $valueProjectUsed = ($findProject->getValue() * ($percentValueUsed/100));
             $result = [
                 'name' => 'Value not used',

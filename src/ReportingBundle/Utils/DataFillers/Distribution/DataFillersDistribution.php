@@ -163,12 +163,15 @@ class DataFillersDistribution  extends DataFillers
      * Fill in ReportingValue and ReportingDistribution with age breakdown
      */
     public function BMS_Distribution_AB() {
+        //Get all distribution beneficiary
         $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
         $beneficiaries = $this->repository->findAll();
 
+        //Get all distribution
         $this->repository = $this->em->getRepository(DistributionData::class);
         $distributions = $this->repository->findAll();
 
+        //Search the age of all beneficiary in all distribution and push the result of the query in a array
         foreach($distributions as $distribution) {
             $results = [];
             foreach($beneficiaries as $beneficiary) {
@@ -188,6 +191,7 @@ class DataFillersDistribution  extends DataFillers
                     }
                 }
             }
+            //Call function to sort all age in different interval
             $byInterval = $this->sortByAge($results);
             
             foreach ($byInterval as $ageBreakdown) 
@@ -316,17 +320,22 @@ class DataFillersDistribution  extends DataFillers
      */
     public function BMSU_Distribution_TVS() {
         
+        //Get all vulnerability criterion
         $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
         $vulnerabilityCriterion = $this->repository->findAll();
 
+
+        //Get all dsitribution beneficiary
         $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
         $beneficiaries = $this->repository->findAll();
 
+        //Get all distribution
         $this->repository = $this->em->getRepository(DistributionData::class);
         $distributions = $this->repository->findAll();
 
         $results = [];
 
+        //Search all vulnerability criterion foreach beneficiary in a distribution and count the vulnerability served
         foreach($distributions as $distribution) {
             foreach($beneficiaries as $beneficiary) {
                 if( $distribution->getId() === $beneficiary->getDistributionData()->getId()) {
@@ -345,6 +354,7 @@ class DataFillersDistribution  extends DataFillers
                         ->select("count(b.id) as value", 'dd.id as distribution')
                         ->groupBy('distribution');
                         $result = $qb->getQuery()->getArrayResult();
+                        //count the number of vulnerability served find in the distribution
                         if((sizeof($result)) > 0) {
                             if((sizeof($results)) == 0) {
                                 $results = $result;
@@ -394,17 +404,21 @@ class DataFillersDistribution  extends DataFillers
      */
     public function BMSU_Distribution_TVSV() {
         
+        //Get all vulnerability Criterion
         $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
         $vulnerabilityCriterion = $this->repository->findAll();
 
+        //get all distribution beneficiary
         $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
         $beneficiaries = $this->repository->findAll();
 
+        //get all distribution
         $this->repository = $this->em->getRepository(DistributionData::class);
         $distributions = $this->repository->findAll();
 
         $results = [];
 
+        //Search all vulnerability criterion foreach beneficiary in a distribution and put the result in a array
         foreach($distributions as $distribution) {
             $byDistribution = [];
             foreach($beneficiaries as $beneficiary) {
@@ -430,6 +444,7 @@ class DataFillersDistribution  extends DataFillers
                     }
                 }
             }
+            //Sort the vulnerability criterion and count the number of entry find foreach of them
             $found = false;
             foreach($results as $result) {
                 foreach($result as $value) {
@@ -486,8 +501,9 @@ class DataFillersDistribution  extends DataFillers
         }
     }
 
-        /**
+     /**
      * Use to sort beneficiary by age interval
+     * If the age is in the interval, increment the corresponding counter 
      */
     public function sortByAge($ages) {
         $byInterval= []; 

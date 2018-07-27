@@ -23,6 +23,10 @@ class Computer implements ComputerInterface {
         $this->project = $project;
     }
 
+    /**
+     * Search in all data retrievers if the code exists
+     * Call the good function after find it
+     */
     public function compute(IndicatorInterface $indicator , array $filters = []) 
     {
         $filters['__'] = [

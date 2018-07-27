@@ -62,6 +62,7 @@ class DataFillersProject
                                             ->setParameter('gender', 1)
                                         ->select('Distinct count(b) AS value');
                 $result = $qb->getQuery()->getArrayResult();
+                //foreach men find, increment the counter
                 if((sizeof($result)) > 0) {
                     if((sizeof($results)) == 0) {
                         $results = $result;
@@ -118,6 +119,7 @@ class DataFillersProject
                                             ->setParameter('gender', 0)
                                         ->select('Distinct count(b) AS value');
                 $result = $qb->getQuery()->getArrayResult();
+                //foreach women find, increment the counter
                 if((sizeof($result)) > 0) {
                     if((sizeof($results)) == 0) {
                         $results = $result;
@@ -160,10 +162,13 @@ class DataFillersProject
      * Fill in ReportingValue and ReportingProject with the total of vulnerabilities served by vulnerabily in a project
      */
     public function BMSU_Project_TVSV() {
+        //Get all vulnerability criterion
         $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
         $vulnerabilityCriterion = $this->repository->findAll();
 
         $projects = $this->getProject();
+
+        //Search all vulnerability criterion foreach beneficiary in a project and put the result in a array
         $results = [];
         foreach($projects as $project) {
             $byProject = [];
@@ -186,6 +191,7 @@ class DataFillersProject
                     }                    
                 }
             }
+            //Sort the vulnerability criterion and count the number of entry find foreach of them
             $found = false;
             foreach($results as $result) {
                 foreach($result as $value) {
@@ -240,11 +246,13 @@ class DataFillersProject
      * Fill in ReportingValue and ReportingProject with the total of vulnerabilities served in a project
      */
     public function BMSU_Project_TVS() {
+        //Get all vulnerability criterion
         $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
         $vulnerabilityCriterion = $this->repository->findAll();
 
         $projects = $this->getProject();
         $results = [];
+        //Search all vulnerability criterion foreach beneficiary in a project  and count the vulnerability served
         foreach($projects as $project) {
             $byProject = [];
             foreach($project->getHouseholds() as $household) {
@@ -259,6 +267,7 @@ class DataFillersProject
                             ->setParameter('criteria', $vulnerabilityCriteria->getId())
                         ->select('count(b) as value');
                         $result = $qb->getQuery()->getArrayResult();
+                        //count the number of vulnerability served find in the project
                         if((sizeof($result)) > 0) {
                             if((sizeof($results)) == 0) {
                                 $results = $result;
@@ -358,6 +367,7 @@ class DataFillersProject
                                             ->setParameter('household', $household->getId())
                                         ->select("count(h.id) as value"); 
                 $result = $qb->getQuery()->getArrayResult();
+                //foreach household served in the project, increment counter
                 if((sizeof($result)) > 0) {
                     if((sizeof($results)) == 0) {
                         $results = $result;
@@ -403,6 +413,7 @@ class DataFillersProject
      */
     public function BMS_Project_AB() {
         $projects = $this->getProject();
+        //Search the age of all beneficiary in all project and push the result of the query in a array
         foreach($projects as $project) {
             $results = [];
             foreach($project->getHouseholds() as $household) {
@@ -421,6 +432,7 @@ class DataFillersProject
                         }        
                 }                      
             }
+            //Call a function to sort age in corresponding interval
             $byInterval = $this->sortByAge($results);
             foreach($byInterval as $ageBreakdown) {
                 $this->em->getConnection()->beginTransaction();
@@ -493,6 +505,7 @@ class DataFillersProject
 
     /**
      * Use to sort beneficiary by age interval
+     * If the age is in the interval, increment the corresponding counter 
      */
     public function sortByAge($ages) {
         $byInterval= []; 
