@@ -15,6 +15,46 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Household
 {
+
+
+    /**
+     * First value with a column in the csv which can move, depends on the number of country specifics
+     * @var string
+     */
+    const firstColumnNonStatic = 'L';
+
+    /**
+     * Mapping between fields and CSV columns
+     */
+    const MAPPING_CSV = [
+        // Household
+        "address_street" => "A",
+        "address_number" => "B",
+        "address_postcode" => "C",
+        "livelihood" => "D",
+        "notes" => "E",
+        "latitude" => "F",
+        "longitude" => "G",
+        "location" => [
+            // Location
+            "adm1" => "H",
+            "adm2" => "I",
+            "adm3" => "J",
+            "adm4" => "K"
+        ],
+        // Beneficiary
+        "beneficiaries" => [
+            "given_name" => "L",
+            "family_name" => "M",
+            "gender" => "N",
+            "status" => "O",
+            "date_of_birth" => "P",
+            "vulnerability_criteria" => "Q",
+            "phones" => "R",
+            "national_ids" => "S"
+        ]
+    ];
+
     /**
      * @var int
      *

@@ -7,7 +7,8 @@ namespace DistributionBundle\Utils;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\ExportCSVService;
-use BeneficiaryBundle\Utils\Mapper;
+use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
+use BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -23,20 +24,20 @@ class DistributionCSVService
     private $exportCSVService;
     /** @var ContainerInterface $container */
     private $container;
-    /** @var Mapper $mapper */
-    private $mapper;
+    /** @var HouseholdToCSVMapper $householdToCSVMapper */
+    private $householdToCSVMapper;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         ExportCSVService $exportCSVService,
         ContainerInterface $container,
-        Mapper $mapper
+        HouseholdToCSVMapper $householdToCSVMapper
     )
     {
         $this->em = $entityManager;
         $this->exportCSVService = $exportCSVService;
         $this->container = $container;
-        $this->mapper = $mapper;
+        $this->householdToCSVMapper = $householdToCSVMapper;
     }
 
     /**
@@ -79,7 +80,7 @@ class DistributionCSVService
         $receivers = $this->buildDataBeneficiary($distributionData);
         $worksheet = $spreadsheet->getActiveSheet();
 
-        $this->mapper->fromHouseholdToCSV($worksheet, $receivers, $countryISO3);
+        $this->householdToCSVMapper->fromHouseholdToCSV($worksheet, $receivers, $countryISO3);
 
         dump($worksheet->toArray(true, null, null, null));
         return $spreadsheet;
@@ -90,6 +91,7 @@ class DistributionCSVService
      * If the distribution is for beneficiary, households will contain only one beneficiary
      * @param DistributionData $distributionData
      * @return array
+     * @throws \Exception
      */
     public function buildDataBeneficiary(DistributionData $distributionData)
     {
@@ -103,7 +105,11 @@ class DistributionCSVService
             switch ($distributionData->getType())
             {
                 case 0:
-                    $receivers[] = $beneficiary->getHousehold();
+                    $household = $beneficiary->getHousehold();
+                    foreach ($this->em->getRepository(Beneficiary::class)->findByHousehold($household) as $beneficiaryHH)
+                    {
+                        $household->addBeneficiary($beneficiaryHH);
+                    }
                     break;
 
                 case 1:
@@ -113,9 +119,11 @@ class DistributionCSVService
                         if ($beneficiary !== $beneficiaryHH)
                             $household->removeBeneficiary($beneficiaryHH);
                     }
-                    $receivers[] = $household;
                     break;
+                default:
+                    throw new \Exception("The type of the distribution is unknown.");
             }
+            $receivers[] = $household;
         }
 
         return $receivers;
