@@ -10,7 +10,12 @@ For **vulnerabilityCriteria** : true or false in 'condition_string' (either the 
 
 ### Config.yml
 
-Example of configuration.
+#### Example of configuration.
+
+**retriever** : You must defined a retriever class which implement the AbstractRetriever of DistributionBundle.
+In this class, you can define some preFinder function to reformat your data between the request and the SQL execution.
+Please specified the full name of the class (with namespace).
+
 Inside 'criteria', you must defined every criteria that can be used to determined if a person should be a beneficiary.
 **Model** => {"**key**" : "**type**"}
 
@@ -18,6 +23,7 @@ Type : **text**, **number**, **bool**, **date** or **entity name (with namespace
 
 ```yaml
 distribution:
+    retriever: BeneficiaryBundle\Utils\Distribution\DefaultRetriever
     criteria: {
         gender: boolean,
         dateOfBirth: date,
