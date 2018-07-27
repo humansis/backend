@@ -264,7 +264,7 @@ class DistributionDataRetrievers
         $distributionValue = $this->BMS_Distribution_TDV($filters);
         $moreRecentDistribution = $this->lastDate($distributionValue);
 
-        $percentValueUsed = 0;
+        $TotalDistributionValueUsed = 0;
 
         //Search the corresponding data and put them in an array after formatting them 
         foreach($moreRecentProject as $project) { 
@@ -273,12 +273,10 @@ class DistributionDataRetrievers
                 foreach($findProject->getDistributions() as $findDistribution) {
                     if($distribution['id'] ===  $findDistribution->getId()) {
 
-                        //calculate the percent of distribution value in a project 
-                        $percent = ($distribution["value"]/$findProject->getValue())*100;
-                        $percentValueUsed = $percentValueUsed + $percent;
+                        $TotalDistributionValueUsed = $TotalDistributionValueUsed + $distribution["value"];
                         $result = [
                             'name' =>$findDistribution->getName(),
-                            'value' => $percent,
+                            'value' => (int)$distribution["value"],
                             'date' => $distribution['date']
                         ]; 
                         array_push($projectDistributionValue, $result);
@@ -286,11 +284,10 @@ class DistributionDataRetrievers
                 }    
             }
 
-            //calculate the percent of project value not used
-            $valueProjectUsed = ($findProject->getValue() * ($percentValueUsed/100));
+            $valueProjectUsed = $project['value']-$TotalDistributionValueUsed;
             $result = [
-                'name' => 'Value not used',
-                'value' => $percentValueUsed,
+                'name' => 'Available',
+                'value' => $valueProjectUsed,
                 'date' => $project['date']
             ];
             array_push($projectDistributionValue, $result);

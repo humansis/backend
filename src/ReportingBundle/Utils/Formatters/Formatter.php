@@ -19,22 +19,22 @@ class Formatter implements FormatterInterface {
      */
     public function format($dataComputed, $typeGraph) {
         switch($typeGraph) {
-            case "histogramme":
+            case "stackbar":
                 $result = Formatter::formatWithSeries($dataComputed);
                 return $result;
-            case "camembert":
+            case "pie":
                 $result = Formatter::formatWithoutSeries($dataComputed);
                 return $result;
             case "bar":
                 $result = Formatter::formatWithoutSeries($dataComputed);
                 return $result;
-            case "cible":
+            case "grid":
                 $result = Formatter::formatWithoutSeries($dataComputed);
                 return $result;
-            case "nombre":
+            case "number":
                 $result = Formatter::formatWithoutSeries($dataComputed);
                 return $result;
-            case "courbe":
+            case "line":
                 $result = Formatter::formatWithDateSeries($dataComputed);
                 return $result;
         }
