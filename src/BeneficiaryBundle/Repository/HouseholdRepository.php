@@ -131,9 +131,14 @@ class HouseholdRepository extends AbstractCriteriaRepository
         }
         else
         {
-            $qbSub->leftJoin("b$i.vulnerabilityCriteria", "vc$i")
-                ->andWhere("vc$i.id = :idvc$i")
+            $qbSubNotIn = $this->createQueryBuilder("hhb$i");
+            $this->setCountry($qbSubNotIn, $countryISO3, "b$i");
+            $qbSubNotIn->leftJoin("hhb$i.beneficiaries", "bb$i")
+                ->leftJoin("bb$i.vulnerabilityCriteria", "vcb$i")
+                ->andWhere("vcb$i.id = :idvc$i")
                 ->setParameter("idvc$i", $filters["id_field"]);
+
+            $qbSub->andWhere($qbSub->expr()->notIn("hh$i", $qbSubNotIn->getDQL()));
         }
 
         if (null !== $filters["kind_beneficiary"])
