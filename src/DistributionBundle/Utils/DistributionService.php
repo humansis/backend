@@ -141,6 +141,23 @@ class DistributionService
         $this->saveReceivers($distribution, $listReceivers);
 
         $this->em->flush();
+        /** @var DistributionData $distribution */
+        $distribution = $this->em->getRepository(DistributionData::class)
+            ->find($distribution);
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
+            ->findByDistributionData($distribution);
+        $selectionsCriteria = $this->em->getRepository(SelectionCriteria::class)
+            ->findByDistributionData($distribution);
+
+        foreach ($distributionBeneficiary as $item)
+        {
+            $distribution->addDistributionBeneficiary($item);
+        }
+        foreach ($selectionsCriteria as $item)
+        {
+            $distribution->addSelectionCriterion($item);
+        }
+
         return ["distribution" => $distribution, "data" => $listReceivers];
     }
 

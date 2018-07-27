@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Controller;
 
+use DistributionBundle\Utils\DistributionBeneficiaryService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,6 +47,7 @@ class DistributionController extends Controller
         {
             $listReceivers = $this->get('distribution.distribution_service')
                 ->create($distributionArray['__country'], $distributionArray);
+            dump($listReceivers);
         }
         catch (\Exception $exception)
         {
@@ -56,7 +58,39 @@ class DistributionController extends Controller
             ->serialize(
                 $listReceivers,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullReceivers", "FullDistribution"])
+                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                    "FullReceivers",
+                    "FullDistribution"
+                ])
+            );
+
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Put("/distributions/{id}/beneficiary", name="add_beneficiary_in_distribution")
+     *
+     * @param Request $request
+     * @param DistributionData $distributionData
+     * @return Response
+     * @throws \Exception
+     */
+    public function addBeneficiaryAction(Request $request, DistributionData $distributionData)
+    {
+        $data = $request->request->all();
+        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiary($distributionData, $data);
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $distributionBeneficiary,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                    "FullDistributionBeneficiary",
+                    "FullDistribution",
+                    "FullBeneficiary"
+                ])
             );
 
         return new Response($json);
@@ -106,7 +140,12 @@ class DistributionController extends Controller
      */
     public function getOneAction(DistributionData $DistributionData)
     {
-        $json = $this->get('jms_serializer')->serialize($DistributionData, 'json');
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $DistributionData,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullDistribution"])
+            );
 
         return new Response($json);
     }
@@ -210,7 +249,7 @@ class DistributionController extends Controller
      * @param Project $project
      * @return Response
      */
-    public function getDistributions(Project $project)
+    public function getDistributionsAction(Project $project)
     {
         try
         {

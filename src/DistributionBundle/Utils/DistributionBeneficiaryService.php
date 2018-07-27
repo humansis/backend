@@ -2,6 +2,8 @@
 
 namespace DistributionBundle\Utils;
 
+use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,73 +33,40 @@ class DistributionBeneficiaryService
     }
 
     /**
-     * Create a distributionBeneficiary
+     * Add either a beneficiary of a household(in this case, we assigned the head of the household) to a distribution
      *
-     * @param array $distributionBeneficiaryArray
+     * @param DistributionData $distributionData
+     * @param array $beneficiaryArray
      * @return DistributionBeneficiary
      * @throws \Exception
      */
-    public function create(array $distributionBeneficiaryArray) 
+    public function addBeneficiary(DistributionData $distributionData, array $beneficiaryArray)
     {
-
-        /** @var DistributionBeneficiary $distribution */
-        $distributionBeneficiary = $this->serializer->deserialize(json_encode($distributionBeneficiaryArray), DistributionBeneficiary::class, 'json');
-        $errors = $this->validator->validate($distributionBeneficiary);
-        if (count($errors) > 0)
+        $beneficiary = null;
+        switch ($distributionData->getType())
         {
-            $errorsArray = [];
-            foreach ($errors as $error)
-            {
-                $errorsArray[] = $error->getMessage();
-            }
-            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+            case 0:
+                $household = $this->em->getRepository(Household::class)->find($beneficiaryArray["id"]);
+                if (!$household instanceof Household)
+                    throw new \Exception("This household was not found.");
+                $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
+                break;
+            case 1:
+                $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
+                break;
+            default:
+                throw new \Exception("The type of the distribution is undefined.");
         }
-        $project = $distributionBeneficiary->getProjectBeneficiary();
-        $projectTmp = $this->em->getRepository(ProjectBeneficiary::class)->find($project);
-        if ($projectTmp instanceof ProjectBeneficiary)
-            $distributionBeneficiary->setProjectBeneficiary($projectTmp);
 
-        $distributionData = $distributionBeneficiary->getDistributionData();
-        $distributionDataTmp = $this->em->getRepository(DistributionData::class)->find($distributionData);
-        if ($distributionDataTmp instanceof DistributionData)
-            $distributionBeneficiary->setDistributionData($distributionDataTmp);
+        $distributionBeneficiary = new DistributionBeneficiary();
+        $distributionBeneficiary->setBeneficiary($beneficiary)
+            ->setDistributionData($distributionData);
 
         $this->em->persist($distributionBeneficiary);
 
         $this->em->flush();
 
         return $distributionBeneficiary;
-    }
-
-    /**
-     * Get all distribution beneficiaries
-     * 
-     * @return array
-     */
-    public function findAll() 
-    {
-        return $this->em->getRepository(DistributionBeneficiary::class)->findAll();
-    }
-
-     /**
-     * @param DistributionBeneficiary $distributionBeneficiary
-     * @return bool
-     */
-    public function delete(DistributionBeneficiary $distributionBeneficiary)
-    {
-        $deleteDistributionBeneficiary = $this->em->getRepository(DistributionData::class)->find($distributionBeneficiary);
-
-        try
-        {
-            $this->em->remove($deleteDistributionBeneficiary);
-            $this->em->flush();
-        }
-        catch (\Exception $exception)
-        {
-            return false;
-        }
-
-        return true;
     }
     
 }
