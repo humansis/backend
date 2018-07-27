@@ -122,13 +122,25 @@ class HouseholdRepository extends AbstractCriteriaRepository
     {
         $qbSub = $this->createQueryBuilder("hh$i");
         $this->setCountry($qbSub, $countryISO3, $i);
-        $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
-            ->leftJoin("b$i.vulnerabilityCriteria", "vc$i")
-            ->andWhere("vc$i.id = :idvc$i")
-            ->setParameter("idvc$i", $filters["id_field"]);
+        $qbSub->leftJoin("hh$i.beneficiaries", "b$i");
+        if (boolval($filters["condition_string"]))
+        {
+            $qbSub->leftJoin("b$i.vulnerabilityCriteria", "vc$i")
+                ->andWhere("vc$i.id = :idvc$i")
+                ->setParameter("idvc$i", $filters["id_field"]);
+        }
+        else
+        {
+            $qbSub->leftJoin("b$i.vulnerabilityCriteria", "vc$i")
+                ->andWhere("vc$i.id = :idvc$i")
+                ->setParameter("idvc$i", $filters["id_field"]);
+        }
+
         if (null !== $filters["kind_beneficiary"])
+        {
             $qbSub->andWhere("b$i.status = :status$i")
                 ->setParameter("status$i", $filters["kind_beneficiary"]);
+        }
 
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
             ->setParameter("idvc$i", $filters["id_field"])

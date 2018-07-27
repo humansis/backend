@@ -128,8 +128,8 @@ Example :
       "table_string": "vulnerabilityCriteria",
       "kind_beneficiary": "beneficiary",
       "field_string": null,
-      "condition_string": "=",
-      "value_string": "saluut",
+      "condition_string": true,
+      "value_string": null,
       "id_field": 1
     },
     {
@@ -178,9 +178,9 @@ Example :
     },
     {
       "table_string": "vulnerabilityCriteria",
-      "field_string": "nutritional issues",
-      "condition_string": "=",
-      "value_string": "saluut",
+      "field_string": null,
+      "condition_string": false,
+      "value_string": null,
       "id_field": 1
     },
     {
