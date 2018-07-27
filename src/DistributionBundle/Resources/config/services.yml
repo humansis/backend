@@ -53,3 +53,11 @@ services:
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
+
+    distribution.distribution_csv_service:
+        class: DistributionBundle\Utils\DistributionCSVService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@beneficiary.household_export_csv_service'
+            - '@service_container'

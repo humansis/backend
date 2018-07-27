@@ -207,7 +207,7 @@ class HouseholdController extends Controller
         $exportCSVService = $this->get('beneficiary.household_export_csv_service');
         try
         {
-            $fileCSV = $exportCSVService->generateCSV($countryIso3);
+            $fileCSV = $exportCSVService->generate($countryIso3);
         }
         catch (\Exception $e)
         {

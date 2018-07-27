@@ -97,15 +97,13 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Remove("/distributions/{id}/beneficiary", name="add_beneficiary_in_distribution")
+     * @Rest\Delete("/distributions/{id}/beneficiary", name="remove_beneficiary_in_distribution")
      *
-     * @param Request $request
      * @param DistributionBeneficiary $distributionBeneficiary
      * @return Response
      */
-    public function removeBeneficiaryAction(Request $request, DistributionBeneficiary $distributionBeneficiary)
+    public function removeBeneficiaryAction(DistributionBeneficiary $distributionBeneficiary)
     {
-        $data = $request->request->all();
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $return = $distributionBeneficiaryService->remove($distributionBeneficiary);
