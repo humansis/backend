@@ -214,11 +214,22 @@ class DistributionService
         }
     }
 
+    /**
+     * Distribution Type change number to string
+     * @param bool $type
+     * @return string
+     */
     public function guessTypeString(bool $type)
     {
         return ($type == 1) ? 'beneficiary' : 'household';
     }
 
+    /**
+     * Transform the object selectionCriteria to an array
+     *
+     * @param SelectionCriteria $selectionCriteria
+     * @return array
+     */
     public function getArrayOfCriteria(SelectionCriteria $selectionCriteria)
     {
         return [
@@ -273,10 +284,8 @@ class DistributionService
     }
 
     /**
-     * Archived a distribution
-     *
      * @param DistributionData $distribution
-     * @return DistributionData
+     * @return null|object
      */
     public function archived(DistributionData $distribution)
     {
@@ -290,6 +299,4 @@ class DistributionService
 
         return $distributionData;
     }
-
-
 }

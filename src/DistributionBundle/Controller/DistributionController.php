@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Controller;
 
+use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -47,7 +48,6 @@ class DistributionController extends Controller
         {
             $listReceivers = $this->get('distribution.distribution_service')
                 ->create($distributionArray['__country'], $distributionArray);
-            dump($listReceivers);
         }
         catch (\Exception $exception)
         {
@@ -94,6 +94,23 @@ class DistributionController extends Controller
             );
 
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Remove("/distributions/{id}/beneficiary", name="add_beneficiary_in_distribution")
+     *
+     * @param Request $request
+     * @param DistributionBeneficiary $distributionBeneficiary
+     * @return Response
+     */
+    public function removeBeneficiaryAction(Request $request, DistributionBeneficiary $distributionBeneficiary)
+    {
+        $data = $request->request->all();
+        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        $return = $distributionBeneficiaryService->remove($distributionBeneficiary);
+
+        return new Response(json_encode($return));
     }
 
 

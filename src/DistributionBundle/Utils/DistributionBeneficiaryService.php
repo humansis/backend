@@ -68,5 +68,17 @@ class DistributionBeneficiaryService
 
         return $distributionBeneficiary;
     }
+
+    /**
+     * @param DistributionBeneficiary $distributionBeneficiary
+     * @return bool
+     */
+    public function remove(DistributionBeneficiary $distributionBeneficiary)
+    {
+        $this->em->remove($distributionBeneficiary);
+        $this->em->flush();
+
+        return true;
+    }
     
 }
