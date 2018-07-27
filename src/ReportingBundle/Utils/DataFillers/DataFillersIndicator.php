@@ -15,6 +15,9 @@ class DataFillersIndicator
         $this->em = $em;   
     }
 
+    /**
+     * Open and parse csv before return it
+     */
     public function getCsv(string $csvFile)
     {  
         //get the content of csv
@@ -24,7 +27,10 @@ class DataFillersIndicator
     }
 
 
-
+    /**
+     * Call function to parse CSV 
+     * And add data in the database
+     */
     public function fillIndicator() 
     {
         $filename = "/var/www/html/julie/BMS/bms_api/src/ReportingBundle/Resources/data/CSV/reportingReference.csv";

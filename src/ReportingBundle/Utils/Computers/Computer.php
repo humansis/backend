@@ -14,13 +14,19 @@ use Doctrine\ORM\EntityManager;
 class Computer implements ComputerInterface {
 
     private $em;
+    private $project;
 
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, ProjectDataRetrievers $project)
     {
         $this->em = $em; 
+        $this->project = $project;
     }
 
+    /**
+     * Search in all data retrievers if the code exists
+     * Call the good function after find it
+     */
     public function compute(IndicatorInterface $indicator , array $filters = []) 
     {
         $filters['__'] = [
@@ -46,9 +52,9 @@ class Computer implements ComputerInterface {
 
         if(preg_match("#^BMS_D#", $indicator->getCode())) 
         {
-            if(is_callable(array(new DistributionDataRetrievers($this->em), $indicator->getCode())))
+            if(is_callable(array(new DistributionDataRetrievers($this->em, $this->project), $indicator->getCode())))
             {
-                return call_user_func_array([new DistributionDataRetrievers($this->em), $indicator->getCode()], [$filters]);
+                return call_user_func_array([new DistributionDataRetrievers($this->em, $this->project), $indicator->getCode()], [$filters]);
             }
         }
     }

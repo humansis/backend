@@ -61,6 +61,8 @@ doctrine:
         dql:
             string_functions:
                  soundex: DoctrineExtensions\Query\Mysql\Soundex
+                 date_format: DoctrineExtensions\Query\Mysql\DateFormat
+                 timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
 
 # Swiftmailer Configuration
 swiftmailer:
