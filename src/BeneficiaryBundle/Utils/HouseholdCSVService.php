@@ -106,7 +106,7 @@ class HouseholdCSVService
         // Get the list of households from csv with their beneficiaries
         if (1 === $step)
         {
-            $listHouseholdsArray = $this->mapper->getListHouseholdArray($sheetArray, $countryIso3);
+            $listHouseholdsArray = $this->mapper->fromCSVToArray($sheetArray, $countryIso3);
             return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $step, $token);
         }
         else

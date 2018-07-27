@@ -7,6 +7,7 @@ namespace DistributionBundle\Utils;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\ExportCSVService;
+use BeneficiaryBundle\Utils\Mapper;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -22,22 +23,27 @@ class DistributionCSVService
     private $exportCSVService;
     /** @var ContainerInterface $container */
     private $container;
+    /** @var Mapper $mapper */
+    private $mapper;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         ExportCSVService $exportCSVService,
-        ContainerInterface $container
+        ContainerInterface $container,
+        Mapper $mapper
     )
     {
         $this->em = $entityManager;
         $this->exportCSVService = $exportCSVService;
         $this->container = $container;
+        $this->mapper = $mapper;
     }
 
     /**
      * @param $countryISO3
      * @param DistributionData $distributionData
      * @return array
+     * @throws \Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
@@ -45,7 +51,7 @@ class DistributionCSVService
     {
         $spreadsheet = $this->exportCSVService->buildFile($countryISO3);
 
-        $spreadsheet = $this->buildFile($spreadsheet, $distributionData);
+        $spreadsheet = $this->buildFile($countryISO3, $spreadsheet, $distributionData);
 
         $writer = new Csv($spreadsheet);
 
@@ -61,26 +67,22 @@ class DistributionCSVService
     }
 
     /**
+     * @param $countryISO3
      * @param Spreadsheet $spreadsheet
      * @param DistributionData $distributionData
      * @return Spreadsheet
+     * @throws \Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    public function buildFile(Spreadsheet $spreadsheet, DistributionData $distributionData)
+    public function buildFile($countryISO3, Spreadsheet $spreadsheet, DistributionData $distributionData)
     {
         $receivers = $this->buildDataBeneficiary($distributionData);
         $worksheet = $spreadsheet->getActiveSheet();
-        foreach ($receivers as $receiver)
-        {
-            $this->addReceiversData($worksheet, $receiver);
-        }
+
+        $this->mapper->fromHouseholdToCSV($worksheet, $receivers, $countryISO3);
+
         dump($worksheet->toArray(true, null, null, null));
         return $spreadsheet;
-    }
-
-    public function addReceiversData(Worksheet &$worksheet, Household $household)
-    {
-
     }
 
     /**

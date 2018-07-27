@@ -5,8 +5,10 @@ namespace BeneficiaryBundle\Utils;
 
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Mapper
 {
@@ -78,10 +80,67 @@ class Mapper
      * @return array
      * @throws \Exception
      */
-    public function getListHouseholdArray(array $sheetArray, $countryIso3)
+    public function fromCSVToArray(array $sheetArray, $countryIso3)
     {
         // Get the mapping for the current country
         $mappingCSV = $this->loadMappingCSVOfCountry($countryIso3);
+        $listHouseholdArray = [];
+        $householdArray = null;
+        $rowHeader = null;
+        $formattedHouseholdArray = null;
+
+        foreach ($sheetArray as $indexRow => $row)
+        {
+            if ($this->indexRowHeader === $indexRow)
+                $rowHeader = $row;
+            if ($indexRow < $this->first_row)
+                continue;
+
+            // Load the household array for the current row
+            try
+            {
+                $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $row, $rowHeader);
+            }
+            catch (\Exception $exception)
+            {
+                throw new \Exception("Your pattern file is not correct. Please used the last template of your country.");
+            }
+            // Check if it's a new household or just a new beneficiary in the current row
+            if ($formattedHouseholdArray["address_street"] !== null)
+            {
+                if (null !== $householdArray)
+                {
+                    $listHouseholdArray[] = $householdArray;
+                }
+                $householdArray = $formattedHouseholdArray;
+            }
+            else
+            {
+                $householdArray["beneficiaries"][] = current($formattedHouseholdArray["beneficiaries"]);
+            }
+        }
+
+        if (null !== $formattedHouseholdArray)
+        {
+            $listHouseholdArray[] = $householdArray;
+        }
+
+        return $listHouseholdArray;
+    }
+
+
+    /**
+     * Get the list of households with their beneficiaries
+     * @param array $sheetArray
+     * @param $countryIso3
+     * @return array
+     * @throws \Exception
+     */
+    public function fromHouseholdToCSV(Worksheet &$worksheet, array $listHouseholds, $countryIso3)
+    {
+        // Get the mapping for the current country
+        $mappingCSV = $this->loadMappingCSVOfCountry($countryIso3);
+        dump($mappingCSV);
         $listHouseholdArray = [];
         $householdArray = null;
         $rowHeader = null;
