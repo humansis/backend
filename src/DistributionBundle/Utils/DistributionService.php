@@ -82,7 +82,7 @@ class DistributionService
         }
         catch (\Exception $exception)
         {
-            throw new \Exception("Your class Retriever is malformed.");
+            throw new \Exception("Your class Retriever is undefined or malformed.");
         }
     }
 
