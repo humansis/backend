@@ -4,8 +4,9 @@ namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Utils\Distribution\DefaultRetriever;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Utils\Retriever\DefaultRetriever;
+use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use DoctrineExtensions\Query\Mysql\Date;
 use JMS\Serializer\Serializer;
@@ -41,6 +42,21 @@ class DistributionService
     /** @var CriteriaDistributionService $criteriaDistributionService */
     private $criteriaDistributionService;
 
+    /** @var AbstractRetriever $retriever */
+    private $retriever;
+
+    /**
+     * DistributionService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param Serializer $serializer
+     * @param ValidatorInterface $validator
+     * @param LocationService $locationService
+     * @param CommodityService $commodityService
+     * @param ConfigurationLoader $configurationLoader
+     * @param CriteriaDistributionService $criteriaDistributionService
+     * @param string $classRetrieverString
+     * @throws \Exception
+     */
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
@@ -48,7 +64,8 @@ class DistributionService
         LocationService $locationService,
         CommodityService $commodityService,
         ConfigurationLoader $configurationLoader,
-        CriteriaDistributionService $criteriaDistributionService
+        CriteriaDistributionService $criteriaDistributionService,
+        string $classRetrieverString
     )
     {
         $this->em = $entityManager;
@@ -58,6 +75,15 @@ class DistributionService
         $this->commodityService = $commodityService;
         $this->configurationLoader = $configurationLoader;
         $this->criteriaDistributionService = $criteriaDistributionService;
+        try
+        {
+            $class = new \ReflectionClass($classRetrieverString);
+            $this->retriever = $class->newInstanceArgs([$this->em]);
+        }
+        catch (\Exception $exception)
+        {
+            throw new \Exception("Your class Retriever is malformed.");
+        }
     }
 
     /**
@@ -127,14 +153,13 @@ class DistributionService
      */
     public function guessBeneficiaries($countryISO3, DistributionData $distributionData, array $criteria)
     {
-        $defaultRetriever = new DefaultRetriever($this->em);
         $criteriaArray = [];
         foreach ($criteria as $selectionCriterion)
         {
             $criteriaArray[] = $this->getArrayOfCriteria($selectionCriterion);
         }
 
-        return $defaultRetriever->getReceivers(
+        return $this->retriever->getReceivers(
             $countryISO3,
             $this->guessTypeString($distributionData->getType()),
             $criteriaArray,
