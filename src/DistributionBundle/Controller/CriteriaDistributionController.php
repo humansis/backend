@@ -75,7 +75,6 @@ class CriteriaDistributionController extends Controller
         }
         catch (\Exception $exception)
         {
-            dump($exception);
             return new Response($exception->getMessage(), 500);
         }
 
