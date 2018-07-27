@@ -4,6 +4,8 @@
 
 **Distribution type** : 0 is for Household, 1 for Beneficiary
 
+For **vulnerabilityCriteria** : true or false in 'condition_string' (either the beneficiary has the vulnerability or not)
+
 ## Configuration
 
 ### Config.yml
