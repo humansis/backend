@@ -10,6 +10,7 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
@@ -131,20 +132,21 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        
+
         $projects = $this->em->getRepository(Project::class)->findAll();
         if (empty($projects))
         {
             print_r("There is no project inside your database");
             return false;
         }
-        
-        $vulnerabilityCriterion =  $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
+
+        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
             "fieldString" => "disabled"
         ]);
         $beneficiaries = $this->body["beneficiaries"];
         $vulnerabilityId = $vulnerabilityCriterion->getId();
-        foreach($beneficiaries as $index => $b){
+        foreach ($beneficiaries as $index => $b)
+        {
             $this->body["beneficiaries"][$index]["vulnerability_criteria"] = [["id" => $vulnerabilityId]];
         }
 
@@ -155,7 +157,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         ]);
         $country_specific_answers = $this->body["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
-        foreach($country_specific_answers as $index => $c){
+        foreach ($country_specific_answers as $index => $c)
+        {
             $this->body["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
         }
 
@@ -310,12 +313,13 @@ class HouseholdControllerTest extends BMSServiceTestCase
             }
         }
 
-        $vulnerabilityCriterion =  $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
+        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
             "fieldString" => "disabled"
         ]);
         $beneficiaries = $this->body["beneficiaries"];
         $vulnerabilityId = $vulnerabilityCriterion->getId();
-        foreach($beneficiaries as $index => $b){
+        foreach ($beneficiaries as $index => $b)
+        {
             $this->body["beneficiaries"][$index]["vulnerability_criteria"] = [["id" => $vulnerabilityId]];
         }
 
@@ -326,7 +330,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         ]);
         $country_specific_answers = $this->body["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
-        foreach($country_specific_answers as $index => $c){
+        foreach ($country_specific_answers as $index => $c)
+        {
             $this->body["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
         }
 
@@ -481,6 +486,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 {
                     $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
                     $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+                    $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
+                    if ($profile instanceof Profile)
+                        $this->em->remove($profile);
                     foreach ($phones as $phone)
                     {
                         $this->em->remove($phone);

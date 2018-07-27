@@ -69,7 +69,7 @@ class DistributionData
     private $project;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\SelectionCriteria", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\SelectionCriteria", mappedBy="distributionData")
      *
      * @Groups({"FullDistribution"})
      */
@@ -106,6 +106,11 @@ class DistributionData
      * @Groups({"FullDistribution"})
      */
     private $type;
+
+    /**
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="distributionData")
+     */
+    private $commodities;
 
 
     /**
@@ -345,23 +350,71 @@ class DistributionData
     }
 
     /**
-     * Set selectionCriteria.
+     * Add commodity.
      *
-     * @param \DistributionBundle\Entity\SelectionCriteria|null $selectionCriteria
+     * @param \DistributionBundle\Entity\Commodity $commodity
      *
      * @return DistributionData
      */
-    public function setSelectionCriteria(\DistributionBundle\Entity\SelectionCriteria $selectionCriteria = null)
+    public function addCommodity(\DistributionBundle\Entity\Commodity $commodity)
     {
-        $this->selectionCriteria = $selectionCriteria;
+        $this->commodities[] = $commodity;
 
         return $this;
     }
 
     /**
+     * Remove commodity.
+     *
+     * @param \DistributionBundle\Entity\Commodity $commodity
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeCommodity(\DistributionBundle\Entity\Commodity $commodity)
+    {
+        return $this->commodities->removeElement($commodity);
+    }
+
+    /**
+     * Get commodities.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCommodities()
+    {
+        return $this->commodities;
+    }
+
+    /**
+     * Add selectionCriterion.
+     *
+     * @param \DistributionBundle\Entity\SelectionCriteria $selectionCriterion
+     *
+     * @return DistributionData
+     */
+    public function addSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
+    {
+        $this->selectionCriteria[] = $selectionCriterion;
+
+        return $this;
+    }
+
+    /**
+     * Remove selectionCriterion.
+     *
+     * @param \DistributionBundle\Entity\SelectionCriteria $selectionCriterion
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
+    {
+        return $this->selectionCriteria->removeElement($selectionCriterion);
+    }
+
+    /**
      * Get selectionCriteria.
      *
-     * @return \DistributionBundle\Entity\SelectionCriteria|null
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getSelectionCriteria()
     {

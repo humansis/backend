@@ -35,7 +35,7 @@ class SectorFixtures extends Fixture
     {
         foreach ($this->data as $datum)
         {
-            $sector = $manager->getRepository(Sector::class)->findBy([
+            $sector = $manager->getRepository(Sector::class)->findOneBy([
                 "name" => $datum[0]
             ]);
             if (!$sector instanceof Sector)

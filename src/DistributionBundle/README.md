@@ -1,10 +1,21 @@
 # DistributionBundle
 
+## Definition
+
+**Distribution type** : 0 is for Household, 1 for Beneficiary
+
+For **vulnerabilityCriteria** : true or false in 'condition_string' (either the beneficiary has the vulnerability or not)
+
 ## Configuration
 
 ### Config.yml
 
-Example of configuration.
+#### Example of configuration.
+
+**retriever** : You must defined a retriever class which implement the AbstractRetriever of DistributionBundle.
+In this class, you can define some preFinder function to reformat your data between the request and the SQL execution.
+Please specified the full name of the class (with namespace).
+
 Inside 'criteria', you must defined every criteria that can be used to determined if a person should be a beneficiary.
 **Model** => {"**key**" : "**type**"}
 
@@ -12,6 +23,7 @@ Type : **text**, **number**, **bool**, **date** or **entity name (with namespace
 
 ```yaml
 distribution:
+    retriever: BeneficiaryBundle\Utils\Distribution\DefaultRetriever
     criteria: {
         gender: boolean,
         dateOfBirth: date,
@@ -104,7 +116,7 @@ OR 'beneficiary' (to send distribution to a specific beneficiary)
     - **field_string** : name of a column of Beneficiary table or null 
     - **condition_string** : '=', '<', '>', '<=', '>=', '!='. It's the operator used for compare the wanted value with the value in database
     - **value_string** : value to be compare with the database column
-    - **id_field** : *optional* '{id}' (id of the foreign key)
+    - **id** : *optional* '{id}' (id of the foreign key)
     
     
 Example :
@@ -124,8 +136,8 @@ Example :
       "table_string": "vulnerabilityCriteria",
       "kind_beneficiary": "beneficiary",
       "field_string": null,
-      "condition_string": "=",
-      "value_string": "saluut",
+      "condition_string": true,
+      "value_string": null,
       "id_field": 1
     },
     {
@@ -153,8 +165,6 @@ Example :
 
 - **distribution_type** : 'household' (for send distribution to every beneficiaries of a household)
 OR 'beneficiary' (to send distribution to a specific beneficiary)
-- **kind_beneficiary** : 'beneficiary' (for send distribution to every beneficiaries of a household)
-OR 'dependent' (to send distribution to a specific beneficiary) OR 'null' (both)
 - **criteria** : list of criterion :
     - **field** : name of a column of Beneficiary table or 'idCountrySpecific' or 'idVulnerabilityCriterion'
     - **operator** : '=', '<', '>', '<=', '>='. It's the operator used for compare the wanted value with the value in database
@@ -166,11 +176,9 @@ Example :
 ```json
 {
   "distribution_type": "beneficiary",
-  "kind_beneficiary": "beneficiary",
   "criteria": [
     {
       "table_string": "countrySpecific",
-      "kind_beneficiary": "beneficiary",
       "field_string": "",
       "condition_string": "=",
       "value_string": 1,
@@ -178,22 +186,19 @@ Example :
     },
     {
       "table_string": "vulnerabilityCriteria",
-      "kind_beneficiary": "beneficiary",
-      "field_string": "nutritional issues",
-      "condition_string": "=",
-      "value_string": "saluut",
+      "field_string": null,
+      "condition_string": false,
+      "value_string": null,
       "id_field": 1
     },
     {
       "table_string": "default",
-      "kind_beneficiary": "beneficiary",
       "field_string": "gender",
       "condition_string": "=",
       "value_string": 0
     },
     {
       "table_string": "default",
-      "kind_beneficiary": "beneficiary",
       "field_string": "dateOfBirth",
       "condition_string": "<",
       "value_string": "1975-11-30"
@@ -212,20 +217,44 @@ PUT(/distributions)
 
 ```json
 {
-    "name": "example name",
-    "updated_on": "2018-04-01 11:20:13",
-    "location": 
+  "name": "example name",
+  "type": 0,
+  "updated_on": "2018-04-01 11:20:13",
+  "project": {
+    "id": 1
+  },
+  "location": {
+    "country_iso3": "KHM",
+    "adm1": "ADMIN FAKED",
+    "adm2": "ADMIN FAKED",
+    "adm3": "ADMIN FAKED",
+    "adm4": "ADMIN FAKED"
+  },
+  "selection_criteria": [
     {
-        "id":2
+      "table_string": "default",
+      "kind_beneficiary": "beneficiary",
+      "field_string": "gender",
+      "condition_string": "=",
+      "value_string": 0
     },
-    "project":  
     {
-        "id":1
-    },
-    "selection_criteria": 
-    {
-        "id":1
+      "table_string": "default",
+      "kind_beneficiary": "beneficiary",
+      "field_string": "dateOfBirth",
+      "condition_string": "=",
+      "value_string": "1975-11-30"
     }
+    ],
+  "commodities": [
+    {
+      "modality_type": {
+        "id": 1
+      },
+      "unit": "kg",
+      "value": 10
+    }
+  ]
 }
 ```
 

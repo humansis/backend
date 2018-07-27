@@ -25,6 +25,9 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('criteria')
                     ->scalarPrototype()->end()
                 ->end()
+                ->scalarNode('retriever')
+                    ->defaultValue('')
+                ->end()
             ->end();
 
         return $treeBuilder;

@@ -141,6 +141,7 @@ nelmio_cors:
             hosts: ['^api\.']
 
 distribution:
+    retriever: BeneficiaryBundle\Utils\Distribution\DefaultRetriever
     criteria: {
         gender: boolean,
         dateOfBirth: date,

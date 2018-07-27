@@ -4,8 +4,11 @@
 namespace Tests\DistributionBundle\Controller;
 
 
+use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\Location;
+use DistributionBundle\Entity\ModalityType;
+use DistributionBundle\Entity\SelectionCriteria;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
@@ -29,14 +32,19 @@ class DistributionControllerTest extends BMSServiceTestCase
             "adm3" => "ADMIN FAKED",
             "adm4" => "ADMIN FAKED"
         ],
-        "selection_criteria" => [
-            "table_string" => "TEST UNIT_TEST",
-            "field_string" => "TEST UNIT_TEST FAKED",
-            "value_string" => "TEST UNIT_TEST FAKED",
-            "condition_string" => "TEST UNIT_TEST FAKED",
-            "kind_beneficiary" => "TEST UNIT_TEST FAKED",
-            "field_id" => "TEST UNIT_TEST FAKED"
-        ]
+        "selection_criteria" => [[
+            "table_string" => "default",
+            "field_string" => "gender",
+            "value_string" => "0",
+            "condition_string" => "=",
+            "kind_beneficiary" => "beneficiary",
+            "field_id" => null
+        ]],
+        "commodities" => [[
+            "unit" => "PHPUNIT TEST",
+            "value" => 999999999,
+            "modality_type" => []
+        ]]
     ];
 
 
@@ -71,18 +79,32 @@ class DistributionControllerTest extends BMSServiceTestCase
         }
         $this->body['project']['id'] = current($projects)->getId();
 
-        $crawler = $this->client->request('PUT', '/api/wsse/distributions', $this->body);
-        $distribution = json_decode($this->client->getResponse()->getContent(), true);
+        $modalityTypes = $this->em->getRepository(ModalityType::class)->findAll();
+        if (empty($modalityTypes))
+        {
+            print_r("\nThere is no modality type inside the database\n");
+            return false;
+        }
+        $this->body['commodities'][0]['modality_type']['id'] = current($modalityTypes)->getId();
+
+        $crawler = $this->client->request('PUT', '/api/wsse/distributions', $this->body, [], ['HTTP_COUNTRY' => 'KHM']);
+        $return = json_decode($this->client->getResponse()->getContent(), true);
+
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
-            $this->assertArrayHasKey('id', $distribution);
-            $this->assertArrayHasKey('name', $distribution);
-            $this->assertSame($distribution['name'], $this->namefullname);
-            $this->assertArrayHasKey('updated_on', $distribution);
-            $this->assertArrayHasKey('location', $distribution);
-            $this->assertArrayHasKey('project', $distribution);
-            $this->assertArrayHasKey('selection_criteria', $distribution);
-            $this->assertArrayHasKey('validated', $distribution);
+        $this->assertArrayHasKey('distribution', $return);
+        $this->assertArrayHasKey('data', $return);
+
+        $distribution = $return['distribution'];
+
+        $this->assertArrayHasKey('id', $distribution);
+        $this->assertArrayHasKey('name', $distribution);
+        $this->assertSame($distribution['name'], $this->namefullname);
+        $this->assertArrayHasKey('updated_on', $distribution);
+        $this->assertArrayHasKey('location', $distribution);
+        $this->assertArrayHasKey('project', $distribution);
+        $this->assertArrayHasKey('selection_criteria', $distribution);
+        $this->assertArrayHasKey('validated', $distribution);
 
         $location = $this->em->getRepository(Location::class)->findOneByAdm1("ADMIN FAKED");
         if ($location instanceof Location)
@@ -90,9 +112,22 @@ class DistributionControllerTest extends BMSServiceTestCase
             $this->em->remove($location);
         }
 
+        $commodity = $this->em->getRepository(Commodity::class)->findOneByUnit("PHPUNIT TEST");
+        if ($commodity instanceof Commodity)
+        {
+            $this->em->remove($commodity);
+        }
+
         $distribution = $this->em->getRepository(DistributionData::class)->find($distribution['id']);
         if ($distribution instanceof DistributionData)
         {
+
+            $selectionCriteria = $this->em->getRepository(SelectionCriteria::class)->findByDistributionData($distribution);
+            foreach ($selectionCriteria as $selectionCriterion)
+            {
+                $this->em->remove($selectionCriterion);
+
+            }
             $this->em->remove($distribution);
         }
 
