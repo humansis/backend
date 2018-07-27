@@ -26,6 +26,7 @@ class DistributionExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
+        $container->setParameter('distribution.retriever',    $config['retriever']);
         $container->setParameter('distribution.criteria',    $config['criteria']);
     }
 }
