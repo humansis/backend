@@ -263,7 +263,7 @@ class DistributionDataRetrievers
                         $percentValueUsed = $percentValueUsed + $percent;
                         $result = [
                             'name' =>$findDistribution->getName(),
-                            'value' => $distribution["value"].' ('.$percent.'%)',
+                            'value' => $percent,
                             'date' => $distribution['date']
                         ]; 
                         array_push($projectDistributionValue, $result);
@@ -274,7 +274,7 @@ class DistributionDataRetrievers
             $valueProjectUsed = ($findProject->getValue() * ($percentValueUsed/100));
             $result = [
                 'name' => 'Value not used',
-                'value' => $valueProjectUsed.' ('.$percentValueUsed.'%)',
+                'value' => $percentValueUsed,
                 'date' => $project['date']
             ];
             array_push($projectDistributionValue, $result);
