@@ -19,8 +19,31 @@ class ReportingController extends Controller
 {
 
      /**
-      * Send data formatted corresponding to code to display it in front
+     * Send data formatted corresponding to code to display it in front
      * @Rest\Post("/indicators/serve/{id}")
+     * 
+     * @SWG\Tag(name="Reporting")
+     * 
+     * @SWG\Parameter(
+     *     name="Project",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=ReportingIndicator::class)
+     * )
+     * 
+     * @SWG\Response(
+     *      response=200,
+     *          description="Get data reporting",
+     *          @SWG\Schema(
+     *              type="array",
+     *              @SWG\Items(ref=@Model(type=ReportingIndicator::class)) 
+     *          )   
+     * )
+     * 
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      * 
      * @param ReportingIndicator $indicator
      * @param Request $request
@@ -47,6 +70,21 @@ class ReportingController extends Controller
      /**
       * Send list of all indicators to display in front
      * @Rest\Post("/indicators")
+     * 
+     *@SWG\Tag(name="Reporting")
+     * 
+     * @SWG\Response(
+     *      response=200,
+     *          description="Get code reporting",
+     *          @SWG\Schema(
+     *              type="array"
+     *          )   
+     * )
+     * 
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      * 
      * @param Request $request
      * @return Response
