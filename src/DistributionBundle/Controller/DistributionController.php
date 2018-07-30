@@ -23,6 +23,14 @@ class DistributionController extends Controller
     /**
      * @Rest\Get("/distributions/{id}/random")
      *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Random beneficiaries",
+     *     @Model(type=DistributionData::class)
+     * )
+     *
      * @param DistributionData $distributionData
      * @return Response
      */
@@ -48,6 +56,14 @@ class DistributionController extends Controller
 
     /**
      * @Rest\Get("/distributions/{id}/validate")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Distribution validated",
+     *     @Model(type=DistributionData::class)
+     * )
      *
      * @param DistributionData $distributionData
      * @return Response
@@ -124,6 +140,14 @@ class DistributionController extends Controller
     /**
      * @Rest\Put("/distributions/{id}/beneficiary", name="add_beneficiary_in_distribution")
      *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="The object distribution beneficiary added",
+     *     @Model(type=DistributionBeneficiary::class)
+     * )
+     *
      * @param Request $request
      * @param DistributionData $distributionData
      * @return Response
@@ -152,6 +176,13 @@ class DistributionController extends Controller
 
     /**
      * @Rest\Delete("/distributions/{id}/beneficiary", name="remove_beneficiary_in_distribution")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return if the beneficiary has been remove"
+     * )
      *
      * @param DistributionBeneficiary $distributionBeneficiary
      * @return Response
