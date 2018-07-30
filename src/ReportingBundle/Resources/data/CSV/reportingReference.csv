@@ -1,12 +1,11 @@
-Total Households,BMS_Country_TH,,courbe
-Total Beneficiaries,BMS_Country_TB,,courbe
-Active Projects,BMS_Country_AP,,courbe
-Total Funding,BMS_Country_TF,,courbe
-Total Transations Completed,BMS_Country_TTC,,courbe
-Enrolled Beneficiaries ,BMS_Country_EB,,courbe
-Total Number of Distributions,BMS_Country_TND,,courbe
-Donors,BMS_Project_D,,nombre
-Household Served,BMS_Project_HS,,nombre
+Total Households,BMS_Country_TH,,line
+Active Projects,BMS_Country_AP,,line
+Total Funding,BMS_Country_TF,,line
+Total Transations Completed,BMS_Country_TTC,,line
+Enrolled Beneficiaries ,BMS_Country_EB,,line
+Total Number of Distributions,BMS_Country_TND,,line
+Donors,BMS_Project_D,,number
+Household Served,BMS_Project_HS,,number
 Number Men and Women,BMS_Project_NMW,,pie
 Age Breakdown,BMS_Project_AB,,pie
 Percentages of Vulnerabilities Served,BMS_Project_PVS,,pie
@@ -14,10 +13,10 @@ Number of Men,BMSU_Project_NM,,
 Number of Women,BMSU_Project_NW,,
 Total of Vulnerabilities  Served,BMSU_Project_TVS,,
 Total of Vulnerabilities Served by Vulnerabilities,BMSU_Project_TVSV,,
-Number of Enrolled Beneficiaries,BMS_Distribution_NEB,,nombre
-Total Transaction Value,BMS_Distribution_TTV,,card
-Percentage of Project Value,BMS_Distribution_PPV,,pie
-Modality,BMS_Distribution_M,,nombre
+Number of Enrolled Beneficiaries,BMS_Distribution_NEB,,number
+Total Distribution Value,BMS_Distribution_TDV,,number
+Percentage of Project Value,BMS_Distribution_PPV,,grid
+Modality,BMS_Distribution_M,,number
 Number Men and Women,BMS_Distribution_NMW,,pie
 Age Breakdown,BMS_Distribution_AB,,pie
 Percentages of Vulnerabilities Served,BMS_Distribution_PVS,,pie
@@ -25,3 +24,4 @@ Number of Men,BMSU_Distribution_NM,,
 Number of Women,BMSU_Distribution_NW,,
 Total of Vulnerabilities  Served,BMSU_Distribution_TVS,,
 Total of Vulnerabilities Served by Vulnerabilities,BMSU_Distribution_TVSV,,
+Project Value,BMSU_Project_PV,,

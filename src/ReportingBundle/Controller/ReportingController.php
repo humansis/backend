@@ -19,8 +19,31 @@ class ReportingController extends Controller
 {
 
      /**
-      * Send data formatted corresponding to code to display it in front
+     * Send data formatted corresponding to code to display it in front
      * @Rest\Post("/indicators/serve/{id}")
+     * 
+     * @SWG\Tag(name="Reporting")
+     * 
+     * @SWG\Parameter(
+     *     name="Project",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=ReportingIndicator::class)
+     * )
+     * 
+     * @SWG\Response(
+     *      response=200,
+     *          description="Get data reporting",
+     *          @SWG\Schema(
+     *              type="array",
+     *              @SWG\Items(ref=@Model(type=ReportingIndicator::class)) 
+     *          )   
+     * )
+     * 
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      * 
      * @param ReportingIndicator $indicator
      * @param Request $request
@@ -29,21 +52,36 @@ class ReportingController extends Controller
     public function serveAction(Request $request, ReportingIndicator $indicator)
     {
         $filters = $request->request->get('filters');
+        $contentJson = $request->request->all();
+        $filters['country'] = $contentJson['__country'];
+
         try {   
             $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
-            // $dataFormatted = $this->get('ra_reporting.formatter')->format($dataComputed, $indicator->getGraphique());
+            $dataFormatted = $this->get('reporting.formatter')->format($dataComputed, $indicator->getGraph());
         }
         catch (\Exception $e)
         {
             return new Response($e->getMessage(), $e->getCode() > 200 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
         }
-        return new Response($dataComputed, Response::HTTP_OK);   
+        return new Response($dataFormatted, Response::HTTP_OK);   
     }
 
 
      /**
       * Send list of all indicators to display in front
-     * @Rest\Get("/indicators")
+     * @Rest\Post("/indicators")
+     * 
+     *@SWG\Tag(name="Reporting")
+     * 
+     * @SWG\Response(
+     *      response=200,
+     *          description="Get code reporting",  
+     * )
+     * 
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      * 
      * @param Request $request
      * @return Response
@@ -51,7 +89,7 @@ class ReportingController extends Controller
     public function getAction(Request $request)
     {
         $indicatorFinded = [];
-        // $indicatorFinded = $this->get('ra_reporting.finder')->findIndicator();
+        $indicatorFinded = $this->get('reporting.finder')->findIndicator();
         $json = json_encode($indicatorFinded);
         return new Response($json, Response::HTTP_OK);
         

@@ -5,7 +5,6 @@ namespace ReportingBundle\Utils\DataFillers\Country;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Validator\Constraints\DateTime;
 
-use ReportingBundle\Utils\Model\IndicatorInterface;
 use ReportingBundle\Utils\DataFillers\DataFillers;
 use ReportingBundle\Entity\ReportingIndicator;
 use ReportingBundle\Entity\ReportingValue;
@@ -13,10 +12,9 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Location;
 use ReportingBundle\Entity\ReportingCountry;
-use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use ProjectBundle\Entity\Project;
-use DistributionBundle\Entity\DistributionBeneficiary;
-
+use DistributionBundle\Entity\DistributionData;
+use \TransactionBundle\Entity\Transaction;
 
 class DataFillersCountry extends DataFillers
 {
@@ -80,46 +78,6 @@ class DataFillersCountry extends DataFillers
     }
 
     /**
-     * Fill in ReportingValue and ReportingCountry with total beneficiaries
-     */
-    public function BMS_Country_TB() {
-        $this->em->getConnection()->beginTransaction();
-        try {
-            $this->repository = $this->em->getRepository(Beneficiary::class);
-            $qb = $this->repository->createQueryBuilder('b')
-                                   ->leftjoin('b.household', 'h')
-                                   ->leftjoin('h.location', 'l')
-                                   ->select('count(b) AS value', 'l.countryIso3 AS country')
-                                   ->groupBy('country');
-            $results = $qb->getQuery()->getArrayResult();
-
-            $reference = $this->getReferenceId("BMS_Country_TB");
-            foreach ($results as $result) 
-            {
-                $new_value = new ReportingValue();
-                $new_value->setValue($result['value']);
-                $new_value->setUnity('beneficiary');
-                $new_value->setCreationDate(new \DateTime());
-
-                $this->em->persist($new_value);
-                $this->em->flush();
-
-                $new_reportingCountry = new ReportingCountry();
-                $new_reportingCountry->setIndicator($reference);
-                $new_reportingCountry->setValue($new_value);
-                $new_reportingCountry->setcountry($result['country']);
-
-                $this->em->persist($new_reportingCountry);
-                $this->em->flush();   
-            }
-            $this->em->getConnection()->commit();
-        }catch (Exception $e) {
-            $this->em->getConnection()->rollback();
-            throw $e;
-        }
-    }
-
-    /**
      * Fill in ReportingValue and ReportingCountry with active projects
      */
     public function BMS_Country_AP() {
@@ -127,7 +85,7 @@ class DataFillersCountry extends DataFillers
         try {
             $this->repository = $this->em->getRepository(Project::class);
             $qb = $this->repository->createQueryBuilder('p')
-                                   ->Where('p.endDate < CURRENT_DATE()')
+                                   ->where("DATE_FORMAT(p.endDate, '%Y-%m-%d') > CURRENT_DATE()")
                                    ->select('count(p) AS value', 'p.iso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
@@ -202,14 +160,13 @@ class DataFillersCountry extends DataFillers
     public function BMS_Country_EB() {
         $this->em->getConnection()->beginTransaction();
         try {
-            $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
-            $qb = $this->repository->createQueryBuilder('db')
-                                   ->leftjoin('db.projectBeneficiary', 'pb')
-                                   ->leftjoin('pb.project', 'p')
-                                   ->select('count(db.id) AS value', 'p.iso3 AS country')
+            $this->repository = $this->em->getRepository(Beneficiary::class);
+            $qb = $this->repository->createQueryBuilder('b')
+                                   ->leftjoin('b.household', 'h')
+                                   ->leftjoin('h.location', 'l')
+                                   ->select('count(b.id) AS value', 'l.countryIso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
-
             $reference = $this->getReferenceId("BMS_Country_EB");
             foreach ($results as $result) 
             {
@@ -242,11 +199,10 @@ class DataFillersCountry extends DataFillers
     public function BMS_Country_TND() {
         $this->em->getConnection()->beginTransaction();
         try {
-            $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
-            $qb = $this->repository->createQueryBuilder('db')
-                                   ->leftjoin('db.projectBeneficiary', 'pb')
-                                   ->leftjoin('pb.project', 'p')
-                                   ->select('count(db.distributionData) AS value', 'p.iso3 AS country')
+            $this->repository = $this->em->getRepository(DistributionData::class);
+            $qb = $this->repository->createQueryBuilder('dd')
+                                   ->leftjoin('dd.location', 'l')
+                                   ->select('count(dd.id) AS value', 'l.countryIso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMS_Country_TND");
@@ -264,6 +220,44 @@ class DataFillersCountry extends DataFillers
                 $new_reportingCountry->setIndicator($reference);
                 $new_reportingCountry->setValue($new_value);
                 $new_reportingCountry->setcountry($result['country']);
+
+                $this->em->persist($new_reportingCountry);
+                $this->em->flush();   
+            }
+            $this->em->getConnection()->commit();
+        }catch (Exception $e) {
+            $this->em->getConnection()->rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * TODO: Add group by country
+     * Fill in ReportingValue and ReportingCountry with the total of completed transactions
+     */
+    public function BMS_Country_TTC() {
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $this->repository = $this->em->getRepository(Transaction::class);
+            $qb = $this->repository->createQueryBuilder('t')
+                                   ->where ('t.pickupdate < CURRENT_DATE() ')
+                                   ->select('count(t.id) AS value');
+            $results = $qb->getQuery()->getArrayResult();
+            $reference = $this->getReferenceId("BMS_Country_TTC");
+            foreach ($results as $result) 
+            {
+                $new_value = new ReportingValue();
+                $new_value->setValue($result['value']);
+                $new_value->setUnity('transactions completed');
+                $new_value->setCreationDate(new \DateTime());
+
+                $this->em->persist($new_value);
+                $this->em->flush();
+
+                $new_reportingCountry = new ReportingCountry();
+                $new_reportingCountry->setIndicator($reference);
+                $new_reportingCountry->setValue($new_value);
+                $new_reportingCountry->setcountry('KHM');
 
                 $this->em->persist($new_reportingCountry);
                 $this->em->flush();   
