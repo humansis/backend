@@ -20,6 +20,8 @@ class DistributionData
     const TYPE_BENEFICIARY = 0;
     const TYPE_HOUSEHOLD = 1;
 
+    const NAME_HEADER_ID = "ID SYNC";
+
     /**
      * @var int
      *

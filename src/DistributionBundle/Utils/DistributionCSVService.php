@@ -7,14 +7,15 @@ namespace DistributionBundle\Utils;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\ExportCSVService;
-use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
 use BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use PhpOffice\PhpSpreadsheet\Writer\Csv as CsvWriter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use PhpOffice\PhpSpreadsheet\Reader\Csv as CsvReader;
 
 class DistributionCSVService
 {
@@ -53,7 +54,7 @@ class DistributionCSVService
         $spreadsheet = $this->exportCSVService->buildFile($countryISO3);
         $spreadsheet = $this->buildFile($countryISO3, $spreadsheet, $distributionData);
 
-        $writer = new Csv($spreadsheet);
+        $writer = new CsvWriter($spreadsheet);
 
         $dataPath = $this->container->getParameter('kernel.root_dir') . '/../var';
         $filename = $dataPath . '/pattern_household_' . $countryISO3 . '.csv';
@@ -64,6 +65,91 @@ class DistributionCSVService
         unlink($filename);
         $file = [$fileContent, 'export_distribution_' . $distributionData->getName() . '.csv'];
         return $file;
+    }
+
+    /**
+     * @param DistributionData $distributionData
+     * @param UploadedFile $uploadedFile
+     * @return bool
+     * @throws \Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    public function import(DistributionData $distributionData, UploadedFile $uploadedFile)
+    {
+        $reader = new CsvReader();
+        $reader->setDelimiter(",");
+        $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
+        $sheetArray = $worksheet->toArray(null, true, true, true);
+        $index = 1;
+        $columnIdSync = null;
+        while ($index < Household::firstRow)
+        {
+            if ($index === Household::indexRowHeader)
+                $columnIdSync = $this->findColumnId($sheetArray[$index]);
+            unset($sheetArray[$index]);
+            $index++;
+        }
+        $this->analyzeArray($distributionData, $sheetArray, $columnIdSync);
+
+        return true;
+    }
+
+    /**
+     * @param DistributionData $distributionData
+     * @param array $receiversArray
+     * @param $columnIdSync
+     * @throws \Exception
+     */
+    public function analyzeArray(DistributionData $distributionData, array $receiversArray, $columnIdSync)
+    {
+        /** @var DistributionData $distributionData */
+        $distributionData = $this->em->getRepository(DistributionData::class)->find($distributionData);
+        /** @var DistributionBeneficiary $distributionBeneficiary */
+        foreach ($distributionData->getDistributionBeneficiaries() as $distributionBeneficiary)
+        {
+            $isFound = false;
+            if (0 === $distributionData->getType())
+                $idFromDatabase = $distributionBeneficiary->getBeneficiary()->getHousehold()->getId();
+            elseif (1 === $distributionData->getType())
+                $idFromDatabase = $distributionBeneficiary->getBeneficiary()->getId();
+            else
+                throw new
+                \Exception("Error system : This type of distribution '{$distributionData->getType()}' is undefined.");
+            foreach ($receiversArray as $index => $receiver)
+            {
+                if (intval($receiver[$columnIdSync]) === $idFromDatabase)
+                {
+                    $isFound = true;
+                    continue;
+                }
+            }
+            if (!$isFound)
+            {
+                $this->em->remove($distributionBeneficiary);
+            }
+        }
+        $this->em->flush();
+    }
+
+    /**
+     * @param array $headerArray
+     * @return int|string
+     * @throws \Exception
+     */
+    public function findColumnId(array $headerArray)
+    {
+        if (empty($headerArray))
+            throw new \Exception("Your CSV is malformed.");
+
+        $nameHeaderSync = DistributionData::NAME_HEADER_ID;
+        foreach ($headerArray as $columnCSV => $nameHeader)
+        {
+            if ($nameHeaderSync === $nameHeader)
+                return $columnCSV;
+        }
+
+        throw new \Exception("Your file is malformed. The column '$nameHeader' was not found.");
     }
 
     /**

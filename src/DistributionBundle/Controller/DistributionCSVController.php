@@ -6,6 +6,7 @@ namespace DistributionBundle\Controller;
 
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Utils\DistributionCSVService;
+use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,14 +22,50 @@ class DistributionCSVController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      * @throws \Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function exportAction(Request $request, DistributionData $distributionData)
     {
         /** @var DistributionCSVService $distributionCSVService */
         $distributionCSVService = $this->get('distribution.distribution_csv_service');
-        $return = $distributionCSVService->export($request->request->get('__country'), $distributionData);
+        try
+        {
+            $return = $distributionCSVService->export($request->request->get('__country'), $distributionData);
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage(), 500);
+        }
+
+        return new Response(json_encode($return));
+    }
+
+    /**
+     * @Rest\Post("/distributions/{id}/import", name="import_csv")
+     *
+     * @param Request $request
+     * @param DistributionData $distributionData
+     * @return Response
+     * @throws \Exception
+     */
+    public function importAction(Request $request, DistributionData $distributionData)
+    {
+        if (!$request->files->has('file'))
+            return new Response("You must upload a file.", 500);
+        $file = $request->files->get('file');
+        /** @var DistributionCSVService $distributionCSVService */
+        $distributionCSVService = $this->get('distribution.distribution_csv_service');
+        try
+        {
+            $return = $distributionCSVService->import($distributionData, $file);
+        }
+        catch (Exception $e)
+        {
+            return new Response($e->getMessage(), 500);
+        }
+        catch (\PhpOffice\PhpSpreadsheet\Exception $e)
+        {
+            return new Response($e->getMessage(), 500);
+        }
 
         return new Response(json_encode($return));
     }

@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils\Mapper;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
+use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -99,7 +100,7 @@ class HouseholdToCSVMapper extends AbstractMapper
             $this->fieldBeneficiary($householdArrayCSV, $householdArray, $mapping);
             $householdsArrayCSV = array_merge($householdsArrayCSV, $householdArrayCSV);
         }
-        $householdsArrayCSV[1][$lastColumn] = "ID SYNCHRONISATION";
+        $householdsArrayCSV[1][$lastColumn] = DistributionData::NAME_HEADER_ID;
         $worksheet->fromArray($householdsArrayCSV, true, 'A1', true);
     }
 
