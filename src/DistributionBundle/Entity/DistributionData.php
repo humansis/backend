@@ -20,6 +20,8 @@ class DistributionData
     const TYPE_BENEFICIARY = 0;
     const TYPE_HOUSEHOLD = 1;
 
+    const NAME_HEADER_ID = "ID SYNC";
+
     /**
      * @var int
      *
@@ -63,7 +65,7 @@ class DistributionData
      * @var Project
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="distributions")
-     * 
+     *
      * @Groups({"FullDistribution"})
      */
     private $project;
@@ -112,6 +114,13 @@ class DistributionData
      */
     private $commodities;
 
+    /**
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="distributionData")
+     *
+     * @Groups({"FullDistribution"})
+     */
+    private $distributionBeneficiaries;
+
 
     /**
      * Constructor
@@ -119,6 +128,8 @@ class DistributionData
     public function __construct()
     {
         $this->reportingDistribution = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->selectionCriteria = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
         $this->setUpdatedOn(new \DateTime());
     }
 
@@ -169,6 +180,29 @@ class DistributionData
         return $this->name;
     }
 
+    /**
+     * Set updatedOn.
+     *
+     * @param \DateTime $updatedOn
+     *
+     * @return DistributionData
+     */
+    public function setUpdatedOn($updatedOn)
+    {
+        $this->updatedOn = $updatedOn;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedOn.
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedOn()
+    {
+        return $this->updatedOn;
+    }
 
     /**
      * Set archived.
@@ -216,6 +250,30 @@ class DistributionData
     public function getValidated()
     {
         return $this->validated;
+    }
+
+    /**
+     * Set type.
+     *
+     * @param int $type
+     *
+     * @return DistributionData
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type.
+     *
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**
@@ -267,36 +325,41 @@ class DistributionData
     }
 
     /**
-     * Set updatedOn.
+     * Add selectionCriterion.
      *
-     * @param \DateTime $updatedOn
+     * @param \DistributionBundle\Entity\SelectionCriteria $selectionCriterion
      *
      * @return DistributionData
      */
-    public function setUpdatedOn($updatedOn)
+    public function addSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
     {
-        $this->updatedOn = $updatedOn;
+        if (null === $this->selectionCriteria)
+            $this->selectionCriteria = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->selectionCriteria[] = $selectionCriterion;
+
         return $this;
     }
 
     /**
-     * Get updatedOn.
+     * Remove selectionCriterion.
      *
-     * @return \DateTime
+     * @param \DistributionBundle\Entity\SelectionCriteria $selectionCriterion
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function getUpdatedOn()
+    public function removeSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
     {
-        return $this->updatedOn;
+        return $this->selectionCriteria->removeElement($selectionCriterion);
     }
 
     /**
-     * Get reportingDistribution
+     * Get selectionCriteria.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getReportingDistribution()
+    public function getSelectionCriteria()
     {
-        return $this->reportingDistribution;
+        return $this->selectionCriteria;
     }
 
     /**
@@ -326,27 +389,13 @@ class DistributionData
     }
 
     /**
-     * Set type.
+     * Get reportingDistribution.
      *
-     * @param int $type
-     *
-     * @return DistributionData
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function setType($type)
+    public function getReportingDistribution()
     {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type.
-     *
-     * @return int
-     */
-    public function getType()
-    {
-        return $this->type;
+        return $this->reportingDistribution;
     }
 
     /**
@@ -386,38 +435,40 @@ class DistributionData
     }
 
     /**
-     * Add selectionCriterion.
+     * Add distributionBeneficiary.
      *
-     * @param \DistributionBundle\Entity\SelectionCriteria $selectionCriterion
+     * @param \DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary
      *
      * @return DistributionData
      */
-    public function addSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
+    public function addDistributionBeneficiary(\DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary)
     {
-        $this->selectionCriteria[] = $selectionCriterion;
+        if (null === $this->distributionBeneficiaries)
+            $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->distributionBeneficiaries[] = $distributionBeneficiary;
 
         return $this;
     }
 
     /**
-     * Remove selectionCriterion.
+     * Remove distributionBeneficiary.
      *
-     * @param \DistributionBundle\Entity\SelectionCriteria $selectionCriterion
+     * @param \DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
+    public function removeDistributionBeneficiary(\DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary)
     {
-        return $this->selectionCriteria->removeElement($selectionCriterion);
+        return $this->distributionBeneficiaries->removeElement($distributionBeneficiary);
     }
 
     /**
-     * Get selectionCriteria.
+     * Get distributionBeneficiaries.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSelectionCriteria()
+    public function getDistributionBeneficiaries()
     {
-        return $this->selectionCriteria;
+        return $this->distributionBeneficiaries;
     }
 }

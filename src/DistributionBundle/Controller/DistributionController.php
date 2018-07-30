@@ -2,6 +2,9 @@
 
 namespace DistributionBundle\Controller;
 
+use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Utils\DistributionBeneficiaryService;
+use DistributionBundle\Utils\DistributionService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +18,75 @@ use Swagger\Annotations as SWG;
 
 class DistributionController extends Controller
 {
+
+
+    /**
+     * @Rest\Get("/distributions/{id}/random")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Random beneficiaries",
+     *     @Model(type=DistributionData::class)
+     * )
+     *
+     * @param DistributionData $distributionData
+     * @return Response
+     */
+    public function getRandomBeneficiariesAction(DistributionData $distributionData)
+    {
+        /** @var DistributionService $distributionService */
+        $distributionService = $this->get('distribution.distribution_service');
+        $receivers = $distributionService->getRandomBeneficiaries($distributionData);
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $receivers,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                    "FullReceivers",
+                    "FullDistribution"
+                ])
+            );
+
+        return new Response($json);
+    }
+
+
+    /**
+     * @Rest\Get("/distributions/{id}/validate")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Distribution validated",
+     *     @Model(type=DistributionData::class)
+     * )
+     *
+     * @param DistributionData $distributionData
+     * @return Response
+     */
+    public function validateAction(DistributionData $distributionData)
+    {
+        /** @var DistributionService $distributionService */
+        $distributionService = $this->get('distribution.distribution_service');
+        $distributionData = $distributionService->validateDistribution($distributionData);
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $distributionData,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                    "FullReceivers",
+                    "FullDistribution"
+                ])
+            );
+
+        return new Response($json);
+    }
+
     /**
      * Create a distribution
      * @Rest\Put("/distributions", name="add_distribution")
@@ -56,10 +128,72 @@ class DistributionController extends Controller
             ->serialize(
                 $listReceivers,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullReceivers", "FullDistribution"])
+                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                    "FullReceivers",
+                    "FullDistribution"
+                ])
             );
 
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Put("/distributions/{id}/beneficiary", name="add_beneficiary_in_distribution")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="The object distribution beneficiary added",
+     *     @Model(type=DistributionBeneficiary::class)
+     * )
+     *
+     * @param Request $request
+     * @param DistributionData $distributionData
+     * @return Response
+     * @throws \Exception
+     */
+    public function addBeneficiaryAction(Request $request, DistributionData $distributionData)
+    {
+        $data = $request->request->all();
+        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiary($distributionData, $data);
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $distributionBeneficiary,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                    "FullDistributionBeneficiary",
+                    "FullDistribution",
+                    "FullBeneficiary"
+                ])
+            );
+
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Delete("/distributions/{id}/beneficiary", name="remove_beneficiary_in_distribution")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return if the beneficiary has been remove"
+     * )
+     *
+     * @param DistributionBeneficiary $distributionBeneficiary
+     * @return Response
+     */
+    public function removeBeneficiaryAction(DistributionBeneficiary $distributionBeneficiary)
+    {
+        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        $return = $distributionBeneficiaryService->remove($distributionBeneficiary);
+
+        return new Response(json_encode($return));
     }
 
 
@@ -106,7 +240,12 @@ class DistributionController extends Controller
      */
     public function getOneAction(DistributionData $DistributionData)
     {
-        $json = $this->get('jms_serializer')->serialize($DistributionData, 'json');
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $DistributionData,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullDistribution"])
+            );
 
         return new Response($json);
     }
@@ -210,7 +349,7 @@ class DistributionController extends Controller
      * @param Project $project
      * @return Response
      */
-    public function getDistributions(Project $project)
+    public function getDistributionsAction(Project $project)
     {
         try
         {

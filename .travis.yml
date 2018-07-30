@@ -45,4 +45,4 @@ script:
 
 # After a build, send email notification with the build results
 notifications:
-  email: lucas.reliefapps@gmail.com
+  email: null

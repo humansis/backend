@@ -3,8 +3,8 @@
 namespace DistributionBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * DistributionBeneficiary
@@ -20,20 +20,23 @@ class DistributionBeneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullDistributionBeneficiary", "FullDistribution"})
      */
     private $id;
 
     /**
      * @var DistributionData
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="distributionBeneficiaries")
+     * @Groups({"FullDistributionBeneficiary"})
      */
     private $distributionData;
 
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="distributionBeneficiary")
+     * @Groups({"FullDistributionBeneficiary", "FullDistribution"})
      */
     private $beneficiary;
 

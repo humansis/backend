@@ -4,12 +4,6 @@
 namespace BeneficiaryBundle\Utils;
 
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Model\ImportStatistic;
-use BeneficiaryBundle\Model\IncompleteLine;
 use BeneficiaryBundle\Utils\DataTreatment\AbstractTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\DuplicateTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\LessTreatment;
@@ -20,14 +14,12 @@ use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\LessVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
+use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 use ProjectBundle\Entity\Project;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpKernel\Kernel;
 
 class HouseholdCSVService
 {
@@ -38,8 +30,8 @@ class HouseholdCSVService
     /** @var HouseholdService $householdService */
     private $householdService;
 
-    /** @var Mapper $mapper */
-    private $mapper;
+    /** @var CSVToArrayMapper $CSVToArrayMapper */
+    private $CSVToArrayMapper;
 
     /** @var Container $container */
     private $container;
@@ -55,14 +47,14 @@ class HouseholdCSVService
         EntityManagerInterface $entityManager,
         HouseholdService $householdService,
         BeneficiaryService $beneficiaryService,
-        Mapper $mapper,
+        CSVToArrayMapper $CSVToArrayMapper,
         Container $container
     )
     {
         $this->em = $entityManager;
         $this->householdService = $householdService;
         $this->beneficiaryService = $beneficiaryService;
-        $this->mapper = $mapper;
+        $this->CSVToArrayMapper = $CSVToArrayMapper;
         $this->container = $container;
     }
 
@@ -106,7 +98,7 @@ class HouseholdCSVService
         // Get the list of households from csv with their beneficiaries
         if (1 === $step)
         {
-            $listHouseholdsArray = $this->mapper->getListHouseholdArray($sheetArray, $countryIso3);
+            $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $countryIso3);
             return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $step, $token);
         }
         else
