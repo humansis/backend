@@ -14,6 +14,24 @@ use ProjectBundle\Entity\Project;
  */
 class HouseholdRepository extends AbstractCriteriaRepository
 {
+
+    public function foundSimilarLevenshtein(string $stringToSearch, int $minimumTolerance)
+    {
+        $qb = $this->createQueryBuilder("hh");
+        $q = $qb->leftJoin("hh.beneficiaries", "b")
+            ->where("b.status = 1")
+            ->andWhere("
+                LEVENSHTEIN(
+                    CONCAT(hh.addressStreet, hh.addressNumber, hh.addressPostcode, b.givenName, b.familyName),
+                    :stringToSearch
+                ) < :minimumTolerance
+            ")
+            ->setParameter("stringToSearch", $stringToSearch)
+            ->setParameter("minimumTolerance", $minimumTolerance);
+
+        return $q->getQuery()->getResult();
+    }
+
     /**
      * Get all Household by country
      * Use $filters to add a offset and a limit. Default => offset = 0 and limit = 10
