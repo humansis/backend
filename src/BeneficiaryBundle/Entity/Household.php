@@ -24,6 +24,18 @@ class Household
     const firstColumnNonStatic = 'L';
 
     /**
+     * The row index of the header (with the name of country specifics)
+     * @var int
+     */
+    const indexRowHeader = 2;
+
+    /**
+     * First row with data
+     * @var int $first_row
+     */
+    const firstRow = 3;
+
+    /**
      * Mapping between fields and CSV columns
      */
     const MAPPING_CSV = [

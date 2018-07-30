@@ -51,7 +51,6 @@ class DistributionCSVService
     public function export($countryISO3, DistributionData $distributionData)
     {
         $spreadsheet = $this->exportCSVService->buildFile($countryISO3);
-
         $spreadsheet = $this->buildFile($countryISO3, $spreadsheet, $distributionData);
 
         $writer = new Csv($spreadsheet);
@@ -79,10 +78,7 @@ class DistributionCSVService
     {
         $receivers = $this->buildDataBeneficiary($distributionData);
         $worksheet = $spreadsheet->getActiveSheet();
-
         $this->householdToCSVMapper->fromHouseholdToCSV($worksheet, $receivers, $countryISO3);
-
-        dump($worksheet->toArray(true, null, null, null));
         return $spreadsheet;
     }
 

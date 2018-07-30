@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Utils\Mapper;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
@@ -20,17 +21,22 @@ class HouseholdToCSVMapper extends AbstractMapper
         $this->serializer = $serializer;
     }
 
+    /**
+     * @param Worksheet $worksheet
+     * @param array $receivers
+     * @param $countryISO3
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     */
     public function fromHouseholdToCSV(Worksheet $worksheet, array $receivers, $countryISO3)
     {
         $arraySheet = $worksheet->toArray(null, true, true, true);
         $mapping = $this->loadMappingCSVOfCountry($countryISO3);
-        $rowHeader = $arraySheet[2];
-        dump($arraySheet);
-        dump($mapping);
+        $householdsArrayCSV = $arraySheet;
         /** @var Household $receiver */
         foreach ($receivers as $receiver)
         {
             $householdArrayCSV = [];
+
             $householdArray = json_decode(
                 $this->serializer
                     ->serialize(
@@ -40,47 +46,226 @@ class HouseholdToCSVMapper extends AbstractMapper
                     ),
                 true);
 
-            dump($householdArray);
             foreach ($mapping as $fieldName => $columnCsv)
             {
                 if (is_array($columnCsv))
                 {
                     foreach ($columnCsv as $fieldName2 => $columnCsv2)
                     {
-                        if (!array_key_exists($fieldName2, $householdArray[$fieldName]))
-                            $householdArrayCSV[$columnCsv2] = null;
+                        if (
+                            array_key_exists($fieldName, $householdArray)
+                            || is_array($householdArray[$fieldName])
+                            || !array_key_exists($fieldName2, $householdArray[$fieldName])
+                        )
+                        {
+                            if ("location" === $fieldName)
+                            {
+                                $householdArrayCSV[0][$columnCsv2] = $this->getLocationField($receiver, $fieldName2);
+                            }
+                            else
+                            {
+                                $householdArrayCSV[0][$columnCsv2] = null;
+                            }
+                        }
                         else
-                            $householdArrayCSV[$columnCsv2] = $householdArray[$fieldName][$fieldName2];
+                        {
+                            $householdArrayCSV[0][$columnCsv2] = $householdArray[$fieldName][$fieldName2];
+                        }
                     }
                 }
                 else
                 {
-                    // TODO COMPLETE FOR COUNTRY SPECIFIC => FOUND ANSWER OF BENEFICIARY
                     if (substr($fieldName, 0, 20) === "tmp_country_specific")
                     {
-                        $field = $rowHeader[$mapping[$fieldName]];
-                        $countrySpecific = $this->em->getRepository(CountrySpecific::class)
-                            ->findOneByFieldString($field);
-//                        $countrySpecificAnswer = $this->
+                        $householdArrayCSV[0][$columnCsv] = $this
+                            ->getCountrySpecificAnswer($countryISO3, $receiver, $arraySheet, $columnCsv);
                     }
-                    elseif (!array_key_exists($fieldName, $householdArray[$fieldName]))
-                        $householdArrayCSV[$columnCsv] = null;
+                    elseif (!array_key_exists($fieldName, $householdArray))
+                    {
+                        $householdArrayCSV[0][$columnCsv] = null;
+                    }
                     else
                     {
-                        $householdArrayCSV[$columnCsv] = $householdArray[$fieldName];
+                        $householdArrayCSV[0][$columnCsv] = $householdArray[$fieldName];
                     }
                 }
             }
 
-            dump($householdArrayCSV);
-            foreach ($receiver->getBeneficiaries()->getValues() as $beneficiary)
+            $this->fieldBeneficiary($householdArrayCSV, $householdArray, $mapping);
+            $householdsArrayCSV = array_merge($householdsArrayCSV, $householdArrayCSV);
+        }
+
+        $worksheet->fromArray($householdsArrayCSV, true, 'A1', true);
+    }
+
+    /**
+     * Reformat the field beneficiary
+     * @param array $householdArrayCSV
+     * @param array $householdArray
+     * @param $mapping
+     */
+    private function fieldBeneficiary(array &$householdArrayCSV, array $householdArray, $mapping)
+    {
+        foreach ($householdArray["beneficiaries"] as $index => $beneficiaryArray)
+        {
+            foreach ($mapping["beneficiaries"] as $fieldName => $columnCsv)
             {
-                dump($beneficiary);
-                foreach ($mapping as $fieldName => $csvColumn)
+                $this->setBeneficiaryNullFields($householdArrayCSV, $index, $mapping);
+                if (array_key_exists($fieldName, $beneficiaryArray))
                 {
+                    switch ($fieldName)
+                    {
+                        case 'phones':
+                            $this
+                                ->fieldPhones($householdArrayCSV, $index, $columnCsv, $beneficiaryArray[$fieldName]);
+                            break;
+                        case 'national_ids':
+                            $this
+                                ->fieldNationalIds($householdArrayCSV, $index, $columnCsv, $beneficiaryArray[$fieldName]);
+                            break;
+                        case 'vulnerability_criteria':
+                            $this
+                                ->fieldVulnerabilityCriteria($householdArrayCSV, $index, $columnCsv, $beneficiaryArray[$fieldName]);
+                            break;
+                        default:
+                            if (false === $beneficiaryArray[$fieldName])
+                                $householdArrayCSV[$index][$columnCsv] = 0;
+                            elseif (true === $beneficiaryArray[$fieldName])
+                                $householdArrayCSV[$index][$columnCsv] = 1;
+                            else
+                                $householdArrayCSV[$index][$columnCsv] = $beneficiaryArray[$fieldName];
+                            break;
+                    }
                 }
+                else
+                    $householdArrayCSV[$index][$columnCsv] = null;
             }
         }
+
+    }
+
+    private function setBeneficiaryNullFields(array &$householdArrayCSV, $index, $mapping)
+    {
+        if (0 === intval($index))
+            return;
+
+        foreach ($mapping as $fieldName => $columnCsv)
+        {
+            if (is_array($columnCsv))
+            {
+                if ("beneficiaries" === $fieldName)
+                    continue;
+                foreach ($columnCsv as $fieldName2 => $columnCsv2)
+                {
+                    $householdArrayCSV[$index][$columnCsv2] = null;
+                }
+            }
+            else
+            {
+                $householdArrayCSV[$index][$columnCsv] = null;
+
+            }
+        }
+    }
+
+    /**
+     * @param $countryISO3
+     * @param Household $receiver
+     * @param $arraySheet
+     * @param $columnCsv
+     * @return null|string
+     */
+    public function getCountrySpecificAnswer($countryISO3, Household $receiver, $arraySheet, $columnCsv)
+    {
+        $countrySpecific = $this->em->getRepository(CountrySpecific::class)
+            ->findOneBy([
+                "fieldString" => $arraySheet[Household::indexRowHeader][$columnCsv],
+                "countryIso3" => $countryISO3
+            ]);
+        if (!$countrySpecific instanceof CountrySpecific)
+            return null;
+        $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
+            ->findOneBy([
+                "countrySpecific" => $countrySpecific,
+                "household" => $receiver
+            ]);
+        if (!$countrySpecificAnswer instanceof CountrySpecificAnswer)
+            return null;
+
+        return $countrySpecificAnswer->getAnswer();
+    }
+
+    /**
+     * Reformat the field which contains vulnerability criteria => switch list of names to a list of ids
+     * @param $householdArrayCSV
+     * @param $index
+     * @param $columnCsv
+     * @param $vulnerabilitiesCriteriaArray
+     */
+    private function fieldVulnerabilityCriteria(&$householdArrayCSV, $index, $columnCsv, $vulnerabilitiesCriteriaArray)
+    {
+        $vulnerabilitiesCriteriaString = "";
+        foreach ($vulnerabilitiesCriteriaArray as $vulnerabilityCriteriaArray)
+        {
+            if ("" !== $vulnerabilitiesCriteriaString)
+                $vulnerabilitiesCriteriaString .= " ; ";
+            $vulnerabilitiesCriteriaString .= $vulnerabilityCriteriaArray["field_string"];
+        }
+        $householdArrayCSV[$index][$columnCsv] = $vulnerabilitiesCriteriaString;
+    }
+
+    /**
+     * Reformat the field phones => switch string [type => type, number => number] to 'type-number'
+     * @param $householdArrayCSV
+     * @param $index
+     * @param $columnCsv
+     * @param $phonesArray
+     */
+    private function fieldPhones(&$householdArrayCSV, $index, $columnCsv, $phonesArray)
+    {
+        $phonesString = "";
+        foreach ($phonesArray as $phoneArray)
+        {
+            if ("" !== $phonesString)
+                $phonesString .= " ; ";
+            $phonesString .= $phoneArray["type"] . " - " . $phoneArray["number"];
+        }
+        $householdArrayCSV[$index][$columnCsv] = $phonesString;
+    }
+
+    /**
+     * Reformat the field nationalids => switch string [id_type => idtype, id_number => idnumber] to 'idtype-idnumber'
+     * @param $householdArrayCSV
+     * @param $index
+     * @param $columnCsv
+     * @param $nationalIdsArray
+     */
+    private function fieldNationalIds(&$householdArrayCSV, $index, $columnCsv, $nationalIdsArray)
+    {
+        $nationalIdsString = "";
+        foreach ($nationalIdsArray as $nationalIdArray)
+        {
+            if ("" !== $nationalIdsString)
+                $nationalIdsString .= " ; ";
+            $nationalIdsString .= $nationalIdArray["id_type"] . " - " . $nationalIdArray["id_number"];
+        }
+        $householdArrayCSV[$index][$columnCsv] = $nationalIdsString;
+    }
+
+    /**
+     * @param Household $receiver
+     * @param $admField
+     * @return mixed|null
+     */
+    public function getLocationField(Household $receiver, $admField)
+    {
+        $location = $receiver->getLocation();
+        $admField = ucfirst($admField);
+        if (!is_callable([$location, "get" . $admField]))
+        {
+            return null;
+        }
+        return call_user_func([$location, "get" . $admField]);
     }
 
 }

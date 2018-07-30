@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils;
 
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
@@ -19,7 +20,7 @@ class ExportCSVService
     /** @var ContainerInterface $container */
     private $container;
 
-    private $MAPPING_CSV = [
+    private $MAPPING_CSV_EXPORT = [
         // Household
         "A" => "Address street",
         "B" => "Address number",
@@ -43,12 +44,6 @@ class ExportCSVService
         "R" => "Phones",
         "S" => "National IDs"
     ];
-
-    /**
-     * First value with a column in the csv which can move, depends on the number of country specifics
-     * @var string
-     */
-    private $firstColumnNonStatic = 'L';
 
     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
     {
@@ -93,9 +88,9 @@ class ExportCSVService
 
         $i = 0;
         $worksheet->setCellValue('A' . 1, "Household");
-        foreach ($this->MAPPING_CSV as $CSVIndex => $name)
+        foreach ($this->MAPPING_CSV_EXPORT as $CSVIndex => $name)
         {
-            if (!$columnsCountrySpecificsAdded && $CSVIndex >= $this->firstColumnNonStatic)
+            if (!$columnsCountrySpecificsAdded && $CSVIndex >= Household::firstColumnNonStatic)
             {
                 if (!empty($countrySpecifics))
                 {
@@ -113,7 +108,7 @@ class ExportCSVService
             }
             else
             {
-                if ($CSVIndex >= $this->firstColumnNonStatic)
+                if ($CSVIndex >= Household::firstColumnNonStatic)
                 {
                     $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 2, $name);
                 }

@@ -7,23 +7,9 @@ namespace BeneficiaryBundle\Utils\Mapper;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use Doctrine\ORM\EntityManagerInterface;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class CSVToArrayMapper extends AbstractMapper
 {
-
-    /**
-     * The row index of the header (with the name of country specifics)
-     * @var int
-     */
-    private $indexRowHeader = 2;
-
-    /**
-     * First row with data
-     * @var int $first_row
-     */
-    private $first_row = 3;
 
     /**
      * Get the list of households with their beneficiaries
@@ -43,9 +29,9 @@ class CSVToArrayMapper extends AbstractMapper
 
         foreach ($sheetArray as $indexRow => $row)
         {
-            if ($this->indexRowHeader === $indexRow)
+            if (Household::indexRowHeader === $indexRow)
                 $rowHeader = $row;
-            if ($indexRow < $this->first_row)
+            if ($indexRow < Household::firstRow)
                 continue;
 
             // Load the household array for the current row

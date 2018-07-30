@@ -20,14 +20,16 @@ class DistributionCSVController extends Controller
      * @param Request $request
      * @param DistributionData $distributionData
      * @return Response
+     * @throws \Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function exportAction(Request $request, DistributionData $distributionData)
     {
         /** @var DistributionCSVService $distributionCSVService */
         $distributionCSVService = $this->get('distribution.distribution_csv_service');
-        $distributionCSVService->export($request->request->get('__country'), $distributionData);
+        $return = $distributionCSVService->export($request->request->get('__country'), $distributionData);
 
-        return new Response(json_encode($distributionCSVService));
+        return new Response(json_encode($return));
     }
 }
