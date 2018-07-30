@@ -89,6 +89,16 @@ class DistributionService
         }
     }
 
+
+    public function validateDistribution(DistributionData $distributionData)
+    {
+        $distributionData->setValidated(true);
+        $this->em->persist($distributionData);
+        $this->em->flush();
+
+        return $distributionData;
+    }
+
     public function getRandomBeneficiaries(DistributionData $distributionData)
     {
         $listReceivers = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);

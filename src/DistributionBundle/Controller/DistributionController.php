@@ -26,7 +26,7 @@ class DistributionController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      */
-    public function getRandomBeneficiaries(DistributionData $distributionData)
+    public function getRandomBeneficiariesAction(DistributionData $distributionData)
     {
         /** @var DistributionService $distributionService */
         $distributionService = $this->get('distribution.distribution_service');
@@ -35,6 +35,32 @@ class DistributionController extends Controller
         $json = $this->get('jms_serializer')
             ->serialize(
                 $receivers,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                    "FullReceivers",
+                    "FullDistribution"
+                ])
+            );
+
+        return new Response($json);
+    }
+
+
+    /**
+     * @Rest\Get("/distributions/{id}/validate")
+     *
+     * @param DistributionData $distributionData
+     * @return Response
+     */
+    public function validateAction(DistributionData $distributionData)
+    {
+        /** @var DistributionService $distributionService */
+        $distributionService = $this->get('distribution.distribution_service');
+        $distributionData = $distributionService->validateDistribution($distributionData);
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $distributionData,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups([
                     "FullReceivers",
