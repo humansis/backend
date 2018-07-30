@@ -122,42 +122,42 @@ class DataFillersDistribution  extends DataFillers
     /**
      * Fill in ReportingValue and ReportingDistribution with modality
      */
-    public function BMS_Distribution_M() {
-        $this->em->getConnection()->beginTransaction();
-        try {
-            $this->repository = $this->em->getRepository(Commodity::class);
-            $qb = $this->repository->createQueryBuilder('c')
-                                   ->leftjoin('c.distributionData', 'dd')
-                                   ->select("CONCAT(c.modality, '-', c.type) AS value", 'dd.id as distribution');
-            $results = $qb->getQuery()->getArrayResult();
-            $reference = $this->getReferenceId("BMS_Distribution_M");
-            foreach ($results as $result) 
-            {
-                $new_value = new ReportingValue();
-                $new_value->setValue($result['value']);
-                $new_value->setUnity('modality');
-                $new_value->setCreationDate(new \DateTime());
+    // public function BMS_Distribution_M() {
+    //     $this->em->getConnection()->beginTransaction();
+    //     try {
+    //         $this->repository = $this->em->getRepository(Commodity::class);
+    //         $qb = $this->repository->createQueryBuilder('c')
+    //                                ->leftjoin('c.distributionData', 'dd')
+    //                                ->select("CONCAT(c.modality, '-', c.type) AS value", 'dd.id as distribution');
+    //         $results = $qb->getQuery()->getArrayResult();
+    //         $reference = $this->getReferenceId("BMS_Distribution_M");
+    //         foreach ($results as $result) 
+    //         {
+    //             $new_value = new ReportingValue();
+    //             $new_value->setValue($result['value']);
+    //             $new_value->setUnity('modality');
+    //             $new_value->setCreationDate(new \DateTime());
 
-                $this->em->persist($new_value);
-                $this->em->flush();
+    //             $this->em->persist($new_value);
+    //             $this->em->flush();
 
-                $this->repository = $this->em->getRepository(DistributionData::class);
-                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]); 
+    //             $this->repository = $this->em->getRepository(DistributionData::class);
+    //             $distribution = $this->repository->findOneBy(['id' => $result['distribution']]); 
 
-                $new_reportingDistribution = new ReportingDistribution();
-                $new_reportingDistribution->setIndicator($reference);
-                $new_reportingDistribution->setValue($new_value);
-                $new_reportingDistribution->setDistribution($distribution);
+    //             $new_reportingDistribution = new ReportingDistribution();
+    //             $new_reportingDistribution->setIndicator($reference);
+    //             $new_reportingDistribution->setValue($new_value);
+    //             $new_reportingDistribution->setDistribution($distribution);
 
-                $this->em->persist($new_reportingDistribution);
-                $this->em->flush();   
-            }
-            $this->em->getConnection()->commit();
-        }catch (Exception $e) {
-            $this->em->getConnection()->rollback();
-            throw $e;
-        }
-    }
+    //             $this->em->persist($new_reportingDistribution);
+    //             $this->em->flush();   
+    //         }
+    //         $this->em->getConnection()->commit();
+    //     }catch (Exception $e) {
+    //         $this->em->getConnection()->rollback();
+    //         throw $e;
+    //     }
+    // }
 
     /**
      * Fill in ReportingValue and ReportingDistribution with age breakdown

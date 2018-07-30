@@ -68,7 +68,7 @@ class DistributionDataRetrievers
                                           ->setParameter('country', $filters['country'])
                                           ->select('rd.id', 'd.name as Name','rv.value as Value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
 
-        // $qb = $this->ifInProject($qb, $filters);
+        $qb = $this->ifInProject($qb, $filters);
         dump($qb);
         dump($qb->getQuery()->getArrayResult());
         return $qb;
@@ -296,7 +296,7 @@ class DistributionDataRetrievers
 
         $TotalDistributionValueUsed = 0;
 
-        if (sizeof($projectValue) > 0 && sozeof($distributionValue) > 0 ) {
+        if (sizeof($projectValue) > 0 && sizeof($distributionValue) > 0 ) {
             $moreRecentProject = $this->lastDate($projectValue);
             $moreRecentDistribution = $this->lastDate($distributionValue);
 
