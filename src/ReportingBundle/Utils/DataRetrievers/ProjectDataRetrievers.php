@@ -26,6 +26,7 @@ class ProjectDataRetrievers
             $qb->andWhere('p.id IN (:projects)')
                     ->setParameter('projects', $filters['project']);
         }
+        dump($qb);
         return $qb;
     }
 
@@ -72,8 +73,12 @@ class ProjectDataRetrievers
     public function BMS_Project_D(array $filters) {
         $qb = $this->getReportingValue('BMS_Project_D', $filters);
         $qb->select('p.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        $result = $this->lastDate($qb->getQuery()->getArrayResult());
-        return $result;
+        if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            $result = $this->lastDate($qb->getQuery()->getArrayResult());
+            return $result;
+        } else {
+            return $qb->getQuery()->getArrayResult();
+        }
     }
 
     /**
@@ -82,8 +87,12 @@ class ProjectDataRetrievers
     public function BMS_Project_HS(array $filters) {
         $qb = $this->getReportingValue('BMS_Project_HS', $filters);
         $qb->select('p.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        $result = $this->lastDate($qb->getQuery()->getArrayResult());
-        return $result;
+        if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            $result = $this->lastDate($qb->getQuery()->getArrayResult());
+            return $result;
+        } else {
+            return $qb->getQuery()->getArrayResult();
+        }
     }
 
     /**
@@ -93,8 +102,12 @@ class ProjectDataRetrievers
         $qb = $this->getReportingValue('BMS_Project_AB', $filters);
         $qb->select('SUM(rv.value) AS value', 'rv.unity AS name', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
            ->groupBy('name', 'date');
-        $result = $this->lastDate($qb->getQuery()->getArrayResult());
-        return $result;
+        if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            $result = $this->lastDate($qb->getQuery()->getArrayResult());
+            return $result;
+        } else {
+            return $qb->getQuery()->getArrayResult();
+        }
     }
 
     /**
@@ -105,36 +118,39 @@ class ProjectDataRetrievers
         $menAndWomen = [];
         $mens = $this->BMSU_Project_NM($filters);
         $womens = $this->BMSU_Project_NW($filters);
-        $lastDate = $mens[0]['date'];
-        foreach($mens as $men) {
-            if ($men['date'] > $lastDate) {
-                $lastDate = $men['date'];
+
+        if (sizeof($mens) > 0 || sizeof($womens) > 0) {
+            $lastDate = $mens[0]['date'];
+            foreach($mens as $men) {
+                if ($men['date'] > $lastDate) {
+                    $lastDate = $men['date'];
+                }
             }
-        }
-        foreach ($mens as $men) { 
-            if ($men["date"] == $lastDate) {
-                $result = [
-                    'name' => $men["name"],
-                    'project' => substr($men["name"],4),
-                    'value' => $men["value"],
-                    'date' => $men['date']
-                ]; 
-                array_push($menAndWomen, $result);
-                foreach ($womens as $women) {
-                    if (substr($women["name"],6) == substr($men["name"], 4)) {
-                        if ($women["date"] == $lastDate) {
-                            $result = [
-                                'name' => $women["name"],
-                                'project' => substr($women["name"],6),
-                                'value' => $women['value'],
-                                'date' => $women['date']
-                            ]; 
-                            array_push($menAndWomen, $result);
-                            break 1;
-                        }
-                    }  
-                }                
-            }   
+            foreach ($mens as $men) { 
+                if ($men["date"] == $lastDate) {
+                    $result = [
+                        'name' => $men["name"],
+                        'project' => substr($men["name"],4),
+                        'value' => $men["value"],
+                        'date' => $men['date']
+                    ]; 
+                    array_push($menAndWomen, $result);
+                    foreach ($womens as $women) {
+                        if (substr($women["name"],6) == substr($men["name"], 4)) {
+                            if ($women["date"] == $lastDate) {
+                                $result = [
+                                    'name' => $women["name"],
+                                    'project' => substr($women["name"],6),
+                                    'value' => $women['value'],
+                                    'date' => $women['date']
+                                ]; 
+                                array_push($menAndWomen, $result);
+                                break 1;
+                            }
+                        }  
+                    }                
+                }   
+            }
         }
         return $menAndWomen; 
     }
@@ -167,30 +183,33 @@ class ProjectDataRetrievers
         $totalVulnerabilities = $this->BMSU_Project_TVS($filters);
         $totalVulnerabilitiesByVulnerabilities = $this->BMSU_Project_TVSV($filters);
 
-        //Get the more recent date
-        $lastDate = $totalVulnerabilities[0]['date'];
-        foreach($totalVulnerabilities as $totalVulnerability) {
-            if ($totalVulnerability['date'] > $lastDate) {
-                $lastDate = $totalVulnerability['date'];
+        if (sizeof($totalVulnerabilities) > 0 && sizeof($totalVulnerabilitiesByVulnerabilities) >0  ) {
+            //Get the more recent date
+            $lastDate = $totalVulnerabilities[0]['date'];
+            foreach($totalVulnerabilities as $totalVulnerability) {
+                if ($totalVulnerability['date'] > $lastDate) {
+                    $lastDate = $totalVulnerability['date'];
+                }
             }
-        }
 
-        //Search the corresponding data and put them in an array after formatting them 
-        foreach ($totalVulnerabilities as $totalVulnerability) { 
-            if ($totalVulnerability["date"] == $lastDate) {
-                foreach ($totalVulnerabilitiesByVulnerabilities as $vulnerability) {
-                    if ($vulnerability["date"] == $lastDate) {
-                        $percent = ($vulnerability["value"]/$totalVulnerability["value"])*100;
-                        $result = [
-                            'name' => $vulnerability["unity"],
-                            'value' => $percent,
-                            'date' => $vulnerability['date']
-                        ]; 
-                        array_push($vulnerabilitiesPercentage, $result);
-                    }   
-                }                
-            }   
-        }
+            //Search the corresponding data and put them in an array after formatting them 
+            foreach ($totalVulnerabilities as $totalVulnerability) { 
+                if ($totalVulnerability["date"] == $lastDate) {
+                    foreach ($totalVulnerabilitiesByVulnerabilities as $vulnerability) {
+                        if ($vulnerability["date"] == $lastDate) {
+                            $percent = ($vulnerability["value"]/$totalVulnerability["value"])*100;
+                            $result = [
+                                'name' => $vulnerability["unity"],
+                                'value' => $percent,
+                                'date' => $vulnerability['date']
+                            ]; 
+                            array_push($vulnerabilitiesPercentage, $result);
+                        }   
+                    }                
+                }   
+            }
+        } 
+       
         return $vulnerabilitiesPercentage; 
     }
 
