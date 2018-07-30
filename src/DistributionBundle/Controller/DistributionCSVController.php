@@ -8,15 +8,31 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Utils\DistributionCSVService;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
 
 class DistributionCSVController extends Controller
 {
 
     /**
      * @Rest\Get("/distributions/{id}/export", name="export_csv")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return the list of distribution criteria",
+     *      examples={
+     *          "application/json":
+     *          {
+     *              0: "a,a,a,a,a\na,a",
+     *              1: "export_distribution_DISTRIBUTION-NAME.csv"
+     *          }
+     *     }
+     * )
      *
      * @param Request $request
      * @param DistributionData $distributionData
@@ -41,6 +57,15 @@ class DistributionCSVController extends Controller
 
     /**
      * @Rest\Post("/distributions/{id}/import", name="import_csv")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Parameter(
+     *     name="file",
+     *     in="formData",
+     *     required=true,
+     *     type="file"
+     * )
      *
      * @param Request $request
      * @param DistributionData $distributionData
