@@ -32,6 +32,7 @@ class HouseholdToCSVMapper extends AbstractMapper
         $arraySheet = $worksheet->toArray(null, true, true, true);
         $mapping = $this->loadMappingCSVOfCountry($countryISO3);
         $householdsArrayCSV = $arraySheet;
+        $lastColumn = null;
         /** @var Household $receiver */
         foreach ($receivers as $receiver)
         {
@@ -71,6 +72,7 @@ class HouseholdToCSVMapper extends AbstractMapper
                         {
                             $householdArrayCSV[0][$columnCsv2] = $householdArray[$fieldName][$fieldName2];
                         }
+                        $lastColumn = $columnCsv2;
                     }
                 }
                 else
@@ -88,13 +90,16 @@ class HouseholdToCSVMapper extends AbstractMapper
                     {
                         $householdArrayCSV[0][$columnCsv] = $householdArray[$fieldName];
                     }
+                    $lastColumn = $columnCsv;
                 }
             }
+            $lastColumn = $this->SUMOfLetter($lastColumn, 1);
+            $householdArrayCSV[0][$lastColumn] = $receiver->getId();
 
             $this->fieldBeneficiary($householdArrayCSV, $householdArray, $mapping);
             $householdsArrayCSV = array_merge($householdsArrayCSV, $householdArrayCSV);
         }
-
+        $householdsArrayCSV[1][$lastColumn] = "ID SYNCHRONISATION";
         $worksheet->fromArray($householdsArrayCSV, true, 'A1', true);
     }
 
