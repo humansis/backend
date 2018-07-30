@@ -4,6 +4,7 @@ namespace DistributionBundle\Controller;
 
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
+use DistributionBundle\Utils\DistributionService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +18,33 @@ use Swagger\Annotations as SWG;
 
 class DistributionController extends Controller
 {
+
+
+    /**
+     * @Rest\Get("/distributions/{id}/random")
+     *
+     * @param DistributionData $distributionData
+     * @return Response
+     */
+    public function getRandomBeneficiaries(DistributionData $distributionData)
+    {
+        /** @var DistributionService $distributionService */
+        $distributionService = $this->get('distribution.distribution_service');
+        $receivers = $distributionService->getRandomBeneficiaries($distributionData);
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $receivers,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                    "FullReceivers",
+                    "FullDistribution"
+                ])
+            );
+
+        return new Response($json);
+    }
+
     /**
      * Create a distribution
      * @Rest\Put("/distributions", name="add_distribution")

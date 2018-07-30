@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
@@ -112,6 +113,14 @@ class Beneficiary
      * @Groups({"FullHousehold"})
      */
     private $nationalIds;
+
+    /**
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary")
+     *
+     * @var DistributionBeneficiary $distributionBeneficiary
+     */
+    private $distributionBeneficiary;
+
 
 
     /**

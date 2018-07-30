@@ -35,7 +35,7 @@ class DistributionBeneficiary
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="distributionBeneficiary")
      * @Groups({"FullDistributionBeneficiary", "FullDistribution"})
      */
     private $beneficiary;
