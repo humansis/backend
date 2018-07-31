@@ -4,6 +4,7 @@
 namespace Tests\DistributionBundle\Controller;
 
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Commodity;
@@ -11,6 +12,8 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
+use DistributionBundle\Utils\DistributionCSVService;
+use DistributionBundle\Utils\DistributionService;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
@@ -20,6 +23,9 @@ class DistributionControllerTest extends BMSServiceTestCase
 {
     /** @var string $namefullname */
     private $namefullname = "TEST_DISTRIBUTION_NAME_PHPUNIT";
+
+    /** @var DistributionCSVService $distributionCSVService */
+    private $distributionCSVService;
 
     private $body = [
         "name" => "TEST_DISTRIBUTION_NAME_PHPUNIT",
@@ -31,19 +37,31 @@ class DistributionControllerTest extends BMSServiceTestCase
             "adm3" => "Chambery",
             "adm4" => "Sainte Hélène sur Isère"
         ],
-        "selection_criteria" => [[
-            "table_string" => "default",
-            "field_string" => "gender",
-            "value_string" => "0",
-            "condition_string" => "=",
-            "kind_beneficiary" => "beneficiary",
-            "field_id" => null
-        ]],
-        "commodities" => [[
-            "unit" => "PHPUNIT TEST",
-            "value" => 999999999,
-            "modality_type" => []
-        ]]
+        "selection_criteria" => [
+            [
+                "table_string" => "default",
+                "field_string" => "dateOfBirth",
+                "value_string" => "1976-10-06",
+                "condition_string" => "=",
+                "kind_beneficiary" => "beneficiary",
+                "field_id" => null
+            ],
+            [
+                "table_string" => "default",
+                "field_string" => "gender",
+                "value_string" => "0",
+                "condition_string" => "=",
+                "kind_beneficiary" => "beneficiary",
+                "field_id" => null
+            ]
+        ],
+        "commodities" => [
+            [
+                "unit" => "PHPUNIT TEST",
+                "value" => 999999999,
+                "modality_type" => []
+            ]
+        ]
     ];
 
 
@@ -58,6 +76,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         // Get a Client instance for simulate a browser
         $this->client = $this->container->get('test.client');
+        $this->distributionCSVService = $this->container->get('distribution.distribution_csv_service');
     }
 
     /**
@@ -65,6 +84,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      */
     public function testCreateDistribution()
     {
+        $this->removeHousehold($this->namefullnameHousehold);
+        $this->createHousehold();
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
@@ -89,14 +110,12 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $crawler = $this->client->request('PUT', '/api/wsse/distributions', $this->body, [], ['HTTP_COUNTRY' => 'FRA']);
         $return = json_decode($this->client->getResponse()->getContent(), true);
-
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         $this->assertArrayHasKey('distribution', $return);
         $this->assertArrayHasKey('data', $return);
 
         $distribution = $return['distribution'];
-
         $this->assertArrayHasKey('id', $distribution);
         $this->assertArrayHasKey('name', $distribution);
         $this->assertSame($distribution['name'], $this->namefullname);
@@ -106,6 +125,34 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $distribution);
         $this->assertArrayHasKey('validated', $distribution);
 
+        dump(sizeof($this->em->getRepository(Beneficiary::class)->findAll()));
+        $data = $this->distributionCSVService
+            ->export(
+                "FRA",
+                $this->em->getRepository(DistributionData::class)->find($distribution["id"])
+            );
+        dump($data);
+        $rows = str_getcsv($data[0], "\n");
+        foreach ($rows as $index => $row)
+        {
+            if ($index < 2)
+                continue;
+
+            dump(str_getcsv($row, ','));
+        }
+
+        $this->removeDistribution($distribution);
+        return true;
+    }
+
+    /**
+     * @param $distribution
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    private function removeDistribution($distribution)
+    {
         $commodity = $this->em->getRepository(Commodity::class)->findOneByUnit("PHPUNIT TEST");
         if ($commodity instanceof Commodity)
         {
@@ -134,6 +181,6 @@ class DistributionControllerTest extends BMSServiceTestCase
         }
 
         $this->em->flush();
-        return true;
+        $this->removeHousehold($this->namefullnameHousehold);
     }
 }

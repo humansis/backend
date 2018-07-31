@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils\Mapper;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
+use CommonBundle\Utils\LocationService;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
@@ -16,10 +17,14 @@ class HouseholdToCSVMapper extends AbstractMapper
     /** @var Serializer $serializer */
     private $serializer;
 
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer)
+    /** @var LocationService $locationService */
+    private $locationService;
+
+    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, LocationService $locationService)
     {
         parent::__construct($entityManager);
         $this->serializer = $serializer;
+        $this->locationService = $locationService;
     }
 
     /**
@@ -265,13 +270,13 @@ class HouseholdToCSVMapper extends AbstractMapper
      */
     public function getLocationField(Household $receiver, $admField)
     {
-        $location = $receiver->getLocation();
         $admField = ucfirst($admField);
-        if (!is_callable([$location, "get" . $admField]))
+        if (!is_callable([$this->locationService, "get" . $admField]))
         {
             return null;
         }
-        return call_user_func([$location, "get" . $admField]);
+        $admString = call_user_func([$this->locationService, "get" . $admField], $receiver);
+        return $admString;
     }
 
 }

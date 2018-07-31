@@ -163,6 +163,11 @@ class DistributionCSVService
     public function buildFile($countryISO3, Spreadsheet $spreadsheet, DistributionData $distributionData)
     {
         $receivers = $this->buildDataBeneficiary($distributionData);
+        foreach (current($receivers)->getBeneficiaries() as $bene)
+        {
+            dump($bene->getId());
+        }
+
         $worksheet = $spreadsheet->getActiveSheet();
         $this->householdToCSVMapper->fromHouseholdToCSV($worksheet, $receivers, $countryISO3);
         return $spreadsheet;
@@ -180,18 +185,19 @@ class DistributionCSVService
         $distributionBeneficiaries = $distributionData->getDistributionBeneficiaries();
         $receivers = [];
         foreach ($distributionBeneficiaries as $distributionBeneficiary)
-        {
+        {// TODO WHY THERE ARE TOO MUCH BENEFICIARIES INSIDE HOUSEHOLD OBJECT
             /** @var Beneficiary $beneficiary */
             $beneficiary = $distributionBeneficiary->getBeneficiary();
-
             switch ($distributionData->getType())
             {
                 case 0:
                     $household = $beneficiary->getHousehold();
+                    dump(sizeof($household->getBeneficiaries()));
                     foreach ($this->em->getRepository(Beneficiary::class)->findByHousehold($household) as $beneficiaryHH)
                     {
                         $household->addBeneficiary($beneficiaryHH);
                     }
+                    dump(sizeof($household->getBeneficiaries()));
                     break;
 
                 case 1:

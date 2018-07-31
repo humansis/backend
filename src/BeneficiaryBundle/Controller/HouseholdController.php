@@ -71,11 +71,11 @@ class HouseholdController extends Controller
     public function addAction(Request $request, Project $project)
     {
         $householdArray = $request->request->all();
-        /** @var HouseholdService $householeService */
-        $householeService = $this->get('beneficiary.household_service');
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
         try
         {
-            $household = $householeService->create($householdArray, $project);
+            $household = $householdService->create($householdArray, $project);
         }
         catch (ValidationException $exception)
         {

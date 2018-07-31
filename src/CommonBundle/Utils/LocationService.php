@@ -4,7 +4,9 @@
 namespace CommonBundle\Utils;
 
 
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Form\HouseholdConstraints;
+use BeneficiaryBundle\Utils\HouseholdService;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
@@ -84,5 +86,101 @@ class LocationService
         }
 
         return null;
+    }
+
+    /**
+     * @param Household $household
+     * @return string
+     * @throws \Exception
+     */
+    public function getAdm1(Household $household)
+    {
+        $location = $household->getLocation();
+        if (null !== $location->getAdm1())
+        {
+            return $location->getAdm1()->getName();
+        }
+        elseif (null !== $location->getAdm2())
+        {
+            return $location->getAdm2()->getAdm1()->getName();
+        }
+        elseif (null !== $location->getAdm3())
+        {
+            return $location->getAdm3()->getAdm2()->getAdm1()->getName();
+        }
+        elseif (null !== $location->getAdm4())
+        {
+            return $location->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getName();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    /**
+     * @param Household $household
+     * @return string
+     * @throws \Exception
+     */
+    public function getAdm2(Household $household)
+    {
+        $location = $household->getLocation();
+        if (null !== $location->getAdm2())
+        {
+            return $location->getAdm2()->getName();
+        }
+        elseif (null !== $location->getAdm3())
+        {
+            return $location->getAdm3()->getAdm2()->getName();
+        }
+        elseif (null !== $location->getAdm4())
+        {
+            return $location->getAdm4()->getAdm3()->getAdm2()->getName();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    /**
+     * @param Household $household
+     * @return string
+     * @throws \Exception
+     */
+    public function getAdm3(Household $household)
+    {
+        $location = $household->getLocation();
+        if (null !== $location->getAdm3())
+        {
+            return $location->getAdm3()->getName();
+        }
+        elseif (null !== $location->getAdm4())
+        {
+            return $location->getAdm4()->getAdm3()->getName();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    /**
+     * @param Household $household
+     * @return string
+     * @throws \Exception
+     */
+    public function getAdm4(Household $household)
+    {
+        $location = $household->getLocation();
+        if (null !== $location->getAdm4())
+        {
+            return $location->getAdm4()->getName();
+        }
+        else
+        {
+            return "";
+        }
     }
 }

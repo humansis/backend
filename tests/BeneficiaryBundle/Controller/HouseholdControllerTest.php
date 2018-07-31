@@ -19,8 +19,6 @@ use Tests\BMSServiceTestCase;
 class HouseholdControllerTest extends BMSServiceTestCase
 {
 
-    private $namefullname = "STREET_TEST";
-
     /**
      * @throws \Exception
      */
@@ -85,7 +83,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         }
         catch (\Exception $exception)
         {
-            $this->remove($this->namefullname);
+            $this->removeHousehold($this->namefullnameHousehold);
             $this->fail("\nThe mapping of fields of Household entity is not correct (1).\n");
             return false;
         }
@@ -209,7 +207,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             [],
             ['HTTP_COUNTRY' => 'FRA']
         );
-        $this->bodyHousehold['fullname'] = $this->namefullname;
+        $this->bodyHousehold['fullname'] = $this->namefullnameHousehold;
 
         $household = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -258,11 +256,11 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('id_number', $national_ids);
             $this->assertArrayHasKey('id_type', $national_ids);
 
-            $this->assertSame($household['address_street'], $this->namefullname . '(u)');
+            $this->assertSame($household['address_street'], $this->namefullnameHousehold . '(u)');
         }
         catch (\Exception $exception)
         {
-            $this->remove($this->namefullname . "(u)");
+            $this->removeHousehold($this->namefullnameHousehold . "(u)");
             $this->fail("\nThe mapping of fields of Household entity is not correct (2).\n");
             return false;
         }
@@ -317,68 +315,17 @@ class HouseholdControllerTest extends BMSServiceTestCase
             }
             catch (\Exception $exception)
             {
-                $this->remove($this->namefullname . '(u)');
+                $this->removeHousehold($this->namefullnameHousehold . '(u)');
                 $this->fail("\nThe mapping of fields of Household entity is not correct (3).\n");
                 return false;
             }
         }
         else
         {
-            $this->remove($this->namefullname);
+            $this->removeHousehold($this->namefullnameHousehold);
             $this->markTestIncomplete("You currently don't have any household in your database.");
         }
 
-        return $this->remove($this->namefullname . '(u)');
-    }
-
-    /**
-     * @depends testGetHouseholds
-     *
-     * @param $addressStreet
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function remove($addressStreet)
-    {
-        $this->em->clear();
-        /** @var Household $household */
-        $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($addressStreet);
-        if ($household instanceof Household)
-        {
-            $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
-            if (!empty($beneficiaries))
-            {
-                /** @var Beneficiary $beneficiary */
-                foreach ($beneficiaries as $beneficiary)
-                {
-                    $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
-                    $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
-                    $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
-                    if ($profile instanceof Profile)
-                        $this->em->remove($profile);
-                    foreach ($phones as $phone)
-                    {
-                        $this->em->remove($phone);
-                    }
-                    foreach ($nationalIds as $nationalId)
-                    {
-                        $this->em->remove($nationalId);
-                    }
-                    $this->em->remove($beneficiary->getProfile());
-                    $this->em->remove($beneficiary);
-                }
-            }
-
-            $countrySpecificAnswers = $this->em->getRepository(CountrySpecificAnswer::class)
-                ->findByHousehold($household);
-            foreach ($countrySpecificAnswers as $countrySpecificAnswer)
-            {
-                $this->em->remove($countrySpecificAnswer);
-            }
-
-            $this->em->remove($household);
-            $this->em->flush();
-        }
+        return $this->removeHousehold($this->namefullnameHousehold . '(u)');
     }
 }

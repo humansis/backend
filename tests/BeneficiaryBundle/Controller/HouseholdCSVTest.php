@@ -181,10 +181,10 @@ class HouseholdCSVTest extends BMSServiceTestCase
     public function testImportCSV()
     {
         $body_begin = $this->SHEET_ARRAY;
-        $this->remove($this->addressStreet);
-        $this->remove($this->addressStreet2);
-        $this->remove($this->addressStreet3);
-        $this->remove($this->addressStreet4);
+        $this->removeHousehold($this->addressStreet);
+        $this->removeHousehold($this->addressStreet2);
+        $this->removeHousehold($this->addressStreet3);
+        $this->removeHousehold($this->addressStreet4);
         $projects = $this->em->getRepository(Project::class)->findAll();
         if (empty($projects))
         {
@@ -566,61 +566,10 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $headOldHousehold = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
         $this->assertSame($this->UPDATED_GIVEN_NAME, $headOldHousehold->getGivenName());
 
-        $this->remove($this->addressStreet);
-        $this->remove($this->addressStreet2);
-        $this->remove($this->addressStreet3);
-        $this->remove($this->addressStreet4);
-    }
-
-    /**
-     * @depends testGetHouseholds
-     *
-     * @param $addressStreet
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function remove($addressStreet)
-    {
-        $this->em->clear();
-        /** @var Household $household */
-        $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($addressStreet);
-        if ($household instanceof Household)
-        {
-            $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
-            if (!empty($beneficiaries))
-            {
-                /** @var Beneficiary $beneficiary */
-                foreach ($beneficiaries as $beneficiary)
-                {
-                    $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
-                    $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
-                    $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
-                    if ($profile instanceof Profile)
-                        $this->em->remove($profile);
-                    foreach ($phones as $phone)
-                    {
-                        $this->em->remove($phone);
-                    }
-                    foreach ($nationalIds as $nationalId)
-                    {
-                        $this->em->remove($nationalId);
-                    }
-                    $this->em->remove($beneficiary->getProfile());
-                    $this->em->remove($beneficiary);
-                }
-            }
-
-            $countrySpecificAnswers = $this->em->getRepository(CountrySpecificAnswer::class)
-                ->findByHousehold($household);
-            foreach ($countrySpecificAnswers as $countrySpecificAnswer)
-            {
-                $this->em->remove($countrySpecificAnswer);
-            }
-
-            $this->em->remove($household);
-            $this->em->flush();
-        }
+        $this->removeHousehold($this->addressStreet);
+        $this->removeHousehold($this->addressStreet2);
+        $this->removeHousehold($this->addressStreet3);
+        $this->removeHousehold($this->addressStreet4);
     }
 
 }
