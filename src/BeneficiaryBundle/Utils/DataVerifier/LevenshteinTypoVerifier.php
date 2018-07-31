@@ -68,7 +68,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             $stringToCompare,
             $this->maximumDistanceLevenshtein);
 
-        if (empty($similarHouseholds))
+        if (true || empty($similarHouseholds))
         {
             $this->saveInCache('no_typo', $cacheId, $householdArray, null);
             return null;
@@ -153,10 +153,10 @@ class LevenshteinTypoVerifier extends AbstractVerifier
     private function saveInCache(string $step, int $cacheId, array $dataToSave, Household $household = null)
     {
         if (null !== $household)
-            $arrayNewHousehold = json_decode($this->container->get('jms_serializer')
+            $arrayOldHousehold = json_decode($this->container->get('jms_serializer')
                 ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)), true);
         else
-            $arrayNewHousehold = json_encode([]);
+            $arrayOldHousehold = json_encode([]);
 
         $sizeToken = 50;
         if (null === $this->token)
@@ -181,7 +181,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             $listHH = [];
         }
 
-        $listHH[$cacheId] = ["new" => $dataToSave, "old" => $arrayNewHousehold, "id_tmp_cache" => $cacheId];
+        $listHH[$cacheId] = ["new" => $dataToSave, "old" => $arrayOldHousehold, "id_tmp_cache" => $cacheId];
         file_put_contents($dir_var_token . '/' . $step, json_encode($listHH));
     }
 }
