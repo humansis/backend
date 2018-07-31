@@ -615,7 +615,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
         print_r($this->color->getColoredString(number_format(($this->sumStep4 / $number), 3)));
         print_r($this->color->getColoredString("\nStep 5 - Average : ", "yellow"));
         print_r($this->color->getColoredString(number_format(($this->sumStep5 / $number), 3)) . "\n\n");
-        
+
         unset($number);
 
         $this->removeAll();
@@ -644,7 +644,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        $this->sumStep1 += ($executionTime - $executionStartTime);
+        if (1 !== $step)
+            $this->sumStep1 += ($executionTime - $executionStartTime);
         $token = $return["token"];
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
@@ -655,7 +656,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        $this->sumStep2 += ($executionTime - $executionStartTime);
+        if (1 !== $step)
+            $this->sumStep2 += ($executionTime - $executionStartTime);
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
         $executionTime = microtime(true);
@@ -665,7 +667,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        $this->sumStep3 += ($executionTime - $executionStartTime);
+        if (1 !== $step)
+            $this->sumStep3 += ($executionTime - $executionStartTime);
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
         $executionTime = microtime(true);
@@ -675,7 +678,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        $this->sumStep4 += ($executionTime - $executionStartTime);
+        if (1 !== $step)
+            $this->sumStep4 += ($executionTime - $executionStartTime);
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
         $executionTime = microtime(true);
@@ -685,7 +689,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        $this->sumStep5 += ($executionTime - $executionStartTime);
+        if (1 !== $step)
+            $this->sumStep5 += ($executionTime - $executionStartTime);
         print_r($this->color->getColoredString("\nExecution time : ", "light_red"));
         print_r($this->color->getColoredString(number_format($totalTime, 3) . " s\n"));
         print_r($this->color->getColoredString("\n---------------------------------------"));

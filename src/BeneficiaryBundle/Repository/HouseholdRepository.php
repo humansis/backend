@@ -85,13 +85,11 @@ class HouseholdRepository extends AbstractCriteriaRepository
     /**
      * @param $onlyCount
      * @param $countryISO3
-     * @param $groupGlobal
-     * @return QueryBuilder
+     * @return QueryBuilder|void
      */
     public function configurationQueryBuilder($onlyCount, $countryISO3)
     {
         $qb = $this->createQueryBuilder("hh");
-
         if ($onlyCount)
             $qb->select("count(hh)");
 
