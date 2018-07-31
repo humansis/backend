@@ -3,13 +3,23 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
+    location_service:
+        class: CommonBundle\Utils\LocationService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "@request_validator"
+
     ##########################################################################
     ####                           DATAFIXTURES                           ####
     ##########################################################################
-    CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
+    CommonBundle\DataFixtures\CountrySpecificFixtures:
         tags:
             - { name: doctrine.fixture.orm }
-    CommonBundle\DataFixtures\CountrySpecificFixtures:
+    CommonBundle\DataFixtures\LocationFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+    CommonBundle\DataFixtures\ModalityFixtures:
         tags:
             - { name: doctrine.fixture.orm }
     CommonBundle\DataFixtures\ProjectFixtures:
@@ -18,11 +28,11 @@ services:
     CommonBundle\DataFixtures\SectorFixtures:
         tags:
             - { name: doctrine.fixture.orm }
-    CommonBundle\DataFixtures\ModalityFixtures:
-        tags:
-            - { name: doctrine.fixture.orm }
     CommonBundle\DataFixtures\UserFixtures:
         arguments: ["@fos_user.user_manager", "@security.encoder_factory"]
+        tags:
+            - { name: doctrine.fixture.orm }
+    CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
         tags:
             - { name: doctrine.fixture.orm }
 

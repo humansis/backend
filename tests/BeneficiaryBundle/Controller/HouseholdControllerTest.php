@@ -35,11 +35,11 @@ class HouseholdControllerTest extends BMSServiceTestCase
         "latitude" => "1.1544",
         "longitude" => "120.12",
         "location" => [
-            "country_iso3" => "COUNTRY_TEST",
-            "adm1" => "ADM1_TEST",
-            "adm2" => "ADM2_TEST",
-            "adm3" => "ADM3_TEST",
-            "adm4" => "ADM4_TEST"
+            "country_iso3" => "FRA",
+            "adm1" => "Rhone-Alpes",
+            "adm2" => "Savoie",
+            "adm3" => "Chambery",
+            "adm4" => "Sainte Hélène sur Isère"
         ],
         "country_specific_answers" => [
             [
@@ -153,7 +153,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
             "fieldString" => 'ID Poor',
             "type" => 'Number',
-            "countryIso3" => 'KHM'
+            "countryIso3" => 'FRA'
         ]);
         $country_specific_answers = $this->body["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
@@ -186,7 +186,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('country_specific_answers', $household);
             $this->assertArrayHasKey('beneficiaries', $household);
             $location = $household["location"];
-            $this->assertArrayHasKey('country_iso3', $location);
             $this->assertArrayHasKey('adm1', $location);
             $this->assertArrayHasKey('adm2', $location);
             $this->assertArrayHasKey('adm3', $location);
@@ -218,6 +217,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         }
         catch (\Exception $exception)
         {
+            dump($exception);
             $this->remove($this->namefullname);
             $this->fail("\nThe mapping of fields of Household entity is not correct (1).\n");
             return false;
@@ -249,7 +249,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             "limit" => 1
         ];
 
-        $crawler = $this->client->request('POST', '/api/wsse/households/get/all', $body, [], ['HTTP_COUNTRY' => 'KHM']);
+        $crawler = $this->client->request('POST', '/api/wsse/households/get/all', $body, [], ['HTTP_COUNTRY' => 'FRA']);
         $listHousehold = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
@@ -326,7 +326,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
             "fieldString" => 'ID Poor',
             "type" => 'Number',
-            "countryIso3" => 'KHM'
+            "countryIso3" => 'FRA'
         ]);
         $country_specific_answers = $this->body["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
@@ -340,7 +340,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             '/api/wsse/households/' . $household->getId() . '/project/' . current($projects)->getId(),
             $this->body,
             [],
-            ['HTTP_COUNTRY' => 'KHM']
+            ['HTTP_COUNTRY' => 'FRA']
         );
         $this->body['fullname'] = $this->namefullname;
 
@@ -362,7 +362,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('country_specific_answers', $household);
             $this->assertArrayHasKey('beneficiaries', $household);
             $location = $household["location"];
-            $this->assertArrayHasKey('country_iso3', $location);
             $this->assertArrayHasKey('adm1', $location);
             $this->assertArrayHasKey('adm2', $location);
             $this->assertArrayHasKey('adm3', $location);
@@ -406,7 +405,11 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testEditHousehold
-     * @throws \Exception
+     * @param $isSuccess
+     * @return bool|void
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function testGetHouseholds($isSuccess)
     {
@@ -421,9 +424,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('POST', '/api/wsse/households/get/all', [], [], ['HTTP_COUNTRY' => 'COUNTRY_TEST']);
+        $crawler = $this->client->request('POST', '/api/wsse/households/get/all', [], [], ['HTTP_COUNTRY' => 'FRA']);
         $households = json_decode($this->client->getResponse()->getContent(), true);
-
         if (!empty($households))
         {
             $household = current($households);
@@ -433,7 +435,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 $this->assertArrayHasKey('location', $household);
                 $this->assertArrayHasKey('beneficiaries', $household);
                 $location = $household["location"];
-                $this->assertArrayHasKey('country_iso3', $location);
                 $this->assertArrayHasKey('adm1', $location);
                 $this->assertArrayHasKey('adm2', $location);
                 $this->assertArrayHasKey('adm3', $location);
@@ -501,8 +502,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     $this->em->remove($beneficiary);
                 }
             }
-            $location = $household->getLocation();
-            $this->em->remove($location);
 
             $countrySpecificAnswers = $this->em->getRepository(CountrySpecificAnswer::class)
                 ->findByHousehold($household);

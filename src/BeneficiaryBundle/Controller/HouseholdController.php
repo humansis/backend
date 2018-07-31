@@ -298,9 +298,9 @@ class HouseholdController extends Controller
     public function allAction(Request $request)
     {
         $filters = $request->request->all();
-        /** @var HouseholdService $householeService */
-        $householeService = $this->get('beneficiary.household_service');
-        $households = $householeService->getAll($filters['__country'], $filters);
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
+        $households = $householdService->getAll($filters['__country'], $filters);
 
         $json = $this->get('jms_serializer')
             ->serialize(

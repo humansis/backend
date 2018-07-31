@@ -1,6 +1,6 @@
 <?php
 
-namespace DistributionBundle\Repository;
+namespace CommonBundle\Repository;
 
 /**
  * LocationRepository

@@ -4,9 +4,11 @@
 namespace Tests\DistributionBundle\Controller;
 
 
+use CommonBundle\Entity\Adm4;
+use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Commodity;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
-use DistributionBundle\Entity\Location;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use ProjectBundle\Entity\Project;
@@ -26,11 +28,11 @@ class DistributionControllerTest extends BMSServiceTestCase
         "name" => "TEST_DISTRIBUTION_NAME_PHPUNIT",
         "type" => 0,
         "location" => [
-            "country_iso3" => "KHM",
-            "adm1" => "ADMIN FAKED",
-            "adm2" => "ADMIN FAKED",
-            "adm3" => "ADMIN FAKED",
-            "adm4" => "ADMIN FAKED"
+            "country_iso3" => "FRA",
+            "adm1" => "Rhone-Alpes",
+            "adm2" => "Savoie",
+            "adm3" => "Chambery",
+            "adm4" => "Sainte Hélène sur Isère"
         ],
         "selection_criteria" => [[
             "table_string" => "default",
@@ -87,7 +89,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         }
         $this->body['commodities'][0]['modality_type']['id'] = current($modalityTypes)->getId();
 
-        $crawler = $this->client->request('PUT', '/api/wsse/distributions', $this->body, [], ['HTTP_COUNTRY' => 'KHM']);
+        $crawler = $this->client->request('PUT', '/api/wsse/distributions', $this->body, [], ['HTTP_COUNTRY' => 'FRA']);
         $return = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -106,12 +108,6 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $distribution);
         $this->assertArrayHasKey('validated', $distribution);
 
-        $location = $this->em->getRepository(Location::class)->findOneByAdm1("ADMIN FAKED");
-        if ($location instanceof Location)
-        {
-            $this->em->remove($location);
-        }
-
         $commodity = $this->em->getRepository(Commodity::class)->findOneByUnit("PHPUNIT TEST");
         if ($commodity instanceof Commodity)
         {
@@ -121,6 +117,14 @@ class DistributionControllerTest extends BMSServiceTestCase
         $distribution = $this->em->getRepository(DistributionData::class)->find($distribution['id']);
         if ($distribution instanceof DistributionData)
         {
+
+            $distributionBeneficiaries = $this->em
+                ->getRepository(DistributionBeneficiary::class)->findByDistributionData($distribution);
+            foreach ($distributionBeneficiaries as $distributionBeneficiary)
+            {
+                $this->em->remove($distributionBeneficiary);
+
+            }
 
             $selectionCriteria = $this->em->getRepository(SelectionCriteria::class)->findByDistributionData($distribution);
             foreach ($selectionCriteria as $selectionCriterion)

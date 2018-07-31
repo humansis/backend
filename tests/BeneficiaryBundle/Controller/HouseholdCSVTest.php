@@ -12,7 +12,6 @@ use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Model\ImportStatistic;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
-use CommonBundle\Utils\Color;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\BMSServiceTestCase;
@@ -24,10 +23,8 @@ class HouseholdCSVTest extends BMSServiceTestCase
     private $hhCSVService;
     /** @var ExportCSVService $exportCSVService */
     private $exportCSVService;
-    /** @var Color $color */
-    private $color;
 
-    private $iso3 = "KHM";
+    private $iso3 = "FRA";
     private $addressStreet = "ADDR TEST_IMPORT";
     private $addressStreet2 = "ADDR2 TEST_IMPORT_TEST_IMPORT";
     private $addressStreet3 = "ADDR3 UNIT TEST UNIT";
@@ -90,10 +87,10 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "E" => "this is just some notes",
             "F" => 1.1544,
             "G" => 120.12,
-            "H" => "TEST_IMPORT",
-            "I" => "TEST_IMPORT",
-            "J" => "TEST_IMPORT",
-            "K" => "TEST_IMPORT",
+            "H" => "Rhone-Alpes",
+            "I" => "Savoie",
+            "J" => "Chambery",
+            "K" => "Sainte Hélène sur Isère",
             "L" => 4.0,
             "M" => "my wash",
             "N" => "FIRSTNAME TEST_IMPORT",
@@ -138,7 +135,6 @@ class HouseholdCSVTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
         $this->hhCSVService = $this->container->get('beneficiary.household_csv_service');
         $this->exportCSVService = $this->container->get('beneficiary.household_export_csv_service');
-        $this->color = new Color();
     }
 
     /**
@@ -268,10 +264,10 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "E" => "this is just some notes",
             "F" => 1.1544,
             "G" => 120.12,
-            "H" => "TEST_IMPORT22",
-            "I" => "TEST_IMPORT222",
-            "J" => "TEST_IMPORT22",
-            "K" => "TEST_IMPORT222",
+            "H" => "Rhone-Alpes",
+            "I" => "Savoie",
+            "J" => "Chambery",
+            "K" => "Sainte Hélène sur Isère",
             "L" => 4.0,
             "M" => "my wash",
             "N" => "FIRSTNAME3 UNIT_TEST",
@@ -357,10 +353,10 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "E" => "this is just some notes",
             "F" => 1.1544,
             "G" => 120.12,
-            "H" => "TEST_IMPORT223333",
-            "I" => "TEST_IMPORT222333",
-            "J" => "TEST_IMPORT223",
-            "K" => "TEST_IMPORT2223",
+            "H" => "Rhone-Alpes",
+            "I" => "Savoie",
+            "J" => "Chambery",
+            "K" => "Sainte Hélène sur Isère",
             "L" => 4.0,
             "M" => "my wash",
             "N" => "FIRSTNAME44444444 UNIT_TEST",
@@ -444,10 +440,10 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "E" => "this is just some notes",
             "F" => 1.1544,
             "G" => 120.12,
-            "H" => "TEST_IMPORT4",
-            "I" => "TEST_IMPORT4",
-            "J" => "TEST_IMPORT4",
-            "K" => "TEST_IMPORT4",
+            "H" => "Rhone-Alpes",
+            "I" => "Savoie",
+            "J" => "Chambery",
+            "K" => "Sainte Hélène sur Isère",
             "L" => 4.0,
             "M" => "my wash",
             "N" => "FI5 UNIT_TEST",
@@ -614,8 +610,6 @@ class HouseholdCSVTest extends BMSServiceTestCase
                     $this->em->remove($beneficiary);
                 }
             }
-            $location = $household->getLocation();
-            $this->em->remove($location);
 
             $countrySpecificAnswers = $this->em->getRepository(CountrySpecificAnswer::class)
                 ->findByHousehold($household);

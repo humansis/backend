@@ -55,7 +55,7 @@ class DistributionData
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location")
+     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
      *
      * @Groups({"FullDistribution"})
      */
@@ -279,11 +279,11 @@ class DistributionData
     /**
      * Set location.
      *
-     * @param \DistributionBundle\Entity\Location|null $location
+     * @param \CommonBundle\Entity\Location|null $location
      *
      * @return DistributionData
      */
-    public function setLocation(\DistributionBundle\Entity\Location $location = null)
+    public function setLocation(\CommonBundle\Entity\Location $location = null)
     {
         $this->location = $location;
 
@@ -293,7 +293,7 @@ class DistributionData
     /**
      * Get location.
      *
-     * @return \DistributionBundle\Entity\Location|null
+     * @return \CommonBundle\Entity\Location|null
      */
     public function getLocation()
     {
