@@ -27,13 +27,11 @@ class DistributionDataRetrievers
      * In distribtuion mode, only one project could be selected
      */
     public function ifInProject($qb, array $filters) {
-        dump($filters['project']);
         if(array_key_exists('project', $filters)) {
             $qb->andWhere('p.id IN (:projects)')
                     ->setParameter('projects', $filters['project']);
         }
         $qb = $this->ifInDistribution($qb, $filters);
-        dump($qb->getQuery()->getArrayResult());
         return $qb;
     }
 
@@ -42,12 +40,10 @@ class DistributionDataRetrievers
      * If this key exists, it means a distribution was selected in selector
      */
     public function ifInDistribution($qb, array $filters) {
-        dump($filters);
         if(array_key_exists('distribution', $filters)) {
             $qb->andWhere('d.id IN (:distributions)')
                     ->setParameter('distributions', $filters['distribution']);
         }
-        // dump($qb->getQuery()->getArrayResult());
         return $qb;
     }
 
@@ -56,8 +52,6 @@ class DistributionDataRetrievers
      * Use in all distribution data retrievers
      */
     public function getReportingValue(string $code, array $filters) {
-        // dump($code);
-        // dump($filters);
         $qb = $this->reportingDistribution->createQueryBuilder('rd')
                                           ->leftjoin('rd.value', 'rv')
                                           ->leftjoin('rd.indicator', 'ri')
@@ -70,8 +64,6 @@ class DistributionDataRetrievers
                                           ->select('rd.id', 'd.name as Name','rv.value as Value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
 
         $qb = $this->ifInProject($qb, $filters);
-        // dump($qb);
-        // dump($qb->getQuery()->getArrayResult());
         return $qb;
     }
 
@@ -79,7 +71,6 @@ class DistributionDataRetrievers
      * Get the data with the more recent values
      */
     public function lastDate(array $values) {
-        dump($values);
         $moreRecentValues = [];
         $lastDate = $values[0]['date'];
         foreach($values as $value) {
@@ -99,10 +90,8 @@ class DistributionDataRetrievers
      * Get the number of enrolled beneficiaries in a distribution
      */
     public function BMS_Distribution_NEB(array $filters) {
-        // dump('NEB');
         $qb = $this->getReportingValue('BMS_Distribution_NEB', $filters);
         $qb->select('d.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        // dump($qb->getQuery()->getArrayResult());
         if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
             $result = $this->lastDate($qb->getQuery()->getArrayResult());
             return $result;
@@ -162,7 +151,6 @@ class DistributionDataRetrievers
     public function BMSU_Distribution_NM(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_NM', $filters);
         $qb->select("CONCAT(rv.unity, '/', d.name) AS name",'rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        dump($qb->getQuery()->getArrayResult());
         return $qb->getQuery()->getArrayResult();
     }
 
@@ -172,7 +160,6 @@ class DistributionDataRetrievers
     public function BMSU_Distribution_NW(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_NW', $filters);
         $qb->select("CONCAT(rv.unity, '/', d.name) AS name",'rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        dump($qb->getQuery()->getArrayResult());
         return $qb->getQuery()->getArrayResult();
     }
 
@@ -225,7 +212,6 @@ class DistributionDataRetrievers
         }
         else if (sizeof($mens) === 0 && sizeof($womens) > 0) {
             $women = $this->lastDate($womens);
-            dump($women);
             $result = [
                 'name' => $women[0]["name"],
                 'project' => substr($women[0]["name"],6),
