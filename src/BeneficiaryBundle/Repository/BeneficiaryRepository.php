@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\Household;
+use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -16,6 +17,16 @@ use Doctrine\ORM\QueryBuilder;
  */
 class BeneficiaryRepository extends AbstractCriteriaRepository
 {
+
+    public function getAllofDistribution(DistributionData $distributionData)
+    {
+        $qb = $this->createQueryBuilder("b");
+        $q = $qb->leftJoin("b.distributionBeneficiary", "db")
+            ->where("db.distributionData = :distributionData")
+            ->setParameter("distributionData", $distributionData);
+
+        return $q->getQuery()->getResult();
+    }
 
     /**
      * Get the head of household

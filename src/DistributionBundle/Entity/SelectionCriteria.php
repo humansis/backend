@@ -49,7 +49,7 @@ class SelectionCriteria
     /**
      * @var string
      *
-     * @ORM\Column(name="field_string", type="string", length=255)
+     * @ORM\Column(name="field_string", type="string", length=255, nullable=true)
      * @Groups({"FullDistribution"})
      */
     private $fieldString;

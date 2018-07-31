@@ -19,7 +19,8 @@ services:
         public: true
     beneficiary.country_specific_service:
         class: BeneficiaryBundle\Utils\CountrySpecificService
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments:
+            - "@doctrine.orm.entity_manager"
         public: true
 
 #####################################################################################################
@@ -27,17 +28,28 @@ services:
 #####################################################################################################
     beneficiary.household_export_csv_service:
         class: BeneficiaryBundle\Utils\ExportCSVService
-        arguments: ["@doctrine.orm.entity_manager", "@service_container"]
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@service_container"
         public: true
     beneficiary.household_csv_service:
         class: BeneficiaryBundle\Utils\HouseholdCSVService
-        arguments: ["@doctrine.orm.entity_manager",
-         "@beneficiary.household_service",
-          "@beneficiary.beneficiary_service",
-           "@beneficiary.mapper",
-            "@service_container"]
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@beneficiary.household_service"
+            - "@beneficiary.beneficiary_service"
+            - "@beneficiary.csv_to_array_mapper"
+            - "@service_container"
         public: true
-    beneficiary.mapper:
-        class: BeneficiaryBundle\Utils\Mapper
-        arguments: ["@doctrine.orm.entity_manager"]
+    beneficiary.csv_to_array_mapper:
+        class: BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper
+        arguments:
+            - "@doctrine.orm.entity_manager"
+        public: true
+
+    beneficiary.household_to_csv_mapper:
+        class: BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@jms_serializer"
         public: true

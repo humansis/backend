@@ -1,75 +1,15 @@
 <?php
 
 
-namespace BeneficiaryBundle\Utils;
+namespace BeneficiaryBundle\Utils\Mapper;
 
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use Doctrine\ORM\EntityManagerInterface;
 
-class Mapper
+class CSVToArrayMapper extends AbstractMapper
 {
-
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /**
-     * The row index of the header (with the name of country specifics)
-     * @var int
-     */
-    private $indexRowHeader = 2;
-
-    /**
-     * First value with a column in the csv which can move, depends on the number of country specifics
-     * @var string
-     */
-    private $firstColumnNonStatic = 'L';
-
-    /**
-     * @var array $MAPPING_CSV
-     */
-    private $MAPPING_CSV = [
-        // Household
-        "address_street" => "A",
-        "address_number" => "B",
-        "address_postcode" => "C",
-        "livelihood" => "D",
-        "notes" => "E",
-        "latitude" => "F",
-        "longitude" => "G",
-        "location" => [
-            // Location
-            "adm1" => "H",
-            "adm2" => "I",
-            "adm3" => "J",
-            "adm4" => "K"
-        ],
-        // Beneficiary
-        "beneficiaries" => [
-            "given_name" => "L",
-            "family_name" => "M",
-            "gender" => "N",
-            "status" => "O",
-            "date_of_birth" => "P",
-            "vulnerability_criteria" => "Q",
-            "phones" => "R",
-            "national_ids" => "S"
-        ]
-    ];
-
-    /**
-     * First row with data
-     * @var int $first_row
-     */
-    private $first_row = 3;
-
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->em = $entityManager;
-    }
-
 
     /**
      * Get the list of households with their beneficiaries
@@ -78,7 +18,7 @@ class Mapper
      * @return array
      * @throws \Exception
      */
-    public function getListHouseholdArray(array $sheetArray, $countryIso3)
+    public function fromCSVToArray(array $sheetArray, $countryIso3)
     {
         // Get the mapping for the current country
         $mappingCSV = $this->loadMappingCSVOfCountry($countryIso3);
@@ -89,9 +29,9 @@ class Mapper
 
         foreach ($sheetArray as $indexRow => $row)
         {
-            if ($this->indexRowHeader === $indexRow)
+            if (Household::indexRowHeader === $indexRow)
                 $rowHeader = $row;
-            if ($indexRow < $this->first_row)
+            if ($indexRow < Household::firstRow)
                 continue;
 
             // Load the household array for the current row
@@ -125,7 +65,6 @@ class Mapper
 
         return $listHouseholdArray;
     }
-
 
     /**
      * Transform the array from the CSV (with index 'A', 'B') to a formatted array which can be compatible with the
@@ -260,74 +199,6 @@ class Mapper
     }
 
     /**
-     * Load the mapping CSV for a specific country. Some columns can move because on the number of country specifics
-     *
-     * @param $countryIso3
-     * @return array
-     */
-    private function loadMappingCSVOfCountry($countryIso3)
-    {
-        $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($countryIso3);
-        // Get the number of country specific for the specific country countryIso3
-        $nbCountrySpecific = count($countrySpecifics);
-        $mappingCSVCountry = [];
-        $countrySpecificsAreLoaded = false;
-        foreach ($this->MAPPING_CSV as $indexFormatted => $indexCSV)
-        {
-            // For recursive array (allowed only 1 level of recursivity)
-            if (is_array($indexCSV))
-            {
-                foreach ($indexCSV as $indexFormatted2 => $indexCSV2)
-                {
-                    // If the column is before the non-static columns, change nothing
-                    if ($indexCSV2 < $this->firstColumnNonStatic)
-                        $mappingCSVCountry[$indexFormatted][$indexFormatted2] = $indexCSV2;
-                    // Else we increment the column.
-                    // Example : if $nbCountrySpecific = 1, we shift the column by 1 (if the column is X, it will became Y)
-                    else
-                    {
-                        // If we have not added the country specific column in the mapping
-                        if (!$countrySpecificsAreLoaded)
-                        {
-                            // Add each country specific column in the mapping
-                            for ($i = 0; $i < $nbCountrySpecific; $i++)
-                            {
-                                $mappingCSVCountry["tmp_country_specific" . $i] =
-                                    $this->SUMOfLetter($indexCSV2, $i);
-                            }
-                            $countrySpecificsAreLoaded = true;
-                        }
-                        $mappingCSVCountry[$indexFormatted][$indexFormatted2] = $this->SUMOfLetter($indexCSV2, $nbCountrySpecific);
-                    }
-                }
-            }
-            else
-            {
-                // Same process than in the if
-                if ($indexCSV < $this->firstColumnNonStatic)
-                    $mappingCSVCountry[$indexFormatted] = $indexCSV;
-                else
-                {
-                    // If we have not added the country specific column in the mapping
-                    if (!$countrySpecificsAreLoaded)
-                    {
-                        // Add each country specific column in the mapping
-                        for ($i = 0; $i < $nbCountrySpecific; $i++)
-                        {
-                            $mappingCSVCountry["tmp_country_specific" . $i] =
-                                $this->SUMOfLetter($indexCSV, $i);
-                        }
-                        $countrySpecificsAreLoaded = true;
-                    }
-                    $mappingCSVCountry[$indexFormatted] = $this->SUMOfLetter($indexCSV, $nbCountrySpecific);
-                }
-            }
-        }
-
-        return $mappingCSVCountry;
-    }
-
-    /**
      * Reformat the field beneficiary
      * @param $formattedHouseholdArray
      */
@@ -338,29 +209,5 @@ class Mapper
         $beneficiary["updated_on"] = (new \DateTime())->format('Y-m-d H:m:i');
         unset($formattedHouseholdArray["beneficiaries"]);
         $formattedHouseholdArray["beneficiaries"][] = $beneficiary;
-    }
-
-    /**
-     * Make an addition of a letter and a number
-     * Example : A + 2 = C  Or  Z + 1 = AA  OR  AY + 2 = BA
-     * @param $letter1
-     * @param $number
-     * @return string
-     */
-    private function SUMOfLetter($letter1, $number)
-    {
-        $ascii = ord($letter1) + $number;
-        $prefix = '';
-        if ($ascii > 90)
-        {
-            $prefix = 'A';
-            $ascii -= 26;
-            while ($ascii > 90)
-            {
-                $prefix++;
-                $ascii -= 90;
-            }
-        }
-        return $prefix . chr($ascii);
     }
 }

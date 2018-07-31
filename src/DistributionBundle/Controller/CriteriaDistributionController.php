@@ -21,6 +21,48 @@ class CriteriaDistributionController extends Controller
     /**
      * @Rest\Get("/distributions/criteria", name="get_criteria_celection")
      *
+     * @SWG\Tag(name="CriteriaDistributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return the list of distribution criteria",
+     *      examples={
+     *          "application/json":
+     *          {
+     *             {
+     *              "field_string": "gender",
+     *              "type": "boolean"
+     *             },
+     *             {
+     *              "field_string": "dateOfBirth",
+     *              "type": "date"
+     *             },
+     *             {
+     *              "table_string": "vulnerabilityCriteria",
+     *              "id": 1,
+     *              "field_string": "disabled"
+     *             },
+     *             {
+     *              "table_string": "vulnerabilityCriteria",
+     *              "id": 2,
+     *              "field_string": "solo parent"
+     *             },
+     *             {
+     *              "table_string": "countrySpecific",
+     *              "id": 1,
+     *              "field_string": "ID Poor",
+     *              "type": "Number"
+     *             },
+     *             {
+     *              "table_string": "countrySpecific",
+     *              "id": 2,
+     *              "field_string": "WASH",
+     *               "type": "Text"
+     *             }
+     *           }
+     *     }
+     * )
+     *
      * @param Request $request
      * @return Response
      */

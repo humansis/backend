@@ -45,6 +45,9 @@ class DistributionService
     /** @var AbstractRetriever $retriever */
     private $retriever;
 
+    /** @var int $numberRandomBeneficiary */
+    private $numberRandomBeneficiary = 1;
+
     /**
      * DistributionService constructor.
      * @param EntityManagerInterface $entityManager
@@ -82,8 +85,29 @@ class DistributionService
         }
         catch (\Exception $exception)
         {
-            throw new \Exception("Your class Retriever is malformed.");
+            throw new \Exception("Your class Retriever is undefined or malformed.");
         }
+    }
+
+
+    public function validateDistribution(DistributionData $distributionData)
+    {
+        $distributionData->setValidated(true);
+        $this->em->persist($distributionData);
+        $this->em->flush();
+
+        return $distributionData;
+    }
+
+    public function getRandomBeneficiaries(DistributionData $distributionData)
+    {
+        $listReceivers = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
+        if (sizeof($listReceivers) < $this->numberRandomBeneficiary)
+            return $listReceivers;
+        $rand_keys = $listReceivers[mt_rand(0, $this->numberRandomBeneficiary)];
+
+
+        return $rand_keys;
     }
 
     /**
@@ -141,6 +165,23 @@ class DistributionService
         $this->saveReceivers($distribution, $listReceivers);
 
         $this->em->flush();
+        /** @var DistributionData $distribution */
+        $distribution = $this->em->getRepository(DistributionData::class)
+            ->find($distribution);
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
+            ->findByDistributionData($distribution);
+        $selectionsCriteria = $this->em->getRepository(SelectionCriteria::class)
+            ->findByDistributionData($distribution);
+
+        foreach ($distributionBeneficiary as $item)
+        {
+            $distribution->addDistributionBeneficiary($item);
+        }
+        foreach ($selectionsCriteria as $item)
+        {
+            $distribution->addSelectionCriterion($item);
+        }
+
         return ["distribution" => $distribution, "data" => $listReceivers];
     }
 
@@ -197,11 +238,22 @@ class DistributionService
         }
     }
 
+    /**
+     * Distribution Type change number to string
+     * @param bool $type
+     * @return string
+     */
     public function guessTypeString(bool $type)
     {
         return ($type == 1) ? 'beneficiary' : 'household';
     }
 
+    /**
+     * Transform the object selectionCriteria to an array
+     *
+     * @param SelectionCriteria $selectionCriteria
+     * @return array
+     */
     public function getArrayOfCriteria(SelectionCriteria $selectionCriteria)
     {
         return [
@@ -256,10 +308,8 @@ class DistributionService
     }
 
     /**
-     * Archived a distribution
-     *
      * @param DistributionData $distribution
-     * @return DistributionData
+     * @return null|object
      */
     public function archived(DistributionData $distribution)
     {
@@ -273,6 +323,4 @@ class DistributionService
 
         return $distributionData;
     }
-
-
 }
