@@ -11,8 +11,6 @@ use UserBundle\Entity\User;
 class UserControllerTest extends BMSServiceTestCase
 {
 
-    /** @var Client $client */
-    private $client;
     /** @var string $username */
     private $username = "TESTER_PHPUNIT@gmail.com";
 

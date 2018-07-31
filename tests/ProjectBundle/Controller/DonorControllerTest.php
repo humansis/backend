@@ -11,10 +11,6 @@ use Tests\BMSServiceTestCase;
 
 class DonorControllerTest extends BMSServiceTestCase
 {
-
-    /** @var Client $client */
-    private $client;
-
     /** @var string $namefullname */
     private $namefullname = "TEST_DONOR_NAME_PHPUNIT";
 

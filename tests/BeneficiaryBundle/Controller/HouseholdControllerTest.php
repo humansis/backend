@@ -19,95 +19,7 @@ use Tests\BMSServiceTestCase;
 class HouseholdControllerTest extends BMSServiceTestCase
 {
 
-    /** @var Client $client */
-    private $client;
-
     private $namefullname = "STREET_TEST";
-
-
-    private $body = [
-        "project" => 1,
-        "address_street" => "STREET_TEST",
-        "address_number" => "NUMBER_TEST",
-        "address_postcode" => "POSTCODE_TEST",
-        "livelihood" => 10,
-        "notes" => "NOTES_TEST",
-        "latitude" => "1.1544",
-        "longitude" => "120.12",
-        "location" => [
-            "country_iso3" => "FRA",
-            "adm1" => "Rhone-Alpes",
-            "adm2" => "Savoie",
-            "adm3" => "Chambery",
-            "adm4" => "Sainte Hélène sur Isère"
-        ],
-        "country_specific_answers" => [
-            [
-                "answer" => "MY_ANSWER_TEST",
-                "country_specific" => [
-                    "id" => 1
-                ]
-            ]
-        ],
-        "beneficiaries" => [
-            [
-                "given_name" => "FIRSTNAME_TEST",
-                "family_name" => "NAME_TEST",
-                "gender" => "h",
-                "status" => 1,
-                "date_of_birth" => "1976-10-06",
-                "updated_on" => "2018-06-13 12:12:12",
-                "profile" => [
-                    "photo" => "PHOTO_TEST"
-                ],
-                "vulnerability_criteria" => [
-                    [
-                        "id" => 1
-                    ]
-                ],
-                "phones" => [
-                    [
-                        "number" => "0000_TEST",
-                        "type" => "TYPE_TEST"
-                    ]
-                ],
-                "national_ids" => [
-                    [
-                        "id_number" => "0000_TEST",
-                        "id_type" => "ID_TYPE_TEST"
-                    ]
-                ]
-            ],
-            [
-                "given_name" => "GIVENNAME_TEST",
-                "family_name" => "FAMILYNAME_TEST",
-                "gender" => "h",
-                "status" => 0,
-                "date_of_birth" => "1976-10-06",
-                "updated_on" => "2018-06-13 12:12:12",
-                "profile" => [
-                    "photo" => "PHOTO_TEST"
-                ],
-                "vulnerability_criteria" => [
-                    [
-                        "id" => 1
-                    ]
-                ],
-                "phones" => [
-                    [
-                        "number" => "1111_TEST",
-                        "type" => "TYPE_TEST"
-                    ]
-                ],
-                "national_ids" => [
-                    [
-                        "id_number" => "1111_TEST",
-                        "id_type" => "ID_TYPE_TEST"
-                    ]
-                ]
-            ]
-        ]
-    ];
 
     /**
      * @throws \Exception
@@ -127,51 +39,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testCreateHousehold()
     {
-        // Fake connection with a token for the user tester (ADMIN)
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-
-        $projects = $this->em->getRepository(Project::class)->findAll();
-        if (empty($projects))
-        {
-            print_r("There is no project inside your database");
-            return false;
-        }
-
-        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
-            "fieldString" => "disabled"
-        ]);
-        $beneficiaries = $this->body["beneficiaries"];
-        $vulnerabilityId = $vulnerabilityCriterion->getId();
-        foreach ($beneficiaries as $index => $b)
-        {
-            $this->body["beneficiaries"][$index]["vulnerability_criteria"] = [["id" => $vulnerabilityId]];
-        }
-
-        $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
-            "fieldString" => 'ID Poor',
-            "type" => 'Number',
-            "countryIso3" => 'FRA'
-        ]);
-        $country_specific_answers = $this->body["country_specific_answers"];
-        $countrySpecificId = $countrySpecific->getId();
-        foreach ($country_specific_answers as $index => $c)
-        {
-            $this->body["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
-        }
-
-        $crawler = $this->client->request(
-            'PUT',
-            '/api/wsse/households/project/' . current($projects)->getId(),
-            $this->body,
-            [],
-            ['HTTP_COUNTRY' => 'COUNTRY_TEST']
-        );
-        $household = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
-
+        $household = $this->createHousehold();
         try
         {
             $this->assertArrayHasKey('id', $household);
@@ -269,9 +137,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
         $this->em->clear();
         $household = $this->em->getRepository(Household::class)->findOneBy([
-            "addressStreet" => $this->body["address_street"],
-            "addressNumber" => $this->body["address_number"],
-            "addressPostcode" => $this->body["address_postcode"],
+            "addressStreet" => $this->bodyHousehold["address_street"],
+            "addressNumber" => $this->bodyHousehold["address_number"],
+            "addressPostcode" => $this->bodyHousehold["address_postcode"],
         ]);
         if (!$household instanceof Household)
             $this->fail("ISSUE : This test must be executed after the createTest");
@@ -289,37 +157,37 @@ class HouseholdControllerTest extends BMSServiceTestCase
             return false;
         }
 
-        $this->body['address_street'] .= '(u)';
+        $this->bodyHousehold['address_street'] .= '(u)';
 
-        foreach ($this->body['beneficiaries'] as $index => $beneficiaryArray)
+        foreach ($this->bodyHousehold['beneficiaries'] as $index => $beneficiaryArray)
         {
             $beneficiary = $this->em->getRepository(Beneficiary::class)
                 ->findOneByGivenName($beneficiaryArray['given_name']);
-            $this->body['beneficiaries'][$index]['id'] = $beneficiary->getId();
+            $this->bodyHousehold['beneficiaries'][$index]['id'] = $beneficiary->getId();
 
             foreach ($beneficiaryArray['phones'] as $index2 => $phoneArray)
             {
                 $phone = $this->em->getRepository(Phone::class)
                     ->findOneByNumber($phoneArray['number']);
-                $this->body['beneficiaries'][$index]['phones'][$index2]['id'] = $phone->getId();
+                $this->bodyHousehold['beneficiaries'][$index]['phones'][$index2]['id'] = $phone->getId();
             }
 
             foreach ($beneficiaryArray['national_ids'] as $index2 => $national_idArray)
             {
                 $national_id = $this->em->getRepository(NationalId::class)
                     ->findOneByIdNumber($national_idArray['id_number']);
-                $this->body['beneficiaries'][$index]['national_ids'][$index2]['id'] = $national_id->getId();
+                $this->bodyHousehold['beneficiaries'][$index]['national_ids'][$index2]['id'] = $national_id->getId();
             }
         }
 
         $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
             "fieldString" => "disabled"
         ]);
-        $beneficiaries = $this->body["beneficiaries"];
+        $beneficiaries = $this->bodyHousehold["beneficiaries"];
         $vulnerabilityId = $vulnerabilityCriterion->getId();
         foreach ($beneficiaries as $index => $b)
         {
-            $this->body["beneficiaries"][$index]["vulnerability_criteria"] = [["id" => $vulnerabilityId]];
+            $this->bodyHousehold["beneficiaries"][$index]["vulnerability_criteria"] = [["id" => $vulnerabilityId]];
         }
 
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
@@ -327,21 +195,21 @@ class HouseholdControllerTest extends BMSServiceTestCase
             "type" => 'Number',
             "countryIso3" => 'FRA'
         ]);
-        $country_specific_answers = $this->body["country_specific_answers"];
+        $country_specific_answers = $this->bodyHousehold["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
         foreach ($country_specific_answers as $index => $c)
         {
-            $this->body["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
+            $this->bodyHousehold["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
         }
 
         $crawler = $this->client->request(
             'POST',
             '/api/wsse/households/' . $household->getId() . '/project/' . current($projects)->getId(),
-            $this->body,
+            $this->bodyHousehold,
             [],
             ['HTTP_COUNTRY' => 'FRA']
         );
-        $this->body['fullname'] = $this->namefullname;
+        $this->bodyHousehold['fullname'] = $this->namefullname;
 
         $household = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());

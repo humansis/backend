@@ -13,14 +13,11 @@ use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
+use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
 use Tests\BMSServiceTestCase;
 
 class DistributionControllerTest extends BMSServiceTestCase
 {
-
-    /** @var Client $client */
-    private $client;
-
     /** @var string $namefullname */
     private $namefullname = "TEST_DISTRIBUTION_NAME_PHPUNIT";
 
@@ -68,6 +65,7 @@ class DistributionControllerTest extends BMSServiceTestCase
      */
     public function testCreateDistribution()
     {
+
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);

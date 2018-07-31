@@ -11,9 +11,6 @@ use UserBundle\Entity\UserProject;
 
 class ProjectControllerTest extends BMSServiceTestCase
 {
-
-    /** @var Client $client */
-    private $client;
     /** @var string $name */
     private $name = "TEST_PROJECT_NAME";
 
