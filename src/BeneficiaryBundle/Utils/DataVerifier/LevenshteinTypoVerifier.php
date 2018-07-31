@@ -37,7 +37,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
      * @param string $countryISO3
      * @param array $householdArray
      * @param int $cacheId
-     * @return array|null
+     * @return array|bool|null
      * @throws \Exception
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId)
@@ -58,6 +58,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
 
         if (null === $newHead)
             return null;
+
         $stringToCompare = $householdArray["address_street"] .
             $householdArray["address_number"] .
             $householdArray["address_postcode"] .
@@ -68,7 +69,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             $stringToCompare,
             $this->maximumDistanceLevenshtein);
 
-        if (true || empty($similarHouseholds))
+        if (empty($similarHouseholds))
         {
             $this->saveInCache('no_typo', $cacheId, $householdArray, null);
             return null;

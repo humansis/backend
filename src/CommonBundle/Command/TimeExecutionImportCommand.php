@@ -753,8 +753,6 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
                     $this->em->remove($beneficiary);
                 }
             }
-            $location = $household->getLocation();
-            $this->em->remove($location);
 
             $countrySpecificAnswers = $this->em->getRepository(CountrySpecificAnswer::class)
                 ->findByHousehold($household);
@@ -764,7 +762,16 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             }
 
             $this->em->remove($household);
-            $this->em->flush();
+            $location = $household->getLocation();
+            $this->em->remove($location);
+            try
+            {
+                $this->em->flush();
+            }
+            catch (\Exception $exception)
+            {
+
+            }
         }
     }
 }
