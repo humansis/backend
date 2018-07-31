@@ -10,6 +10,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\DependencyInjection\Container;
 
+/**
+ * @deprecated Use the Levenshtein Typo Verifier (which use the Levenshtein algorithm)
+ * Class TypoVerifier
+ * @package BeneficiaryBundle\Utils\DataVerifier
+ */
 class TypoVerifier extends AbstractVerifier
 {
 
