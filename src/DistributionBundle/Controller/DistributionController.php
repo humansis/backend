@@ -121,7 +121,6 @@ class DistributionController extends Controller
         }
         catch (\Exception $exception)
         {
-            dump($exception);
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 

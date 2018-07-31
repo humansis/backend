@@ -217,7 +217,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
         }
         catch (\Exception $exception)
         {
-            dump($exception);
             $this->remove($this->namefullname);
             $this->fail("\nThe mapping of fields of Household entity is not correct (1).\n");
             return false;
