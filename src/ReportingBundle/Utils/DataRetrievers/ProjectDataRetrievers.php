@@ -26,7 +26,6 @@ class ProjectDataRetrievers
             $qb->andWhere('p.id IN (:projects)')
                     ->setParameter('projects', $filters['project']);
         }
-        dump($qb);
         return $qb;
     }
 

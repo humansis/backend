@@ -1,5 +1,17 @@
 # Reporting Module
 
+## example json filters
+```
+{
+    "filters": 
+            {
+                 "project" : ["1"],
+                "distribution": ["1"]
+                 
+            }
+     
+}
+```
 ## Table of database link to the reporting module
 
 ![alt text](https://raw.githubusercontent.com/ReliefApplications/bms_api/dev/src/ReportingBundle/Resources/img/BDD.png)

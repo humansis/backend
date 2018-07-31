@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManager;
 
 use ReportingBundle\Entity\ReportingCountry;
 
-class CountryDataRetrievers implements DataRetrieverInterface
+class CountryDataRetrievers
 {
     private $em;
     private $reportingCountry;

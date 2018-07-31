@@ -27,13 +27,13 @@ class DistributionDataRetrievers
      * In distribtuion mode, only one project could be selected
      */
     public function ifInProject($qb, array $filters) {
-        // dump($filters);
+        dump($filters['project']);
         if(array_key_exists('project', $filters)) {
             $qb->andWhere('p.id IN (:projects)')
                     ->setParameter('projects', $filters['project']);
         }
         $qb = $this->ifInDistribution($qb, $filters);
-        // dump($qb->getQuery()->getArrayResult());
+        dump($qb->getQuery()->getArrayResult());
         return $qb;
     }
 
@@ -42,6 +42,7 @@ class DistributionDataRetrievers
      * If this key exists, it means a distribution was selected in selector
      */
     public function ifInDistribution($qb, array $filters) {
+        dump($filters);
         if(array_key_exists('distribution', $filters)) {
             $qb->andWhere('d.id IN (:distributions)')
                     ->setParameter('distributions', $filters['distribution']);
@@ -69,8 +70,8 @@ class DistributionDataRetrievers
                                           ->select('rd.id', 'd.name as Name','rv.value as Value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
 
         $qb = $this->ifInProject($qb, $filters);
-        dump($qb);
-        dump($qb->getQuery()->getArrayResult());
+        // dump($qb);
+        // dump($qb->getQuery()->getArrayResult());
         return $qb;
     }
 
@@ -101,7 +102,7 @@ class DistributionDataRetrievers
         // dump('NEB');
         $qb = $this->getReportingValue('BMS_Distribution_NEB', $filters);
         $qb->select('d.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        dump($qb->getQuery()->getArrayResult());
+        // dump($qb->getQuery()->getArrayResult());
         if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
             $result = $this->lastDate($qb->getQuery()->getArrayResult());
             return $result;
@@ -161,6 +162,7 @@ class DistributionDataRetrievers
     public function BMSU_Distribution_NM(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_NM', $filters);
         $qb->select("CONCAT(rv.unity, '/', d.name) AS name",'rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+        dump($qb->getQuery()->getArrayResult());
         return $qb->getQuery()->getArrayResult();
     }
 
@@ -170,6 +172,7 @@ class DistributionDataRetrievers
     public function BMSU_Distribution_NW(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_NW', $filters);
         $qb->select("CONCAT(rv.unity, '/', d.name) AS name",'rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+        dump($qb->getQuery()->getArrayResult());
         return $qb->getQuery()->getArrayResult();
     }
 
@@ -183,7 +186,7 @@ class DistributionDataRetrievers
         $mens = $this->BMSU_Distribution_NM($filters);
         $womens = $this->BMSU_Distribution_NW($filters);
 
-        if (sizeof($mens) > 0 || sizeof($womens) > 0) {
+        if (sizeof($mens) > 0 && sizeof($womens) > 0) {
             //search the more recent date
             $lastDate = $mens[0]['date'];
             foreach($mens as $men) {
@@ -219,6 +222,26 @@ class DistributionDataRetrievers
                     }                
                 }   
             }
+        }
+        else if (sizeof($mens) === 0 && sizeof($womens) > 0) {
+            $women = $this->lastDate($womens);
+            dump($women);
+            $result = [
+                'name' => $women[0]["name"],
+                'project' => substr($women[0]["name"],6),
+                'value' => $women[0]['value'],
+                'date' => $women[0]['date']
+            ]; 
+            array_push($menAndWomen, $result);
+        } else if (sizeof($womens) === 0 && sizeof($mens) > 0) {
+            $men = $this->lastDate($mens);
+            $result = [
+                'name' => $men[0]["name"],
+                'project' => substr($men[0]["name"],4),
+                'value' => $men[0]['value'],
+                'date' => $men[0]['date']
+            ]; 
+            array_push($menAndWomen, $result);
         }
         return $menAndWomen; 
     }
