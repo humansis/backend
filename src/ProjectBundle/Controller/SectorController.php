@@ -9,16 +9,18 @@ use ProjectBundle\Entity\Sector;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use FOS\RestBundle\Controller\Annotations as Rest;
 
+use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class SectorController extends Controller
 {
 
     /**
      * @Rest\Get("/sectors", name="get_all_sectors")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Sectors")
      *
@@ -43,6 +45,7 @@ class SectorController extends Controller
 
     /**
      * @Rest\Get("/sectors/{id}", name="show_sector")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Sectors")
      *
@@ -65,6 +68,7 @@ class SectorController extends Controller
 
     /**
      * @Rest\Put("/sectors", name="add_sector")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Sectors")
      *
@@ -109,6 +113,7 @@ class SectorController extends Controller
 
     /**
      * @Rest\Post("/sectors/{id}", name="update_sector")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Sectors")
      *

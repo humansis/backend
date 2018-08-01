@@ -13,12 +13,14 @@ use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class DistributionCSVController extends Controller
 {
 
     /**
      * @Rest\Get("/distributions/{id}/export", name="export_csv")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -57,6 +59,7 @@ class DistributionCSVController extends Controller
 
     /**
      * @Rest\Post("/distributions/{id}/import", name="import_csv")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *

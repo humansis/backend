@@ -4,20 +4,21 @@ namespace ProjectBundle\Controller;
 
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use ProjectBundle\Entity\Project;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use ProjectBundle\Entity\Project;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class ProjectController extends Controller
 {
     /**
      * Get projects
      * @Rest\Get("/projects", name="get_all_projects")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Projects")
      *
@@ -46,6 +47,7 @@ class ProjectController extends Controller
     /**
      * Get a project
      * @Rest\Get("/projects/{id}", name="show_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Projects")
      *
@@ -68,6 +70,7 @@ class ProjectController extends Controller
     /**
      * Create a project
      * @Rest\Put("/projects", name="add_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Projects")
      *
@@ -113,6 +116,7 @@ class ProjectController extends Controller
      * TODO VOTER POUR CHECKER QUE PROJECT EST PAS ARCHIVED
      * Edit a project
      * @Rest\Post("/projects/{id}", name="update_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Projects")
      *
@@ -157,6 +161,7 @@ class ProjectController extends Controller
     /**
      * Edit a project
      * @Rest\Delete("/projects/{id}", name="delete_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Projects")
      *

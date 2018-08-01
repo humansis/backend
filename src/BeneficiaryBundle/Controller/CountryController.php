@@ -11,11 +11,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class CountryController extends Controller
 {
     /**
      * @Rest\Get("/country_specifics", name="all_country_specifics")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
      *
      * @return Response
      */
@@ -35,6 +37,7 @@ class CountryController extends Controller
 
     /**
      * @Rest\Put("/country_specifics")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @param Request $request
      * @return Response
@@ -56,6 +59,7 @@ class CountryController extends Controller
 
     /**
      * @Rest\Post("/country_specifics/{id}")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @param Request $request
      * @return Response
@@ -78,6 +82,7 @@ class CountryController extends Controller
     /**
      * Edit a countrySpecific
      * @Rest\Delete("/country_specifics/{id}", name="delete_country_specific")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="CountrySpecifics")
      *

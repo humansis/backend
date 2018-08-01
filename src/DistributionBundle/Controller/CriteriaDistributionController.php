@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
 class CriteriaDistributionController extends Controller
@@ -20,6 +21,7 @@ class CriteriaDistributionController extends Controller
 
     /**
      * @Rest\Get("/distributions/criteria", name="get_criteria_celection")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      *
@@ -83,6 +85,7 @@ class CriteriaDistributionController extends Controller
 
     /**
      * @Rest\Post("/distributions/criteria")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      *
@@ -131,6 +134,7 @@ class CriteriaDistributionController extends Controller
 
     /**
      * @Rest\Post("/distributions/criteria/number")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      *

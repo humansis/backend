@@ -9,12 +9,13 @@ use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use DistributionBundle\Entity\DistributionData;
 use ProjectBundle\Entity\Project;
 
+use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class DistributionController extends Controller
 {
@@ -22,6 +23,7 @@ class DistributionController extends Controller
 
     /**
      * @Rest\Get("/distributions/{id}/random")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -56,6 +58,7 @@ class DistributionController extends Controller
 
     /**
      * @Rest\Get("/distributions/{id}/validate")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -90,6 +93,7 @@ class DistributionController extends Controller
     /**
      * Create a distribution
      * @Rest\Put("/distributions", name="add_distribution")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -139,6 +143,7 @@ class DistributionController extends Controller
 
     /**
      * @Rest\Put("/distributions/{id}/beneficiary", name="add_beneficiary_in_distribution")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -176,6 +181,7 @@ class DistributionController extends Controller
 
     /**
      * @Rest\Delete("/distributions/{id}/beneficiary", name="remove_beneficiary_in_distribution")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -199,6 +205,7 @@ class DistributionController extends Controller
 
     /**
      * @Rest\Get("/distributions", name="get_all_distributions")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -223,6 +230,7 @@ class DistributionController extends Controller
 
     /**
      * @Rest\Get("/distributions/{id}", name="get_one_distributions")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -254,6 +262,7 @@ class DistributionController extends Controller
     /**
      * Edit a distribution
      * @Rest\Post("/distributions/{id}", name="update_distribution")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -299,6 +308,7 @@ class DistributionController extends Controller
     /**
      * Archive a distribution
      * @Rest\Post("/distributions/archive/{id}", name="archived_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -334,6 +344,7 @@ class DistributionController extends Controller
     /**
      * Get distributions of one project
      * @Rest\Get("/distributions/projects/{id}", name="get_distributions_of_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Distributions")
      *

@@ -5,13 +5,14 @@ namespace UserBundle\Controller;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use UserBundle\Entity\User;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use Swagger\Annotations as SWG;
-use UserBundle\Entity\User;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class UserController extends Controller
 {
@@ -135,6 +136,7 @@ class UserController extends Controller
      * Create a new User. You must have called getSalt before use this one
      *
      * @Rest\Put("/users", name="add_user")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Users")
      *
@@ -191,6 +193,7 @@ class UserController extends Controller
      * Connection URL checking
      *
      * @Rest\Get("/check")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_WRITE')")
      *
      * @SWG\Response(
      *     response=200,
@@ -217,6 +220,7 @@ class UserController extends Controller
      * Get all users
      *
      * @Rest\Get("/users", name="get_all_users")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Users")
      *
@@ -254,6 +258,7 @@ class UserController extends Controller
      * Show a user
      *
      * @Rest\Get("/users/{id}", name="show_user")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Users")
      *
@@ -282,6 +287,7 @@ class UserController extends Controller
      * Edit a user {id} with data in the body
      *
      * @Rest\Post("/users/{id}", name="update_user")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Users")
      *
@@ -382,6 +388,7 @@ class UserController extends Controller
     /**
      * Delete an user with its links in the api
      * @Rest\Delete("/users/{id}", name="delete_user")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Users")
      *

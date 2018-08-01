@@ -13,12 +13,14 @@ use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class ModalityController extends Controller
 {
 
     /**
      * @Rest\Get("/modalities")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Modalities")
      *
@@ -51,6 +53,7 @@ class ModalityController extends Controller
 
     /**
      * @Rest\Get("/modalities/{id}/types")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Modalities")
      *
@@ -84,6 +87,7 @@ class ModalityController extends Controller
 
     /**
      * @Rest\Post("/modalities")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Modalities")
      *
@@ -125,6 +129,7 @@ class ModalityController extends Controller
 
     /**
      * @Rest\Post("/modalities/{id}/types")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Modalities")
      *
