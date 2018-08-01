@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Entity;
 
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\Expr\Select;
 use ProjectBundle\Entity\Project;
@@ -51,6 +52,16 @@ class DistributionData
      * @Groups({"FullDistribution"})
      */
     private $updatedOn;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_distribution", type="date")
+     * @JMS_Type("DateTime<'Y-m-d'>")
+     *
+     * @Groups({"FullDistribution"})
+     */
+    private $dateDistribution;
 
     /**
      * @var Location
@@ -470,5 +481,29 @@ class DistributionData
     public function getDistributionBeneficiaries()
     {
         return $this->distributionBeneficiaries;
+    }
+
+    /**
+     * Set dateDistribution.
+     *
+     * @param \DateTime $dateDistribution
+     *
+     * @return DistributionData
+     */
+    public function setDateDistribution($dateDistribution)
+    {
+        $this->dateDistribution = $dateDistribution;
+
+        return $this;
+    }
+
+    /**
+     * Get dateDistribution.
+     *
+     * @return \DateTime
+     */
+    public function getDateDistribution()
+    {
+        return $this->dateDistribution;
     }
 }

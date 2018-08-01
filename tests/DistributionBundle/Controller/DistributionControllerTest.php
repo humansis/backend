@@ -32,6 +32,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
     private $body = [
         "name" => "TEST_DISTRIBUTION_NAME_PHPUNIT",
+        "date_distribution" => "2018-08-10",
         "type" => 0,
         "location" => [
             "adm1" => "Rhone-Alpes",
