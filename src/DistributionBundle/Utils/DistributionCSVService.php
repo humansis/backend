@@ -83,6 +83,7 @@ class DistributionCSVService
         $sheetArray = $worksheet->toArray(null, true, true, true);
         $index = 1;
         $columnIdSync = null;
+        // Remove useless line (like headers)
         while ($index < Household::firstRow)
         {
             if ($index === Household::indexRowHeader)
@@ -90,6 +91,7 @@ class DistributionCSVService
             unset($sheetArray[$index]);
             $index++;
         }
+        // Analyze each rows of the file
         $this->analyzeArray($distributionData, $sheetArray, $columnIdSync);
 
         return true;
