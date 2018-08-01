@@ -35,11 +35,12 @@ class ProjectService
     /**
      * Get all projects
      *
+     * @param User $user
      * @return array
      */
-    public function findAll()
+    public function findAll(User $user)
     {
-        $projects = $this->em->getRepository(Project::class)->findByArchived(0);
+        $projects = $this->em->getRepository(Project::class)->getAllOfUser($user);
         $houseHoldsRepository = $this->em->getRepository(Household::class);
         foreach($projects as $project){
             $project->setNumberOfHouseholds($houseHoldsRepository->countByProject($project)[1]);
@@ -52,7 +53,9 @@ class ProjectService
     /**
      * Create a project
      *
+     * @param $countryISO3
      * @param array $projectArray
+     * @param User $user
      * @return Project
      * @throws \Exception
      */
@@ -199,9 +202,6 @@ class ProjectService
      */
     public function delete(Project $project)
     {
-        $projectBeneficiary = $this->em->getRepository(ProjectBeneficiary::class)->findByProject($project);
-        if (!empty($projectBeneficiary))
-            $this->archived($project);
         $distributionData = $this->em->getRepository(DistributionData::class)->findByProject($project);
         if (!empty($distributionData))
             $this->archived($project);

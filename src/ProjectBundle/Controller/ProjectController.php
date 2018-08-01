@@ -35,9 +35,8 @@ class ProjectController extends Controller
      */
     public function getAllAction()
     {
-        // TODO check user rights
-
-        $projects = $this->get('project.project_service')->findAll();
+        $user = $this->getUser();
+        $projects = $this->get('project.project_service')->findAll($user);
         $json = $this->get('jms_serializer')
             ->serialize($projects, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
 

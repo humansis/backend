@@ -1,6 +1,7 @@
 <?php
 
 namespace ProjectBundle\Repository;
+use UserBundle\Entity\User;
 
 /**
  * ProjectRepository
@@ -10,4 +11,15 @@ namespace ProjectBundle\Repository;
  */
 class ProjectRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    public function getAllOfUser(User $user)
+    {
+        $qb = $this->createQueryBuilder("p");
+        $q = $qb->leftJoin("p.usersProject", "up")
+            ->where("up.user = :user")
+            ->andWhere("p.archived = 0")
+            ->setParameter("user", $user);
+
+        return $q->getQuery()->getResult();
+    }
 }
