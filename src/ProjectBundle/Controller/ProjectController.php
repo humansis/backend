@@ -92,11 +92,13 @@ class ProjectController extends Controller
     public function addAction(Request $request)
     {
         $projectArray = $request->request->all();
+        $country = $projectArray['__country'];
+        unset($projectArray['__country']);
         $user = $this->getUser();
 
         try
         {
-            $project = $this->get('project.project_service')->create($projectArray, $user);
+            $project = $this->get('project.project_service')->create($country, $projectArray, $user);
         }
         catch (\Exception $e)
         {

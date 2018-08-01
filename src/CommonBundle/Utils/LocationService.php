@@ -36,7 +36,7 @@ class LocationService
      * @return Location|null|object
      * @throws ValidationException
      */
-    public function getOrSaveLocation(array $locationArray)
+    public function getOrSaveLocation($countryISO3, array $locationArray)
     {
         $this->requestValidator->validate(
             "location",
@@ -46,7 +46,7 @@ class LocationService
         );
 
         $adm1 = $this->em->getRepository(Adm1::class)->findOneBy([
-            "countryISO3" => $locationArray["country_iso3"],
+            "countryISO3" => $countryISO3,
             "name" => $locationArray["adm1"]
             ]);
 

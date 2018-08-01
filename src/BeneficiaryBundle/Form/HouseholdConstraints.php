@@ -35,7 +35,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "beneficiaries" =>$array,
         ];
         $location = [
-            "country_iso3" => $string,
+            "country_iso3" => $optionalString,
             "adm1" => $string,
             "adm2" => $string,
             "adm3" => $string,
@@ -50,7 +50,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "id_tmp" => $optionalString,
             "given_name" => $string,
             "family_name" => $string,
-            "gender" => $string,
+            "gender" => $numeric,
             "status" => $numeric,
             "date_of_birth" => $string,
             "updated_on" => $string,

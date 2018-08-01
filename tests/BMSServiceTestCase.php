@@ -19,6 +19,7 @@ use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Serializer\SerializerInterface;
 use UserBundle\Entity\User;
 use UserBundle\Security\Authentication\Token\WsseUserToken;
@@ -26,7 +27,6 @@ use UserBundle\Security\Authentication\Token\WsseUserToken;
 
 class BMSServiceTestCase extends KernelTestCase
 {
-
     /** @var Client $client */
     protected $client;
     const USER_PHPUNIT = 'phpunit';
@@ -43,10 +43,16 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var $serializer */
     protected $serializer;
 
+    /** @var TokenStorage $tokenStorage */
     protected $tokenStorage;
 
     /** @var HouseholdService $householdService */
     protected $householdService;
+
+    // VARIABLES
+
+    /** @var string $iso3 */
+    protected $iso3 = "UNT";
 
     protected $namefullnameHousehold = "STREET_TEST";
 
@@ -60,7 +66,6 @@ class BMSServiceTestCase extends KernelTestCase
         "latitude" => "1.1544",
         "longitude" => "120.12",
         "location" => [
-            "country_iso3" => "FRA",
             "adm1" => "Rhone-Alpes",
             "adm2" => "Savoie",
             "adm3" => "Chambery",
@@ -68,7 +73,7 @@ class BMSServiceTestCase extends KernelTestCase
         ],
         "country_specific_answers" => [
             [
-                "answer" => "MY_ANSWER_TEST",
+                "answer" => "MY_ANSWER_TEST1",
                 "country_specific" => [
                     "id" => 1
                 ]
@@ -78,7 +83,7 @@ class BMSServiceTestCase extends KernelTestCase
             [
                 "given_name" => "FIRSTNAME_TEST",
                 "family_name" => "NAME_TEST",
-                "gender" => "h",
+                "gender" => 1,
                 "status" => 1,
                 "date_of_birth" => "1976-10-06",
                 "updated_on" => "2018-06-13 12:12:12",
@@ -106,7 +111,7 @@ class BMSServiceTestCase extends KernelTestCase
             [
                 "given_name" => "GIVENNAME_TEST",
                 "family_name" => "FAMILYNAME_TEST",
-                "gender" => "h",
+                "gender" => 1,
                 "status" => 0,
                 "date_of_birth" => "1976-10-06",
                 "updated_on" => "2018-06-13 12:12:12",
@@ -312,7 +317,7 @@ class BMSServiceTestCase extends KernelTestCase
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
             "fieldString" => 'ID Poor',
             "type" => 'Number',
-            "countryIso3" => 'FRA'
+            "countryIso3" => $this->iso3
         ]);
         $country_specific_answers = $this->bodyHousehold["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
@@ -320,7 +325,8 @@ class BMSServiceTestCase extends KernelTestCase
         {
             $this->bodyHousehold["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
         }
-        $this->bodyHousehold["__country"] = "FRA";
+
+        $this->bodyHousehold["__country"] = $this->iso3;
         $household = $this->householdService->create(
             $this->bodyHousehold,
             current($projects)

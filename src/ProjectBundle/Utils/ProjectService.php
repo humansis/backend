@@ -56,7 +56,7 @@ class ProjectService
      * @return Project
      * @throws \Exception
      */
-    public function create(array $projectArray, User $user)
+    public function create($countryISO3, array $projectArray, User $user)
     {
         /** @var Project $project */
         $newProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
@@ -64,8 +64,8 @@ class ProjectService
         $project->setName($newProject->getName())
                 ->setName($newProject->getName())
                 ->setStartDate($newProject->getStartDate())        
-                ->setEndDate($newProject->getEndDate());
-        $project->setIso3($projectArray['__country']);
+                ->setEndDate($newProject->getEndDate())
+                ->setIso3($countryISO3);
 
         $errors = $this->validator->validate($project);
         if (count($errors) > 0)

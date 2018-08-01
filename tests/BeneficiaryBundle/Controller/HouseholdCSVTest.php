@@ -24,7 +24,6 @@ class HouseholdCSVTest extends BMSServiceTestCase
     /** @var ExportCSVService $exportCSVService */
     private $exportCSVService;
 
-    private $iso3 = "FRA";
     private $addressStreet = "ADDR TEST_IMPORT";
     private $addressStreet2 = "ADDR2 TEST_IMPORT_TEST_IMPORT";
     private $addressStreet3 = "ADDR3 UNIT TEST UNIT";
@@ -95,7 +94,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => "my wash",
             "N" => "FIRSTNAME TEST_IMPORT",
             "O" => "NAME TEST_IMPORT",
-            "P" => "F",
+            "P" => 0,
             "Q" => 1,
             "R" => "1995-04-25",
             "S" => "lactating ; single family",
@@ -118,7 +117,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => null,
             "N" => "FIRSTNAME2 TEST_IMPORT",
             "O" => "NAME2 TEST_IMPORT",
-            "P" => "M",
+            "P" => 1,
             "Q" => 0,
             "R" => "1995-04-25",
             "S" => "lactating",
@@ -272,7 +271,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => "my wash",
             "N" => "FIRSTNAME3 UNIT_TEST",
             "O" => "FNAME33 UNIT_TEST",
-            "P" => "F",
+            "P" => 0,
             "Q" => 1,
             "R" => "1995-04-25",
             "S" => "lactating ; single family",
@@ -295,7 +294,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => null,
             "N" => "FIRSTNAME2 TEST_IMPORT",
             "O" => "NAME2 TEST_IMPORT",
-            "P" => "M",
+            "P" => 1,
             "Q" => 0,
             "R" => "1995-04-25",
             "S" => "lactating",
@@ -361,7 +360,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => "my wash",
             "N" => "FIRSTNAME44444444 UNIT_TEST",
             "O" => "FNAME44444444444444 UNIT_TEST",
-            "P" => "F",
+            "P" => 0,
             "Q" => 1,
             "R" => "1995-04-25",
             "S" => "lactating ; single family",
@@ -384,7 +383,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => null,
             "N" => "FIRSTNAME2 TEST_IMPORT",
             "O" => "NAME2 TEST_IMPORT",
-            "P" => "M",
+            "P" => 1,
             "Q" => 0,
             "R" => "1995-04-25",
             "S" => "lactating",
@@ -448,7 +447,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => "my wash",
             "N" => "FI5 UNIT_TEST",
             "O" => "FNA5 UNIT_TEST",
-            "P" => "F",
+            "P" => 0,
             "Q" => 1,
             "R" => "1995-04-25",
             "S" => "lactating ; single family",
@@ -471,7 +470,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => null,
             "N" => "FIRSTNAME2 TEST_IMPORT",
             "O" => "NAME2 TEST_IMPORT",
-            "P" => "M",
+            "P" => 1,
             "Q" => 0,
             "R" => "1995-04-25",
             "S" => "lactating",

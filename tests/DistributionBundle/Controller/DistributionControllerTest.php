@@ -5,6 +5,9 @@ namespace Tests\DistributionBundle\Controller;
 
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
+use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Commodity;
@@ -31,7 +34,6 @@ class DistributionControllerTest extends BMSServiceTestCase
         "name" => "TEST_DISTRIBUTION_NAME_PHPUNIT",
         "type" => 0,
         "location" => [
-            "country_iso3" => "FRA",
             "adm1" => "Rhone-Alpes",
             "adm2" => "Savoie",
             "adm3" => "Chambery",
@@ -49,7 +51,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             [
                 "table_string" => "default",
                 "field_string" => "gender",
-                "value_string" => "0",
+                "value_string" => "1",
                 "condition_string" => "=",
                 "kind_beneficiary" => "beneficiary",
                 "field_id" => null
@@ -108,7 +110,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         }
         $this->body['commodities'][0]['modality_type']['id'] = current($modalityTypes)->getId();
 
-        $crawler = $this->client->request('PUT', '/api/wsse/distributions', $this->body, [], ['HTTP_COUNTRY' => 'FRA']);
+        $crawler = $this->client->request('PUT', '/api/wsse/distributions', $this->body, [], ['HTTP_COUNTRY' => $this->iso3]);
         $return = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
@@ -125,20 +127,50 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $distribution);
         $this->assertArrayHasKey('validated', $distribution);
 
-        dump(sizeof($this->em->getRepository(Beneficiary::class)->findAll()));
         $data = $this->distributionCSVService
             ->export(
-                "FRA",
+                $this->iso3,
                 $this->em->getRepository(DistributionData::class)->find($distribution["id"])
             );
-        dump($data);
+
         $rows = str_getcsv($data[0], "\n");
         foreach ($rows as $index => $row)
         {
+
             if ($index < 2)
                 continue;
 
-            dump(str_getcsv($row, ','));
+            $rowArray = str_getcsv($row, ',');
+
+            if ($index === 2)
+            {
+                $indexAnswerCountrySpecific = 11;
+                $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($this->iso3);
+                    /** @var CountrySpecific $countrySpecific */
+                foreach ($countrySpecifics as $countrySpecific)
+                {
+                    /** @var CountrySpecificAnswer $answer */
+                    $answer = $this->em->getRepository(CountrySpecificAnswer::class)->findOneBy([
+                        "countrySpecific" => $countrySpecific,
+                        "household" => $this->em->getRepository(Household::class)->findOneBy([
+                            "addressStreet" => $this->bodyHousehold['address_street'],
+                            "addressNumber" => $this->bodyHousehold['address_number']
+                        ])
+                    ]);
+
+                    if (!$answer instanceof CountrySpecificAnswer)
+                        continue;
+
+                    $this->assertSame($answer->getAnswer(), $rowArray[$indexAnswerCountrySpecific]);
+                    $indexAnswerCountrySpecific++;
+                }
+            }
+
+            $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["given_name"], $rowArray[13]);
+            $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["family_name"], $rowArray[14]);
+            $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["gender"], intval($rowArray[15]));
+            $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["status"], intval($rowArray[16]));
+            $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["date_of_birth"], $rowArray[17]);
         }
 
         $this->removeDistribution($distribution);

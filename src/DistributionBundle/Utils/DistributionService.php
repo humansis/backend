@@ -134,7 +134,7 @@ class DistributionService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        $location = $this->locationService->getOrSaveLocation($location);
+        $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
         $distribution->setLocation($location);
 
         $project = $distribution->getProject();

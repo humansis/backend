@@ -114,7 +114,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             "limit" => 1
         ];
 
-        $crawler = $this->client->request('POST', '/api/wsse/households/get/all', $body, [], ['HTTP_COUNTRY' => 'FRA']);
+        $crawler = $this->client->request('POST', '/api/wsse/households/get/all', $body, [], ['HTTP_COUNTRY' => $this->iso3]);
         $listHousehold = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
@@ -191,7 +191,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
             "fieldString" => 'ID Poor',
             "type" => 'Number',
-            "countryIso3" => 'FRA'
+            "countryIso3" => $this->iso3
         ]);
         $country_specific_answers = $this->bodyHousehold["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
@@ -205,7 +205,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             '/api/wsse/households/' . $household->getId() . '/project/' . current($projects)->getId(),
             $this->bodyHousehold,
             [],
-            ['HTTP_COUNTRY' => 'FRA']
+            ['HTTP_COUNTRY' => $this->iso3]
         );
         $this->bodyHousehold['fullname'] = $this->namefullnameHousehold;
 
@@ -289,7 +289,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('POST', '/api/wsse/households/get/all', [], [], ['HTTP_COUNTRY' => 'FRA']);
+        $crawler = $this->client->request('POST', '/api/wsse/households/get/all', [], [], ['HTTP_COUNTRY' => $this->iso3]);
         $households = json_decode($this->client->getResponse()->getContent(), true);
         if (!empty($households))
         {

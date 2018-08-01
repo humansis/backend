@@ -137,7 +137,7 @@ PUT ("/households/project/{id}")
 		{
 			"given_name": "name",
 			"family_name": "family",
-			"gender": "m",
+			"gender": 1,
 			"status": 0,
 			"date_of_birth": "1976-10-06",
 			"updated_on": "2018-06-13 12:12:12",
@@ -165,7 +165,7 @@ PUT ("/households/project/{id}")
 		{
 			"given_name": "name222",
 			"family_name": "family2222",
-			"gender": "f",
+			"gender": 0,
 			"status": 0,
 			"date_of_birth": "1976-10-06",
 			"updated_on": "2018-06-13 12:12:12",
@@ -224,7 +224,7 @@ POST ("/households/{id_household}/project/{id_project}")
 			"id": 1,
 			"given_name": "nameee2",
 			"family_name": "family",
-			"gender": "h",
+			"gender": 1,
 			"status": 0,
 			"date_of_birth": "1976-10-06",
 			"updated_on": "2018-06-13 12:12:12",
