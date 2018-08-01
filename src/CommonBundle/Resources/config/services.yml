@@ -17,6 +17,11 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
     CommonBundle\DataFixtures\LocationFixtures:
+        arguments:
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+    CommonBundle\DataFixtures\LocationUnitTestFixtures:
         tags:
             - { name: doctrine.fixture.orm }
     CommonBundle\DataFixtures\ModalityFixtures:
@@ -29,7 +34,9 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
     CommonBundle\DataFixtures\UserFixtures:
-        arguments: ["@fos_user.user_manager", "@security.encoder_factory"]
+        arguments:
+            - "@fos_user.user_manager"
+            - "@security.encoder_factory"
         tags:
             - { name: doctrine.fixture.orm }
     CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
