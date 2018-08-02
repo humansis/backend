@@ -88,7 +88,7 @@ class DefaultVoter extends Voter
     protected function hasCountry(User $user, $countryISO3)
     {
         $userCountry = $this->em->getRepository(UserCountry::class)
-            ->findBy([
+            ->findOneBy([
                 "user" => $user,
                 "iso3" => $countryISO3
             ]);
