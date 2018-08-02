@@ -36,7 +36,9 @@ class ProjectDataRetrievers
      */
     public function BMS_Project_HS(array $filters) {
         $qb = $this->getReportingValue('BMS_Project_HS', $filters);
+        //check if the DQL query return a result or not
         if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            //to filter data with the good frequency
             $frequency = $this->getByFrequency($qb, $filters, 'BMS_Project_HS');
             if(sizeof($frequency) > 0) {
                 $result = $this->lastDate($frequency);
@@ -54,7 +56,9 @@ class ProjectDataRetrievers
      */
     public function BMS_Project_AB(array $filters) {
         $qb = $this->getReportingValue('BMS_Project_AB', $filters);
+        //check if the DQL query return a result or not
         if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            //to filter data with the good frequency
             $frequency = $this->getByFrequency($qb, $filters, 'BMS_Project_AB');
             if(sizeof($frequency) > 0) {
                 $result = $this->lastDate($frequency);
@@ -73,9 +77,11 @@ class ProjectDataRetrievers
     public function BMS_Project_NMW(array $filters) {
 
         $menAndWomen = [];
+        //call function to get number of men and number of women
         $mens = $this->BMSU_Project_NM($filters);
         $womens = $this->BMSU_Project_NW($filters);
 
+        //verify if there is no men or no women in the distribution
         if (sizeof($mens) > 0 || sizeof($womens) > 0) {
             $lastDate = $mens[0]['date'];
             foreach($mens as $men) {
@@ -83,6 +89,8 @@ class ProjectDataRetrievers
                     $lastDate = $men['date'];
                 }
             }
+            
+            //Search the corresponding data and put them in an array after formatting them 
             foreach ($mens as $men) { 
                 if ($men["date"] == $lastDate) {
                     $result = [
@@ -117,6 +125,7 @@ class ProjectDataRetrievers
      */
     public function BMSU_Project_NM(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_NM', $filters);
+        //to filter data with the good frequency
         $result = $this->getByFrequency($qb, $filters, 'BMSU_Project_NM' );
         return $result;    
     }
@@ -126,6 +135,7 @@ class ProjectDataRetrievers
      */
     public function BMSU_Project_NW(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_NW', $filters);
+        //to filter data with the good frequency
         $result = $this->getByFrequency($qb, $filters, 'BMSU_Project_NW');
         return $result;   
     }  
@@ -175,6 +185,7 @@ class ProjectDataRetrievers
      */
     public function BMSU_Project_TVSV(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_TVSV', $filters);
+        //to filter data with the good frequency
         $result = $this->getByFrequency($qb, $filters, 'BMSU_Project_TVSV' );
         return $result;
     }
@@ -184,6 +195,7 @@ class ProjectDataRetrievers
      */
     public function BMSU_Project_TVS(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_TVS', $filters);
+        //to filter data with the good frequency
         $result = $this->getByFrequency($qb, $filters, 'BMSU_Project_TVS' );
         return $result;
     }
@@ -193,6 +205,7 @@ class ProjectDataRetrievers
      */
     public function BMSU_Project_PV(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_PV', $filters);
+        //to filter data with the good frequency
         $result = $this->getByFrequency($qb, $filters, 'BMSU_Project_PV' );
         return $result;
     }
@@ -262,6 +275,8 @@ class ProjectDataRetrievers
      * switch case to use the good select
      * each case is the name of the function to execute
      * in the body of each case, if allow to find which frequency is waiting
+     * 
+     * Indicators with the same 'select' statement are grouped in the same case
      */
     public function conditionSelect($qb, $nameFunction, $frequency) {
         switch ($nameFunction) {

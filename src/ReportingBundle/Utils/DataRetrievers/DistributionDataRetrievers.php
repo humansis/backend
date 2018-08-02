@@ -69,6 +69,7 @@ class DistributionDataRetrievers
 
     /**
      * Get the data with the more recent values
+     * If the frequency is quarter, select the value corresponding to the quarter
      */
     public function lastDate(array $values) {
         $moreRecentValues = [];
@@ -95,7 +96,9 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_NEB(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_NEB', $filters);
+        //check if the DQL query return a result or not
         if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            //to filter data with the good frequency
             $frequency = $this->getByFrequency($qb, $filters, 'BMS_Distribution_NEB');
             if(sizeof($frequency) > 0) {
                 $result = $this->lastDate($frequency);
@@ -114,7 +117,9 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_TDV(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_TDV', $filters);
+        //check if the DQL query return a result or not
         if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            //to filter data with the good frequency
             $frequency = $this->getByFrequency($qb, $filters, 'BMS_Distribution_TDV');
             if(sizeof($frequency) > 0) {
                 $result = $this->lastDate($frequency);
@@ -132,7 +137,9 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_M(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_M', $filters);
+        //check if the DQL query return a result or not
         if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            //to filter data with the good frequency
             $frequency = $this->getByFrequency($qb, $filters, 'BMS_Distribution_M');
             if(sizeof($frequency) > 0) {
                 $result = $this->lastDate($frequency);
@@ -150,7 +157,9 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_AB(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_AB', $filters);
+        //check if the DQL query return a result or not
         if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            //to filter data with the good frequency
             $frequency = $this->getByFrequency($qb, $filters, 'BMS_Distribution_AB');
             if(sizeof($frequency) > 0) {
                 $result = $this->lastDate($frequency);
@@ -168,6 +177,7 @@ class DistributionDataRetrievers
      */
     public function BMSU_Distribution_NM(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_NM', $filters);
+        //to filter data with the good frequency
         $result = $this->getByFrequency($qb, $filters, 'BMSU_Distribution_NM' );
         return $result; 
     }
@@ -177,6 +187,7 @@ class DistributionDataRetrievers
      */
     public function BMSU_Distribution_NW(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_NW', $filters);
+        //to filter data with the good frequency
         $result = $this->getByFrequency($qb, $filters, 'BMSU_Distribution_NW' );
         return $result; 
     }
@@ -191,6 +202,7 @@ class DistributionDataRetrievers
         $mens = $this->BMSU_Distribution_NM($filters);
         $womens = $this->BMSU_Distribution_NW($filters);
 
+        //verify if there is no men or no women in the distribution
         if (sizeof($mens) > 0 && sizeof($womens) > 0) {
             //search the more recent date
             $lastDate = $mens[0]['date'];
@@ -255,8 +267,9 @@ class DistributionDataRetrievers
      */
     public function BMSU_Distribution_TVS(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_TVS', $filters);
-           $result = $this->getByFrequency($qb, $filters, 'BMSU_Distribution_TVS' );
-           return $result;   
+        //to filter data with the good frequency
+        $result = $this->getByFrequency($qb, $filters, 'BMSU_Distribution_TVS' );
+        return $result;   
     }
 
     /**
@@ -264,8 +277,9 @@ class DistributionDataRetrievers
      */
     public function BMSU_Distribution_TVSV(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_TVSV', $filters);
-           $result = $this->getByFrequency($qb, $filters, 'BMSU_Distribution_TVSV' );
-           return $result;   
+        //to filter data with the good frequency
+        $result = $this->getByFrequency($qb, $filters, 'BMSU_Distribution_TVSV' );
+        return $result;   
     }
 
     /**
@@ -312,15 +326,12 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_PPV(array $filters) {
         $projectDistributionValue =[];
-
         $repositoryProject = $this->em->getRepository(Project::class);
-
         $projectValue = $this->project->BMSU_Project_PV($filters);
-
         $distributionValue = $this->BMS_Distribution_TDV($filters);
-
         $TotalDistributionValueUsed = 0;
 
+        //Verify if one of them is empty
         if (sizeof($projectValue) > 0 && sizeof($distributionValue) > 0 ) {
             $moreRecentProject = $this->lastDate($projectValue);
             $moreRecentDistribution = $this->lastDate($distributionValue);
@@ -392,6 +403,8 @@ class DistributionDataRetrievers
      * switch case to use the good select
      * each case is the name of the function to execute
      * in the body of each case, if allow to find which frequency is waiting
+     * 
+     * Indicator with the same 'select' statement is grouped in the same case
      */
     public function conditionSelect($qb, $nameFunction, $frequency) {
         switch ($nameFunction) {
