@@ -260,6 +260,11 @@ class ProjectDataRetrievers
         return $result;
     }
 
+    /**
+     * switch case to use the good select
+     * each case is the name of the function to execute
+     * in the body of each case, if allow to find which frequency is waiting
+     */
     public function conditionSelect($qb, $nameFunction, $frequency) {
         switch ($nameFunction) {
             case 'BMS_Project_AB':
