@@ -35,12 +35,25 @@ class ProjectService
     /**
      * Get all projects
      *
+     * @param $countryIso3
      * @param User $user
      * @return array
      */
-    public function findAll(User $user)
+    public function findAll($countryIso3, User $user)
     {
-        $projects = $this->em->getRepository(Project::class)->getAllOfUser($user);
+        if (
+            !$user->hasRole("ROLE_COUNTRY_MANAGER")
+            && !$user->hasRole("ROLE_REGIONAL_MANAGER")
+            && !$user->hasRole("ROLE_ADMIN")
+        )
+        {
+            $projects = $this->em->getRepository(Project::class)->getAllOfUser($user);
+        }
+        else
+        {
+            $projects = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
+
+        }
         $houseHoldsRepository = $this->em->getRepository(Household::class);
         foreach($projects as $project){
             $project->setNumberOfHouseholds($houseHoldsRepository->countByProject($project)[1]);

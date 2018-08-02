@@ -6,20 +6,24 @@ namespace DistributionBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use ProjectBundle\Entity\Project;
 
 abstract class AbstractCriteriaRepository extends EntityRepository implements InterfaceCriteriaRepository
 {
 
     /**
-     * @param $countryISO3
+     * @param Project $project
+     * @param array $countryISO3
      * @param array $criteria
      * @param array $configurationCriteria
      * @param bool $onlyCount
      * @param string|null $groupGlobal
      * @return mixed
      * @throws \Exception
+     * @throws \ReflectionException
      */
     public function findByCriteria(
+        Project $project,
         $countryISO3,
         array $criteria,
         array $configurationCriteria = [],
@@ -27,7 +31,7 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
         string $groupGlobal = null
     )
     {
-        $qb = $this->configurationQueryBuilder($onlyCount, $countryISO3);
+        $qb = $this->configurationQueryBuilder($onlyCount, $countryISO3, $project);
 
         $i = 1;
         foreach ($criteria as $criterion)
@@ -70,9 +74,10 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
     /**
      * @param $onlyCount
      * @param $countryISO3
+     * @param Project $project
      * @throws \Exception
      */
-    public function configurationQueryBuilder($onlyCount, $countryISO3)
+    public function configurationQueryBuilder($onlyCount, $countryISO3, Project $project)
     {
         throw new \Exception("configurationQueryBuilder must de implemented.");
     }

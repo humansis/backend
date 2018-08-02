@@ -58,24 +58,29 @@ class DefaultVoter extends Voter
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
+        dump(1);
         $user = $token->getUser();
         if (!$user instanceof User)
         {
             return false;
         }
+        dump(1);
         /**
          * @var User $user
          */
         if (!$this->hasRole($user->getRoles(), $attribute))
             return false;
 
+        dump(1);
         if(!$this->requestStack->getCurrentRequest()->request->has('__country'))
             return false;
 
+        dump(1);
         $countryISO3 = $this->requestStack->getCurrentRequest()->request->get('__country');
         if (!$this->hasCountry($user, $countryISO3))
             return false;
 
+        dump(1);
         return true;
     }
 

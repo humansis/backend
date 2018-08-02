@@ -8,6 +8,7 @@ use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
+use ProjectBundle\Entity\Project;
 
 /**
  * BeneficiaryRepository
@@ -86,16 +87,19 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     /**
      * @param $onlyCount
      * @param $countryISO3
-     * @param $groupGlobal
-     * @return QueryBuilder
+     * @param Project $project
+     * @return QueryBuilder|void
      */
-    public function configurationQueryBuilder($onlyCount, $countryISO3)
+    public function configurationQueryBuilder($onlyCount, $countryISO3, Project $project)
     {
         $qb = $this->createQueryBuilder("b");
 
         if ($onlyCount)
             $qb->select("count(b)");
 
+        $qb->leftJoin("hh.projects", "p")
+            ->andWhere("p.id =:idProject")
+            ->setParameter("idProject", $project->getId());
         $qb->leftJoin("b.household", "hh");
         $this->setCountry($qb, $countryISO3);
 

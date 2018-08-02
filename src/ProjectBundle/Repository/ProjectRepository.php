@@ -22,4 +22,14 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
 
         return $q->getQuery()->getResult();
     }
+
+    public function getAllOfCountry($iso3)
+    {
+        $qb = $this->createQueryBuilder("p");
+        $q = $qb->where("p.iso3 = :iso3")
+            ->andWhere("p.archived = 0")
+            ->setParameter("iso3", $iso3);
+
+        return $q->getQuery()->getResult();
+    }
 }

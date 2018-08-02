@@ -33,10 +33,10 @@ class ProjectController extends Controller
      *
      * @return Response
      */
-    public function getAllAction()
+    public function getAllAction(Request $request)
     {
         $user = $this->getUser();
-        $projects = $this->get('project.project_service')->findAll($user);
+        $projects = $this->get('project.project_service')->findAll($request->request->get('__country'), $user);
         $json = $this->get('jms_serializer')
             ->serialize($projects, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
 

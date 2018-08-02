@@ -10,6 +10,8 @@ use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
 use UserBundle\Entity\User;
+use UserBundle\Entity\UserCountry;
+use UserBundle\Entity\UserProject;
 
 
 class UserFixtures extends Fixture
@@ -54,6 +56,11 @@ class UserFixtures extends Fixture
                     ->setRoles(["ROLE_ADMIN"]);
                 $instance->setPassword($this->encoderFactory->getEncoder($instance)->encodePassword($datum[1], $salt));
                 $manager->persist($instance);
+                $userCountry = new UserCountry();
+                $userCountry->setUser($instance)
+                    ->setIso3("KHM")
+                    ->setRights(1);
+                $manager->persist($userCountry);
                 $manager->flush();
             }
         }
