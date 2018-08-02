@@ -6,6 +6,7 @@ namespace CommonBundle\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use FOS\UserBundle\Doctrine\UserManager;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
@@ -61,6 +62,15 @@ class UserFixtures extends Fixture
                     ->setIso3("KHM")
                     ->setRights(1);
                 $manager->persist($userCountry);
+                $project = $manager->getRepository(Project::class)->findOneByName("Dev Project");
+                if ($project instanceof Project)
+                {
+                    $userProject = new UserProject();
+                    $userProject->setRights(1)
+                        ->setUser($instance)
+                        ->setProject($project);
+                    $manager->persist($userProject);
+                }
                 $manager->flush();
             }
         }

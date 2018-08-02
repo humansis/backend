@@ -52,7 +52,7 @@ class BMSServiceTestCase extends KernelTestCase
     // VARIABLES
 
     /** @var string $iso3 */
-    protected $iso3 = "UNT";
+    protected $iso3 = "KHM";
 
     protected $namefullnameHousehold = "STREET_TEST";
 

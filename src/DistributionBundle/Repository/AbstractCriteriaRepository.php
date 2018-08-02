@@ -23,7 +23,7 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
      * @throws \ReflectionException
      */
     public function findByCriteria(
-        Project $project,
+        Project $project = null,
         $countryISO3,
         array $criteria,
         array $configurationCriteria = [],
@@ -67,7 +67,6 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
                 throw new \Exception("The field '{$criterion['field_string']}' is not implement yet");
             $i++;
         }
-
         return $qb->getQuery()->getResult();
     }
 
@@ -106,7 +105,7 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
         $qb->leftJoin("hh$i.location", "l$i")
 
             ->leftJoin("l$i.adm1", "adm1$i")
-            ->where("adm1$i.countryISO3 = :iso3 AND hh$i.archived = 0")
+            ->andWhere("adm1$i.countryISO3 = :iso3 AND hh$i.archived = 0")
 
             ->leftJoin("l$i.adm4", "adm4$i")
             ->leftJoin("adm4$i.adm3", "adm3b$i")
