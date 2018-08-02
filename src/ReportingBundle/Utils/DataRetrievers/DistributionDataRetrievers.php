@@ -74,7 +74,11 @@ class DistributionDataRetrievers
         $moreRecentValues = [];
         $lastDate = $values[0]['date'];
         foreach($values as $value) {
-            if ($value['date'] > $lastDate) {
+            if ($value['date'] === 'Jan-Mar' || $value['date'] === 'Apr-Jun' || 
+                $value['date'] === 'Jul-Sep' || $value['date'] === 'Oct-Dec' ) {
+                    $lastDate = $value['date'];
+                }
+            else if ($value['date'] > $lastDate) {
                 $lastDate = $value['date'];
             }
         }
@@ -404,10 +408,10 @@ class DistributionDataRetrievers
                 return $qb;
             case 'BMS_Distribution_TDV' :
                 if ($frequency === 'Month' || $frequency === "Period") {
-                    $qb ->select('d.name AS name', 'd.id AS id','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+                    $qb ->select('Distinct d.name AS name', 'd.id AS id','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
                 } 
                 else if ($frequency === 'Year') {
-                    $qb ->select('d.name AS name', 'd.id AS id','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y') AS date");
+                    $qb ->select('Distinct d.name AS name', 'd.id AS id','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y') AS date");
                 } 
                 else if ($frequency === 'Quarter') {
                     $qb ->select('DISTINCT rv.value AS value', 'd.name AS name', 'd.id AS id', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date");

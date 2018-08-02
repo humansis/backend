@@ -223,8 +223,6 @@ class ProjectDataRetrievers
                                     ->andWhere('p.iso3 = :country')
                                     ->setParameter('country', $filters['country']);
         $qb = $this->ifInProject($qb, $filters);
-        dump($qb->getQuery()->getArrayResult());
-
         return $qb;
     }
 
