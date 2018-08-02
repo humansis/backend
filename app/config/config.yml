@@ -64,6 +64,8 @@ doctrine:
                  date_format: DoctrineExtensions\Query\Mysql\DateFormat
                  timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
                  quarter: DoctrineExtensions\Query\Mysql\Quarter
+                 month: DoctrineExtensions\Query\Mysql\Month
+                 year: DoctrineExtensions\Query\Mysql\Year
 
 # Swiftmailer Configuration
 swiftmailer:

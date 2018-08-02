@@ -34,6 +34,9 @@ class CountryDataRetrievers
       return $qb;
   }
 
+  /**
+   * sort data by frequency
+   */
   public function getByFrequency($qb, array $filters) {
     if ($filters['frequency'] === "Month") {
       $qb ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
@@ -63,6 +66,9 @@ class CountryDataRetrievers
     return $result;
   }
 
+  /**
+   * get the name of month which delimit the quarter
+   */
   public function getNameQuarter($results) {
     foreach($results as &$result) {
         if ($result['date'] === "1") {
