@@ -63,6 +63,7 @@ doctrine:
                  soundex: DoctrineExtensions\Query\Mysql\Soundex
                  date_format: DoctrineExtensions\Query\Mysql\DateFormat
                  timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
+                 quarter: DoctrineExtensions\Query\Mysql\Quarter
 
 # Swiftmailer Configuration
 swiftmailer:
