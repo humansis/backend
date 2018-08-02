@@ -6,17 +6,19 @@ namespace ProjectBundle\Controller;
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Donor;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class DonorController extends Controller
 {
 
     /**
      * @Rest\Get("/donors", name="get_all_donor")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Donors")
      *
@@ -44,6 +46,7 @@ class DonorController extends Controller
      * Get a donor
      *
      * @Rest\Get("/donors/{id}", name="show_donor")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Donors")
      *
@@ -66,6 +69,7 @@ class DonorController extends Controller
 
     /**
      * @Rest\Put("/donors", name="create_donor")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Donors")
      *
@@ -111,7 +115,7 @@ class DonorController extends Controller
 
     /**
      * @Rest\Post("/donors/{id}", name="update_donor")
-     *
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Donors")
      *
@@ -159,6 +163,7 @@ class DonorController extends Controller
     /**
      * Edit a donor
      * @Rest\Delete("/donors/{id}", name="delete_donor")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Donors")
      *

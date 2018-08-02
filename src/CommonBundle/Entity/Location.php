@@ -1,6 +1,6 @@
 <?php
 
-namespace DistributionBundle\Entity;
+namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation\Groups;
  * Location
  *
  * @ORM\Table(name="location")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\LocationRepository")
+ * @ORM\Entity(repositoryClass="CommonBundle\Repository\LocationRepository")
  */
 class Location
 {
@@ -24,41 +24,33 @@ class Location
     private $id;
 
     /**
-     * @var string
+     * @var Adm1
      *
-     * @ORM\Column(name="country_iso3", type="string", length=45)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
-     */
-    private $countryIso3;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="adm1", type="string", length=255, nullable=true)
+     * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm1", mappedBy="location")
      * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
      */
     private $adm1;
 
     /**
-     * @var string
+     * @var Adm2
      *
-     * @ORM\Column(name="adm2", type="string", length=255, nullable=true)
+     * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm2", mappedBy="location")
      * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
      */
     private $adm2;
 
     /**
-     * @var string
+     * @var Adm3
      *
-     * @ORM\Column(name="adm3", type="string", length=255, nullable=true)
+     * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm3", mappedBy="location")
      * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
      */
     private $adm3;
 
     /**
-     * @var string
+     * @var Adm4
      *
-     * @ORM\Column(name="adm4", type="string", length=255, nullable=true)
+     * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm4", mappedBy="location")
      * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
      */
     private $adm4;
@@ -74,37 +66,13 @@ class Location
     }
 
     /**
-     * Set countryIso3.
-     *
-     * @param string $countryIso3
-     *
-     * @return Location
-     */
-    public function setCountryIso3($countryIso3)
-    {
-        $this->countryIso3 = $countryIso3;
-
-        return $this;
-    }
-
-    /**
-     * Get countryIso3.
-     *
-     * @return string
-     */
-    public function getCountryIso3()
-    {
-        return $this->countryIso3;
-    }
-
-    /**
      * Set adm1.
      *
-     * @param string $adm1
+     * @param \CommonBundle\Entity\Adm1|null $adm1
      *
      * @return Location
      */
-    public function setAdm1($adm1)
+    public function setAdm1(\CommonBundle\Entity\Adm1 $adm1 = null)
     {
         $this->adm1 = $adm1;
 
@@ -114,7 +82,7 @@ class Location
     /**
      * Get adm1.
      *
-     * @return string
+     * @return \CommonBundle\Entity\Adm1|null
      */
     public function getAdm1()
     {
@@ -124,11 +92,11 @@ class Location
     /**
      * Set adm2.
      *
-     * @param string $adm2
+     * @param \CommonBundle\Entity\Adm2|null $adm2
      *
      * @return Location
      */
-    public function setAdm2($adm2)
+    public function setAdm2(\CommonBundle\Entity\Adm2 $adm2 = null)
     {
         $this->adm2 = $adm2;
 
@@ -138,7 +106,7 @@ class Location
     /**
      * Get adm2.
      *
-     * @return string
+     * @return \CommonBundle\Entity\Adm2|null
      */
     public function getAdm2()
     {
@@ -148,11 +116,11 @@ class Location
     /**
      * Set adm3.
      *
-     * @param string $adm3
+     * @param \CommonBundle\Entity\Adm3|null $adm3
      *
      * @return Location
      */
-    public function setAdm3($adm3)
+    public function setAdm3(\CommonBundle\Entity\Adm3 $adm3 = null)
     {
         $this->adm3 = $adm3;
 
@@ -162,7 +130,7 @@ class Location
     /**
      * Get adm3.
      *
-     * @return string
+     * @return \CommonBundle\Entity\Adm3|null
      */
     public function getAdm3()
     {
@@ -172,11 +140,11 @@ class Location
     /**
      * Set adm4.
      *
-     * @param string $adm4
+     * @param \CommonBundle\Entity\Adm4|null $adm4
      *
      * @return Location
      */
-    public function setAdm4($adm4)
+    public function setAdm4(\CommonBundle\Entity\Adm4 $adm4 = null)
     {
         $this->adm4 = $adm4;
 
@@ -186,11 +154,10 @@ class Location
     /**
      * Get adm4.
      *
-     * @return string
+     * @return \CommonBundle\Entity\Adm4|null
      */
     public function getAdm4()
     {
         return $this->adm4;
     }
-
 }

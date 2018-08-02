@@ -12,7 +12,6 @@ use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Model\ImportStatistic;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
-use CommonBundle\Utils\Color;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\BMSServiceTestCase;
@@ -24,10 +23,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
     private $hhCSVService;
     /** @var ExportCSVService $exportCSVService */
     private $exportCSVService;
-    /** @var Color $color */
-    private $color;
 
-    private $iso3 = "KHM";
     private $addressStreet = "ADDR TEST_IMPORT";
     private $addressStreet2 = "ADDR2 TEST_IMPORT_TEST_IMPORT";
     private $addressStreet3 = "ADDR3 UNIT TEST UNIT";
@@ -90,15 +86,15 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "E" => "this is just some notes",
             "F" => 1.1544,
             "G" => 120.12,
-            "H" => "TEST_IMPORT",
-            "I" => "TEST_IMPORT",
-            "J" => "TEST_IMPORT",
-            "K" => "TEST_IMPORT",
+            "H" => "Rhone-Alpes",
+            "I" => "Savoie",
+            "J" => "Chambery",
+            "K" => "Sainte Hélène sur Isère",
             "L" => 4.0,
             "M" => "my wash",
             "N" => "FIRSTNAME TEST_IMPORT",
             "O" => "NAME TEST_IMPORT",
-            "P" => "F",
+            "P" => 0,
             "Q" => 1,
             "R" => "1995-04-25",
             "S" => "lactating ; single family",
@@ -121,7 +117,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => null,
             "N" => "FIRSTNAME2 TEST_IMPORT",
             "O" => "NAME2 TEST_IMPORT",
-            "P" => "M",
+            "P" => 1,
             "Q" => 0,
             "R" => "1995-04-25",
             "S" => "lactating",
@@ -138,7 +134,6 @@ class HouseholdCSVTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
         $this->hhCSVService = $this->container->get('beneficiary.household_csv_service');
         $this->exportCSVService = $this->container->get('beneficiary.household_export_csv_service');
-        $this->color = new Color();
     }
 
     /**
@@ -185,10 +180,10 @@ class HouseholdCSVTest extends BMSServiceTestCase
     public function testImportCSV()
     {
         $body_begin = $this->SHEET_ARRAY;
-        $this->remove($this->addressStreet);
-        $this->remove($this->addressStreet2);
-        $this->remove($this->addressStreet3);
-        $this->remove($this->addressStreet4);
+        $this->removeHousehold($this->addressStreet);
+        $this->removeHousehold($this->addressStreet2);
+        $this->removeHousehold($this->addressStreet3);
+        $this->removeHousehold($this->addressStreet4);
         $projects = $this->em->getRepository(Project::class)->findAll();
         if (empty($projects))
         {
@@ -268,15 +263,15 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "E" => "this is just some notes",
             "F" => 1.1544,
             "G" => 120.12,
-            "H" => "TEST_IMPORT22",
-            "I" => "TEST_IMPORT222",
-            "J" => "TEST_IMPORT22",
-            "K" => "TEST_IMPORT222",
+            "H" => "Rhone-Alpes",
+            "I" => "Savoie",
+            "J" => "Chambery",
+            "K" => "Sainte Hélène sur Isère",
             "L" => 4.0,
             "M" => "my wash",
             "N" => "FIRSTNAME3 UNIT_TEST",
             "O" => "FNAME33 UNIT_TEST",
-            "P" => "F",
+            "P" => 0,
             "Q" => 1,
             "R" => "1995-04-25",
             "S" => "lactating ; single family",
@@ -299,7 +294,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => null,
             "N" => "FIRSTNAME2 TEST_IMPORT",
             "O" => "NAME2 TEST_IMPORT",
-            "P" => "M",
+            "P" => 1,
             "Q" => 0,
             "R" => "1995-04-25",
             "S" => "lactating",
@@ -357,15 +352,15 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "E" => "this is just some notes",
             "F" => 1.1544,
             "G" => 120.12,
-            "H" => "TEST_IMPORT223333",
-            "I" => "TEST_IMPORT222333",
-            "J" => "TEST_IMPORT223",
-            "K" => "TEST_IMPORT2223",
+            "H" => "Rhone-Alpes",
+            "I" => "Savoie",
+            "J" => "Chambery",
+            "K" => "Sainte Hélène sur Isère",
             "L" => 4.0,
             "M" => "my wash",
             "N" => "FIRSTNAME44444444 UNIT_TEST",
             "O" => "FNAME44444444444444 UNIT_TEST",
-            "P" => "F",
+            "P" => 0,
             "Q" => 1,
             "R" => "1995-04-25",
             "S" => "lactating ; single family",
@@ -388,7 +383,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => null,
             "N" => "FIRSTNAME2 TEST_IMPORT",
             "O" => "NAME2 TEST_IMPORT",
-            "P" => "M",
+            "P" => 1,
             "Q" => 0,
             "R" => "1995-04-25",
             "S" => "lactating",
@@ -444,15 +439,15 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "E" => "this is just some notes",
             "F" => 1.1544,
             "G" => 120.12,
-            "H" => "TEST_IMPORT4",
-            "I" => "TEST_IMPORT4",
-            "J" => "TEST_IMPORT4",
-            "K" => "TEST_IMPORT4",
+            "H" => "Rhone-Alpes",
+            "I" => "Savoie",
+            "J" => "Chambery",
+            "K" => "Sainte Hélène sur Isère",
             "L" => 4.0,
             "M" => "my wash",
             "N" => "FI5 UNIT_TEST",
             "O" => "FNA5 UNIT_TEST",
-            "P" => "F",
+            "P" => 0,
             "Q" => 1,
             "R" => "1995-04-25",
             "S" => "lactating ; single family",
@@ -475,7 +470,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "M" => null,
             "N" => "FIRSTNAME2 TEST_IMPORT",
             "O" => "NAME2 TEST_IMPORT",
-            "P" => "M",
+            "P" => 1,
             "Q" => 0,
             "R" => "1995-04-25",
             "S" => "lactating",
@@ -570,63 +565,10 @@ class HouseholdCSVTest extends BMSServiceTestCase
         $headOldHousehold = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
         $this->assertSame($this->UPDATED_GIVEN_NAME, $headOldHousehold->getGivenName());
 
-        $this->remove($this->addressStreet);
-        $this->remove($this->addressStreet2);
-        $this->remove($this->addressStreet3);
-        $this->remove($this->addressStreet4);
-    }
-
-    /**
-     * @depends testGetHouseholds
-     *
-     * @param $addressStreet
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function remove($addressStreet)
-    {
-        $this->em->clear();
-        /** @var Household $household */
-        $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($addressStreet);
-        if ($household instanceof Household)
-        {
-            $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
-            if (!empty($beneficiaries))
-            {
-                /** @var Beneficiary $beneficiary */
-                foreach ($beneficiaries as $beneficiary)
-                {
-                    $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
-                    $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
-                    $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
-                    if ($profile instanceof Profile)
-                        $this->em->remove($profile);
-                    foreach ($phones as $phone)
-                    {
-                        $this->em->remove($phone);
-                    }
-                    foreach ($nationalIds as $nationalId)
-                    {
-                        $this->em->remove($nationalId);
-                    }
-                    $this->em->remove($beneficiary->getProfile());
-                    $this->em->remove($beneficiary);
-                }
-            }
-            $location = $household->getLocation();
-            $this->em->remove($location);
-
-            $countrySpecificAnswers = $this->em->getRepository(CountrySpecificAnswer::class)
-                ->findByHousehold($household);
-            foreach ($countrySpecificAnswers as $countrySpecificAnswer)
-            {
-                $this->em->remove($countrySpecificAnswer);
-            }
-
-            $this->em->remove($household);
-            $this->em->flush();
-        }
+        $this->removeHousehold($this->addressStreet);
+        $this->removeHousehold($this->addressStreet2);
+        $this->removeHousehold($this->addressStreet3);
+        $this->removeHousehold($this->addressStreet4);
     }
 
 }

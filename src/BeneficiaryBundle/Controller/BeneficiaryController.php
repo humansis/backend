@@ -18,7 +18,7 @@ class BeneficiaryController extends Controller
 
     /**
      * @Rest\Get("/vulnerability_criteria", name="get_all_vulnerability_criteria")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @return Response
      */
@@ -32,7 +32,7 @@ class BeneficiaryController extends Controller
 
     /**
      * @Rest\Put("/households/{id}/beneficiary", name="add_beneficiary_in_household")
-     *
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @param Request $request
      * @param Household $household

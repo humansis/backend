@@ -150,18 +150,4 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->andWhere("csa$i.answer {$filters["condition_string"]} :value$i")
             ->setParameter("value$i", $filters["value_string"]);
     }
-
-    /**
-     * Set the country iso3 in the query on Household (with alias 'hh{id}'
-     *
-     * @param QueryBuilder $qb
-     * @param $countryISO3
-     * @param string $i
-     */
-    protected function setCountry(QueryBuilder &$qb, $countryISO3, $i = '')
-    {
-        $qb->leftJoin("hh$i.location", "l$i")
-            ->andWhere("l$i.countryIso3 = :countryIso3")
-            ->setParameter("countryIso3", $countryISO3);
-    }
 }

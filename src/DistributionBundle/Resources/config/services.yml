@@ -20,13 +20,6 @@ services:
             - '@jms_serializer'
             - '@validator'
 
-    location_service:
-        class: DistributionBundle\Utils\LocationService
-        public: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - "@request_validator"
-
     distribution.criteria_distribution_service:
         class: DistributionBundle\Utils\CriteriaDistributionService
         public: true

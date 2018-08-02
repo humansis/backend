@@ -11,9 +11,6 @@ use Tests\BMSServiceTestCase;
 class SectorControllerTest extends BMSServiceTestCase
 {
 
-    /** @var Client $client */
-    private $client;
-
     /** @var string $name */
     private $name = "TEST_DONOR_NAME_PHPUNIT";
 

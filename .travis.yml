@@ -38,6 +38,7 @@ install:
   - php bin/console doctrine:database:create --env=test
   - php bin/console doctrine:m:m -n --env=test
   - php bin/console doctrine:fixtures:load -n --env=test
+  - php bin/console jrk:levenshtein:install
 
 # Run script
 script:

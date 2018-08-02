@@ -13,6 +13,15 @@ before that the controller process.
 
 # DOCKER
 
+#### Informations
+
+We are using the doctrine extension `LevenshteinFunction`, from the package `jrk/levenshtein-bundle`
+- The Git repository : https://github.com/jr-k/JrkLevenshteinBundle
+
+##### Trick Levenshtein activation
+
+`php bin/console jrk:levenshtein:install`
+
 #### On your computer
 
 - `docker-compose up --build` : build and run the docker image

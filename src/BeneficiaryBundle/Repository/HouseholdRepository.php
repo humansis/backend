@@ -14,6 +14,24 @@ use ProjectBundle\Entity\Project;
  */
 class HouseholdRepository extends AbstractCriteriaRepository
 {
+
+    public function foundSimilarLevenshtein(string $stringToSearch, int $minimumTolerance)
+    {
+        $qb = $this->createQueryBuilder("hh");
+        $q = $qb->leftJoin("hh.beneficiaries", "b")
+            ->where("b.status = 1")
+            ->andWhere("
+                LEVENSHTEIN(
+                    CONCAT(hh.addressStreet, hh.addressNumber, hh.addressPostcode, b.givenName, b.familyName),
+                    :stringToSearch
+                ) < :minimumTolerance
+            ")
+            ->setParameter("stringToSearch", $stringToSearch)
+            ->setParameter("minimumTolerance", $minimumTolerance);
+
+        return $q->getQuery()->getResult();
+    }
+
     /**
      * Get all Household by country
      * Use $filters to add a offset and a limit. Default => offset = 0 and limit = 10
@@ -26,9 +44,22 @@ class HouseholdRepository extends AbstractCriteriaRepository
     {
         $qb = $this->createQueryBuilder("hh");
         $q = $qb->leftJoin("hh.location", "l")
-            ->where("l.countryIso3 = :iso3")
-            ->setParameter("iso3", $iso3)
-            ->andWhere("hh.archived = 0");
+            ->leftJoin("l.adm1", "adm1")
+            ->leftJoin("l.adm2", "adm2")
+            ->leftJoin("l.adm3", "adm3")
+            ->leftJoin("l.adm4", "adm4")
+            ->where("adm1.countryISO3 = :iso3 AND hh.archived = 0")
+            ->leftJoin("adm4.adm3", "adm3b")
+            ->leftJoin("adm3b.adm2", "adm2b")
+            ->leftJoin("adm2b.adm1", "adm1b")
+            ->orWhere("adm1b.countryISO3 = :iso3 AND hh.archived = 0")
+            ->leftJoin("adm3.adm2", "adm2c")
+            ->leftJoin("adm2c.adm1", "adm1c")
+            ->orWhere("adm1c.countryISO3 = :iso3 AND hh.archived = 0")
+            ->leftJoin("adm2.adm1", "adm1d")
+            ->orWhere("adm1d.countryISO3 = :iso3 AND hh.archived = 0")
+            ->setParameter("iso3", $iso3);
+
         if (array_key_exists("offset", $filters))
             $q->setMaxResults(intval($filters['limit']));
         if (array_key_exists("limit", $filters))
@@ -67,13 +98,11 @@ class HouseholdRepository extends AbstractCriteriaRepository
     /**
      * @param $onlyCount
      * @param $countryISO3
-     * @param $groupGlobal
-     * @return QueryBuilder
+     * @return QueryBuilder|void
      */
     public function configurationQueryBuilder($onlyCount, $countryISO3)
     {
         $qb = $this->createQueryBuilder("hh");
-
         if ($onlyCount)
             $qb->select("count(hh)");
 
@@ -174,20 +203,6 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
             ->setParameter("value$i", $filters["value_string"])
             ->setParameter("countrySpecific$i", $filters["id_field"]);
-    }
-
-    /**
-     * Set the country iso3 in the query on Household (with alias 'hh{id}'
-     *
-     * @param QueryBuilder $qb
-     * @param $countryISO3
-     * @param string $i
-     */
-    protected function setCountry(QueryBuilder &$qb, $countryISO3, $i = '')
-    {
-        $qb->leftJoin("hh$i.location", "l$i")
-            ->andWhere("l$i.countryIso3 = :countryIso3")
-            ->setParameter("countryIso3", $countryISO3);
     }
 
     /**

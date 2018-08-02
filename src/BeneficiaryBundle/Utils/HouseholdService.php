@@ -11,8 +11,8 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use DistributionBundle\Entity\Location;
-use DistributionBundle\Utils\LocationService;
+use CommonBundle\Entity\Location;
+use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
@@ -53,7 +53,7 @@ class HouseholdService
         BeneficiaryService $beneficiaryService,
         RequestValidator $requestValidator,
         LocationService $locationService,
-    ValidatorInterface $validator
+        ValidatorInterface $validator
     )
     {
         $this->em = $entityManager;
@@ -119,7 +119,8 @@ class HouseholdService
             ->setAddressNumber($householdArray["address_number"]);
 
         $errors = $this->validator->validate($household);
-        if (count($errors) > 0) {
+        if (count($errors) > 0)
+        {
             $errorsMessage = "";
             /** @var ConstraintViolation $error */
             foreach ($errors as $error)
@@ -133,13 +134,14 @@ class HouseholdService
         }
 
         // Save or update location instance
-        $location = $this->locationService->getOrSaveLocation($householdArray["location"]);
+        $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
+        if (null === $location)
+            throw new \Exception("Location was not found.");
         $household->setLocation($location);
         $project = $this->em->getRepository(Project::class)->find($project);
         if (!$project instanceof Project)
             throw new \Exception("This project is not found");
         $household->addProject($project);
-
 
 
         $this->em->persist($household);
@@ -246,7 +248,7 @@ class HouseholdService
             $household->addProject($project);
 
         // Save or update location instance
-        $location = $this->locationService->getOrSaveLocation($householdArray["location"]);
+        $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
         $household->setLocation($location);
 
         $this->em->persist($household);

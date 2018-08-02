@@ -11,9 +11,6 @@ use UserBundle\Entity\UserProject;
 
 class ProjectControllerTest extends BMSServiceTestCase
 {
-
-    /** @var Client $client */
-    private $client;
     /** @var string $name */
     private $name = "TEST_PROJECT_NAME";
 
@@ -22,8 +19,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         "start_date" => "2018-02-01",
         "end_date" => "2018-03-03",
         "value" => 5,
-        "notes" => "This is a note",
-        "__country" => "FRA"
+        "notes" => "This is a note"
     ];
 
 
@@ -50,7 +46,8 @@ class ProjectControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('PUT', '/api/wsse/projects', $this->body);
+        $crawler = $this->client->request('PUT', '/api/wsse/projects', $this->body, [], ['HTTP_COUNTRY' => $this->iso3]);
+
         $project = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         try

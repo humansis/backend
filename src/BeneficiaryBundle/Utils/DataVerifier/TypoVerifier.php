@@ -10,6 +10,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\DependencyInjection\Container;
 
+/**
+ * @deprecated Use the Levenshtein Typo Verifier (which use the Levenshtein algorithm)
+ * Class TypoVerifier
+ * @package BeneficiaryBundle\Utils\DataVerifier
+ */
 class TypoVerifier extends AbstractVerifier
 {
 
@@ -49,9 +54,11 @@ class TypoVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId)
     {
+        $householdRepository = $this->em->getRepository(Household::class);
+        $beneficiaryRepository = $this->em->getRepository(Beneficiary::class);
         if (null === $this->listHouseholdsSaved)
         {
-            $this->listHouseholdsSaved = $this->em->getRepository(Household::class)
+            $this->listHouseholdsSaved = $householdRepository
                 ->getAllBy($countryISO3, [], [
                     'hh.id',
                     'hh.addressStreet',
@@ -80,7 +87,7 @@ class TypoVerifier extends AbstractVerifier
             {
                 // Get the head of the current household
                 /** @var Beneficiary $oldHead */
-                $oldHead = $this->em->getRepository(Beneficiary::class)->getHeadOfHouseholdId($oldHousehold['id']);
+                $oldHead = $beneficiaryRepository->getHeadOfHouseholdId($oldHousehold['id']);
                 if (!$oldHead instanceof Beneficiary)
                     continue;
                 $this->mappingHouseholdAndHead['id'] = $oldHead;
@@ -89,15 +96,15 @@ class TypoVerifier extends AbstractVerifier
             $oldHead = $this->mappingHouseholdAndHead['id'];
 
             similar_text(
-                $householdArray["address_street"] . "/" .
-                $householdArray["address_number"] . "/" .
-                $householdArray["address_postcode"] . "/" .
-                $newHead["given_name"] . "/" .
+                $householdArray["address_street"] .
+                $householdArray["address_number"] .
+                $householdArray["address_postcode"] .
+                $newHead["given_name"] .
                 $newHead["family_name"],
-                $oldHousehold['addressStreet'] . "/" .
-                $oldHousehold['addressNumber'] . "/" .
-                $oldHousehold['addressPostcode'] . "/" .
-                $oldHead->getGivenName() . "/" .
+                $oldHousehold['addressStreet'] .
+                $oldHousehold['addressNumber'] .
+                $oldHousehold['addressPostcode'] .
+                $oldHead->getGivenName() .
                 $oldHead->getFamilyName(),
                 $tmpPercent
             );
@@ -109,7 +116,7 @@ class TypoVerifier extends AbstractVerifier
                     'mapping_new_old',
                     $cacheId,
                     $householdArray,
-                    $this->em->getRepository(Household::class)->find($oldHousehold['id'])
+                    $householdRepository->find($oldHousehold['id'])
                 );
                 return false;
             }
@@ -122,7 +129,7 @@ class TypoVerifier extends AbstractVerifier
         if ($this->minimumPercentSimilar < $percent)
         {
             $return = [
-                "old" => $this->em->getRepository(Household::class)->find($similarHousehold['id']),
+                "old" => $householdRepository->find($similarHousehold['id']),
                 "new" => $householdArray, "id_tmp_cache" => $cacheId
             ];
             return $return;

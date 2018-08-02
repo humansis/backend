@@ -12,6 +12,7 @@ use BeneficiaryBundle\Utils\DataTreatment\TypoTreatment;
 use BeneficiaryBundle\Utils\DataVerifier\AbstractVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\LessVerifier;
+use BeneficiaryBundle\Utils\DataVerifier\LevenshteinTypoVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
@@ -152,7 +153,6 @@ class HouseholdCSVService
             {
                 $householdsToSave[$cache_id] = $householdArray;
             }
-
             $cache_id++;
             unset($treatReturned[$index]);
         }
@@ -175,7 +175,8 @@ class HouseholdCSVService
         {
             // CASE FOUND TYPO ISSUES
             case 1:
-                return new TypoVerifier($this->em, $this->container, $this->initOrGetToken());
+//                return new TypoVerifier($this->em, $this->container, $this->initOrGetToken());
+                return new LevenshteinTypoVerifier($this->em, $this->container, $this->initOrGetToken());
                 break;
             // CASE FOUND DUPLICATED ISSUES
             case 2:

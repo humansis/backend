@@ -83,6 +83,7 @@ class DistributionCSVService
         $sheetArray = $worksheet->toArray(null, true, true, true);
         $index = 1;
         $columnIdSync = null;
+        // Remove useless line (like headers)
         while ($index < Household::firstRow)
         {
             if ($index === Household::indexRowHeader)
@@ -90,6 +91,7 @@ class DistributionCSVService
             unset($sheetArray[$index]);
             $index++;
         }
+        // Analyze each rows of the file
         $this->analyzeArray($distributionData, $sheetArray, $columnIdSync);
 
         return true;
@@ -163,6 +165,7 @@ class DistributionCSVService
     public function buildFile($countryISO3, Spreadsheet $spreadsheet, DistributionData $distributionData)
     {
         $receivers = $this->buildDataBeneficiary($distributionData);
+
         $worksheet = $spreadsheet->getActiveSheet();
         $this->householdToCSVMapper->fromHouseholdToCSV($worksheet, $receivers, $countryISO3);
         return $spreadsheet;
@@ -183,14 +186,23 @@ class DistributionCSVService
         {
             /** @var Beneficiary $beneficiary */
             $beneficiary = $distributionBeneficiary->getBeneficiary();
-
             switch ($distributionData->getType())
             {
                 case 0:
                     $household = $beneficiary->getHousehold();
                     foreach ($this->em->getRepository(Beneficiary::class)->findByHousehold($household) as $beneficiaryHH)
                     {
-                        $household->addBeneficiary($beneficiaryHH);
+                        $isInside = false;
+                        foreach ($household->getBeneficiaries() as $beneficiaryAlreadyInside)
+                        {
+                            if ($beneficiaryAlreadyInside->getId() === $beneficiaryHH->getId())
+                            {
+                                $isInside = true;
+                                break;
+                            }
+                        }
+                        if (!$isInside)
+                            $household->addBeneficiary($beneficiaryHH);
                     }
                     break;
 
