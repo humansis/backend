@@ -48,7 +48,7 @@ class LocationService
         $adm1 = $this->em->getRepository(Adm1::class)->findOneBy([
             "countryISO3" => $countryISO3,
             "name" => $locationArray["adm1"]
-            ]);
+        ]);
 
         if ($adm1 instanceof Adm1)
         {
@@ -62,7 +62,7 @@ class LocationService
             if ($adm2 instanceof Adm2)
             {
                 if (!array_key_exists("adm3", $locationArray) || null === $locationArray["adm3"] || "" === $locationArray["adm3"])
-                    return $adm1->getLocation();
+                    return $adm2->getLocation();
                 $adm3 = $this->em->getRepository(Adm3::class)->findOneBy([
                     "adm2" => $adm2,
                     "name" => $locationArray["adm3"]
@@ -71,7 +71,7 @@ class LocationService
                 if ($adm3 instanceof Adm3)
                 {
                     if (!array_key_exists("adm4", $locationArray) || null === $locationArray["adm4"] || "" === $locationArray["adm4"])
-                        return $adm1->getLocation();
+                        return $adm3->getLocation();
                     $adm4 = $this->em->getRepository(Adm4::class)->findOneBy([
                         "adm3" => $adm3,
                         "name" => $locationArray["adm4"]
@@ -81,7 +81,17 @@ class LocationService
                     {
                         return $adm4->getLocation();
                     }
+
+                    return $adm3->getLocation();
                 }
+                else
+                {
+                    return $adm2->getLocation();
+                }
+            }
+            else
+            {
+                return $adm1->getLocation();
             }
         }
 
