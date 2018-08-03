@@ -1,7 +1,9 @@
 services:
-    CommonBundle\Listener\RequestListener:
-        tags:
-            - { name: kernel.event_listener, event: kernel.request }
+
+
+#######################################################################################
+##                                       CRUD                                        ##
+#######################################################################################
 
     location_service:
         class: CommonBundle\Utils\LocationService
@@ -10,46 +12,74 @@ services:
             - '@doctrine.orm.entity_manager'
             - "@request_validator"
 
-    ##########################################################################
-    ####                           DATAFIXTURES                           ####
-    ##########################################################################
+
+#######################################################################################
+##                                     LISTENER                                      ##
+#######################################################################################
+    CommonBundle\Listener\RequestListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
+
+
+#######################################################################################
+##                                      FIXTURE                                      ##
+#######################################################################################
+
     CommonBundle\DataFixtures\CountrySpecificFixtures:
         tags:
             - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\LocationFixtures:
         arguments:
             - "@kernel"
         tags:
             - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\LocationUnitTestFixtures:
         tags:
             - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\ModalityFixtures:
         tags:
             - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\ProjectFixtures:
         tags:
             - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\SectorFixtures:
         tags:
             - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\UserFixtures:
         arguments:
             - "@fos_user.user_manager"
             - "@security.encoder_factory"
         tags:
             - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
         tags:
             - { name: doctrine.fixture.orm }
 
 
-    ##########################################################################
-    ####                              VOTERS                              ####
-    ##########################################################################
+#######################################################################################
+##                                       VOTER                                       ##
+#######################################################################################
 
     voter_default:
         class: CommonBundle\Voter\DefaultVoter
-        arguments: ["@security.role_hierarchy", "@doctrine.orm.entity_manager", "@request_stack"]
+        arguments:
+            - "@security.role_hierarchy"
+            - "@doctrine.orm.entity_manager"
+            - "@request_stack"
+        tags:
+            - { name: security.voter }
+
+    voter_project:
+        class: CommonBundle\Voter\ProjectVoter
+        arguments:
+            - "@security.role_hierarchy"
+            - "@doctrine.orm.entity_manager"
         tags:
             - { name: security.voter }

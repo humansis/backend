@@ -86,7 +86,7 @@ class CriteriaDistributionController extends Controller
 
     /**
      * @Rest\Post("/distributions/criteria/project/{id}")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      *
@@ -135,7 +135,7 @@ class CriteriaDistributionController extends Controller
 
     /**
      * @Rest\Post("/distributions/criteria/project/{id}/number")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      *

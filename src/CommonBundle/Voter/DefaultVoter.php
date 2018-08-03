@@ -7,18 +7,18 @@ namespace CommonBundle\Voter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
-use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 
-class DefaultVoter extends Voter
+/**
+ * Class DefaultVoter
+ * Check if the user is connected, if he/she has the route needed role and if he/she is assigned to the country
+ *
+ * @package CommonBundle\Voter
+ */
+class DefaultVoter extends BMSVoter
 {
-
-    /** @var RoleHierarchy $roleHierarchy */
-    private $roleHierarchy;
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -26,9 +26,10 @@ class DefaultVoter extends Voter
     /** @var RequestStack $requestStack */
     private $requestStack;
 
+
     public function __construct(RoleHierarchy $roleHierarchy, EntityManagerInterface $entityManager, RequestStack $requestStack)
     {
-        $this->roleHierarchy = $roleHierarchy;
+        parent::__construct($roleHierarchy);
         $this->em = $entityManager;
         $this->requestStack = $requestStack;
     }
@@ -69,7 +70,7 @@ class DefaultVoter extends Voter
         if (!$this->hasRole($user->getRoles(), $attribute))
             return false;
 
-        if(!$this->requestStack->getCurrentRequest()->request->has('__country'))
+        if (!$this->requestStack->getCurrentRequest()->request->has('__country'))
             return false;
 
         $countryISO3 = $this->requestStack->getCurrentRequest()->request->get('__country');
@@ -93,37 +94,5 @@ class DefaultVoter extends Voter
                 "iso3" => $countryISO3
             ]);
         return ($userCountry instanceof UserCountry);
-    }
-
-    /**
-     * @param array $myRoles
-     * @param string $attribute
-     * @return bool
-     */
-    protected function hasRole(array $myRoles, string $attribute)
-    {
-        $myArrayRoles = $this->getMyReachableRoles($myRoles);
-
-        foreach($myArrayRoles as $role)
-        {
-            if ($role->getRole() === strval($attribute))
-                return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param array $my_roles
-     * @return array|\Symfony\Component\Security\Core\Role\RoleInterface[]
-     */
-    protected function getMyReachableRoles(array $my_roles)
-    {
-        $arrayRoles = [];
-        foreach ($my_roles as $role)
-        {
-            $arrayRoles[] = new Role($role);
-        }
-        return $this->roleHierarchy->getReachableRoles($arrayRoles);
     }
 }
