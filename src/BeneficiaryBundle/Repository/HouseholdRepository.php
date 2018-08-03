@@ -15,19 +15,41 @@ use ProjectBundle\Entity\Project;
 class HouseholdRepository extends AbstractCriteriaRepository
 {
 
+    /**
+     * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
+     * TODO : FOUND SOLUTION TO RETURN ONLY THE SIMILAR IF DISTANCE = 0 OR THE LIST OF HOUSEHOLDS WITH A DISTANCE
+     * TODO : UNDER MINIMUMTOLERANCE, IF NO ONE HAS A DISTANCE = 0
+     * @param string $stringToSearch
+     * @param int $minimumTolerance
+     * @return mixed
+     */
     public function foundSimilarLevenshtein(string $stringToSearch, int $minimumTolerance)
     {
         $qb = $this->createQueryBuilder("hh");
         $q = $qb->leftJoin("hh.beneficiaries", "b")
+            ->select("hh as household")
+            ->addSelect("LEVENSHTEIN(
+                    CONCAT(hh.addressStreet, hh.addressNumber, hh.addressPostcode, b.givenName, b.familyName),
+                    :stringToSearch
+                ) as levenshtein")
             ->where("b.status = 1")
             ->andWhere("
                 LEVENSHTEIN(
                     CONCAT(hh.addressStreet, hh.addressNumber, hh.addressPostcode, b.givenName, b.familyName),
                     :stringToSearch
-                ) < :minimumTolerance
+                ) < 
+                CASE 
+                    WHEN (LEVENSHTEIN(
+                        CONCAT(hh.addressStreet, hh.addressNumber, hh.addressPostcode, b.givenName, b.familyName),
+                        :stringToSearch) = 0) 
+                        THEN 1
+                    ELSE
+                        :minimumTolerance
+                    END
             ")
             ->setParameter("stringToSearch", $stringToSearch)
-            ->setParameter("minimumTolerance", $minimumTolerance);
+            ->setParameter("minimumTolerance", $minimumTolerance)
+            ->orderBy("levenshtein", "ASC");
 
         return $q->getQuery()->getResult();
     }
@@ -73,24 +95,6 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 $q->addSelect($selects);
             }
         }
-
-        return $q->getQuery()->getResult();
-    }
-
-    /**
-     * Get similar household
-     * @param array $householdArray
-     * @return mixed
-     */
-    public function getSimilar(array $householdArray)
-    {
-        $qb = $this->createQueryBuilder("hh");
-        $q = $qb->where("SOUNDEX(hh.addressStreet) = SOUNDEX(:addr_street)")
-            ->andWhere("SOUNDEX(hh.addressNumber) = SOUNDEX(:addr_number)")
-            ->andWhere("SOUNDEX(hh.addressPostcode) = SOUNDEX(:addr_postcode)")
-            ->setParameter("addr_street", $householdArray["address_street"])
-            ->setParameter("addr_number", $householdArray["address_number"])
-            ->setParameter("addr_postcode", $householdArray["address_postcode"]);
 
         return $q->getQuery()->getResult();
     }
