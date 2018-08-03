@@ -52,4 +52,5 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@jms_serializer"
+            - "@location_service"
         public: true

@@ -70,7 +70,6 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
     /**
      * @param $onlyCount
      * @param $countryISO3
-     * @param $groupGlobal
      * @throws \Exception
      */
     public function configurationQueryBuilder($onlyCount, $countryISO3)
@@ -88,5 +87,37 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
     public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
         throw new \Exception("whereDefault must de implemented.");
+    }
+
+    /**
+     * Set the country iso3 in the query on Household (with alias 'hh{id}'
+     *
+     * @param QueryBuilder $qb
+     * @param $countryISO3
+     * @param string $i
+     */
+    protected function setCountry(QueryBuilder &$qb, $countryISO3, $i = '')
+    {
+        $qb->leftJoin("hh$i.location", "l$i")
+
+            ->leftJoin("l$i.adm1", "adm1$i")
+            ->where("adm1$i.countryISO3 = :iso3 AND hh$i.archived = 0")
+
+            ->leftJoin("l$i.adm4", "adm4$i")
+            ->leftJoin("adm4$i.adm3", "adm3b$i")
+            ->leftJoin("adm3b$i.adm2", "adm2b$i")
+            ->leftJoin("adm2b$i.adm1", "adm1b$i")
+            ->orWhere("adm1b$i.countryISO3 = :iso3 AND hh$i.archived = 0")
+
+            ->leftJoin("l$i.adm3", "adm3$i")
+            ->leftJoin("adm3$i.adm2", "adm2c$i")
+            ->leftJoin("adm2c$i.adm1", "adm1c$i")
+            ->orWhere("adm1c$i.countryISO3 = :iso3 AND hh$i.archived = 0")
+
+            ->leftJoin("l$i.adm2", "adm2$i")
+            ->leftJoin("adm2$i.adm1", "adm1d$i")
+            ->orWhere("adm1d$i.countryISO3 = :iso3 AND hh$i.archived = 0")
+
+            ->setParameter("iso3", $countryISO3);
     }
 }

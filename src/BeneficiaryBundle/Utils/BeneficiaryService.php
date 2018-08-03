@@ -260,6 +260,7 @@ class BeneficiaryService
             return false;
 
         $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+        $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
         foreach ($nationalIds as $nationalId)
         {
             $this->em->remove($nationalId);
@@ -271,6 +272,7 @@ class BeneficiaryService
             $this->em->remove($phone);
         }
         $this->em->remove($beneficiary);
+        $this->em->remove($profile);
         $this->em->flush();
         return true;
     }

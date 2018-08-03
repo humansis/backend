@@ -10,7 +10,7 @@ use ReportingBundle\Entity\ReportingIndicator;
 use ReportingBundle\Entity\ReportingValue;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\Location;
+use CommonBundle\Entity\Location;
 use ReportingBundle\Entity\ReportingCountry;
 use ProjectBundle\Entity\Project;
 use DistributionBundle\Entity\DistributionData;

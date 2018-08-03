@@ -11,8 +11,6 @@ use UserBundle\Entity\User;
 class UserControllerTest extends BMSServiceTestCase
 {
 
-    /** @var Client $client */
-    private $client;
     /** @var string $username */
     private $username = "TESTER_PHPUNIT@gmail.com";
 
@@ -42,7 +40,6 @@ class UserControllerTest extends BMSServiceTestCase
 
         $crawler = $this->client->request('GET', '/api/wsse/users');
         $users = json_decode($this->client->getResponse()->getContent(), true);
-
         if (!empty($users))
         {
             $user = $users[0];

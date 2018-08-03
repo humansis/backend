@@ -4,18 +4,15 @@ namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Utils\Distribution\DefaultRetriever;
+use CommonBundle\Utils\LocationService;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
-use DoctrineExtensions\Query\Mysql\Date;
 use JMS\Serializer\Serializer;
 use DistributionBundle\Entity\DistributionData;
-use DistributionBundle\Entity\Location;
 use DistributionBundle\Entity\SelectionCriteria;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Tests\Matcher\DumpedUrlMatcherTest;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DistributionService
@@ -121,6 +118,8 @@ class DistributionService
      */
     public function create($countryISO3, array $distributionArray)
     {
+        $location = $distributionArray['location'];
+        unset($distributionArray['location']);
         /** @var DistributionData $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
         $distribution->setUpdatedOn(new \DateTime());
@@ -135,7 +134,7 @@ class DistributionService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        $location = $this->locationService->getOrSaveLocation($distributionArray['location']);
+        $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
         $distribution->setLocation($location);
 
         $project = $distribution->getProject();

@@ -60,28 +60,32 @@ doctrine:
         auto_mapping: true
         dql:
             string_functions:
-                 soundex: DoctrineExtensions\Query\Mysql\Soundex
-                 date_format: DoctrineExtensions\Query\Mysql\DateFormat
+                 soundex:       DoctrineExtensions\Query\Mysql\Soundex
+                 date_format:   DoctrineExtensions\Query\Mysql\DateFormat
                  timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
                  quarter: DoctrineExtensions\Query\Mysql\Quarter
                  month: DoctrineExtensions\Query\Mysql\Month
                  year: DoctrineExtensions\Query\Mysql\Year
 
+            numeric_functions:
+                levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
+                levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
+
 # Swiftmailer Configuration
 swiftmailer:
-    transport: '%mailer_transport%'
-    host: '%mailer_host%'
-    username: '%mailer_user%'
-    password: '%mailer_password%'
-    spool: { type: memory }
+    transport:  '%mailer_transport%'
+    host:       '%mailer_host%'
+    username:   '%mailer_user%'
+    password:   '%mailer_password%'
+    spool:      { type: memory }
 
 doctrine_migrations:
-    dir_name: "%kernel.root_dir%/DoctrineMigrations"
-    namespace: Application\Migrations
-    table_name: migration_versions
-    name: Application Migrations
-    organize_migrations: false # Version >= 1.2, possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false
-    custom_template: ~ # Version >= 1.2, path to your custom migrations template
+      dir_name:             "%kernel.root_dir%/DoctrineMigrations"
+      namespace:            Application\Migrations
+      table_name:           migration_versions
+      name:                 Application Migrations
+      organize_migrations:  false # Version >= 1.2, possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false
+      custom_template:      ~ # Version >= 1.2, path to your custom migrations template
 
 fos_user:
     db_driver: orm

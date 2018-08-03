@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
-use DistributionBundle\Entity\Location;
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -140,7 +140,7 @@ class Household
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Location", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location", cascade={"persist"})
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $location;
@@ -337,11 +337,11 @@ class Household
     /**
      * Set location.
      *
-     * @param \DistributionBundle\Entity\Location|null $location
+     * @param \CommonBundle\Entity\Location|null $location
      *
      * @return Household
      */
-    public function setLocation(\DistributionBundle\Entity\Location $location = null)
+    public function setLocation(\CommonBundle\Entity\Location $location = null)
     {
         $this->location = $location;
 
@@ -351,7 +351,7 @@ class Household
     /**
      * Get location.
      *
-     * @return \DistributionBundle\Entity\Location|null
+     * @return \CommonBundle\Entity\Location|null
      */
     public function getLocation()
     {

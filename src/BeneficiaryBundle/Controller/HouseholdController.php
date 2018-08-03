@@ -20,11 +20,13 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class HouseholdController extends Controller
 {
     /**
      * @Rest\Get("/households/{id}")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
      *
      * @param Household $household
      * @return Response
@@ -41,7 +43,42 @@ class HouseholdController extends Controller
     }
 
     /**
+     * @Rest\Post("/households/get/all", name="all_households")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All households",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Household::class))
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function allAction(Request $request)
+    {
+        $filters = $request->request->all();
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
+        $households = $householdService->getAll($filters['__country'], $filters);
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $households,
+                'json',
+                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
+
+    /**
      * @Rest\Put("/households/project/{id}", name="add_household")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Households")
      *
@@ -71,11 +108,11 @@ class HouseholdController extends Controller
     public function addAction(Request $request, Project $project)
     {
         $householdArray = $request->request->all();
-        /** @var HouseholdService $householeService */
-        $householeService = $this->get('beneficiary.household_service');
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
         try
         {
-            $household = $householeService->create($householdArray, $project);
+            $household = $householdService->create($householdArray, $project);
         }
         catch (ValidationException $exception)
         {
@@ -97,6 +134,7 @@ class HouseholdController extends Controller
 
     /**
      * @Rest\Post("/import/households/project/{id}", name="import_household")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Households")
      *
@@ -175,7 +213,7 @@ class HouseholdController extends Controller
 
     /**
      * @Rest\Get("/csv/households/export", name="get_pattern_csv_household")
-     *
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Households")
      *
@@ -220,6 +258,7 @@ class HouseholdController extends Controller
     /**
      * @Rest\Post("/households/{id}/project/{id_project}")
      * @ParamConverter("project", options={"mapping": {"id_project" : "id"}})
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * NOTE : YOU CAN'T EDIT THE PROJECTS LIST OF THE HOUSEHOLD HERE
      *
@@ -280,39 +319,11 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Post("/households/get/all", name="all_households")
-     *
-     * @SWG\Tag(name="Households")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="All households",
-     *     @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref=@Model(type=Household::class))
-     *     )
-     * )
-     *
-     * @return Response
-     */
-    public function allAction(Request $request)
-    {
-        $filters = $request->request->all();
-        /** @var HouseholdService $householeService */
-        $householeService = $this->get('beneficiary.household_service');
-        $households = $householeService->getAll($filters['__country'], $filters);
-
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $households,
-                'json',
-                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
-            );
-        return new Response($json);
-    }
-
-    /**
      * @Rest\Delete("/households/{id}")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     *
+     * @param Household $household
+     * @return Response
      */
     public function removeAction(Household $household)
     {

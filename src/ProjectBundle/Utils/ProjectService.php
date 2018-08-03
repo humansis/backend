@@ -35,11 +35,12 @@ class ProjectService
     /**
      * Get all projects
      *
+     * @param User $user
      * @return array
      */
-    public function findAll()
+    public function findAll(User $user)
     {
-        $projects = $this->em->getRepository(Project::class)->findByArchived(0);
+        $projects = $this->em->getRepository(Project::class)->getAllOfUser($user);
         $houseHoldsRepository = $this->em->getRepository(Household::class);
         foreach($projects as $project){
             $project->setNumberOfHouseholds($houseHoldsRepository->countByProject($project)[1]);
@@ -52,11 +53,13 @@ class ProjectService
     /**
      * Create a project
      *
+     * @param $countryISO3
      * @param array $projectArray
+     * @param User $user
      * @return Project
      * @throws \Exception
      */
-    public function create(array $projectArray, User $user)
+    public function create($countryISO3, array $projectArray, User $user)
     {
         /** @var Project $project */
         $newProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
@@ -64,8 +67,8 @@ class ProjectService
         $project->setName($newProject->getName())
                 ->setName($newProject->getName())
                 ->setStartDate($newProject->getStartDate())        
-                ->setEndDate($newProject->getEndDate());
-        $project->setIso3($projectArray['__country']);
+                ->setEndDate($newProject->getEndDate())
+                ->setIso3($countryISO3);
 
         $errors = $this->validator->validate($project);
         if (count($errors) > 0)
@@ -199,9 +202,6 @@ class ProjectService
      */
     public function delete(Project $project)
     {
-        $projectBeneficiary = $this->em->getRepository(ProjectBeneficiary::class)->findByProject($project);
-        if (!empty($projectBeneficiary))
-            $this->archived($project);
         $distributionData = $this->em->getRepository(DistributionData::class)->findByProject($project);
         if (!empty($distributionData))
             $this->archived($project);

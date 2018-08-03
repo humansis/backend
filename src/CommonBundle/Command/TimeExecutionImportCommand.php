@@ -194,7 +194,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "G" => 120.12,
             "H" => "TEST_IMPOR11T22",
             "I" => "TEST_IMPORT222",
-            "J" => "TEST_IMPORT22",
+            "J" => "TEST_IMPORT2c2",
             "K" => "TEST_IMPORT222",
             "L" => 4.0,
             "M" => "my wash",
@@ -240,7 +240,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "G" => 120.12,
             "H" => "TEST_IMPORT22",
             "I" => "TEST_IMP222ORT222",
-            "J" => "TEST_IMPORT22",
+            "J" => "TEST_IMPORT2c2",
             "K" => "TEST_IMPORT222",
             "L" => 4.0,
             "M" => "my wash",
@@ -285,7 +285,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "F" => 1.1544,
             "G" => 120.12,
             "H" => "TEST_IMPORT22",
-            "I" => "TEST_IMPORT222",
+            "I" => "TEST_IMPORTd222",
             "J" => "TEST_IMPO33333RT22",
             "K" => "TEST_IMPORT222",
             "L" => 4.0,
@@ -330,7 +330,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "E" => "this is just some notes",
             "F" => 1.1544,
             "G" => 120.12,
-            "H" => "TEST_IMPORT22",
+            "H" => "TEST_IMPORT2e2",
             "I" => "TEST_IMPORT222",
             "J" => "TEST_IMPORT22",
             "K" => "TEST_IMPORT4444222",
@@ -377,7 +377,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "F" => 1.1544,
             "G" => 120.12,
             "H" => "TEST_IMPOR5555T22",
-            "I" => "TEST_IMPORT222",
+            "I" => "TEST_IMPORT2r22",
             "J" => "TEST_IMPORT22",
             "K" => "TEST_IMPORT222",
             "L" => 4.0,
@@ -423,7 +423,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "F" => 1.1544,
             "G" => 120.12,
             "H" => "TEST_IMPORT22",
-            "I" => "TEST_IMPORT222",
+            "I" => "TEST_IMPORTz222",
             "J" => "TEST_IMPOR6666T22",
             "K" => "TEST_IMPORT222",
             "L" => 4.0,
@@ -470,7 +470,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "G" => 120.12,
             "H" => "TEST_IMPOR77T22",
             "I" => "TEST_IMPORT222",
-            "J" => "TEST_IMPOR777T22",
+            "J" => "TEST_IMPOR777oT22",
             "K" => "TEST_IMPORT222",
             "L" => 4.0,
             "M" => "my wash",
@@ -515,7 +515,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "F" => 1.1544,
             "G" => 120.12,
             "H" => "TEST_IMPORT22",
-            "I" => "TEST_IMPORT222",
+            "I" => "TEST_IMPORpT222",
             "J" => "TEST_IMPOR8888T22",
             "K" => "TEST_IMPORT222",
             "L" => 4.0,
@@ -615,7 +615,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
         print_r($this->color->getColoredString(number_format(($this->sumStep4 / $number), 3)));
         print_r($this->color->getColoredString("\nStep 5 - Average : ", "yellow"));
         print_r($this->color->getColoredString(number_format(($this->sumStep5 / $number), 3)) . "\n\n");
-        
+
         unset($number);
 
         $this->removeAll();
@@ -644,7 +644,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        $this->sumStep1 += ($executionTime - $executionStartTime);
+        if (1 !== $step)
+            $this->sumStep1 += ($executionTime - $executionStartTime);
         $token = $return["token"];
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
@@ -655,7 +656,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        $this->sumStep2 += ($executionTime - $executionStartTime);
+        if (1 !== $step)
+            $this->sumStep2 += ($executionTime - $executionStartTime);
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
         $executionTime = microtime(true);
@@ -665,7 +667,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        $this->sumStep3 += ($executionTime - $executionStartTime);
+        if (1 !== $step)
+            $this->sumStep3 += ($executionTime - $executionStartTime);
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
         $executionTime = microtime(true);
@@ -675,7 +678,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        $this->sumStep4 += ($executionTime - $executionStartTime);
+        if (1 !== $step)
+            $this->sumStep4 += ($executionTime - $executionStartTime);
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
         $executionTime = microtime(true);
@@ -685,7 +689,8 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        $this->sumStep5 += ($executionTime - $executionStartTime);
+        if (1 !== $step)
+            $this->sumStep5 += ($executionTime - $executionStartTime);
         print_r($this->color->getColoredString("\nExecution time : ", "light_red"));
         print_r($this->color->getColoredString(number_format($totalTime, 3) . " s\n"));
         print_r($this->color->getColoredString("\n---------------------------------------"));
@@ -748,8 +753,6 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
                     $this->em->remove($beneficiary);
                 }
             }
-            $location = $household->getLocation();
-            $this->em->remove($location);
 
             $countrySpecificAnswers = $this->em->getRepository(CountrySpecificAnswer::class)
                 ->findByHousehold($household);
@@ -759,7 +762,16 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             }
 
             $this->em->remove($household);
-            $this->em->flush();
+            $location = $household->getLocation();
+            $this->em->remove($location);
+            try
+            {
+                $this->em->flush();
+            }
+            catch (\Exception $exception)
+            {
+
+            }
         }
     }
 }
