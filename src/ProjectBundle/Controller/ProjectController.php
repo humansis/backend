@@ -33,10 +33,10 @@ class ProjectController extends Controller
      *
      * @return Response
      */
-    public function getAllAction()
+    public function getAllAction(Request $request)
     {
         $user = $this->getUser();
-        $projects = $this->get('project.project_service')->findAll($user);
+        $projects = $this->get('project.project_service')->findAll($request->request->get('__country'), $user);
         $json = $this->get('jms_serializer')
             ->serialize($projects, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
 
@@ -46,7 +46,7 @@ class ProjectController extends Controller
     /**
      * Get a project
      * @Rest\Get("/projects/{id}", name="show_project")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
      *
      * @SWG\Tag(name="Projects")
      *
@@ -115,7 +115,7 @@ class ProjectController extends Controller
      * TODO VOTER POUR CHECKER QUE PROJECT EST PAS ARCHIVED
      * Edit a project
      * @Rest\Post("/projects/{id}", name="update_project")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
      *
      * @SWG\Tag(name="Projects")
      *
@@ -160,7 +160,7 @@ class ProjectController extends Controller
     /**
      * Edit a project
      * @Rest\Delete("/projects/{id}", name="delete_project")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
      *
      * @SWG\Tag(name="Projects")
      *

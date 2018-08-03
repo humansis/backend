@@ -6,20 +6,24 @@ namespace DistributionBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use ProjectBundle\Entity\Project;
 
 abstract class AbstractCriteriaRepository extends EntityRepository implements InterfaceCriteriaRepository
 {
 
     /**
-     * @param $countryISO3
+     * @param Project $project
+     * @param array $countryISO3
      * @param array $criteria
      * @param array $configurationCriteria
      * @param bool $onlyCount
      * @param string|null $groupGlobal
      * @return mixed
      * @throws \Exception
+     * @throws \ReflectionException
      */
     public function findByCriteria(
+        Project $project = null,
         $countryISO3,
         array $criteria,
         array $configurationCriteria = [],
@@ -27,7 +31,7 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
         string $groupGlobal = null
     )
     {
-        $qb = $this->configurationQueryBuilder($onlyCount, $countryISO3);
+        $qb = $this->configurationQueryBuilder($onlyCount, $countryISO3, $project);
 
         $i = 1;
         foreach ($criteria as $criterion)
@@ -63,16 +67,16 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
                 throw new \Exception("The field '{$criterion['field_string']}' is not implement yet");
             $i++;
         }
-
         return $qb->getQuery()->getResult();
     }
 
     /**
      * @param $onlyCount
      * @param $countryISO3
+     * @param Project $project
      * @throws \Exception
      */
-    public function configurationQueryBuilder($onlyCount, $countryISO3)
+    public function configurationQueryBuilder($onlyCount, $countryISO3, Project $project)
     {
         throw new \Exception("configurationQueryBuilder must de implemented.");
     }
@@ -101,7 +105,7 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
         $qb->leftJoin("hh$i.location", "l$i")
 
             ->leftJoin("l$i.adm1", "adm1$i")
-            ->where("adm1$i.countryISO3 = :iso3 AND hh$i.archived = 0")
+            ->andWhere("adm1$i.countryISO3 = :iso3 AND hh$i.archived = 0")
 
             ->leftJoin("l$i.adm4", "adm4$i")
             ->leftJoin("adm4$i.adm3", "adm3b$i")

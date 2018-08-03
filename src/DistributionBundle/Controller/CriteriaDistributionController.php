@@ -6,6 +6,7 @@ namespace DistributionBundle\Controller;
 
 use DistributionBundle\Utils\CriteriaDistributionService;
 use JMS\Serializer\SerializationContext;
+use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,8 +85,8 @@ class CriteriaDistributionController extends Controller
     }
 
     /**
-     * @Rest\Post("/distributions/criteria")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Rest\Post("/distributions/criteria/project/{id}")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      *
@@ -107,16 +108,16 @@ class CriteriaDistributionController extends Controller
      * )
      *
      * @param Request $request
+     * @param Project $project
      * @return Response
-     * @throws \Exception
      */
-    public function getBeneficiariesAction(Request $request)
+    public function getBeneficiariesAction(Request $request, Project $project)
     {
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
         try
         {
-            $receivers = $criteriaDistributionService->load($request->request->all());
+            $receivers = $criteriaDistributionService->load($project, $request->request->all());
         }
         catch (\Exception $exception)
         {
@@ -133,8 +134,8 @@ class CriteriaDistributionController extends Controller
     }
 
     /**
-     * @Rest\Post("/distributions/criteria/number")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Rest\Post("/distributions/criteria/project/{id}/number")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      *
@@ -156,16 +157,16 @@ class CriteriaDistributionController extends Controller
      * )
      *
      * @param Request $request
+     * @param Project $project
      * @return Response
-     * @throws \Exception
      */
-    public function getBeneficiariesNumberAction(Request $request)
+    public function getBeneficiariesNumberAction(Request $request, Project $project)
     {
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
         try
         {
-            $receivers = $criteriaDistributionService->load($request->request->all(), true);
+            $receivers = $criteriaDistributionService->load($project, $request->request->all(), true);
         }
         catch (\Exception $exception)
         {

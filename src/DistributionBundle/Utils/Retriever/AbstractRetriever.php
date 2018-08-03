@@ -4,18 +4,21 @@
 namespace DistributionBundle\Utils\Retriever;
 
 
+use ProjectBundle\Entity\Project;
+
 abstract class AbstractRetriever
 {
     /**
+     * @param Project $project
      * @param string $countryISO3
      * @param string $distributionType
      * @param array $criteria
      * @param array $configurationCriteria
      * @param bool $onlyCount
      * @return array
-     * @throws \Exception
      */
     public function getReceivers(
+        Project $project,
         string $countryISO3,
         string $distributionType,
         array $criteria,
@@ -26,7 +29,7 @@ abstract class AbstractRetriever
         $this->preFinder($distributionType, $criteria);
 
         $receivers = $this->guessRepository($distributionType)
-            ->findByCriteria($countryISO3, $criteria, $configurationCriteria, $onlyCount);
+            ->findByCriteria($project, $countryISO3, $criteria, $configurationCriteria, $onlyCount);
 
         // If we only want the number of beneficiaries, return only the number
         if ($onlyCount)

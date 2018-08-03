@@ -1,4 +1,10 @@
 services:
+
+
+#######################################################################################
+##                                       CRUD                                        ##
+#######################################################################################
+
     distribution.distribution_service:
         class: DistributionBundle\Utils\DistributionService
         public: true
@@ -46,6 +52,11 @@ services:
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
+
+
+#######################################################################################
+##                                       CSV                                         ##
+#######################################################################################
 
     distribution.distribution_csv_service:
         class: DistributionBundle\Utils\DistributionCSVService

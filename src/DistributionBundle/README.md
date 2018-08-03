@@ -101,9 +101,9 @@ These methods are used to add criteria on their field.
 
 # Routes
 
-- **POST /distribution/criteria** : Get the list of beneficiaries of household
+- **POST /distribution/criteria/project/{id_of_project}** : Get the list of beneficiaries of household
 
-- **POST /distribution/criteria/number** : Get the number of beneficiaries of household
+- **POST /distribution/criteria/project/{id_of_project}/number** : Get the number of beneficiaries of household
 
 
 ### Household Distribution

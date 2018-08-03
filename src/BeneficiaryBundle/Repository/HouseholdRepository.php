@@ -98,14 +98,20 @@ class HouseholdRepository extends AbstractCriteriaRepository
     /**
      * @param $onlyCount
      * @param $countryISO3
+     * @param Project $project
      * @return QueryBuilder|void
      */
-    public function configurationQueryBuilder($onlyCount, $countryISO3)
+    public function configurationQueryBuilder($onlyCount, $countryISO3, Project $project = null)
     {
         $qb = $this->createQueryBuilder("hh");
         if ($onlyCount)
             $qb->select("count(hh)");
 
+        if (null !== $project)
+        {
+            $qb->where(":idProject MEMBER OF hh.projects")
+                ->setParameter("idProject", $project->getId());
+        }
         $qb->leftJoin("hh.beneficiaries", "b");
         $this->setCountry($qb, $countryISO3);
 
