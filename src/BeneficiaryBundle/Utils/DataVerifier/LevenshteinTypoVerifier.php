@@ -43,10 +43,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
     public function verify(string $countryISO3, array $householdArray, int $cacheId)
     {
         $householdRepository = $this->em->getRepository(Household::class);
-        $beneficiaryRepository = $this->em->getRepository(Beneficiary::class);
-
         $newHead = null;
-
         foreach ($householdArray['beneficiaries'] as $newBeneficiaryArray)
         {
             if (1 === intval($newBeneficiaryArray['status']))
@@ -76,28 +73,19 @@ class LevenshteinTypoVerifier extends AbstractVerifier
         }
         elseif (1 === sizeof($similarHouseholds))
         {
-            $oldHead = $beneficiaryRepository->getHeadOfHouseholdId(current($similarHouseholds)->getId());
-            $distanceTmp = levenshtein(
-                $stringToCompare,
-                current($similarHouseholds)->getAddressStreet() .
-                current($similarHouseholds)->getAddressNumber() .
-                current($similarHouseholds)->getAddressPostcode() .
-                $oldHead->getGivenName() .
-                $oldHead->getFamilyName()
-            );
-            if (0 == $distanceTmp)
+            if (0 == intval(current($similarHouseholds)["levenshtein"]))
             {
                 // SAVE 100% SIMILAR IN 1_typo
                 $this->saveInCache(
                     'mapping_new_old',
                     $cacheId,
                     $householdArray,
-                    $householdRepository->find(current($similarHouseholds))
+                    $householdRepository->find(current($similarHouseholds)["household"])
                 );
                 return false;
             }
             $return = [
-                "old" => $householdRepository->find(current($similarHouseholds)),
+                "old" => $householdRepository->find(current($similarHouseholds)["household"]),
                 "new" => $householdArray, "id_tmp_cache" => $cacheId
             ];
 
@@ -107,34 +95,14 @@ class LevenshteinTypoVerifier extends AbstractVerifier
         {
             $distance = null;
             $bestSimilarHousehold = null;
-            /** @var Household $similarHousehold */
-            foreach ($similarHouseholds as $similarHousehold)
+            foreach ($similarHouseholds as $index => $similarHouseholdAndLevenshtein)
             {
-                /** @var Beneficiary $oldHead */
-                $oldHead = $beneficiaryRepository->getHeadOfHouseholdId($similarHousehold->getId());
-                $distanceTmp = levenshtein(
-                    $stringToCompare,
-                    $similarHousehold->getAddressStreet() .
-                    $similarHousehold->getAddressNumber() .
-                    $similarHousehold->getAddressPostcode() .
-                    $oldHead->getGivenName() .
-                    $oldHead->getFamilyName()
-                );
-                if (0 == $distanceTmp)
+                if ($distance === null || intval($similarHouseholdAndLevenshtein["levenshtein"]) < $distance)
                 {
-                    // SAVE 100% SIMILAR IN 1_typo
-                    $this->saveInCache(
-                        'mapping_new_old',
-                        $cacheId,
-                        $householdArray,
-                        $householdRepository->find($similarHousehold)
-                    );
+                    $bestSimilarHousehold = $similarHouseholdAndLevenshtein["household"];
+                    $distance = $similarHouseholdAndLevenshtein["levenshtein"];
                 }
-                elseif ($distance === null || $distanceTmp < $distance)
-                {
-                    $bestSimilarHousehold = $similarHousehold;
-                    $distance = $distanceTmp;
-                }
+                unset($similarHouseholds[$index]);
             }
             $return = [
                 "old" => $householdRepository->find($bestSimilarHousehold),
