@@ -6,7 +6,8 @@ services:
 #######################################################################################
 
     user.user_service:
-        alias: UserBundle\Utils\UserService
+        class: UserBundle\Utils\UserService
+        arguments: ['@doctrine.orm.entity_manager', '@validator']
         public: true
 
 
