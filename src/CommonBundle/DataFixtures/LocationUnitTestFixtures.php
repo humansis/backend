@@ -16,7 +16,7 @@ class LocationUnitTestFixtures extends Fixture
 {
 
     private $data = [
-        ['UNT', 'Rhone-Alpes', 'Savoie', 'Chambery', 'Sainte Hélène sur Isère'],
+        ['KHM', 'Rhone-Alpes', 'Savoie', 'Chambery', 'Sainte Hélène sur Isère'],
     ];
 
     /**

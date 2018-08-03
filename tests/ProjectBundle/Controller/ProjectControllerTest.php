@@ -46,7 +46,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('PUT', '/api/wsse/projects', $this->body, [], ['HTTP_COUNTRY' => $this->iso3]);
+        $crawler = $this->request('PUT', '/api/wsse/projects', $this->body);
 
         $project = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -83,7 +83,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('GET', '/api/wsse/projects/' . $project['id'], $this->body);
+        $crawler = $this->request('GET', '/api/wsse/projects/' . $project['id'], $this->body);
         $newProject = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         try
@@ -121,7 +121,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->em->clear();
 
         $this->body['name'] .= '(u)';
-        $crawler = $this->client->request('POST', '/api/wsse/projects/' . $project['id'], $this->body);
+        $crawler = $this->request('POST', '/api/wsse/projects/' . $project['id'], $this->body);
         $this->body['name'] = $this->name;
         $newproject = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -161,7 +161,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('GET', '/api/wsse/projects');
+        $crawler = $this->request('GET', '/api/wsse/projects');
         $projects = json_decode($this->client->getResponse()->getContent(), true);
 
         if (!empty($projects))

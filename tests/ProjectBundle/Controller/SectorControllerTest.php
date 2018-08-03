@@ -42,7 +42,7 @@ class SectorControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('PUT', '/api/wsse/sectors', $this->body);
+        $crawler = $this->request('PUT', '/api/wsse/sectors', $this->body);
         $sector = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -87,7 +87,7 @@ class SectorControllerTest extends BMSServiceTestCase
         $this->em->clear();
 
         $this->body['name'] .= '(u)';
-        $crawler = $this->client->request('POST', '/api/wsse/sectors/' . $sector->getId(), $this->body);
+        $crawler = $this->request('POST', '/api/wsse/sectors/' . $sector->getId(), $this->body);
         $this->body['name'] = $this->name;
 
         $sector = json_decode($this->client->getResponse()->getContent(), true);
@@ -126,7 +126,7 @@ class SectorControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('GET', '/api/wsse/sectors');
+        $crawler = $this->request('GET', '/api/wsse/sectors');
         $sectors = json_decode($this->client->getResponse()->getContent(), true);
 
         if (!empty($sectors))

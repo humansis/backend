@@ -52,7 +52,7 @@ class BMSServiceTestCase extends KernelTestCase
     // VARIABLES
 
     /** @var string $iso3 */
-    protected $iso3 = "UNT";
+    protected $iso3 = "KHM";
 
     protected $namefullnameHousehold = "STREET_TEST";
 
@@ -149,6 +149,11 @@ class BMSServiceTestCase extends KernelTestCase
      * }
      */
     private $defaultSerializerName = "serializer";
+
+    protected function request($method, $uri, $body = [], $files = [], $headers = null)
+    {
+        $this->client->request($method, $uri, $body, $files, (null === $headers) ? ['HTTP_COUNTRY' => 'KHM'] : $headers);
+    }
 
 
     public function setDefaultSerializerName($serializerName)

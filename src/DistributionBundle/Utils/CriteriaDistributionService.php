@@ -9,6 +9,7 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
+use ProjectBundle\Entity\Project;
 
 class CriteriaDistributionService
 {
@@ -51,17 +52,19 @@ class CriteriaDistributionService
 
 
     /**
+     * @param Project $project
      * @param array $filters
      * @param bool $onlyCount
      * @return mixed
      * @throws \Exception
      */
-    public function load(array $filters, bool $onlyCount = false)
+    public function load(Project $project, array $filters, bool $onlyCount = false)
     {
         $countryISO3 = $filters['__country'];
         $distributionType = $filters['distribution_type'];
 
         return $this->retriever->getReceivers(
+            $project,
             $countryISO3,
             $distributionType,
             $filters["criteria"],

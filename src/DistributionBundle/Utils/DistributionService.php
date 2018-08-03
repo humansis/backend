@@ -160,7 +160,7 @@ class DistributionService
 
         $this->em->persist($distribution);
 
-        $listReceivers = $this->guessBeneficiaries($countryISO3, $distribution, $criteria);
+        $listReceivers = $this->guessBeneficiaries($projectTmp, $countryISO3, $distribution, $criteria);
         $this->saveReceivers($distribution, $listReceivers);
 
         $this->em->flush();
@@ -185,13 +185,13 @@ class DistributionService
     }
 
     /**
+     * @param Project $project
      * @param $countryISO3
      * @param DistributionData $distributionData
      * @param array $criteria
-     * @return mixed
-     * @throws \Exception
+     * @return array
      */
-    public function guessBeneficiaries($countryISO3, DistributionData $distributionData, array $criteria)
+    public function guessBeneficiaries(Project $project, $countryISO3, DistributionData $distributionData, array $criteria)
     {
         $criteriaArray = [];
         foreach ($criteria as $selectionCriterion)
@@ -200,6 +200,7 @@ class DistributionService
         }
 
         return $this->retriever->getReceivers(
+            $project,
             $countryISO3,
             $this->guessTypeString($distributionData->getType()),
             $criteriaArray,

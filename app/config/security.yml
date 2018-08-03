@@ -37,7 +37,7 @@ security:
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
 
     access_decision_manager:
-        strategy: affirmative
+        strategy: unanimous
 
 
     role_hierarchy:
