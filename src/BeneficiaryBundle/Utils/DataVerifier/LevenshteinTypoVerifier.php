@@ -17,7 +17,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
      * Maximum distance between two strings with the Levenshtein algorithm
      * @var int
      */
-    private $maximumDistanceLevenshtein = 4;
+    private $maximumDistanceLevenshtein = 2;
 
     /** @var Container $container */
     private $container;
@@ -43,13 +43,10 @@ class LevenshteinTypoVerifier extends AbstractVerifier
     public function verify(string $countryISO3, array $householdArray, int $cacheId)
     {
         $householdRepository = $this->em->getRepository(Household::class);
-        $beneficiaryRepository = $this->em->getRepository(Beneficiary::class);
-
         $newHead = null;
-
         foreach ($householdArray['beneficiaries'] as $newBeneficiaryArray)
         {
-            if (1 === intval($newBeneficiaryArray['status']))
+            if (1 == $newBeneficiaryArray['status'])
             {
                 $newHead = $newBeneficiaryArray;
                 break;
@@ -59,14 +56,12 @@ class LevenshteinTypoVerifier extends AbstractVerifier
         if (null === $newHead)
             return null;
 
-        $stringToCompare = $householdArray["address_street"] .
+        $similarHouseholds = $householdRepository->foundSimilarLevenshtein(
+            $householdArray["address_street"] .
             $householdArray["address_number"] .
             $householdArray["address_postcode"] .
             $newHead["given_name"] .
-            $newHead["family_name"];
-
-        $similarHouseholds = $householdRepository->foundSimilarLevenshtein(
-            $stringToCompare,
+            $newHead["family_name"],
             $this->maximumDistanceLevenshtein);
 
         if (empty($similarHouseholds))
@@ -74,73 +69,24 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             $this->saveInCache('no_typo', $cacheId, $householdArray, null);
             return null;
         }
-        elseif (1 === sizeof($similarHouseholds))
+        else
         {
-            $oldHead = $beneficiaryRepository->getHeadOfHouseholdId(current($similarHouseholds)->getId());
-            $distanceTmp = levenshtein(
-                $stringToCompare,
-                current($similarHouseholds)->getAddressStreet() .
-                current($similarHouseholds)->getAddressNumber() .
-                current($similarHouseholds)->getAddressPostcode() .
-                $oldHead->getGivenName() .
-                $oldHead->getFamilyName()
-            );
-            if (0 == $distanceTmp)
+            if (0 == intval(current($similarHouseholds)["levenshtein"]))
             {
                 // SAVE 100% SIMILAR IN 1_typo
                 $this->saveInCache(
                     'mapping_new_old',
                     $cacheId,
                     $householdArray,
-                    $householdRepository->find(current($similarHouseholds))
+                    $householdRepository->find(current($similarHouseholds)["household"])
                 );
                 return false;
             }
-            $return = [
-                "old" => $householdRepository->find(current($similarHouseholds)),
-                "new" => $householdArray, "id_tmp_cache" => $cacheId
-            ];
 
-            return $return;
-        }
-        else
-        {
-            $distance = null;
-            $bestSimilarHousehold = null;
-            /** @var Household $similarHousehold */
-            foreach ($similarHouseholds as $similarHousehold)
-            {
-                /** @var Beneficiary $oldHead */
-                $oldHead = $beneficiaryRepository->getHeadOfHouseholdId($similarHousehold->getId());
-                $distanceTmp = levenshtein(
-                    $stringToCompare,
-                    $similarHousehold->getAddressStreet() .
-                    $similarHousehold->getAddressNumber() .
-                    $similarHousehold->getAddressPostcode() .
-                    $oldHead->getGivenName() .
-                    $oldHead->getFamilyName()
-                );
-                if (0 == $distanceTmp)
-                {
-                    // SAVE 100% SIMILAR IN 1_typo
-                    $this->saveInCache(
-                        'mapping_new_old',
-                        $cacheId,
-                        $householdArray,
-                        $householdRepository->find($similarHousehold)
-                    );
-                }
-                elseif ($distance === null || $distanceTmp < $distance)
-                {
-                    $bestSimilarHousehold = $similarHousehold;
-                    $distance = $distanceTmp;
-                }
-            }
-            $return = [
-                "old" => $householdRepository->find($bestSimilarHousehold),
+            return [
+                "old" => $householdRepository->find(current($similarHouseholds)["household"]),
                 "new" => $householdArray, "id_tmp_cache" => $cacheId
             ];
-            return $return;
         }
     }
 
@@ -155,7 +101,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
     {
         if (null !== $household)
             $arrayOldHousehold = json_decode($this->container->get('jms_serializer')
-                ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)), true);
+                ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])), true);
         else
             $arrayOldHousehold = json_encode([]);
 
