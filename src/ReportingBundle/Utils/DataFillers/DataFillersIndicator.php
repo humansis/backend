@@ -38,14 +38,18 @@ class DataFillersIndicator
         foreach($contentFile as $data) 
         {
             $new = new ReportingIndicator();
-
+            $filter = [];
             $new->setreference($data[0]);
             $new->setGraph($data[3]);
             $new->setCode($data[1]);
+            array_push($filter, $data[2]);
             
-            if(!empty($data[0]))
-            {
-                $new->setFilters($data[2]);
+            if(is_array($filter))
+            { 
+                if(!empty($filter))
+                {
+                    $new->setFilters($filter);
+                }
             }
 
             $this->em->persist($new);
