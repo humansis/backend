@@ -38,7 +38,7 @@ class UserControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('GET', '/api/wsse/users');
+        $crawler = $this->request('GET', '/api/wsse/users');
         $users = json_decode($this->client->getResponse()->getContent(), true);
 
         if (!empty($users))
@@ -63,13 +63,13 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testGetSalt()
     {
-        $crawler = $this->client->request('GET', '/api/wsse/salt/' . $this->username);
+        $crawler = $this->request('GET', '/api/wsse/salt/' . $this->username);
         $data = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('user_id', $data);
         $this->assertArrayHasKey('salt', $data);
 
-        $crawler = $this->client->request('GET', '/api/wsse/salt/o');
+        $crawler = $this->request('GET', '/api/wsse/salt/o');
         $data = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(!$this->client->getResponse()->isSuccessful());
@@ -100,7 +100,7 @@ class UserControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->client->request('PUT', '/api/wsse/users', $body);
+        $crawler = $this->request('PUT', '/api/wsse/users', $body);
         $user = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -126,7 +126,7 @@ class UserControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->client->request('POST', '/api/wsse/users/' . $newuser['id'], $body);
+        $crawler = $this->request('POST', '/api/wsse/users/' . $newuser['id'], $body);
         $newUserReceived = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -155,7 +155,7 @@ class UserControllerTest extends BMSServiceTestCase
 
         $body = ["oldPassword" => "PSWUNITTEST", "newPassword" => "PSWUNITTEST1"];
 
-        $crawler = $this->client->request('POST', '/api/wsse/users/' . $userToChange['id'] . '/password', $body);
+        $crawler = $this->request('POST', '/api/wsse/users/' . $userToChange['id'] . '/password', $body);
         $newUserReceived = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -184,7 +184,7 @@ class UserControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->client->request('DELETE', '/api/wsse/users/' . $userToDelete['id']);
+        $crawler = $this->request('DELETE', '/api/wsse/users/' . $userToDelete['id']);
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed

@@ -150,6 +150,11 @@ class BMSServiceTestCase extends KernelTestCase
      */
     private $defaultSerializerName = "serializer";
 
+    protected function request($method, $uri, $body = [], $files = [], $headers = null)
+    {
+        $this->client->request($method, $uri, $body, $files, (null === $headers) ? ['HTTP_COUNTRY' => 'KHM'] : $headers);
+    }
+
 
     public function setDefaultSerializerName($serializerName)
     {
