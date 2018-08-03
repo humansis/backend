@@ -17,7 +17,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
      * Maximum distance between two strings with the Levenshtein algorithm
      * @var int
      */
-    private $maximumDistanceLevenshtein = 4;
+    private $maximumDistanceLevenshtein = 2;
 
     /** @var Container $container */
     private $container;
@@ -46,7 +46,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
         $newHead = null;
         foreach ($householdArray['beneficiaries'] as $newBeneficiaryArray)
         {
-            if (1 === intval($newBeneficiaryArray['status']))
+            if (1 == $newBeneficiaryArray['status'])
             {
                 $newHead = $newBeneficiaryArray;
                 break;
@@ -56,14 +56,12 @@ class LevenshteinTypoVerifier extends AbstractVerifier
         if (null === $newHead)
             return null;
 
-        $stringToCompare = $householdArray["address_street"] .
+        $similarHouseholds = $householdRepository->foundSimilarLevenshtein(
+            $householdArray["address_street"] .
             $householdArray["address_number"] .
             $householdArray["address_postcode"] .
             $newHead["given_name"] .
-            $newHead["family_name"];
-
-        $similarHouseholds = $householdRepository->foundSimilarLevenshtein(
-            $stringToCompare,
+            $newHead["family_name"],
             $this->maximumDistanceLevenshtein);
 
         if (empty($similarHouseholds))
@@ -71,7 +69,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             $this->saveInCache('no_typo', $cacheId, $householdArray, null);
             return null;
         }
-        elseif (1 === sizeof($similarHouseholds))
+        else
         {
             if (0 == intval(current($similarHouseholds)["levenshtein"]))
             {
@@ -84,31 +82,11 @@ class LevenshteinTypoVerifier extends AbstractVerifier
                 );
                 return false;
             }
-            $return = [
+
+            return [
                 "old" => $householdRepository->find(current($similarHouseholds)["household"]),
                 "new" => $householdArray, "id_tmp_cache" => $cacheId
             ];
-
-            return $return;
-        }
-        else
-        {
-            $distance = null;
-            $bestSimilarHousehold = null;
-            foreach ($similarHouseholds as $index => $similarHouseholdAndLevenshtein)
-            {
-                if ($distance === null || intval($similarHouseholdAndLevenshtein["levenshtein"]) < $distance)
-                {
-                    $bestSimilarHousehold = $similarHouseholdAndLevenshtein["household"];
-                    $distance = $similarHouseholdAndLevenshtein["levenshtein"];
-                }
-                unset($similarHouseholds[$index]);
-            }
-            $return = [
-                "old" => $householdRepository->find($bestSimilarHousehold),
-                "new" => $householdArray, "id_tmp_cache" => $cacheId
-            ];
-            return $return;
         }
     }
 
@@ -123,7 +101,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
     {
         if (null !== $household)
             $arrayOldHousehold = json_decode($this->container->get('jms_serializer')
-                ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)), true);
+                ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])), true);
         else
             $arrayOldHousehold = json_encode([]);
 

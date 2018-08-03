@@ -17,6 +17,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
     /**
      * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
+     * TODO : FOUND SOLUTION TO RETURN ONLY THE SIMILAR IF DISTANCE = 0 OR THE LIST OF HOUSEHOLDS WITH A DISTANCE
+     * TODO : UNDER MINIMUMTOLERANCE, IF NO ONE HAS A DISTANCE = 0
      * @param string $stringToSearch
      * @param int $minimumTolerance
      * @return mixed
@@ -46,30 +48,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     END
             ")
             ->setParameter("stringToSearch", $stringToSearch)
-            ->setParameter("minimumTolerance", $minimumTolerance);
-
-        return $q->getQuery()->getResult();
-    }
-
-    /**
-     * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
-     * @param string $stringToSearch
-     * @param int $minimumTolerance
-     * @return mixed
-     */
-    public function foundSimilarLevenshteinOld(string $stringToSearch, int $minimumTolerance)
-    {
-        $qb = $this->createQueryBuilder("hh");
-        $q = $qb->leftJoin("hh.beneficiaries", "b")
-            ->where("b.status = 1")
-            ->andWhere("
-                LEVENSHTEIN(
-                    CONCAT(hh.addressStreet, hh.addressNumber, hh.addressPostcode, b.givenName, b.familyName),
-                    :stringToSearch
-                ) < :minimumTolerance
-            ")
-            ->setParameter("stringToSearch", $stringToSearch)
-            ->setParameter("minimumTolerance", $minimumTolerance);
+            ->setParameter("minimumTolerance", $minimumTolerance)
+            ->orderBy("levenshtein", "ASC");
 
         return $q->getQuery()->getResult();
     }

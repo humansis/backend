@@ -67,7 +67,6 @@ class TypoTreatment extends AbstractTreatment
                             $this->beneficiaryService->updateOrCreate($oldHousehold, $newHeadHH, true);
                     }
                 }
-                dump($householdArray);
                 // ADD TO THE MAPPING FILE
                 $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold);
                 $householdArray['new']['id_tmp_cache'] = $id_tmp;
