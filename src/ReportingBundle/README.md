@@ -60,8 +60,6 @@ A code beginning with BMS_ is display in the front and a code beginnning with BM
 ## Retrieve Data
 
 ![alt text](https://raw.githubusercontent.com/ReliefApplications/bms_api/dev/src/ReportingBundle/Resources/img/BackEndConfiguration.png)
-![alt text](https://raw.githubusercontent.com/ReliefApplications/bms_api/dev/src/ReportingBundle/Resources/img/SchemaBackEndConfiguration.png)
-
 
 * Controller :  
     * @Post /indicators/serve/{{id}}, send data formatted corresponding to code to display it in front
