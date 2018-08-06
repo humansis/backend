@@ -28,6 +28,10 @@ There are two command in the reporting bundle, one to get the reference of indic
 
 ![alt text](https://raw.githubusercontent.com/ReliefApplications/bms_api/dev/src/ReportingBundle/Resources/img/BDD.png)
 
+## Schema of Reporting Module
+
+![alt text](https://raw.githubusercontent.com/ReliefApplications/bms_api/dev/src/ReportingBundle/Resources/img/SchemaReportingModule.png)
+
 ## Fill Database with Command and DataFillers
 
 ![alt text](https://raw.githubusercontent.com/ReliefApplications/bms_api/dev/src/ReportingBundle/Resources/img/CommandFillers.png)
