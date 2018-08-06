@@ -17,7 +17,7 @@ class LocationController extends Controller
 {
 
     /**
-     * @Rest\get("/location/adm1", name="all_adm1")
+     * @Rest\Get("/location/adm1", name="all_adm1")
      * 
      * @SWG\Tag(name="Location")
      *
@@ -48,7 +48,7 @@ class LocationController extends Controller
     }
 
     /**
-     * @Rest\post("/location/adm2", name="all_adm2")
+     * @Rest\Post("/location/adm2", name="all_adm2")
      * 
      * @SWG\Tag(name="Location")
      *
@@ -79,7 +79,7 @@ class LocationController extends Controller
     }
 
     /**
-     * @Rest\post("/location/adm3", name="all_adm3")
+     * @Rest\Post("/location/adm3", name="all_adm3")
      * 
      * @SWG\Tag(name="Location")
      *
@@ -110,7 +110,7 @@ class LocationController extends Controller
     }
 
     /**
-     * @Rest\post("/location/adm4", name="all_adm4")
+     * @Rest\Post("/location/adm4", name="all_adm4")
      * 
      * @SWG\Tag(name="Location")
      *
