@@ -193,4 +193,12 @@ class LocationService
             return "";
         }
     }
+
+    /**
+     * 
+     */
+    public function getAllAdm1(string $countryIso3) {
+        $adm1 = $this->em->getRepository(Adm1::class)->findBy(["countryISO3" => $countryIso3]);
+        return $adm1;
+    }
 }
