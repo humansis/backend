@@ -63,6 +63,10 @@ doctrine:
                  soundex:       DoctrineExtensions\Query\Mysql\Soundex
                  date_format:   DoctrineExtensions\Query\Mysql\DateFormat
                  timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
+                 quarter: DoctrineExtensions\Query\Mysql\Quarter
+                 month: DoctrineExtensions\Query\Mysql\Month
+                 year: DoctrineExtensions\Query\Mysql\Year
+
             numeric_functions:
                 levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
                 levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction

@@ -60,19 +60,26 @@ class DistributionDataRetrievers
                                           ->where('ri.code = :code')
                                           ->setParameter('code', $code)
                                           ->andWhere('p.iso3 = :country')
-                                          ->setParameter('country', $filters['country']);
+                                          ->setParameter('country', $filters['country'])
+                                          ->select('rd.id', 'd.name as Name','rv.value as Value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+
         $qb = $this->ifInProject($qb, $filters);
         return $qb;
     }
 
     /**
      * Get the data with the more recent values
+     * If the frequency is quarter, select the value corresponding to the quarter
      */
     public function lastDate(array $values) {
         $moreRecentValues = [];
         $lastDate = $values[0]['date'];
         foreach($values as $value) {
-            if ($value['date'] > $lastDate) {
+            if ($value['date'] === 'Jan-Mar' || $value['date'] === 'Apr-Jun' || 
+                $value['date'] === 'Jul-Sep' || $value['date'] === 'Oct-Dec' ) {
+                    $lastDate = $value['date'];
+                }
+            else if ($value['date'] > $lastDate) {
                 $lastDate = $value['date'];
             }
         }
@@ -89,9 +96,20 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_NEB(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_NEB', $filters);
-        $qb->select('d.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        $result = $this->lastDate($qb->getQuery()->getArrayResult());
-        return $result;
+        //check if the DQL query return a result or not
+        if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            //to filter data with the good frequency
+            $frequency = $this->getByFrequency($qb, $filters, 'BMS_Distribution_NEB');
+            if(sizeof($frequency) > 0) {
+                $result = $this->lastDate($frequency);
+                return $result;
+            } else { 
+                return [];
+            }
+        } else {
+            return $qb->getQuery()->getArrayResult();
+        }
+        
     }
 
     /**
@@ -99,10 +117,19 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_TDV(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_TDV', $filters);
-        $qb->select('d.name AS name', 'd.id AS id','SUM(rv.value) AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
-            ->groupBy('name', 'id', 'date');
-        $results = $this->lastDate($qb->getQuery()->getArrayResult());
-        return $results;
+        //check if the DQL query return a result or not
+        if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            //to filter data with the good frequency
+            $frequency = $this->getByFrequency($qb, $filters, 'BMS_Distribution_TDV');
+            if(sizeof($frequency) > 0) {
+                $result = $this->lastDate($frequency);
+                return $result;
+            } else { 
+                return [];
+            }
+        } else {
+            return $qb->getQuery()->getArrayResult();
+        }
     }
 
     /**
@@ -110,9 +137,19 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_M(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_M', $filters);
-        $qb->select('d.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        $result = $this->lastDate($qb->getQuery()->getArrayResult());
-        return $result;
+        //check if the DQL query return a result or not
+        if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            //to filter data with the good frequency
+            $frequency = $this->getByFrequency($qb, $filters, 'BMS_Distribution_M');
+            if(sizeof($frequency) > 0) {
+                $result = $this->lastDate($frequency);
+                return $result;
+            } else { 
+                return [];
+            }
+        } else {
+            return $qb->getQuery()->getArrayResult();
+        }
     }
 
     /**
@@ -120,10 +157,19 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_AB(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_AB', $filters);
-        $qb->select('SUM(rv.value) AS value', 'rv.unity AS name', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
-           ->groupBy('name', 'date');
-        $result = $this->lastDate($qb->getQuery()->getArrayResult());;
-        return $result;
+        //check if the DQL query return a result or not
+        if (sizeof($qb->getQuery()->getArrayResult()) > 0) {
+            //to filter data with the good frequency
+            $frequency = $this->getByFrequency($qb, $filters, 'BMS_Distribution_AB');
+            if(sizeof($frequency) > 0) {
+                $result = $this->lastDate($frequency);
+                return $result;
+            } else { 
+                return [];
+            }
+        } else {
+            return $qb->getQuery()->getArrayResult();
+        }
     }
 
     /**
@@ -131,8 +177,9 @@ class DistributionDataRetrievers
      */
     public function BMSU_Distribution_NM(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_NM', $filters);
-        $qb->select("CONCAT(rv.unity, '/', d.name) AS name",'rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        return $qb->getQuery()->getArrayResult();
+        //to filter data with the good frequency
+        $result = $this->getByFrequency($qb, $filters, 'BMSU_Distribution_NM' );
+        return $result; 
     }
 
     /**
@@ -140,8 +187,9 @@ class DistributionDataRetrievers
      */
     public function BMSU_Distribution_NW(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_NW', $filters);
-        $qb->select("CONCAT(rv.unity, '/', d.name) AS name",'rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
-        return $qb->getQuery()->getArrayResult();
+        //to filter data with the good frequency
+        $result = $this->getByFrequency($qb, $filters, 'BMSU_Distribution_NW' );
+        return $result; 
     }
 
     /**
@@ -154,40 +202,62 @@ class DistributionDataRetrievers
         $mens = $this->BMSU_Distribution_NM($filters);
         $womens = $this->BMSU_Distribution_NW($filters);
 
-        //search the more recent date
-        $lastDate = $mens[0]['date'];
-        foreach($mens as $men) {
-            if ($men['date'] > $lastDate) {
-                $lastDate = $men['date'];
+        //verify if there is no men or no women in the distribution
+        if (sizeof($mens) > 0 && sizeof($womens) > 0) {
+            //search the more recent date
+            $lastDate = $mens[0]['date'];
+            foreach($mens as $men) {
+                if ($men['date'] > $lastDate) {
+                    $lastDate = $men['date'];
+                }
+            }
+
+            //Search the corresponding data and put them in an array after formatting them 
+            foreach ($mens as $men) { 
+                if ($men["date"] == $lastDate) {
+                    $result = [
+                        'name' => $men["name"],
+                        'project' => substr($men["name"],4),
+                        'value' => $men["value"],
+                        'date' => $men['date']
+                    ]; 
+                    array_push($menAndWomen, $result);
+                    foreach ($womens as $women) {
+
+                        if (substr($women["name"],6) == substr($men["name"], 4)) {
+                            if ($women["date"] == $lastDate) {
+                                $result = [
+                                    'name' => $women["name"],
+                                    'project' => substr($women["name"],6),
+                                    'value' => $women['value'],
+                                    'date' => $women['date']
+                                ]; 
+                                array_push($menAndWomen, $result);
+                                break 1;
+                            }
+                        }  
+                    }                
+                }   
             }
         }
-
-        //Search the corresponding data and put them in an array after formatting them 
-        foreach ($mens as $men) { 
-            if ($men["date"] == $lastDate) {
-                $result = [
-                    'name' => $men["name"],
-                    'project' => substr($men["name"],4),
-                    'value' => $men["value"],
-                    'date' => $men['date']
-                ]; 
-                array_push($menAndWomen, $result);
-                foreach ($womens as $women) {
-
-                    if (substr($women["name"],6) == substr($men["name"], 4)) {
-                        if ($women["date"] == $lastDate) {
-                            $result = [
-                                'name' => $women["name"],
-                                'project' => substr($women["name"],6),
-                                'value' => $women['value'],
-                                'date' => $women['date']
-                            ]; 
-                            array_push($menAndWomen, $result);
-                            break 1;
-                        }
-                    }  
-                }                
-            }   
+        else if (sizeof($mens) === 0 && sizeof($womens) > 0) {
+            $women = $this->lastDate($womens);
+            $result = [
+                'name' => $women[0]["name"],
+                'project' => substr($women[0]["name"],6),
+                'value' => $women[0]['value'],
+                'date' => $women[0]['date']
+            ]; 
+            array_push($menAndWomen, $result);
+        } else if (sizeof($womens) === 0 && sizeof($mens) > 0) {
+            $men = $this->lastDate($mens);
+            $result = [
+                'name' => $men[0]["name"],
+                'project' => substr($men[0]["name"],4),
+                'value' => $men[0]['value'],
+                'date' => $men[0]['date']
+            ]; 
+            array_push($menAndWomen, $result);
         }
         return $menAndWomen; 
     }
@@ -197,9 +267,9 @@ class DistributionDataRetrievers
      */
     public function BMSU_Distribution_TVS(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_TVS', $filters);
-        $qb->select('SUM(rv.value) AS value', 'rv.unity AS unity',  "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
-           ->groupBy('unity', 'date');         
-        return $qb->getQuery()->getArrayResult();
+        //to filter data with the good frequency
+        $result = $this->getByFrequency($qb, $filters, 'BMSU_Distribution_TVS' );
+        return $result;   
     }
 
     /**
@@ -207,9 +277,9 @@ class DistributionDataRetrievers
      */
     public function BMSU_Distribution_TVSV(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_TVSV', $filters);
-        $qb->select('SUM(rv.value) AS value', 'rv.unity AS unity',  "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
-           ->groupBy('unity', 'date');
-        return $qb->getQuery()->getArrayResult();
+        //to filter data with the good frequency
+        $result = $this->getByFrequency($qb, $filters, 'BMSU_Distribution_TVSV' );
+        return $result;   
     }
 
     /**
@@ -222,29 +292,31 @@ class DistributionDataRetrievers
         $totalVulnerabilities = $this->BMSU_Distribution_TVS($filters);
         $totalVulnerabilitiesByVulnerabilities = $this->BMSU_Distribution_TVSV($filters);
 
-        //get the more recent data
-        $lastDate = $totalVulnerabilities[0]['date'];
-        foreach($totalVulnerabilities as $totalVulnerability) {
-            if ($totalVulnerability['date'] > $lastDate) {
-                $lastDate = $totalVulnerability['date'];
+        if (sizeof($totalVulnerabilities)> 0 && sizeof($totalVulnerabilitiesByVulnerabilities) > 0) {
+            //get the more recent data
+            $lastDate = $totalVulnerabilities[0]['date'];
+            foreach($totalVulnerabilities as $totalVulnerability) {
+                if ($totalVulnerability['date'] > $lastDate) {
+                    $lastDate = $totalVulnerability['date'];
+                }
             }
-        }
 
-        //Search the corresponding data and put them in an array after formatting them 
-        foreach ($totalVulnerabilities as $totalVulnerability) { 
-            if ($totalVulnerability["date"] == $lastDate) {
-                foreach ($totalVulnerabilitiesByVulnerabilities as $vulnerability) {
-                    if ($vulnerability["date"] == $lastDate) {
-                        $percent = ($vulnerability["value"]/$totalVulnerability["value"])*100;
-                        $result = [
-                            'name' => $vulnerability["unity"],
-                            'value' => $percent,
-                            'date' => $vulnerability['date']
-                        ]; 
-                        array_push($vulnerabilitiesPercentage, $result);
-                    }   
-                }                
-            }   
+            //Search the corresponding data and put them in an array after formatting them 
+            foreach ($totalVulnerabilities as $totalVulnerability) { 
+                if ($totalVulnerability["date"] == $lastDate) {
+                    foreach ($totalVulnerabilitiesByVulnerabilities as $vulnerability) {
+                        if ($vulnerability["date"] == $lastDate) {
+                            $percent = ($vulnerability["value"]/$totalVulnerability["value"])*100;
+                            $result = [
+                                'name' => $vulnerability["unity"],
+                                'value' => $percent,
+                                'date' => $vulnerability['date']
+                            ]; 
+                            array_push($vulnerabilitiesPercentage, $result);
+                        }   
+                    }                
+                }   
+            }
         }
         return $vulnerabilitiesPercentage; 
     }
@@ -254,47 +326,175 @@ class DistributionDataRetrievers
      */
     public function BMS_Distribution_PPV(array $filters) {
         $projectDistributionValue =[];
-
-
         $repositoryProject = $this->em->getRepository(Project::class);
-
         $projectValue = $this->project->BMSU_Project_PV($filters);
-        $moreRecentProject = $this->lastDate($projectValue);
-
         $distributionValue = $this->BMS_Distribution_TDV($filters);
-        $moreRecentDistribution = $this->lastDate($distributionValue);
-
         $TotalDistributionValueUsed = 0;
 
-        //Search the corresponding data and put them in an array after formatting them 
-        foreach($moreRecentProject as $project) { 
-            $findProject = $repositoryProject->findOneBy(['id' => $project['id']]); 
-            foreach($moreRecentDistribution as $distribution) {
-                foreach($findProject->getDistributions() as $findDistribution) {
-                    if($distribution['id'] ===  $findDistribution->getId()) {
+        //Verify if one of them is empty
+        if (sizeof($projectValue) > 0 && sizeof($distributionValue) > 0 ) {
+            $moreRecentProject = $this->lastDate($projectValue);
+            $moreRecentDistribution = $this->lastDate($distributionValue);
 
-                        $TotalDistributionValueUsed = $TotalDistributionValueUsed + $distribution["value"];
-                        $result = [
-                            'name' =>$findDistribution->getName(),
-                            'value' => (int)$distribution["value"],
-                            'date' => $distribution['date']
-                        ]; 
-                        array_push($projectDistributionValue, $result);
-                    }
-                }    
+            //Search the corresponding data and put them in an array after formatting them 
+            foreach($moreRecentProject as $project) { 
+                $findProject = $repositoryProject->findOneBy(['id' => $project['id']]); 
+                foreach($moreRecentDistribution as $distribution) {
+                    foreach($findProject->getDistributions() as $findDistribution) {
+                        if($distribution['id'] ===  $findDistribution->getId()) {
+
+                            $TotalDistributionValueUsed = $TotalDistributionValueUsed + $distribution["value"];
+                            $result = [
+                                'name' =>$findDistribution->getName(),
+                                'value' => (int)$distribution["value"],
+                                'date' => $distribution['date']
+                            ]; 
+                            array_push($projectDistributionValue, $result);
+                        }
+                    }    
+                }
+
+                $valueProjectUsed = $project['value']-$TotalDistributionValueUsed;
+                $result = [
+                    'name' => 'Available',
+                    'value' => $valueProjectUsed,
+                    'date' => $project['date']
+                ];
+                array_push($projectDistributionValue, $result);
             }
-
-            $valueProjectUsed = $project['value']-$TotalDistributionValueUsed;
-            $result = [
-                'name' => 'Available',
-                'value' => $valueProjectUsed,
-                'date' => $project['date']
-            ];
-            array_push($projectDistributionValue, $result);
         }
-         
         return $projectDistributionValue;
         
+    }
+
+        /**
+     * sort data by frequency
+     */
+    public function getByFrequency($qb, array $filters, string $nameFunction) {
+        if ($filters['frequency'] === "Month") {
+          $qb ->andWhere("MONTH(rv.creationDate) = MONTH(CURRENT_DATE())");
+          $qb = $this->conditionSelect($qb, $nameFunction, 'Month');
+          $result = $qb->getQuery()->getArrayResult();
+        }
+        else if($filters['frequency'] === "Year") {
+          $qb ->andWhere("YEAR(rv.creationDate) = YEAR(CURRENT_DATE())");
+          $qb = $this->conditionSelect($qb, $nameFunction, 'Year');
+          $result = $qb->getQuery()->getArrayResult();
+        } 
+        else if($filters['frequency'] === "Quarter") {
+          $qb ->andWhere("QUARTER(rv.creationDate) = QUARTER(CURRENT_DATE())");
+          $qb = $this->conditionSelect($qb, $nameFunction, 'Quarter');
+          $byQuarter = $qb->getQuery()->getArrayResult();
+          $result = $this->getNameQuarter($byQuarter);
+        } 
+        else {
+            $period = explode('-', $filters['frequency']); 
+            $qb ->andWhere("DATE_FORMAT(rv.creationDate, '%m/%d/%Y')  >= :from")
+                    ->setParameter('from', $period[0])
+                ->andWhere("DATE_FORMAT(rv.creationDate, '%m/%d/%Y')  <= :to")
+                    ->setParameter('to', $period[1]);
+            $qb = $this->conditionSelect($qb, $nameFunction, 'Period');
+            $result = $qb->getQuery()->getArrayResult();
+        }
+        return $result;
+    }
+
+    /**
+     * switch case to use the good select
+     * each case is the name of the function to execute
+     * in the body of each case, if allow to find which frequency is waiting
+     * 
+     * Indicator with the same 'select' statement is grouped in the same case
+     */
+    public function conditionSelect($qb, $nameFunction, $frequency) {
+        switch ($nameFunction) {
+            case 'BMS_Distribution_NEB':
+                if ($frequency === 'Month' || $frequency === "Period") {
+                    $qb ->select('d.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+                } else if ($frequency === 'Year') {
+                    $qb ->select('d.name AS name','MAX(rv.value) AS value', "DATE_FORMAT(rv.creationDate, '%Y') AS date")
+                        ->groupBy('name', 'date');
+                } else if ($frequency === 'Quarter') {
+                    $qb ->select('d.name AS name','MAX(rv.value) AS value', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
+                        ->groupBy('name', 'date');
+                } 
+                return $qb;
+            case 'BMS_Distribution_TDV' :
+                if ($frequency === 'Month' || $frequency === "Period") {
+                    $qb ->select('Distinct d.name AS name', 'd.id AS id','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+                } 
+                else if ($frequency === 'Year') {
+                    $qb ->select('Distinct d.name AS name', 'd.id AS id','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y') AS date");
+                } 
+                else if ($frequency === 'Quarter') {
+                    $qb ->select('DISTINCT rv.value AS value', 'd.name AS name', 'd.id AS id', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date");
+                }
+                return $qb;
+            case 'BMSU_Distribution_NM' :
+            case 'BMSU_Distribution_NW' :
+                 if ($frequency === 'Month' || $frequency === "Period") {
+                    $qb ->select("CONCAT(rv.unity, '/', d.name) AS name",'rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+                } else if ($frequency === 'Year') {
+                    $qb ->select("CONCAT(rv.unity, '/', d.name) AS name",'MAX(rv.value) AS value', "DATE_FORMAT(rv.creationDate, '%Y') AS date")
+                        ->groupBy('name, date');
+                } else if ($frequency === 'Quarter') {
+                    $qb ->select("CONCAT(rv.unity, '/', d.name) AS name",'MAX(rv.value) AS value', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
+                        ->groupBy('name, date');
+                }
+                return $qb;
+            case 'BMSU_Distribution_TVS':
+            case 'BMSU_Distribution_TVSV' :
+                if ($frequency === 'Month' || $frequency === "Period") {
+                    $qb ->select('SUM(rv.value) AS value', 'rv.unity AS unity',  "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
+                        ->groupBy('unity', 'date'); 
+                } else if ($frequency === 'Year') {
+                    $qb ->select('SUM(rv.value) AS value', 'rv.unity AS unity',  "DATE_FORMAT(rv.creationDate, '%Y') AS date")
+                        ->groupBy('unity', 'date'); 
+                } else if ($frequency === 'Quarter') {
+                    $qb ->select('SUM(rv.value) AS value', 'rv.unity AS unity',  "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
+                        ->groupBy('unity', 'date'); 
+                }  
+                return $qb;
+            case 'BMS_Distribution_AB' :
+                if ($frequency === 'Month' || $frequency === "Period") {
+                    $qb ->select('SUM(rv.value) AS value', 'rv.unity AS name', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
+                        ->groupBy('name', 'date');
+                } else if ($frequency === 'Year') {
+                    $qb ->select('SUM(rv.value) AS value', 'rv.unity AS name', "DATE_FORMAT(rv.creationDate, '%Y') AS date")
+                        ->groupBy('name', 'date');
+                } else if ($frequency === 'Quarter') {
+                    $qb ->select('SUM(rv.value) AS value', 'rv.unity AS name', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
+                        ->groupBy('name', 'date');
+                }
+                return $qb;
+            case 'BMS_Distribution_M':
+                if ($frequency === 'Month' || $frequency === "Period") {
+                    $qb ->select('DISTINCT d.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+                } else if ($frequency === 'Year') {
+                    $qb ->select('DISTINCT d.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y') AS date");
+                } else if ($frequency === 'Quarter') {
+                    $qb ->select('DISTINCT d.name AS name','rv.value AS value', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date");
+                } 
+                return $qb;     
+        }
+    }
+
+    /**
+     * get the name of month which delimit the quarter
+     */
+    public function getNameQuarter($results) {
+        foreach($results as &$result) {
+            if ($result['date'] === "1") {
+            $result["date"] = "Jan-Mar";
+            } else if ($result['date'] === "2") {
+            $result["date"] = "Apr-Jun";
+            } else if ($result['date'] === "3") {
+            $result["date"] = "Jul-Sep";
+            } else {
+            $result["date"] = "Oct-Dec";
+            }
+        }
+        return $results;
     }
 
 }

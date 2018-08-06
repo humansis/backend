@@ -45,12 +45,11 @@ class DataFillersCountry extends DataFillers
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(Household::class);
-            $qb = $this->repository->createQueryBuilder('h')
-                                   ->leftjoin('h.location', 'l')
-                                   ->select('Distinct count(h) AS value', 'l.countryIso3 AS country')
-                                   ->groupBy('country');
-            $results = $qb->getQuery()->getArrayResult();
-
+            $qb = $this->repository->createQueryBuilder('h');
+            $qb = $this->getCountry($qb, 'h');
+            $qb ->select('Distinct count(h)as value', "adm1.countryISO3 as CountryAdm1", "adm1d.countryISO3 as CountryAdm2", "adm1c.countryISO3 as CountryAdm3", "adm1b.countryISO3 as CountryAdm4")
+                ->groupBy('CountryAdm1', 'CountryAdm2', 'CountryAdm3', 'CountryAdm4');
+            $results = $this->sortByCountry($qb->getQuery()->getArrayResult());
             $reference = $this->getReferenceId("BMS_Country_TH");
             foreach ($results as $result) 
             {
@@ -85,7 +84,7 @@ class DataFillersCountry extends DataFillers
         try {
             $this->repository = $this->em->getRepository(Project::class);
             $qb = $this->repository->createQueryBuilder('p')
-                                   ->where("DATE_FORMAT(p.endDate, '%Y-%m-%d') > CURRENT_DATE()")
+                                   ->where("DATE_FORMAT(p.endDate, '%Y-%m-%d') < DATE_FORMAT(CURRENT_DATE(), '%Y-%m-%d') ")
                                    ->select('count(p) AS value', 'p.iso3 AS country')
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
@@ -162,11 +161,11 @@ class DataFillersCountry extends DataFillers
         try {
             $this->repository = $this->em->getRepository(Beneficiary::class);
             $qb = $this->repository->createQueryBuilder('b')
-                                   ->leftjoin('b.household', 'h')
-                                   ->leftjoin('h.location', 'l')
-                                   ->select('count(b.id) AS value', 'l.countryIso3 AS country')
-                                   ->groupBy('country');
-            $results = $qb->getQuery()->getArrayResult();
+                                   ->leftjoin('b.household', 'h');
+            $qb = $this->getCountry($qb, 'h');
+            $qb ->select('Distinct count(b.id) as value', "adm1.countryISO3 as CountryAdm1", "adm1d.countryISO3 as CountryAdm2", "adm1c.countryISO3 as CountryAdm3", "adm1b.countryISO3 as CountryAdm4")
+                ->groupBy('CountryAdm1', 'CountryAdm2', 'CountryAdm3', 'CountryAdm4');
+            $results = $this->sortByCountry($qb->getQuery()->getArrayResult());
             $reference = $this->getReferenceId("BMS_Country_EB");
             foreach ($results as $result) 
             {
@@ -200,11 +199,11 @@ class DataFillersCountry extends DataFillers
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(DistributionData::class);
-            $qb = $this->repository->createQueryBuilder('dd')
-                                   ->leftjoin('dd.location', 'l')
-                                   ->select('count(dd.id) AS value', 'l.countryIso3 AS country')
-                                   ->groupBy('country');
-            $results = $qb->getQuery()->getArrayResult();
+            $qb = $this->repository->createQueryBuilder('dd');
+            $qb = $this->getCountry($qb, 'dd');
+            $qb ->select('count(dd.id) as value', "adm1.countryISO3 as CountryAdm1", "adm1d.countryISO3 as CountryAdm2", "adm1c.countryISO3 as CountryAdm3", "adm1b.countryISO3 as CountryAdm4")
+                ->groupBy('CountryAdm1', 'CountryAdm2', 'CountryAdm3', 'CountryAdm4');
+            $results = $this->sortByCountry($qb->getQuery()->getArrayResult());
             $reference = $this->getReferenceId("BMS_Country_TND");
             foreach ($results as $result) 
             {
@@ -268,6 +267,102 @@ class DataFillersCountry extends DataFillers
             throw $e;
         }
     }
+
+
+     /**
+     * Set the country iso3 in the query on Household (with alias 'hh{id}'
+     *
+     * @param QueryBuilder $qb
+     * @param $countryISO3
+     * @param string $i
+     */
+    public function getCountry($qb, string $alias)
+    {
+        $qb->leftJoin("$alias.location", "l")
+
+            ->leftJoin("l.adm1", "adm1")
+
+            ->leftJoin("l.adm4", "adm4")
+            ->leftJoin("adm4.adm3", "adm3b")
+            ->leftJoin("adm3b.adm2", "adm2b")
+            ->leftJoin("adm2b.adm1", "adm1b")
+
+            ->leftJoin("l.adm3", "adm3")
+            ->leftJoin("adm3.adm2", "adm2c")
+            ->leftJoin("adm2c.adm1", "adm1c")
+
+            ->leftJoin("l.adm2", "adm2")
+            ->leftJoin("adm2.adm1", "adm1d");
+            return $qb;
+    }
+
+    /**
+     * search after delete null adm which data as the same adm and add them together
+     */
+    public function sortByCountry(Array $byCountry) {
+        $results = [];
+        $withoutNull = $this->deleteNullAdm($byCountry);
+        foreach($withoutNull as $data) {
+            if (empty($results)) {
+                array_push($results, $data);
+            }
+            else {
+                $valueFound = false;
+                foreach($results as &$result){
+                    if ($result['country'] === $data['country']) {
+                        $valueFound = true;
+                        $result['value'] = $result['value'] + $data['value'];
+                    }
+                }
+                if (!$valueFound){
+                    array_push($results, $data);
+                }
+            }
+           
+        }
+        return $results;
+    }
+
+    /**
+     * Search which adm isn't empty and keep only this adm
+     */
+    public function deleteNullAdm($byCountry) {
+        $results = [];
+        foreach($byCountry as $data) {
+            if(!empty($data['CountryAdm1'])) {
+                $result = [
+                    'value' => $data['value'],
+                    'country' => $data['CountryAdm1'],
+                ]; 
+                array_push($results, $result);
+            } 
+            else if(!empty($data['CountryAdm2'])) {
+                $result = [
+                    'value' => $data['value'],
+                    'country' => $data['CountryAdm2'],
+                ]; 
+                array_push($results, $result);
+            } 
+            else if(!empty($data['CountryAdm3'])) {
+                $result = [
+                    'value' => $data['value'],
+                    'country' => $data['CountryAdm3'],
+                ]; 
+                array_push($results, $result);
+            } 
+            else if(!empty($data['CountryAdm4'])) {
+                $result = [
+                    'value' => $data['value'],
+                    'country' => $data['CountryAdm4'],
+                ]; 
+                array_push($results, $result);
+            } 
+        }
+        return $results;
+        
+    }
+
+
 
 
 

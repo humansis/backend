@@ -88,8 +88,25 @@ class DataFillersDistribution  extends DataFillers
             $this->repository = $this->em->getRepository(Commodity::class);
             $qb = $this->repository->createQueryBuilder('c')
                                    ->leftjoin('c.distributionData', 'dd')
-                                   ->select('c.value AS value', 'c.unit as unity', 'dd.id as distribution');
-            $results = $qb->getQuery()->getArrayResult();
+                                   ->select('c.value AS value', 'c.id as id', 'c.unit as unity', 'dd.id as distribution');
+            $commodityValues = $qb->getQuery()->getArrayResult();
+            $results = [];
+            foreach($commodityValues as $commodityValue) {
+                $valueFind = false;
+                if (sizeof($results) === 0) {
+                    array_push($results, $commodityValue);
+                }else {
+                    foreach($results as &$dataResult) {
+                        if ($commodityValue['distribution'] === $dataResult['distribution']) {
+                            $dataResult['value'] = $dataResult['value'] + $commodityValue['value'];
+                            $valueFind = true;
+                        }
+                    }
+                    if (!$valueFind) {
+                        array_push($results, $commodityValue);
+                    }
+                }
+            }
             $reference = $this->getReferenceId("BMS_Distribution_TDV");
             foreach ($results as $result) 
             {
@@ -128,7 +145,9 @@ class DataFillersDistribution  extends DataFillers
             $this->repository = $this->em->getRepository(Commodity::class);
             $qb = $this->repository->createQueryBuilder('c')
                                    ->leftjoin('c.distributionData', 'dd')
-                                   ->select("CONCAT(c.modality, '-', c.type) AS value", 'dd.id as distribution');
+                                   ->leftjoin('c.modalityType', 'm')
+                                   ->leftjoin('m.modality', 'mt')
+                                   ->select("CONCAT(mt.name, '-', m.name) AS value", 'dd.id as distribution');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMS_Distribution_M");
             foreach ($results as $result) 
