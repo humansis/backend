@@ -69,6 +69,11 @@ class DistributionCSVController extends Controller
      *     required=true,
      *     type="file"
      * )
+     * 
+     * @SWG\Response(
+     *     response=200,
+     *     description="Import distribution"
+     * )
      *
      * @param Request $request
      * @param DistributionData $distributionData
