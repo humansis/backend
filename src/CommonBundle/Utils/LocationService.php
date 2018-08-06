@@ -195,10 +195,37 @@ class LocationService
     }
 
     /**
-     * 
+     * Get the list of all adm1 in the country
      */
     public function getAllAdm1(string $countryIso3) {
         $adm1 = $this->em->getRepository(Adm1::class)->findBy(["countryISO3" => $countryIso3]);
         return $adm1;
+    }
+
+    /**
+     * Get the list of all adm2 linked to the adm1 passed in paramter
+     */
+    public function getAllAdm2(string $IDadm1) {
+        $adm1 = $this->em->getRepository(Adm1::class)->findBy(["id" => $IDadm1]);
+        $adm2 = $this->em->getRepository(Adm2::class)->findBy(["adm1" => $adm1]);
+        return $adm2;
+    }
+
+    /**
+     * Get the list of all adm3 linked to the adm2 passed in paramter
+     */
+    public function getAllAdm3(string $IDadm2) {
+        $adm2 = $this->em->getRepository(Adm2::class)->findBy(["id" => $IDadm2]);
+        $adm3 = $this->em->getRepository(Adm3::class)->findBy(["adm2" => $adm2]);
+        return $adm3;
+    }
+
+    /**
+     * Get the list of all adm4 linked to the adm3 passed in paramter
+     */
+    public function getAllAdm4(string $IDadm3) {
+        $adm3 = $this->em->getRepository(Adm3::class)->findBy(["id" => $IDadm3]);
+        $adm4 = $this->em->getRepository(Adm4::class)->findBy(["adm3" => $adm3]);
+        return $adm4;
     }
 }
