@@ -16,3 +16,6 @@ rest_distribution:
 
 rest_reporting:
     resource: "@ReportingBundle/Resources/config/routing.yml"
+
+rest_common:
+    resource: "@CommonBundle/Resources/config/routing.yml"

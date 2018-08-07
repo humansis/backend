@@ -5,6 +5,7 @@ namespace DistributionBundle\Controller;
 
 
 use DistributionBundle\Entity\Modality;
+use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Utils\ModalityService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
