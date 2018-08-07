@@ -38,6 +38,7 @@ class LocationService
      */
     public function getOrSaveLocation($countryISO3, array $locationArray)
     {
+        dump($locationArray);
         $this->requestValidator->validate(
             "location",
             HouseholdConstraints::class,
