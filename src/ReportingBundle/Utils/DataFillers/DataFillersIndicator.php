@@ -33,7 +33,7 @@ class DataFillersIndicator
      */
     public function fillIndicator() 
     {
-        $filename = "/var/www/html/julie/BMS/bms_api/src/ReportingBundle/Resources/data/CSV/reportingReference.csv";
+        $filename = "src/ReportingBundle/Resources/data/CSV/reportingReference.csv";
         $contentFile = $this->getCsv($filename);
         foreach($contentFile as $data) 
         {
