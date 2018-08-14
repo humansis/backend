@@ -22,6 +22,7 @@ services:
             - "@jms_serializer"
             - "@request_validator"
             - "@validator"
+            - "@service_container"
         public: true
 
     beneficiary.country_specific_service:

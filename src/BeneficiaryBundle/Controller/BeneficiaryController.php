@@ -55,4 +55,19 @@ class BeneficiaryController extends Controller
 
         return new Response($json);
     }
+
+    /**
+     * @Rest\GET("/beneficiary/export", name="export_beneficiary")
+     * @return Response
+     */
+
+    public function exportToCSVAction() {
+
+
+        $this->get('beneficiary.beneficiary_service')->export();
+
+        return new Response('true');
+
+    }
+
 }

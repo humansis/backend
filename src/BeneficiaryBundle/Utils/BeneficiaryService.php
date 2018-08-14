@@ -12,9 +12,13 @@ use BeneficiaryBundle\Form\HouseholdConstraints;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use PhpOption\Tests\PhpOptionRepo;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
+
 
 class BeneficiaryService
 {
@@ -30,17 +34,25 @@ class BeneficiaryService
     /** @var ValidatorInterface $validator */
     private $validator;
 
+    /** @var ContainerInterface $container */
+    private $container;
+
+
+
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
         RequestValidator $requestValidator,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        ContainerInterface $container
     )
+
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->requestValidator = $requestValidator;
         $this->validator = $validator;
+        $this->container = $container;
     }
 
 
@@ -275,5 +287,28 @@ class BeneficiaryService
         $this->em->remove($profile);
         $this->em->flush();
         return true;
+    }
+
+    public function export(){
+
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->createSheet();
+        $worksheet = $spreadsheet->getActiveSheet();
+        $array = array('id','givenName','familyName','gender','status','dateOfbirth','update_on','photo','household_id','profile');
+        foreach ($array as $value) {
+
+            $key= array_search($value,$array);
+            $worksheet->setCellValue(chr(ord('A')+ $key).'1', $value);
+
+        }
+        $writer = new Csv($spreadsheet);
+        $dataPath = $this->container->getParameter('kernel.root_dir') . '/../var';
+        $filename = $dataPath . '/test.csv';
+        $writer->save($filename);
+        $fileContent = file_get_contents($filename);
+        dump($fileContent);
+        return $writer;
+
+
     }
 }
