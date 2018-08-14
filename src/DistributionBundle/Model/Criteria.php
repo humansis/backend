@@ -35,5 +35,31 @@ class Criteria
         return $this;
     }
 
+     /**
+     * @var string $distributionType
+     * @Groups({"Criteria"})
+     *
+     */
+    protected $distributionType;
+
+    /**
+     * @return string
+     */
+    public function getDistributionType(): string
+    {
+        return $this->distributionType;
+    }
+
+    /**
+     * @param string $distributionType
+     * @return Criteria
+     */
+    public function setDistributionType(string $distributionType)
+    {
+        $this->distributionType = $distributionType;
+
+        return $this;
+    }
+
 
 }

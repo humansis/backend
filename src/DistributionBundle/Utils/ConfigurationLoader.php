@@ -38,21 +38,38 @@ class ConfigurationLoader
         $criteriaFormatted = [];
         foreach ($this->criteria as $criterion => $type)
         {
-            if (in_array($type, $this->MAPPING_TYPE_DEFAULT))
-            {
-                $criteriaFormatted[] = ["field_string" => $criterion, "type" => $type];
-            }
-            else
-            {
-                $instances = $this->em->getRepository($type)->findForCriteria($filters);
-                foreach ($instances as $instance)
-                {
-                    $instance->setTableString($criterion);
+            if($criterion !== 'countrySpecific') {
+                if($criterion !== 'vulnerabilityCriteria') {
+                    $criteriaFormatted[] = $this->formatCriteria($filters, 'Beneficiary', $criterion, $type);
                 }
-                $criteriaFormatted = array_merge($criteriaFormatted, $instances);
+                else {
+                    $criteriaFormatted = array_merge($criteriaFormatted, $this->formatCriteria($filters, 'Beneficiary', $criterion, $type));
+                }
             }
-        }
+            else {
+                $criteriaFormatted = array_merge($criteriaFormatted, $this->formatCriteria($filters, 'Household', $criterion, $type));
 
+            }
+            
+        }
         return $criteriaFormatted;
+    }
+
+    private function formatCriteria(array $filters, string $distributionType, $criterion, $type) {
+        if (in_array($type, $this->MAPPING_TYPE_DEFAULT))
+        {
+           return ["field_string" => $criterion, "type" => $type, "distribution_type" => $distributionType];
+        }
+        else
+        {
+            $instances = $this->em->getRepository($type)->findForCriteria($filters);
+            foreach ($instances as &$instance)
+            {
+                $instance->setTableString($criterion);
+                $instance->setDistributionType($distributionType);
+            }
+        
+            return $instances;
+        }
     }
 }
