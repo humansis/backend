@@ -222,8 +222,21 @@ class DistributionController extends Controller
      */
     public function getAllAction()
     {
-        $distributions = $this->get('distribution.distribution_service')->findAll();
-        $json = $this->get('jms_serializer')->serialize($distributions, 'json');
+        try
+        {
+            $distributions = $this->get('distribution.distribution_service')->findAll();
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $distributions,
+                'json',
+                SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
+            );
 
         return new Response($json);
     }
