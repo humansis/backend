@@ -10,4 +10,11 @@ namespace DistributionBundle\Repository;
  */
 class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
 {
+
+
+    public function getLastId() {
+        $qb = $this->createQueryBuilder('dd')
+                   ->select("MAX(dd.id)" );
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

@@ -121,7 +121,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $distribution = $return['distribution'];
         $this->assertArrayHasKey('id', $distribution);
         $this->assertArrayHasKey('name', $distribution);
-        $this->assertSame($distribution['name'], $this->namefullname);
+        // $this->assertSame($distribution['name'], $this->namefullname);
         $this->assertArrayHasKey('updated_on', $distribution);
         $this->assertArrayHasKey('location', $distribution);
         $this->assertArrayHasKey('project', $distribution);
@@ -134,6 +134,8 @@ class DistributionControllerTest extends BMSServiceTestCase
                 $this->em->getRepository(DistributionData::class)->find($distribution["id"])
             );
 
+        $distributionId = $this->em->getRepository(DistributionData::class)->getLastId();
+        $this->assertSame($distribution['name'], $this->namefullname.$distributionId);
         $rows = str_getcsv($data[0], "\n");
         foreach ($rows as $index => $row)
         {
