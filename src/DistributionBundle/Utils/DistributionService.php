@@ -134,6 +134,12 @@ class DistributionService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
+        if($distributionArray['type'] === "Beneficiary") {
+            $distribution->settype(1);
+        } else {
+            $distribution->settype(0);
+        }
+
         $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
         $distribution->setLocation($location);
 
