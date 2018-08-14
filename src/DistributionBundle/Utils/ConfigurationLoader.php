@@ -58,7 +58,7 @@ class ConfigurationLoader
     private function formatCriteria(array $filters, string $distributionType, $criterion, $type) {
         if (in_array($type, $this->MAPPING_TYPE_DEFAULT))
         {
-           return ["field_string" => $criterion, "type" => $type, "distributionType" => $distributionType];
+           return ["field_string" => $criterion, "type" => $type, "distribution_type" => $distributionType];
         }
         else
         {
