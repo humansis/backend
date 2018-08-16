@@ -12,6 +12,7 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
+use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
@@ -228,4 +229,54 @@ class LocationService
         $adm4 = $this->em->getRepository(Adm4::class)->findBy(["adm3" => $adm3]);
         return $adm4;
     }
+
+    /**
+     * get the code of location for upcoming distribution
+     */
+    public function getCodeOfUpcomingDistribution(string $countryIso3) {
+        $distributions = $this->em->getRepository(DistributionData::class)->findAll();
+        $response = [];
+
+        $date = new \Datetime();
+
+        foreach($distributions as $distribution) {
+            if ($distribution->getDateDistribution() > $date) {
+
+                $location = $this->em->getRepository(Location::class)->findOneBy(["id" =>$distribution->getLocation()->getId()]);
+
+                if($location->getAdm1()) 
+                {
+                    $location_name = $location->getAdm1()->getName();
+                    $code = $location->getAdm1()->getCode();
+                }
+                elseif ($location->getAdm2()) 
+                {
+                    $location_name = $location->getAdm2()->getName();
+                    $code = $location->getAdm2()->getCode();
+                }
+                elseif ($location->getAdm3()) 
+                {
+                    $location_name = $location->getAdm3()->getName();
+                    $code = $location->getAdm3()->getCode();
+                }
+                elseif ($location->getAdm4()) 
+                {
+                    $location_name = $location->getAdm4()->getName();
+                    $code = $location->getAdm4()->getCode();
+                }
+
+                $data = [
+                    "name" => $distribution->getName(),
+                    "date" => $distribution->getDateDistribution(),
+                    "project_name" => $distribution->getProject()->getName(),
+                    "code_location" => $code,
+                    "location_name" => $location_name
+                ];
+                array_push($response, $data);
+            } 
+        }
+
+        return $response;
+    }
+
 }
