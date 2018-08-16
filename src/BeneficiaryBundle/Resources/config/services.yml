@@ -13,6 +13,7 @@ services:
             - "@request_validator"
             - "@location_service"
             - "@validator"
+            - "@service_container"
         public: true
 
     beneficiary.beneficiary_service:
@@ -65,4 +66,11 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@jms_serializer"
             - "@location_service"
+        public: true
+
+    beneficiary.export_csv:
+        class: BeneficiaryBundle\Utils\ExportService
+        arguments:
+        - "@doctrine.orm.entity_manager"
+        - "@service_container"
         public: true

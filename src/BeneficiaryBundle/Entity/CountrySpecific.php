@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use BeneficiaryBundle\Utils\ExportableInterface;
 use DistributionBundle\Model\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
@@ -12,7 +13,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="country_specific")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CountrySpecificRepository")
  */
-class CountrySpecific extends Criteria
+class CountrySpecific extends Criteria implements ExportableInterface
 {
     /**
      * @var int
@@ -185,5 +186,17 @@ class CountrySpecific extends Criteria
     public function getFieldString()
     {
         return $this->fieldString;
+    }
+
+
+    function getMappedValueForExport(): array
+    {
+        return [
+            "type" => $this->getType(),
+            "Country Iso3"=> $this->getCountryIso3(),
+            "Field" => $this->getFieldString(),
+            "country specific answers " =>join(',',$this->getCountrySpecificAnswers()->getValues())
+
+        ];
     }
 }

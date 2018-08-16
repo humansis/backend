@@ -37,6 +37,10 @@ class BeneficiaryService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var Beneficiary $beneficiary */
+    private $beneficiary;
+
+
 
 
     public function __construct(
@@ -53,6 +57,7 @@ class BeneficiaryService
         $this->requestValidator = $requestValidator;
         $this->validator = $validator;
         $this->container = $container;
+        $this->beneficiary = new Beneficiary();
     }
 
 
@@ -289,26 +294,11 @@ class BeneficiaryService
         return true;
     }
 
-    public function export(){
+    public function exportToCsv() {
 
-        $spreadsheet = new Spreadsheet();
-        $spreadsheet->createSheet();
-        $worksheet = $spreadsheet->getActiveSheet();
-        $array = array('id','givenName','familyName','gender','status','dateOfbirth','update_on','photo','household_id','profile');
-        foreach ($array as $value) {
-
-            $key= array_search($value,$array);
-            $worksheet->setCellValue(chr(ord('A')+ $key).'1', $value);
-
-        }
-        $writer = new Csv($spreadsheet);
-        $dataPath = $this->container->getParameter('kernel.root_dir') . '/../var';
-        $filename = $dataPath . '/test.csv';
-        $writer->save($filename);
-        $fileContent = file_get_contents($filename);
-        dump($fileContent);
-        return $writer;
-
+        $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
+        $this->container->get('beneficiary.export_csv')->export($exportableTable);
 
     }
+
 }

@@ -27,38 +27,79 @@ Class ExportService {
     /** @var Beneficiary $beneficiary */
     private $beneficiary;
 
-
-    private $MAPPING_CSV_BENEFICIARY = [
-        // Beneficiary
-        "Given name" => $this->beneficiary->getGivenName(),
-        "Family name" => $this->beneficiary->getFamilyName(),
-        "Gender"=> $this->beneficiary->getGender() ,
-        "Status"=> $this->beneficiary->getStatus(),
-        "Date of birth"=> $this->beneficiary-> ,
-        "Vulnerability criteria" => ,
-        "Phones" => ,
-        "National IDs" =>
-    ];
-
-//    private $MAPPING_CSV_HOUSEHOLD = [
-//        // Household
-//        "Given name" =>  ,
-//        "Family name" => ,
-//        "Gender"=> ,
-//        "Status"=> ,
-//        "Date of birth"=> ,
-//        "Vulnerability criteria" => ,
-//        "Phones" => ,
-//        "National IDs" =>
-//    ];
-
+    /**
+     * ExportService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param ContainerInterface $container
+     */
     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
     {
         $this->em = $entityManager;
         $this->container = $container;
+        $this->beneficiary = new Beneficiary();
+    }
+
+    public function export($exportableTable) {
 
 
-     
+        dump("ceci une variable exportabletable",$exportableTable);
+
+
+        $rows = [];
+
+        // step 1 : convertir le mapping en données
+
+        foreach ($exportableTable as $value) {
+            if( $value instanceof ExportableInterface) {
+                dump("ceci est la valeur", $value);
+                array_push($rows, $value->getMappedValueForExport());
+                dump($rows);
+            }
+        }
+
+        // step 2 : sheet construction
+
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->createSheet();
+        $worksheet = $spreadsheet->getActiveSheet();
+
+        // get headers title
+        $headers = array_keys($rows[0]);
+
+
+        $rowIndex = 1;
+
+        foreach ($headers as $key => $value) {
+            $index = chr(ord('A')+ $key).$rowIndex;
+
+            $worksheet->setCellValue($index, $value);
+        }
+
+        $rowIndex = 2;
+
+        foreach ($rows as $key => $value) {
+
+           foreach ($headers as $colIndex => $header) {
+               $index = chr(ord('A')+ $colIndex ).$rowIndex;
+               $worksheet->setCellValue($index, $value[$header]);
+           }
+            $rowIndex++;
+        }
+
+        // step 3 : scaning sheet into csv
+
+        $writer = new Csv($spreadsheet);
+
+        $dataPath = $this->container->getParameter('kernel.root_dir') . '/../var';
+        $filename = $dataPath . '/test.csv';
+
+        $writer->save($filename);
+        $fileContent = file_get_contents($filename);
+
+        dump($fileContent);
+        return $writer;
+
+
     }
 
 

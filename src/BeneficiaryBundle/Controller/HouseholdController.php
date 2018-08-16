@@ -337,4 +337,16 @@ class HouseholdController extends Controller
             );
         return new Response($json);
     }
+
+    /**
+     * @Rest\GET("/Household/export", name="export_household")
+     * @return Response
+     */
+
+    public function exportToCSVAction() {
+
+        $this->get('beneficiary.household_service')->exportToCsv();
+        return new Response('true');
+
+    }
 }

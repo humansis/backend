@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class HouseholdService
 {
@@ -46,6 +46,9 @@ class HouseholdService
     /** @var ValidatorInterface $validator */
     private $validator;
 
+    /** @var ContainerInterface $container */
+    private $container;
+
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -53,7 +56,8 @@ class HouseholdService
         BeneficiaryService $beneficiaryService,
         RequestValidator $requestValidator,
         LocationService $locationService,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        ContainerInterface $container
     )
     {
         $this->em = $entityManager;
@@ -62,6 +66,7 @@ class HouseholdService
         $this->requestValidator = $requestValidator;
         $this->locationService = $locationService;
         $this->validator = $validator;
+        $this->container= $container;
     }
 
     /**
@@ -335,5 +340,12 @@ class HouseholdService
         $this->em->flush();
 
         return $household;
+    }
+
+    public function exportToCsv() {
+
+        $exportableTable = $this->em->getRepository(Household::class)->findAll();
+        $this->container->get('beneficiary.export_csv')->export($exportableTable);
+
     }
 }
