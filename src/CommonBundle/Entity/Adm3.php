@@ -40,6 +40,14 @@ class Adm3
     private $adm2;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="code", type="string", length=255, nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
+     */
+    private $code;
+
+    /**
      * @var Location
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Location", inversedBy="adm3", cascade={"persist"})
@@ -133,5 +141,29 @@ class Adm3
     public function getLocation()
     {
         return $this->location;
+    }
+
+    /**
+     * Set code.
+     *
+     * @param string $code
+     *
+     * @return Adm3
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    /**
+     * Get code.
+     *
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->code;
     }
 }
