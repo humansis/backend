@@ -491,6 +491,13 @@ class Beneficiary implements ExportableInterface
     function getMappedValueForExport(): array
     {
         return [
+            "Address_street" => $this->getHousehold()->getAddressStreet(),
+            "Address_number" => $this->getHousehold()->getAddressNumber(),
+            "Address_postcode" => $this->getHousehold()->getAddressPostcode(),
+            "livelihood" => $this->getHousehold()->getLivelihood(),
+            "notes" => $this->getHousehold()->getNotes(),
+            "lat" => $this->getHousehold()->getLatitude(),
+            "long" => $this->getHousehold()->getLongitude(),
             "Given name" => $this->getGivenName(),
             "Family name"=> $this->getFamilyName(),
             "Gender" => $this->getGender(),
@@ -498,7 +505,8 @@ class Beneficiary implements ExportableInterface
             "Date of birth" => $this->getDateOfBirth()->format('m/d/y'),
             "Vulnerability criteria" => join(',', $this->getVulnerabilityCriteria()->getValues()),
             "Phones" => join(',', $this->getPhones()->getValues()) ,
-            "National IDs" =>  join(',', $this->getNationalIds()->getValues())
+            "National IDs" =>  join(',', $this->getNationalIds()->getValues()),
+
         ];
     }
 }

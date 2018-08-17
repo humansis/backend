@@ -98,10 +98,7 @@ Class ExportService {
 
         unlink($filename);
 
-        return [
-            'content' => $fileContent,
-            'filename' => 'test.csv'
-        ];
+        return [$fileContent,'test.csv'];
     }
 
 

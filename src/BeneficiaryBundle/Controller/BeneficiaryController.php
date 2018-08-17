@@ -67,7 +67,7 @@ class BeneficiaryController extends Controller
     }
 
     /**
-     * @Rest\Get("/Beneficiary/export", name="beneficiary_export")
+     * @Rest\Get("/beneficiary/export", name="beneficiary_export")
      * TODO: ADd security on project
      * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
      *
