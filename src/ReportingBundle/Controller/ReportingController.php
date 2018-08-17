@@ -58,7 +58,6 @@ class ReportingController extends Controller
         try {   
             $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
             $dataFormatted = $this->get('reporting.formatter')->format($dataComputed, $indicator->getGraph());
-            dump($dataFormatted);
         }
         catch (\Exception $e)
         {
