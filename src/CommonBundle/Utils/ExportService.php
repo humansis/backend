@@ -52,6 +52,7 @@ Class ExportService {
             }
         }
 
+
         // step 2 : sheet construction
 
         $spreadsheet = new Spreadsheet();
@@ -62,6 +63,7 @@ Class ExportService {
             throw new \Exception("No data to export", Response::HTTP_NO_CONTENT);
         }
         // get headers title
+
         $headers = array_keys($rows[0]);
 
 

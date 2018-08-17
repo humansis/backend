@@ -75,7 +75,7 @@ class CountrySpecificService
     public function exportToCsv() {
 
         $exportableTable = $this->em->getRepository(CountrySpecific::class)->findAll();
-        $this->container->get('export_csv_service')->export($exportableTable);
+        return $this->container->get('export_csv_service')->export($exportableTable);
 
     }
 

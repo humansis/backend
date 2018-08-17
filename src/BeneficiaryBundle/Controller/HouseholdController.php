@@ -339,14 +339,33 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\GET("/Household/export", name="export_household")
+     * @Rest\Get("/Households/export", name="households_export")
+     * TODO: ADd security on project
+     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=204,
+     *     description="HTTP_NO_CONTENT"
+     * )
      * @return Response
      */
 
     public function exportToCSVAction() {
 
-        $this->get('beneficiary.household_service')->exportToCsv();
-        return new Response('true');
+        try{$fileCSV= $this->get('beneficiary.household_service')->exportToCsv();
+            return new Response(json_encode($fileCSV));
+        } catch (\Exception $exception) {
+
+            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+
 
     }
 }
