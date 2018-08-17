@@ -12,6 +12,7 @@ use JMS\Serializer\Serializer;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\SelectionCriteria;
 use ProjectBundle\Entity\Project;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -45,6 +46,9 @@ class DistributionService
     /** @var int $numberRandomBeneficiary */
     private $numberRandomBeneficiary = 1;
 
+    /** @var ContainerInterface $container */
+    private $container;
+
     /**
      * DistributionService constructor.
      * @param EntityManagerInterface $entityManager
@@ -65,7 +69,9 @@ class DistributionService
         CommodityService $commodityService,
         ConfigurationLoader $configurationLoader,
         CriteriaDistributionService $criteriaDistributionService,
-        string $classRetrieverString
+        string $classRetrieverString,
+        ContainerInterface $container
+
     )
     {
         $this->em = $entityManager;
@@ -75,7 +81,9 @@ class DistributionService
         $this->commodityService = $commodityService;
         $this->configurationLoader = $configurationLoader;
         $this->criteriaDistributionService = $criteriaDistributionService;
+        $this->container = $container;
         try
+
         {
             $class = new \ReflectionClass($classRetrieverString);
             $this->retriever = $class->newInstanceArgs([$this->em]);
@@ -335,5 +343,13 @@ class DistributionService
         $this->em->flush();
 
         return $distributionData;
+    }
+
+
+    public function exportToCsv() {
+
+        $exportableTable = $this->em->getRepository(DistributionData::class)->findAll();
+        return $this->container->get('export_csv_service')->export($exportableTable);
+
     }
 }

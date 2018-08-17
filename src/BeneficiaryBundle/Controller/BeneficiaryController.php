@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Controller;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 use JMS\Serializer\SerializationContext;
@@ -9,13 +10,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class BeneficiaryController extends Controller
 {
-
     /**
      * @Rest\Get("/vulnerability_criteria", name="get_all_vulnerability_criteria")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
@@ -55,4 +54,16 @@ class BeneficiaryController extends Controller
 
         return new Response($json);
     }
+
+    /**
+     * @Rest\GET("/beneficiary/export", name="export_beneficiary")
+     * @return Response
+     */
+    public function exportToCSVAction() {
+        
+        $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv();
+        dump(json_encode($fileCSV));
+        return new Response(json_encode($fileCSV));
+    }
+
 }

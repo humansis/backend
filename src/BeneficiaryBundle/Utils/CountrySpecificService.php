@@ -6,6 +6,7 @@ namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class CountrySpecificService
 {
@@ -13,9 +14,16 @@ class CountrySpecificService
     private $em;
 
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /** @var ContainerInterface $container */
+    private $container;
+
+
+
+    public function __construct(EntityManagerInterface $entityManager , ContainerInterface $container )
     {
         $this->em = $entityManager;
+        $this->container = $container;
+
     }
 
     public function getAll($countryIso3)
@@ -63,4 +71,12 @@ class CountrySpecificService
 
         return true;
     }
+
+    public function exportToCsv() {
+
+        $exportableTable = $this->em->getRepository(CountrySpecific::class)->findAll();
+        $this->container->get('export_csv_service')->export($exportableTable);
+
+    }
+
 }

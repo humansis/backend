@@ -12,9 +12,13 @@ use BeneficiaryBundle\Form\HouseholdConstraints;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use PhpOption\Tests\PhpOptionRepo;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
+
 
 class BeneficiaryService
 {
@@ -30,17 +34,30 @@ class BeneficiaryService
     /** @var ValidatorInterface $validator */
     private $validator;
 
+    /** @var ContainerInterface $container */
+    private $container;
+
+    /** @var Beneficiary $beneficiary */
+    private $beneficiary;
+
+
+
+
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
         RequestValidator $requestValidator,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        ContainerInterface $container
     )
+
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->requestValidator = $requestValidator;
         $this->validator = $validator;
+        $this->container = $container;
+        $this->beneficiary = new Beneficiary();
     }
 
 
@@ -276,4 +293,12 @@ class BeneficiaryService
         $this->em->flush();
         return true;
     }
+
+    public function exportToCsv() {
+
+        $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
+        return $this->container->get('export_csv_service')->export($exportableTable);
+
+    }
+
 }

@@ -13,6 +13,7 @@ services:
             - "@request_validator"
             - "@location_service"
             - "@validator"
+            - "@service_container"
         public: true
 
     beneficiary.beneficiary_service:
@@ -22,12 +23,15 @@ services:
             - "@jms_serializer"
             - "@request_validator"
             - "@validator"
+            - "@service_container"
         public: true
 
     beneficiary.country_specific_service:
         class: BeneficiaryBundle\Utils\CountrySpecificService
         arguments:
             - "@doctrine.orm.entity_manager"
+            - "@service_container"
+
         public: true
 
 

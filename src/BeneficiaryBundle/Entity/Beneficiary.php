@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use CommonBundle\Utils\ExportableInterface;
 
 /**
  * Beneficiary
@@ -14,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="beneficiary")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\BeneficiaryRepository")
  */
-class Beneficiary
+class Beneficiary implements ExportableInterface
 {
     /**
      * @var int
@@ -481,5 +482,23 @@ class Beneficiary
     public function getProfile()
     {
         return $this->profile;
+    }
+
+    /**
+     * Returns an array representation of this class in order to prepare the export
+     * @return array
+     */
+    function getMappedValueForExport(): array
+    {
+        return [
+            "Given name" => $this->getGivenName(),
+            "Family name"=> $this->getFamilyName(),
+            "Gender" => $this->getGender(),
+            "Status" => $this->getStatus(),
+            "Date of birth" => $this->getDateOfBirth()->format('m/d/y'),
+            "Vulnerability criteria" => join(',', $this->getVulnerabilityCriteria()->getValues()),
+            "Phones" => join(',', $this->getPhones()->getValues()) ,
+            "National IDs" =>  join(',', $this->getNationalIds()->getValues())
+        ];
     }
 }

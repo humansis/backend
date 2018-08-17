@@ -37,6 +37,11 @@ We are using the doctrine extension `LevenshteinFunction`, from the package `jrk
 - `cleanAndTest` : Delete your database, create a new one, migrate migrations, load fixtures, clean cache of import CSV and execute unit tests
 - `clean` : Delete your database, create a new one, migrate migrations, load fixtures and clean cache of import CSV
 
+#### Git Hooks
+
+Just after installation, don't forget to set your hook directory in order to enable the custom hooks (pre-commit and pre-push):
+
+`git config core.hooksPath hooks`
 
 # Command
 

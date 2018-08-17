@@ -7,6 +7,7 @@ use DistributionBundle\Utils\DistributionBeneficiaryService;
 use DistributionBundle\Utils\DistributionService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use DistributionBundle\Entity\DistributionData;
@@ -242,7 +243,7 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Get("/distributions/{id}", name="get_one_distributions")
+     * @Rest\Get("/distributions/{id}", name="get_one_distributions", requirements={"id"="\d+"})
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Distributions")
@@ -393,5 +394,39 @@ class DistributionController extends Controller
 
         return new Response($json, Response::HTTP_OK);
     }
+
+
+
+    /**
+     * @Rest\Get("/distributions/export", name="distributions_export")
+     * TODO: ADd security on project
+     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=204,
+     *     description="HTTP_NO_CONTENT"
+     * )
+     * @return Response
+     */
+    public function exportToCSVAction() {
+
+        try{
+            $fileCSV = $this->get('distribution.distribution_service')->exportToCsv();
+            return new Response(json_encode($fileCSV));
+        } catch(\Exception $exception) {
+            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+
+
+
 
 }

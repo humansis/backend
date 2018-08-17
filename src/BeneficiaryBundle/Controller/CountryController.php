@@ -115,4 +115,19 @@ class CountryController extends Controller
         if (!$valid)
             return new Response("", Response::HTTP_BAD_REQUEST);
     }
+    /**
+     * @Rest\GET("/Country/export", name="country_export")
+     * @return Response
+     */
+
+    public function exportToCSVAction() {
+
+
+
+        $this->get('beneficiary.country_specific_service')->exportToCsv();
+        return new Response('true');
+
+    }
+
+
 }

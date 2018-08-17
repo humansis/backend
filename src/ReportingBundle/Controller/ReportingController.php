@@ -94,4 +94,6 @@ class ReportingController extends Controller
         return new Response($json, Response::HTTP_OK);
         
     }
+
+
 }
