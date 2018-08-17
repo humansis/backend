@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
+
 class BeneficiaryController extends Controller
 {
 
@@ -23,7 +26,11 @@ class BeneficiaryController extends Controller
     /**
      * @Rest\Get("/vulnerability_criteria", name="get_all_vulnerability_criteria")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
-     *
+     * @SWG\Tag(name="Beneficiary")
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
      * @return Response
      */
     public function getAllVulnerabilityCriteria()
@@ -37,7 +44,11 @@ class BeneficiaryController extends Controller
     /**
      * @Rest\Put("/households/{id}/beneficiary", name="add_beneficiary_in_household")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
-     *
+     * @SWG\Tag(name="Beneficiary")
+     *  @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
      * @param Request $request
      * @param Household $household
      * @return Response
@@ -61,17 +72,36 @@ class BeneficiaryController extends Controller
     }
 
     /**
-     * @Rest\GET("/beneficiary/export", name="export_beneficiary")
+     * @Rest\Get("/Beneficiary/export", name="beneficiary_export")
+     * TODO: ADd security on project
+     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
+     *
+     * @SWG\Tag(name="Beneficiary")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=204,
+     *     description="HTTP_NO_CONTENT"
+     * )
      * @return Response
      */
 
     public function exportToCSVAction() {
 
 
+    try{
 
         $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv();
-        dump(json_encode($fileCSV));
         return new Response(json_encode($fileCSV));
+        dump($fileCSV);
+    }   catch(\Exception $exception)
+    {
+        return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+    }
 
     }
 

@@ -19,6 +19,7 @@ class CountryController extends Controller
      * @Rest\Get("/country_specifics", name="all_country_specifics")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
      *
+     *
      * @return Response
      */
     public function getCountrySpecificsAction(Request $request)
@@ -116,16 +117,35 @@ class CountryController extends Controller
             return new Response("", Response::HTTP_BAD_REQUEST);
     }
     /**
-     * @Rest\GET("/Country/export", name="country_export")
+     * @Rest\Get("/Country/export", name="country_export")
+     * TODO: ADd security on project
+     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
+     *
+     * @SWG\Tag(name="Country")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=204,
+     *     description="HTTP_NO_CONTENT"
+     * )
      * @return Response
      */
-
     public function exportToCSVAction() {
 
 
+     try {
 
-        $this->get('beneficiary.country_specific_service')->exportToCsv();
-        return new Response('true');
+         $fileCSV = $this->get('beneficiary.country_specific_service')->exportToCsv();
+         return new Response(json_encode($fileCSV));
+     } catch (\Exception $exception) {
+
+         return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+     }
+
 
     }
 

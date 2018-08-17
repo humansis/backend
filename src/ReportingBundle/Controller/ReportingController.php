@@ -97,4 +97,61 @@ class ReportingController extends Controller
     }
 
 
+    /**
+     * Send data formatted corresponding to code to display it in front
+     * @Rest\Post("/indicators/export/{id}")
+     *
+     * @SWG\Tag(name="Reporting")
+     *
+     * @SWG\Parameter(
+     *     name="Project",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=ReportingIndicator::class)
+     * )
+     *
+     * @SWG\Response(
+     *      response=200,
+     *          description="Get data reporting",
+     *          @SWG\Schema(
+     *              type="array",
+     *              @SWG\Items(ref=@Model(type=ReportingIndicator::class))
+     *          )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param ReportingIndicator $indicator
+     * @param Request $request
+     * @return Response
+     */
+
+    public function exportToCsv(Request $request, ReportingIndicator $indicator) {
+
+        $filters = $request->request->get('filters'); //on utilisera les filtres dans le csv
+        $contentJson = $request->request->all();
+        $filters['country'] = $contentJson['__country'];
+
+        try {
+            $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
+            $dataFormatted = $this->get('reporting.formatter')->format($dataComputed, $indicator->getGraph());
+            dump($dataFormatted);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), $e->getCode() > 200 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+
+
+
+
+
+
+
+    }
+
+
 }
