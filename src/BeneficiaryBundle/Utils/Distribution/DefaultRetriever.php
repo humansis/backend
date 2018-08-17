@@ -33,14 +33,14 @@ class DefaultRetriever extends AbstractRetriever
      */
     protected function preFinder(string $distributionType, array &$criteria)
     {
-        if ($distributionType === 'household')
+        if ($distributionType === 'household' || $distributionType === 'beneficiary')
         {
             foreach ($criteria as $index => $criterion)
             {
                 $criteria[$index]["kind_beneficiary"] = $this->getStatusBeneficiaryCriterion($criterion["kind_beneficiary"]);
             }
         }
-        elseif ($distributionType !== 'beneficiary')
+        else
         {
             throw new \Exception("The distribution type '$distributionType' is unknown.");
         }
@@ -77,7 +77,7 @@ class DefaultRetriever extends AbstractRetriever
         {
             case 'beneficiary':
                 return 1;
-            case 'dependent':
+            case 'household':
                 return 0;
             case null:
                 return null;

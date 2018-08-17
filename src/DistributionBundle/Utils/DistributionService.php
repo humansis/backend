@@ -142,6 +142,12 @@ class DistributionService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
+        if($distributionArray['type'] === "Beneficiary") {
+            $distribution->settype(1);
+        } else {
+            $distribution->settype(0);
+        }
+
         $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
         $distribution->setLocation($location);
 
@@ -165,6 +171,13 @@ class DistributionService
             $distribution->removeSelectionCriterion($item);
             $criteria[] = $this->criteriaDistributionService->save($distribution, $item, false);
         }
+
+        $this->em->persist($distribution);
+        $this->em->flush();
+
+        $name = $distribution->getName();
+        $id = $distribution->getId();
+        $distribution->setName($name.$id);
 
         $this->em->persist($distribution);
 

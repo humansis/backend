@@ -142,4 +142,36 @@ class LocationController extends Controller
             );
         return new Response($json);
     }
+
+
+     /**
+     * @Rest\Get("/location/upcoming_distribution", name="all_location")
+     * 
+     * @SWG\Tag(name="Location")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All location",
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getCodeUpcomingDistribution(Request $request) {
+
+        $filters = $request->request->all();
+
+        $locationService = $this->get('location_service');
+        $location = $locationService->getCodeOfUpcomingDistribution($filters['__country']);
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $location,
+                'json',
+                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+
+        
+    }
 }
