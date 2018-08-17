@@ -69,8 +69,9 @@ class BeneficiaryController extends Controller
 
 
 
-        $this->get('beneficiary.beneficiary_service')->exportToCsv();
-        return new Response('true');
+        $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv();
+        dump(json_encode($fileCSV));
+        return new Response(json_encode($fileCSV));
 
     }
 

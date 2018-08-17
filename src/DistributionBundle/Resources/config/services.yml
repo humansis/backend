@@ -17,6 +17,7 @@ services:
             - '@distribution.configuration_loader'
             - '@distribution.criteria_distribution_service'
             - '%distribution.retriever%'
+            - '@service_container'
 
     distribution.distribution_beneficiary_service:
         class: DistributionBundle\Utils\DistributionBeneficiaryService

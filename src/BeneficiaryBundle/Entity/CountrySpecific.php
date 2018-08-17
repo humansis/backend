@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
-use BeneficiaryBundle\Utils\ExportableInterface;
+use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\Model\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;

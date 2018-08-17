@@ -345,7 +345,7 @@ class HouseholdService
     public function exportToCsv() {
 
         $exportableTable = $this->em->getRepository(Household::class)->findAll();
-        $this->container->get('beneficiary.export_csv')->export($exportableTable);
+        $this->container->get('export_csv_service')->export($exportableTable);
 
     }
 }

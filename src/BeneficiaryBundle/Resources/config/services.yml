@@ -30,6 +30,8 @@ services:
         class: BeneficiaryBundle\Utils\CountrySpecificService
         arguments:
             - "@doctrine.orm.entity_manager"
+            - "@service_container"
+
         public: true
 
 
@@ -66,11 +68,4 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@jms_serializer"
             - "@location_service"
-        public: true
-
-    beneficiary.export_csv:
-        class: BeneficiaryBundle\Utils\ExportService
-        arguments:
-        - "@doctrine.orm.entity_manager"
-        - "@service_container"
         public: true

@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Utils;
+namespace CommonBundle\Utils;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
@@ -8,12 +8,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-
+use Symfony\Component\HttpFoundation\Response;
 
 
 Class ExportService {
@@ -24,9 +23,6 @@ Class ExportService {
     /** @var ContainerInterface $container */
     private $container;
 
-    /** @var Beneficiary $beneficiary */
-    private $beneficiary;
-
     /**
      * ExportService constructor.
      * @param EntityManagerInterface $entityManager
@@ -36,7 +32,7 @@ Class ExportService {
     {
         $this->em = $entityManager;
         $this->container = $container;
-        $this->beneficiary = new Beneficiary();
+
     }
 
     public function export($exportableTable) {
@@ -50,11 +46,18 @@ Class ExportService {
         // step 1 : convertir le mapping en données
 
         foreach ($exportableTable as $value) {
-            if( $value instanceof ExportableInterface) {
-                dump("ceci est la valeur", $value);
-                array_push($rows, $value->getMappedValueForExport());
-                dump($rows);
+            if(is_object($value)) {
+                if( $value instanceof ExportableInterface) {
+                    dump("ceci est la valeur", $value);
+                    array_push($rows, $value->getMappedValueForExport());
+                    dump($rows);
+                }
+            } else if(is_array($value)) {
+                array_push($rows, $value);
+            } else {
+                throw new \Exception("The table to export contains a not allowed content ($value). Allowed content: array, ".ExportableInterface::class."");
             }
+
         }
 
         // step 2 : sheet construction
@@ -63,6 +66,9 @@ Class ExportService {
         $spreadsheet->createSheet();
         $worksheet = $spreadsheet->getActiveSheet();
 
+        if(count($rows) === 0) {
+            throw new \Exception("No data to export", Response::HTTP_NO_CONTENT);
+        }
         // get headers title
         $headers = array_keys($rows[0]);
 
@@ -97,9 +103,12 @@ Class ExportService {
         $fileContent = file_get_contents($filename);
 
         dump($fileContent);
-        return $writer;
+        unlink($filename);
 
-
+        return [
+            'content' => $fileContent,
+            'filename' => 'test.csv'
+        ];
     }
 
 

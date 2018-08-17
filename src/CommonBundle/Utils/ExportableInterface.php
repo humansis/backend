@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Utils;
+namespace CommonBundle\Utils;
 
 
 interface ExportableInterface {

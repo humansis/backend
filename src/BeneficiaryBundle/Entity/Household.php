@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
-use BeneficiaryBundle\Utils\ExportableInterface;
+use CommonBundle\Utils\ExportableInterface;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;

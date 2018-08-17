@@ -3,6 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use CommonBundle\Entity\Location;
+use CommonBundle\Utils\ExportableInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\Expr\Select;
 use ProjectBundle\Entity\Project;
@@ -15,7 +16,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="distribution_data")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\DistributionDataRepository")
  */
-class DistributionData
+class DistributionData implements ExportableInterface
 {
 
     const TYPE_BENEFICIARY = 0;
@@ -505,5 +506,23 @@ class DistributionData
     public function getDateDistribution()
     {
         return $this->dateDistribution;
+    }
+
+
+    function getMappedValueForExport(): array
+    {
+        return [
+            "type" => $this->getType(),
+            "Archived"=> $this->getArchived(),
+            "Location " => $this->getLocation(),
+            "Name" => $this->getName(),
+            "Date of distribution " => $this->getDateDistribution(),
+            "Update on " => $this->getUpdatedOn(),
+            "Selection criteria" => join(',', $this->getSelectionCriteria()->getValues()),
+            "Commodities " =>join(',',$this->getCommodities()->getValues()),
+            "Distribution beneficiaries" =>join(',',$this->getDistributionBeneficiaries()->getValues())
+
+
+        ];
     }
 }
