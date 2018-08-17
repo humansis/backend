@@ -40,6 +40,14 @@ class Adm1
     private $countryISO3;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="code", type="string", length=255, nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
+     */
+    private $code;
+
+    /**
      * @var Location
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Location", inversedBy="adm1", cascade={"persist"})
@@ -109,6 +117,30 @@ class Adm1
     public function getCountryISO3()
     {
         return $this->countryISO3;
+    }
+
+    /**
+     * Set code.
+     *
+     * @param string $code
+     *
+     * @return Adm1
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    /**
+     * Get code.
+     *
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->code;
     }
 
     /**
