@@ -32,15 +32,10 @@ Class ExportService {
     {
         $this->em = $entityManager;
         $this->container = $container;
-
     }
 
-    public function export($exportableTable) {
-
-
-        dump("ceci une variable exportabletable",$exportableTable);
-
-
+    public function export($exportableTable)
+    {
         $rows = [];
 
         // step 1 : convertir le mapping en données
@@ -48,16 +43,13 @@ Class ExportService {
         foreach ($exportableTable as $value) {
             if(is_object($value)) {
                 if( $value instanceof ExportableInterface) {
-                    dump("ceci est la valeur", $value);
                     array_push($rows, $value->getMappedValueForExport());
-                    dump($rows);
                 }
             } else if(is_array($value)) {
                 array_push($rows, $value);
             } else {
                 throw new \Exception("The table to export contains a not allowed content ($value). Allowed content: array, ".ExportableInterface::class."");
             }
-
         }
 
 
@@ -104,7 +96,6 @@ Class ExportService {
         $writer->save($filename);
         $fileContent = file_get_contents($filename);
 
-        dump($fileContent);
         unlink($filename);
 
         return [

@@ -18,11 +18,6 @@ use Swagger\Annotations as SWG;
 
 class BeneficiaryController extends Controller
 {
-
-
-
-
-
     /**
      * @Rest\Get("/vulnerability_criteria", name="get_all_vulnerability_criteria")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
@@ -89,20 +84,15 @@ class BeneficiaryController extends Controller
      * )
      * @return Response
      */
-
-    public function exportToCSVAction() {
-
-
-    try{
-
-        $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv();
-        return new Response(json_encode($fileCSV));
-        dump($fileCSV);
-    }   catch(\Exception $exception)
+    public function exportToCSVAction()
     {
-        return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        try
+        {
+            $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv();
+            return new Response(json_encode($fileCSV));
+        }   catch(\Exception $exception)
+        {
+            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
     }
-
-    }
-
 }
