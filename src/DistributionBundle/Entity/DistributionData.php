@@ -511,16 +511,57 @@ class DistributionData implements ExportableInterface
 
     function getMappedValueForExport(): array
     {
+        // récuperer les criteria de selection  depuis l'objet selectioncriteria
+
+        $valueselectioncriteria = [];
+        foreach ($this->getSelectionCriteria() as $value) {
+            array_push( $valueselectioncriteria, $value->getNumber());
+        }
+        $valueselectioncriteria = join(',',  $valueselectioncriteria);
+
+        // récuperer les valeurs des commodities depuis l'objet commodities
+
+        $valuescommodities = [];
+        foreach ($this->getCommodities()->getValues() as $value) {
+            array_push($valuescommodities, $value->getFieldString());
+        }
+        $valuescommodities = join(',', $valuescommodities);
+
+        //récuperer les valeurs des destributions des beneficiaires depuis l'objet distribution
+
+
+
+        $valuesdistributionbeneficiaries = [];
+
+        foreach ($this->getDistributionBeneficiaries()->getValues() as $value) {
+            array_push($valuesdistributionbeneficiaries, $value->getIdNumber());
+        }
+        $valuesdistributionbeneficiaries = join(',',$valuesdistributionbeneficiaries);
+
+
+
+
+        // récuperer les adm1 , adm2 , adm3 , adm 4 depuis l'objet localisation : faut vérifier d'abord s'ils sont null ou pas pour avoir le nom
+
+        $adm1 = ( ! empty($this->getLocation()->getAdm1()) ) ? $this->getLocation()->getAdm1()->getName() : '';
+        $adm2 = ( ! empty($this->getLocation()->getAdm2()) ) ? $this->getLocation()->getAdm2()->getName() : '';
+        $adm3 = ( ! empty($this->getLocation()->getAdm3()) ) ? $this->getLocation()->getAdm3()->getName() : '';
+        $adm4 = ( ! empty($this->getLocation()->getAdm4()) ) ? $this->getLocation()->getAdm4()->getName() : '';
+
         return [
+            "projet" => $this->getProject()->getId(),
             "type" => $this->getType(),
             "Archived"=> $this->getArchived(),
-            "Location " => $this->getLocation(),
+            "adm1" => $adm1,
+            "adm2" =>$adm2,
+            "adm3" =>$adm3,
+            "adm4" =>$adm4,
             "Name" => $this->getName(),
             "Date of distribution " => $this->getDateDistribution(),
             "Update on " => $this->getUpdatedOn(),
-            "Selection criteria" => join(',', $this->getSelectionCriteria()->getValues()),
-            "Commodities " =>join(',',$this->getCommodities()->getValues()),
-            "Distribution beneficiaries" =>join(',',$this->getDistributionBeneficiaries()->getValues())
+            "Selection criteria" =>  $valueselectioncriteria,
+            "Commodities " =>$valuescommodities,
+            "Distribution beneficiaries" =>$valuesdistributionbeneficiaries,
 
 
         ];

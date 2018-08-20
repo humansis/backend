@@ -349,7 +349,7 @@ class DistributionService
     public function exportToCsv() {
 
         $exportableTable = $this->em->getRepository(DistributionData::class)->findAll();
-        return $this->container->get('export_csv_service')->export($exportableTable);
+        return $this->container->get('export_csv_service')->export($exportableTable,'destributions');
 
     }
 }

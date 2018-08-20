@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use ProjectBundle\Entity\Donor;
 use ProjectBundle\Entity\Sector;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -25,11 +26,16 @@ class ProjectService
     /** @var ValidatorInterface $validator */
     private $validator;
 
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator)
+    /** @var ContainerInterface $container */
+    private $container;
+
+    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator , ContainerInterface $container)
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->container = $container;
+
     }
 
     /**
@@ -255,4 +261,12 @@ class ProjectService
 
         return true;
     }
+
+    public function exportToCsv() {
+
+        $exportableTable = $this->em->getRepository(Project::class)->findAll();
+        return $this->container->get('export_csv_service')->export($exportableTable,'destributions');
+
+    }
+
 }

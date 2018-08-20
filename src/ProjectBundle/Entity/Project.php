@@ -2,6 +2,7 @@
 
 namespace ProjectBundle\Entity;
 
+use CommonBundle\Utils\ExportableInterface;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
@@ -12,7 +13,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="project")
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\ProjectRepository")
  */
-class Project
+class Project implements ExportableInterface
 {
     /**
      * @var int
@@ -595,4 +596,134 @@ class Project
     {
         return $this->distributions;
     }
+
+    function getMappedValueForExport(): array
+    {
+
+//        // récuperer les criteria de selection  depuis l'objet selectioncriteria
+
+
+        $namedistribution = [];
+
+        foreach ($this->getDistributions()->getValues() as $value) {
+            array_push( $namedistribution, $value->getName());
+        }
+        //8$valueselectioncriteria = join(',',  $valueselectioncriteria);
+
+        dump($namedistribution);
+
+
+        // récuperer les valeurs des commodities depuis l'objet commodities
+
+        $updateondistribution = [];
+        foreach ($this->getDistributions()->getValues()  as $value) {
+            array_push($updateondistribution, $value->getupdatedOn());
+        }
+
+        dump($updateondistribution);
+        //
+        //$valuescommodities = join(',', $valuescommodities);
+
+        //récuperer les valeurs des destributions des beneficiaires depuis l'objet distribution
+
+
+
+        $datedistribution = [];
+
+        foreach ($this->getDistributions()->getValues()  as $value) {
+            array_push($datedistribution, $value->getdateDistribution());
+        }
+
+        dump($datedistribution);
+
+        //$valuesdistributionbeneficiaries = join(',',$valuesdistributionbeneficiaries);
+
+        $typedistribution = [];
+
+        foreach ($this->getDistributions()->getValues()  as $value) {
+            array_push($typedistribution, $value->getType());
+        }
+
+        dump($typedistribution);
+
+        $archivedistribution = [];
+
+        foreach ($this->getDistributions()->getValues()  as $value) {
+        array_push($archivedistribution, $value->getArchived());
+        }
+
+        dump($archivedistribution);
+
+        $criteriadistribution= [];
+
+        foreach ($this->getDistributions()->getValues()  as $value) {
+            array_push($criteriadistribution, $value->getSelectionCriteria());
+        }
+
+        dump($criteriadistribution);
+
+        $locationdistribution= [];
+
+        foreach ($this->getDistributions()->getValues()  as $value) {
+            array_push($locationdistribution, $value->getLocation());
+        }
+
+        dump($locationdistribution);
+
+
+        $beneficiarydistribution = [];
+
+        foreach ($this->getDistributions()->getValues()  as $value) {
+            array_push($beneficiarydistribution, $value->getDistributionBeneficiaries());
+        }
+
+        dump($beneficiarydistribution);
+
+
+
+
+
+        //$valuesdistributionbeneficiaries = join(',',$valuesdistributionbeneficiaries);
+
+
+
+//
+//        // récuperer les adm1 , adm2 , adm3 , adm 4 depuis l'objet localisation : faut vérifier d'abord s'ils sont null ou pas pour avoir le nom
+//
+//        $adm1 = ( ! empty($this->getLocation()->getAdm1()) ) ? $this->getLocation()->getAdm1()->getName() : '';
+//        $adm2 = ( ! empty($this->getLocation()->getAdm2()) ) ? $this->getLocation()->getAdm2()->getName() : '';
+//        $adm3 = ( ! empty($this->getLocation()->getAdm3()) ) ? $this->getLocation()->getAdm3()->getName() : '';
+//        $adm4 = ( ! empty($this->getLocation()->getAdm4()) ) ? $this->getLocation()->getAdm4()->getName() : '';
+
+         //foreach ( $namedistribution as $i => $value ) {
+
+        $tab = [
+            "type" => $this->$typedistribution[0],
+            "Archived"=> $this->$archivedistribution[0],
+//            "adm1" => $adm1,
+//            "adm2" =>$adm2,
+//            "adm3" =>$adm3,
+//            "adm4" =>$adm4,
+            "Name" => $this->$namedistribution[0],
+            "Date of distribution " => $this->$datedistribution[0],
+            "Update on " => $this->$updateondistribution[0] ];
+//            "Selection criteria" =>  $valueselectioncriteria,
+//            "Commodities " =>$valuescommodities,
+//            "Distribution beneficiaries" =>$valuesdistributionbeneficiaries, ]
+
+        dmup($tab);
+
+             return [];
+
+
+    }
+
+
+
+
+
+
+
+
+
 }

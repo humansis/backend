@@ -34,7 +34,7 @@ Class ExportService {
         $this->container = $container;
     }
 
-    public function export($exportableTable)
+    public function export($exportableTable, $name)
     {
         $rows = [];
 
@@ -98,7 +98,7 @@ Class ExportService {
 
         unlink($filename);
 
-        return [$fileContent,'test.csv'];
+        return [$fileContent,'' . $name. '.csv'];
     }
 
 
