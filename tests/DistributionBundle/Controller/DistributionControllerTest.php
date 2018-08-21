@@ -135,7 +135,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $distributionId = $this->em->getRepository(DistributionData::class)->getLastId();
         $this->assertSame($distribution['name'], $this->namefullname.$distributionId);
-        $rows = str_getcsv($data[0], "\n");
+        $rows = str_getcsv($data['content'], "\n");
         foreach ($rows as $index => $row)
         {
 
