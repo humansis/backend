@@ -67,7 +67,7 @@ class BeneficiaryController extends Controller
     }
 
     /**
-     * @Rest\Get("/Beneficiary/export", name="beneficiary_export")
+     * @Rest\Get("/beneficiary/export", name="beneficiary_export")
      * TODO: ADd security on project
      * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
      *
@@ -89,10 +89,12 @@ class BeneficiaryController extends Controller
         try
         {
             $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv();
+
             return new Response(json_encode($fileCSV));
-        }   catch(\Exception $exception)
+        }
+        catch(\Exception $exception)
         {
-            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+            return new Response($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
     }
 }

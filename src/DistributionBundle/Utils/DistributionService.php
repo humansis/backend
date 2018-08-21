@@ -329,17 +329,16 @@ class DistributionService
     }
 
     /**
-     * @param DistributionData $distribution
+     * @param DistributionData $distributionData
      * @return null|object
      */
-    public function archived(DistributionData $distribution)
+    public function archived(DistributionData $distributionData)
     {
         /** @var DistributionData $distribution */
-        $distributionData = $this->em->getRepository(DistributionData::class)->find($distribution);
         if (!empty($distributionData))
-            $distribution->setArchived(1);
+            $distributionData->setArchived(1);
 
-        $this->em->persist($distribution);
+        $this->em->persist($distributionData);
         $this->em->flush();
 
         return $distributionData;
@@ -349,7 +348,7 @@ class DistributionService
     public function exportToCsv() {
 
         $exportableTable = $this->em->getRepository(DistributionData::class)->findAll();
-        return $this->container->get('export_csv_service')->export($exportableTable);
+        return $this->container->get('export_csv_service')->export($exportableTable,'destributions');
 
     }
 }

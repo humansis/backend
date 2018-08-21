@@ -2,6 +2,7 @@
 
 namespace ProjectBundle\Entity;
 
+use CommonBundle\Utils\ExportableInterface;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;

@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
-use CommonBundle\Utils\ExportableInterface;
+
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="household")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdRepository")
  */
-class Household implements ExportableInterface
+class Household
 {
 
 
@@ -607,18 +607,5 @@ class Household implements ExportableInterface
         return $this;
     }
 
-    function getMappedValueForExport(): array
-    {
-        return [
-            "Address_street" => $this->getAddressStreet(),
-            "Address_number" => $this->getAddressNumber(),
-            "Address_postcode" => $this->getAddressPostcode(),
-            "livelihood" => $this->getLivelihood(),
-            "notes" => $this->getNotes(),
-            "lat" => $this->getLatitude(),
-            "long" => $this->getLongitude()
-
-        ];
-    }
 
 }

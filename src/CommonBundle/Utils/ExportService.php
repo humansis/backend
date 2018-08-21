@@ -23,6 +23,9 @@ Class ExportService {
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var array $headers An array that follows the csv format*/
+    private $headers;
+
     /**
      * ExportService constructor.
      * @param EntityManagerInterface $entityManager
@@ -34,7 +37,7 @@ Class ExportService {
         $this->container = $container;
     }
 
-    public function export($exportableTable)
+    public function export($exportableTable, $name)
     {
         $rows = [];
 
@@ -62,24 +65,36 @@ Class ExportService {
         if(count($rows) === 0) {
             throw new \Exception("No data to export", Response::HTTP_NO_CONTENT);
         }
-        // get headers title
-
-        $headers = array_keys($rows[0]);
-
 
         $rowIndex = 1;
 
-        foreach ($headers as $key => $value) {
+        // write headers
+        if(is_array($this->headers)) {
+            foreach ($this->headers as $key => $value) {
+
+                foreach ($value as $colIndex => $header) {
+                    $index = chr(ord('A')+ $colIndex ).$rowIndex;
+                    $worksheet->setCellValue($index, $value[$colIndex]);
+                }
+                $rowIndex++;
+            }
+        }
+
+        // get table headers titles
+        reset($rows);
+        $tableHeaders = array_keys($rows[0]);
+
+        foreach ($tableHeaders as $key => $value) {
             $index = chr(ord('A')+ $key).$rowIndex;
 
             $worksheet->setCellValue($index, $value);
         }
 
-        $rowIndex = 2;
+        $rowIndex++;
 
         foreach ($rows as $key => $value) {
 
-           foreach ($headers as $colIndex => $header) {
+           foreach ($tableHeaders as $colIndex => $header) {
                $index = chr(ord('A')+ $colIndex ).$rowIndex;
                $worksheet->setCellValue($index, $value[$header]);
            }
@@ -100,24 +115,19 @@ Class ExportService {
 
         return [
             'content' => $fileContent,
-            'filename' => 'test.csv'
+            'filename' => '' . $name. '.csv'
         ];
     }
 
+    /**
+     * @param array $headers This array should follow the csv format
+     * @return ExportService
+     */
+    public function setHeaders(array $headers) {
+        $this->headers = $headers;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return $this;
+    }
 
 
 }

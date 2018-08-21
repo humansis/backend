@@ -4,5 +4,5 @@ namespace ReportingBundle\Utils\Formatters;
 
 interface FormatterInterface 
 {
-    public function format($dataComputed, $typeGraph);
+    public function format($type, $dataComputed, $typeGraph);
 }

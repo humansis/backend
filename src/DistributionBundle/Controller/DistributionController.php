@@ -398,7 +398,7 @@ class DistributionController extends Controller
 
 
     /**
-     * @Rest\Get("/distributions/export", name="distributions_export")
+     * @Rest\GET ("/distributions/export", name="distributions_export")
      * TODO: ADd security on project
      * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
      *
@@ -415,7 +415,7 @@ class DistributionController extends Controller
      * )
      * @return Response
      */
-    public function exportToCSVAction() {
+    public function exportToCSVAction(  )  {
 
         try{
             $fileCSV = $this->get('distribution.distribution_service')->exportToCsv();
