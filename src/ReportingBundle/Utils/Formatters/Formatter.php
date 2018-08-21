@@ -7,119 +7,93 @@ use JMS\Serializer\SerializationContext;
 
 class Formatter implements FormatterInterface {
 
+    /** @var int  */
+    const DefaultFormat = 0;
+
+    /** @var int */
+    const CsvFormat = 1;
+
     public function __construct()
     { }
 
     /**
      * Use to know which format is mandatory for the graph then return data in the good format
-     * 
+     *
+     * @param $type
      * @param array $dataComputed
      * @param string $typeGraph
-     * @return json
+     * @return void
      */
-    public function format($dataComputed, $typeGraph) {
+    public function format($type, $dataComputed, $typeGraph)
+    {
+        $result = [];
+
+        switch ($type) {
+            case self::DefaultFormat:
+                $result = $this->defaultFormat($dataComputed, $typeGraph);
+                break;
+
+            case self::CsvFormat:
+                $result = $this->csvFormat($dataComputed, $typeGraph);
+                break;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $dataComputed
+     * @param $typeGraph
+     * @return array
+     */
+    private function defaultFormat($dataComputed, $typeGraph)
+    {
+        $result = [];
+
         switch($typeGraph) {
             case "stackbar":
-                $result = Formatter::formatWithSeries($dataComputed);
-                return $result;
+                $result = DefaultFormatter::formatWithSeries($dataComputed);
+                break;
             case "pie":
-                $result = Formatter::formatWithoutSeries($dataComputed);
-                return $result;
             case "bar":
-                $result = Formatter::formatWithoutSeries($dataComputed);
-                return $result;
             case "grid":
-                $result = Formatter::formatWithoutSeries($dataComputed);
-                return $result;
             case "number":
-                $result = Formatter::formatWithoutSeries($dataComputed);
-                return $result;
+                $result = DefaultFormatter::formatWithoutSeries($dataComputed);
+                break;
             case "line":
-                $result = Formatter::formatWithDateSeries($dataComputed);
-                return $result;
+                $result = DefaultFormatter::formatWithDateSeries($dataComputed);
+                break;
         }
+
+        return $result;
     }
 
     /**
-     * Update indicator's format to have series
-     * First key need always to be 'name' for the general name
-     * 
-     * @param array $dataComputed
-     * @return json
+     * @param $dataComputed
+     * @param $typeGraph
+     * @return array
+     * @throws \Exception
      */
-    public function formatWithSeries($dataComputed) {
-        $data = [];
-        $names = [];
-        $formats = [];
-        foreach($dataComputed as $indicator) {
-            array_push($names, $indicator['name']); 
+    private function csvFormat($dataComputed, $typeGraph)
+    {
+        $result = [];
+
+        switch($typeGraph) {
+            case "stackbar":
+                $result = CsvFormatter::formatWithSeries($dataComputed);
+                break;
+            case "pie":
+            case "bar":
+            case "grid":
+            case "number":
+                $result = CsvFormatter::formatWithoutSeries($dataComputed);
+                break;
+            case "line":
+                $result = CsvFormatter::formatWithDateSeries($dataComputed);
+                break;
         }
 
-        foreach(array_unique($names) as $name) {
-             $format = [
-                'name' => $name,
-                'series' => [
-                ]
-            ];
-            foreach($dataComputed as $indicator) {
-                $value = [
-                    'name' => $indicator['unity'],
-                    'value' => intval($indicator['value']),
-                    'unity' => $indicator['unity']
-                ];
-                if($format['name'] === $indicator['name']) {
-                    array_push($format['series'], (object) $value);                  
-                }    
-            }
-            array_push($data, (object) $format);
-        }
-        return json_encode($data);
+        return $result;
     }
 
-    /**
-     * Encode data which doesn't need series in json
-     * 
-     * @param array $dataComputed
-     * @return json
-     */
-    public function formatWithoutSeries($dataComputed) {
-        return json_encode($dataComputed);    
-    }
-
-
-    /**
-     * Update indicator's format to have series and date
-     * First key need always to be 'name' for the general name
-     * 
-     * @param array $dataComputed
-     * @return json
-     */
-    public function formatWithDateSeries($dataComputed) {
-        $data = [];
-        $names = [];
-        $formats = [];
-        foreach($dataComputed as $indicator) {
-            array_push($names, $indicator['name']); 
-        }
-
-        foreach(array_unique($names) as $name) {
-             $format = [
-                'name' => $name,
-                'series' => [
-                ]
-            ];
-            foreach($dataComputed as $indicator) {
-                $value = [
-                    'name' => $indicator['date'],
-                    'value' => intval($indicator['value']),
-                    'unity' => $indicator['unity']
-                ];
-                if($format['name'] === $indicator['name']) {
-                    array_push($format['series'], (object) $value);                  
-                }    
-            }
-            array_push($data, (object) $format);
-        }
-        return json_encode($data);
-    }
 }

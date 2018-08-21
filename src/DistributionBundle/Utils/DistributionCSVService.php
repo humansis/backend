@@ -63,7 +63,10 @@ class DistributionCSVService
         //Récupération du contenu et suppression du fichier
         $fileContent = file_get_contents($filename);
         unlink($filename);
-        $file = [$fileContent, 'export_distribution_' . $distributionData->getName() . '.csv'];
+        $file = [
+            'content' => $fileContent,
+            'filename' => 'export_distribution_' . $distributionData->getName() . '.csv'
+        ];
         return $file;
     }
 

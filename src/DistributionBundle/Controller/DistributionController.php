@@ -417,8 +417,6 @@ class DistributionController extends Controller
      */
     public function exportToCSVAction(  )  {
 
-//        dump($request->request->get('__country'));
-
         try{
             $fileCSV = $this->get('distribution.distribution_service')->exportToCsv();
             return new Response(json_encode($fileCSV));

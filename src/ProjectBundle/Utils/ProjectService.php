@@ -262,11 +262,4 @@ class ProjectService
         return true;
     }
 
-    public function exportToCsv() {
-
-        $exportableTable = $this->em->getRepository(Project::class)->findAll();
-        return $this->container->get('export_csv_service')->export($exportableTable,'destributions');
-
-    }
-
 }

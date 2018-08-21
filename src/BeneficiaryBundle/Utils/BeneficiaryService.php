@@ -297,7 +297,6 @@ class BeneficiaryService
     public function exportToCsv() {
 
         $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
-        dump($exportableTable);
         return $this->container->get('export_csv_service')->export($exportableTable,'beneficiaryhousehoulds');
 
     }

@@ -2,6 +2,10 @@
 
 namespace ReportingBundle\Controller;
 
+use BeneficiaryBundle\Utils\ExportCSVService;
+use CommonBundle\Utils\ExportService;
+use phpDocumentor\Reflection\TypeResolver;
+use ReportingBundle\Utils\Formatters\Formatter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use JMS\Serializer\SerializationContext;
@@ -57,13 +61,13 @@ class ReportingController extends Controller
 
         try {   
             $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
-            $dataFormatted = $this->get('reporting.formatter')->format($dataComputed, $indicator->getGraph());
+            $dataFormatted = $this->get('reporting.formatter')->format(Formatter::DefaultFormat, $dataComputed, $indicator->getGraph());
         }
         catch (\Exception $e)
         {
             return new Response($e->getMessage(), $e->getCode() > 200 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
         }
-        return new Response($dataFormatted, Response::HTTP_OK);   
+        return new JsonResponse($dataFormatted, Response::HTTP_OK);
     }
 
 
@@ -126,23 +130,41 @@ class ReportingController extends Controller
      * @param ReportingIndicator $indicator
      * @param Request $request
      * @return Response
+     * @throws \Exception
      */
 
     public function exportToCsv(Request $request, ReportingIndicator $indicator) {
 
         $filters = $request->request->get('filters'); //on utilisera les filtres dans le csv
+
         $contentJson = $request->request->all();
         $filters['country'] = $contentJson['__country'];
 
         try {
             $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
-            $dataFormatted = $this->get('reporting.formatter')->format($dataComputed, $indicator->getGraph());
-            dump($dataFormatted);
+            $dataFormatted = $this->get('reporting.formatter')->format(Formatter::CsvFormat, $dataComputed, $indicator->getGraph());
         }
         catch (\Exception $e)
         {
             return new Response($e->getMessage(), $e->getCode() > 200 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
         }
+
+        $extraData = [
+            ["Frequency", $filters['frequency']],
+            ["Country", $contentJson['__country']],
+            ["Indicator name", $indicator->getCode()],
+            ["Indicator Reference", $indicator->getReference()],
+            ["Graph type", $indicator->getGraph()],
+        ];
+
+        /** @var ExportService $exporter */
+        $exporter = $this->get('export_csv_service');
+
+        $toExport = $exporter
+            ->setHeaders($extraData)
+            ->export($dataFormatted, $indicator->getReference());
+
+        return new JsonResponse($toExport);
 
 
 
