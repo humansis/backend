@@ -7,6 +7,7 @@ use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use UserBundle\Entity\User;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
@@ -74,7 +75,7 @@ class UserController extends Controller
             return new Response($exception->getMessage(), $exception->getCode());
         }
 
-        return new Response(json_encode($data));
+        return new JsonResponse($data);
     }
 
     /**
@@ -117,19 +118,18 @@ class UserController extends Controller
      *
      * @return Response
      */
-    public function getSaltAction(Request $request)
+    public function getSaltAction(Request $request, $username)
     {
-        $username = $request->get('username');
         try
         {
             $salt = $this->get('user.user_service')->getSalt($username);
         }
         catch (\Exception $exception)
         {
-            return new Response($exception->getMessage(), $exception->getCode());
+            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
 
-        return new Response(json_encode($salt));
+        return new JsonResponse($salt);
     }
 
     /**
@@ -177,7 +177,7 @@ class UserController extends Controller
         }
 
         if (!$user instanceof User)
-            return new Response(json_encode($user));
+            return new JsonResponse($user);
 
 
         $userJson = $serializer->serialize(
@@ -405,6 +405,6 @@ class UserController extends Controller
     {
         $isSuccess = $this->get('user.user_service')->delete($user);
 
-        return new Response(json_encode($isSuccess));
+        return new JsonResponse($isSuccess);
     }
 }

@@ -8,6 +8,8 @@ use JMS\Serializer\Annotation\Groups;
 /**
  * Adm4
  *
+ * @see Adm1 For a better understanding of Adm
+ * 
  * @ORM\Table(name="adm4")
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\Adm4Repository")
  */

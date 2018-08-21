@@ -8,6 +8,14 @@ use JMS\Serializer\Annotation\Groups;
 /**
  * Adm1
  *
+ * Adm are levels into the Boundaries standardisation
+ * Adm0 => Country
+ * Adm1 => under country
+ * Adm2 => under under country
+ * Adm3 => ...
+ * Adm4 => ...
+ * Adm5 => ...
+ *
  * @ORM\Table(name="adm1")
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\Adm1Repository")
  */
