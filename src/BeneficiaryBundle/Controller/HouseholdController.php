@@ -28,6 +28,13 @@ class HouseholdController extends Controller
      * @Rest\Get("/households/{id}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
      *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
      * @param Household $household
      * @return Response
      */
@@ -321,6 +328,13 @@ class HouseholdController extends Controller
     /**
      * @Rest\Delete("/households/{id}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
      *
      * @param Household $household
      * @return Response

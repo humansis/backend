@@ -402,7 +402,7 @@ class DistributionController extends Controller
      * TODO: ADd security on project
      * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
      *
-     * @ SWG\Tag(name="Distributions")
+     * @SWG\Tag(name="Distributions")
      *
      * @SWG\Response(
      *     response=200,
