@@ -120,7 +120,8 @@ Class ExportService {
 
         return [
             'content' => $this->filecontent,
-            'filename' => $filename
+            'filename' => $name,
+            'filepath' => $filename
         ];
     }
 
