@@ -162,7 +162,7 @@ class BeneficiaryFixtures extends Fixture
                 ->setArchived($sheet->getCell('V'.$rowIndex)->getValue())
                 ->setDateDistribution((new \DateTime())->setDate(2018,8,01))
                 ->setType($sheet->getCell('W'.$rowIndex)->getValue())
-                ->setUpdatedOn((new \DateTime())->setDate(2018,8,01))
+                ->setUpdatedOn((new \DateTime())->setDate(2018,8,01)->setTime(8,13,58))
                 ->setProject($project);
 
             $manager->persist($distribution);
@@ -173,12 +173,7 @@ class BeneficiaryFixtures extends Fixture
 
             $rowIterator->next();
 
-
-
-
-
         }
-
 
         $manager->flush();
 
