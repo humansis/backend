@@ -43,9 +43,6 @@ class DistributionService
     /** @var AbstractRetriever $retriever */
     private $retriever;
 
-    /** @var int $numberRandomBeneficiary */
-    private $numberRandomBeneficiary = 1;
-
     /** @var ContainerInterface $container */
     private $container;
 
@@ -102,17 +99,6 @@ class DistributionService
         $this->em->flush();
 
         return $distributionData;
-    }
-
-    public function getRandomBeneficiaries(DistributionData $distributionData)
-    {
-        $listReceivers = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
-        if (sizeof($listReceivers) < $this->numberRandomBeneficiary)
-            return $listReceivers;
-        $rand_keys = $listReceivers[mt_rand(0, $this->numberRandomBeneficiary)];
-
-
-        return $rand_keys;
     }
 
     /**

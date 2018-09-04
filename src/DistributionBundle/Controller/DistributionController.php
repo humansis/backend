@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use DistributionBundle\Entity\DistributionData;
+use BeneficiaryBundle\Entity\Beneficiary;
 use ProjectBundle\Entity\Project;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -39,9 +40,9 @@ class DistributionController extends Controller
      */
     public function getRandomBeneficiariesAction(DistributionData $distributionData)
     {
-        /** @var DistributionService $distributionService */
-        $distributionService = $this->get('distribution.distribution_service');
-        $receivers = $distributionService->getRandomBeneficiaries($distributionData);
+        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        $receivers = $distributionBeneficiaryService->getRandomBeneficiaries($distributionData);
 
         $json = $this->get('jms_serializer')
             ->serialize(
@@ -55,7 +56,6 @@ class DistributionController extends Controller
 
         return new Response($json);
     }
-
 
     /**
      * @Rest\Get("/distributions/{id}/validate")
@@ -243,7 +243,7 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Get("/distributions/{id}", name="get_one_distributions", requirements={"id"="\d+"})
+     * @Rest\Get("/distributions/{id}", name="get_one_distribution", requirements={"id"="\d+"})
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Distributions")
@@ -267,6 +267,44 @@ class DistributionController extends Controller
                 $DistributionData,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups(["FullDistribution"])
+            );
+
+        return new Response($json);
+    }
+
+    /**
+     * Get all beneficiaries of a distribution
+     * @Rest\Get("/distributions/{id}/beneficiaries", name="get_beneficiaries_distribution", requirements={"id"="\d+"})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     * 
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="beneficiaries for one distribution",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Beneficiary::class))
+     *     )
+     * )
+     *
+     * @param DistributionData $DistributionData
+     * @return Response
+     */
+    public function getDistributionBeneficiariesAction(DistributionData $distributionData)
+    {
+        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $beneficiaries,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                    "FullReceivers",
+                    "FullDistribution"
+                ])
             );
 
         return new Response($json);

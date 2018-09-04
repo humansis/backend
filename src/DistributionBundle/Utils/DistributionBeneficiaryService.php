@@ -24,12 +24,45 @@ class DistributionBeneficiaryService
     /** @var ValidatorInterface $validator */
     private $validator;
 
+    /** @var int $numberRandomBeneficiary */
+    private $numberRandomBeneficiary = 10;
+
 
     public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator)
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
+    }
+    
+    /**
+     * Get all beneficiaries from a distribution
+     *
+     * @param DistributionData $distributionData
+     * @return array
+     */
+    public function getBeneficiaries(DistributionData $distributionData)
+    {
+        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
+        return $beneficiaries;
+    }
+    
+    
+    /**
+     * Get random beneficiaries from a distribution
+     *
+     * @param DistributionData $distributionData
+     * @return array
+     */
+    public function getRandomBeneficiaries(DistributionData $distributionData)
+    {
+        $listReceivers = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
+        if (sizeof($listReceivers) < $this->numberRandomBeneficiary)
+            return $listReceivers;
+        $rand_keys = $listReceivers[mt_rand(0, $this->numberRandomBeneficiary)];
+
+
+        return $rand_keys;
     }
 
     /**
