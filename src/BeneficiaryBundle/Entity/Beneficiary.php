@@ -100,19 +100,19 @@ class Beneficiary implements ExportableInterface
      * @var VulnerabilityCriterion
      *
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $vulnerabilityCriteria;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist"})
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers"})
      */
     private $phones;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist"})
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers"})
      */
     private $nationalIds;
 

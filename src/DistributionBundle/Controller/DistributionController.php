@@ -302,8 +302,7 @@ class DistributionController extends Controller
                 $beneficiaries,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    "FullReceivers",
-                    "FullDistribution"
+                    "FullReceivers"
                 ])
             );
 
