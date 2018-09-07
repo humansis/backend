@@ -19,23 +19,21 @@ class ExportDistributionTest extends BMSServiceTestCase {
     }
 
     /**
-     * TODO
-     * to test export distribution
+     * Test export distribution
      * expectedDistribution.csv is a file to test the export distribution service
      * @throws \Exception
      */
-
-
     public function testExportDistribution () {
 
         $exportservice = new ExportService($this->em,$this->container);
-
         $exportableTable = $this->em->getRepository(DistributionData::class)->findAll();
 
         $csv = $exportservice->export($exportableTable,'actual');
 
-        $this->assertEquals(file_get_contents('expectedDistribution.csv'), $csv['content']);
+        $getResourceDistribution = fgets(fopen(__DIR__ . '/../Resources/expectedDistribution.csv', 'r'));
+        $getContentDistribution = strtok($csv['content'], "\n");
 
+        $this->assertEquals($getResourceDistribution, $getContentDistribution);
 
     }
 
