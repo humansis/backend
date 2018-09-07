@@ -54,8 +54,7 @@ class ExportController extends Controller
 
             try{
 
-                $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv("beneficiaries", null);
-                //$fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv("beneficiaries");
+                $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv();
 
                 return new Response(json_encode($fileCSV));
                 
@@ -70,7 +69,7 @@ class ExportController extends Controller
             try{
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
 
-                $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv("beneficiariesInDistribution", $distribution);
+                $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsvBeneficiariesInDistribution($distribution);
                 
                 return new Response(json_encode($fileCSV));
                 

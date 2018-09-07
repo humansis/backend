@@ -299,18 +299,17 @@ class BeneficiaryService
         return true;
     }
 
-    public function exportToCsv(string $option, DistributionData $distributionData) {
+    public function exportToCsvBeneficiariesInDistribution(DistributionData $distributionData) {
 
-        if($option == "beneficiariesInDistribution"){
-            $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
-            //$beneficiaries = $this->dbs->getBeneficiaries();
-            dump($beneficiaries);
-            return $this->container->get('export_csv_service')->export($beneficiaries,'beneficiaryhousehoulds');
-        }
-        elseif($option == "beneficiaries"){
-            $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
-            return $this->container->get('export_csv_service')->export($exportableTable,'beneficiaryhousehoulds');
-        }
+        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
+        return $this->container->get('export_csv_service')->export($beneficiaries,'beneficiaryInDistribution');
+
+    }
+
+    public function exportToCsv() {
+
+        $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
+        return $this->container->get('export_csv_service')->export($exportableTable,'beneficiaryhousehoulds');
 
     }
 
