@@ -39,7 +39,7 @@ class DistributionController extends Controller
      * @return Response
      */
     public function getRandomBeneficiariesAction(DistributionData $distributionData)
-    {
+    {    
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $receivers = $distributionBeneficiaryService->getRandomBeneficiaries($distributionData);
@@ -49,8 +49,7 @@ class DistributionController extends Controller
                 $receivers,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    "FullReceivers",
-                    "FullDistribution"
+                    "FullReceivers"
                 ])
             );
 

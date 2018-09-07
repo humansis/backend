@@ -59,10 +59,14 @@ class DistributionBeneficiaryService
         $listReceivers = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
         if (sizeof($listReceivers) < $this->numberRandomBeneficiary)
             return $listReceivers;
-        $rand_keys = $listReceivers[mt_rand(0, $this->numberRandomBeneficiary)];
+        
+        $randomIds = array_rand($listReceivers, $this->numberRandomBeneficiary);
+        $randomReceivers = array();
+        foreach ($randomIds as $id) {
+            array_push($randomReceivers, $listReceivers[$id]);
+        }
 
-
-        return $rand_keys;
+        return $randomReceivers;
     }
 
     /**
