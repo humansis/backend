@@ -452,11 +452,14 @@ class DistributionController extends Controller
      * )
      * @return Response
      */
-    public function exportToCSVAction(  )  {
+    public function exportToCSVAction()  {
 
         try{
+
             $fileCSV = $this->get('distribution.distribution_service')->exportToCsv();
+            
             return new Response(json_encode($fileCSV));
+            
         } catch(\Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }

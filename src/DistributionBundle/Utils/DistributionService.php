@@ -283,6 +283,18 @@ class DistributionService
         return $this->em->getRepository(DistributionData::class)->findAll();
     }
 
+
+    /**
+     * Get all distributions
+     *
+     * @return array
+     */
+    public function findOneById(int $id)
+    {
+        return $this->em->getRepository(DistributionData::class)->findOneBy(['id' => $id]);
+    }
+
+
     /**
      * Edit a distribution
      *
@@ -331,10 +343,8 @@ class DistributionService
     }
 
 
-    public function exportToCsv() {
-
-        $exportableTable = $this->em->getRepository(DistributionData::class)->findAll();
-        return $this->container->get('export_csv_service')->export($exportableTable,'destributions');
-
+    public function exportToCsv(int $projectId) {
+        $exportableTable = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId]);
+        return $this->container->get('export_csv_service')->export($exportableTable,'distributions');
     }
 }

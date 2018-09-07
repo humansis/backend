@@ -18,6 +18,8 @@ use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use DistributionBundle\Utils\DistributionBeneficiaryService;
+use DistributionBundle\Entity\DistributionData;
 
 
 class BeneficiaryService
@@ -40,7 +42,8 @@ class BeneficiaryService
     /** @var Beneficiary $beneficiary */
     private $beneficiary;
 
-
+    /** @var DistributionBeneficiaryService $dbs */
+    private $dbs;
 
 
     public function __construct(
@@ -48,7 +51,8 @@ class BeneficiaryService
         Serializer $serializer,
         RequestValidator $requestValidator,
         ValidatorInterface $validator,
-        ContainerInterface $container
+        ContainerInterface $container,
+        DistributionBeneficiaryService $distributionBeneficiary
     )
 
     {
@@ -58,6 +62,7 @@ class BeneficiaryService
         $this->validator = $validator;
         $this->container = $container;
         $this->beneficiary = new Beneficiary();
+        $this->dbs = $distributionBeneficiary;
     }
 
 
@@ -294,10 +299,18 @@ class BeneficiaryService
         return true;
     }
 
-    public function exportToCsv() {
+    public function exportToCsv(string $option, DistributionData $distributionData) {
 
-        $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
-        return $this->container->get('export_csv_service')->export($exportableTable,'beneficiaryhousehoulds');
+        if($option == "beneficiariesInDistribution"){
+            $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
+            //$beneficiaries = $this->dbs->getBeneficiaries();
+            dump($beneficiaries);
+            return $this->container->get('export_csv_service')->export($beneficiaries,'beneficiaryhousehoulds');
+        }
+        elseif($option == "beneficiaries"){
+            $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
+            return $this->container->get('export_csv_service')->export($exportableTable,'beneficiaryhousehoulds');
+        }
 
     }
 
