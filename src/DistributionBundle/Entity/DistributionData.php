@@ -514,31 +514,33 @@ class DistributionData implements ExportableInterface
         // récuperer les criteria de selection  depuis l'objet selectioncriteria
 
         $valueselectioncriteria = [];
-        foreach ($this->getSelectionCriteria() as $value) {
-            array_push( $valueselectioncriteria, $value->getNumber());
+        foreach ($this->getSelectionCriteria() as $criterion) {
+            $stringCriterion = $criterion->getFieldString() . " " . $criterion->getConditionString() . " " . $criterion->getValueString();
+            array_push( $valueselectioncriteria, $stringCriterion);
         }
-        $valueselectioncriteria = join(',',  $valueselectioncriteria);
+        $valueselectioncriteria = join(', ',  $valueselectioncriteria);
 
         // récuperer les valeurs des commodities depuis l'objet commodities
 
         $valuescommodities = [];
-        foreach ($this->getCommodities()->getValues() as $value) {
-            array_push($valuescommodities, $value->getFieldString());
+        
+        foreach ($this->getCommodities() as $commodity) {
+            $stringCommodity = $commodity->getModalityType()->getName() . " " . $commodity->getValue() . " " . $commodity->getUnit();
+            array_push($valuescommodities, $stringCommodity);
         }
         $valuescommodities = join(',', $valuescommodities);
 
-        //récuperer les valeurs des destributions des beneficiaires depuis l'objet distribution
 
+        //récuperer les valeurs des distributions des beneficiaires depuis l'objet distribution
+        // $valuesdistributionbeneficiaries = [];
 
+        // foreach ($this->getDistributionBeneficiaries() as $value) {
+        //     dump($value);
+        //     array_push($valuesdistributionbeneficiaries, $value->getIdNumber());
+        // }
+        // $valuesdistributionbeneficiaries = join(',',$valuesdistributionbeneficiaries);
 
-        $valuesdistributionbeneficiaries = [];
-
-        foreach ($this->getDistributionBeneficiaries()->getValues() as $value) {
-            array_push($valuesdistributionbeneficiaries, $value->getIdNumber());
-        }
-        $valuesdistributionbeneficiaries = join(',',$valuesdistributionbeneficiaries);
-
-
+        $typeString = $this->getType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
 
 
         // récuperer les adm1 , adm2 , adm3 , adm 4 depuis l'objet localisation : faut vérifier d'abord s'ils sont null ou pas pour avoir le nom
@@ -550,8 +552,8 @@ class DistributionData implements ExportableInterface
 
         return [
             "projet" => $this->getProject()->getName(),
-            "type" => $this->getType(),
-            "Archived"=> $this->getArchived(),
+            "type" => $typeString,
+            // "Archived"=> $this->getArchived(),
             "adm1" => $adm1,
             "adm2" =>$adm2,
             "adm3" =>$adm3,
@@ -560,10 +562,8 @@ class DistributionData implements ExportableInterface
             "Date of distribution " => $this->getDateDistribution(),
             "Update on " => $this->getUpdatedOn(),
             "Selection criteria" =>  $valueselectioncriteria,
-            "Commodities " =>$valuescommodities,
-            "Distribution beneficiaries" =>$valuesdistributionbeneficiaries,
-
-
+            "Commodities " => $valuescommodities,
+            // "Distribution beneficiaries" =>$valuesdistributionbeneficiaries,
         ];
     }
 }

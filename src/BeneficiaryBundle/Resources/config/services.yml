@@ -15,7 +15,7 @@ services:
             - "@validator"
             - "@service_container"
         public: true
-
+        
     beneficiary.beneficiary_service:
         class: BeneficiaryBundle\Utils\BeneficiaryService
         arguments:
@@ -24,6 +24,7 @@ services:
             - "@request_validator"
             - "@validator"
             - "@service_container"
+            - "@distribution.distribution_beneficiary_service"
         public: true
 
     beneficiary.country_specific_service:

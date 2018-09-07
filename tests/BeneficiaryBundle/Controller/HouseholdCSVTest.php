@@ -142,6 +142,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
      */
     public function testExportCSV()
     {
+
         $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($this->iso3);
         $csvGenerated = $this->exportCSVService->generate($this->iso3);
         $csvArray = str_replace('"', '', explode(",", explode("\n", current($csvGenerated))[1]));

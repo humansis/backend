@@ -56,6 +56,7 @@ class LocationFixtures extends Fixture
 
         $files = scandir($dir_files);
         $nbFilesLoaded = 0;
+
         foreach ($files as $file)
         {
             if ("." == $file || ".." == $file)

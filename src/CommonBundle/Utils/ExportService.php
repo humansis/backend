@@ -26,6 +26,9 @@ Class ExportService {
     /** @var array $headers An array that follows the csv format*/
     private $headers;
 
+    /** @var string $filecontent*/
+    private $filecontent;
+
     /**
      * ExportService constructor.
      * @param EntityManagerInterface $entityManager
@@ -98,24 +101,27 @@ Class ExportService {
                $index = chr(ord('A')+ $colIndex ).$rowIndex;
                $worksheet->setCellValue($index, $value[$header]);
            }
-            $rowIndex++;
+
+           $rowIndex++;
         }
 
         // step 3 : scaning sheet into csv
 
         $writer = new Csv($spreadsheet);
+        $writer->setEnclosure('');
 
         $dataPath = $this->container->getParameter('kernel.root_dir') . '/../var';
-        $filename = $dataPath . '/test.csv';
+        $filename = $dataPath . '/'.$name.'.csv';
 
         $writer->save($filename);
-        $fileContent = file_get_contents($filename);
+        $this->filecontent = file_get_contents($filename);
 
         unlink($filename);
 
         return [
-            'content' => $fileContent,
-            'filename' => '' . $name. '.csv'
+            'content' => $this->filecontent,
+            'filename' => $name,
+            'filepath' => $filename
         ];
     }
 
