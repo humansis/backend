@@ -18,7 +18,12 @@ class CountryController extends Controller
     /**
      * @Rest\Get("/country_specifics", name="all_country_specifics")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
+     *@SWG\Tag(name="Country")
      *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
      *
      * @return Response
      */
@@ -39,6 +44,12 @@ class CountryController extends Controller
     /**
      * @Rest\Put("/country_specifics")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @SWG\Tag(name="Country")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
      *
      * @param Request $request
      * @return Response
@@ -61,6 +72,13 @@ class CountryController extends Controller
     /**
      * @Rest\Post("/country_specifics/{id}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     *
+     *@SWG\Tag(name="Country")
+     *
+     *@SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
      *
      * @param Request $request
      * @return Response
@@ -85,7 +103,7 @@ class CountryController extends Controller
      * @Rest\Delete("/country_specifics/{id}", name="delete_country_specific")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
-     * @SWG\Tag(name="CountrySpecifics")
+     * @SWG\Tag(name="Country")
      *
      * @SWG\Response(
      *     response=200,
