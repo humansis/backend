@@ -19,6 +19,15 @@ use ProjectBundle\Entity\Project;
 class BeneficiaryRepository extends AbstractCriteriaRepository
 {
 
+    public function getAllOfProject(int $project){
+        $qb = $this->createQueryBuilder('b');
+        $q = $qb->leftJoin('b.household', 'hh')
+            ->where(':project MEMBER OF hh.projects')
+            ->setParameter('project', $project);
+
+        return $q->getQuery()->getResult();
+    }
+
     public function getAllofDistribution(DistributionData $distributionData)
     {
         $qb = $this->createQueryBuilder("b");

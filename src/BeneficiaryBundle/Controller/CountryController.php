@@ -152,20 +152,20 @@ class CountryController extends Controller
      * )
      * @return Response
      */
-    public function exportToCSVAction() {
+    // public function exportToCSVAction() {
 
 
-     try {
+    //  try {
 
-         $fileCSV = $this->get('beneficiary.country_specific_service')->exportToCsv();
-         return new Response(json_encode($fileCSV));
-     } catch (\Exception $exception) {
+    //      $fileCSV = $this->get('beneficiary.country_specific_service')->exportToCsv();
+    //      return new Response(json_encode($fileCSV));
+    //  } catch (\Exception $exception) {
 
-         return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-     }
+    //      return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+    //  }
 
 
-    }
+    // }
 
 
 }

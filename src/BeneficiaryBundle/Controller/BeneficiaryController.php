@@ -84,17 +84,17 @@ class BeneficiaryController extends Controller
      * )
      * @return Response
      */
-    public function exportToCSVAction()
-    {
-        try
-        {
-            $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv();
+    // public function exportToCSVAction()
+    // {
+    //     try
+    //     {
+    //         $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv();
 
-            return new Response(json_encode($fileCSV));
-        }
-        catch(\Exception $exception)
-        {
-            return new Response($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-        }
-    }
+    //         return new Response(json_encode($fileCSV));
+    //     }
+    //     catch(\Exception $exception)
+    //     {
+    //         return new Response($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+    //     }
+    // }
 }

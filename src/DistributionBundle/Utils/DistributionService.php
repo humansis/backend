@@ -294,6 +294,15 @@ class DistributionService
         return $this->em->getRepository(DistributionData::class)->findOneBy(['id' => $id]);
     }
 
+    /**
+     * Get all distributions
+     *
+     * @return array
+     */
+    public function getAllBeneficiariesInProject(DistributionData $distributionData)
+    {
+        return $this->em->getRepository(Beneficiary::class)->getAllOfProject($distributionData->getProject()->getId());
+    }
 
     /**
      * Edit a distribution
