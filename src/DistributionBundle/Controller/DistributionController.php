@@ -483,16 +483,35 @@ class DistributionController extends Controller
             return new Response('You must upload a file.', 500);
         }
 
-        try {
-            $return = $distributionCsvService->saveCSV($countryIso3, $beneficiaries, $distributionData, $request->files->get('file'));
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        if ($request->request->get('step')) {
+            $step = $request->request->get('step');
+
+            if ($step == 1) {
+                try {
+                    $return = $distributionCsvService->parseCSV($countryIso3, $beneficiaries, $distributionData, $request->files->get('file'));
+                } catch (\Exception $e) {
+                    return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            } elseif ($step == 2) {
+                try {
+                    $return = $distributionCsvService->saveCSV($countryIso3, $beneficiaries, $distributionData, $request->files->get('file'));
+                } catch (\Exception $e) {
+                    return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                $return = 'An error occured, please check the body';
+            }
+
+            $json = $this->get('jms_serializer')
+                ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
+
+            return new Response($json);
+        } else {
+            $json = $this->get('jms_serializer')
+                ->serialize('An error occured, please check the body', 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
+
+            return new Response($json);
         }
-
-        $json = $this->get('jms_serializer')
-            ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
-
-        return new Response($json);
     }
 
     /**

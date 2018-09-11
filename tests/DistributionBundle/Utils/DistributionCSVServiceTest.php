@@ -20,7 +20,7 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
     /**
      * Test used to check if the function returns the right informations in each array.
      */
-    public function testSaveCSV()
+    public function testparseCSV()
     {
         $distributionCSVService = $this->container->get('distribution.distribution_csv_service');
 
@@ -30,11 +30,40 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
         $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
         $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiaryInDistribution.csv', 'r');
 
-        $jsonFromSaveCSV = $distributionCSVService->saveCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
+        $jsonFromparseCSV = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
 
-        $errorArray = $jsonFromSaveCSV['errors'];
-        $addArray = $jsonFromSaveCSV['added'];
-        $deleteArray = $jsonFromSaveCSV['deleted'];
+        $errorArray = $jsonFromparseCSV['errors'];
+        $addArray = $jsonFromparseCSV['added'];
+        $deleteArray = $jsonFromparseCSV['deleted'];
+
+        for ($i = 0; $i < count($errorArray); ++$i) {
+            $this->assertTrue($errorArray[$i]['givenName'] == 'UserLambda' && $errorArray[$i]['familyName'] == 'FamilyLambda');
+        }
+
+        for ($i = 0; $i < count($addArray); ++$i) {
+            $this->assertTrue($addArray[$i]['givenName'] == 'Test4' && $addArray[$i]['familyName'] == 'Tester');
+        }
+
+        for ($i = 0; $i < count($deleteArray); ++$i) {
+            $this->assertTrue($deleteArray[$i]['givenName'] == 'Test6' && $deleteArray[$i]['familyName'] == 'Bis');
+        }
+    }
+
+    public function testsaveCSV()
+    {
+        $distributionCSVService = $this->container->get('distribution.distribution_csv_service');
+
+        $countryIso3 = 'FR';
+        $distributionData = $this->em->getRepository(DistributionData::class)->findOneById('1');
+        $distributionBeneficiaryService = $this->container->get('distribution.distribution_beneficiary_service');
+        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
+        $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiaryInDistribution.csv', 'r');
+
+        $jsonFromparseCSV = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
+
+        $errorArray = $jsonFromparseCSV['errors'];
+        $addArray = $jsonFromparseCSV['added'];
+        $deleteArray = $jsonFromparseCSV['deleted'];
 
         for ($i = 0; $i < count($errorArray); ++$i) {
             $this->assertTrue($errorArray[$i]['givenName'] == 'UserLambda' && $errorArray[$i]['familyName'] == 'FamilyLambda');

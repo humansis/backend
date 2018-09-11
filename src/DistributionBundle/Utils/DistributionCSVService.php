@@ -236,7 +236,7 @@ class DistributionCSVService
     }
 
     /**
-     * Defined the reader and transform CSV to array.
+     * Defined the reader and transform CSV to array and check the difference between the database and the CSV.
      *
      * @param $countryIso3
      * @param $beneficiaries
@@ -249,7 +249,7 @@ class DistributionCSVService
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function saveCSV($countryIso3, $beneficiaries, DistributionData $distributionData, UploadedFile $uploadedFile)
+    public function parseCSV($countryIso3, $beneficiaries, DistributionData $distributionData, UploadedFile $uploadedFile)
     {
         // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
         // LOADING CSV
@@ -258,9 +258,11 @@ class DistributionCSVService
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->toArray(null, true, true, true);
 
-        $givenNameArray = array_slice(array_map(function ($item) { return $item['L']; }, ($sheetArray)), 1);
-        $familyNameArray = array_slice(array_map(function ($item) { return $item['M']; }, ($sheetArray)), 1);
+        // Recover all the givenName and the familyName in the CSV file :
+        $givenNameArray = array_map(function ($item) { return $item['L']; }, ($sheetArray));
+        $familyNameArray = array_map(function ($item) { return $item['M']; }, ($sheetArray));
 
+        // Recover all the givenName and the familyName in the Beneficiary entity :
         $entityDatasArray = array_map(function ($item) {
             $tempGivenNameArray = array();
             $tempFamilyNameArray = array();
@@ -280,6 +282,7 @@ class DistributionCSVService
 
         $beneficiariesInProject = $this->em->getRepository(Beneficiary::class)->getAllOfProject($distributionData->getProject()->getId());
 
+        // Recover all the givenName and the familyName of the beneficiaries in the project :
         $givenNameBeneficiariesArray = array();
         $familyNameBeneficiariesArray = array();
         for ($i = 0; $i < count($beneficiariesInProject); ++$i) {
@@ -298,13 +301,22 @@ class DistributionCSVService
             if (!in_array($givenName, $givenNameEntityArray) || !in_array($familyName, $familyNameEntityArray)) {
                 if (!in_array($givenName, $givenNameBeneficiariesArray) && !in_array($familyName, $familyNameBeneficiariesArray)) {
                     array_push($errorArray, [
-                        'givenName' => $givenName,
-                        'familyName' => $familyName, ]
+                        'given name' => $sheetArray[$i]['L'],
+                        'family name' => $sheetArray[$i]['M'],
+                        'gender' => $sheetArray[$i]['N'],
+                        'status' => $sheetArray[$i]['O'],
+                        'date of birth' => $sheetArray[$i]['P'],
+                        'vulnerability criteria' => $sheetArray[$i]['Q'],
+                        'phones' => $sheetArray[$i]['R'],
+                        'national IDs' => $sheetArray[$i]['S'],
+                        'updated_on' => '',
+                        'profile' => '',
+                        ]
                     );
                 } else {
                     array_push($addArray, [
-                        'givenName' => $givenName,
-                        'familyName' => $familyName, ]
+                        $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $givenName, 'familyName' => $familyName]),
+                        ]
                     );
                 }
             }
@@ -316,8 +328,8 @@ class DistributionCSVService
 
             if (!in_array($givenNameEntity, $givenNameArray) && !in_array($familyNameEntity, $familyNameArray)) {
                 array_push($deleteArray, [
-                    'givenName' => $givenNameEntity,
-                    'familyName' => $familyNameEntity, ]
+                    $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $givenName, 'familyName' => $familyName]),
+                    ]
                 );
             }
         }
@@ -325,8 +337,28 @@ class DistributionCSVService
         $allArray = array(
             'errors' => $errorArray,
             'added' => $addArray,
-            'deleted' => $deleteArray, );
+            'deleted' => $deleteArray
+        );
 
         return $allArray;
+    }
+
+    /**
+     * Recover the array of the CSV and save the data to the dataBase.
+     *
+     * @param $countryIso3
+     * @param $beneficiaries
+     * @param DistributionData $distributionData
+     * @param UploadedFile     $uploadedFile
+     *
+     * @return array
+     *
+     * @throws \Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    public function saveCSV($countryIso3, $beneficiaries, DistributionData $distributionData, UploadedFile $uploadedFile)
+    {
+        $this->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
     }
 }
