@@ -299,9 +299,9 @@ class DistributionService
      *
      * @return array
      */
-    public function getAllBeneficiariesInProject(DistributionData $distributionData)
+    public function getAllBeneficiariesInProject(Project $project)
     {
-        return $this->em->getRepository(Beneficiary::class)->getAllOfProject($distributionData->getProject()->getId());
+        return $this->em->getRepository(Beneficiary::class)->getAllOfProject($project->getId());
     }
 
     /**

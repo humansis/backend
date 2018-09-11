@@ -322,6 +322,5 @@ class DistributionCSVService
         $allArray = array($errorArray, $addArray, $deleteArray);
         
         return $allArray;
-        // return $this->transformAndAnalyze($countryIso3, $distributionData, $sheetArray, $step, $token);
     }
 }

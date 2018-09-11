@@ -474,8 +474,8 @@ class DistributionController extends Controller
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
         
-        $contentJson = $request->request->all();
-        $countryIso3 = $contentJson['__country'];
+        $content = $request->request->all();
+        $countryIso3 = $content['__country'];
 
         /** @var DistributionCsvService $distributionCsvService */
         $distributionCsvService = $this->get('distribution.distribution_csv_service');
@@ -489,48 +489,7 @@ class DistributionController extends Controller
         catch(\Exception $e){
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        // if (!$request->query->has('step'))
-        //     return new Response('You must specify the current level.');
-        // $step = $request->query->get('step');
-        // if ($request->query->has('token'))
-        //     $token = $request->query->get('token');
-        // else
-        //     $token = null;
-
-        // $contentJson = $request->request->all();
-        // $countryIso3 = $contentJson['__country'];
-        // unset($contentJson['__country']);
-        // /** @var DistributionCsvService $distributionCsvService */
-        // $distributionCsvService = $this->get('distribution.distribution_csv_service');
-
-        // if (1 === intval($step))
-        // {
-        //     if (!$request->files->has('file'))
-        //         return new Response("You must upload a file.", 500);
-        //     // try
-        //     // {
-        //     //     $return = $distributionCsvService->saveCSV($countryIso3, $distributionData, $request->files->get('file'), $step, $token);
-        //     // }
-        //     try{
-        //         $return = $distributionCsvService->import($distributionData, $request->files->get('file'));
-        //     }
-        //     catch (\Exception $e)
-        //     {
-        //         return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        //     }
-        // }
-        // else
-        // {
-        //     try
-        //     {
-        //         $return = $householdService->foundErrors($countryIso3, $distributionData, $contentJson, $step, $token);
-        //     }
-        //     catch (\Exception $e)
-        //     {
-        //         return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        //     }
-        // }
-
+        
         $json = $this->get('jms_serializer')
             ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
         return new Response($json);
@@ -552,17 +511,17 @@ class DistributionController extends Controller
      *     response=400,
      *     description="BAD_REQUEST"
      * )
-     * @param DistributionData $distributionData
+     * @param Project $project
      * @return Response
      */
-    public function getBeneficiariesInProjectAction(DistributionData $distributionData)
+    public function getBeneficiariesInProjectAction(Project $project)
     {
          /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
          $distributionBeneficiaryService = $this->get('distribution.distribution_service');
 
         try
         {
-            $beneficiariesInProject = $distributionBeneficiaryService->getAllBeneficiariesInProject($distributionData);
+            $beneficiariesInProject = $distributionBeneficiaryService->getAllBeneficiariesInProject($project);
         }
         catch (\Exception $e)
         {
