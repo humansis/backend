@@ -21,6 +21,7 @@ use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Security\Authentication\Token\WsseUserToken;
 
@@ -46,8 +47,20 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var TokenStorage $tokenStorage */
     protected $tokenStorage;
 
+    /** @var ValidatorInterface $validator */
+    protected $validator;
+
     /** @var HouseholdService $householdService */
     protected $householdService;
+
+    /** @var CommodityService $commodityService */
+    protected $commodityService;
+
+    /** @var ConfigurationLoader $configurationLoader */
+    protected $configurationLoader;
+
+    /** @var CriteriaDistributionService $criteriaDistributionService */
+    protected $criteriaDistributionService;
 
     // VARIABLES
 
@@ -178,6 +191,10 @@ class BMSServiceTestCase extends KernelTestCase
         //Mocking Serializer, Container
         $this->serializer = $this->container
             ->get($this->defaultSerializerName);
+
+        //Symdfony Validator 
+        $this->validator = $this->container
+            ->get('validator');
 
         //setting the token_storage
         $this->tokenStorage = $this->container->get('security.token_storage');

@@ -295,7 +295,7 @@ class DistributionService
     }
 
     /**
-     * Get all distributions
+     * Get all beneficiaries in a selected project
      *
      * @return array
      */
