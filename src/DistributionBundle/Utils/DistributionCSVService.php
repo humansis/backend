@@ -262,6 +262,12 @@ class DistributionCSVService
         $givenNameArray = array_map(function ($item) { return $item['L']; }, ($sheetArray));
         $familyNameArray = array_map(function ($item) { return $item['M']; }, ($sheetArray));
 
+        $nameArray = array();
+
+        for($i = 2; $i <= count($givenNameArray); $i++){
+            array_push($nameArray, $givenNameArray[$i] . " " . $familyNameArray[$i]);
+        }
+
         // Recover all the givenName and the familyName in the Beneficiary entity :
         $entityDatasArray = array_map(function ($item) {
             $tempGivenNameArray = array();
@@ -322,13 +328,12 @@ class DistributionCSVService
             }
         }
 
-        for ($j = 0; $j < count($beneficiaries); ++$j) {
-            $givenNameEntity = $beneficiaries[$j]->getGivenName();
-            $familyNameEntity = $beneficiaries[$j]->getFamilyName();
+        foreach ($beneficiaries as $beneficiary) {
+            $nameEntity = $beneficiary->getGivenName() . " " . $beneficiary->getFamilyName();
 
-            if (!in_array($givenNameEntity, $givenNameArray) && !in_array($familyNameEntity, $familyNameArray)) {
+            if (in_array($nameEntity, $nameArray) == false) {
                 array_push($deleteArray, [
-                    $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $givenName, 'familyName' => $familyName]),
+                    $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $beneficiary->getGivenName(), 'familyName' => $beneficiary->getFamilyName()]),
                     ]
                 );
             }
@@ -359,6 +364,28 @@ class DistributionCSVService
      */
     public function saveCSV($countryIso3, $beneficiaries, DistributionData $distributionData, UploadedFile $uploadedFile)
     {
-        $this->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
+        $allArray = $this->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
+        $distributionBeneficiary = new DistributionBeneficiary();
+
+        $addArray = $allArray["added"];
+        $deleteArray = $allArray["deleted"];
+
+        foreach ($addArray as $beneficiary){
+            $distributionBeneficiary->setBeneficiary($beneficiary[0]);
+            $distributionBeneficiary->setDistributionData($distributionData);
+
+            $this->em->persist($distributionBeneficiary);
+            $this->em->flush();
+        }
+
+        foreach ($deleteArray as $value){
+            $db = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['beneficiary' => $value[0]->getId(), 'distributionData' => $distributionData->getId()]);
+            $this->em->remove($db[0]);
+            $this->em->flush();
+        }
+
+        return array(
+            'result' => "Elements ajoutés / supprimés"
+        );
     }
 }

@@ -49,6 +49,9 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
         }
     }
 
+    /**
+     * Test used to check if the datas are saved and deleted from the database.
+     */
     public function testsaveCSV()
     {
         $distributionCSVService = $this->container->get('distribution.distribution_csv_service');
