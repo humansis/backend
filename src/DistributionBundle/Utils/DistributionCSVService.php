@@ -10,6 +10,8 @@ use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
+use JMS\Serializer\Serializer;
+use JMS\Serializer\SerializationContext;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv as CsvWriter;
@@ -27,18 +29,22 @@ class DistributionCSVService
     private $container;
     /** @var HouseholdToCSVMapper $householdToCSVMapper */
     private $householdToCSVMapper;
+    /** @var Serializer $serializer */
+    private $serializer;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         ExportCSVService $exportCSVService,
         ContainerInterface $container,
-        HouseholdToCSVMapper $householdToCSVMapper
+        HouseholdToCSVMapper $householdToCSVMapper,
+        Serializer $serializer
     )
     {
         $this->em = $entityManager;
         $this->exportCSVService = $exportCSVService;
         $this->container = $container;
         $this->householdToCSVMapper = $householdToCSVMapper;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -86,7 +92,7 @@ class DistributionCSVService
         $sheetArray = $worksheet->toArray(null, true, true, true);
         $index = 1;
         $columnIdSync = null;
-        // Remove useless line (like headers)
+        // Remove useless lines (like headers)
         while ($index < Household::firstRow)
         {
             if ($index === Household::indexRowHeader)
@@ -226,4 +232,95 @@ class DistributionCSVService
         return $receivers;
     }
 
+    /**
+     * Defined the reader and transform CSV to array
+     *
+     * @param $countryIso3
+     * @param $beneficiaries
+     * @param DistributionData $distributionData
+     * @param UploadedFile $uploadedFile
+     * @return array
+     * @throws \Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    public function saveCSV($countryIso3, $beneficiaries, DistributionData $distributionData, UploadedFile $uploadedFile)
+    {
+        // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
+        // LOADING CSV
+        $reader = new CsvReader();
+        $reader->setDelimiter(",");
+        $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
+        $sheetArray = $worksheet->toArray(null, true, true, true);
+
+        $givenNameArray = array_slice(array_map(function($item){ return $item['L'];}, ($sheetArray)), 1);
+        $familyNameArray = array_slice(array_map(function($item){ return $item['M'];}, ($sheetArray)), 1);
+
+        $entityDatasArray = array_map(function($item){ 
+
+            $tempGivenNameArray = array();
+            $tempFamilyNameArray = array();
+
+            array_push($tempGivenNameArray, $item->getGivenName());
+            array_push($tempFamilyNameArray, $item->getFamilyName());
+
+            return array($tempGivenNameArray[0], $tempFamilyNameArray[0]);
+        }, ($beneficiaries));
+
+        $givenNameEntityArray = array();
+        $familyNameEntityArray = array();
+        for($i = 0; $i < count($entityDatasArray); $i++){
+            array_push($givenNameEntityArray, $entityDatasArray[$i][0]);
+            array_push($familyNameEntityArray, $entityDatasArray[$i][1]);
+        }
+
+        $beneficiariesInProject = $this->em->getRepository(Beneficiary::class)->getAllOfProject($distributionData->getProject()->getId());
+       
+        $givenNameBeneficiariesArray = array();
+        $familyNameBeneficiariesArray = array();
+        for($i = 0; $i < count($beneficiariesInProject); $i++){
+            array_push($givenNameBeneficiariesArray, $beneficiariesInProject[$i]->getGivenName());
+            array_push($familyNameBeneficiariesArray, $beneficiariesInProject[$i]->getFamilyName());
+        }
+
+        $errorArray = array();
+        $addArray = array();
+        $deleteArray = array();
+
+        for($i = 2; $i <= count($sheetArray); $i++){
+            $givenName = $sheetArray[$i]['L'];
+            $familyName = $sheetArray[$i]['M'];
+
+            if(!in_array($givenName, $givenNameEntityArray) || !in_array($familyName, $familyNameEntityArray)){
+                if(!in_array($givenName, $givenNameBeneficiariesArray) && !in_array($familyName, $familyNameBeneficiariesArray)){
+                    array_push($errorArray, [
+                        'givenName' => $givenName, 
+                        'familyName' => $familyName]
+                    );
+                }
+                else{
+                    array_push($addArray, [
+                        'givenName' => $givenName, 
+                        'familyName' => $familyName]
+                    );
+                }    
+            }
+        }
+
+        for($j = 0; $j < count($beneficiaries); $j++){
+            $givenNameEntity = $beneficiaries[$j]->getGivenName();
+            $familyNameEntity = $beneficiaries[$j]->getFamilyName();
+
+            if(!in_array($givenNameEntity, $givenNameArray) && !in_array($familyNameEntity, $familyNameArray)){
+                array_push($deleteArray, [
+                    'givenName' => $givenNameEntity, 
+                    'familyName' => $familyNameEntity]
+                );
+            }
+        }
+
+        $allArray = array($errorArray, $addArray, $deleteArray);
+        
+        return $allArray;
+    }
 }

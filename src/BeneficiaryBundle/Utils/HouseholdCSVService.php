@@ -175,7 +175,7 @@ class HouseholdCSVService
         {
             // CASE FOUND TYPO ISSUES
             case 1:
-//                return new TypoVerifier($this->em, $this->container, $this->initOrGetToken());
+            // return new TypoVerifier($this->em, $this->container, $this->initOrGetToken());
                 return new LevenshteinTypoVerifier($this->em, $this->container, $this->initOrGetToken());
                 break;
             // CASE FOUND DUPLICATED ISSUES

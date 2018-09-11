@@ -547,7 +547,6 @@ class Beneficiary implements ExportableInterface
             "Vulnerability criteria" => $valuescriteria,
             "Phones" => $valuesphones ,
             "National IDs" => $valuesnationalID,
-
         ];
 
 

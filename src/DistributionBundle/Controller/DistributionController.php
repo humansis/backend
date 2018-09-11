@@ -5,6 +5,7 @@ namespace DistributionBundle\Controller;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
 use DistributionBundle\Utils\DistributionService;
+use DistributionBundle\Utils\DistributionCsvService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -432,6 +433,106 @@ class DistributionController extends Controller
     }
 
 
+/**
+     * Import beneficiaries of one distribution 
+     * @Rest\Post("/import/beneficiaries/distribution/{id}", name="import_beneficiaries_distribution")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Parameter(
+     *     name="file",
+     *     in="formData",
+     *     required=true,
+     *     type="file"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return Beneficiaries (old and new) if similarity founded",
+     *      examples={
+     *          "application/json": {{
+     *              "old": @Model(type=Beneficiary::class),
+     *              "new": @Model(type=Beneficiary::class)
+     *          }}
+     *      }
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param DistributionData $distributionData
+     * @return Response
+     */
+    public function importAction(Request $request, DistributionData $distributionData)
+    {
+        
+         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
+        
+        $content = $request->request->all();
+        $countryIso3 = $content['__country'];
+
+        /** @var DistributionCsvService $distributionCsvService */
+        $distributionCsvService = $this->get('distribution.distribution_csv_service');
+        
+        if(!$request->files->has('file'))
+            return new Response("You must upload a file.", 500);
+        
+        try{
+            $return = $distributionCsvService->saveCSV($countryIso3, $beneficiaries, $distributionData, $request->files->get('file'));
+        }
+        catch(\Exception $e){
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        
+        $json = $this->get('jms_serializer')
+            ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
+        return new Response($json);
+    }
+
+    /**
+     * Get beneficiaries of one project
+     * @Rest\Get("/distributions/beneficiaries/project/{id}", name="get_beneficiaries_of_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     * @param Project $project
+     * @return Response
+     */
+    public function getBeneficiariesInProjectAction(Project $project)
+    {
+         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+         $distributionBeneficiaryService = $this->get('distribution.distribution_service');
+
+        try
+        {
+            $beneficiariesInProject = $distributionBeneficiaryService->getAllBeneficiariesInProject($project);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $json = $this->get('jms_serializer')
+        ->serialize($beneficiariesInProject, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
+
+        return new Response($json, Response::HTTP_OK);
+    }
 
     /**
      * @Rest\GET ("/distributions/export", name="distributions_export")

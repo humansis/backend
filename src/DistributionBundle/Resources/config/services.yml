@@ -67,3 +67,4 @@ services:
             - '@beneficiary.household_export_csv_service'
             - '@service_container'
             - '@beneficiary.household_to_csv_mapper'
+            - '@jms_serializer'
