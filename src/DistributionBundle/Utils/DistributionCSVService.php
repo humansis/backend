@@ -292,6 +292,7 @@ class DistributionCSVService
         $givenNameBeneficiariesArray = array();
         $familyNameBeneficiariesArray = array();
         for ($i = 0; $i < count($beneficiariesInProject); ++$i) {
+
             array_push($givenNameBeneficiariesArray, $beneficiariesInProject[$i]->getGivenName());
             array_push($familyNameBeneficiariesArray, $beneficiariesInProject[$i]->getFamilyName());
         }

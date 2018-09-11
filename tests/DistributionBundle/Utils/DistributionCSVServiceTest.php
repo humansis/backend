@@ -5,6 +5,7 @@ namespace Tests\DistributionBundle\Controller;
 use Tests\BMSServiceTestCase;
 use DistributionBundle\Entity\DistributionData;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use BeneficiaryBundle\Entity\Beneficiary;
 
 class DistributionCSVServiceTest extends BMSServiceTestCase
 {
@@ -37,7 +38,7 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
         $deleteArray = $jsonFromparseCSV['deleted'];
 
         for ($i = 0; $i < count($errorArray); ++$i) {
-            $this->assertTrue($errorArray[$i]['givenName'] == 'UserLambda' && $errorArray[$i]['familyName'] == 'FamilyLambda');
+            $this->assertTrue($errorArray[$i]['given name'] == 'UserLambda' && $errorArray[$i]['family name'] == 'FamilyLambda');
         }
 
         for ($i = 0; $i < count($addArray); ++$i) {
@@ -62,22 +63,22 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
         $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
         $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiaryInDistribution.csv', 'r');
 
-        $jsonFromparseCSV = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
+        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
 
-        $errorArray = $jsonFromparseCSV['errors'];
-        $addArray = $jsonFromparseCSV['added'];
-        $deleteArray = $jsonFromparseCSV['deleted'];
+        $distributionCSVService->saveCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
 
-        for ($i = 0; $i < count($errorArray); ++$i) {
-            $this->assertTrue($errorArray[$i]['givenName'] == 'UserLambda' && $errorArray[$i]['familyName'] == 'FamilyLambda');
+
+
+        //We check if the element that should be suppressed is suppressed :
+        foreach ($beneficiaries as $beneficiary){
+            $this->assertFalse($beneficiary->getGivenName() == "Test6" && $beneficiary->getFamilyName() == 'Bis');
         }
 
-        for ($i = 0; $i < count($addArray); ++$i) {
-            $this->assertTrue($addArray[$i]['givenName'] == 'Test4' && $addArray[$i]['familyName'] == 'Tester');
-        }
-
-        for ($i = 0; $i < count($deleteArray); ++$i) {
-            $this->assertTrue($deleteArray[$i]['givenName'] == 'Test6' && $deleteArray[$i]['familyName'] == 'Bis');
+        foreach ($beneficiaries as $beneficiary){
+            if($beneficiary->getGivenName() == "Test4" && $beneficiary->getFamilyName() == "Tester"){
+                $this->assertTrue($beneficiary->getGivenName() == "Test4" && $beneficiary->getFamilyName() == "Tester");
+                return true;
+            }
         }
     }
 }
