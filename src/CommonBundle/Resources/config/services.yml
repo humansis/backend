@@ -76,6 +76,12 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\DistributionFixtures:
+        arguments:
+        - "@distribution.distribution_service"
+        tags:
+        - { name: doctrine.fixture.orm }
+
 
 #######################################################################################
 ##                                       VOTER                                       ##

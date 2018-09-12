@@ -6,15 +6,6 @@ namespace CommonBundle\DataFixtures;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
-
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use CommonBundle\Entity\Location;
 use ProjectBundle\Entity\Project;
 
 class BeneficiaryFixtures extends Fixture
@@ -59,7 +50,7 @@ class BeneficiaryFixtures extends Fixture
                   "date_of_birth" => "1996/10/10",
                   "vulnerability_criteria" => [
                       [
-                          "id" => 1
+                          "id" => 3
                       ]
                   ],
                   "phones" => [],
@@ -113,7 +104,7 @@ class BeneficiaryFixtures extends Fixture
                   "date_of_birth" => "1996/10/13",
                   "vulnerability_criteria" => [
                       [
-                          "id" => 1
+                          "id" => 3
                       ]
                   ],
                   "phones" => [],
@@ -183,7 +174,7 @@ class BeneficiaryFixtures extends Fixture
                     "date_of_birth" => "1996/10/15",
                     "vulnerability_criteria" => [
                         [
-                            "id" => 1
+                            "id" => 3
                         ]
                     ],
                     "phones" => [],
@@ -247,7 +238,6 @@ class BeneficiaryFixtures extends Fixture
      * Load data fixtures with the passed EntityManager
      *
      * @param ObjectManager $manager
-     * @param HouseholdService $householdService
      */
     public function load(ObjectManager $manager)
     {
