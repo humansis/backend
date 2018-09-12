@@ -356,4 +356,10 @@ class DistributionService
         $exportableTable = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId]);
         return $this->container->get('export_csv_service')->export($exportableTable,'distributions');
     }
+    
+    public function countAllBeneficiaries(string $country)
+    {
+        $count = (int) $this->em->getRepository(DistributionBeneficiary::class)->countAll($country);
+        return $count;
+    }
 }

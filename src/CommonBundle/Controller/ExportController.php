@@ -35,7 +35,6 @@ class ExportController extends Controller
      */
     public function exportToCSVAction(Request $request)  {
 
-        dump("test");
         if($request->query->get('project')){
             $idProject = $request->query->get('project');
 
@@ -79,35 +78,4 @@ class ExportController extends Controller
         }
     }
 
-     /**
-     * @Rest\Get("/export/{id}", name="export_data_Beneficiaries_Distribution")
-     * 
-     * @SWG\Tag(name="Export")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="OK"
-     * )
-     *
-     * @SWG\Response(
-     *     response=204,
-     *     description="HTTP_NO_CONTENT"
-     * )
-     * @param DistributionData $DistributionData
-     * @return Response
-     */
-    // public function exportToCSVBeneficiariesDistribution(DistributionData $distributionData)  {
-
-    //     /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-    //     dump($distributionData);
-    //     try{
-
-    //         $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsvBeneficiariesDistribution("beneficiariesInDistribution", $distributionData);
-            
-    //         return new Response(json_encode($fileCSV));
-            
-    //     } catch(\Exception $exception) {
-    //         return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-    //     }
-    // }
 }

@@ -298,6 +298,12 @@ class BeneficiaryService
         $this->em->flush();
         return true;
     }
+    
+    public function countAll(string $iso3)
+    {
+        $count = (int) $this->em->getRepository(Beneficiary::class)->countAllInCountry($iso3);
+        return $count;
+    }
 
     public function exportToCsvBeneficiariesInDistribution(DistributionData $distributionData) {
 
