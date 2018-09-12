@@ -20,7 +20,7 @@ class RequestListener
             $countryIso3 = $event->getRequest()->headers->get('country');
             $event->getRequest()->request->add(["__country" => $countryIso3]);
         }
-        else
+        elseif (preg_match('/api/', $event->getRequest()->getPathInfo()))
         {
             $response = new Response("'country' header missing from request (iso3 code).", Response::HTTP_BAD_REQUEST);
             $event->setResponse($response);
