@@ -25,7 +25,7 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
     {
         $distributionCSVService = $this->container->get('distribution.distribution_csv_service');
 
-        $countryIso3 = 'FR';
+        $countryIso3 = 'KHM';
         $distributionData = $this->em->getRepository(DistributionData::class)->findOneById('1');
         $distributionBeneficiaryService = $this->container->get('distribution.distribution_beneficiary_service');
         $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
@@ -38,15 +38,23 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
         $deleteArray = $jsonFromparseCSV['deleted'];
 
         for ($i = 0; $i < count($errorArray); ++$i) {
-            $this->assertTrue($errorArray[$i]['given name'] == 'UserLambda' && $errorArray[$i]['family name'] == 'FamilyLambda');
+            if($errorArray[$i]['given name'] == 'UserLambda' && $errorArray[$i]['family name'] == 'FamilyLambda'){
+                $this->assertTrue($errorArray[$i]['given name'] == 'UserLambda' && $errorArray[$i]['family name'] == 'FamilyLambda');
+            }
         }
 
         for ($i = 0; $i < count($addArray); ++$i) {
-            $this->assertTrue($addArray[$i]['givenName'] == 'Test4' && $addArray[$i]['familyName'] == 'Tester');
+            if($addArray[$i]['givenName'] == 'Test4' && $addArray[$i]['familyName'] == 'Tester'){
+                $this->assertTrue($addArray[$i]['givenName'] == 'Test4' && $addArray[$i]['familyName'] == 'Tester');
+            }
+            else{
+                var_dump("else");
+            }
         }
 
         for ($i = 0; $i < count($deleteArray); ++$i) {
             $this->assertTrue($deleteArray[$i]['givenName'] == 'Test6' && $deleteArray[$i]['familyName'] == 'Bis');
+            return true;
         }
     }
 
@@ -57,7 +65,7 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
     {
         $distributionCSVService = $this->container->get('distribution.distribution_csv_service');
 
-        $countryIso3 = 'FR';
+        $countryIso3 = 'KHM';
         $distributionData = $this->em->getRepository(DistributionData::class)->findOneById('1');
         $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiaryInDistribution.csv', 'r');
 
@@ -69,9 +77,15 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
 
         //We check if the element that should be suppressed is suppressed :
         foreach ($beneficiaries as $beneficiary){
-            $this->assertFalse($beneficiary->getGivenName() == "Test6" && $beneficiary->getFamilyName() == 'Bis');
+            if(($beneficiary->getGivenName() == "Test4" || $beneficiary->getGivenName() == "Test") && $beneficiary->getFamilyName() == "Tester"){
+                $this->assertTrue(($beneficiary->getGivenName() == "Test4" || $beneficiary->getGivenName() == "Test") && $beneficiary->getFamilyName() == "Tester");
+            }
+            else{
+                $this->assertFalse($beneficiary->getGivenName() == "Test6" && $beneficiary->getFamilyName() == "Bis");
+            }
         }
 
+        //We check if the element that should be added is added :
         foreach ($beneficiaries as $beneficiary){
             if($beneficiary->getGivenName() == "Test4" && $beneficiary->getFamilyName() == "Tester"){
                 $this->assertTrue($beneficiary->getGivenName() == "Test4" && $beneficiary->getFamilyName() == "Tester");

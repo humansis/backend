@@ -8,8 +8,6 @@ use BeneficiaryBundle\Entity\Beneficiary;
 
 class DistributionServiceTest extends BMSServiceTestCase
 {
-    /** @var LocationService $locationService */
-    private $locationService;
 
     public function setUp()
     {
@@ -30,10 +28,8 @@ class DistributionServiceTest extends BMSServiceTestCase
 
         $allBeneficiariesInProject = $distributionService->getAllBeneficiariesInProject($project);
 
-        $beneficiary = new Beneficiary();
-
         for ($i = 0; $i < count($allBeneficiariesInProject); ++$i) {
-            $this->assertTrue($allBeneficiariesInProject[$i] instanceof $beneficiary);
+            $this->assertTrue($allBeneficiariesInProject[$i] instanceof Beneficiary);
         }
     }
 }
