@@ -7,6 +7,7 @@ use JMS\Serializer\Serializer;
 use ProjectBundle\Entity\Donor;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Psr\Container\ContainerInterface;
 
 class DonorService
 {
@@ -20,11 +21,15 @@ class DonorService
     /** @var ValidatorInterface $validator */
     private $validator;
 
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator)
+    /** @var ContainerInterface $container */
+    private $container;
+
+    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container)
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->container = $container;
     }
 
 
@@ -114,5 +119,28 @@ class DonorService
         }
 
         return true;
+    }
+
+    /**
+     * Export all the donors in the CSV file
+     * @return mixed
+     */
+    public function exportToCsv() {
+
+        $exportableTable = $this->em->getRepository(Donor::class)->findAll();
+
+        $donorData = array();
+        foreach ($exportableTable as $value){
+            array_push($donorData, [
+                "Full name" => $value->getFullName(),
+                "Short name"=> $value->getShortname(),
+                "Date added" => $value->getDateAdded()->format('Y-m-d H:i:s'),
+                "Notes" => $value->getNotes(),
+                //"Project" => $value->getProjects()->getValues(),
+            ]);
+        }
+
+        return $this->container->get('export_csv_service')->export($donorData, 'country');
+
     }
 }

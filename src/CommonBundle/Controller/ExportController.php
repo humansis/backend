@@ -35,8 +35,8 @@ class ExportController extends Controller
      */
     public function exportToCSVAction(Request $request)  {
 
-        if($request->query->get('project')){
-            $idProject = $request->query->get('project');
+        if($request->query->get('distributions')){
+            $idProject = $request->query->get('distributions');
 
             try{
 
@@ -89,8 +89,48 @@ class ExportController extends Controller
                 return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
             }
         }
-    }
 
+        elseif($request->query->get('countries')){
+
+            try{
+
+                $fileCSV = $this->get('beneficiary.country_specific_service')->exportToCsv();
+
+                return new Response(json_encode($fileCSV));
+
+            } catch(\Exception $exception) {
+                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+        elseif($request->query->get('donors')){
+
+            try{
+
+                $fileCSV = $this->get('project.donor_service')->exportToCsv();
+
+                return new Response(json_encode($fileCSV));
+
+            } catch(\Exception $exception) {
+                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+        elseif($request->query->get('projects')){
+
+            $country = $request->query->get('projects');
+            //$country = $request->query->get('__country');
+            try{
+
+                $fileCSV = $this->get('project.project_service')->exportToCsv($country);
+
+                return new Response(json_encode($fileCSV));
+
+            } catch(\Exception $exception) {
+                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+            }
+        }
+    }
      /**
      * @Rest\Get("/export/{id}", name="export_data_Beneficiaries_Distribution")
      * 
