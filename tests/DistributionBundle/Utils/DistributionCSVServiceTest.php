@@ -59,8 +59,6 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
 
         $countryIso3 = 'FR';
         $distributionData = $this->em->getRepository(DistributionData::class)->findOneById('1');
-        $distributionBeneficiaryService = $this->container->get('distribution.distribution_beneficiary_service');
-        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
         $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiaryInDistribution.csv', 'r');
 
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);

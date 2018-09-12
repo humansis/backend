@@ -35,7 +35,6 @@ class ExportController extends Controller
      */
     public function exportToCSVAction(Request $request)  {
 
-        dump("test");
         if($request->query->get('project')){
             $idProject = $request->query->get('project');
 
@@ -73,6 +72,19 @@ class ExportController extends Controller
                 
                 return new Response(json_encode($fileCSV));
                 
+            } catch(\Exception $exception) {
+                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+        elseif($request->query->get('users')){
+
+            try{
+
+                $fileCSV = $this->get('user.user_service')->exportToCsv();
+
+                return new Response(json_encode($fileCSV));
+
             } catch(\Exception $exception) {
                 return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
             }

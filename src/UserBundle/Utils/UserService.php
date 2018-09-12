@@ -263,4 +263,15 @@ class UserService
 
         return true;
     }
+
+    /**
+     * Export all users in a CSV file
+     * @return mixed
+     */
+    public function exportToCsv() {
+
+        $exportableTable = $this->em->getRepository(User::class)->findAll();
+        return $this->container->get('export_csv_service')->export($exportableTable,'beneficiaryhousehoulds');
+
+    }
 }
