@@ -4,10 +4,8 @@
 namespace CommonBundle\Listener;
 
 
-use CommonBundle\Controller\BMSController;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use UserBundle\Controller\UserController;
+use Symfony\Component\HttpFoundation\Response;
 
 class RequestListener
 {
@@ -21,6 +19,11 @@ class RequestListener
         {
             $countryIso3 = $event->getRequest()->headers->get('country');
             $event->getRequest()->request->add(["__country" => $countryIso3]);
+        }
+        else
+        {
+            $response = new Response("'country' header missing from request (iso3 code).", Response::HTTP_BAD_REQUEST);
+            $event->setResponse($response);
         }
     }
 }
