@@ -356,52 +356,6 @@ class DistributionController extends Controller
     }
 
     /**
-     * Edit a beneficiary in a distribution.
-     *
-     * @Rest\Post("/beneficiaries/{id}", name="update_beneficiary")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
-     *
-     * @SWG\Tag(name="Distributions")
-     *
-     * @SWG\Parameter(
-     *     name="Beneficiary",
-     *     in="body",
-     *     required=true,
-     *     @Model(type=DistributionData::class)
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="beneficiary updated",
-     *     @Model(type=DistributionData::class)
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param Request          $request
-     * @param DistributionData $DistributionData
-     *
-     * @return Response
-     */
-    public function updateBeneficiaryAction(Request $request, DistributionData $DistributionData)
-    {
-        $beneficiaryArray = $request->request->all();
-        try {
-            $beneficiaryData = $this->get('distribution.distribution_service')
-                ->editBeneficiary($DistributionData, $beneficiaryArray);
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-        $json = $this->get('jms_serializer')
-            ->serialize($beneficiaryData, 'json', SerializationContext::create()->setSerializeNull(true));
-
-        return new Response($json, Response::HTTP_OK);
-    }
-
-    /**
      * Archive a distribution.
      *
      * @Rest\Post("/distributions/archive/{id}", name="archived_project")
