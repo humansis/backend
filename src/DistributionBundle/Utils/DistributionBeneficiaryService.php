@@ -117,5 +117,22 @@ class DistributionBeneficiaryService
 
         return true;
     }
+
+    /**
+     * @param Int $distributionId
+     * @param Beneficiary $beneficiary
+     * @return bool
+     */
+    public function removeBeneficiaryInDistribution(Int $distributionId, Beneficiary $beneficiary)
+    {
+        $distributionData = $this->em->getRepository(DistributionData::class)->find($distributionId);
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'distributionData' => $distributionData->getId()]);
+        dump($distributionBeneficiary);
+        dump($distributionData);
+        dump($beneficiary);
+        $this->em->remove($distributionBeneficiary);
+        $this->em->flush();
+        return true;
+    }
     
 }
