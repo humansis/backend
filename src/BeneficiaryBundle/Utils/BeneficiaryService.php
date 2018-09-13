@@ -9,6 +9,7 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use PhpOption\Tests\PhpOptionRepo;
