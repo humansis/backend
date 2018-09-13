@@ -51,25 +51,6 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
         elseif ($beneficiaries && $beneficiariesInProject) {
             $this->assertTrue(count($errorArray) > 0 || count($addArray) > 0 || count($deleteArray) > 0);
         }
-        /*for ($i = 0; $i < count($errorArray); ++$i) {
-            if($errorArray[$i]['given name'] == 'UserLambda' && $errorArray[$i]['family name'] == 'FamilyLambda'){
-                $this->assertTrue($errorArray[$i]['given name'] == 'UserLambda' && $errorArray[$i]['family name'] == 'FamilyLambda');
-            }
-        }
-
-        for ($i = 0; $i < count($addArray); ++$i) {
-            if($addArray[$i]['givenName'] == 'Test4' && $addArray[$i]['familyName'] == 'Tester'){
-                $this->assertTrue($addArray[$i]['givenName'] == 'Test4' && $addArray[$i]['familyName'] == 'Tester');
-            }
-            else{
-                var_dump("else");
-            }
-        }
-
-        for ($i = 0; $i < count($deleteArray); ++$i) {
-            $this->assertTrue($deleteArray[$i]['givenName'] == 'Test6' && $deleteArray[$i]['familyName'] == 'Bis');
-            return true;
-        }*/
     }
 
     /**

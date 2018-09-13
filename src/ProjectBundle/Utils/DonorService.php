@@ -129,7 +129,7 @@ class DonorService
 
         $exportableTable = $this->em->getRepository(Donor::class)->findAll();
 
-        $donorData = array();
+        /*$donorData = array();
         foreach ($exportableTable as $value){
             array_push($donorData, [
                 "Full name" => $value->getFullName(),
@@ -138,9 +138,9 @@ class DonorService
                 "Notes" => $value->getNotes(),
                 //"Project" => $value->getProjects()->getValues(),
             ]);
-        }
+        }*/
 
-        return $this->container->get('export_csv_service')->export($donorData, 'country');
+        return $this->container->get('export_csv_service')->export($exportableTable, 'donors');
 
     }
 }

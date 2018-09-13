@@ -272,7 +272,7 @@ class ProjectService
 
         $exportableTable = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
 
-        $projectsData = array();
+        /*$projectsData = array();
         foreach ($exportableTable as $value){
             array_push($projectsData, [
                 "Project name" => $value->getName(),
@@ -286,8 +286,8 @@ class ProjectService
                 //"Sectors" => $value->getSectors()->getValues(),
                 "is archived" => $value->getArchived(),
             ]);
-        }
-        return $this->container->get('export_csv_service')->export($projectsData, 'projects');
+        }*/
+        return $this->container->get('export_csv_service')->export($exportableTable, 'projects');
 
     }
 }

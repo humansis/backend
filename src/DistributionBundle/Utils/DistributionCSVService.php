@@ -386,7 +386,7 @@ class DistributionCSVService
         }
 
         return array(
-            'result' => "Elements ajoutés / supprimés"
+            'result' => "Elements added / suppressed"
         );
     }
 }
