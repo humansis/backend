@@ -371,11 +371,13 @@ class DistributionCSVService
         $deleteArray = $allArray['deleted'];
 
         foreach ($addArray as $beneficiary) {
-            $distributionBeneficiary->setBeneficiary($beneficiary[0]);
-            $distributionBeneficiary->setDistributionData($distributionData);
+            if($beneficiary[0] != null){
+                $distributionBeneficiary->setBeneficiary($beneficiary[0]);
+                $distributionBeneficiary->setDistributionData($distributionData);
 
-            $this->em->persist($distributionBeneficiary);
-            $this->em->flush();
+                $this->em->persist($distributionBeneficiary);
+                $this->em->flush();
+            }
         }
 
         foreach ($deleteArray as $value) {
