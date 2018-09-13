@@ -1,6 +1,6 @@
 <?php
 
-namespace App\tests\CommonBundle\Controller;
+namespace App\tests\DistributionBundle\Controller;
 
 use CommonBundle\Utils\ExportService;
 use DistributionBundle\Entity\DistributionData;

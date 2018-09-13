@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 use DistributionBundle\Entity\DistributionData;
 use BeneficiaryBundle\Entity\Beneficiary;
 use ProjectBundle\Entity\Project;
-
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
@@ -22,8 +21,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class DistributionController extends Controller
 {
-
-
     /**
      * @Rest\Get("/distributions/{id}/random")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
@@ -37,10 +34,11 @@ class DistributionController extends Controller
      * )
      *
      * @param DistributionData $distributionData
+     *
      * @return Response
      */
     public function getRandomBeneficiariesAction(DistributionData $distributionData)
-    {    
+    {
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $receivers = $distributionBeneficiaryService->getRandomBeneficiaries($distributionData);
@@ -50,7 +48,7 @@ class DistributionController extends Controller
                 $receivers,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    "FullReceivers"
+                    'FullReceivers',
                 ])
             );
 
@@ -70,6 +68,7 @@ class DistributionController extends Controller
      * )
      *
      * @param DistributionData $distributionData
+     *
      * @return Response
      */
     public function validateAction(DistributionData $distributionData)
@@ -83,8 +82,8 @@ class DistributionController extends Controller
                 $distributionData,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    "FullReceivers",
-                    "FullDistribution"
+                    'FullReceivers',
+                    'FullDistribution',
                 ])
             );
 
@@ -92,7 +91,8 @@ class DistributionController extends Controller
     }
 
     /**
-     * Create a distribution
+     * Create a distribution.
+     *
      * @Rest\Put("/distributions", name="add_distribution")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
@@ -114,18 +114,16 @@ class DistributionController extends Controller
      * )
      *
      * @param Request $request
+     *
      * @return Response
      */
     public function addAction(Request $request)
     {
         $distributionArray = $request->request->all();
-        try
-        {
+        try {
             $listReceivers = $this->get('distribution.distribution_service')
                 ->create($distributionArray['__country'], $distributionArray);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -134,8 +132,8 @@ class DistributionController extends Controller
                 $listReceivers,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    "FullReceivers",
-                    "FullDistribution"
+                    'FullReceivers',
+                    'FullDistribution',
                 ])
             );
 
@@ -154,9 +152,11 @@ class DistributionController extends Controller
      *     @Model(type=DistributionBeneficiary::class)
      * )
      *
-     * @param Request $request
+     * @param Request          $request
      * @param DistributionData $distributionData
+     *
      * @return Response
+     *
      * @throws \Exception
      */
     public function addBeneficiaryAction(Request $request, DistributionData $distributionData)
@@ -171,9 +171,9 @@ class DistributionController extends Controller
                 $distributionBeneficiary,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    "FullDistributionBeneficiary",
-                    "FullDistribution",
-                    "FullBeneficiary"
+                    'FullDistributionBeneficiary',
+                    'FullDistribution',
+                    'FullBeneficiary',
                 ])
             );
 
@@ -192,6 +192,7 @@ class DistributionController extends Controller
      * )
      *
      * @param DistributionBeneficiary $distributionBeneficiary
+     *
      * @return Response
      */
     public function removeBeneficiaryAction(DistributionBeneficiary $distributionBeneficiary)
@@ -202,7 +203,6 @@ class DistributionController extends Controller
 
         return new Response(json_encode($return));
     }
-
 
     /**
      * @Rest\Get("/distributions", name="get_all_distributions")
@@ -223,12 +223,9 @@ class DistributionController extends Controller
      */
     public function getAllAction()
     {
-        try
-        {
+        try {
             $distributions = $this->get('distribution.distribution_service')->findAll();
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -258,6 +255,7 @@ class DistributionController extends Controller
      * )
      *
      * @param DistributionData $DistributionData
+     *
      * @return Response
      */
     public function getOneAction(DistributionData $DistributionData)
@@ -266,17 +264,18 @@ class DistributionController extends Controller
             ->serialize(
                 $DistributionData,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullDistribution"])
+                SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
             );
 
         return new Response($json);
     }
 
     /**
-     * Get all beneficiaries of a distribution
+     * Get all beneficiaries of a distribution.
+     *
      * @Rest\Get("/distributions/{id}/beneficiaries", name="get_beneficiaries_distribution", requirements={"id"="\d+"})
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
-     * 
+     *
      * @SWG\Tag(name="Distributions")
      *
      * @SWG\Response(
@@ -289,6 +288,7 @@ class DistributionController extends Controller
      * )
      *
      * @param DistributionData $DistributionData
+     *
      * @return Response
      */
     public function getDistributionBeneficiariesAction(DistributionData $distributionData)
@@ -302,16 +302,16 @@ class DistributionController extends Controller
                 $beneficiaries,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    "FullReceivers"
+                    'FullReceivers',
                 ])
             );
 
         return new Response($json);
     }
 
-
     /**
-     * Edit a distribution
+     * Edit a distribution.
+     *
      * @Rest\Post("/distributions/{id}", name="update_distribution")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
@@ -335,29 +335,29 @@ class DistributionController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
-     * @param Request $request
+     * @param Request          $request
      * @param DistributionData $DistributionData
+     *
      * @return Response
      */
     public function updateAction(Request $request, DistributionData $DistributionData)
     {
         $distributionArray = $request->request->all();
-        try
-        {
+        try {
             $DistributionData = $this->get('distribution.distribution_service')
                 ->edit($DistributionData, $distributionArray);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         $json = $this->get('jms_serializer')
             ->serialize($DistributionData, 'json', SerializationContext::create()->setSerializeNull(true));
+
         return new Response($json, Response::HTTP_OK);
     }
 
     /**
-     * Archive a distribution
+     * Archive a distribution.
+     *
      * @Rest\Post("/distributions/archive/{id}", name="archived_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
@@ -374,26 +374,26 @@ class DistributionController extends Controller
      * )
      *
      * @param DistributionData $distribution
+     *
      * @return Response
      */
     public function archivedAction(DistributionData $distribution)
     {
-        try
-        {
+        try {
             $archivedDistribution = $this->get('distribution.distribution_service')
                 ->archived($distribution);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         $json = $this->get('jms_serializer')
             ->serialize($archivedDistribution, 'json', SerializationContext::create()->setSerializeNull(true));
+
         return new Response($json, Response::HTTP_OK);
     }
 
     /**
-     * Get distributions of one project
+     * Get distributions of one project.
+     *
      * @Rest\Get("/distributions/projects/{id}", name="get_distributions_of_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
      *
@@ -408,17 +408,16 @@ class DistributionController extends Controller
      *     response=400,
      *     description="BAD_REQUEST"
      * )
+     *
      * @param Project $project
+     *
      * @return Response
      */
     public function getDistributionsAction(Project $project)
     {
-        try
-        {
-            $distributions = $project->getDistributions(); 
-        }
-        catch (\Exception $e)
-        {
+        try {
+            $distributions = $project->getDistributions();
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -432,9 +431,9 @@ class DistributionController extends Controller
         return new Response($json, Response::HTTP_OK);
     }
 
-
-/**
-     * Import beneficiaries of one distribution 
+    /**
+     * Import beneficiaries of one distribution.
+     *
      * @Rest\Post("/import/beneficiaries/distribution/{id}", name="import_beneficiaries_distribution")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
@@ -463,40 +462,61 @@ class DistributionController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
-     * @param Request $request
+     * @param Request          $request
      * @param DistributionData $distributionData
+     *
      * @return Response
      */
     public function importAction(Request $request, DistributionData $distributionData)
     {
-        
-         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
-        
+
         $content = $request->request->all();
         $countryIso3 = $content['__country'];
 
         /** @var DistributionCsvService $distributionCsvService */
         $distributionCsvService = $this->get('distribution.distribution_csv_service');
-        
-        if(!$request->files->has('file'))
-            return new Response("You must upload a file.", 500);
-        
-        try{
-            $return = $distributionCsvService->saveCSV($countryIso3, $beneficiaries, $distributionData, $request->files->get('file'));
+
+        if (!$request->files->has('file')) {
+            return new Response('You must upload a file.', 500);
         }
-        catch(\Exception $e){
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+
+        if ($request->request->get('step')) {
+            $step = $request->request->get('step');
+
+            if ($step == 1) {
+                try {
+                    $return = $distributionCsvService->parseCSV($countryIso3, $beneficiaries, $distributionData, $request->files->get('file'));
+                } catch (\Exception $e) {
+                    return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            } elseif ($step == 2) {
+                try {
+                    $return = $distributionCsvService->saveCSV($countryIso3, $beneficiaries, $distributionData, $request->files->get('file'));
+                } catch (\Exception $e) {
+                    return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                $return = 'An error occured, please check the body';
+            }
+
+            $json = $this->get('jms_serializer')
+                ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
+
+            return new Response($json);
+        } else {
+            $json = $this->get('jms_serializer')
+                ->serialize('An error occured, please check the body', 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
+
+            return new Response($json);
         }
-        
-        $json = $this->get('jms_serializer')
-            ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
-        return new Response($json);
     }
 
     /**
-     * Get beneficiaries of one project
+     * Get beneficiaries of one project.
+     *
      * @Rest\Get("/distributions/beneficiaries/project/{id}", name="get_beneficiaries_of_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
@@ -511,25 +531,24 @@ class DistributionController extends Controller
      *     response=400,
      *     description="BAD_REQUEST"
      * )
+     *
      * @param Project $project
+     *
      * @return Response
      */
     public function getBeneficiariesInProjectAction(Project $project)
     {
-         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-         $distributionBeneficiaryService = $this->get('distribution.distribution_service');
+        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        $distributionBeneficiaryService = $this->get('distribution.distribution_service');
 
-        try
-        {
+        try {
             $beneficiariesInProject = $distributionBeneficiaryService->getAllBeneficiariesInProject($project);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         $json = $this->get('jms_serializer')
-        ->serialize($beneficiariesInProject, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
+        ->serialize($beneficiariesInProject, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
 
         return new Response($json, Response::HTTP_OK);
     }
@@ -550,23 +569,17 @@ class DistributionController extends Controller
      *     response=204,
      *     description="HTTP_NO_CONTENT"
      * )
+     *
      * @return Response
      */
-    public function exportToCSVAction()  {
-
-        try{
-
+    public function exportToCSVAction()
+    {
+        try {
             $fileCSV = $this->get('distribution.distribution_service')->exportToCsv();
-            
+
             return new Response(json_encode($fileCSV));
-            
-        } catch(\Exception $exception) {
+        } catch (\Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
     }
-
-
-
-
-
 }

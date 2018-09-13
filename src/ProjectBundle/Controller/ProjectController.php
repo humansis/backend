@@ -193,36 +193,4 @@ class ProjectController extends Controller
         if (!$valid)
             return new Response("", Response::HTTP_BAD_REQUEST);
     }
-
-
-    /**
-     * @Rest\Get("/project/export", name="project_export")
-     * TODO: ADd security on project
-     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
-     *
-     * @SWG\Tag(name="Project")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="OK"
-     * )
-     *
-     * @SWG\Response(
-     *     response=204,
-     *     description="HTTP_NO_CONTENT"
-     * )
-     * @return Response
-     */
-
-    public function exportToCSVAction() {
-
-        try{
-            $fileCSV = $this->get('project.project_service')->exportToCsv();
-            return new Response(json_encode($fileCSV));
-        } catch(\Exception $exception) {
-            return new Response($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-        }
-    }
-
-
 }

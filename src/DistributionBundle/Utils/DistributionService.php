@@ -295,7 +295,7 @@ class DistributionService
     }
 
     /**
-     * Get all distributions
+     * Get all beneficiaries in a selected project
      *
      * @return array
      */
@@ -317,6 +317,43 @@ class DistributionService
         /** @var DistributionData $distribution */
         $editedDistribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
         $editedDistribution->setId($distributionData->getId());
+
+        $errors = $this->validator->validate($editedDistribution);
+        if (count($errors) > 0)
+        {
+            $errorsArray = [];
+            foreach ($errors as $error)
+            {
+                $errorsArray[] = $error->getMessage();
+            }
+            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->em->merge($editedDistribution);
+        $this->em->flush();
+
+        return $editedDistribution;
+    }
+
+    /**
+     * Edit a beneficiary in distribution
+     *
+     * @param DistributionData $distributionData
+     * @param array $beneficiaryArray
+     * @return DistributionData
+     * @throws \Exception
+     */
+    public function editBeneficiary(DistributionData $distributionData, array $beneficiaryArray)
+    {
+        $distributionBeneficiary = new DistributionBeneficiary();
+
+        foreach ($beneficiaryArray as $beneficiary) {
+            $distributionBeneficiary->setBeneficiary($beneficiary[0]);
+            $distributionBeneficiary->setDistributionData($distributionData);
+
+            $this->em->persist($distributionBeneficiary);
+            $this->em->flush();
+        }
 
         $errors = $this->validator->validate($editedDistribution);
         if (count($errors) > 0)

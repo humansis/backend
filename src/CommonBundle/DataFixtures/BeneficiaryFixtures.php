@@ -1,185 +1,249 @@
 <?php
 
+
 namespace CommonBundle\DataFixtures;
 
-
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use DistributionBundle\Entity\DistributionData;
+use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use FOS\UserBundle\Doctrine\UserManager;
 use Doctrine\Common\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
-use Symfony\Component\HttpKernel\Kernel;
-use CommonBundle\Entity\Location;
-use PhpOffice\PhpSpreadsheet\Reader\Csv;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm4;
 
 class BeneficiaryFixtures extends Fixture
-
 {
 
+    private $householdArray = [
+        [
+          "address_street" => "azerrt",
+          "address_number" => "1",
+          "address_postcode" => "12345",
+          "livelihood" => "1",
+          "notes" => null,
+          "latitude" => null,
+          "longitude" => null,
+          "location" => [
+            "adm1" => "Banteay Meanchey",
+            "adm2" => "Mongkol Borei",
+            "adm3" => "Banteay Neang",
+            "adm4" => null,
+            "country_iso3" => "KHM",
+          ],
+          "country_specific_answers" => [
+              [
+                "answer" => "2",
+                "country_specific" => [
+                    "id" => 1
+                ],
+              ],
+              [
+                  "answer" => null,
+                  "country_specific" => [
+                      "id" => 2
+                  ],
+              ]
+          ],
+          "beneficiaries" => [
+              [
+                  "given_name" => "Test",
+                  "family_name" => "Tester",
+                  "gender" => "0",
+                  "status" => "1",
+                  "date_of_birth" => "1996/10/10",
+                  "vulnerability_criteria" => [
+                      [
+                          "id" => 3
+                      ]
+                  ],
+                  "phones" => [],
+                  "national_ids" => [],
+                  "profile" => [
+                      "photo" => ""
+                  ],
+                  "updated_on" => "2018-09-12 13:09:06",
+              ],
+              [
+                  "given_name" => "Test2",
+                  "family_name" => "Tester",
+                  "gender" => "1",
+                  "status" => "0",
+                  "date_of_birth" => "1996/10/11",
+                  "vulnerability_criteria" => [
+                      [
+                          "id" => 1
+                      ]
+                  ],
+                  "phones" => [],
+                  "national_ids" => [],
+                  "profile" => [
+                      "photo" => ""
+                  ],
+                  "updated_on" => "2018-09-12 13:09:06"
+              ],
+              [
+                  "given_name" => "Test4",
+                  "family_name" => "Tester",
+                  "gender" => "1",
+                  "status" => "0",
+                  "date_of_birth" => "1996/10/12",
+                  "vulnerability_criteria" => [
+                      [
+                          "id" => 1
+                      ]
+                  ],
+                  "phones" => [],
+                  "national_ids" => [],
+                  "profile" => [
+                      "photo" => ""
+                  ],
+                  "updated_on" => "2018-09-12 13:09:06",
+              ],
+              [
+                  "given_name" => "Test5",
+                  "family_name" => "Tester",
+                  "gender" => "1",
+                  "status" => "0",
+                  "date_of_birth" => "1996/10/13",
+                  "vulnerability_criteria" => [
+                      [
+                          "id" => 3
+                      ]
+                  ],
+                  "phones" => [],
+                  "national_ids" => [],
+                  "profile" => [
+                      "photo" => ""
+                  ],
+                  "updated_on" => "2018-09-12 13:09:06",
+              ],
 
+          ],
+          "__country" => "KHM"
+        ],
+        [
+            "address_street" => "azerrt",
+            "address_number" => "2",
+            "address_postcode" => "12346",
+            "livelihood" => "1",
+            "notes" => null,
+            "latitude" => null,
+            "longitude" => null,
+            "location" => [
+                "adm1" => "Banteay Meanchey",
+                "adm2" => "Mongkol Borei",
+                "adm3" => "Banteay Neang",
+                "adm4" => null,
+                "country_iso3" => "KHM",
+            ],
+            "country_specific_answers" => [
+                [
+                    "answer" => "3",
+                    "country_specific" => [
+                        "id" => 1
+                    ],
+                ],
+                [
+                    "answer" => null,
+                    "country_specific" => [
+                        "id" => 2
+                    ],
+                ]
+            ],
+            "beneficiaries" => [
+                [
+                    "given_name" => "Test6",
+                    "family_name" => "Bis",
+                    "gender" => "1",
+                    "status" => "1",
+                    "date_of_birth" => "1996/10/14",
+                    "vulnerability_criteria" => [
+                        [
+                            "id" => 1
+                        ]
+                    ],
+                    "phones" => [],
+                    "national_ids" => [],
+                    "profile" => [
+                        "photo" => ""
+                    ],
+                    "updated_on" => "2018-09-12 13:09:06",
+                ],
+                [
+                    "given_name" => "Test7",
+                    "family_name" => "Bis",
+                    "gender" => "1",
+                    "status" => "0",
+                    "date_of_birth" => "1996/10/15",
+                    "vulnerability_criteria" => [
+                        [
+                            "id" => 3
+                        ]
+                    ],
+                    "phones" => [],
+                    "national_ids" => [],
+                    "profile" => [
+                        "photo" => ""
+                    ],
+                    "updated_on" => "2018-09-12 13:09:06"
+                ],
+                [
+                    "given_name" => "Test8",
+                    "family_name" => "Bis",
+                    "gender" => "1",
+                    "status" => "0",
+                    "date_of_birth" => "1996/10/16",
+                    "vulnerability_criteria" => [
+                        [
+                            "id" => 1
+                        ]
+                    ],
+                    "phones" => [],
+                    "national_ids" => [],
+                    "profile" => [
+                        "photo" => ""
+                    ],
+                    "updated_on" => "2018-09-12 13:09:06",
+                ],
+                [
+                    "given_name" => "Test9",
+                    "family_name" => "Bis",
+                    "gender" => "1",
+                    "status" => "0",
+                    "date_of_birth" => "1996/10/17",
+                    "vulnerability_criteria" => [
+                        [
+                            "id" => 1
+                        ]
+                    ],
+                    "phones" => [],
+                    "national_ids" => [],
+                    "profile" => [
+                        "photo" => ""
+                    ],
+                    "updated_on" => "2018-09-12 13:09:06",
+                ],
 
-    /** @var UserManager $manager */
-    private $manager;
+            ],
+            "__country" => "KHM"
+        ],
+    ];
 
-    /** @var Kernel $kernel */
-    private $kernel;
+    private $householdService;
 
-
-
-    public function __construct(UserManager $manager , Kernel $kernel)
+    public function __construct(HouseholdService $householdService)
     {
-        $this->manager = $manager;
-        $this->kernel = $kernel;
-
+        $this->householdService = $householdService;
     }
 
-    /**
-     * @param ObjectManager $manager
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     */
 
+    /**
+     * Load data fixtures with the passed EntityManager
+     *
+     * @param ObjectManager $manager
+     */
     public function load(ObjectManager $manager)
     {
-        $nbFilesLoaded = $this->parseDirectory($manager);
-        print_r("\n\n $nbFilesLoaded file(s) loaded.\n\n");
-    }
-
-    /**
-     * @param ObjectManager $manager
-     * @return bool
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     */
-    public function parseDirectory(ObjectManager $manager)
-    {
-        $dir_root = $this->kernel->getRootDir();
-        $file = $dir_root . '/../src/CommonBundle/DataFixtures/BeneficiariesFiles/beneficiaryhouseholder.xlsx';
-        if (!file_exists($file)) {
-            return false;
+        $project = $manager->getRepository(Project::class)->find(1);
+        foreach($this->householdArray as $household){
+            $this->householdService->create($household, $project);
         }
-
-        $reader = new Xlsx();
-        $spreadSheet = $reader->load($file);
-        $sheet = $spreadSheet->getActiveSheet();
-        $rowIterator = $sheet->getRowIterator(2);
-
-
-        while ($rowIterator->current()->getCellIterator()->current()->getValue() != null) {
-
-            $rowIndex = $rowIterator->current()->getRowIndex();
-
-            // remplir la table location
-
-
-            $location = new Location();
-            $Adm1 = new Adm1();
-            $Adm2 = new Adm2();
-            $Adm3 = new Adm3();
-            $Adm4 = new Adm4();
-
-            $Adm1 ->setName('Battambang')->setCountryISO3('KHM');
-            $Adm2 ->setName('bla');
-            $Adm3 ->setName('test');
-            $Adm4 ->setName('tooot');
-
-
-            $manager->persist($Adm1);
-            $manager->persist($Adm2);
-            $manager->persist($Adm3);
-            $manager->persist($Adm4);
-
-
-            $location ->setAdm1($Adm1)
-                      ->setAdm2($Adm2)
-                      ->setAdm3($Adm3)
-                      ->setAdm4($Adm4);
-
-            $manager->persist($location);
-
-
-
-
-
-
-            // remplir la table household
-
-            $household = new Household() ;
-
-            $household->setAddressStreet($sheet->getCell('A'.$rowIndex)->getValue())
-                ->setLivelihood($sheet->getCell('D'.$rowIndex)->getValue())
-                ->setLatitude($sheet->getCell('F'.$rowIndex)->getValue())
-                ->setLongitude($sheet->getCell('G'.$rowIndex)->getValue())
-                ->setNotes($sheet->getCell('E'.$rowIndex)->getValue())
-                ->setAddressPostcode($sheet->getCell('C'.$rowIndex)->getValue())
-                ->setAddressNumber($sheet->getCell('B'.$rowIndex)->getValue())
-                ->setLocation($location);
-
-            $manager->persist($household);
-
-            // remplir la table beneficiary
-
-            $beneficiary = new Beneficiary();
-
-            $beneficiary->setGivenName($sheet->getCell('L'.$rowIndex)->getValue())
-                ->setFamilyName($sheet->getCell('M'.$rowIndex)->getValue())
-                ->setGender($sheet->getCell('N'.$rowIndex)->getValue())
-                ->setStatus($sheet->getCell('O'.$rowIndex)->getValue())
-                ->setDateOfBirth((new \DateTime())->setDate (2018, 8, 01) )
-                ->setHousehold($household);
-
-            $manager->persist($beneficiary);
-
-
-            //remplir la table project
-
-            $project = new Project();
-
-            $project ->setName($sheet->getCell('T'.$rowIndex)->getValue())
-                        ->setStartDate(new \DateTime())
-                        ->setEndDate((new \DateTime())->setDate(2018,8,01))
-                        ->setIso3('KHM')
-                        ->setArchived('true');
-
-
-            $manager->persist($project);
-
-            // remplir la table distribution
-
-            $distribution = new DistributionData() ;
-
-            $distribution ->setName($sheet->getCell('W'.$rowIndex)->getValue())
-                ->setLocation($location)
-                ->setArchived($sheet->getCell('V'.$rowIndex)->getValue())
-                ->setDateDistribution((new \DateTime())->setDate(2018,8,01))
-                ->setType($sheet->getCell('W'.$rowIndex)->getValue())
-                ->setUpdatedOn((new \DateTime())->setDate(2018,8,01)->setTime(8,13,58))
-                ->setProject($project);
-
-            $manager->persist($distribution);
-
-
-
-
-
-            $rowIterator->next();
-
-        }
-
-        $manager->flush();
-
-            return true ;
-
     }
-
-
 }

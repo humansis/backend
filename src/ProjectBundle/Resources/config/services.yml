@@ -12,7 +12,7 @@ services:
 
     project.donor_service:
         class: ProjectBundle\Utils\DonorService
-        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
+        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator', '@service_container']
         public: true
 
     project.sector_service:

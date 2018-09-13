@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
+use Psr\Container\ContainerInterface;
 
 class UserService
 {
@@ -21,10 +22,14 @@ class UserService
     /** @var ValidatorInterface $validator */
     private $validator;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    /** @var ContainerInterface $container */
+    private $container;
+
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
+        $this->container = $container;
     }
 
     /**
@@ -262,5 +267,25 @@ class UserService
         }
 
         return true;
+    }
+
+    /**
+     * Export all users in a CSV file
+     * @return mixed
+     */
+    public function exportToCsv() {
+
+        $exportableTable = $this->em->getRepository(User::class)->findAll();
+
+        /*$userData = array();
+        for($i = 0; $i < count($exportableTable); $i++){
+            array_push($userData, [
+                'email' => $exportableTable[$i]->getEmail(),
+                'role' => $exportableTable[$i]->getRoles()[0]
+            ]);
+        }*/
+
+        return $this->container->get('export_csv_service')->export($exportableTable,'users');
+
     }
 }

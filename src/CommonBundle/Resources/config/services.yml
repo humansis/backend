@@ -65,17 +65,22 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\BeneficiaryFixtures:
-        arguments:
-            - "@fos_user.user_manager"
-            - "@kernel"
-        tags:
-            - { name: doctrine.fixture.orm }
-
 
     CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
         tags:
             - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\BeneficiaryFixtures:
+        arguments:
+            - "@beneficiary.household_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\DistributionFixtures:
+        arguments:
+        - "@distribution.distribution_service"
+        tags:
+        - { name: doctrine.fixture.orm }
 
 
 #######################################################################################

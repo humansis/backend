@@ -2,10 +2,10 @@
 
 namespace ProjectBundle\Entity;
 
-use CommonBundle\Utils\ExportableInterface;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
+use CommonBundle\Utils\ExportableInterface;
 
 /**
  * Project
@@ -13,7 +13,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="project")
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\ProjectRepository")
  */
-class Project
+class Project implements ExportableInterface
 {
     /**
      * @var int
@@ -595,5 +595,39 @@ class Project
     public function getDistributions()
     {
         return $this->distributions;
+    }
+
+    /**
+     * Returns an array representation of this class in order to prepare the export
+     * @return array
+     */
+    function getMappedValueForExport(): array
+    {
+        //  Recover all donors with the Donors object
+        $donors = [];
+        foreach ($this->getDonors()->getValues() as $value) {
+            array_push($donors, $value->getNumber());
+        }
+        $donors = join(',', $donors);
+
+        // Recover all sectors with the Sectors object
+        $sectors = [];
+        foreach ($this->getSectors()->getValues() as $value) {
+            array_push($sectors, $value->getNumber());
+        }
+        $sectors = join(',', $sectors);
+
+        return [
+            "Project name" => $this->getName(),
+            "Start date"=> $this->getStartDate()->format('Y-m-d H:i:s'),
+            "End date" => $this->getEndDate()->format('Y-m-d H:i:s'),
+            "Number of households" => $this->getNumberOfHouseholds(),
+            "Value" => $this->getValue(),
+            "Notes" => $this->getNotes(),
+            "Country" => $this->getIso3(),
+            "Donors" => $donors,
+            "Sectors" => $sectors,
+            "is archived" => $this->getArchived(),
+        ];
     }
 }

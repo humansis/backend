@@ -492,15 +492,14 @@ class Beneficiary implements ExportableInterface
      */
     function getMappedValueForExport(): array
     {
-        // récuperer les numeros de telephones depuis l'objet phone
-
+        // Recover the phones of the beneficiary
         $valuesphones = [];
         foreach ($this->getPhones()->getValues() as $value) {
             array_push($valuesphones, $value->getNumber());
         }
         $valuesphones = join(',', $valuesphones);
 
-        // récuperer les criterions depuis l'objet Vulnerability criteria
+        // Recover the  criterions from Vulnerability criteria object
 
         $valuescriteria = [];
         foreach ($this->getVulnerabilityCriteria()->getValues() as $value) {
@@ -508,7 +507,7 @@ class Beneficiary implements ExportableInterface
         }
         $valuescriteria = join(',', $valuescriteria);
 
-        // récuperer les nationalID depuis l'objet les nationalID
+        // Recover nationalID from nationalID object
 
         $valuesnationalID = [];
 
@@ -518,7 +517,7 @@ class Beneficiary implements ExportableInterface
         $valuesnationalID = join(',',$valuesnationalID);
 
 
-        // récuperer les adm1 , adm2 , adm3 , adm 4 depuis l'objet localisation : faut vérifier d'abord s'ils sont null ou pas pour avoir le nom
+        // Recover adm1 , adm2 , adm3 , adm 4 from localisation object : we have to verify if they are null before to get the name
 
         $adm1 = ( ! empty($this->getHousehold()->getLocation()->getAdm1()) ) ? $this->getHousehold()->getLocation()->getAdm1()->getName() : '';
         $adm2 = ( ! empty($this->getHousehold()->getLocation()->getAdm2()) ) ? $this->getHousehold()->getLocation()->getAdm2()->getName() : '';
@@ -548,8 +547,5 @@ class Beneficiary implements ExportableInterface
             "Phones" => $valuesphones ,
             "National IDs" => $valuesnationalID,
         ];
-
-
-
     }
 }

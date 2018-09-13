@@ -2,11 +2,11 @@
 
 namespace UserBundle\Entity;
 
+use CommonBundle\Utils\ExportableInterface;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-use UserBundle\Utils\ExportableInterface;
 
 /**
  * User
@@ -14,7 +14,7 @@ use UserBundle\Utils\ExportableInterface;
  * @ORM\Table(name="`user")
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserRepository")
  */
-class User extends BaseUser
+class User extends BaseUser implements ExportableInterface
 {
     /**
      * @var int
@@ -158,5 +158,17 @@ class User extends BaseUser
     public function getUserProjects()
     {
         return $this->userProjects;
+    }
+
+    /**
+     * Returns an array representation of this class in order to prepare the export
+     * @return array
+     */
+    function getMappedValueForExport(): array
+    {
+        return [
+            'email' => $this->getEmail(),
+            'role' => $this->getRoles()[0]
+        ];
     }
 }

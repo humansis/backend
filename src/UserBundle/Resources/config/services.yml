@@ -7,7 +7,7 @@ services:
 
     user.user_service:
         class: UserBundle\Utils\UserService
-        arguments: ['@doctrine.orm.entity_manager', '@validator']
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
         public: true
 
 

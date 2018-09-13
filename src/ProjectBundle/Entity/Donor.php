@@ -5,6 +5,7 @@ namespace ProjectBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
+use CommonBundle\Utils\ExportableInterface;
 
 /**
  * Donor
@@ -12,7 +13,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="donor")
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\DonorRepository")
  */
-class Donor
+class Donor implements ExportableInterface
 {
     /**
      * @var int
@@ -231,5 +232,27 @@ class Donor
     public function getProjects()
     {
         return $this->projects;
+    }
+
+    /**
+     * Returns an array representation of this class in order to prepare the export
+     * @return array
+     */
+    function getMappedValueForExport(): array
+    {
+        // Recover projects of the donor
+        $project = [];
+        foreach ($this->getProjects()->getValues() as $value) {
+            array_push($project, $value->getNumber());
+        }
+        $project = join(',', $project);
+
+        return [
+            "Full name" => $this->getFullName(),
+            "Short name"=> $this->getShortname(),
+            "Date added" => $this->getDateAdded()->format('Y-m-d H:i:s'),
+            "Notes" => $this->getNotes(),
+            "Project" => $project,
+        ];
     }
 }
