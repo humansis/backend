@@ -370,8 +370,6 @@ class DistributionCSVService
         $addArray = $allArray['added'];
         $deleteArray = $allArray['deleted'];
 
-        dump($allArray);
-
         foreach ($addArray as $beneficiary) {
             if($beneficiary[0] != null){
                 $distributionBeneficiary->setBeneficiary($beneficiary[0]);
