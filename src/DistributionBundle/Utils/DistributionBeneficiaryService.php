@@ -134,5 +134,4 @@ class DistributionBeneficiaryService
         $this->em->flush();
         return true;
     }
-    
 }
