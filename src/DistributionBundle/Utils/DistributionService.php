@@ -338,24 +338,32 @@ class DistributionService
     /**
      * Edit a beneficiary in distribution
      *
-     * @param DistributionData $distributionData
-     * @param array $beneficiaryArray
+     * @param Beneficiary $beneficiary
+     * @param Beneficiary $beneficiaryData
      * @return DistributionData
      * @throws \Exception
      */
-    public function editBeneficiary(DistributionData $distributionData, array $beneficiaryArray)
+    public function editBeneficiary(Beneficiary $beneficiary, Beneficiary $beneficiaryData)
     {
-        $distributionBeneficiary = new DistributionBeneficiary();
+        $editedBeneficiary = $beneficiaryData;
+        $editedBeneficiary->setId($beneficiary->getId());
 
-        foreach ($beneficiaryArray as $beneficiary) {
-            $distributionBeneficiary->setBeneficiary($beneficiary[0]);
-            $distributionBeneficiary->setDistributionData($distributionData);
-
-            $this->em->persist($distributionBeneficiary);
-            $this->em->flush();
+        $errors = $this->validator->validate($editedBeneficiary);
+        if (count($errors) > 0)
+        {
+            $errorsArray = [];
+            foreach ($errors as $error)
+            {
+                $errorsArray[] = $error->getMessage();
+            }
+            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        $errors = $this->validator->validate($editedDistribution);
+        $this->em->merge($editedBeneficiary);
+        $this->em->flush();
+
+
+        /*$errors = $this->validator->validate($editedDistribution);
         if (count($errors) > 0)
         {
             $errorsArray = [];
@@ -367,9 +375,9 @@ class DistributionService
         }
 
         $this->em->merge($editedDistribution);
-        $this->em->flush();
+        $this->em->flush();*/
 
-        return $editedDistribution;
+        return $editedBeneficiary;
     }
 
     /**

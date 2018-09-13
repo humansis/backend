@@ -205,6 +205,40 @@ class DistributionController extends Controller
     }
 
     /**
+     * @Rest\Delete("beneficiaries/{id}", name="remove_one_beneficiary_in_distribution")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return if the beneficiary specified has been remove"
+     * )
+     *
+     * @param Request $request
+     * @param Beneficiary $beneficiary
+     *
+     * @return Response
+     */
+    public function removeOneBeneficiaryAction(Request $request, Beneficiary $beneficiary)
+    {
+        if ($request->query->get('distributionId')) {
+            $distributionId = $request->query->get('distributionId');
+
+            /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+            $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+            $return = $distributionBeneficiaryService->removeBeneficiaryInDistribution($distributionId, $beneficiary);
+
+            return new Response(json_encode($return));
+        } else {
+            $json = $this->get('jms_serializer')
+                ->serialize('An error occured, please check the body', 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
+
+            return new Response($json);
+        }
+    }
+
+    /**
      * @Rest\Get("/distributions", name="get_all_distributions")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
@@ -367,13 +401,13 @@ class DistributionController extends Controller
      *     name="Beneficiary",
      *     in="body",
      *     required=true,
-     *     @Model(type=DistributionData::class)
+     *     @Model(type=Beneficiary::class)
      * )
      *
      * @SWG\Response(
      *     response=200,
      *     description="beneficiary updated",
-     *     @Model(type=DistributionData::class)
+     *     @Model(type=Beneficiary::class)
      * )
      *
      * @SWG\Response(
@@ -382,16 +416,17 @@ class DistributionController extends Controller
      * )
      *
      * @param Request          $request
-     * @param DistributionData $DistributionData
+     * @param Beneficiary $beneficiary
      *
      * @return Response
      */
-    public function updateBeneficiaryAction(Request $request, DistributionData $DistributionData)
+    public function updateBeneficiaryAction(Request $request, Beneficiary $beneficiary)
     {
-        $beneficiaryArray = $request->request->all();
+        $beneficiaryData = $request->request->all();
+
         try {
             $beneficiaryData = $this->get('distribution.distribution_service')
-                ->editBeneficiary($DistributionData, $beneficiaryArray);
+                ->editBeneficiary($beneficiary, $beneficiaryData);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
