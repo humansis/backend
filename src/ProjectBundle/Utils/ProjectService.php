@@ -68,6 +68,12 @@ class ProjectService
         $this->em->flush();
         return $projects;
     }
+    
+    public function countAll(string $iso3)
+    {
+        $count = $this->em->getRepository(Project::class)->count(['iso3' => $iso3, 'archived' => 0]);
+        return $count;
+    }
 
     /**
      * Create a project

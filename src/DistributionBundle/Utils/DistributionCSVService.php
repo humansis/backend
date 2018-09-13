@@ -264,8 +264,8 @@ class DistributionCSVService
 
         $nameArray = array();
 
-        for($i = 2; $i <= count($givenNameArray); $i++){
-            array_push($nameArray, $givenNameArray[$i] . " " . $familyNameArray[$i]);
+        for ($i = 2; $i <= count($givenNameArray); ++$i) {
+            array_push($nameArray, $givenNameArray[$i].' '.$familyNameArray[$i]);
         }
 
         // Recover all the givenName and the familyName in the Beneficiary entity :
@@ -292,7 +292,6 @@ class DistributionCSVService
         $givenNameBeneficiariesArray = array();
         $familyNameBeneficiariesArray = array();
         for ($i = 0; $i < count($beneficiariesInProject); ++$i) {
-
             array_push($givenNameBeneficiariesArray, $beneficiariesInProject[$i]->getGivenName());
             array_push($familyNameBeneficiariesArray, $beneficiariesInProject[$i]->getFamilyName());
         }
@@ -330,7 +329,7 @@ class DistributionCSVService
         }
 
         foreach ($beneficiaries as $beneficiary) {
-            $nameEntity = $beneficiary->getGivenName() . " " . $beneficiary->getFamilyName();
+            $nameEntity = $beneficiary->getGivenName().' '.$beneficiary->getFamilyName();
 
             if (in_array($nameEntity, $nameArray) == false) {
                 array_push($deleteArray, [
@@ -343,7 +342,7 @@ class DistributionCSVService
         $allArray = array(
             'errors' => $errorArray,
             'added' => $addArray,
-            'deleted' => $deleteArray
+            'deleted' => $deleteArray,
         );
 
         return $allArray;
@@ -368,10 +367,10 @@ class DistributionCSVService
         $allArray = $this->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
         $distributionBeneficiary = new DistributionBeneficiary();
 
-        $addArray = $allArray["added"];
-        $deleteArray = $allArray["deleted"];
+        $addArray = $allArray['added'];
+        $deleteArray = $allArray['deleted'];
 
-        foreach ($addArray as $beneficiary){
+        foreach ($addArray as $beneficiary) {
             $distributionBeneficiary->setBeneficiary($beneficiary[0]);
             $distributionBeneficiary->setDistributionData($distributionData);
 
@@ -379,14 +378,14 @@ class DistributionCSVService
             $this->em->flush();
         }
 
-        foreach ($deleteArray as $value){
+        foreach ($deleteArray as $value) {
             $db = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['beneficiary' => $value[0]->getId(), 'distributionData' => $distributionData->getId()]);
             $this->em->remove($db[0]);
             $this->em->flush();
         }
 
         return array(
-            'result' => "Elements added / suppressed"
+            'result' => 'Elements added / suppressed',
         );
     }
 }
