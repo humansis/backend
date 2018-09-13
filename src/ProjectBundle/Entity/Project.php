@@ -606,7 +606,6 @@ class Project implements ExportableInterface
         //  Recover all donors with the Donors object
         $donors = [];
         foreach ($this->getDonors()->getValues() as $value) {
-            dump($value);
             array_push($donors, $value->getNumber());
         }
         $donors = join(',', $donors);
@@ -614,7 +613,6 @@ class Project implements ExportableInterface
         // Recover all sectors with the Sectors object
         $sectors = [];
         foreach ($this->getSectors()->getValues() as $value) {
-            dump($value);
             array_push($sectors, $value->getNumber());
         }
         $sectors = join(',', $sectors);

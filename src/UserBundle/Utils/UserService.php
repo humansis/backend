@@ -275,17 +275,17 @@ class UserService
      */
     public function exportToCsv() {
 
-        $userData = array();
         $exportableTable = $this->em->getRepository(User::class)->findAll();
 
+        /*$userData = array();
         for($i = 0; $i < count($exportableTable); $i++){
             array_push($userData, [
                 'email' => $exportableTable[$i]->getEmail(),
                 'role' => $exportableTable[$i]->getRoles()[0]
             ]);
-        }
+        }*/
 
-        return $this->container->get('export_csv_service')->export($userData,'users');
+        return $this->container->get('export_csv_service')->export($exportableTable,'users');
 
     }
 }
