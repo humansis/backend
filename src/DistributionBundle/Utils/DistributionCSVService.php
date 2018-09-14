@@ -335,17 +335,11 @@ class DistributionCSVService
                         ]
                     );
                 } else {
-                    array_push($addArray, [
-                        $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $sheetArray[$i]['L'], 'familyName' => $sheetArray[$i]['M']]),
-                        ]
-                    );
+                    array_push($addArray, $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $sheetArray[$i]['L'], 'familyName' => $sheetArray[$i]['M']]));
                 }
             }
             else{
-                array_push($presentStoreIdBeneficiaryArray, [
-                        $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $sheetArray[$i]['L'], 'familyName' => $sheetArray[$i]['M']]),
-                    ]
-                );
+                array_push($presentStoreIdBeneficiaryArray, $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $sheetArray[$i]['L'], 'familyName' => $sheetArray[$i]['M']]));
                 array_push($presentStoreCSV, [
                         'givenName' => $sheetArray[$i]['L'],
                         'familyName' => $sheetArray[$i]['M'],
@@ -364,10 +358,7 @@ class DistributionCSVService
             $nameEntity = $beneficiary->getGivenName().' '.$beneficiary->getFamilyName();
 
             if (in_array($nameEntity, $nameArray) == false) {
-                array_push($deleteArray, [
-                    $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $beneficiary->getGivenName(), 'familyName' => $beneficiary->getFamilyName()]),
-                    ]
-                );
+                array_push($deleteArray, $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $beneficiary->getGivenName(), 'familyName' => $beneficiary->getFamilyName()]));
             }
         }
 
@@ -407,8 +398,8 @@ class DistributionCSVService
         $presentStoreCSV = $allArray['presentStoreCSV'];
 
         foreach ($addArray as $beneficiary) {
-            if($beneficiary[0] != null){
-                $distributionBeneficiary->setBeneficiary($beneficiary[0]);
+            if($beneficiary != null){
+                $distributionBeneficiary->setBeneficiary($beneficiary);
                 $distributionBeneficiary->setDistributionData($distributionData);
 
                 $this->em->persist($distributionBeneficiary);
@@ -417,13 +408,13 @@ class DistributionCSVService
         }
 
         foreach ($deleteArray as $value) {
-            $db = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['beneficiary' => $value[0]->getId(), 'distributionData' => $distributionData->getId()]);
+            $db = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['beneficiary' => $value->getId(), 'distributionData' => $distributionData->getId()]);
             $this->em->remove($db[0]);
             $this->em->flush();
         }
 
         for ($i = 0; $i < count($presentStoreIdBeneficiaryArray); $i++){
-            $beneficiaryId = $presentStoreIdBeneficiaryArray[$i][0]->getId();
+            $beneficiaryId = $presentStoreIdBeneficiaryArray[$i]->getId();
             $beneficiaryNewGivenName = $presentStoreCSV[$i]['givenName'];
             $beneficiaryNewFamilyName = $presentStoreCSV[$i]['familyName'];
             $beneficiaryNewGender = $presentStoreCSV[$i]['gender'];
