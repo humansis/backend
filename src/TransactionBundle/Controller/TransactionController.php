@@ -16,7 +16,7 @@ class TransactionController extends Controller
 {
 
     /**
-     * @Rest\Post("/transaction", name="test_transaction")
+     * @Rest\Get("/transaction", name="test_transaction")
      * 
      * @SWG\Tag(name="Common")
      *

@@ -1,5 +1,5 @@
 services:
-    transaction_service:
+    transaction.transaction_service:
         class: TransactionBundle\Utils\KHMTransactionService
         public: true
         arguments:
