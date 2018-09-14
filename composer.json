@@ -34,6 +34,7 @@
 		"incenteev/composer-parameter-handler": "^2.0",
 		"jms/serializer-bundle": "^2.4",
 		"jrk/levenshtein-bundle": "dev-master",
+		"mashape/unirest-php": "^3.0",
 		"nelmio/api-doc-bundle": "^3.0",
 		"nelmio/cors-bundle": "^1.5",
 		"phpoffice/phpspreadsheet": "^1.4",
