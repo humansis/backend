@@ -328,10 +328,10 @@ class DistributionCSVService
                         'family_name' => $sheetArray[$i]['M'],
                         'gender' => $sheetArray[$i]['N'],
                         'status' => $sheetArray[$i]['O'],
-                        'dateBirth' => $sheetArray[$i]['P'],
-                        'vulCrit' => $sheetArray[$i]['Q'],
+                        'date_birth' => $sheetArray[$i]['P'],
+                        'vul_crit' => $sheetArray[$i]['Q'],
                         'phones' => $sheetArray[$i]['R'],
-                        'nationalId' => $sheetArray[$i]['S'],
+                        'national_id' => $sheetArray[$i]['S'],
                         ]
                     );
                 } else {
