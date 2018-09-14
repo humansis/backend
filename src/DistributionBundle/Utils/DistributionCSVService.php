@@ -324,14 +324,14 @@ class DistributionCSVService
                 // We check if the beneficiary is present in the project :
                 if (!in_array($nameCSV, $nameBeneficiaryInProjectEntity)) {
                     array_push($errorArray, [
-                        'given name' => $sheetArray[$i]['L'],
-                        'family name' => $sheetArray[$i]['M'],
+                        'given_name' => $sheetArray[$i]['L'],
+                        'family_name' => $sheetArray[$i]['M'],
                         'gender' => $sheetArray[$i]['N'],
                         'status' => $sheetArray[$i]['O'],
-                        'date of birth' => $sheetArray[$i]['P'],
-                        'vulnerability criteria' => $sheetArray[$i]['Q'],
+                        'dateBirth' => $sheetArray[$i]['P'],
+                        'vulCrit' => $sheetArray[$i]['Q'],
                         'phones' => $sheetArray[$i]['R'],
-                        'national IDs' => $sheetArray[$i]['S'],
+                        'nationalId' => $sheetArray[$i]['S'],
                         ]
                     );
                 } else {
