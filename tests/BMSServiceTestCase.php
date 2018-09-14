@@ -418,16 +418,4 @@ class BMSServiceTestCase extends KernelTestCase
 
         return true;
     }
-
- /* =========================================== DistributionBeneficiary ==============================================*/
-
-    /**
-     * Test used to check if the function returns the right informations in each array.
-     */
-    public function createDistributionBeneficiaryTest(){
-
-
-
-        return $distributionBeneficiary;
-    }
 }
