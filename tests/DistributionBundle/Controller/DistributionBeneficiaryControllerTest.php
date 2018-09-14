@@ -24,7 +24,6 @@ use Tests\BMSServiceTestCase;
 
 class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
 {
-
     /**
      * @throws \Exception
      */
@@ -41,10 +40,39 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
-    public function testCreateDistributionData()
+    public function testCreateDistributionBeneficiary()
     {
+        //We check if there is an user in the Beneficiary to use him for the test :
+        $beneficiary = $this->em->getRepository(Beneficiary::class)->findAll();
 
-        $distributionBeneficiary = $this->createDistributionBeneficiaryTest();
+        // If there is no user, we display an error :
+        if(!$beneficiary){
+            print_r("\nThere is no beneficiary with the ID specified to execute the test.\n");
+            $this->markTestIncomplete("There is no beneficiary with the ID specified to execute the test.");
+        }
+
+        $distributionData = $this->em->getRepository(DistributionData::class)->findAll();
+
+        if(!$distributionData){
+            print_r("\nThere is no distribution with the ID specified to execute the test.\n");
+            $this->markTestIncomplete("There is no distribution with the ID specified to execute the test.");
+        }
+
+        // If everything is ok, we create a new distributionBeneficiary
+        $distributionBeneficiary = new DistributionBeneficiary();
+        $distributionBeneficiary->setBeneficiary($beneficiary[0])
+            ->setDistributionData($distributionData[0]);
+
+        $this->em->persist($distributionBeneficiary);
+
+        $this->em->flush();
+
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->find($distributionBeneficiary->getId());
+
+        if(!$distributionBeneficiary){
+            print_r("\nThere was an error while creating the new distributionBeneficiary during the test.\n");
+            $this->markTestIncomplete("There was an error while creating the new distributionBeneficiary during the test.");
+        }
 
         try
         {
@@ -59,21 +87,28 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
             return false;
         }
 
-        return true;
+        return $distributionBeneficiary;
     }
 
     /**
-     * @throws \Exception
+     * @param DistributionBeneficiary $distributionBeneficiary
+     * @return bool
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @depends testCreateDistributionBeneficiary
      */
-    public function testRemoveDistributionData()
+    public function testRemoveDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
     {
+
+        $beneficiaryId = $distributionBeneficiary->getBeneficiary()->getId();
+        $distributionId = $distributionBeneficiary->getDistributionData()->getId();
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/1?distributionId=1');
+        $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/'. $beneficiaryId .'?distributionId='. $distributionId);
         $listDistributionBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());

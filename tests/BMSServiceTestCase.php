@@ -423,44 +423,10 @@ class BMSServiceTestCase extends KernelTestCase
 
     /**
      * Test used to check if the function returns the right informations in each array.
-     * @test
      */
     public function createDistributionBeneficiaryTest(){
 
-        //We check if there is an user in the Beneficiary to use him for the test :
-        $beneficiary = $this->em->getRepository(Beneficiary::class)->find(1);
 
-        // If there is no user, we display an error :
-        if(!$beneficiary){
-            print_r("\nThere is no beneficiary with the ID specified to execute the test.\n");
-            $this->markTestIncomplete("There is no beneficiary with the ID specified to execute the test.");
-        }
-
-        $distributionData = $this->em->getRepository(DistributionData::class)->find(1);
-
-        if(!$distributionData){
-            print_r("\nThere is no distribution with the ID specified to execute the test.\n");
-            $this->markTestIncomplete("There is no distribution with the ID specified to execute the test.");
-        }
-
-        // If everything is ok, we create a new distributionBeneficiary
-        $distributionBeneficiary = new DistributionBeneficiary();
-        $distributionBeneficiary->setBeneficiary($beneficiary)
-            ->setDistributionData($distributionData);
-
-        $this->em->persist($distributionBeneficiary);
-
-        $this->em->flush();
-
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->find($distributionBeneficiary->getId());
-
-        if(!$distributionBeneficiary){
-            print_r("\nThere was an error while creating the new distributionBeneficiary during the test.\n");
-            $this->markTestIncomplete("There was an error while creating the new distributionBeneficiary during the test.");
-        }
-        if($distributionBeneficiary){
-            $this->assertTrue(true);
-        }
 
         return $distributionBeneficiary;
     }
