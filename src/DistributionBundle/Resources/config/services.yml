@@ -26,6 +26,7 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@jms_serializer'
             - '@validator'
+            - '@service_container'
 
     distribution.criteria_distribution_service:
         class: DistributionBundle\Utils\CriteriaDistributionService
@@ -68,3 +69,5 @@ services:
             - '@service_container'
             - '@beneficiary.household_to_csv_mapper'
             - '@jms_serializer'
+            - '@validator'
+            - "@request_validator"

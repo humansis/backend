@@ -56,6 +56,7 @@ class DistributionService
      * @param ConfigurationLoader $configurationLoader
      * @param CriteriaDistributionService $criteriaDistributionService
      * @param string $classRetrieverString
+     * @param ContainerInterface $container
      * @throws \Exception
      */
     public function __construct(
@@ -68,7 +69,6 @@ class DistributionService
         CriteriaDistributionService $criteriaDistributionService,
         string $classRetrieverString,
         ContainerInterface $container
-
     )
     {
         $this->em = $entityManager;

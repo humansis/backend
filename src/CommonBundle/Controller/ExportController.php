@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ExportController extends Controller
 {
     /**
-     * @Rest\Get("/export", name="export_data")
+     * @Rest\Post("/export", name="export_data")
      *
      * @SWG\Tag(name="Export")
      *
@@ -97,38 +97,16 @@ class ExportController extends Controller
             } catch (\Exception $exception) {
                 return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
             }
+        } elseif ($request->query->get('distributionSamble')) {
+            $arrayObjectBeneficiary = $request->request->all();
+            try {
+                $fileCSV = $this->get('distribution.distribution_beneficiary_service')->exportToCsv($arrayObjectBeneficiary);
+
+                return new Response(json_encode($fileCSV));
+            } catch (\Exception $exception) {
+                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+            }
         }
+
     }
-
-    /*
-    * @Rest\Get("/export/{id}", name="export_data_Beneficiaries_Distribution")
-    *
-    * @SWG\Tag(name="Export")
-    *
-    * @SWG\Response(
-    *     response=200,
-    *     description="OK"
-    * )
-    *
-    * @SWG\Response(
-    *     response=204,
-    *     description="HTTP_NO_CONTENT"
-    * )
-    * @param DistributionData $DistributionData
-    * @return Response
-    */
-    // public function exportToCSVBeneficiariesDistribution(DistributionData $distributionData)  {
-
-    //     /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-    //     dump($distributionData);
-    //     try{
-
-    //         $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsvBeneficiariesDistribution("beneficiariesInDistribution", $distributionData);
-
-    //         return new Response(json_encode($fileCSV));
-
-    //     } catch(\Exception $exception) {
-    //         return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-    //     }
-    // }
 }

@@ -13,6 +13,8 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
+use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManager;
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
@@ -416,5 +418,4 @@ class BMSServiceTestCase extends KernelTestCase
 
         return true;
     }
-
 }
