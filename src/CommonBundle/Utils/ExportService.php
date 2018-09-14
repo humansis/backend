@@ -44,7 +44,7 @@ Class ExportService {
     {
         $rows = [];
 
-        // step 1 : convertir le mapping en données
+        // step 1 : Convert the mapping as data
 
         foreach ($exportableTable as $value) {
             if(is_object($value)) {
