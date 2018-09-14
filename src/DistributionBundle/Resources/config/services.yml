@@ -69,3 +69,5 @@ services:
             - '@service_container'
             - '@beneficiary.household_to_csv_mapper'
             - '@jms_serializer'
+            - '@validator'
+            - "@request_validator"

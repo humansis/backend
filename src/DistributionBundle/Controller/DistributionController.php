@@ -533,8 +533,8 @@ class DistributionController extends Controller
             return new Response('You must upload a file.', 500);
         }
 
-        if ($request->request->get('step')) {
-            $step = $request->request->get('step');
+        if ($request->query->get('step')) {
+            $step = $request->query->get('step');
 
             if ($step == 1) {
                 try {
