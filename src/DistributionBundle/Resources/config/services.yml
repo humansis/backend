@@ -26,6 +26,7 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@jms_serializer'
             - '@validator'
+            - '@service_container'
 
     distribution.criteria_distribution_service:
         class: DistributionBundle\Utils\CriteriaDistributionService

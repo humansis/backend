@@ -33,24 +33,40 @@ class DistributionController extends Controller
      *     @Model(type=DistributionData::class)
      * )
      *
+     * @param Request $request
      * @param DistributionData $distributionData
      *
      * @return Response
      */
-    public function getRandomBeneficiariesAction(DistributionData $distributionData)
+    public function getRandomBeneficiariesAction(Request $request, DistributionData $distributionData)
     {
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        $receivers = $distributionBeneficiaryService->getRandomBeneficiaries($distributionData);
+        if($request->query->get("size")){
+            $numberToDisplay = $request->query->get("size");
 
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $receivers,
-                'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    'FullReceivers',
-                ])
-            );
+            /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+            $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+            $receivers = $distributionBeneficiaryService->getRandomBeneficiaries($distributionData, $numberToDisplay);
+
+            $json = $this->get('jms_serializer')
+                ->serialize(
+                    $receivers,
+                    'json',
+                    SerializationContext::create()->setSerializeNull(true)->setGroups([
+                        'FullReceivers',
+                    ])
+                );
+        }
+        else{
+            $json = $this->get('jms_serializer')
+                ->serialize(
+                    "The size to display is unset",
+                    'json',
+                    SerializationContext::create()->setSerializeNull(true)->setGroups([
+                        'FullReceivers',
+                    ])
+                );
+        }
+
 
         return new Response($json);
     }
