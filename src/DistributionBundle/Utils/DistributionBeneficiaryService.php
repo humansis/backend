@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use DistributionBundle\Entity\DistributionData;
@@ -24,15 +25,16 @@ class DistributionBeneficiaryService
     /** @var ValidatorInterface $validator */
     private $validator;
 
-    /** @var int $numberRandomBeneficiary */
-    private $numberRandomBeneficiary = 10;
+    /** @var ContainerInterface $container */
+    private $container;
 
 
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator)
+    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container)
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->container = $container;
     }
     
     /**
@@ -46,21 +48,22 @@ class DistributionBeneficiaryService
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
         return $beneficiaries;
     }
-    
-    
+
+
     /**
      * Get random beneficiaries from a distribution
      *
      * @param DistributionData $distributionData
+     * @param Int $numberRandomBeneficiary
      * @return array
      */
-    public function getRandomBeneficiaries(DistributionData $distributionData)
+    public function getRandomBeneficiaries(DistributionData $distributionData, Int $numberRandomBeneficiary)
     {
         $listReceivers = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
-        if (sizeof($listReceivers) < $this->numberRandomBeneficiary)
+        if (sizeof($listReceivers) <= $numberRandomBeneficiary)
             return $listReceivers;
         
-        $randomIds = array_rand($listReceivers, $this->numberRandomBeneficiary);
+        $randomIds = array_rand($listReceivers, $numberRandomBeneficiary);
         $randomReceivers = array();
         foreach ($randomIds as $id) {
             array_push($randomReceivers, $listReceivers[$id]);
@@ -131,5 +134,41 @@ class DistributionBeneficiaryService
         $this->em->remove($distributionBeneficiary);
         $this->em->flush();
         return true;
+    }
+
+    /**
+     * @param array $objectBeneficiary
+     * @return mixed
+     */
+    public function exportToCsv(array $objectBeneficiary) {
+
+        $beneficiaries = array();
+        foreach ($objectBeneficiary as $value){
+            array_push($beneficiaries, [
+                "Given name" => $value->getGivenName(),
+                "Family name"=> $value->getFamilyName(),
+                "Gender" => $value->getGender(),
+                "Status" => $value->getStatus(),
+                "Date of birth" => $value->getDateOfBirth()->format('m/d/y'),
+                //"Update on" => $value->getUpdatedOn(),
+                //"Household" => $value['household'],
+                //"Vulnerability criteria" => $value['vulnerabilityCriteria'],
+                //"Phones" => $value['phones'],
+                //"National IDs" => $value['nationalIds'],
+
+                /*"Given name" => $value['givenName'],
+                "Family name"=> $value['familyName'],
+                "Gender" => $value['gender'],
+                "Status" => $value['status'],
+                "Date of birth" => $value['dateOfBirth'],
+                "Update on" => $value['updatedOn'],
+                "Profile" => $value['profile'],
+                "Household" => $value['household'],
+                "Vulnerability criteria" => $value['vulnerabilityCriteria'],
+                "Phones" => $value['phones'],
+                "National IDs" => $value['nationalIds'],*/
+            ]);
+        }
+        return $this->container->get('export_csv_service')->export($beneficiaries,'distributions');
     }
 }

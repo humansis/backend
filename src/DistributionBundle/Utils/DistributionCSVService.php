@@ -4,6 +4,10 @@ namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
@@ -15,6 +19,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Csv as CsvWriter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use PhpOffice\PhpSpreadsheet\Reader\Csv as CsvReader;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 
 class DistributionCSVService
 {
@@ -29,18 +35,28 @@ class DistributionCSVService
     /** @var Serializer $serializer */
     private $serializer;
 
+    /** @var ValidatorInterface $validator */
+    private $validator;
+
+    /** @var RequestValidator $requestValidator */
+    private $requestValidator;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         ExportCSVService $exportCSVService,
         ContainerInterface $container,
         HouseholdToCSVMapper $householdToCSVMapper,
-        Serializer $serializer
+        Serializer $serializer,
+        ValidatorInterface $validator,
+        RequestValidator $requestValidator
     ) {
         $this->em = $entityManager;
         $this->exportCSVService = $exportCSVService;
         $this->container = $container;
         $this->householdToCSVMapper = $householdToCSVMapper;
         $this->serializer = $serializer;
+        $this->validator = $validator;
+        $this->requestValidator = $requestValidator;
     }
 
     /**
@@ -264,6 +280,7 @@ class DistributionCSVService
 
         $nameArray = array();
 
+        // We put the given name and family name from CSV file on a same line instead of in two distinct arrays :
         for ($i = 2; $i <= count($givenNameArray); ++$i) {
             array_push($nameArray, $givenNameArray[$i].' '.$familyNameArray[$i]);
         }
@@ -279,33 +296,33 @@ class DistributionCSVService
             return array($tempGivenNameArray[0], $tempFamilyNameArray[0]);
         }, ($beneficiaries));
 
-        $givenNameEntityArray = array();
-        $familyNameEntityArray = array();
+        // We store them in two distinct arrays :
+        $nameDistributionBeneficiaryEntity = array();
         for ($i = 0; $i < count($entityDatasArray); ++$i) {
-            array_push($givenNameEntityArray, $entityDatasArray[$i][0]);
-            array_push($familyNameEntityArray, $entityDatasArray[$i][1]);
+            array_push($nameDistributionBeneficiaryEntity, $entityDatasArray[$i][0].' '.$entityDatasArray[$i][1]);
         }
 
         $beneficiariesInProject = $this->em->getRepository(Beneficiary::class)->getAllOfProject($distributionData->getProject()->getId());
 
         // Recover all the givenName and the familyName of the beneficiaries in the project :
-        $givenNameBeneficiariesArray = array();
-        $familyNameBeneficiariesArray = array();
+        $nameBeneficiaryInProjectEntity = array();
         for ($i = 0; $i < count($beneficiariesInProject); ++$i) {
-            array_push($givenNameBeneficiariesArray, $beneficiariesInProject[$i]->getGivenName());
-            array_push($familyNameBeneficiariesArray, $beneficiariesInProject[$i]->getFamilyName());
+            array_push($nameBeneficiaryInProjectEntity, $beneficiariesInProject[$i]->getGivenName().' '.$beneficiariesInProject[$i]->getFamilyName());
         }
 
         $errorArray = array();
         $addArray = array();
         $deleteArray = array();
+        $presentStoreIdBeneficiaryArray = array();
+        $presentStoreCSV = array();
 
+        // We search if the givenName and familyName from the CSV file are in the Beneficiary table :
         for ($i = 2; $i <= count($sheetArray); ++$i) {
-            $givenName = $sheetArray[$i]['L'];
-            $familyName = $sheetArray[$i]['M'];
+            $nameCSV = $sheetArray[$i]['L'].' '.$sheetArray[$i]['M'];
 
-            if (!in_array($givenName, $givenNameEntityArray) || !in_array($familyName, $familyNameEntityArray)) {
-                if (!in_array($givenName, $givenNameBeneficiariesArray) && !in_array($familyName, $familyNameBeneficiariesArray)) {
+            if (!in_array($nameCSV, $nameDistributionBeneficiaryEntity)) {
+                // We check if the beneficiary is present in the project :
+                if (!in_array($nameCSV, $nameBeneficiaryInProjectEntity)) {
                     array_push($errorArray, [
                         'given name' => $sheetArray[$i]['L'],
                         'family name' => $sheetArray[$i]['M'],
@@ -315,16 +332,31 @@ class DistributionCSVService
                         'vulnerability criteria' => $sheetArray[$i]['Q'],
                         'phones' => $sheetArray[$i]['R'],
                         'national IDs' => $sheetArray[$i]['S'],
-                        'updated_on' => '',
-                        'profile' => '',
                         ]
                     );
                 } else {
                     array_push($addArray, [
-                        $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $givenName, 'familyName' => $familyName]),
+                        $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $sheetArray[$i]['L'], 'familyName' => $sheetArray[$i]['M']]),
                         ]
                     );
                 }
+            }
+            else{
+                array_push($presentStoreIdBeneficiaryArray, [
+                        $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $sheetArray[$i]['L'], 'familyName' => $sheetArray[$i]['M']]),
+                    ]
+                );
+                array_push($presentStoreCSV, [
+                        'givenName' => $sheetArray[$i]['L'],
+                        'familyName' => $sheetArray[$i]['M'],
+                        'gender' => $sheetArray[$i]['N'],
+                        'status' => $sheetArray[$i]['O'],
+                        'dateBirth' => $sheetArray[$i]['P'],
+                        'vulCrit' => $sheetArray[$i]['Q'],
+                        'phones' => $sheetArray[$i]['R'],
+                        'nationalId' => $sheetArray[$i]['S'],
+                    ]
+                );
             }
         }
 
@@ -343,6 +375,8 @@ class DistributionCSVService
             'errors' => $errorArray,
             'added' => $addArray,
             'deleted' => $deleteArray,
+            'presentStoreId' => $presentStoreIdBeneficiaryArray,
+            'presentStoreCSV' => $presentStoreCSV,
         );
 
         return $allArray;
@@ -369,6 +403,8 @@ class DistributionCSVService
 
         $addArray = $allArray['added'];
         $deleteArray = $allArray['deleted'];
+        $presentStoreIdBeneficiaryArray = $allArray['presentStoreId'];
+        $presentStoreCSV = $allArray['presentStoreCSV'];
 
         foreach ($addArray as $beneficiary) {
             if($beneficiary[0] != null){
@@ -386,8 +422,126 @@ class DistributionCSVService
             $this->em->flush();
         }
 
+        for ($i = 0; $i < count($presentStoreIdBeneficiaryArray); $i++){
+            $beneficiaryId = $presentStoreIdBeneficiaryArray[$i][0]->getId();
+            $beneficiaryNewGivenName = $presentStoreCSV[$i]['givenName'];
+            $beneficiaryNewFamilyName = $presentStoreCSV[$i]['familyName'];
+            $beneficiaryNewGender = $presentStoreCSV[$i]['gender'];
+            $beneficiaryNewStatus = $presentStoreCSV[$i]['status'];
+            $beneficiaryNewDateBirth = $presentStoreCSV[$i]['dateBirth'];
+            $beneficiaryNewVulCrit = $presentStoreCSV[$i]['vulCrit'];
+            $beneficiaryNewPhones = $presentStoreCSV[$i]['phones'];
+            $beneficiaryNewNatId = $presentStoreCSV[$i]['nationalId'];
+
+            $editedBeneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryId);
+
+            $editedBeneficiary->setVulnerabilityCriteria(null);
+            $items = $this->em->getRepository(Phone::class)->findByBeneficiary($editedBeneficiary);
+            foreach ($items as $item)
+            {
+                $this->em->remove($item);
+            }
+            $items = $this->em->getRepository(NationalId::class)->findByBeneficiary($editedBeneficiary);
+            foreach ($items as $item)
+            {
+                $this->em->remove($item);
+            }
+
+            $this->em->flush();
+
+
+            $editedBeneficiary->setGender($beneficiaryNewGender)
+                ->setDateOfBirth(new \DateTime($beneficiaryNewDateBirth))
+                ->setFamilyName($beneficiaryNewFamilyName)
+                ->setGivenName($beneficiaryNewGivenName)
+                ->setStatus($beneficiaryNewStatus);
+
+            $errors = $this->validator->validate($editedBeneficiary);
+            if (count($errors) > 0)
+            {
+                $errorsArray = [];
+                foreach ($errors as $error)
+                {
+                    $errorsArray[] = $error->getMessage();
+                }
+                throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+            }
+
+            $editedBeneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($beneficiaryNewVulCrit));
+
+            if($beneficiaryNewPhones)
+                $this->getOrSavePhone($editedBeneficiary, $beneficiaryNewPhones);
+
+            if($beneficiaryNewNatId)
+                $this->getOrSaveNationalId($editedBeneficiary, $beneficiaryNewNatId);
+
+            $this->em->merge($editedBeneficiary);
+            $this->em->flush();
+        }
+
         return array(
-            'result' => 'Elements added / suppressed',
+            'result' => 'Elements added / suppressed / modified',
         );
+    }
+
+    /**
+     * @param $vulnerabilityCriterionString
+     * @return VulnerabilityCriterion
+     * @throws \Exception
+     */
+    public function getVulnerabilityCriterion($vulnerabilityCriterionString)
+    {
+        /** @var VulnerabilityCriterion $vulnerabilityCriterion */
+        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findBy(['fieldString' => $vulnerabilityCriterionString]);
+
+        if (!$vulnerabilityCriterion[0] instanceof VulnerabilityCriterion)
+            throw new \Exception("This vulnerability doesn't exist.");
+        return $vulnerabilityCriterion[0];
+    }
+
+    /**
+     * @param Beneficiary $beneficiary
+     * @param string $phoneNumber
+     * @return Phone|null|object
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     */
+    public function getOrSavePhone(Beneficiary $beneficiary, string $phoneNumber)
+    {
+        $this->requestValidator->validate(
+            "phone",
+            HouseholdConstraints::class,
+            $phoneNumber,
+            'any'
+        );
+        $phone = $this->em->getRepository(Phone::class)->findOneBy(['beneficiary' => $beneficiary->getId()]);
+        $phone->setNumber($phoneNumber);
+
+        $this->em->merge($phone);
+        $this->em->flush();
+
+        return $phone;
+    }
+
+    /**
+     * @param Beneficiary $beneficiary
+     * @param string $nationalIdString
+     * @return NationalId|null|object
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     */
+    public function getOrSaveNationalId(Beneficiary $beneficiary, string $nationalIdString)
+    {
+        $this->requestValidator->validate(
+            "nationalId",
+            HouseholdConstraints::class,
+            $nationalIdString,
+            'any'
+        );
+        $nationalId = $this->em->getRepository(NationalId::class)->findOneBy(['beneficiary' => $beneficiary->getId()]);
+        $nationalId->setIdNumber($nationalIdString);
+
+        $this->em->merge($nationalId);
+        $this->em->flush();
+
+        return $nationalId;
     }
 }
