@@ -34,18 +34,18 @@ class TransactionController extends Controller
      */
     public function getTransactionAction(Request $request)  {
         
-        // try
-        // {
-        //     $response = $this->get('transaction.transaction_service')->getToken();
-        // }
-        // catch (\Exception $exception)
-        // {
-        //     return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        // }
-        // 
-        // $json = $this->get('jms_serializer')->serialize($response, 'json', null);
-        // 
-        // return new Response($json);
+        try
+        {
+            $response = $this->get('transaction.transaction_service')->getToken();
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        
+        $json = $this->get('jms_serializer')->serialize($response, 'json', null);
+        
+        return new Response($json);
         
     }
 
