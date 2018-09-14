@@ -136,18 +136,6 @@ class Beneficiary implements ExportableInterface
     }
 
     /**
-     * Set id.
-     *
-     * @param $id
-     * @return Beneficiary
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    /**
      * Get id.
      *
      * @return int

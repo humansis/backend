@@ -127,9 +127,7 @@ class DistributionBeneficiaryService
     {
         $distributionData = $this->em->getRepository(DistributionData::class)->find($distributionId);
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'distributionData' => $distributionData->getId()]);
-        dump($distributionBeneficiary);
-        dump($distributionData);
-        dump($beneficiary);
+        
         $this->em->remove($distributionBeneficiary);
         $this->em->flush();
         return true;

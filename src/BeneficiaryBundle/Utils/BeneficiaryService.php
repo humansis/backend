@@ -9,7 +9,6 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
-use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use PhpOption\Tests\PhpOptionRepo;
@@ -299,7 +298,7 @@ class BeneficiaryService
         $this->em->flush();
         return true;
     }
-
+    
     public function countAll(string $iso3)
     {
         $count = (int) $this->em->getRepository(Beneficiary::class)->countAllInCountry($iso3);
