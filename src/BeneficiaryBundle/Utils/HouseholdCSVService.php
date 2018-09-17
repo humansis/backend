@@ -17,7 +17,9 @@ use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
 use Doctrine\ORM\EntityManagerInterface;
-use PhpOffice\PhpSpreadsheet\Reader\Csv;
+use PhpOffice\PhpSpreadsheet\Reader\Csv as CsvReader;
+use PhpOffice\PhpSpreadsheet\Reader\Xls as XlsReader;
+use PhpOffice\PhpSpreadsheet\Reader\Ods as OdsReader;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -83,11 +85,27 @@ class HouseholdCSVService
      */
     public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, int $step, $token)
     {
-        // If it's the first step, we transform CSV to array mapped for corresponding to the entity Household
+        // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
         // LOADING CSV
-        $reader = new Csv();
-        $reader->setDelimiter(",");
+        if($uploadedFile->getClientOriginalExtension() == "csv"){
+            $reader = new CsvReader();
+            $reader->setDelimiter(',');
+        }
+        else if($uploadedFile->getClientOriginalExtension() == "xls") {
+            $reader = new XlsReader();
+        }
+        else if($uploadedFile->getClientOriginalExtension() == "ods") {
+            $reader = new OdsReader();
+        }
+        else{
+            return ["Error with the extension of the file imported"];
+        }
+
+        dump($uploadedFile->getRealPath());
+        dump($reader->load($uploadedFile->getRealPath()));
+        dump($reader->load($uploadedFile->getRealPath())->getActiveSheet());
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
+        dump($uploadedFile->getClientOriginalExtension());
         $sheetArray = $worksheet->toArray(null, true, true, true);
 
         return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $step, $token);
