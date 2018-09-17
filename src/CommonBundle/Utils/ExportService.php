@@ -117,6 +117,9 @@ Class ExportService {
         elseif($type == "excel"){
             $filename = $dataPath . '/'.$name.'.xls';
         }
+        elseif($type == "ods"){
+            $filename = $dataPath . '/'.$name.'.ods';
+        }
         else{
             return "An error occured with the type file";
         }
