@@ -1,4 +1,6 @@
 services:
-#    transaction.example:
-#        class: TransactionBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    transaction.transaction_service:
+        class: TransactionBundle\Utils\KHMTransactionService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'

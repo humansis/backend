@@ -275,7 +275,6 @@ class DistributionCSVService
     {
         // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
         // LOADING CSV
-        dump($uploadedFile->getClientOriginalExtension());
         if($uploadedFile->getClientOriginalExtension() == "csv"){
             $reader = new CsvReader();
             $reader->setDelimiter(',');
