@@ -35,7 +35,9 @@ class KHMTransactionService extends DefaultTransactionService {
             'client_id' => 'third_party',
             'client_secret' => '16681c9ff419d8ecc7cfe479eb02a7a'
         );
+        dump($query);
         $response = Unirest\Request::post($this->url . "/oauth/token", null, $query);
+        dump($response);
         return $response->body;
     }
 
