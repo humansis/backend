@@ -32,7 +32,7 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
 
         //beneficiaries contains all beneficiaries in a distribution :
         $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
-        $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiaryInDistribution.csv', 'r');
+        $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiaryInDistribution.csv', 'beneficiaryInDistribution.csv');
 
 
         $jsonFromparseCSV = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);

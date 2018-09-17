@@ -27,7 +27,7 @@ class ExportBeneficiaryTest extends BMSServiceTestCase {
         $exportservice = new ExportService($this->em,$this->container);
         $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
 
-        $csv = $exportservice->export($exportableTable,'actual');
+        $csv = $exportservice->export($exportableTable,'actual', 'csv');
 
         $getResourceBeneficiary = fgets(fopen(__DIR__ . '/../Resources/expectedBeneficiary.csv', 'r'));
         $getContentBeneficiary = strtok($csv['content'], "\n");
