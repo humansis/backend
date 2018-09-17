@@ -60,10 +60,16 @@ class DistributionBeneficiaryService
     public function getRandomBeneficiaries(DistributionData $distributionData, Int $numberRandomBeneficiary)
     {
         $listReceivers = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
-        if (sizeof($listReceivers) <= $numberRandomBeneficiary)
+
+        if (sizeof($listReceivers) < $numberRandomBeneficiary)
             return $listReceivers;
-        
+
+
         $randomIds = array_rand($listReceivers, $numberRandomBeneficiary);
+
+        if(gettype($randomIds) == 'integer')
+            return [$listReceivers[$randomIds]];
+
         $randomReceivers = array();
         foreach ($randomIds as $id) {
             array_push($randomReceivers, $listReceivers[$id]);
@@ -138,9 +144,10 @@ class DistributionBeneficiaryService
 
     /**
      * @param array $objectBeneficiary
+     * @param string $type
      * @return mixed
      */
-    public function exportToCsv(array $objectBeneficiary) {
+    public function exportToCsv(array $objectBeneficiary, string $type) {
 
         $beneficiaries = array();
         foreach ($objectBeneficiary as $value){
@@ -169,6 +176,6 @@ class DistributionBeneficiaryService
                 "National IDs" => $value['nationalIds'],*/
             ]);
         }
-        return $this->container->get('export_csv_service')->export($beneficiaries,'distributions');
+        return $this->container->get('export_csv_service')->export($beneficiaries,'distributions', $type);
     }
 }

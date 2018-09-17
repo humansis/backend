@@ -40,7 +40,7 @@ Class ExportService {
         $this->container = $container;
     }
 
-    public function export($exportableTable, $name)
+    public function export($exportableTable, $name, $type)
     {
         $rows = [];
 
@@ -105,13 +105,24 @@ Class ExportService {
            $rowIndex++;
         }
 
-        // step 3 : scaning sheet into csv
+        // step 3 : scaning sheet into csv or excel
 
         $writer = new Csv($spreadsheet);
         $writer->setEnclosure('');
 
         $dataPath = $this->container->getParameter('kernel.root_dir') . '/../var';
-        $filename = $dataPath . '/'.$name.'.csv';
+        if($type == "csv"){
+            $filename = $dataPath . '/'.$name.'.csv';
+        }
+        elseif($type == "excel"){
+            $filename = $dataPath . '/'.$name.'.xls';
+        }
+        elseif($type == "ods"){
+            $filename = $dataPath . '/'.$name.'.ods';
+        }
+        else{
+            return "An error occured with the type file";
+        }
 
         $writer->save($filename);
         $this->filecontent = file_get_contents($filename);

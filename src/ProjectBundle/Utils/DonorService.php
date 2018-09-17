@@ -123,24 +123,14 @@ class DonorService
 
     /**
      * Export all the donors in the CSV file
+     * @param string $type
      * @return mixed
      */
-    public function exportToCsv() {
+    public function exportToCsv(string $type) {
 
         $exportableTable = $this->em->getRepository(Donor::class)->findAll();
 
-        /*$donorData = array();
-        foreach ($exportableTable as $value){
-            array_push($donorData, [
-                "Full name" => $value->getFullName(),
-                "Short name"=> $value->getShortname(),
-                "Date added" => $value->getDateAdded()->format('Y-m-d H:i:s'),
-                "Notes" => $value->getNotes(),
-                //"Project" => $value->getProjects()->getValues(),
-            ]);
-        }*/
-
-        return $this->container->get('export_csv_service')->export($exportableTable, 'donors');
+        return $this->container->get('export_csv_service')->export($exportableTable, 'donors', $type);
 
     }
 }

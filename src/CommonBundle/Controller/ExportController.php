@@ -35,17 +35,20 @@ class ExportController extends Controller
     {
         if ($request->query->get('distributions')) {
             $idProject = $request->query->get('distributions');
+            $type = $request->request->get('type');
 
             try {
-                $fileCSV = $this->get('distribution.distribution_service')->exportToCsv($idProject);
+                $fileCSV = $this->get('distribution.distribution_service')->exportToCsv($idProject, $type);
 
                 return new Response(json_encode($fileCSV));
             } catch (\Exception $exception) {
                 return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
             }
         } elseif ($request->query->get('beneficiaries')) {
+            $type = $request->request->get('type');
+
             try {
-                $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv();
+                $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv($type);
 
                 return new Response(json_encode($fileCSV));
             } catch (\Exception $exception) {
@@ -53,45 +56,54 @@ class ExportController extends Controller
             }
         } elseif ($request->query->get('beneficiariesInDistribution')) {
             $idDistribution = $request->query->get('beneficiariesInDistribution');
+            $type = $request->request->get('type');
 
             try {
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
 
-                $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsvBeneficiariesInDistribution($distribution);
+                $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsvBeneficiariesInDistribution($distribution, $type);
 
                 return new Response(json_encode($fileCSV));
             } catch (\Exception $exception) {
                 return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
             }
         } elseif ($request->query->get('users')) {
+            $type = $request->request->get('type');
+
             try {
-                $fileCSV = $this->get('user.user_service')->exportToCsv();
+                $fileCSV = $this->get('user.user_service')->exportToCsv($type);
 
                 return new Response(json_encode($fileCSV));
             } catch (\Exception $exception) {
                 return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
             }
         } elseif ($request->query->get('countries')) {
+            $type = $request->request->get('type');
+
             try {
-                $fileCSV = $this->get('beneficiary.country_specific_service')->exportToCsv();
+                $fileCSV = $this->get('beneficiary.country_specific_service')->exportToCsv($type);
 
                 return new Response(json_encode($fileCSV));
             } catch (\Exception $exception) {
                 return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
             }
         } elseif ($request->query->get('donors')) {
+            $type = $request->request->get('type');
+
             try {
-                $fileCSV = $this->get('project.donor_service')->exportToCsv();
+                $fileCSV = $this->get('project.donor_service')->exportToCsv($type);
 
                 return new Response(json_encode($fileCSV));
             } catch (\Exception $exception) {
                 return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
             }
-        } elseif ($request->query->get('projects')) {
-            $country = $request->query->get('projects');
+        } elseif ($request->query->get('project')) {
+            $country = $request->query->get('project');
+            $type = $request->request->get('type');
+
             //$country = $request->query->get('__country');
             try {
-                $fileCSV = $this->get('project.project_service')->exportToCsv($country);
+                $fileCSV = $this->get('project.project_service')->exportToCsv($country, $type);
 
                 return new Response(json_encode($fileCSV));
             } catch (\Exception $exception) {
@@ -99,8 +111,10 @@ class ExportController extends Controller
             }
         } elseif ($request->query->get('distributionSamble')) {
             $arrayObjectBeneficiary = $request->request->all();
+            $type = $request->request->get('type');
+
             try {
-                $fileCSV = $this->get('distribution.distribution_beneficiary_service')->exportToCsv($arrayObjectBeneficiary);
+                $fileCSV = $this->get('distribution.distribution_beneficiary_service')->exportToCsv($arrayObjectBeneficiary, $type);
 
                 return new Response(json_encode($fileCSV));
             } catch (\Exception $exception) {

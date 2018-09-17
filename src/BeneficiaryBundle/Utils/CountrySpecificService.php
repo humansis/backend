@@ -74,12 +74,13 @@ class CountrySpecificService
 
     /**
      * Export all the countries specifics in a CSV file
+     * @param string $type
      * @return mixed
      */
-    public function exportToCsv() {
+    public function exportToCsv(string $type) {
 
         $exportableTable = $this->em->getRepository(CountrySpecific::class)->findAll();
-        return $this->container->get('export_csv_service')->export($exportableTable, 'country');
+        return $this->container->get('export_csv_service')->export($exportableTable, 'country', $type);
 
     }
 
