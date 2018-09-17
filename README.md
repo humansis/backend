@@ -93,5 +93,7 @@ END
 
 # Import & Export
 
-This is now possible to import or export data in different part of the site. Both of them can be done using CSV, XLS and ODS files.
-Note that during the import part, all beneficiaries you modified in the imported file will be updated. Moreover, if a beneficiary is missing in the distribution but is present in all the beneficiaries of the project, he'll be suppressed from the distribution. There is the same process for a beneficiary added in the imported file. Finally, if you added a beneficiary unknown from all the beneficiaries of the project, he'll be added to a "errors" part to display you that all users in this part won't be added to the distirbution.
+It's now possible to import or export data in the application. You can export data in the app in different formats : CSV, XLS or ODS.
+
+Note that during the import part, all beneficiaries you modify in the imported file will be updated. Moreover, if a beneficiary is missing in the distribution but is present in all the beneficiaries of the project, he'll be removed from the distribution. 
+The same process goes for beneficiaries added in the imported file. Finally, if you add a beneficiary that is not part of the project (in the database), he'll be added in "errors" array that shows all users that won't be added to the distirbution.
