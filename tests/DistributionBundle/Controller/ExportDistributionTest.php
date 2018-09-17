@@ -28,7 +28,7 @@ class ExportDistributionTest extends BMSServiceTestCase {
         $exportservice = new ExportService($this->em,$this->container);
         $exportableTable = $this->em->getRepository(DistributionData::class)->findAll();
 
-        $csv = $exportservice->export($exportableTable,'actual');
+        $csv = $exportservice->export($exportableTable,'actual', 'csv');
 
         $getResourceDistribution = fgets(fopen(__DIR__ . '/../Resources/expectedDistribution.csv', 'r'));
         $getContentDistribution = strtok($csv['content'], "\n");
