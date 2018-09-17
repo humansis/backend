@@ -138,9 +138,10 @@ class DistributionBeneficiaryService
 
     /**
      * @param array $objectBeneficiary
+     * @param string $type
      * @return mixed
      */
-    public function exportToCsv(array $objectBeneficiary) {
+    public function exportToCsv(array $objectBeneficiary, string $type) {
 
         $beneficiaries = array();
         foreach ($objectBeneficiary as $value){
@@ -169,6 +170,6 @@ class DistributionBeneficiaryService
                 "National IDs" => $value['nationalIds'],*/
             ]);
         }
-        return $this->container->get('export_csv_service')->export($beneficiaries,'distributions');
+        return $this->container->get('export_csv_service')->export($beneficiaries,'distributions', $type);
     }
 }

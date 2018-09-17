@@ -305,17 +305,17 @@ class BeneficiaryService
         return $count;
     }
 
-    public function exportToCsvBeneficiariesInDistribution(DistributionData $distributionData) {
+    public function exportToCsvBeneficiariesInDistribution(DistributionData $distributionData, string $type) {
 
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
-        return $this->container->get('export_csv_service')->export($beneficiaries,'beneficiaryInDistribution');
+        return $this->container->get('export_csv_service')->export($beneficiaries,'beneficiaryInDistribution', $type);
 
     }
 
-    public function exportToCsv() {
+    public function exportToCsv(string $type) {
 
         $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
-        return $this->container->get('export_csv_service')->export($exportableTable,'beneficiaryhousehoulds');
+        return $this->container->get('export_csv_service')->export($exportableTable,'beneficiaryhousehoulds', $type);
 
     }
 
