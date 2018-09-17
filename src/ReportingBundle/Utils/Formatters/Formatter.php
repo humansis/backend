@@ -13,6 +13,9 @@ class Formatter implements FormatterInterface {
     /** @var int */
     const CsvFormat = 1;
 
+    /**
+     * Formatter constructor.
+     */
     public function __construct()
     { }
 
@@ -22,7 +25,8 @@ class Formatter implements FormatterInterface {
      * @param $type
      * @param array $dataComputed
      * @param string $typeGraph
-     * @return void
+     * @return array
+     * @throws \Exception
      */
     public function format($type, $dataComputed, $typeGraph)
     {
@@ -80,7 +84,7 @@ class Formatter implements FormatterInterface {
 
         switch($typeGraph) {
             case "stackbar":
-                $result = CsvFormatter::formatWithSeries($dataComputed);
+                $result = CsvFormatter::formatWithSeries();
                 break;
             case "pie":
             case "bar":

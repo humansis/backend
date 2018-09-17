@@ -65,7 +65,6 @@ services:
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@beneficiary.household_export_csv_service'
             - '@service_container'
             - '@beneficiary.household_to_csv_mapper'
             - '@jms_serializer'

@@ -71,26 +71,25 @@ class ReportingController extends Controller
     }
 
 
-     /**
-      * Send list of all indicators to display in front
+    /**
+     * Send list of all indicators to display in front
      * @Rest\Post("/indicators")
-     * 
-     *@SWG\Tag(name="Reporting")
-     * 
+     *
+     * @SWG\Tag(name="Reporting")
+     *
      * @SWG\Response(
      *      response=200,
-     *          description="Get code reporting",  
+     *          description="Get code reporting",
      * )
-     * 
+     *
      * @SWG\Response(
      *     response=400,
      *     description="BAD_REQUEST"
      * )
-     * 
-     * @param Request $request
+     *
      * @return Response
      */
-    public function getAction(Request $request)
+    public function getAction()
     {
         $indicatorFinded = [];
         $indicatorFinded = $this->get('reporting.finder')->findIndicator();
@@ -165,13 +164,6 @@ class ReportingController extends Controller
             ->export($dataFormatted, $indicator->getReference());
 
         return new JsonResponse($toExport);
-
-
-
-
-
-
-
     }
 
 

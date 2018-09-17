@@ -16,11 +16,21 @@ class CommodityService
     private $em;
 
 
+    /**
+     * CommodityService constructor.
+     * @param EntityManagerInterface $entityManager
+     */
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->em = $entityManager;
     }
 
+    /**
+     * @param DistributionData $distribution
+     * @param array $commodityArray
+     * @param bool $flush
+     * @return Commodity
+     */
     public function create(DistributionData $distribution, array $commodityArray, bool $flush)
     {
         $commodity = new Commodity();

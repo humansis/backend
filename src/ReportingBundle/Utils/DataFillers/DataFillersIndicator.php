@@ -8,8 +8,15 @@ use Doctrine\ORM\EntityManager;
 class DataFillersIndicator
 {
 
+    /**
+     * @var EntityManager
+     */
     private $em;
 
+    /**
+     * DataFillersIndicator constructor.
+     * @param EntityManager $em
+     */
     public function __construct(EntityManager $em)
     {
         $this->em = $em;   
@@ -17,6 +24,8 @@ class DataFillersIndicator
 
     /**
      * Open and parse csv before return it
+     * @param string $csvFile
+     * @return array
      */
     public function getCsv(string $csvFile)
     {  

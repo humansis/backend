@@ -32,8 +32,9 @@ class SectorController extends Controller
      *          @SWG\Items(ref=@Model(type=Sector::class))
      *     )
      * )
+     * @return Response
      */
-    public function getAllAction(Request $request)
+    public function getAllAction()
     {
         $sectors = $this->get('project.sector_service')->findAll();
 
@@ -136,6 +137,7 @@ class SectorController extends Controller
      * )
      *
      * @param Request $request
+     * @param Sector $sector
      * @return Response
      */
     public function updateAction(Request $request, Sector $sector)

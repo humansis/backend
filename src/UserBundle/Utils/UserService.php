@@ -25,6 +25,12 @@ class UserService
     /** @var ContainerInterface $container */
     private $container;
 
+    /**
+     * UserService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param ValidatorInterface $validator
+     * @param ContainerInterface $container
+     */
     public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
     {
         $this->em = $entityManager;
@@ -51,6 +57,11 @@ class UserService
         return $this->em->getRepository(User::class)->findOneByUsername($username);
     }
 
+    /**
+     * @param User $user
+     * @param array $userData
+     * @return User
+     */
     public function update(User $user, array $userData)
     {
         $roles = $userData['roles'];

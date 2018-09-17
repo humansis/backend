@@ -82,6 +82,11 @@ class TypoTreatment extends AbstractTreatment
         return $this->mergeListHHSimilarAndNoTypo($listHouseholds, $households100Percent);
     }
 
+    /**
+     * @param $listHouseholds
+     * @param $households100Percent
+     * @return array
+     */
     public function mergeListHHSimilarAndNoTypo($listHouseholds, $households100Percent)
     {
         foreach ($households100Percent as $household100Percent)

@@ -9,10 +9,20 @@ use Doctrine\ORM\EntityManager;
 
 class Finder implements FinderInterface {
 
+    /**
+     * @var EntityManager
+     */
     private $em;
+    /**
+     * @var
+     */
     private $repository;
 
 
+    /**
+     * Finder constructor.
+     * @param EntityManager $em
+     */
     public function __construct(EntityManager $em)
     {
         $this->em = $em; 

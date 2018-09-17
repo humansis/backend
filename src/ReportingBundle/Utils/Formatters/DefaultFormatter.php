@@ -3,6 +3,10 @@
 namespace ReportingBundle\Utils\Formatters;
 
 
+/**
+ * Class DefaultFormatter
+ * @package ReportingBundle\Utils\Formatters
+ */
 class DefaultFormatter
 {
     /**
@@ -15,7 +19,6 @@ class DefaultFormatter
     public function formatWithSeries($dataComputed) {
         $data = [];
         $names = [];
-        $formats = [];
         foreach($dataComputed as $indicator) {
             array_push($names, $indicator['name']);
         }
@@ -63,7 +66,6 @@ class DefaultFormatter
     public function formatWithDateSeries($dataComputed) {
         $data = [];
         $names = [];
-        $formats = [];
         foreach($dataComputed as $indicator) {
             array_push($names, $indicator['name']);
         }

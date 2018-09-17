@@ -6,9 +6,18 @@ namespace CommonBundle\Utils;
 
 class Color
 {
+    /**
+     * @var array
+     */
     private $foreground_colors = array();
+    /**
+     * @var array
+     */
     private $background_colors = array();
 
+    /**
+     * Color constructor.
+     */
     public function __construct() {
         // Set up shell colors
         $this->foreground_colors['black'] = '0;30';
@@ -39,6 +48,13 @@ class Color
     }
 
     // Returns colored string
+
+    /**
+     * @param $string
+     * @param null $foreground_color
+     * @param null $background_color
+     * @return string
+     */
     public function getColoredString($string, $foreground_color = null, $background_color = null) {
         $colored_string = "";
 
@@ -58,11 +74,19 @@ class Color
     }
 
     // Returns all foreground color names
+
+    /**
+     * @return array
+     */
     public function getForegroundColors() {
         return array_keys($this->foreground_colors);
     }
 
     // Returns all background color names
+
+    /**
+     * @return array
+     */
     public function getBackgroundColors() {
         return array_keys($this->background_colors);
     }

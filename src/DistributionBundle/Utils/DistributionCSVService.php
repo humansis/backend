@@ -8,7 +8,6 @@ use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
-use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
@@ -23,14 +22,11 @@ use PhpOffice\PhpSpreadsheet\Reader\Xls as XlsReader;
 use PhpOffice\PhpSpreadsheet\Reader\Ods as OdsReader;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
-use Asan\PHPExcel\Excel;
 
 class DistributionCSVService
 {
     /** @var EntityManagerInterface $em */
     private $em;
-    /** @var ExportCSVService $exportCSVService */
-    private $exportCSVService;
     /** @var ContainerInterface $container */
     private $container;
     /** @var HouseholdToCSVMapper $householdToCSVMapper */
@@ -44,9 +40,17 @@ class DistributionCSVService
     /** @var RequestValidator $requestValidator */
     private $requestValidator;
 
+    /**
+     * DistributionCSVService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param ContainerInterface $container
+     * @param HouseholdToCSVMapper $householdToCSVMapper
+     * @param Serializer $serializer
+     * @param ValidatorInterface $validator
+     * @param RequestValidator $requestValidator
+     */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ExportCSVService $exportCSVService,
         ContainerInterface $container,
         HouseholdToCSVMapper $householdToCSVMapper,
         Serializer $serializer,
@@ -54,7 +58,6 @@ class DistributionCSVService
         RequestValidator $requestValidator
     ) {
         $this->em = $entityManager;
-        $this->exportCSVService = $exportCSVService;
         $this->container = $container;
         $this->householdToCSVMapper = $householdToCSVMapper;
         $this->serializer = $serializer;
@@ -286,7 +289,7 @@ class DistributionCSVService
         else{
             return ["Error with the extension of the file imported"];
         }
-        
+
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->toArray(null, true, true, true);
 

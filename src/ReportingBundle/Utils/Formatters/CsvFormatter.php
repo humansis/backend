@@ -3,17 +3,20 @@
 namespace ReportingBundle\Utils\Formatters;
 
 
+/**
+ * Class CsvFormatter
+ * @package ReportingBundle\Utils\Formatters
+ */
 class CsvFormatter
 {
     /**
      * Update indicator's format to have series
      * First key need always to be 'name' for the general name
      *
-     * @param array $dataComputed
-     * @return array
+     * @return void
      * @throws \Exception
      */
-    public function formatWithSeries($dataComputed) {
+    public function formatWithSeries() {
 
         throw new \Exception('Not implemented');
     }

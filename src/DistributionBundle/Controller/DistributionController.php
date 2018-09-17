@@ -337,8 +337,7 @@ class DistributionController extends Controller
      *     )
      * )
      *
-     * @param DistributionData $DistributionData
-     *
+     * @param DistributionData $distributionData
      * @return Response
      */
     public function getDistributionBeneficiariesAction(DistributionData $distributionData)
@@ -601,35 +600,5 @@ class DistributionController extends Controller
         ->serialize($beneficiariesInProject, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
 
         return new Response($json, Response::HTTP_OK);
-    }
-
-    /**
-     * @Rest\GET ("/distributions/export", name="distributions_export")
-     * TODO: ADd security on project
-     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
-     *
-     * @SWG\Tag(name="Distributions")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="OK"
-     * )
-     *
-     * @SWG\Response(
-     *     response=204,
-     *     description="HTTP_NO_CONTENT"
-     * )
-     *
-     * @return Response
-     */
-    public function exportToCSVAction()
-    {
-        try {
-            $fileCSV = $this->get('distribution.distribution_service')->exportToCsv();
-
-            return new Response(json_encode($fileCSV));
-        } catch (\Exception $exception) {
-            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-        }
     }
 }

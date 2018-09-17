@@ -73,6 +73,12 @@ class CriteriaDistributionService
         );
     }
 
+    /**
+     * @param DistributionData $distributionData
+     * @param SelectionCriteria $selectionCriteria
+     * @param bool $flush
+     * @return SelectionCriteria
+     */
     public function save(DistributionData $distributionData, SelectionCriteria $selectionCriteria, bool $flush)
     {
         $selectionCriteria->setDistributionData($distributionData);
@@ -82,6 +88,10 @@ class CriteriaDistributionService
         return $selectionCriteria;
     }
 
+    /**
+     * @param array $filters
+     * @return array
+     */
     public function getAll(array $filters)
     {
         $criteria = $this->configurationLoader->load($filters);

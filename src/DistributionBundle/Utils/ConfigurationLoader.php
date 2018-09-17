@@ -11,8 +11,14 @@ class ConfigurationLoader
     /** @var EntityManagerInterface $em */
     private $em;
 
+    /**
+     * @var
+     */
     private $criteria;
 
+    /**
+     * @var array
+     */
     private $MAPPING_TYPE_DEFAULT = [
         "boolean",
         "string",
@@ -20,6 +26,11 @@ class ConfigurationLoader
         "date"
     ];
 
+    /**
+     * ConfigurationLoader constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param $criteria
+     */
     public function __construct(EntityManagerInterface $entityManager, $criteria)
     {
         $this->em = $entityManager;
@@ -55,6 +66,13 @@ class ConfigurationLoader
         return $criteriaFormatted;
     }
 
+    /**
+     * @param array $filters
+     * @param string $distributionType
+     * @param $criterion
+     * @param $type
+     * @return array
+     */
     private function formatCriteria(array $filters, string $distributionType, $criterion, $type) {
         if (in_array($type, $this->MAPPING_TYPE_DEFAULT))
         {

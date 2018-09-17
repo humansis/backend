@@ -50,6 +50,16 @@ class HouseholdService
     private $container;
 
 
+    /**
+     * HouseholdService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param Serializer $serializer
+     * @param BeneficiaryService $beneficiaryService
+     * @param RequestValidator $requestValidator
+     * @param LocationService $locationService
+     * @param ValidatorInterface $validator
+     * @param ContainerInterface $container
+     */
     public function __construct(
         EntityManagerInterface $entityManager,
         Serializer $serializer,
@@ -283,6 +293,10 @@ class HouseholdService
         return $household;
     }
 
+    /**
+     * @param Household $household
+     * @param Project $project
+     */
     public function addToProject(Household &$household, Project $project)
     {
         if (!in_array($project, $household->getProjects()->toArray()))
@@ -333,6 +347,10 @@ class HouseholdService
         return $countrySpecificAnswer;
     }
 
+    /**
+     * @param Household $household
+     * @return Household
+     */
     public function remove(Household $household)
     {
         $household->setArchived(true);
@@ -342,6 +360,9 @@ class HouseholdService
         return $household;
     }
 
+    /**
+     * @return mixed
+     */
     public function exportToCsv() {
 
         $exportableTable = $this->em->getRepository(Household::class)->findAll();

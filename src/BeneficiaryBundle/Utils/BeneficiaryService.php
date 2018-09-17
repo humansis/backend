@@ -298,13 +298,22 @@ class BeneficiaryService
         $this->em->flush();
         return true;
     }
-    
+
+    /**
+     * @param string $iso3
+     * @return int
+     */
     public function countAll(string $iso3)
     {
         $count = (int) $this->em->getRepository(Beneficiary::class)->countAllInCountry($iso3);
         return $count;
     }
 
+    /**
+     * @param DistributionData $distributionData
+     * @param string $type
+     * @return mixed
+     */
     public function exportToCsvBeneficiariesInDistribution(DistributionData $distributionData, string $type) {
 
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
@@ -312,6 +321,10 @@ class BeneficiaryService
 
     }
 
+    /**
+     * @param string $type
+     * @return mixed
+     */
     public function exportToCsv(string $type) {
 
         $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();

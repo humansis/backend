@@ -29,6 +29,13 @@ class DistributionBeneficiaryService
     private $container;
 
 
+    /**
+     * DistributionBeneficiaryService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param Serializer $serializer
+     * @param ValidatorInterface $validator
+     * @param ContainerInterface $container
+     */
     public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container)
     {
         $this->em = $entityManager;
@@ -150,24 +157,7 @@ class DistributionBeneficiaryService
                 "Family name"=> $value->getFamilyName(),
                 "Gender" => $value->getGender(),
                 "Status" => $value->getStatus(),
-                "Date of birth" => $value->getDateOfBirth()->format('m/d/y'),
-                //"Update on" => $value->getUpdatedOn(),
-                //"Household" => $value['household'],
-                //"Vulnerability criteria" => $value['vulnerabilityCriteria'],
-                //"Phones" => $value['phones'],
-                //"National IDs" => $value['nationalIds'],
-
-                /*"Given name" => $value['givenName'],
-                "Family name"=> $value['familyName'],
-                "Gender" => $value['gender'],
-                "Status" => $value['status'],
-                "Date of birth" => $value['dateOfBirth'],
-                "Update on" => $value['updatedOn'],
-                "Profile" => $value['profile'],
-                "Household" => $value['household'],
-                "Vulnerability criteria" => $value['vulnerabilityCriteria'],
-                "Phones" => $value['phones'],
-                "National IDs" => $value['nationalIds'],*/
+                "Date of birth" => $value->getDateOfBirth()->format('m/d/y')
             ]);
         }
         return $this->container->get('export_csv_service')->export($beneficiaries,'distributions', $type);

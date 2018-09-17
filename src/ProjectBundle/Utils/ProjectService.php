@@ -18,6 +18,9 @@ use UserBundle\Entity\UserProject;
 
 class ProjectService
 {
+    /**
+     * @var EntityManagerInterface
+     */
     protected $em;
 
     /** @var Serializer $serializer */
@@ -29,6 +32,13 @@ class ProjectService
     /** @var ContainerInterface $container */
     private $container;
 
+    /**
+     * ProjectService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param Serializer $serializer
+     * @param ValidatorInterface $validator
+     * @param ContainerInterface $container
+     */
     public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator , ContainerInterface $container)
     {
         $this->em = $entityManager;
@@ -68,7 +78,11 @@ class ProjectService
         $this->em->flush();
         return $projects;
     }
-    
+
+    /**
+     * @param string $iso3
+     * @return mixed
+     */
     public function countAll(string $iso3)
     {
         $count = $this->em->getRepository(Project::class)->count(['iso3' => $iso3, 'archived' => 0]);

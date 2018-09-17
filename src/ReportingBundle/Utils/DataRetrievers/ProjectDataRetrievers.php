@@ -8,9 +8,19 @@ use ReportingBundle\Entity\ReportingProject;
 
 class ProjectDataRetrievers 
 {
+    /**
+     * @var EntityManager
+     */
     private $em;
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectRepository|\Doctrine\ORM\EntityRepository
+     */
     private $reportingProject;
 
+    /**
+     * ProjectDataRetrievers constructor.
+     * @param EntityManager $em
+     */
     public function __construct(EntityManager $em)
     {
         $this->em = $em;   
@@ -19,6 +29,8 @@ class ProjectDataRetrievers
 
     /**
      * Get the name of all donors
+     * @param array $filters
+     * @return array
      */
     public function BMS_Project_D(array $filters) {
         $qb = $this->getReportingValue('BMS_Project_D', $filters);
@@ -33,6 +45,8 @@ class ProjectDataRetrievers
 
     /**
      * Get the number of household served
+     * @param array $filters
+     * @return array
      */
     public function BMS_Project_HS(array $filters) {
         $qb = $this->getReportingValue('BMS_Project_HS', $filters);
@@ -53,6 +67,8 @@ class ProjectDataRetrievers
 
     /**
      * Get the beneficiaries age
+     * @param array $filters
+     * @return array
      */
     public function BMS_Project_AB(array $filters) {
         $qb = $this->getReportingValue('BMS_Project_AB', $filters);
@@ -73,6 +89,8 @@ class ProjectDataRetrievers
 
     /**
      * Get the number of men and women in a project
+     * @param array $filters
+     * @return array
      */
     public function BMS_Project_NMW(array $filters) {
 
@@ -122,6 +140,8 @@ class ProjectDataRetrievers
 
     /**
      * Get the number of men
+     * @param array $filters
+     * @return mixed
      */
     public function BMSU_Project_NM(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_NM', $filters);
@@ -132,16 +152,20 @@ class ProjectDataRetrievers
 
     /**
      * Get the number of women
+     * @param array $filters
+     * @return mixed
      */
     public function BMSU_Project_NW(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_NW', $filters);
         //to filter data with the good frequency
         $result = $this->getByFrequency($qb, $filters, 'BMSU_Project_NW');
         return $result;   
-    }  
-    
+    }
+
     /**
      * Get the percentage of vulnerabilities served
+     * @param array $filters
+     * @return array
      */
     public function BMS_Project_PVS(array $filters) {
         $vulnerabilitiesPercentage = [];
@@ -182,6 +206,8 @@ class ProjectDataRetrievers
 
     /**
      * Get the total of vulnerabilities served by vulnerabilities
+     * @param array $filters
+     * @return mixed
      */
     public function BMSU_Project_TVSV(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_TVSV', $filters);
@@ -192,6 +218,8 @@ class ProjectDataRetrievers
 
     /**
      * Get the total of vulnerabilities served
+     * @param array $filters
+     * @return mixed
      */
     public function BMSU_Project_TVS(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_TVS', $filters);
@@ -202,6 +230,8 @@ class ProjectDataRetrievers
 
     /**
      * Get the total of value in a project
+     * @param array $filters
+     * @return mixed
      */
     public function BMSU_Project_PV(array $filters) {
         $qb = $this->getReportingValue('BMSU_Project_PV', $filters);
@@ -213,6 +243,9 @@ class ProjectDataRetrievers
     /**
      * Use to verify if a key project exist in filter
      * If this key exists, it means a project was selected in selector
+     * @param $qb
+     * @param array $filters
+     * @return mixed
      */
     public function ifInProject($qb, array $filters) {
         if(array_key_exists('project', $filters)) {
@@ -225,6 +258,9 @@ class ProjectDataRetrievers
     /**
      * Use to make join and where in DQL
      * Use in all project data retrievers
+     * @param string $code
+     * @param array $filters
+     * @return \Doctrine\ORM\QueryBuilder|mixed
      */
     public function getReportingValue(string $code, array $filters) {
         $qb = $this->reportingProject->createQueryBuilder('rp')
@@ -241,6 +277,10 @@ class ProjectDataRetrievers
 
     /**
      * sort data by frequency
+     * @param $qb
+     * @param array $filters
+     * @param string $nameFunction
+     * @return mixed
      */
     public function getByFrequency($qb, array $filters, string $nameFunction) {
         if ($filters['frequency'] === "Month") {
@@ -275,8 +315,12 @@ class ProjectDataRetrievers
      * switch case to use the good select
      * each case is the name of the function to execute
      * in the body of each case, if allow to find which frequency is waiting
-     * 
+     *
      * Indicators with the same 'select' statement are grouped in the same case
+     * @param $qb
+     * @param $nameFunction
+     * @param $frequency
+     * @return mixed
      */
     public function conditionSelect($qb, $nameFunction, $frequency) {
         switch ($nameFunction) {
@@ -344,6 +388,8 @@ class ProjectDataRetrievers
 
     /**
      * get the name of month which delimit the quarter
+     * @param $results
+     * @return mixed
      */
     public function getNameQuarter($results) {
         foreach($results as &$result) {
@@ -363,6 +409,8 @@ class ProjectDataRetrievers
 
     /**
      * Get the data with the more recent values
+     * @param array $values
+     * @return array
      */
     public function lastDate(array $values) {
         $moreRecentValues = [];

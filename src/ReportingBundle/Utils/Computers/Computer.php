@@ -13,10 +13,21 @@ use Doctrine\ORM\EntityManager;
 
 class Computer implements ComputerInterface {
 
+    /**
+     * @var EntityManager
+     */
     private $em;
+    /**
+     * @var ProjectDataRetrievers
+     */
     private $project;
 
 
+    /**
+     * Computer constructor.
+     * @param EntityManager $em
+     * @param ProjectDataRetrievers $project
+     */
     public function __construct(EntityManager $em, ProjectDataRetrievers $project)
     {
         $this->em = $em; 
@@ -26,6 +37,9 @@ class Computer implements ComputerInterface {
     /**
      * Search in all data retrievers if the code exists
      * Call the good function after find it
+     * @param IndicatorInterface $indicator
+     * @param array $filters
+     * @return mixed
      */
     public function compute(IndicatorInterface $indicator , array $filters = []) 
     {
@@ -58,6 +72,4 @@ class Computer implements ComputerInterface {
             }
         }
     }
-
 }
-?>

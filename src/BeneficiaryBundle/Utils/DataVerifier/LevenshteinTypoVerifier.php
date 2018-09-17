@@ -25,6 +25,12 @@ class LevenshteinTypoVerifier extends AbstractVerifier
     private $token;
 
 
+    /**
+     * LevenshteinTypoVerifier constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param Container $container
+     * @param $token
+     */
     public function __construct(EntityManagerInterface $entityManager, Container $container, $token)
     {
         parent::__construct($entityManager);

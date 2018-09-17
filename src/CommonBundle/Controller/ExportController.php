@@ -121,6 +121,5 @@ class ExportController extends Controller
                 return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
             }
         }
-
     }
 }
