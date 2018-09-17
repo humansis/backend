@@ -3,6 +3,7 @@
 namespace TransactionBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use \Unirest;
 
 class KHMTransactionService extends DefaultTransactionService {
 
