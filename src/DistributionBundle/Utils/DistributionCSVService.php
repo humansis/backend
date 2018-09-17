@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
+use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
@@ -27,6 +28,8 @@ class DistributionCSVService
 {
     /** @var EntityManagerInterface $em */
     private $em;
+    /** @var ExportCSVService $exportCSVService */
+    private $exportCSVService;
     /** @var ContainerInterface $container */
     private $container;
     /** @var HouseholdToCSVMapper $householdToCSVMapper */
@@ -43,6 +46,7 @@ class DistributionCSVService
     /**
      * DistributionCSVService constructor.
      * @param EntityManagerInterface $entityManager
+     * @param ExportCSVService $exportCSVService
      * @param ContainerInterface $container
      * @param HouseholdToCSVMapper $householdToCSVMapper
      * @param Serializer $serializer
@@ -51,6 +55,7 @@ class DistributionCSVService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
+        ExportCSVService $exportCSVService,
         ContainerInterface $container,
         HouseholdToCSVMapper $householdToCSVMapper,
         Serializer $serializer,
@@ -58,6 +63,7 @@ class DistributionCSVService
         RequestValidator $requestValidator
     ) {
         $this->em = $entityManager;
+        $this->exportCSVService = $exportCSVService;
         $this->container = $container;
         $this->householdToCSVMapper = $householdToCSVMapper;
         $this->serializer = $serializer;
