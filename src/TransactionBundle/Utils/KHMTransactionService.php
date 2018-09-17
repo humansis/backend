@@ -3,7 +3,7 @@
 namespace TransactionBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
-use \Unirest\Request;
+use Unirest as Unirest;
 
 class KHMTransactionService extends DefaultTransactionService {
 
@@ -35,7 +35,7 @@ class KHMTransactionService extends DefaultTransactionService {
             'client_id' => 'third_party',
             'client_secret' => '16681c9ff419d8ecc7cfe479eb02a7a'
         );
-        $response = Request::post($this->url . "/oauth/token", null, $query);
+        $response = Unirest\Request::post($this->url . "/oauth/token", null, $query);
         return $response->body;
     }
 
