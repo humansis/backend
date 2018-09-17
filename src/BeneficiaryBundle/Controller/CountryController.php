@@ -134,38 +134,4 @@ class CountryController extends Controller
         if (!$valid)
             return new Response("", Response::HTTP_BAD_REQUEST);
     }
-    /**
-     * @Rest\Get("/Country/export", name="country_export")
-     * TODO: ADd security on project
-     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
-     *
-     * @SWG\Tag(name="Country")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="OK"
-     * )
-     *
-     * @SWG\Response(
-     *     response=204,
-     *     description="HTTP_NO_CONTENT"
-     * )
-     * @return Response
-     */
-    // public function exportToCSVAction() {
-
-
-    //  try {
-
-    //      $fileCSV = $this->get('beneficiary.country_specific_service')->exportToCsv();
-    //      return new Response(json_encode($fileCSV));
-    //  } catch (\Exception $exception) {
-
-    //      return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-    //  }
-
-
-    // }
-
-
 }

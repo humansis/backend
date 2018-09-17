@@ -23,7 +23,6 @@ use PhpOffice\PhpSpreadsheet\Reader\Xls as XlsReader;
 use PhpOffice\PhpSpreadsheet\Reader\Ods as OdsReader;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
-use Asan\PHPExcel\Excel;
 
 class DistributionCSVService
 {
@@ -44,6 +43,16 @@ class DistributionCSVService
     /** @var RequestValidator $requestValidator */
     private $requestValidator;
 
+    /**
+     * DistributionCSVService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param ExportCSVService $exportCSVService
+     * @param ContainerInterface $container
+     * @param HouseholdToCSVMapper $householdToCSVMapper
+     * @param Serializer $serializer
+     * @param ValidatorInterface $validator
+     * @param RequestValidator $requestValidator
+     */
     public function __construct(
         EntityManagerInterface $entityManager,
         ExportCSVService $exportCSVService,
@@ -285,7 +294,7 @@ class DistributionCSVService
         else{
             return ["Error with the extension of the file imported"];
         }
-        
+
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->toArray(null, true, true, true);
 

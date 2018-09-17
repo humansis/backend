@@ -22,6 +22,12 @@ class SectorService
     /** @var ValidatorInterface $validator */
     private $validator;
 
+    /**
+     * SectorService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param Serializer $serializer
+     * @param ValidatorInterface $validator
+     */
     public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator)
     {
         $this->em = $entityManager;
@@ -29,6 +35,9 @@ class SectorService
         $this->validator = $validator;
     }
 
+    /**
+     * @return object[]
+     */
     public function findAll()
     {
         return $this->em->getRepository(Sector::class)->findAll();

@@ -19,9 +19,19 @@ use \TransactionBundle\Entity\Transaction;
 class DataFillersCountry extends DataFillers
 {
 
+    /**
+     * @var EntityManager
+     */
     private $em;
+    /**
+     * @var
+     */
     private $repository;
 
+    /**
+     * DataFillersCountry constructor.
+     * @param EntityManager $em
+     */
     public function __construct(EntityManager $em)
     {
         $this->em = $em;   
@@ -29,6 +39,10 @@ class DataFillersCountry extends DataFillers
 
     /**
      * find the id of reference code
+     * @param string $code
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function getReferenceId(string $code) {
         $this->repository = $this->em->getRepository(ReportingIndicator::class);
@@ -269,12 +283,12 @@ class DataFillersCountry extends DataFillers
     }
 
 
-     /**
+    /**
      * Set the country iso3 in the query on Household (with alias 'hh{id}'
      *
      * @param QueryBuilder $qb
-     * @param $countryISO3
-     * @param string $i
+     * @param string $alias
+     * @return QueryBuilder
      */
     public function getCountry($qb, string $alias)
     {
@@ -298,6 +312,8 @@ class DataFillersCountry extends DataFillers
 
     /**
      * search after delete null adm which data as the same adm and add them together
+     * @param array $byCountry
+     * @return array
      */
     public function sortByCountry(Array $byCountry) {
         $results = [];
@@ -325,6 +341,8 @@ class DataFillersCountry extends DataFillers
 
     /**
      * Search which adm isn't empty and keep only this adm
+     * @param $byCountry
+     * @return array
      */
     public function deleteNullAdm($byCountry) {
         $results = [];
@@ -361,9 +379,4 @@ class DataFillersCountry extends DataFillers
         return $results;
         
     }
-
-
-
-
-
 }

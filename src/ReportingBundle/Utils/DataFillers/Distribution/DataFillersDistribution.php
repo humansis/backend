@@ -18,17 +18,31 @@ use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
 class DataFillersDistribution  extends DataFillers
 {
 
+    /**
+     * @var EntityManager
+     */
     private $em;
+    /**
+     * @var
+     */
     private $repository;
 
 
+    /**
+     * DataFillersDistribution constructor.
+     * @param EntityManager $em
+     */
     public function __construct(EntityManager $em)
     {
         $this->em = $em;   
     }
 
-     /**
+    /**
      * find the id of reference code
+     * @param string $code
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function getReferenceId(string $code) {
         $this->repository = $this->em->getRepository(ReportingIndicator::class);
@@ -514,15 +528,16 @@ class DataFillersDistribution  extends DataFillers
                 $this->em->getConnection()->rollback();
                 throw $e;
             }
-            $byDistribution = [];
             $results = [];
 
         }
     }
 
-     /**
+    /**
      * Use to sort beneficiary by age interval
-     * If the age is in the interval, increment the corresponding counter 
+     * If the age is in the interval, increment the corresponding counter
+     * @param $ages
+     * @return array
      */
     public function sortByAge($ages) {
         $byInterval= []; 
@@ -587,7 +602,4 @@ class DataFillersDistribution  extends DataFillers
         }
         return $byInterval;
     }
-
-
-
 }

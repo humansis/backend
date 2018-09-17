@@ -24,6 +24,13 @@ class DonorService
     /** @var ContainerInterface $container */
     private $container;
 
+    /**
+     * DonorService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param Serializer $serializer
+     * @param ValidatorInterface $validator
+     * @param ContainerInterface $container
+     */
     public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container)
     {
         $this->em = $entityManager;

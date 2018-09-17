@@ -15,6 +15,10 @@ use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+/**
+ * Class UserController
+ * @package UserBundle\Controller
+ */
 class UserController extends Controller
 {
 
@@ -114,11 +118,10 @@ class UserController extends Controller
      *     description="LOCKED"
      * )
      *
-     * @param Request $request
-     *
+     * @param $username
      * @return Response
      */
-    public function getSaltAction(Request $request, $username)
+    public function getSaltAction($username)
     {
         try
         {
@@ -194,6 +197,8 @@ class UserController extends Controller
      *
      * @Rest\Get("/check")
      * @Security("is_granted('ROLE_USER_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Users")
      *
      * @SWG\Response(
      *     response=200,
@@ -273,6 +278,7 @@ class UserController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
+     * @param User $user
      * @return Response
      */
     public function showAction(User $user)

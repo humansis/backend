@@ -155,6 +155,11 @@ class HouseholdToCSVMapper extends AbstractMapper
 
     }
 
+    /**
+     * @param array $householdArrayCSV
+     * @param $index
+     * @param $mapping
+     */
     private function setBeneficiaryNullFields(array &$householdArrayCSV, $index, $mapping)
     {
         if (0 === intval($index))

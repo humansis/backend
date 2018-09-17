@@ -10,10 +10,24 @@ use \DistributionBundle\Entity\DistributionData;
 
 class DistributionDataRetrievers
 {
+    /**
+     * @var EntityManager
+     */
     private $em;
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectRepository|\Doctrine\ORM\EntityRepository
+     */
     private $reportingDistribution;
+    /**
+     * @var ProjectDataRetrievers
+     */
     private $project;
 
+    /**
+     * DistributionDataRetrievers constructor.
+     * @param EntityManager $em
+     * @param ProjectDataRetrievers $project
+     */
     public function __construct(EntityManager $em, ProjectDataRetrievers $project)
     {
         $this->em = $em;   
@@ -21,10 +35,13 @@ class DistributionDataRetrievers
         $this->project = $project;
     }
 
-     /**
+    /**
      * Use to verify if a key project exist in filter
      * If this key exists, it means a project was selected in selector
      * In distribtuion mode, only one project could be selected
+     * @param $qb
+     * @param array $filters
+     * @return mixed
      */
     public function ifInProject($qb, array $filters) {
         if(array_key_exists('project', $filters)) {
@@ -38,6 +55,9 @@ class DistributionDataRetrievers
     /**
      * Use to verify if a key distribution exist in filter
      * If this key exists, it means a distribution was selected in selector
+     * @param $qb
+     * @param array $filters
+     * @return mixed
      */
     public function ifInDistribution($qb, array $filters) {
         if(array_key_exists('distribution', $filters)) {
@@ -50,6 +70,9 @@ class DistributionDataRetrievers
     /**
      * Use to make join and where in DQL
      * Use in all distribution data retrievers
+     * @param string $code
+     * @param array $filters
+     * @return \Doctrine\ORM\QueryBuilder|mixed
      */
     public function getReportingValue(string $code, array $filters) {
         $qb = $this->reportingDistribution->createQueryBuilder('rd')
@@ -70,6 +93,8 @@ class DistributionDataRetrievers
     /**
      * Get the data with the more recent values
      * If the frequency is quarter, select the value corresponding to the quarter
+     * @param array $values
+     * @return array
      */
     public function lastDate(array $values) {
         $moreRecentValues = [];
@@ -93,6 +118,8 @@ class DistributionDataRetrievers
 
     /**
      * Get the number of enrolled beneficiaries in a distribution
+     * @param array $filters
+     * @return array
      */
     public function BMS_Distribution_NEB(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_NEB', $filters);
@@ -114,6 +141,8 @@ class DistributionDataRetrievers
 
     /**
      * Get the total distribution value in a distribution
+     * @param array $filters
+     * @return array
      */
     public function BMS_Distribution_TDV(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_TDV', $filters);
@@ -134,6 +163,8 @@ class DistributionDataRetrievers
 
     /**
      * Get the modality(and it type) for a distribution
+     * @param array $filters
+     * @return array
      */
     public function BMS_Distribution_M(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_M', $filters);
@@ -154,6 +185,8 @@ class DistributionDataRetrievers
 
     /**
      * Get the age breakdown in a distribution
+     * @param array $filters
+     * @return array
      */
     public function BMS_Distribution_AB(array $filters) {
         $qb = $this->getReportingValue('BMS_Distribution_AB', $filters);
@@ -174,6 +207,8 @@ class DistributionDataRetrievers
 
     /**
      * Get the number of men in a distribution
+     * @param array $filters
+     * @return mixed
      */
     public function BMSU_Distribution_NM(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_NM', $filters);
@@ -184,6 +219,8 @@ class DistributionDataRetrievers
 
     /**
      * Get the number of women in a distribution
+     * @param array $filters
+     * @return mixed
      */
     public function BMSU_Distribution_NW(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_NW', $filters);
@@ -194,6 +231,8 @@ class DistributionDataRetrievers
 
     /**
      * Get the number of men and women in a project
+     * @param array $filters
+     * @return array
      */
     public function BMS_Distribution_NMW(array $filters) {
 
@@ -264,6 +303,8 @@ class DistributionDataRetrievers
 
     /**
      * Get the total of vulnerabilities served
+     * @param array $filters
+     * @return mixed
      */
     public function BMSU_Distribution_TVS(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_TVS', $filters);
@@ -274,6 +315,8 @@ class DistributionDataRetrievers
 
     /**
      * Get the total of vulnerabilities served by vulnerabilities
+     * @param array $filters
+     * @return mixed
      */
     public function BMSU_Distribution_TVSV(array $filters) {
         $qb = $this->getReportingValue('BMSU_Distribution_TVSV', $filters);
@@ -284,6 +327,8 @@ class DistributionDataRetrievers
 
     /**
      * Get the percentage of vulnerabilities served
+     * @param array $filters
+     * @return array
      */
     public function BMS_Distribution_PVS(array $filters) {
         $vulnerabilitiesPercentage = [];
@@ -323,6 +368,8 @@ class DistributionDataRetrievers
 
     /**
      * Get the percent of value used in the project by the distribution
+     * @param array $filters
+     * @return array
      */
     public function BMS_Distribution_PPV(array $filters) {
         $projectDistributionValue =[];
@@ -367,8 +414,12 @@ class DistributionDataRetrievers
         
     }
 
-        /**
+    /**
      * sort data by frequency
+     * @param $qb
+     * @param array $filters
+     * @param string $nameFunction
+     * @return mixed
      */
     public function getByFrequency($qb, array $filters, string $nameFunction) {
         if ($filters['frequency'] === "Month") {
@@ -403,8 +454,12 @@ class DistributionDataRetrievers
      * switch case to use the good select
      * each case is the name of the function to execute
      * in the body of each case, if allow to find which frequency is waiting
-     * 
+     *
      * Indicator with the same 'select' statement is grouped in the same case
+     * @param $qb
+     * @param $nameFunction
+     * @param $frequency
+     * @return mixed
      */
     public function conditionSelect($qb, $nameFunction, $frequency) {
         switch ($nameFunction) {
@@ -481,6 +536,8 @@ class DistributionDataRetrievers
 
     /**
      * get the name of month which delimit the quarter
+     * @param $results
+     * @return mixed
      */
     public function getNameQuarter($results) {
         foreach($results as &$result) {

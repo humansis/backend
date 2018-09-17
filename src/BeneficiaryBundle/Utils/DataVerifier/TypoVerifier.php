@@ -36,6 +36,12 @@ class TypoVerifier extends AbstractVerifier
     private $mappingHouseholdAndHead;
 
 
+    /**
+     * TypoVerifier constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param Container $container
+     * @param $token
+     */
     public function __construct(EntityManagerInterface $entityManager, Container $container, $token)
     {
         parent::__construct($entityManager);

@@ -13,13 +13,24 @@ use Doctrine\ORM\EntityManager;
 class DataFillers implements DataFillersInterface
 {
 
+    /**
+     * @var EntityManager
+     */
     private $em;
 
+    /**
+     * DataFillers constructor.
+     * @param EntityManager $em
+     */
     public function __construct(EntityManager $em)
     {
         $this->em = $em;   
     }
 
+    /**
+     * @param IndicatorInterface $indicator
+     * @return mixed
+     */
     public function fill(IndicatorInterface $indicator)
     {
 

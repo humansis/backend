@@ -17,11 +17,18 @@ use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
 
 use Doctrine\ORM\EntityManager;
 
-class DataFillersProject 
+class DataFillersProject
 {
 
+    /**
+     * @var EntityManager
+     */
     private $em;
 
+    /**
+     * DataFillersProject constructor.
+     * @param EntityManager $em
+     */
     public function __construct(EntityManager $em)
     {
         $this->em = $em;   
@@ -29,6 +36,10 @@ class DataFillersProject
 
     /**
      * find the id of reference code
+     * @param string $code
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function getReferenceId(string $code) {
         $this->repository = $this->em->getRepository(ReportingIndicator::class);
@@ -38,6 +49,9 @@ class DataFillersProject
         return $qb->getQuery()->getSingleResult();
     }
 
+    /**
+     * @return array|object[]
+     */
     public function getProject() {
         $this->repository = $this->em->getRepository(Project::class);
         return $this->repository->findAll();
@@ -51,7 +65,6 @@ class DataFillersProject
         $projects = $this->getProject();
         $results = [];
         foreach($projects as $project) {
-            $byProject = [];
             foreach($project->getHouseholds() as $household) {
                 $this->repository = $this->em->getRepository(Beneficiary::class);
                 $qb = $this->repository->createQueryBuilder('b')
@@ -108,7 +121,6 @@ class DataFillersProject
         $projects = $this->getProject();
         $results = [];
         foreach($projects as $project) {
-            $byProject = [];
             foreach($project->getHouseholds() as $household) {
                 $this->repository = $this->em->getRepository(Beneficiary::class);
                 $qb = $this->repository->createQueryBuilder('b')
@@ -254,7 +266,6 @@ class DataFillersProject
         $results = [];
         //Search all vulnerability criterion foreach beneficiary in a project  and count the vulnerability served
         foreach($projects as $project) {
-            $byProject = [];
             foreach($project->getHouseholds() as $household) {
                 $this->repository = $this->em->getRepository(Beneficiary::class);
                 $qb = $this->repository->createQueryBuilder('b')
@@ -313,7 +324,6 @@ class DataFillersProject
     public function BMS_Project_D() {
         $projects = $this->getProject();
         foreach($projects as $project) {
-            $byProject = [];
             foreach($project->getDonors() as $donor) {
                 $this->repository = $this->em->getRepository(Donor::class);
                 $qb = $this->repository->createQueryBuilder('d')
@@ -358,7 +368,6 @@ class DataFillersProject
     public function BMS_Project_HS() {
         $projects = $this->getProject();
         foreach($projects as $project) {
-            $byProject = [];
             $results = [];
             foreach($project->getHouseholds() as $household) {
                 $this->repository = $this->em->getRepository(Household::class);
@@ -403,8 +412,7 @@ class DataFillersProject
                 }catch (Exception $e) {
                     $this->em->getConnection()->rollback();
                     throw $e;
-                }       
-            $results = [];
+                }
         }
     }
 
@@ -459,8 +467,6 @@ class DataFillersProject
                     throw $e;
                 }    
             }
-            $results = [];
-            $byInterval = [];
         }
     }
 
@@ -505,7 +511,9 @@ class DataFillersProject
 
     /**
      * Use to sort beneficiary by age interval
-     * If the age is in the interval, increment the corresponding counter 
+     * If the age is in the interval, increment the corresponding counter
+     * @param $ages
+     * @return array
      */
     public function sortByAge($ages) {
         $byInterval= []; 

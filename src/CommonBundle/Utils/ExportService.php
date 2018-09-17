@@ -40,6 +40,14 @@ Class ExportService {
         $this->container = $container;
     }
 
+    /**
+     * @param $exportableTable
+     * @param $name
+     * @param $type
+     * @return array|string
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
     public function export($exportableTable, $name, $type)
     {
         $rows = [];

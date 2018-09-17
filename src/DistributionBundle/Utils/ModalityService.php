@@ -15,21 +15,37 @@ class ModalityService
     private $em;
 
 
+    /**
+     * ModalityService constructor.
+     * @param EntityManagerInterface $manager
+     */
     public function __construct(EntityManagerInterface $manager)
     {
         $this->em = $manager;
     }
 
+    /**
+     * @return object[]
+     */
     public function getAll()
     {
         return $this->em->getRepository(Modality::class)->findAll();
     }
 
+    /**
+     * @param Modality $modality
+     * @return \Doctrine\Common\Collections\Collection
+     */
     public function getAllModalityTypes(Modality $modality)
     {
         return $modality->getModalityTypes();
     }
 
+    /**
+     * @param $name
+     * @return Modality
+     * @throws \Exception
+     */
     public function create($name)
     {
         try
@@ -47,6 +63,12 @@ class ModalityService
         return $modality;
     }
 
+    /**
+     * @param Modality $modality
+     * @param $name
+     * @return ModalityType
+     * @throws \Exception
+     */
     public function createType(Modality $modality, $name)
     {
         try

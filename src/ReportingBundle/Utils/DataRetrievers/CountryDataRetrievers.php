@@ -8,9 +8,19 @@ use ReportingBundle\Entity\ReportingCountry;
 
 class CountryDataRetrievers
 {
+    /**
+     * @var EntityManager
+     */
     private $em;
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectRepository|\Doctrine\ORM\EntityRepository
+     */
     private $reportingCountry;
 
+    /**
+     * CountryDataRetrievers constructor.
+     * @param EntityManager $em
+     */
     public function __construct(EntityManager $em)
     {
         $this->em = $em; 
@@ -20,6 +30,9 @@ class CountryDataRetrievers
     /**
      * Use to make join and where in DQL
      * Use in all project data retrievers
+     * @param string $code
+     * @param array $filters
+     * @return \Doctrine\ORM\QueryBuilder
      */
     public function getReportingValue(string $code, array $filters) {
       $qb = $this->reportingCountry->createQueryBuilder('rc')
@@ -32,11 +45,14 @@ class CountryDataRetrievers
       return $qb;
   }
 
-  /**
-   * sort data by frequency
-   * take the query like parameter and according to the frequency filters
-   * make action to retrun data corresponding to this frequency
-   */
+    /**
+     * sort data by frequency
+     * take the query like parameter and according to the frequency filters
+     * make action to retrun data corresponding to this frequency
+     * @param $qb
+     * @param array $filters
+     * @return mixed
+     */
   public function getByFrequency($qb, array $filters) {
     if ($filters['frequency'] === "Month") {
       $qb ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
@@ -66,9 +82,11 @@ class CountryDataRetrievers
     return $result;
   }
 
-  /**
-   * get the name of month which delimit the quarter
-   */
+    /**
+     * get the name of month which delimit the quarter
+     * @param $results
+     * @return mixed
+     */
   public function getNameQuarter($results) {
     foreach($results as &$result) {
         if ($result['date'] === "1") {
@@ -85,9 +103,11 @@ class CountryDataRetrievers
   }
 
 
-  /**
-   * Get total of household by country
-   */
+    /**
+     * Get total of household by country
+     * @param array $filters
+     * @return mixed
+     */
   public function BMS_Country_TH(array $filters)
   {
     $qb = $this->getReportingValue('BMS_Country_TH', $filters);
@@ -95,9 +115,11 @@ class CountryDataRetrievers
     return $result;
   }
 
-  /**
-   * Get total of active projects by country
-   */
+    /**
+     * Get total of active projects by country
+     * @param array $filters
+     * @return mixed
+     */
   public function BMS_Country_AP(array $filters)
   {
     $qb = $this->getReportingValue('BMS_Country_AP', $filters);
@@ -105,9 +127,11 @@ class CountryDataRetrievers
     return $result;
   }
 
-  /**
-   * Get total funding by country
-   */
+    /**
+     * Get total funding by country
+     * @param array $filters
+     * @return mixed
+     */
   public function BMS_Country_TF(array $filters)
   {
     $qb = $this->getReportingValue('BMS_Country_TF', $filters);
@@ -115,9 +139,11 @@ class CountryDataRetrievers
     return $result;
   }
 
-  /**
-   * Get total of enrolled beneficiaries by country
-   */
+    /**
+     * Get total of enrolled beneficiaries by country
+     * @param array $filters
+     * @return mixed
+     */
   public function BMS_Country_EB(array $filters)
   {
     $qb = $this->getReportingValue('BMS_Country_EB', $filters);
@@ -125,9 +151,11 @@ class CountryDataRetrievers
     return $result;
   }
 
-  /**
-   * Get total number of distributions by country
-   */
+    /**
+     * Get total number of distributions by country
+     * @param array $filters
+     * @return mixed
+     */
   public function BMS_Country_TND(array $filters)
   {
     $qb = $this->getReportingValue('BMS_Country_TND', $filters);
@@ -135,9 +163,11 @@ class CountryDataRetrievers
     return $result;
   }
 
-  /**
-   * Get total transactions completed
-   */
+    /**
+     * Get total transactions completed
+     * @param array $filters
+     * @return mixed
+     */
   public function BMS_Country_TTC(array $filters)
   {
     $qb = $this->getReportingValue('BMS_Country_TTC', $filters);

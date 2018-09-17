@@ -44,6 +44,14 @@ class HouseholdCSVService
     private $token;
 
 
+    /**
+     * HouseholdCSVService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param HouseholdService $householdService
+     * @param BeneficiaryService $beneficiaryService
+     * @param CSVToArrayMapper $CSVToArrayMapper
+     * @param Container $container
+     */
     public function __construct(
         EntityManagerInterface $entityManager,
         HouseholdService $householdService,

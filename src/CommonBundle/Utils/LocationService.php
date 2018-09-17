@@ -26,6 +26,11 @@ class LocationService
     /** @var RequestValidator $requestValidator */
     private $requestValidator;
 
+    /**
+     * LocationService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param RequestValidator $requestValidator
+     */
     public function __construct(EntityManagerInterface $entityManager, RequestValidator $requestValidator)
     {
         $this->em = $entityManager;
@@ -33,6 +38,7 @@ class LocationService
     }
 
     /**
+     * @param $countryISO3
      * @param array $locationArray
      * @return Location|null|object
      * @throws ValidationException
@@ -197,6 +203,8 @@ class LocationService
 
     /**
      * Get the list of all adm1 in the country
+     * @param string $countryIso3
+     * @return object[]
      */
     public function getAllAdm1(string $countryIso3) {
         $adm1 = $this->em->getRepository(Adm1::class)->findBy(["countryISO3" => $countryIso3]);
@@ -205,6 +213,8 @@ class LocationService
 
     /**
      * Get the list of all adm2 linked to the adm1 passed in paramter
+     * @param string $IDadm1
+     * @return object[]
      */
     public function getAllAdm2(string $IDadm1) {
         $adm1 = $this->em->getRepository(Adm1::class)->findBy(["id" => $IDadm1]);
@@ -214,6 +224,8 @@ class LocationService
 
     /**
      * Get the list of all adm3 linked to the adm2 passed in paramter
+     * @param string $IDadm2
+     * @return object[]
      */
     public function getAllAdm3(string $IDadm2) {
         $adm2 = $this->em->getRepository(Adm2::class)->findBy(["id" => $IDadm2]);
@@ -223,6 +235,8 @@ class LocationService
 
     /**
      * Get the list of all adm4 linked to the adm3 passed in paramter
+     * @param string $IDadm3
+     * @return object[]
      */
     public function getAllAdm4(string $IDadm3) {
         $adm3 = $this->em->getRepository(Adm3::class)->findBy(["id" => $IDadm3]);
@@ -232,6 +246,8 @@ class LocationService
 
     /**
      * get the code of location for upcoming distribution
+     * @param string $countryIso3
+     * @return array
      */
     public function getCodeOfUpcomingDistribution(string $countryIso3) {
         $distributions = $this->em->getRepository(DistributionData::class)->findAll();

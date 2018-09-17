@@ -31,6 +31,7 @@ class ProjectController extends Controller
      *     )
      * )
      *
+     * @param Request $request
      * @return Response
      */
     public function getAllAction(Request $request)
@@ -56,6 +57,7 @@ class ProjectController extends Controller
      *     @Model(type=Project::class)
      * )
      *
+     * @param Project $project
      * @return Response
      */
     public function showAction(Project $project)

@@ -17,46 +17,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class DistributionCSVController extends Controller
 {
-
-    /**
-     * @Rest\Get("/distributions/{id}/export", name="export_csv")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
-     *
-     * @SWG\Tag(name="Distributions")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Return the list of distribution criteria",
-     *      examples={
-     *          "application/json":
-     *          {
-     *              0: "a,a,a,a,a\na,a",
-     *              1: "export_distribution_DISTRIBUTION-NAME.csv"
-     *          }
-     *     }
-     * )
-     *
-     * @param Request $request
-     * @param \DistributionBundle\Entity\DistributionData $distributionData
-     * @return Response
-     * @throws \Exception
-     */
-    public function exportAction(Request $request, DistributionData $distributionData)
-    {
-        /** @var DistributionCSVService $distributionCSVService */
-        $distributionCSVService = $this->get('distribution.distribution_csv_service');
-        try
-        {
-            $return = $distributionCSVService->export($request->request->get('__country'), $distributionData);
-        }
-        catch (\Exception $exception)
-        {
-            return new Response($exception->getMessage(), 500);
-        }
-
-        return new Response(json_encode($return));
-    }
-
     /**
      * @Rest\Post("/distributions/{id}/import", name="import_csv")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
