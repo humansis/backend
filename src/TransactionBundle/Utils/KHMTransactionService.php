@@ -72,9 +72,11 @@ class KHMTransactionService extends DefaultTransactionService {
         curl_close($curl);
         
         if ($err) {
-          throw new \Exception($err);
+            throw new \Exception($err);
         } else {
-          return $response;
+            $result = array();
+            parse_str($response, $result);
+            return $result;
         }
     }
 
