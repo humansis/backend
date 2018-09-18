@@ -48,6 +48,7 @@ class KHMTransactionService extends DefaultTransactionService {
         // dump($decrypted);
         // 
         $response = Unirest\Request::post($this->url . "/oauth/token", null, $query);
+        dump($response);
         return $response->body;
     }
 
