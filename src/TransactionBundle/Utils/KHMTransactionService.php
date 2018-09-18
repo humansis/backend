@@ -54,7 +54,7 @@ class KHMTransactionService extends DefaultTransactionService {
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-          CURLOPT_PORT => "9443",
+          CURLOPT_PORT => "8443",
           CURLOPT_URL => "https://stageonline.wingmoney.com:8443/RestEngine/oauth/token",
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_ENCODING => "",
