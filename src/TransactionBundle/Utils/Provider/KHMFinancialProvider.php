@@ -3,18 +3,19 @@
 namespace TransactionBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use BeneficiaryBundle\Entity\Beneficiary;
 
-class KHMTransactionService extends DefaultTransactionService {
+class KHMFinancialProvider implements DefaultFinancialProvider {
 
     /** @var EntityManagerInterface $em */
     private $em;
     
-    private $token;
-    
     private $url = "https://stageonline.wingmoney.com:8443/RestEngine";
+    private $token;
+    private $lastTokenDate;
 
     /**
-     * DefaultTransactionService constructor.
+     * DefaultFinancialProvider constructor.
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(EntityManagerInterface $entityManager)
@@ -23,8 +24,8 @@ class KHMTransactionService extends DefaultTransactionService {
     }
 
     /**
-     * Connect to API to transfer money
-     * @return string token
+     * Get token to connect to API
+     * @return object token
      * @throws \Exception
      */
     public function getToken()
@@ -38,7 +39,37 @@ class KHMTransactionService extends DefaultTransactionService {
             "client_secret" => "16681c9ff419d8ecc7cfe479eb02a7a",
             "scope"         => "trust"
         );
-        return $this->sendRequest("POST", $route, array(), $body);
+        
+        try {
+            $this->token = $this->sendRequest("POST", $route, $body);
+            $this->lastTokenDate = new \Date();
+            return $this->token;
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+    }
+    
+    /**
+     * Send money to beneficiaries
+     * @param  Beneficiary  $beneficiary
+     * @return object       transaction
+     */
+    public function sendMoneyToOne(string $phone_number = "0962620581")
+    {
+        $route = "/api/v1/sendmoney/nowing/commit";
+        $body = array(
+            "amount"          => 50,
+            "sender_msisdn"   => "012249184",
+            "receiver_msisdn" => $phone_number
+        );
+        
+        try {
+            $sent = $this->sendRequest("POST", $route, $body);
+            return $sent;
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
     
     /**
@@ -47,11 +78,20 @@ class KHMTransactionService extends DefaultTransactionService {
      * @param  string $route   url of the request
      * @param  array  $headers headers of the request (optional)
      * @param  array  $body    body of the request (optional)
-     * @return string response
+     * @return mixed  response
      * @throws \Exception
      */
-    public function sendRequest(string $type, string $route, array $headers = array(), array $body = array()) {
+    public function sendRequest(string $type, string $route, array $body = array()) {
         $curl = curl_init();
+        
+        $headers = array();
+        
+        if(!preg_match('/\/oauth\/token/', $route)) {
+            if (new \Date - $this->lastTokenDate > $this->token->expires_in) {
+                $this->getToken();
+            }
+            array_push($headers, "Authorization: Bearer " . $this->token->access_token);
+        }
         
         curl_setopt_array($curl, array(
           CURLOPT_PORT           => "8443",
@@ -61,7 +101,7 @@ class KHMTransactionService extends DefaultTransactionService {
           CURLOPT_MAXREDIRS      => 10,
           CURLOPT_TIMEOUT        => 30,
           CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST  => "POST",
+          CURLOPT_CUSTOMREQUEST  => $type,
           CURLOPT_POSTFIELDS     => http_build_query($body),
           CURLOPT_HTTPHEADER     => $headers,
           CURLOPT_FAILONERROR    => true
@@ -75,8 +115,6 @@ class KHMTransactionService extends DefaultTransactionService {
             throw new \Exception($err);
         } else {
             $result = json_decode($response);
-            dump($response);
-            dump($result);
             return $result;
         }
     }

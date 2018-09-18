@@ -16,9 +16,9 @@ class TransactionController extends Controller
 {
 
     /**
-     * @Rest\Get("/transaction", name="test_transaction")
+     * @Rest\Get("/transaction/distribution/{id}/send", name="send_money_for_distribution")
      * 
-     * @SWG\Tag(name="Common")
+     * @SWG\Tag(name="Transaction")
      *
      * @SWG\Response(
      *     response=200,
@@ -29,14 +29,17 @@ class TransactionController extends Controller
      *     response=400,
      *     description="HTTP_BAD_REQUEST"
      * )
+     *
      * @param Request $request
+     * @param DistributionData $distributionData
      * @return Response
      */
-    public function getTransactionAction(Request $request)  {
+    public function getTransactionAction(Request $request, DistributionData $distributionData)  {
+        $countryISO3 = $request->request->get('__country');
         
         try
         {
-            $response = $this->get('transaction.transaction_service')->getToken();
+            $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $distributionData);;
         }
         catch (\Exception $exception)
         {
