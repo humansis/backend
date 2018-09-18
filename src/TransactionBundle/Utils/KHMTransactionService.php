@@ -74,8 +74,7 @@ class KHMTransactionService extends DefaultTransactionService {
         if ($err) {
             throw new \Exception($err);
         } else {
-            $result = array();
-            parse_str($response, $result);
+            $result = json_decode($response);
             dump($response);
             dump($result);
             return $result;
