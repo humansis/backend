@@ -23,6 +23,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xls as XlsReader;
 use PhpOffice\PhpSpreadsheet\Reader\Ods as OdsReader;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class DistributionCSVService
 {
@@ -279,21 +280,7 @@ class DistributionCSVService
      */
     public function parseCSV($countryIso3, $beneficiaries, DistributionData $distributionData, UploadedFile $uploadedFile)
     {
-        // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
-        // LOADING CSV
-        if($uploadedFile->getClientOriginalExtension() == "csv"){
-            $reader = new CsvReader();
-            $reader->setDelimiter(',');
-        }
-        else if($uploadedFile->getClientOriginalExtension() == "xls") {
-            $reader = new XlsReader();
-        }
-        else if($uploadedFile->getClientOriginalExtension() == "ods") {
-            $reader = new OdsReader();
-        }
-        else{
-            return ["Error with the extension of the file imported"];
-        }
+        $reader = IOFactory::createReaderForFile($uploadedFile->getRealPath());
 
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->toArray(null, true, true, true);

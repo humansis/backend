@@ -17,10 +17,13 @@ use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
 use Doctrine\ORM\EntityManagerInterface;
-use PhpOffice\PhpSpreadsheet\Reader\Csv;
+use PhpOffice\PhpSpreadsheet\Reader\Csv as CsvReader;
+use PhpOffice\PhpSpreadsheet\Reader\Xls as XlsReader;
+use PhpOffice\PhpSpreadsheet\Reader\Ods as OdsReader;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class HouseholdCSVService
 {
@@ -83,10 +86,10 @@ class HouseholdCSVService
      */
     public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, int $step, $token)
     {
-        // If it's the first step, we transform CSV to array mapped for corresponding to the entity Household
+        // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
         // LOADING CSV
-        $reader = new Csv();
-        $reader->setDelimiter(",");
+        $reader = IOFactory::createReaderForFile($uploadedFile->getRealPath());
+
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->toArray(null, true, true, true);
 
