@@ -57,6 +57,7 @@ class KHMTransactionService extends DefaultTransactionService {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         ));
         $response = Unirest\Request::post($this->url . "/oauth/token", null, $query);
+        dump(Unirest\Request::getInfo());
         dump($response);
         return $response->body;
          
