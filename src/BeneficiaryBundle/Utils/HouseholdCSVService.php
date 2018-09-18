@@ -23,6 +23,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Ods as OdsReader;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class HouseholdCSVService
 {
@@ -87,25 +88,9 @@ class HouseholdCSVService
     {
         // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
         // LOADING CSV
-        if($uploadedFile->getClientOriginalExtension() == "csv"){
-            $reader = new CsvReader();
-            $reader->setDelimiter(',');
-        }
-        else if($uploadedFile->getClientOriginalExtension() == "xls") {
-            $reader = new XlsReader();
-        }
-        else if($uploadedFile->getClientOriginalExtension() == "ods") {
-            $reader = new OdsReader();
-        }
-        else{
-            return ["Error with the extension of the file imported"];
-        }
+        $reader = IOFactory::createReaderForFile($uploadedFile->getRealPath());
 
-        dump($uploadedFile->getRealPath());
-        dump($reader->load($uploadedFile->getRealPath()));
-        dump($reader->load($uploadedFile->getRealPath())->getActiveSheet());
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
-        dump($uploadedFile->getClientOriginalExtension());
         $sheetArray = $worksheet->toArray(null, true, true, true);
 
         return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $step, $token);
