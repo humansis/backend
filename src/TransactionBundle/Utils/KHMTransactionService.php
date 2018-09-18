@@ -76,6 +76,8 @@ class KHMTransactionService extends DefaultTransactionService {
         } else {
             $result = array();
             parse_str($response, $result);
+            dump($response);
+            dump($result);
             return $result;
         }
     }
