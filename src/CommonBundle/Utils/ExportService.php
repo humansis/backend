@@ -7,6 +7,8 @@ use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use PhpOffice\PhpSpreadsheet\Writer\Ods;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
@@ -122,7 +124,7 @@ Class ExportService {
         if($type == "csv"){
             $filename = $dataPath . '/'.$name.'.csv';
         }
-        elseif($type == "excel"){
+        elseif($type == "xls"){
             $filename = $dataPath . '/'.$name.'.xls';
         }
         elseif($type == "ods"){
@@ -131,6 +133,22 @@ Class ExportService {
         else{
             return "An error occured with the type file";
         }
+
+        /*if($type == "csv"){
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Csv");
+            $filename = $name . ".csv";
+        }
+        elseif($type == "xls"){
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xls");
+            $filename = $name . ".xls";
+        }
+        elseif($type == "ods"){
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Ods");
+            $filename = $name . ".ods";
+        }
+        else{
+            return "An error occured with the type file";
+        }*/
 
         $writer->save($filename);
         $this->filecontent = file_get_contents($filename);
