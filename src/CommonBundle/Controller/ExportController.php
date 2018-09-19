@@ -79,9 +79,10 @@ class ExportController extends Controller
             }
         } elseif ($request->query->get('countries')) {
             $type = $request->request->get('type');
+            $countryIso3 = $request->request->get("__country");
 
             try {
-                $fileCSV = $this->get('beneficiary.country_specific_service')->exportToCsv($type);
+                $fileCSV = $this->get('beneficiary.country_specific_service')->exportToCsv($type, $countryIso3);
 
                 return new Response(json_encode($fileCSV));
             } catch (\Exception $exception) {
@@ -109,8 +110,8 @@ class ExportController extends Controller
             } catch (\Exception $exception) {
                 return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
             }
-        } elseif ($request->query->get('distributionSamble')) {
-            $arrayObjectBeneficiary = $request->request->all();
+        } elseif ($request->query->get('distributionSample')) {
+            $arrayObjectBeneficiary = $request->request->get("sample");
             $type = $request->request->get('type');
 
             try {

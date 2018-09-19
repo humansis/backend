@@ -158,12 +158,13 @@ class DistributionBeneficiaryService
 
         $beneficiaries = array();
         foreach ($objectBeneficiary as $value){
+            dump($value);
             array_push($beneficiaries, [
-                "Given name" => $value->getGivenName(),
-                "Family name"=> $value->getFamilyName(),
-                "Gender" => $value->getGender(),
-                "Status" => $value->getStatus(),
-                "Date of birth" => $value->getDateOfBirth()->format('m/d/y')
+                "Given name" => $value['given_name'],
+                "Family name"=> $value['family_name'],
+                "Gender" => $value['gender'],
+                "Status" => $value['status'],
+                "Date of birth" => $value['date_of_birth']
             ]);
         }
         return $this->container->get('export_csv_service')->export($beneficiaries,'distributions', $type);
