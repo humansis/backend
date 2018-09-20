@@ -345,14 +345,13 @@ class DistributionService
      */
     public function archived(DistributionData $distributionData)
     {
-        /** @var DistributionData $distribution */
         if (!empty($distributionData))
             $distributionData->setArchived(1);
 
         $this->em->persist($distributionData);
         $this->em->flush();
 
-        return $distributionData;
+        return "Archived";
     }
 
     /**
