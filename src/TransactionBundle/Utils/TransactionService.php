@@ -40,7 +40,8 @@ class TransactionService {
         
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
         
-        return $this->financialProvider->sendMoneyToAll($distributionBeneficiaries);
+        // return $this->financialProvider->sendMoneyToAll($distributionBeneficiaries);
+        return $this->financialProvider->sendMoneyToOne();
     }
     
     /**

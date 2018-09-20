@@ -55,13 +55,13 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      * @param  Beneficiary  $beneficiary
      * @return object       transaction
      */
-    public function sendMoneyToOne(string $phone_number = "0962620581")
+    public function sendMoneyToOne(string $phoneNumber = "0962620581")
     {
         $route = "/api/v1/sendmoney/nowing/commit";
         $body = array(
             "amount"          => 50,
             "sender_msisdn"   => "012249184",
-            "receiver_msisdn" => $phone_number
+            "receiver_msisdn" => $phoneNumber
         );
         
         try {
