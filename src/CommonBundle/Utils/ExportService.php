@@ -118,15 +118,14 @@ Class ExportService {
         $writer = new Csv($spreadsheet);
         $writer->setEnclosure('');
 
-        $dataPath = $this->container->getParameter('kernel.root_dir') . '/../var';
         if($type == "csv"){
-            $filename = $dataPath . '/'.$name.'.csv';
+            $filename = $name.'.csv';
         }
-        elseif($type == "excel"){
-            $filename = $dataPath . '/'.$name.'.xls';
+        elseif($type == "xls"){
+            $filename = $name.'.xls';
         }
         elseif($type == "ods"){
-            $filename = $dataPath . '/'.$name.'.ods';
+            $filename = $name.'.ods';
         }
         else{
             return "An error occured with the type file";
@@ -139,7 +138,7 @@ Class ExportService {
 
         return [
             'content' => $this->filecontent,
-            'filename' => $name,
+            'filename' => $filename,
             'filepath' => $filename
         ];
     }
