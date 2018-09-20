@@ -7,7 +7,7 @@ use TransactionBundle\Utils\Provider\DefaultFinancialProvider;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
 
-abstract class TransactionService {
+class TransactionService {
 
     /** @var EntityManagerInterface $em */
     private $em;

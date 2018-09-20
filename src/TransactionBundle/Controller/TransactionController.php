@@ -41,7 +41,7 @@ class TransactionController extends Controller
         
         try
         {
-            $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $distributionData);;
+            $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $distributionData);
         }
         catch (\Exception $exception)
         {
