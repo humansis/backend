@@ -42,7 +42,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         try {
             $this->token = $this->sendRequest("POST", $route, $body);
-            $this->lastTokenDate = new \Date();
+            $this->lastTokenDate = new \DateTime();
             return $this->token;
         } catch (Exception $e) {
             throw $e;
@@ -87,7 +87,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         $headers = array();
         
         if(!preg_match('/\/oauth\/token/', $route)) {
-            if (new \Date() - $this->lastTokenDate > $this->token->expires_in) {
+            if (new \DateTime() - $this->lastTokenDate > $this->token->expires_in) {
                 $this->getToken();
             }
             array_push($headers, "Authorization: Bearer " . $this->token->access_token);
