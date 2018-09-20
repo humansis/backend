@@ -6,22 +6,27 @@ use Doctrine\ORM\EntityManagerInterface;
 use TransactionBundle\Utils\Provider\DefaultFinancialProvider;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class TransactionService {
 
     /** @var EntityManagerInterface $em */
     private $em;
+
+    /** @var ContainerInterface $container */
+    private $container;
     
     /** @var DefaultFinancialProvider $retriever */
     private $financialProvider;
 
     /**
-     * DefaultFinancialProvider constructor.
+     * TransactionService constructor.
      * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
     {
         $this->em = $entityManager;
+        $this->container = $container;
     }
     
     /**
@@ -35,7 +40,7 @@ class TransactionService {
         try {            
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
         } catch (\Exception $e) {
-            throw new \Exception("The financial provider for " . $countryISO3 . "is not properly defined");
+            throw new \Exception($e);
         }
         
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
@@ -49,12 +54,14 @@ class TransactionService {
      * @param  string $countryISO3 iso3 code of the country
      * @return Class             
      */
-    public function getFinancialProviderForCountry(string $countryISO3)
+    private function getFinancialProviderForCountry(string $countryISO3)
     {
-        $class = new \ReflectionClass('TransactionBundle\\Utils\\Provider\\' 
-        . strtoupper($countryISO3) 
-        . 'FinancialProvider');
-        return $class->newInstanceArgs([$this->em]);
+        $provider = $this->container->get('transaction.' . strtolower($countryISO3) . '_financial_provider');
+        
+        if (! ($provider instanceof DefaultFinancialProvider)) {
+            throw new \Exception("The financial provider for " . $countryISO3 . "is not properly defined");
+        }
+        return $provider;
     }
 
 }
