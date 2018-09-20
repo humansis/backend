@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
+use DistributionBundle\Entity\DistributionData;
+
 class TransactionController extends Controller
 {
 
