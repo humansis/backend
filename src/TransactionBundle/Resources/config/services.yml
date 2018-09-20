@@ -1,6 +1,6 @@
 services:
     transaction.transaction_service:
-        class: TransactionBundle\Utils\KHMTransactionService
+        class: TransactionBundle\Utils\TransactionService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
