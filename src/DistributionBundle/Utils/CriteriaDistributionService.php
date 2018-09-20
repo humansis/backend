@@ -67,7 +67,7 @@ class CriteriaDistributionService
             $project,
             $countryISO3,
             $distributionType,
-            $filters["criteria"],
+            $filters,
             $this->configurationLoader->load($filters),
             $onlyCount
         );
