@@ -12,7 +12,7 @@ abstract class AbstractRetriever
      * @param Project $project
      * @param string $countryISO3
      * @param string $distributionType
-     * @param array $filters
+     * @param array $criteria
      * @param array $configurationCriteria
      * @param bool $onlyCount
      * @return array
@@ -21,15 +21,15 @@ abstract class AbstractRetriever
         Project $project,
         string $countryISO3,
         string $distributionType,
-        array $filters,
+        array $criteria,
         array $configurationCriteria,
         bool $onlyCount = false
     )
     {
-        $this->preFinder($distributionType, $filters['criteria']);
+        $this->preFinder($distributionType, $criteria);
 
         $receivers = $this->guessRepository($distributionType)
-            ->findByCriteria($project, $countryISO3, $filters, $configurationCriteria, $onlyCount);
+            ->findByCriteria($project, $countryISO3, $criteria, $configurationCriteria, $onlyCount);
 
         // If we only want the number of beneficiaries, return only the number
         if ($onlyCount)
