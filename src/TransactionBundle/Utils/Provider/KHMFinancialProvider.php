@@ -5,7 +5,7 @@ namespace TransactionBundle\Utils\Provider;
 use Doctrine\ORM\EntityManagerInterface;
 use BeneficiaryBundle\Entity\Beneficiary;
 
-class KHMFinancialProvider implements DefaultFinancialProvider {
+class KHMFinancialProvider extends DefaultFinancialProvider {
 
     /** @var EntityManagerInterface $em */
     private $em;
