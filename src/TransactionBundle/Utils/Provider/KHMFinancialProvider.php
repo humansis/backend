@@ -1,6 +1,6 @@
 <?php
 
-namespace TransactionBundle\Utils;
+namespace TransactionBundle\Utils\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
 use BeneficiaryBundle\Entity\Beneficiary;
