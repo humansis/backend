@@ -120,35 +120,18 @@ Class ExportService {
         $writer = new Csv($spreadsheet);
         $writer->setEnclosure('');
 
-        $dataPath = $this->container->getParameter('kernel.root_dir') . '/../var';
         if($type == "csv"){
-            $filename = $dataPath . '/'.$name.'.csv';
+            $filename = $name.'.csv';
         }
         elseif($type == "xls"){
-            $filename = $dataPath . '/'.$name.'.xls';
+            $filename = $name.'.xls';
         }
         elseif($type == "ods"){
-            $filename = $dataPath . '/'.$name.'.ods';
+            $filename = $name.'.ods';
         }
         else{
             return "An error occured with the type file";
         }
-
-        /*if($type == "csv"){
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Csv");
-            $filename = $name . ".csv";
-        }
-        elseif($type == "xls"){
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xls");
-            $filename = $name . ".xls";
-        }
-        elseif($type == "ods"){
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Ods");
-            $filename = $name . ".ods";
-        }
-        else{
-            return "An error occured with the type file";
-        }*/
 
         $writer->save($filename);
         $this->filecontent = file_get_contents($filename);
@@ -157,7 +140,7 @@ Class ExportService {
 
         return [
             'content' => $this->filecontent,
-            'filename' => $name,
+            'filename' => $filename,
             'filepath' => $filename
         ];
     }
