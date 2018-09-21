@@ -64,7 +64,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         }
         catch (\Exception $exception)
         {
-            print_r("\nThe mapping of fields of Donor entity is not correct.\n");
+            print_r("\nThe mapping of fields of Project entity is not correct.\n");
             $this->remove($this->name);
             return false;
         }
@@ -100,7 +100,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         }
         catch (\Exception $exception)
         {
-            print_r("\nThe mapping of fields of Donor entity is not correct.\n");
+            print_r("\nThe mapping of fields of Project entity is not correct.\n");
             $this->remove($this->name);
             return false;
         }

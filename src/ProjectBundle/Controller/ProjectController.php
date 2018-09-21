@@ -114,7 +114,6 @@ class ProjectController extends Controller
     }
 
     /**
-     * TODO VOTER POUR CHECKER QUE PROJECT EST PAS ARCHIVED
      * Edit a project
      * @Rest\Post("/projects/{id}", name="update_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")

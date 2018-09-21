@@ -60,7 +60,7 @@ class CriteriaDistributionService
                 $finalArray = $this->kindBeneficiary($finalArray, $criterion, $distributionType, $threshold);
             }
         }
-
+      
         return ['number' => count($finalArray)];
     }
 
