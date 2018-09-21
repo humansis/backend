@@ -9,6 +9,7 @@ use BeneficiaryBundle\Utils\DataTreatment\DuplicateTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\LessTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\MoreTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\TypoTreatment;
+use BeneficiaryBundle\Utils\DataTreatment\MissingTreatment;
 use BeneficiaryBundle\Utils\DataVerifier\AbstractVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\LessVerifier;
@@ -120,7 +121,6 @@ class HouseholdCSVService
     }
 
     /**
-     * TODO STEP 1 CHECK INCOMPLETE LINES
      * @param $countryIso3
      * @param Project $project
      * @param array $treatReturned
@@ -139,6 +139,9 @@ class HouseholdCSVService
         $treatment = $this->guessTreatment($step);
         if ($treatment !== null)
             $treatReturned = $treatment->treat($project, $treatReturned);
+
+        if(array_key_exists("miss", $treatReturned))
+            return "A line is incomplete in the imported file";
 
         /** @var AbstractVerifier $verifier */
         $verifier = $this->guessVerifier($step);
@@ -222,7 +225,8 @@ class HouseholdCSVService
         switch ($step)
         {
             case 1:
-                return null;
+                return new MissingTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+
                 break;
             // CASE FOUND TYPO ISSUES
             case 2:
