@@ -162,10 +162,13 @@ class ProjectService
      */
     public function edit(Project $project, array $projectArray)
     {
+        var_dump("\ntest1");
         /** @var Project $editedProject */
         $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
         $oldProject = $this->em->getRepository(Project::class)->find($editedProject->getId());
+        var_dump("\ntest2");
         if($oldProject->getArchived() == 0){
+            var_dump("\ntest3");
             $project->setName($editedProject->getName())
                 ->setStartDate($editedProject->getStartDate())
                 ->setEndDate($editedProject->getEndDate());
@@ -220,9 +223,9 @@ class ProjectService
 
             return $project;
         }
-        /*else{
+        else{
             return ['error' => 'The project is archived'];
-        }*/
+        }
     }
 
     /**
