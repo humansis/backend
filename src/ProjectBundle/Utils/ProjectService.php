@@ -220,9 +220,9 @@ class ProjectService
 
             return $project;
         }
-        else{
+        /*else{
             return ['error' => 'The project is archived'];
-        }
+        }*/
     }
 
     /**
