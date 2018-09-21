@@ -169,6 +169,7 @@ class ProjectService
         var_dump($editedProject->getStartDate());
         var_dump($editedProject->getEndDate());
         var_dump($editedProject->getNotes());
+        var_dump($editedProject->getId());
         $oldProject = $this->em->getRepository(Project::class)->findOneBy(['name' => $editedProject->getName(), 'start_date' => $editedProject->getStartDate(), 'end_date' => $editedProject->getEndDate(), 'notes' => $editedProject->getNotes()]);
         var_dump("\ntest2");
         if($oldProject->getArchived() == 0){
