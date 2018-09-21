@@ -165,9 +165,7 @@ class ProjectService
         /** @var Project $editedProject */
         $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
         $oldProject = $this->em->getRepository(Project::class)->find($project->getId());
-        var_dump("\ntest2");
         if($oldProject->getArchived() == 0){
-            var_dump("\ntest3");
             $project->setName($editedProject->getName())
                 ->setStartDate($editedProject->getStartDate())
                 ->setEndDate($editedProject->getEndDate());
