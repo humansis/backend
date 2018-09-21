@@ -1,6 +1,13 @@
 services:
     transaction.transaction_service:
-        class: TransactionBundle\Utils\KHMTransactionService
+        class: TransactionBundle\Utils\TransactionService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "@service_container"
+
+    transaction.khm_financial_provider:
+        class: TransactionBundle\Utils\Provider\KHMFinancialProvider
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'

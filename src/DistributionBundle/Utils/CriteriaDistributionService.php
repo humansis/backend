@@ -129,7 +129,7 @@ class CriteriaDistributionService
                 }
             }
         }
-
+      
         return ['number' => count($finalArray)];
     }
 
