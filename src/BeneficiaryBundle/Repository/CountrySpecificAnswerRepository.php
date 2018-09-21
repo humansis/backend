@@ -10,4 +10,47 @@ namespace BeneficiaryBundle\Repository;
  */
 class CountrySpecificAnswerRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findForValue(int $countrySpecificId, int $answer, string $conditionString){
+
+        $qb = $this->createQueryBuilder('csa');
+
+        if($conditionString == ">"){
+            $q  = $qb->where('csa.countrySpecific = :countrySpecificId')
+                ->setParameter('countrySpecificId', $countrySpecificId)
+                ->andWhere('csa.answer > :answer')
+                ->setParameter('answer', $answer);
+        }
+        else if($conditionString == "<"){
+            $q  = $qb->where('csa.countrySpecific = :countrySpecificId')
+                ->setParameter('countrySpecificId', $countrySpecificId)
+                ->andWhere('csa.answer < :answer')
+                ->setParameter('answer', $answer);
+        }
+        else if($conditionString == ">="){
+            $q  = $qb->where('csa.countrySpecific = :countrySpecificId')
+                ->setParameter('countrySpecificId', $countrySpecificId)
+                ->andWhere('csa.answer >= :answer')
+                ->setParameter('answer', $answer);
+        }
+        else if($conditionString == "<="){
+            $q  = $qb->where('csa.countrySpecific = :countrySpecificId')
+                ->setParameter('countrySpecificId', $countrySpecificId)
+                ->andWhere('csa.answer <= :answer')
+                ->setParameter('answer', $answer);
+        }
+        else if($conditionString == "="){
+            $q  = $qb->where('csa.countrySpecific = :countrySpecificId')
+                ->setParameter('countrySpecificId', $countrySpecificId)
+                ->andWhere('csa.answer = :answer')
+                ->setParameter('answer', $answer);
+        }
+        else if($conditionString == "!="){
+            $q  = $qb->where('csa.countrySpecific = :countrySpecificId')
+                ->setParameter('countrySpecificId', $countrySpecificId)
+                ->andWhere('csa.answer != :answer')
+                ->setParameter('answer', $answer);
+        }
+
+        return $q->getQuery()->getResult();
+    }
 }

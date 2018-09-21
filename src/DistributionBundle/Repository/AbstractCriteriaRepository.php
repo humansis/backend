@@ -4,12 +4,7 @@
 namespace DistributionBundle\Repository;
 
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
-use BeneficiaryBundle\Repository\HouseholdRepository;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 use ProjectBundle\Entity\Project;
 
@@ -30,15 +25,12 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
     public function findByCriteria(
         Project $project = null,
         $countryISO3,
-        array $filters,
+        array $criteria,
         array $configurationCriteria = [],
         bool $onlyCount = false,
         string $groupGlobal = null
     )
     {
-        $criteria = $filters['criteria'];
-        $distributionType = $filters['distribution_type'];
-
         $qb = $this->configurationQueryBuilder($onlyCount, $countryISO3, $project);
 
         $i = 1;
@@ -67,20 +59,9 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
 
                 $class = (new \ReflectionClass($configType));
                 $method = null;
-
-
-                if($distributionType == "household"){
-                    $className = new ClassMetadata("BeneficiaryBundle\Entity\Household");
-                    $callFunc = new HouseholdRepository($this->getEntityManager(), $className);
-                }
-                else{
-                    $className = new ClassMetadata("BeneficiaryBundle\Entity\Beneficiary");
-                    $callFunc = new BeneficiaryRepository($this->getEntityManager(), $className);
-                }
-
-                if (!is_callable([$callFunc, 'where' . $class->getShortName()],null, $method))
+                if (!is_callable([$this, 'where' . $class->getShortName()],null, $method))
                     throw new \Exception("You must implement a method called 'where{$class->getShortName()}'.'");
-                call_user_func_array([$callFunc, $method], [&$qb, $i, $countryISO3, $criterion]);
+                call_user_func_array([$this, $method], [&$qb, $i, $countryISO3, $criterion]);
             }
             if (null === $configType)
                 throw new \Exception("The field '{$criterion['field_string']}' is not implement yet");

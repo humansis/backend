@@ -35,6 +35,55 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
+    public function findByDateOfBirth(string $value, string $conditionString){
+
+        $qb = $this->createQueryBuilder('b');
+
+        if($conditionString == ">"){
+            $q  = $qb->where('b.dateOfBirth > :value')
+                ->setParameter('value', $value);
+        }
+        else if($conditionString == "<"){
+            $q  = $qb->where('b.dateOfBirth < :value')
+                ->setParameter('value', $value);
+        }
+        else if($conditionString == ">="){
+            $q  = $qb->where('b.dateOfBirth >= :value')
+                ->setParameter('value', $value);
+        }
+        else if($conditionString == "<="){
+            $q  = $qb->where('b.dateOfBirth <= :value')
+                ->setParameter('value', $value);
+        }
+        else if($conditionString == "="){
+            $q  = $qb->where('b.dateOfBirth = :value')
+                ->setParameter('value', $value);
+        }
+        else if($conditionString == "!="){
+            $q  = $qb->where('b.dateOfBirth != :value')
+                ->setParameter('value', $value);
+        }
+
+        return $q->getQuery()->getResult();
+    }
+
+    public function findByVulnerabilityCriterion(int $vulnerabilityId, string $conditionString){
+        $qb = $this->createQueryBuilder('b');
+
+        if($conditionString == "true"){
+            $q = $qb->leftJoin('b.vulnerabilityCriteria', 'vc')
+                ->where(':vulnerabilityId = vc.id')
+                ->setParameter('vulnerabilityId', $vulnerabilityId);
+        }
+        else{
+            $q = $qb->leftJoin('b.vulnerabilityCriteria', 'vc')
+                ->where(':vulnerabilityId <> vc.id')
+                ->setParameter('vulnerabilityId', $vulnerabilityId);
+        }
+
+        return $q->getQuery()->getResult();
+    }
+
     public function countAllInCountry(string $iso3)
     {
         $qb = $this->createQueryBuilder('b');
