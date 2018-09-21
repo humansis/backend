@@ -140,7 +140,7 @@ class HouseholdCSVService
         if ($treatment !== null)
             $treatReturned = $treatment->treat($project, $treatReturned);
 
-        if(array_key_exists("error", $treatReturned))
+        if(array_key_exists("miss", $treatReturned))
             return "A line is incomplete in the imported file";
 
         /** @var AbstractVerifier $verifier */
