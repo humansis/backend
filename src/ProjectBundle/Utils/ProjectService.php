@@ -164,59 +164,65 @@ class ProjectService
     {
         /** @var Project $editedProject */
         $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
-        $project->setName($editedProject->getName())
-                ->setStartDate($editedProject->getStartDate())        
+        $oldProject = $this->em->getRepository(Project::class)->find($editedProject->getId());
+        if($oldProject->getArchived() == 0){
+            $project->setName($editedProject->getName())
+                ->setStartDate($editedProject->getStartDate())
                 ->setEndDate($editedProject->getEndDate());
 
-        $sectors = $editedProject->getSectors();
-        if (null !== $sectors)
-        {
-            $sectors = clone $editedProject->getSectors();
-            $project->removeSectors();
-            /** @var Sector $sector */
-            foreach ($sectors as $sector)
+            $sectors = $editedProject->getSectors();
+            if (null !== $sectors)
             {
-                $sectorTmp = $this->em->getRepository(Sector::class)->find($sector);
-                if ($sectorTmp instanceof Sector)
-                    $project->addSector($sectorTmp);
+                $sectors = clone $editedProject->getSectors();
+                $project->removeSectors();
+                /** @var Sector $sector */
+                foreach ($sectors as $sector)
+                {
+                    $sectorTmp = $this->em->getRepository(Sector::class)->find($sector);
+                    if ($sectorTmp instanceof Sector)
+                        $project->addSector($sectorTmp);
+                }
             }
-        }
 
-        $donors = $editedProject->getDonors();
+            $donors = $editedProject->getDonors();
 
-        if (null !== $donors)
-        {
-            $donors = clone $editedProject->getDonors();
-            $project->removeDonors();
-            /** @var Donor $donor */
-            foreach ($donors as $donor)
+            if (null !== $donors)
             {
-                $donorTmp = $this->em->getRepository(Donor::class)->find($donor);
-                if ($donorTmp instanceof Donor)
-                    $project->addDonor($donorTmp);
+                $donors = clone $editedProject->getDonors();
+                $project->removeDonors();
+                /** @var Donor $donor */
+                foreach ($donors as $donor)
+                {
+                    $donorTmp = $this->em->getRepository(Donor::class)->find($donor);
+                    if ($donorTmp instanceof Donor)
+                        $project->addDonor($donorTmp);
+                }
             }
-        }
 
-        $errors = $this->validator->validate($project);
-        if (count($errors) > 0)
-        {
-            $errorsArray = [];
-            foreach ($errors as $error)
+            $errors = $this->validator->validate($project);
+            if (count($errors) > 0)
             {
-                $errorsArray[] = $error->getMessage();
+                $errorsArray = [];
+                foreach ($errors as $error)
+                {
+                    $errorsArray[] = $error->getMessage();
+                }
+                throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
             }
-            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+
+            $this->em->merge($project);
+            try{
+                $this->em->flush();
+
+            } catch (\Exception $e){
+                return false;
+            }
+
+            return $project;
         }
-
-        $this->em->merge($project);
-        try{
-            $this->em->flush();
-
-        } catch (\Exception $e){
-            return false;
+        else{
+            return ['error' => 'The project is archived'];
         }
-
-        return $project;
     }
 
     /**
