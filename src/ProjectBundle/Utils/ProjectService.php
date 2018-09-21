@@ -162,10 +162,13 @@ class ProjectService
      */
     public function edit(Project $project, array $projectArray)
     {
-        var_dump("\ntest1");
         /** @var Project $editedProject */
         var_dump($projectArray);
         $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
+        var_dump($editedProject->getName());
+        var_dump($editedProject->getStartDate());
+        var_dump($editedProject->getEndDate());
+        var_dump($editedProject->getNotes());
         $oldProject = $this->em->getRepository(Project::class)->findOneBy(['name' => $editedProject->getName(), 'start_date' => $editedProject->getStartDate(), 'end_date' => $editedProject->getEndDate(), 'notes' => $editedProject->getNotes()]);
         var_dump("\ntest2");
         if($oldProject->getArchived() == 0){
