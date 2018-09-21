@@ -117,7 +117,7 @@ class CriteriaDistributionController extends Controller
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
         try
         {
-            $receivers = $criteriaDistributionService->load($request->request->all(), true);
+            $receivers = $criteriaDistributionService->load($request->request->all());
         }
         catch (\Exception $exception)
         {
