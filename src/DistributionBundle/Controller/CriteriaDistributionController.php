@@ -111,7 +111,7 @@ class CriteriaDistributionController extends Controller
      * @param Project $project
      * @return Response
      */
-    public function getBeneficiariesNumberAction(Request $request)
+    public function getBeneficiariesNumberAction(Request $request, Project $project)
     {
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');

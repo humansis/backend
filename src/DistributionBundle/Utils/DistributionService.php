@@ -192,7 +192,6 @@ class DistributionService
             $distribution->addSelectionCriterion($item);
         }
 
-        dump("test4");
         return ["distribution" => $distribution, "data" => $listReceivers];
     }
 
