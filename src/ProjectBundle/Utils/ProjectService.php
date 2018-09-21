@@ -164,6 +164,7 @@ class ProjectService
     {
         var_dump("\ntest1");
         /** @var Project $editedProject */
+        var_dump($projectArray);
         $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
         $oldProject = $this->em->getRepository(Project::class)->find($editedProject->getId());
         var_dump("\ntest2");
