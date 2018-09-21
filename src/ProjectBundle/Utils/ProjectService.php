@@ -166,7 +166,7 @@ class ProjectService
         /** @var Project $editedProject */
         var_dump($projectArray);
         $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
-        $oldProject = $this->em->getRepository(Project::class)->find($editedProject->getId());
+        $oldProject = $this->em->getRepository(Project::class)->findOneBy(['name' => $editedProject->getName(), 'start_date' => $editedProject->getStartDate(), 'end_date' => $editedProject->getEndDate(), 'notes' => $editedProject->getNotes()]);
         var_dump("\ntest2");
         if($oldProject->getArchived() == 0){
             var_dump("\ntest3");
