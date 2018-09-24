@@ -113,11 +113,15 @@ class CriteriaDistributionController extends Controller
      */
     public function getBeneficiariesNumberAction(Request $request, Project $project)
     {
+        $filters = $request->request->all();
+        $filters['countryIso3'] = $filters['__country'];
+        $threshold = $filters['threshold'];
+
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
         try
         {
-            $receivers = $criteriaDistributionService->load($request->request->all());
+            $receivers = $criteriaDistributionService->load($filters, $project, $threshold, true);
         }
         catch (\Exception $exception)
         {

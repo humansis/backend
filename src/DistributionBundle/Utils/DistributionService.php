@@ -110,11 +110,11 @@ class DistributionService
      *
      * @param $countryISO3
      * @param array $distributionArray
+     * @param int $threshold
      * @return array
-     * @throws \Exception
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function create($countryISO3, array $distributionArray)
+    public function create($countryISO3, array $distributionArray, int $threshold)
     {
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
@@ -171,7 +171,7 @@ class DistributionService
 
         $this->em->persist($distribution);
 
-        $listReceivers = $this->guessBeneficiaries($projectTmp, $countryISO3, $distribution, $criteria);
+        $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['type'], $projectTmp, $threshold);
         $this->saveReceivers($distribution, $listReceivers);
 
         $this->em->flush();
@@ -196,27 +196,20 @@ class DistributionService
     }
 
     /**
-     * @param Project $project
-     * @param $countryISO3
-     * @param DistributionData $distributionData
      * @param array $criteria
-     * @return array
+     * @param $countryISO3
+     * @param $type
+     * @param Project $project
+     * @param int $threshold
+     * @return mixed
      */
-    public function guessBeneficiaries(Project $project, $countryISO3, DistributionData $distributionData, array $criteria)
+    public function guessBeneficiaries(array $criteria, $countryISO3, $type, Project $project, int $threshold)
     {
-        $criteriaArray = [];
-        foreach ($criteria as $selectionCriterion)
-        {
-            $criteriaArray[] = $this->getArrayOfCriteria($selectionCriterion);
-        }
+        $criteria['criteria'] = $criteria['selection_criteria'];
+        $criteria['countryIso3'] = $countryISO3;
+        $criteria['distribution_type'] = $type;
 
-        return $this->retriever->getReceivers(
-            $project,
-            $countryISO3,
-            $this->guessTypeString($distributionData->getType()),
-            $criteriaArray,
-            $this->configurationLoader->load(['__country' => $countryISO3])
-        );
+        return $this->container->get('distribution.criteria_distribution_service')->load($criteria, $project, $threshold, false);
     }
 
     /**
@@ -226,7 +219,7 @@ class DistributionService
      */
     public function saveReceivers(DistributionData $distributionData, array $listReceivers)
     {
-        foreach ($listReceivers as $receiver)
+        foreach ($listReceivers['finalArray'] as $receiver)
         {
             if ($receiver instanceof Household)
             {

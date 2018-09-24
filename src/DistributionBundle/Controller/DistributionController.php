@@ -136,9 +136,11 @@ class DistributionController extends Controller
     public function addAction(Request $request)
     {
         $distributionArray = $request->request->all();
+        $threshold = $distributionArray['threshold'];
+
         try {
             $listReceivers = $this->get('distribution.distribution_service')
-                ->create($distributionArray['__country'], $distributionArray);
+                ->create($distributionArray['__country'], $distributionArray, $threshold);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
