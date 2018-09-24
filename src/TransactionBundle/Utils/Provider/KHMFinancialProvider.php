@@ -84,7 +84,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
     public function sendRequest(string $type, string $route, array $body = array()) {
         $curl = curl_init();
         
-        $headers = array();
+        $headers = array("Content-type: application/json; charset=UTF-8");
         
         if(!preg_match('/\/oauth\/token/', $route)) {
             if (!$this->lastTokenDate ||
