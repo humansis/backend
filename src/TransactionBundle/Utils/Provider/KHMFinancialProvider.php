@@ -66,7 +66,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         try {
             $sent = $this->sendRequest("POST", $route, $body);
-            dump($sent);
             return $sent;
         } catch (Exception $e) {
             throw $e;
@@ -118,11 +117,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         $response = curl_exec($curl);
         $err = curl_error($curl);
-        dump($response);
-        dump($err);
-        
-        dump($curl);
-        dump(curl_getinfo($curl, CURLINFO_CONTENT_TYPE));
         
         curl_close($curl);
     
@@ -130,7 +124,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             throw new \Exception($err);
         } else {
             $result = json_decode($response);
-            dump($result);
             return $result;
         }
     }
