@@ -118,7 +118,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         $response = curl_exec($curl);
         $err = curl_error($curl);
         
-        dump($curl);
+        dump(curl_getinfo($curl, CURLINFO_HTTP_CODE));
         
         curl_close($curl);
     
