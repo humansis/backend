@@ -86,12 +86,18 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         $headers = array();
         
+        // Not authentication request
         if(!preg_match('/\/oauth\/token/', $route)) {
             if (!$this->lastTokenDate ||
             (new \DateTime())->getTimestamp() - $this->lastTokenDate->getTimestamp() > $this->token->expires_in) {
                 $this->getToken();
             }
-            array_push($headers, "Authorization: Bearer " . $this->token->access_token);
+            array_push($headers, "Authorization: Bearer " . $this->token->access_token, "Content-type: application/json");
+            $body = json_encode($body);
+        }
+        // Authentication request
+        else {
+            $body = http_build_query($body); // Pass body as url-encoded string
         }
                 
         curl_setopt_array($curl, array(
@@ -103,7 +109,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
           CURLOPT_TIMEOUT        => 30,
           CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
           CURLOPT_CUSTOMREQUEST  => $type,
-          CURLOPT_POSTFIELDS     => http_build_query($body),
+          CURLOPT_POSTFIELDS     => $body,
           CURLOPT_HTTPHEADER     => $headers,
           CURLOPT_FAILONERROR    => true,
           CURLINFO_HEADER_OUT    => true
