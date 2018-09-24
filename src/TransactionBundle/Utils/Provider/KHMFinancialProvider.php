@@ -112,14 +112,14 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
           CURLOPT_POSTFIELDS     => $body,
           CURLOPT_HTTPHEADER     => $headers,
           CURLOPT_FAILONERROR    => true,
-          CURLINFO_HEADER_OUT    => true
+          CURLOPT_HEADER         => true
         ));
         
         $response = curl_exec($curl);
         $err = curl_error($curl);
         
         dump($response);
-        dump($response);
+        dump(curl_getinfo($ch, CURLINFO_HTTP_CODE));
         
         curl_close($curl);
     
