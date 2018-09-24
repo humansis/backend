@@ -57,7 +57,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      */
     public function sendMoneyToOne(string $phoneNumber = "0962620581")
     {
-        $route = "/api/v1/sendmoney/nowing/commit";
+        $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
             "amount"          => 50,
             "sender_msisdn"   => "012249184",
