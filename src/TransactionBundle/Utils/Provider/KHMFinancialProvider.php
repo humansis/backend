@@ -91,7 +91,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             (new \DateTime())->getTimestamp() - $this->lastTokenDate->getTimestamp() > $this->token->expires_in) {
                 $this->getToken();
             }
-            array_push($headers, "Authorization: Bearer " . $this->token->access_token, "Content-type: application/json ; charset=UTF-8");
+            array_push($headers, "Authorization: Bearer " . $this->token->access_token);
         }
                 
         curl_setopt_array($curl, array(
