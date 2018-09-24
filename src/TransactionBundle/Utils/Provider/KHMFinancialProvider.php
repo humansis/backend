@@ -94,6 +94,10 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             array_push($headers, "Authorization: Bearer " . $this->token->access_token);
         }
         
+        dump(http_build_query($body));
+        dump(gettype(http_build_query($body)));
+        dump($body);
+        
         curl_setopt_array($curl, array(
           CURLOPT_PORT           => "8443",
           CURLOPT_URL            => $this->url . $route,
