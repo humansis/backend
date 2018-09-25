@@ -17,6 +17,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 
+/**
+ * Class LocationService
+ * @package CommonBundle\Utils
+ */
 class LocationService
 {
 

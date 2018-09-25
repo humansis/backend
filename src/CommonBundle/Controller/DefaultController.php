@@ -8,6 +8,10 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class DefaultController
+ * @package CommonBundle\Controller
+ */
 class DefaultController extends Controller
 {
     /**

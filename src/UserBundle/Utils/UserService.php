@@ -13,6 +13,10 @@ use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
 use Psr\Container\ContainerInterface;
 
+/**
+ * Class UserService
+ * @package UserBundle\Utils
+ */
 class UserService
 {
 

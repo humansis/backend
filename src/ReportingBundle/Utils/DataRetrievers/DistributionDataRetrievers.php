@@ -8,6 +8,10 @@ use ReportingBundle\Entity\ReportingDistribution;
 use \ProjectBundle\Entity\Project;
 use \DistributionBundle\Entity\DistributionData;
 
+/**
+ * Class DistributionDataRetrievers
+ * @package ReportingBundle\Utils\DataRetrievers
+ */
 class DistributionDataRetrievers
 {
     /**

@@ -19,6 +19,10 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+/**
+ * Class DistributionController
+ * @package DistributionBundle\Controller
+ */
 class DistributionController extends Controller
 {
     /**

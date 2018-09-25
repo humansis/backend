@@ -15,6 +15,10 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+/**
+ * Class SectorController
+ * @package ProjectBundle\Controller
+ */
 class SectorController extends Controller
 {
 
