@@ -93,16 +93,4 @@ class CriteriaDistributionControllerTest extends BMSServiceTestCase
 
         return true;
     }
-
-    /**
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function testAddAction(){
-
-
-        $distributionAfter = $this->em->getRepository(DistributionData::class)->findAll();
-
-        $this->assertTrue($distributionBefore < $distributionAfter);
-    }
 }
