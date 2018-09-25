@@ -64,7 +64,7 @@ class DistributionControllerTest extends BMSServiceTestCase
                 "country_iso3"=> "KHM"
             ],
             "location_name"=> "",
-            "name"=> "-Banteay Meanchey-9/13/2018-",
+            "name"=> "TEST_DISTRIBUTION_NAME_PHPUNIT",
             "project"=> [
                 "donors"=> [],
                 "donors_name"=> [],
@@ -95,7 +95,6 @@ class DistributionControllerTest extends BMSServiceTestCase
             "threshold"=> "1"
         );
 
-        $distributionBefore = $this->em->getRepository(DistributionData::class)->findAll();
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
