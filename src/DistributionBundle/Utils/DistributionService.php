@@ -174,6 +174,7 @@ class DistributionService
         $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['type'], $projectTmp, $threshold);
         $this->saveReceivers($distribution, $listReceivers);
 
+        dump($listReceivers);
         $this->em->flush();
         /** @var DistributionData $distribution */
         $distribution = $this->em->getRepository(DistributionData::class)
