@@ -129,30 +129,6 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $distribution);
         $this->assertArrayHasKey('validated', $distribution);
 
-        $data = $this->distributionCSVService
-            ->export(
-                $this->iso3,
-                $this->em->getRepository(DistributionData::class)->find($distribution["id"])
-            );
-
-        $distributionId = $this->em->getRepository(DistributionData::class)->getLastId();
-        $this->assertSame($distribution['name'], $this->namefullname.$distributionId);
-        $rows = str_getcsv($data['content'], "\n");
-        foreach ($rows as $index => $row)
-        {
-
-            if ($index < 2)
-                continue;
-
-            $rowArray = str_getcsv($row, ',');
-
-            $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["given_name"], $rowArray[13]);
-            $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["family_name"], $rowArray[14]);
-            $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["gender"], intval($rowArray[15]));
-            $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["status"], intval($rowArray[16]));
-            $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["date_of_birth"], $rowArray[17]);
-        }
-
         $this->removeDistribution($distribution);
         return true;
     }
