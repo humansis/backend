@@ -30,47 +30,6 @@ class DistributionControllerTest extends BMSServiceTestCase
     /** @var DistributionCSVService $distributionCSVService */
     private $distributionCSVService;
 
-    private $body = [
-        "name" => "TEST_DISTRIBUTION_NAME_PHPUNIT",
-        "date_distribution" => "2018-08-10",
-        "location" => [
-            "adm1" => "Rhone-Alpes",
-            "adm2" => "Savoie",
-            "adm3" => "Chambery",
-            "adm4" => "Sainte Hélène sur Isère"
-        ],
-        "selection_criteria" => [
-            [
-                "table_string" => "default",
-                "field_string" => "dateOfBirth",
-                "value_string" => "1976-10-06",
-                "condition_string" => "=",
-                "kind_beneficiary" => "beneficiary",
-                "field_id" => null,
-                "weight" => "1"
-            ],
-            [
-                "table_string" => "default",
-                "field_string" => "gender",
-                "value_string" => "1",
-                "condition_string" => "=",
-                "kind_beneficiary" => "beneficiary",
-                "field_id" => null,
-                "weight" => "1"
-            ]
-        ],
-        "commodities" => [
-            [
-                "unit" => "PHPUNIT TEST",
-                "value" => 999999999,
-                "modality_type" => []
-            ]
-        ],
-        "type"=> "Household",
-        "threshold"=> "1"
-    ];
-
-
     /**
      * @throws \Exception
      */
@@ -90,6 +49,54 @@ class DistributionControllerTest extends BMSServiceTestCase
      */
     public function testCreateDistribution()
     {
+        $criteria = array(
+            "adm1" => "",
+            "adm2"=> "",
+            "adm3" => "",
+            "adm4" => "",
+            "commodities" =>[],
+            "date_distribution" => "2018-09-13",
+            "location" => [
+                "location" => [
+                    "adm1" => "Rhone-Alpes",
+                    "adm2" => "Savoie",
+                    "adm3" => "Chambery",
+                    "adm4" => "Sainte Hélène sur Isère",
+                    "country_iso3"=> "KHM"
+                ]
+            ],
+            "location_name"=> "",
+            "name"=> "-Banteay Meanchey-9/13/2018-",
+            "project"=> [
+                "donors"=> [],
+                "donors_name"=> [],
+                "id"=> "1",
+                "name"=> "",
+                "sectors"=> [],
+                "sectors_name"=> []
+            ],
+            "selection_criteria"=> [
+                [
+                    "condition_string"=> "true",
+                    "field_string"=> "disabled",
+                    "id_field"=> "1",
+                    "kind_beneficiary"=> "Beneficiary",
+                    "table_string"=> "vulnerabilityCriteria",
+                    "weight"=> "1"
+                ],
+                [
+                    "condition_string"=> "0",
+                    "field_string"=> "gender",
+                    "id_field"=> "1",
+                    "kind_beneficiary"=> "Beneficiary",
+                    "table_string"=> "vulnerabilityCriteria",
+                    "weight"=> "1"
+                ]
+            ],
+            "type"=> "Household",
+            "threshold"=> "1"
+        );
+
         $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
 
@@ -98,23 +105,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $projects = $this->em->getRepository(Project::class)->findAll();
-        if (empty($projects))
-        {
-            print_r("\nThere is no project inside the database\n");
-            return false;
-        }
-        $this->body['project']['id'] = current($projects)->getId();
-
-        $modalityTypes = $this->em->getRepository(ModalityType::class)->findAll();
-        if (empty($modalityTypes))
-        {
-            print_r("\nThere is no modality type inside the database\n");
-            return false;
-        }
-        $this->body['commodities'][0]['modality_type']['id'] = current($modalityTypes)->getId();
-
-        $crawler = $this->request('PUT', '/api/wsse/distributions', $this->body);
+        $crawler = $this->request('PUT', '/api/wsse/distributions', $criteria);
         $return = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
