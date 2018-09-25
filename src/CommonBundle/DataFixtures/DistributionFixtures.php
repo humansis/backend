@@ -50,10 +50,12 @@ class DistributionFixtures extends Fixture
                 'field_string' => 'disabled',
                 'id_field' => 1,
                 'kind_beneficiary' => 'Beneficiary',
-                'table_string' => 'vulnerabilityCriteria'
+                'table_string' => 'vulnerabilityCriteria',
+                'weight' => '1'
             ]
         ],
-        'type' => 'Beneficiary'
+        'type' => 'Beneficiary',
+        'threshold' => '1'
     ];
 
     private $distributionService;
@@ -71,6 +73,6 @@ class DistributionFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $this->distributionService->create("KHM", $this->distributionArray);
+        $this->distributionService->create("KHM", $this->distributionArray, 1);
     }
 }
