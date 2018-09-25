@@ -57,13 +57,11 @@ class DistributionControllerTest extends BMSServiceTestCase
             "commodities" =>[],
             "date_distribution" => "2018-09-13",
             "location" => [
-                "location" => [
-                    "adm1" => "Rhone-Alpes",
-                    "adm2" => "Savoie",
-                    "adm3" => "Chambery",
-                    "adm4" => "Sainte Hélène sur Isère",
-                    "country_iso3"=> "KHM"
-                ]
+                "adm1"=> "Banteay Meanchey",
+                "adm2"=> "Mongkol Borei",
+                "adm3"=> "Chamnaom",
+                "adm4"=> "Chamnaom",
+                "country_iso3"=> "KHM"
             ],
             "location_name"=> "",
             "name"=> "-Banteay Meanchey-9/13/2018-",
@@ -97,8 +95,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             "threshold"=> "1"
         );
 
-        $this->removeHousehold($this->namefullnameHousehold);
-        $this->createHousehold();
+        $distributionBefore = $this->em->getRepository(DistributionData::class)->findAll();
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
@@ -107,6 +104,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('PUT', '/api/wsse/distributions', $criteria);
         $return = json_decode($this->client->getResponse()->getContent(), true);
+
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         $this->assertArrayHasKey('distribution', $return);

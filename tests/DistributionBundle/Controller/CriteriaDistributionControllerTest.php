@@ -99,63 +99,7 @@ class CriteriaDistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function testAddAction(){
-        $criteria = array(
-            "adm1" => "",
-	        "adm2"=> "",
-            "adm3" => "",
-	        "adm4" => "",
-	        "commodities" =>[],
-	        "date_distribution" => "2018-09-13",
-	        "location" => [
-                "adm1"=> "Banteay Meanchey",
-		        "adm2"=> "Mongkol Borei",
-		        "adm3"=> "Chamnaom",
-		        "adm4"=> "Chamnaom",
-		        "country_iso3"=> "KHM"
-            ],
-	        "location_name"=> "",
-	        "name"=> "-Banteay Meanchey-9/13/2018-",
-	        "project"=> [
-                "donors"=> [],
-		        "donors_name"=> [],
-		        "id"=> "1",
-                "name"=> "",
-		        "sectors"=> [],
-		        "sectors_name"=> []
-	        ],
-	        "selection_criteria"=> [
-		        [
-                    "condition_string"=> "true",
-			        "field_string"=> "disabled",
-			        "id_field"=> "1",
-			        "kind_beneficiary"=> "Beneficiary",
-			        "table_string"=> "vulnerabilityCriteria",
-                    "weight"=> "1"
-		        ],
-                [
-                    "condition_string"=> "0",
-                    "field_string"=> "gender",
-			        "id_field"=> "1",
-			        "kind_beneficiary"=> "Beneficiary",
-			        "table_string"=> "vulnerabilityCriteria",
-                    "weight"=> "1"
-		        ]
-	        ],
-	        "type"=> "Household",
-            "threshold"=> "1"
-        );
 
-        $distributionBefore = $this->em->getRepository(DistributionData::class)->findAll();
-
-        // Fake connection with a token for the user tester (ADMIN)
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $crawler = $this->request('PUT', '/api/wsse/distributions', $criteria);
-        $listDistributionBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         $distributionAfter = $this->em->getRepository(DistributionData::class)->findAll();
 
