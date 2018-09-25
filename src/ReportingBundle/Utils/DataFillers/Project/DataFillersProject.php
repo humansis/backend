@@ -17,6 +17,10 @@ use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
 
 use Doctrine\ORM\EntityManager;
 
+/**
+ * Class DataFillersProject
+ * @package ReportingBundle\Utils\DataFillers\Project
+ */
 class DataFillersProject
 {
 

@@ -14,6 +14,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 use DistributionBundle\Entity\DistributionData;
 
+/**
+ * Class TransactionController
+ * @package TransactionBundle\Controller
+ */
 class TransactionController extends Controller
 {
 

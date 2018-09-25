@@ -15,6 +15,10 @@ use \DistributionBundle\Entity\Commodity;
 use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
 
 
+/**
+ * Class DataFillersDistribution
+ * @package ReportingBundle\Utils\DataFillers\Distribution
+ */
 class DataFillersDistribution  extends DataFillers
 {
 

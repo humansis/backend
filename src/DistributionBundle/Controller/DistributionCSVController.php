@@ -15,6 +15,10 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+/**
+ * Class DistributionCSVController
+ * @package DistributionBundle\Controller
+ */
 class DistributionCSVController extends Controller
 {
     /**

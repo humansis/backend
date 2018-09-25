@@ -25,6 +25,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
+/**
+ * Class DistributionCSVService
+ * @package DistributionBundle\Utils
+ */
 class DistributionCSVService
 {
     /** @var EntityManagerInterface $em */

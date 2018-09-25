@@ -6,9 +6,16 @@ use UserBundle\Security\Factory\WsseFactory;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
+/**
+ * Class UserBundle
+ * @package UserBundle
+ */
 class UserBundle extends Bundle
 {
-	public function build(ContainerBuilder $container)
+    /**
+     * @param ContainerBuilder $container
+     */
+    public function build(ContainerBuilder $container)
     {
         parent::build($container);
 

@@ -16,6 +16,10 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * Class DistributionService
+ * @package DistributionBundle\Utils
+ */
 class DistributionService
 {
 

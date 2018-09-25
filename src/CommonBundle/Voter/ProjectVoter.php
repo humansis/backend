@@ -11,6 +11,10 @@ use Symfony\Component\Security\Core\Role\RoleHierarchy;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserProject;
 
+/**
+ * Class ProjectVoter
+ * @package CommonBundle\Voter
+ */
 class ProjectVoter extends BMSVoter
 {
     /** @var EntityManagerInterface $em */

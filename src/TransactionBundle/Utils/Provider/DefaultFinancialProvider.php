@@ -4,11 +4,18 @@ namespace TransactionBundle\Utils\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
 
+/**
+ * Class DefaultFinancialProvider
+ * @package TransactionBundle\Utils\Provider
+ */
 abstract class DefaultFinancialProvider {
 
     /** @var EntityManagerInterface $em */
     private $em;
-    
+
+    /**
+     * @var
+     */
     private $url;
 
     /**

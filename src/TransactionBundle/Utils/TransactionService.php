@@ -8,6 +8,10 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class TransactionService
+ * @package TransactionBundle\Utils
+ */
 class TransactionService {
 
     /** @var EntityManagerInterface $em */
@@ -22,18 +26,20 @@ class TransactionService {
     /**
      * TransactionService constructor.
      * @param EntityManagerInterface $entityManager
+     * @param ContainerInterface $container
      */
     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
     {
         $this->em = $entityManager;
         $this->container = $container;
     }
-    
+
     /**
      * Send money to distribution beneficiaries
-     * @param  string           $countryISO3      
-     * @param  DistributionData $distributionData 
-     * @return [type]                             
+     * @param  string $countryISO3
+     * @param  DistributionData $distributionData
+     * @return object [type]
+     * @throws \Exception
      */
     public function sendMoney(string $countryISO3, DistributionData $distributionData)
     {
@@ -48,11 +54,12 @@ class TransactionService {
         // return $this->financialProvider->sendMoneyToAll($distributionBeneficiaries);
         return $this->financialProvider->sendMoneyToOne();
     }
-    
+
     /**
      * Get the financial provider corresponding to the current country
      * @param  string $countryISO3 iso3 code of the country
-     * @return Class             
+     * @return Class
+     * @throws \Exception
      */
     private function getFinancialProviderForCountry(string $countryISO3)
     {

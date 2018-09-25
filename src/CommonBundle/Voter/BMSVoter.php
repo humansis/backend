@@ -8,6 +8,10 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
 
+/**
+ * Class BMSVoter
+ * @package CommonBundle\Voter
+ */
 abstract class BMSVoter extends Voter
 {
 

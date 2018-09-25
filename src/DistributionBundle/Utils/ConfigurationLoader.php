@@ -6,6 +6,10 @@ namespace DistributionBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
 
+/**
+ * Class ConfigurationLoader
+ * @package DistributionBundle\Utils
+ */
 class ConfigurationLoader
 {
     /** @var EntityManagerInterface $em */

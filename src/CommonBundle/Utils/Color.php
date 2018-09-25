@@ -4,6 +4,10 @@
 namespace CommonBundle\Utils;
 
 
+/**
+ * Class Color
+ * @package CommonBundle\Utils
+ */
 class Color
 {
     /**

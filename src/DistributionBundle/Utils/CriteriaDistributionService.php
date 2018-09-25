@@ -14,6 +14,10 @@ use DistributionBundle\Entity\SelectionCriteria;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
 
+/**
+ * Class CriteriaDistributionService
+ * @package DistributionBundle\Utils
+ */
 class CriteriaDistributionService
 {
 

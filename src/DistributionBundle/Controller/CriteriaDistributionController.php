@@ -17,6 +17,10 @@ use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
+/**
+ * Class CriteriaDistributionController
+ * @package DistributionBundle\Controller
+ */
 class CriteriaDistributionController extends Controller
 {
 
