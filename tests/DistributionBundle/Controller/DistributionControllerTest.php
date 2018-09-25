@@ -148,27 +148,11 @@ class DistributionControllerTest extends BMSServiceTestCase
 
             if ($index === 2)
             {
-                $indexAnswerCountrySpecific = 11;
-                $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($this->iso3);
                 $household = $this->em->getRepository(Household::class)->findOneBy([
                     "addressStreet" => $this->bodyHousehold['address_street'],
                     "addressNumber" => $this->bodyHousehold['address_number']
                 ]);
-                /** @var CountrySpecific $countrySpecific */
-                foreach ($countrySpecifics as $countrySpecific)
-                {
-                    /** @var CountrySpecificAnswer $answer */
-                    $answer = $this->em->getRepository(CountrySpecificAnswer::class)->findOneBy([
-                        "countrySpecific" => $countrySpecific,
-                        "household" => $household
-                    ]);
 
-                    if (!$answer instanceof CountrySpecificAnswer)
-                        continue;
-
-                    $this->assertSame($answer->getAnswer(), $rowArray[$indexAnswerCountrySpecific]);
-                    $indexAnswerCountrySpecific++;
-                }
                 $this->assertSame($household->getId(), intval($rowArray[21]));
             }
 
