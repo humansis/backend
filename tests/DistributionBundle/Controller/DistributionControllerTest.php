@@ -51,7 +51,7 @@ class DistributionControllerTest extends BMSServiceTestCase
     {
         $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
-        
+
         $criteria = array(
             "adm1" => "",
             "adm2"=> "",
@@ -65,6 +65,14 @@ class DistributionControllerTest extends BMSServiceTestCase
                 "adm3"=> "Chamnaom",
                 "adm4"=> "Chamnaom",
                 "country_iso3"=> "KHM"
+            ],
+            "country_specific_answers" => [
+                [
+                    "answer" => "MY_ANSWER_TEST1",
+                    "country_specific" => [
+                        "id" => 1
+                    ]
+                ]
             ],
             "location_name"=> "",
             "name"=> "TEST_DISTRIBUTION_NAME_PHPUNIT",
