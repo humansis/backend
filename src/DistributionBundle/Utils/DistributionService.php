@@ -114,7 +114,7 @@ class DistributionService
      * @return array
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function create($countryISO3, array $distributionArray, int $threshold = 1)
+    public function create($countryISO3, array $distributionArray, int $threshold)
     {
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
