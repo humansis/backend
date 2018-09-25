@@ -37,6 +37,25 @@ services:
 
 
 #######################################################################################
+##                                      IMPORT                                       ##
+#######################################################################################
+
+    beneficiary.api_import_service:
+        class: BeneficiaryBundle\Utils\ApiImportService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "@service_container"
+        public: true
+
+
+    beneficiary.khm_api_provider:
+        class: BeneficiaryBundle\Utils\ImportProvider\KHMApiProvider
+        public: true
+        arguments:
+        - '@doctrine.orm.entity_manager'
+
+
+#######################################################################################
 ##                                        CSV                                        ##
 #######################################################################################
 
