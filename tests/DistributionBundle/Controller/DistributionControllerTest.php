@@ -146,16 +146,6 @@ class DistributionControllerTest extends BMSServiceTestCase
 
             $rowArray = str_getcsv($row, ',');
 
-            if ($index === 2)
-            {
-                $household = $this->em->getRepository(Household::class)->findOneBy([
-                    "addressStreet" => $this->bodyHousehold['address_street'],
-                    "addressNumber" => $this->bodyHousehold['address_number']
-                ]);
-
-                $this->assertSame($household->getId(), intval($rowArray[21]));
-            }
-
             $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["given_name"], $rowArray[13]);
             $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["family_name"], $rowArray[14]);
             $this->assertSame($this->bodyHousehold['beneficiaries'][$index - 2]["gender"], intval($rowArray[15]));
