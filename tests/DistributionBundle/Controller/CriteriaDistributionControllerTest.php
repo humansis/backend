@@ -85,6 +85,12 @@ class CriteriaDistributionControllerTest extends BMSServiceTestCase
         $listDistributionBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        $this->assertTrue(gettype($listDistributionBeneficiary) == "array");
+
+        $this->assertTrue(key_exists('number', $listDistributionBeneficiary));
+        $this->assertTrue(gettype($listDistributionBeneficiary['number']) == "integer");
+
         return true;
     }
 

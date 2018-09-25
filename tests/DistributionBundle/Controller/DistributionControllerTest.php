@@ -33,7 +33,6 @@ class DistributionControllerTest extends BMSServiceTestCase
     private $body = [
         "name" => "TEST_DISTRIBUTION_NAME_PHPUNIT",
         "date_distribution" => "2018-08-10",
-        "type" => 0,
         "location" => [
             "adm1" => "Rhone-Alpes",
             "adm2" => "Savoie",
@@ -47,7 +46,8 @@ class DistributionControllerTest extends BMSServiceTestCase
                 "value_string" => "1976-10-06",
                 "condition_string" => "=",
                 "kind_beneficiary" => "beneficiary",
-                "field_id" => null
+                "field_id" => null,
+                "weight" => "1"
             ],
             [
                 "table_string" => "default",
@@ -55,7 +55,8 @@ class DistributionControllerTest extends BMSServiceTestCase
                 "value_string" => "1",
                 "condition_string" => "=",
                 "kind_beneficiary" => "beneficiary",
-                "field_id" => null
+                "field_id" => null,
+                "weight" => "1"
             ]
         ],
         "commodities" => [
@@ -64,7 +65,9 @@ class DistributionControllerTest extends BMSServiceTestCase
                 "value" => 999999999,
                 "modality_type" => []
             ]
-        ]
+        ],
+        "type"=> "Household",
+        "threshold"=> "1"
     ];
 
 
