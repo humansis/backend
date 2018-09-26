@@ -31,13 +31,16 @@ class BeneficiaryControllerTest extends BMSServiceTestCase {
 
         $body = [
             "countryCode" => "010201",
-            "flush" => false
+            "flush" => "false"
         ];
 
         $crawler = $this->request('POST', '/api/wsse/beneficiaries/import/api', $body);
         $listHousehold = json_decode($this->client->getResponse()->getContent(), true);
 
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertTrue(gettype($listHousehold) == "array");
+        $this->assertTrue(key_exists('message', $listHousehold));
+        $this->assertTrue($listHousehold['message'] == "Insertion successfull");
 
         return true;
     }
