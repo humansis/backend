@@ -37,6 +37,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase {
         $crawler = $this->request('POST', '/api/wsse/beneficiaries/import/api', $body);
         $listHousehold = json_decode($this->client->getResponse()->getContent(), true);
 
+        var_dump($listHousehold);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertTrue(gettype($listHousehold) == "array");
         $this->assertTrue(key_exists('message', $listHousehold));
