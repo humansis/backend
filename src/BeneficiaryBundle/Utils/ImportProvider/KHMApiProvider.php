@@ -36,7 +36,7 @@ class KHMApiProvider extends DefaultApiProvider {
     /**
      * Get beneficiaries from API
      * @param int $countryCode
-     * @return object transaction
+     * @return array
      * @throws \Exception
      */
     public function getBeneficiaries(int $countryCode)
@@ -44,8 +44,47 @@ class KHMApiProvider extends DefaultApiProvider {
         $route = "/api/idpoor8/". $countryCode .".json?email=james.happell%40peopleinneed.cz&token=K45nDocxQ5sEFfqSWwDm-2DxskYEDYFe";
         
         try {
-            $sent = $this->sendRequest("GET", $route);
-            return $sent;
+            $beneficiaries = $this->sendRequest("GET", $route);
+
+            $beneficiariesArray = array();
+
+            foreach ($beneficiaries as $beneficiary) {
+                foreach ($beneficiary['HouseholdMembers'] as $householdMember) {
+                    for($i = 0; $i < strlen($householdMember['MemberName']); $i++){
+                        if($householdMember['MemberName'][$i] == ' ')
+                            $bothName = explode(' ', $householdMember['MemberName']);
+                    }
+
+                    $givenName = $bothName[0];
+                    $familyName = $bothName[1];
+
+                    if($householdMember['RelationshipToHH'] == "Head of Household")
+                        $headerHousehold = 1;
+                    else
+                        $headerHousehold = 0;
+
+                    if($householdMember['Sex'] == 'Man')
+                        $sex = 1;
+                    else
+                        $sex = 0;
+
+                    array_push($beneficiariesArray, array(
+                            'equityCardNo' => $householdMember['EquityCardNo'],
+                            'headHousehold' => $headerHousehold,
+                            'givenName' => $givenName,
+                            'familyName' => $familyName,
+                            'IDPoor' => $householdMember['PovertyLevel'],
+                            'sex' => $sex,
+                            'dateOfBirth' => $householdMember['YearOfBirth'] . '-01-01'
+                        )
+                    );
+                }
+            }
+
+            asort($beneficiariesArray);
+
+            return $beneficiariesArray;
+
         } catch (Exception $e) {
             throw $e;
         }
@@ -83,11 +122,11 @@ class KHMApiProvider extends DefaultApiProvider {
         $err = curl_error($curl);
         
         curl_close($curl);
-    
+
         if ($err) {
             throw new \Exception($err);
         } else {
-            $result = json_decode($response);
+            $result = json_decode($response, true);
             return $result;
         }
     }

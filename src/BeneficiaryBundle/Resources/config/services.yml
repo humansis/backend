@@ -45,6 +45,7 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - "@service_container"
+            - "@validator"
         public: true
 
 
