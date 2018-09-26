@@ -86,8 +86,9 @@ class BeneficiaryController extends Controller
         $body = $request->request->all();
         $countryIso3 = $body['__country'];
         $countryCode = $body['countryCode'];
+        $flush = $body['flush'];
 
-        $vulnerabilityCriteria = $this->get('beneficiary.api_import_service')->getBeneficiaries($countryIso3, $countryCode);
+        $vulnerabilityCriteria = $this->get('beneficiary.api_import_service')->getBeneficiaries($countryIso3, $countryCode, $flush);
         $json = $this->get('jms_serializer')
             ->serialize($vulnerabilityCriteria, 'json');
 

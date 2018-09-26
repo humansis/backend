@@ -15,6 +15,7 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Utils\LocationService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -64,10 +65,11 @@ class ApiImportService
      * Get beneficiaries from the API in the current country
      * @param  string $countryISO3
      * @param int $countryCode
+     * @param bool $flush
      * @return array
      * @throws \Exception
      */
-    public function getBeneficiaries(string $countryISO3, int $countryCode)
+    public function getBeneficiaries(string $countryISO3, int $countryCode, bool $flush)
     {
         try {
             $this->apiProvider = $this->getApiProviderForCountry($countryISO3);
@@ -83,24 +85,28 @@ class ApiImportService
             foreach ($allBeneficiaries as $allBeneficiary){
                 if($oldEquityNumber != $allBeneficiary['equityCardNo'] && $oldEquityNumber != ""){
 
-                    $household = $this->createAndInitHousehold();
+                    $household = $this->createAndInitHousehold($beneficiariesInHousehold);
 
-                    $location = $this->getLocation($this->locationService, $countryCode, $countryISO3);
-                    $household->setLocation($location);
+                    if($household != 'beneficiariesExist'){
+                        $location = $this->getLocation($this->locationService, $countryCode, $countryISO3);
+                        $household->setLocation($location);
 
-                    $this->em->persist($household);
+                        $this->em->persist($household);
 
-                    $this->insertBeneficiaries($household, $beneficiariesInHousehold);
+                        $this->insertBeneficiaries($household, $beneficiariesInHousehold);
 
-                    $countrySpecificAnswer = $this->setCountrySpecificAnswer($countryISO3, $household, $beneficiariesInHousehold);
+                        $countrySpecificAnswer = $this->setCountrySpecificAnswer($countryISO3, $household, $beneficiariesInHousehold);
 
-                    $this->em->persist($countrySpecificAnswer);
-                    $this->em->flush();
+                        $this->em->persist($countrySpecificAnswer);
 
-                    $this->setHousehold($household);
+                        if($flush)
+                            $this->em->flush();
 
-                    unset($beneficiariesInHousehold);
-                    $beneficiariesInHousehold = array();
+                        $this->setHousehold($household);
+
+                        unset($beneficiariesInHousehold);
+                        $beneficiariesInHousehold = array();
+                    }
                 }
 
                 $oldEquityNumber = $allBeneficiary['equityCardNo'];
@@ -131,10 +137,23 @@ class ApiImportService
     }
 
     /**
-     * @return Household
+     * @param array $beneficiariesInHousehold
+     * @return Household|string
      * @throws \Exception
      */
-    private function createAndInitHousehold(){
+    private function createAndInitHousehold(array $beneficiariesInHousehold){
+
+        $dateOfBirth = new DateTime($beneficiariesInHousehold[0]['dateOfBirth']);
+        $familyName = $beneficiariesInHousehold[0]['familyName'];
+        $givenName = $beneficiariesInHousehold[0]["givenName"];
+        $status = $beneficiariesInHousehold[0]['headHousehold'];
+        $sex = $beneficiariesInHousehold[0]['sex'];
+
+        $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $givenName, 'familyName' => $familyName, 'gender' => $sex, 'status' => $status, 'dateOfBirth' => $dateOfBirth]);
+
+        if($beneficiary)
+            return "beneficiariesExist";
+
         /** @var Household $household */
         $household = new Household();
         $household->setNotes(null)
