@@ -6,7 +6,7 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
@@ -41,19 +41,59 @@ Class ExportService {
     }
 
     /**
-     * @param $exportableTable
-     * @param $name
-     * @param $type
-     * @return array|string
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @param array $headers This array should follow the csv format
+     * @return ExportService
      */
-    public function export($exportableTable, $name, $type)
+    public function setHeaders(array $headers) {
+        $this->headers = $headers;
+
+        return $this;
+    }
+
+    /**
+     * Generate file
+     * @param  Spreadsheet $spreadsheet 
+     * @param  string      $name        
+     * @param  string      $type        
+     * @return $filename                   
+     */
+    public function generateFile(Spreadsheet $spreadsheet, string $name, string $type)
     {
+        // step 3 : scaning sheet into csv or excel
+        if($type == "csv"){
+            $writer = IOFactory::createWriter($spreadsheet, 'Csv');
+            $writer->setEnclosure('');
+            $writer->setDelimiter(',');
+            $writer->setUseBOM(true);
+            $filename = $name.'.csv';
+        }
+        elseif($type == "xls"){
+            $writer = IOFactory::createWriter($spreadsheet, 'Xls');
+            $filename = $name.'.xls';
+        }
+        elseif($type == "ods"){
+            $writer = IOFactory::createWriter($spreadsheet, 'Ods');
+            $filename = $name.'.ods';
+        }
+        else{
+            return "An error occured with the type file";
+        }
+        
+        $writer->save($filename);
+        return $filename;
+    }
+    
+    /**
+     * Export data to file (csv, xls or ods)
+     * @param  $exportableTable
+     * @param  string $name           
+     * @param  string $type           
+     * @return $filename                 
+     */
+    public function export($exportableTable, string $name, string $type) {
         $rows = [];
 
         // step 1 : Convert the mapping as data
-
         foreach ($exportableTable as $value) {
             if(is_object($value)) {
                 if( $value instanceof ExportableInterface) {
@@ -66,11 +106,10 @@ Class ExportService {
             }
         }
 
-
         // step 2 : sheet construction
-
         $spreadsheet = new Spreadsheet();
         $spreadsheet->createSheet();
+        $spreadsheet->setActiveSheetIndex(0);
         $worksheet = $spreadsheet->getActiveSheet();
 
         if(count($rows) === 0) {
@@ -79,25 +118,12 @@ Class ExportService {
 
         $rowIndex = 1;
 
-        // write headers
-        if(is_array($this->headers)) {
-            foreach ($this->headers as $key => $value) {
-
-                foreach ($value as $colIndex => $header) {
-                    $index = chr(ord('A')+ $colIndex ).$rowIndex;
-                    $worksheet->setCellValue($index, $value[$colIndex]);
-                }
-                $rowIndex++;
-            }
-        }
-
         // get table headers titles
         reset($rows);
         $tableHeaders = array_keys($rows[0]);
 
         foreach ($tableHeaders as $key => $value) {
             $index = chr(ord('A')+ $key).$rowIndex;
-
             $worksheet->setCellValue($index, $value);
         }
 
@@ -109,48 +135,16 @@ Class ExportService {
                $index = chr(ord('A')+ $colIndex ).$rowIndex;
                $worksheet->setCellValue($index, $value[$header]);
            }
-
            $rowIndex++;
         }
-
-        // step 3 : scaning sheet into csv or excel
-
-        $writer = new Csv($spreadsheet);
-        $writer->setEnclosure('');
-
-        if($type == "csv"){
-            $filename = $name.'.csv';
+        
+        try {
+            $filename = $this->generateFile($spreadsheet, $name, $type);
+        } catch (\Exception $e) {
+            throw new \Exception($e);
         }
-        elseif($type == "xls"){
-            $filename = $name.'.xls';
-        }
-        elseif($type == "ods"){
-            $filename = $name.'.ods';
-        }
-        else{
-            return "An error occured with the type file";
-        }
-
-        $writer->save($filename);
-        $this->filecontent = file_get_contents($filename);
-
-        unlink($filename);
-
-        return [
-            'content' => $this->filecontent,
-            'filename' => $filename,
-            'filepath' => $filename
-        ];
-    }
-
-    /**
-     * @param array $headers This array should follow the csv format
-     * @return ExportService
-     */
-    public function setHeaders(array $headers) {
-        $this->headers = $headers;
-
-        return $this;
+        
+        return $filename;
     }
 
 

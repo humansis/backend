@@ -248,18 +248,29 @@ class HouseholdController extends Controller
     public function getPatternCSVAction(Request $request)
     {
         $countryIso3 = $request->request->get('__country');
+        
+        $type = $request->query->get('type') ?: 'csv';
         /** @var ExportCSVService $exportCSVService */
         $exportCSVService = $this->get('beneficiary.household_export_csv_service');
         try
         {
-            $fileCSV = $exportCSVService->generate($countryIso3);
-        }
-        catch (\Exception $e)
+            $filename = $exportCSVService->generate($countryIso3, $type);
+            // Create binary file to send
+            $response = new BinaryFileResponse(getcwd() . '/' . $filename);
+            
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
+            $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+            if ($mimeTypeGuesser->isSupported()) {
+                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
+            } else {
+                $response->headers->set('Content-Type', 'text/plain');
+            }
+            $response->deleteFileAfterSend(true);
+        } catch (\Exception $e)
         {
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-
-        return new Response(json_encode($fileCSV));
+        return $response;
     }
 
     /**

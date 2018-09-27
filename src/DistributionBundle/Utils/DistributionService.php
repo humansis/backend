@@ -361,6 +361,7 @@ class DistributionService
      */
     public function exportToCsv(int $projectId, string $type) {
         $exportableTable = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId]);
+        dump($exportableTable);
         return $this->container->get('export_csv_service')->export($exportableTable,'distributions', $type);
     }
 
