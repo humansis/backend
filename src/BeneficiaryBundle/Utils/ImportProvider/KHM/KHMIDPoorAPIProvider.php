@@ -94,7 +94,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
             foreach ($villages as $village) {
 
-                $this->saveAdm4($village, $countryIso2, $params['countryCode']);
+                $location = $this->saveAdm4($village, $countryIso2, $params['countryCode']);
 
                 foreach ($village['HouseholdMembers'] as $householdMember) {
                     for($i = 0; $i < strlen($householdMember['MemberName']); $i++){
@@ -122,7 +122,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
                             'familyName' => $familyName,
                             'IDPoor' => $householdMember['PovertyLevel'],
                             'gender' => $sex,
-                            'dateOfBirth' => $householdMember['YearOfBirth'] . '-01-01'
+                            'dateOfBirth' => $householdMember['YearOfBirth'] . '-01-01',
+                            'location' => $location
                         )
                     );
                 }
@@ -131,7 +132,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
             //Sort by equityNumber
             asort($beneficiariesArray);
 
-            return $this->parseData($beneficiariesArray, $countryIso3, $params['countryCode']);
+            return $this->parseData($beneficiariesArray, $countryIso3);
 
         } catch (\Exception $e) {
             throw $e;
@@ -189,7 +190,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @throws ValidationException
      * @throws \Exception
      */
-    public function parseData(array $beneficiariesArray, string $countryIso3, string $allCountryCode){
+    public function parseData(array $beneficiariesArray, string $countryIso3){
         $oldEquityNumber = "";
         $beneficiariesInHousehold = array();
 
@@ -203,12 +204,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
                 }
 
                 if($household != 'beneficiariesExist'){
-                    try {
-                        $location = $this->getLocation($this->locationService, $countryIso3, $allCountryCode);
-                    } catch (ValidationException $e) {
-                        throw $e;
-                    }
-                    $household->setLocation($location);
+                    $household->setLocation($allBeneficiary['location']);
 
                     $this->em->persist($household);
 
@@ -281,40 +277,6 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
         }
 
         return $household;
-    }
-
-    /**
-     * @param LocationService $locationService
-     * @param string $countryISO3
-     * @param string $allCountryCode
-     * @return \CommonBundle\Entity\Location|null|object
-     * @throws ValidationException
-     * @throws \Exception
-     */
-    private function getLocation(LocationService $locationService, string $countryISO3, string $allCountryCode){
-
-
-        $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $allCountryCode]);
-        if($adm3 == null)
-            throw new \Exception("Adm3 was not found.");
-
-        $adm2 = $this->em->getRepository(Adm2::class)->find($adm3->getAdm2());
-        $adm1 = $this->em->getRepository(Adm1::class)->find($adm2->getAdm1());
-
-        $householdArray = array(
-            'location' => array(
-                'adm1' => $adm1->getName(),
-                'adm2' => $adm2->getName(),
-                'adm3' => $adm3->getName()
-            )
-        );
-
-        $location = $locationService->getOrSaveLocation($countryISO3, $householdArray["location"]);
-
-        if (null === $location)
-            throw new \Exception("Location was not found.");
-
-        return $location;
     }
 
     /**
@@ -451,12 +413,9 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
         if($adm3 == null)
             throw new \Exception("Adm3 was not found.");
 
-        $checkAdm4 = $this->em->getRepository(Adm4::class)->findOneBy(['name' => $village['VillageName'], 'adm3' => $adm3]);
-        if(!$checkAdm4){
+        $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(['name' => $village['VillageName'], 'adm3' => $adm3]);
+        if(!$adm4){
             $adm4 = new Adm4();
-
-
-
 
             $adm4->setName($village['VillageName'])
                 ->setAdm3($adm3)
@@ -465,5 +424,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
             $this->em->persist($adm4);
             $this->em->flush();
         }
+
+        return $adm4->getLocation();
     }
 }
