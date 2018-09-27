@@ -9,6 +9,9 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 
 /**
  * Class ExportController
@@ -17,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ExportController extends Controller
 {
     /**
-     * @Rest\Post("/export", name="export_data")
+     * @Rest\Get("/export", name="export_data")
      *
      * @SWG\Tag(name="Export")
      *
@@ -35,96 +38,58 @@ class ExportController extends Controller
      *
      * @return Response
      */
-    public function exportToCSVAction(Request $request)
+    public function exportAction(Request $request)
     {
-        if ($request->query->get('distributions')) {
-            $idProject = $request->query->get('distributions');
-            $type = $request->request->get('type');
-
-            try {
-                $fileCSV = $this->get('distribution.distribution_service')->exportToCsv($idProject, $type);
-
-                return new Response(json_encode($fileCSV));
-            } catch (\Exception $exception) {
-                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-            }
-        } elseif ($request->query->get('beneficiaries')) {
-            $type = $request->request->get('type');
-
-            try {
-                $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsv($type);
-
-                return new Response(json_encode($fileCSV));
-            } catch (\Exception $exception) {
-                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-            }
-        } elseif ($request->query->get('beneficiariesInDistribution')) {
-            $idDistribution = $request->query->get('beneficiariesInDistribution');
-            $type = $request->request->get('type');
-
-            try {
+        try {
+            // Format of the file (csv, xls, ods)
+            $type = $request->query->get('type');
+            // Generate corresponding file depending on request
+            if ($request->query->get('distributions')) {
+                $idProject = $request->query->get('distributions');
+                $filename = $this->get('distribution.distribution_service')->exportToCsv($idProject, $type);
+            } 
+            elseif ($request->query->get('beneficiaries')) {
+                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv($type);
+            } 
+            elseif ($request->query->get('beneficiariesInDistribution')) {
+                $idDistribution = $request->query->get('beneficiariesInDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
-
-                $fileCSV = $this->get('beneficiary.beneficiary_service')->exportToCsvBeneficiariesInDistribution($distribution, $type);
-
-                return new Response(json_encode($fileCSV));
-            } catch (\Exception $exception) {
-                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsvBeneficiariesInDistribution($distribution, $type);
+            } 
+            elseif ($request->query->get('users')) {
+                $filename = $this->get('user.user_service')->exportToCsv($type);
+            } 
+            elseif ($request->query->get('countries')) {
+                $countryIso3 = $request->request->get("__country");
+                $filename = $this->get('beneficiary.country_specific_service')->exportToCsv($type, $countryIso3);
+            } 
+            elseif ($request->query->get('donors')) {
+                $filename = $this->get('project.donor_service')->exportToCsv($type);
+            } 
+            elseif ($request->query->get('projects')) {
+                $country = $request->query->get('projects');
+                $filename = $this->get('project.project_service')->exportToCsv($country, $type);
+            } 
+            elseif ($request->query->get('distributionSample')) {
+                $arrayObjectBeneficiary = $request->request->get("sample");
+                $filename = $this->get('distribution.distribution_beneficiary_service')->exportToCsv($arrayObjectBeneficiary, $type);
             }
-        } elseif ($request->query->get('users')) {
-            $type = $request->request->get('type');
-
-            try {
-                $fileCSV = $this->get('user.user_service')->exportToCsv($type);
-
-                return new Response(json_encode($fileCSV));
-            } catch (\Exception $exception) {
-                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+            
+            // Create binary file to send
+            $response = new BinaryFileResponse(getcwd() . '/' . $filename);
+            
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
+            $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+            if ($mimeTypeGuesser->isSupported()) {
+                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
+            } else {
+                $response->headers->set('Content-Type', 'text/plain');
             }
-        } elseif ($request->query->get('countries')) {
-            $type = $request->request->get('type');
-            $countryIso3 = $request->request->get("__country");
-
-            try {
-                $fileCSV = $this->get('beneficiary.country_specific_service')->exportToCsv($type, $countryIso3);
-
-                return new Response(json_encode($fileCSV));
-            } catch (\Exception $exception) {
-                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-            }
-        } elseif ($request->query->get('donors')) {
-            $type = $request->request->get('type');
-
-            try {
-                $fileCSV = $this->get('project.donor_service')->exportToCsv($type);
-
-                return new Response(json_encode($fileCSV));
-            } catch (\Exception $exception) {
-                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-            }
-        } elseif ($request->query->get('project')) {
-            $country = $request->query->get('project');
-            $type = $request->request->get('type');
-
-            //$country = $request->query->get('__country');
-            try {
-                $fileCSV = $this->get('project.project_service')->exportToCsv($country, $type);
-
-                return new Response(json_encode($fileCSV));
-            } catch (\Exception $exception) {
-                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-            }
-        } elseif ($request->query->get('distributionSample')) {
-            $arrayObjectBeneficiary = $request->request->get("sample");
-            $type = $request->request->get('type');
-
-            try {
-                $fileCSV = $this->get('distribution.distribution_beneficiary_service')->exportToCsv($arrayObjectBeneficiary, $type);
-
-                return new Response(json_encode($fileCSV));
-            } catch (\Exception $exception) {
-                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-            }
+            $response->deleteFileAfterSend(true);
+            
+            return $response;
+        } catch (\Exception $exception) {
+            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
     }
 }

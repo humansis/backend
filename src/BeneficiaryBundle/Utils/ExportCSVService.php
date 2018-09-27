@@ -54,23 +54,17 @@ class ExportCSVService
 
     /**
      * @param $countryISO3
+     * @param $type
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function generate($countryISO3)
+    public function generate(string $countryISO3, string $type)
     {
         $spreadsheet = $this->buildFile($countryISO3);
-        $writer = new Csv($spreadsheet);
-        $dataPath = $this->container->getParameter('kernel.root_dir') . '/../var';
-        $filename = $dataPath . '/pattern_household_' . $countryISO3 . '.csv';
-        $writer->save($filename);
-
-        //Récupération du contenu et suppression du fichier
-        $fileContent = file_get_contents($filename);
-        unlink($filename);
-        $file = [$fileContent, 'pattern_household_' . $countryISO3 . '.csv'];
-        return $file;
+        $filename = $this->container->get('export_csv_service')->generateFile($spreadsheet, 'pattern_household_' . $countryISO3, $type);
+        
+        return $filename;
     }
 
     /**
