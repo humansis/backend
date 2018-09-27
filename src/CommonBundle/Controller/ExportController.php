@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 class ExportController extends Controller
 {
     /**
-     * @Rest\Get("/export", name="export_data")
+     * @Rest\Post("/export", name="export_data")
      *
      * @SWG\Tag(name="Export")
      *
@@ -71,7 +71,7 @@ class ExportController extends Controller
                 $filename = $this->get('project.project_service')->exportToCsv($country, $type);
             } 
             elseif ($request->query->get('distributionSample')) {
-                $arrayObjectBeneficiary = $request->request->get("sample");
+                $arrayObjectBeneficiary = $request->request->get('sample');
                 $filename = $this->get('distribution.distribution_beneficiary_service')->exportToCsv($arrayObjectBeneficiary, $type);
             }
             
