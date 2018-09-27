@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Class ApiImportService
  * @package BeneficiaryBundle\Utils
  */
-class ApiImportService
+class APIImportService
 {
     /** @var EntityManagerInterface $em */
     private $em;

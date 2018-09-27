@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Utils\ImportProvider\DefaultApiProvider;
+use BeneficiaryBundle\Utils\ImportProvider\DefaultAPIProvider;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
@@ -25,7 +25,7 @@ use Symfony\Component\Validator\ConstraintViolation;
  * Class KHMApiProvider
  * @package BeneficiaryBundle\Utils\ImportProvider
  */
-class KHMIDPoorApiProvider extends DefaultApiProvider {
+class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
     /** @var EntityManagerInterface $em */
     private $em;

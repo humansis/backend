@@ -81,7 +81,7 @@ class BeneficiaryController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getAllBeneficiariesApi(Request $request)
+    public function importBeneficiariesFromAPIAction(Request $request)
     {
         $body = $request->request->all();
         $countryIso3 = $body['__country'];

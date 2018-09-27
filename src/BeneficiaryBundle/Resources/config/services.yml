@@ -41,7 +41,7 @@ services:
 #######################################################################################
 
     beneficiary.api_import_service:
-        class: BeneficiaryBundle\Utils\ApiImportService
+        class: BeneficiaryBundle\Utils\APIImportService
         arguments:
             - '@doctrine.orm.entity_manager'
             - "@service_container"
@@ -49,7 +49,7 @@ services:
 
 
     beneficiary.khm_api_provider_idpoor:
-        class: BeneficiaryBundle\Utils\ImportProvider\KHM\KHMIDPoorApiProvider
+        class: BeneficiaryBundle\Utils\ImportProvider\KHM\KHMIDPoorAPIProvider
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'

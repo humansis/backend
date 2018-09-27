@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
  * Class DefaultApiProvider
  * @package BeneficiaryBundle\Utils\ImportProvider
  */
-abstract class DefaultApiProvider {
+abstract class DefaultAPIProvider {
 
     /** @var EntityManagerInterface $em */
     private $em;
