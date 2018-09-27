@@ -106,7 +106,9 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
                 $this->getToken();
             }
             array_push($headers, "Authorization: Bearer " . $this->token->access_token, "Content-type: application/json");
-            $body = json_encode((object) $body);
+            $body_test = json_encode((object) $body);
+            $body = "{\n  \"amount\":10,\n  \"sender_msisdn\":\"012249184\",\n  \"receiver_msisdn\":\"012345678\"\n}";
+            dump($body_test);
             dump($body);
         }
         // Authentication request
@@ -124,9 +126,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
           CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
           CURLOPT_CUSTOMREQUEST  => $type,
           CURLOPT_POSTFIELDS     => $body,
-          CURLOPT_HTTPHEADER     => $headers,
-          CURLOPT_FAILONERROR    => true,
-          CURLINFO_HEADER_OUT    => true
+          CURLOPT_HTTPHEADER     => $headers
         ));
         
         $response = curl_exec($curl);
