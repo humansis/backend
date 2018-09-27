@@ -146,10 +146,10 @@ class ApiImportService
         $dateOfBirth = new DateTime($beneficiariesInHousehold[0]['dateOfBirth']);
         $familyName = $beneficiariesInHousehold[0]['familyName'];
         $givenName = $beneficiariesInHousehold[0]["givenName"];
-        $status = $beneficiariesInHousehold[0]['headHousehold'];
-        $sex = $beneficiariesInHousehold[0]['sex'];
+        $status = $beneficiariesInHousehold[0]['status'];
+        $gender = $beneficiariesInHousehold[0]['gender'];
 
-        $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $givenName, 'familyName' => $familyName, 'gender' => $sex, 'status' => $status, 'dateOfBirth' => $dateOfBirth]);
+        $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $givenName, 'familyName' => $familyName, 'gender' => $gender, 'status' => $status, 'dateOfBirth' => $dateOfBirth]);
 
         if($beneficiary)
             return "beneficiariesExist";
@@ -314,11 +314,11 @@ class ApiImportService
         $beneficiary = new Beneficiary();
         $beneficiary->setHousehold($household);
 
-        $beneficiary->setGender($beneficiaryArray["sex"])
+        $beneficiary->setGender($beneficiaryArray["gender"])
             ->setDateOfBirth(new \DateTime($beneficiaryArray["dateOfBirth"]))
             ->setFamilyName($beneficiaryArray["familyName"])
             ->setGivenName($beneficiaryArray["givenName"])
-            ->setStatus($beneficiaryArray["headHousehold"])
+            ->setStatus($beneficiaryArray["status"])
             ->setUpdatedOn(new \DateTime());
 
         $this->createProfile($beneficiary);

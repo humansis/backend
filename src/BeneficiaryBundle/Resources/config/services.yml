@@ -50,7 +50,7 @@ services:
 
 
     beneficiary.khm_api_provider:
-        class: BeneficiaryBundle\Utils\ImportProvider\KHMApiProvider
+        class: BeneficiaryBundle\Utils\ImportProvider\KHM\KHMIDPoorApiProvider
         public: true
         arguments:
         - '@doctrine.orm.entity_manager'

@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Utils\ImportProvider;
+namespace BeneficiaryBundle\Utils\ImportProvider\KHM;
 
 use Doctrine\ORM\EntityManagerInterface;
 use BeneficiaryBundle\Entity\Beneficiary;
@@ -10,7 +10,7 @@ use BeneficiaryBundle\Utils\ImportProvider\DefaultApiProvider;
  * Class KHMApiProvider
  * @package BeneficiaryBundle\Utils\ImportProvider
  */
-class KHMApiProvider extends DefaultApiProvider {
+class KHMIDPoorApiProvider extends DefaultApiProvider {
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -70,11 +70,11 @@ class KHMApiProvider extends DefaultApiProvider {
 
                     array_push($beneficiariesArray, array(
                             'equityCardNo' => $householdMember['EquityCardNo'],
-                            'headHousehold' => $headerHousehold,
+                            'status' => $headerHousehold,
                             'givenName' => $givenName,
                             'familyName' => $familyName,
                             'IDPoor' => $householdMember['PovertyLevel'],
-                            'sex' => $sex,
+                            'gender' => $sex,
                             'dateOfBirth' => $householdMember['YearOfBirth'] . '-01-01'
                         )
                     );
