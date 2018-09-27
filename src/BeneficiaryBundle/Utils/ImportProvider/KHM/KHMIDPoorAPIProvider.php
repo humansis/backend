@@ -71,10 +71,21 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      */
     public function importData(string $countryIso3, array $params)
     {
-        if(!key_exists('countryCode', $params) || !key_exists('countryIso2', $params))
-            throw new \Exception("Missing a key in the array");
+        if(!key_exists('countryCode', $params))
+            throw new \Exception("Missing countryCode key in the array");
 
-        $route = "/api/idpoor8/". $params['countryCode'] .".json?email=james.happell%40peopleinneed.cz&token=K45nDocxQ5sEFfqSWwDm-2DxskYEDYFe";
+        $countryIso2 = "";
+        $countryCode = "";
+
+        for ($i = 0; $i < strlen($params['countryCode']); $i++){
+            if($i < 2)
+                $countryIso2 = $countryIso2 . $params['countryCode'][$i];
+
+            else
+                $countryCode = $countryCode . $params['countryCode'][$i];
+        }
+
+        $route = "/api/idpoor8/". $countryCode .".json?email=james.happell%40peopleinneed.cz&token=K45nDocxQ5sEFfqSWwDm-2DxskYEDYFe";
         
         try {
             $villages = $this->sendRequest("GET", $route);
@@ -83,7 +94,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
             foreach ($villages as $village) {
 
-                $this->saveAdm4($village, $params);
+                $this->saveAdm4($village, $countryIso2, $params['countryCode']);
 
                 foreach ($village['HouseholdMembers'] as $householdMember) {
                     for($i = 0; $i < strlen($householdMember['MemberName']); $i++){
@@ -120,7 +131,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
             //Sort by equityNumber
             asort($beneficiariesArray);
 
-            return $this->parseData($beneficiariesArray, $countryIso3, $params);
+            return $this->parseData($beneficiariesArray, $countryIso3, $params['countryCode']);
 
         } catch (\Exception $e) {
             throw $e;
@@ -171,12 +182,14 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
     /**
      * @param array $beneficiariesArray
      * @param string $countryIso3
-     * @param array $params
+     * @param string $countryIso2
+     * @param string $countryCode
+     * @param array $allCountryCode
      * @return array
      * @throws ValidationException
      * @throws \Exception
      */
-    public function parseData(array $beneficiariesArray, string $countryIso3, array $params){
+    public function parseData(array $beneficiariesArray, string $countryIso3, string $allCountryCode){
         $oldEquityNumber = "";
         $beneficiariesInHousehold = array();
 
@@ -191,7 +204,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
                 if($household != 'beneficiariesExist'){
                     try {
-                        $location = $this->getLocation($this->locationService, $params['countryCode'], $params['countryIso2'], $countryIso3);
+                        $location = $this->getLocation($this->locationService, $countryIso3, $allCountryCode);
                     } catch (ValidationException $e) {
                         throw $e;
                     }
@@ -272,25 +285,19 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
     /**
      * @param LocationService $locationService
-     * @param int $countryCode
-     * @param string $countryIso2
      * @param string $countryISO3
+     * @param string $allCountryCode
      * @return \CommonBundle\Entity\Location|null|object
      * @throws ValidationException
      * @throws \Exception
      */
-    private function getLocation(LocationService $locationService, int $countryCode, string $countryIso2, string $countryISO3){
+    private function getLocation(LocationService $locationService, string $countryISO3, string $allCountryCode){
 
-        $fullCountryCode = $countryIso2 . $countryCode;
 
-        $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $fullCountryCode]);
-        if($adm3 == null){
-            $fullCountryCode = $countryIso2 . "0" . $countryCode;
-            $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $fullCountryCode]);
+        $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $allCountryCode]);
+        if($adm3 == null)
+            throw new \Exception("Adm3 was not found.");
 
-            if($adm3 == null)
-                throw new \Exception("Adm3 was not found.");
-        }
         $adm2 = $this->em->getRepository(Adm2::class)->find($adm3->getAdm2());
         $adm1 = $this->em->getRepository(Adm1::class)->find($adm2->getAdm1());
 
@@ -434,28 +441,29 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
     /**
      * @param array $village
-     * @param array $params
+     * @param string $countryIso2
+     * @param string $allCountryCode
      * @throws \Exception
      */
-    private function saveAdm4(array $village, array $params){
-        $adm4 = new Adm4();
+    private function saveAdm4(array $village, string $countryIso2, string $allCountryCode){
 
-        $fullCountryCode = $params['countryIso2'] . $params['countryCode'];
+        $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $allCountryCode]);
+        if($adm3 == null)
+            throw new \Exception("Adm3 was not found.");
 
-        $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $fullCountryCode]);
-        if($adm3 == null){
-            $fullCountryCode = $params['countryIso2'] . "0" . $params['countryCode'];
-            $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $fullCountryCode]);
+        $checkAdm4 = $this->em->getRepository(Adm4::class)->findOneBy(['name' => $village['VillageName'], 'adm3' => $adm3]);
+        if(!$checkAdm4){
+            $adm4 = new Adm4();
 
-            if($adm3 == null)
-                throw new \Exception("Adm3 was not found.");
+
+
+
+            $adm4->setName($village['VillageName'])
+                ->setAdm3($adm3)
+                ->setCode($countryIso2 . $village['VillageCode']);
+
+            $this->em->persist($adm4);
+            $this->em->flush();
         }
-
-        $adm4->setName($village['VillageName'])
-            ->setAdm3($adm3)
-            ->setCode($village['VillageCode']);
-
-        $this->em->persist($adm4);
-        $this->em->flush();
     }
 }
