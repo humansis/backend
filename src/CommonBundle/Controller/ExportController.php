@@ -13,6 +13,10 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 
+/**
+ * Class ExportController
+ * @package CommonBundle\Controller
+ */
 class ExportController extends Controller
 {
     /**

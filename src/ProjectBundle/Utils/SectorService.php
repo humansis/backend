@@ -10,6 +10,10 @@ use ProjectBundle\Entity\Sector;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * Class SectorService
+ * @package ProjectBundle\Utils
+ */
 class SectorService
 {
 

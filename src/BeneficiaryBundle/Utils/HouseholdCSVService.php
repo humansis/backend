@@ -276,6 +276,7 @@ class HouseholdCSVService
      * If the token is null, create a new one
      * return the token
      * @return string
+     * @throws \Exception
      */
     public function initOrGetToken()
     {

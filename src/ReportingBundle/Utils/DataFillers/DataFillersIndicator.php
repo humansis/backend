@@ -5,6 +5,10 @@ namespace ReportingBundle\Utils\DataFillers;
 use ReportingBundle\Entity\ReportingIndicator;
 use Doctrine\ORM\EntityManager;
 
+/**
+ * Class DataFillersIndicator
+ * @package ReportingBundle\Utils\DataFillers
+ */
 class DataFillersIndicator
 {
 

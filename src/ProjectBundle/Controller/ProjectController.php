@@ -13,6 +13,10 @@ use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+/**
+ * Class ProjectController
+ * @package ProjectBundle\Controller
+ */
 class ProjectController extends Controller
 {
     /**

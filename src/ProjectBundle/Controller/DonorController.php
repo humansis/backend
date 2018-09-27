@@ -13,6 +13,10 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+/**
+ * Class DonorController
+ * @package ProjectBundle\Controller
+ */
 class DonorController extends Controller
 {
 

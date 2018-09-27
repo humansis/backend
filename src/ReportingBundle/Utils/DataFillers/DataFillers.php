@@ -10,6 +10,10 @@ use ReportingBundle\Utils\Model\IndicatorInterface;
 
 use Doctrine\ORM\EntityManager;
 
+/**
+ * Class DataFillers
+ * @package ReportingBundle\Utils\DataFillers
+ */
 class DataFillers implements DataFillersInterface
 {
 

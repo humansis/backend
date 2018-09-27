@@ -10,4 +10,17 @@ namespace BeneficiaryBundle\Repository;
  */
 class CountrySpecificAnswerRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function hasValue(int $countrySpecificId, int $answer, string $conditionString, int $householdId){
+
+        $qb = $this->createQueryBuilder('csa');
+
+        $q  = $qb->where('csa.countrySpecific = :countrySpecificId')
+            ->setParameter('countrySpecificId', $countrySpecificId)
+            ->andWhere('csa.answer '. $conditionString . ' :answer')
+            ->setParameter('answer', $answer)
+            ->andWhere('csa.household = :householdId')
+            ->setParameter('householdId', $householdId);
+
+        return $q->getQuery()->getResult();
+    }
 }

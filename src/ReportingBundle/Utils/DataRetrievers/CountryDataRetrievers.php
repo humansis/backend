@@ -6,6 +6,10 @@ use Doctrine\ORM\EntityManager;
 
 use ReportingBundle\Entity\ReportingCountry;
 
+/**
+ * Class CountryDataRetrievers
+ * @package ReportingBundle\Utils\DataRetrievers
+ */
 class CountryDataRetrievers
 {
     /**

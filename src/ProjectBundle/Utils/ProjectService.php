@@ -16,6 +16,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserProject;
 
+/**
+ * Class ProjectService
+ * @package ProjectBundle\Utils
+ */
 class ProjectService
 {
     /**

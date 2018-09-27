@@ -35,6 +35,67 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
+    /**
+     * @param string $value
+     * @param string $conditionString
+     * @param int $beneficiaryId
+     * @return mixed
+     */
+    public function hasDateOfBirth(string $value, string $conditionString, int $beneficiaryId){
+
+        $qb = $this->createQueryBuilder('b');
+
+        $q  = $qb->where('b.dateOfBirth ' . $conditionString . ' :value')
+            ->setParameter('value', $value)
+            ->andWhere('b.id = :beneficiaryId')
+            ->setParameter('beneficiaryId', $beneficiaryId);
+
+        return $q->getQuery()->getResult();
+    }
+
+    /**
+     * @param int $vulnerabilityId
+     * @param string $conditionString
+     * @param int $beneficiaryId
+     * @return mixed
+     */
+    public function hasVulnerabilityCriterion(int $vulnerabilityId, string $conditionString, int $beneficiaryId){
+        $qb = $this->createQueryBuilder('b');
+
+        if($conditionString == "true"){
+            $q = $qb->leftJoin('b.vulnerabilityCriteria', 'vc')
+                ->where(':vulnerabilityId = vc.id')
+                ->setParameter('vulnerabilityId', $vulnerabilityId)
+                ->andWhere(':beneficiaryId = b.id')
+                ->setParameter(':beneficiaryId', $beneficiaryId);
+        }
+        else{
+            $q = $qb->leftJoin('b.vulnerabilityCriteria', 'vc')
+                ->where(':vulnerabilityId <> vc.id')
+                ->setParameter('vulnerabilityId', $vulnerabilityId)
+                ->andWhere(':beneficiaryId = b.id')
+                ->setParameter(':beneficiaryId', $beneficiaryId);
+        }
+
+        return $q->getQuery()->getResult();
+    }
+
+    /**
+     * @param string $gender
+     * @param int $beneficiaryId
+     * @return mixed
+     */
+    public function hasGender(string $gender, int $beneficiaryId){
+        $qb = $this->createQueryBuilder('b');
+
+        $q = $qb->where(':gender = b.gender')
+            ->setParameter('gender', $gender)
+            ->andWhere(':beneficiaryId = b.id')
+            ->setParameter(':beneficiaryId', $beneficiaryId);
+
+        return $q->getQuery()->getResult();
+    }
+
     public function countAllInCountry(string $iso3)
     {
         $qb = $this->createQueryBuilder('b');

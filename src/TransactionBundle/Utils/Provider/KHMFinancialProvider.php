@@ -5,13 +5,26 @@ namespace TransactionBundle\Utils\Provider;
 use Doctrine\ORM\EntityManagerInterface;
 use BeneficiaryBundle\Entity\Beneficiary;
 
+/**
+ * Class KHMFinancialProvider
+ * @package TransactionBundle\Utils\Provider
+ */
 class KHMFinancialProvider extends DefaultFinancialProvider {
 
     /** @var EntityManagerInterface $em */
     private $em;
-    
+
+    /**
+     * @var string
+     */
     private $url = "https://stageonline.wingmoney.com:8443/RestEngine";
+    /**
+     * @var
+     */
     private $token;
+    /**
+     * @var
+     */
     private $lastTokenDate;
 
     /**

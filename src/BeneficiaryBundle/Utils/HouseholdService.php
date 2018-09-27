@@ -26,6 +26,10 @@ use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class HouseholdService
+ * @package BeneficiaryBundle\Utils
+ */
 class HouseholdService
 {
     /** @var EntityManagerInterface $em */

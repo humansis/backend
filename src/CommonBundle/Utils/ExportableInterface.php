@@ -3,6 +3,10 @@
 namespace CommonBundle\Utils;
 
 
+/**
+ * Interface ExportableInterface
+ * @package CommonBundle\Utils
+ */
 interface ExportableInterface {
 
     /**

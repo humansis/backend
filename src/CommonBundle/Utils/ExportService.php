@@ -15,6 +15,10 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use Symfony\Component\HttpFoundation\Response;
 
 
+/**
+ * Class ExportService
+ * @package CommonBundle\Utils
+ */
 Class ExportService {
 
     /** @var EntityManagerInterface $em */

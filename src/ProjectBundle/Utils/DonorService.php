@@ -9,6 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Psr\Container\ContainerInterface;
 
+/**
+ * Class DonorService
+ * @package ProjectBundle\Utils
+ */
 class DonorService
 {
 
