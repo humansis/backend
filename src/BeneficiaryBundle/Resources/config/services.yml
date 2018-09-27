@@ -45,15 +45,16 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - "@service_container"
-            - "@validator"
         public: true
 
 
-    beneficiary.khm_api_provider:
+    beneficiary.khm_api_provider_idpoor:
         class: BeneficiaryBundle\Utils\ImportProvider\KHM\KHMIDPoorApiProvider
         public: true
         arguments:
-        - '@doctrine.orm.entity_manager'
+            - '@doctrine.orm.entity_manager'
+            - "@validator"
+            - "@service_container"
 
 
 #######################################################################################
