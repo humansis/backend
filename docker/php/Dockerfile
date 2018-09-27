@@ -26,7 +26,6 @@ RUN wget https://phar.phpunit.de/phpunit-6.5.phar
 RUN chmod +x phpunit-6.5.phar
 RUN mv phpunit-6.5.phar /usr/local/bin/phpunit
 RUN phpunit --version
-RUN composer require phpoffice/phpexcel
 RUN composer require phpoffice/phpspreadsheet
 
 # Set timezone
