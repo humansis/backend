@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Utils\ImportProvider\KHM;
 
+use CommonBundle\Entity\Adm4;
 use Doctrine\ORM\EntityManagerInterface;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -76,12 +77,15 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
         $route = "/api/idpoor8/". $params['countryCode'] .".json?email=james.happell%40peopleinneed.cz&token=K45nDocxQ5sEFfqSWwDm-2DxskYEDYFe";
         
         try {
-            $beneficiaries = $this->sendRequest("GET", $route);
+            $villages = $this->sendRequest("GET", $route);
 
             $beneficiariesArray = array();
 
-            foreach ($beneficiaries as $beneficiary) {
-                foreach ($beneficiary['HouseholdMembers'] as $householdMember) {
+            foreach ($villages as $village) {
+
+                $this->saveAdm4($village, $params);
+
+                foreach ($village['HouseholdMembers'] as $householdMember) {
                     for($i = 0; $i < strlen($householdMember['MemberName']); $i++){
                         if($householdMember['MemberName'][$i] == ' ')
                             $bothName = explode(' ', $householdMember['MemberName']);
@@ -113,6 +117,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
                 }
             }
 
+            //Sort by equityNumber
             asort($beneficiariesArray);
 
             return $this->parseData($beneficiariesArray, $countryIso3, $params);
@@ -400,8 +405,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
             ->setDateOfBirth(new \DateTime($beneficiaryArray["dateOfBirth"]))
             ->setFamilyName($beneficiaryArray["familyName"])
             ->setGivenName($beneficiaryArray["givenName"])
-            ->setStatus($beneficiaryArray["status"])
-            ->setUpdatedOn(new \DateTime());
+            ->setStatus($beneficiaryArray["status"]);
 
         $this->createProfile($beneficiary);
 
@@ -426,5 +430,32 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
         $this->em->persist($beneficiary);
 
         return $profile;
+    }
+
+    /**
+     * @param array $village
+     * @param array $params
+     * @throws \Exception
+     */
+    private function saveAdm4(array $village, array $params){
+        $adm4 = new Adm4();
+
+        $fullCountryCode = $params['countryIso2'] . $params['countryCode'];
+
+        $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $fullCountryCode]);
+        if($adm3 == null){
+            $fullCountryCode = $params['countryIso2'] . "0" . $params['countryCode'];
+            $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $fullCountryCode]);
+
+            if($adm3 == null)
+                throw new \Exception("Adm3 was not found.");
+        }
+
+        $adm4->setName($village['VillageName'])
+            ->setAdm3($adm3)
+            ->setCode($village['VillageCode']);
+
+        $this->em->persist($adm4);
+        $this->em->flush();
     }
 }
