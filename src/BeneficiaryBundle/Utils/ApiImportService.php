@@ -69,7 +69,7 @@ class ApiImportService
      * @return array
      * @throws \Exception
      */
-    public function getBeneficiaries(string $countryISO3, int $countryCode, $flush)
+    public function getBeneficiaries(string $countryISO3, int $countryCode)
     {
         try {
             $this->apiProvider = $this->getApiProviderForCountry($countryISO3);
@@ -99,10 +99,8 @@ class ApiImportService
 
                         $this->em->persist($countrySpecificAnswer);
 
-                        if($flush == "true") {
-                            $this->em->flush();
-                            $this->setHousehold($household);
-                        }
+                        $this->em->flush();
+                        $this->setHousehold($household);
 
                         unset($beneficiariesInHousehold);
                         $beneficiariesInHousehold = array();
