@@ -68,4 +68,30 @@ class BeneficiaryController extends Controller
 
         return new Response($json);
     }
+
+    /**
+     * @Rest\Post("/beneficiaries/import/api", name="get_all_benficiaries_via_api")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @SWG\Tag(name="Beneficiary")
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function importBeneficiariesFromAPIAction(Request $request)
+    {
+        $body = $request->request->all();
+        $countryIso3 = $body['__country'];
+        $provider = $body['provider'];
+        $params = $body['params'];
+
+        $vulnerabilityCriteria = $this->get('beneficiary.api_import_service')->import($countryIso3, $provider, $params);
+        $json = $this->get('jms_serializer')
+            ->serialize($vulnerabilityCriteria, 'json');
+
+        return new Response($json);
+    }
 }

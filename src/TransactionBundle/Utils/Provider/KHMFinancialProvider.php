@@ -62,11 +62,12 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         }
         
     }
-    
+
     /**
      * Send money to beneficiaries
-     * @param  Beneficiary  $beneficiary
+     * @param string $phoneNumber
      * @return object       transaction
+     * @throws \Exception
      */
     public function sendMoneyToOne(string $phoneNumber = "0962620581")
     {
@@ -84,13 +85,12 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             throw $e;
         }
     }
-    
+
     /**
      * Send request to WING API for Cambodia
-     * @param  string $type    type of the request ("GET", "POST", etc.)
-     * @param  string $route   url of the request
-     * @param  array  $headers headers of the request (optional)
-     * @param  array  $body    body of the request (optional)
+     * @param  string $type type of the request ("GET", "POST", etc.)
+     * @param  string $route url of the request
+     * @param  array $body body of the request (optional)
      * @return mixed  response
      * @throws \Exception
      */

@@ -133,6 +133,9 @@ class Beneficiary implements ExportableInterface
         $this->vulnerabilityCriteria = new \Doctrine\Common\Collections\ArrayCollection();
         $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nationalIds = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setUpdatedOn(new \DateTime());
+
+        //TODO check if updatedOn everytime
     }
 
     /**

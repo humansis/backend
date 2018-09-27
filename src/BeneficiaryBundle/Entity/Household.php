@@ -82,27 +82,24 @@ class Household
     /**
      * @var string
      *
-     * @ORM\Column(name="address_street", type="string", length=255)
+     * @ORM\Column(name="address_street", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "FullReceivers"})
-     * @Assert\NotBlank(message="The address street is required.")
      */
     private $addressStreet;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="address_number", type="string", length=255)
+     * @ORM\Column(name="address_number", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "FullReceivers"})
-     * @Assert\NotBlank(message="The address number is required.")
      */
     private $addressNumber;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="address_postcode", type="string", length=255)
+     * @ORM\Column(name="address_postcode", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "FullReceivers"})
-     * @Assert\NotBlank(message="The address postcode is required.")
      */
     private $addressPostcode;
 

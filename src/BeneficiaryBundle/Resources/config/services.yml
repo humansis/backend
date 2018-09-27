@@ -37,6 +37,27 @@ services:
 
 
 #######################################################################################
+##                                      IMPORT                                       ##
+#######################################################################################
+
+    beneficiary.api_import_service:
+        class: BeneficiaryBundle\Utils\APIImportService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "@service_container"
+        public: true
+
+
+    beneficiary.khm_api_provider_idpoor:
+        class: BeneficiaryBundle\Utils\ImportProvider\KHM\KHMIDPoorAPIProvider
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "@validator"
+            - "@service_container"
+
+
+#######################################################################################
 ##                                        CSV                                        ##
 #######################################################################################
 
