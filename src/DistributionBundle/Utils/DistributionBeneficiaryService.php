@@ -14,7 +14,11 @@ use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
 
 
-class DistributionBeneficiaryService 
+/**
+ * Class DistributionBeneficiaryService
+ * @package DistributionBundle\Utils
+ */
+class DistributionBeneficiaryService
 {
     /** @var EntityManagerInterface $em */
     private $em;

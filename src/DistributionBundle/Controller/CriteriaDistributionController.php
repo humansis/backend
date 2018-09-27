@@ -17,6 +17,10 @@ use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
+/**
+ * Class CriteriaDistributionController
+ * @package DistributionBundle\Controller
+ */
 class CriteriaDistributionController extends Controller
 {
 
@@ -85,55 +89,6 @@ class CriteriaDistributionController extends Controller
     }
 
     /**
-     * @Rest\Post("/distributions/criteria/project/{id}")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
-     *
-     * @SWG\Tag(name="CriteriaDistributions")
-     *
-     * @SWG\Parameter(
-     *     name="body",
-     *     in="body",
-     *     required=true,
-     *     schema={}
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="OK"
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param Request $request
-     * @param Project $project
-     * @return Response
-     */
-    public function getBeneficiariesAction(Request $request, Project $project)
-    {
-        /** @var CriteriaDistributionService $criteriaDistributionService */
-        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        try
-        {
-            $receivers = $criteriaDistributionService->load($project, $request->request->all());
-        }
-        catch (\Exception $exception)
-        {
-            return new Response($exception->getMessage(), 500);
-        }
-
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $receivers,
-                'json'
-            );
-
-        return new Response($json);
-    }
-
-    /**
      * @Rest\Post("/distributions/criteria/project/{id}/number")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
      *
@@ -162,11 +117,15 @@ class CriteriaDistributionController extends Controller
      */
     public function getBeneficiariesNumberAction(Request $request, Project $project)
     {
+        $filters = $request->request->all();
+        $filters['countryIso3'] = $filters['__country'];
+        $threshold = $filters['threshold'];
+
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
         try
         {
-            $receivers = $criteriaDistributionService->load($project, $request->request->all(), true);
+            $receivers = $criteriaDistributionService->load($filters, $project, $threshold, true);
         }
         catch (\Exception $exception)
         {

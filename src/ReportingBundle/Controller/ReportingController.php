@@ -19,6 +19,10 @@ use Swagger\Annotations as SWG;
 
 use ReportingBundle\Entity\ReportingIndicator;
 
+/**
+ * Class ReportingController
+ * @package ReportingBundle\Controller
+ */
 class ReportingController extends Controller
 {
 

@@ -16,6 +16,10 @@ use ProjectBundle\Entity\Project;
 use DistributionBundle\Entity\DistributionData;
 use \TransactionBundle\Entity\Transaction;
 
+/**
+ * Class DataFillersCountry
+ * @package ReportingBundle\Utils\DataFillers\Country
+ */
 class DataFillersCountry extends DataFillers
 {
 

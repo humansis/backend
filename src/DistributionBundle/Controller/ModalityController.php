@@ -16,6 +16,10 @@ use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+/**
+ * Class ModalityController
+ * @package DistributionBundle\Controller
+ */
 class ModalityController extends Controller
 {
 

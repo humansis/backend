@@ -13,6 +13,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class CommonController
+ * @package CommonBundle\Controller
+ */
 class CommonController extends Controller
 {
 

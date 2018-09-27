@@ -79,6 +79,30 @@ class SelectionCriteria
     private $valueString;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="weight", type="integer")
+     * @Groups({"FullDistribution"})
+     */
+    private $weight;
+
+    /**
+     * @return int
+     */
+    public function getWeight(): int
+    {
+        return $this->weight;
+    }
+
+    /**
+     * @param int $weight
+     */
+    public function setWeight(int $weight)
+    {
+        $this->weight = $weight;
+    }
+
+    /**
      * Get id.
      *
      * @return int
