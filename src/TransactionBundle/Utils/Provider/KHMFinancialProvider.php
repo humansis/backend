@@ -90,7 +90,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
     {
         $route = "/api/v1/sendmoney/nonwing/txn_inquiry";
         $body = array(
-            "transaction_id" => "ABR590191"
+            "transaction_id" => "ABR490985"
         );
         
         try {
