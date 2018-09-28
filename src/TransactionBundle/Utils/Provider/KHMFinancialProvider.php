@@ -106,10 +106,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
                 $this->getToken();
             }
             array_push($headers, "Authorization: Bearer " . $this->token->access_token, "Content-type: application/json");
-            $body_test = json_encode((object) $body);
-            $body = "{\n  \"amount\":10,\n  \"sender_msisdn\":\"012249184\",\n  \"receiver_msisdn\":\"012345678\"\n}";
-            dump($body_test);
-            dump($body);
+            $body = json_encode((object) $body);
         }
         // Authentication request
         else {
