@@ -22,7 +22,8 @@ class TransactionController extends Controller
 {
 
     /**
-     * @Rest\Get("/transaction/distribution/{id}/send", name="send_money_for_distribution")
+     * Send moeny to distribution beneficiaries via country financial provider
+     * @Rest\Post("/transaction/distribution/{id}/send", name="send_money_for_distribution")
      * 
      * @SWG\Tag(name="Transaction")
      *
@@ -40,7 +41,7 @@ class TransactionController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      */
-    public function getTransactionAction(Request $request, DistributionData $distributionData)  {
+    public function postTransactionAction(Request $request, DistributionData $distributionData)  {
         $countryISO3 = $request->request->get('__country');
         
         try
@@ -54,6 +55,35 @@ class TransactionController extends Controller
         
         return new Response(json_encode($response));
         
+    }
+    
+    /**
+    * Get transaction status for distribution beneficiaries
+    * @Rest\Get("/transaction/distribution/{id}/status", name="status_money_for_distribution")
+    * 
+    * @SWG\Tag(name="Transaction")
+    *
+    * @SWG\Response(
+    *     response=200,
+    *     description="OK"
+    * )
+    *
+    * @SWG\Response(
+    *     response=400,
+    *     description="HTTP_BAD_REQUEST"
+    * )
+     * @param  Request          $request          
+     * @param  DistributionData $distributionData 
+     * @return Response                             
+     */
+    public function getTransactionStatusAction(Request $request, DistributionData $distributionData) {
+        $countryISO3 = $request->request->get('__country');
+        try {
+            $response = $this->get('transaction.transaction_service')->getStatus($countryISO3, $distributionData);
+        }
+        catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
     }
 
 }

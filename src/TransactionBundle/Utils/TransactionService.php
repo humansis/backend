@@ -38,7 +38,7 @@ class TransactionService {
      * Send money to distribution beneficiaries
      * @param  string $countryISO3
      * @param  DistributionData $distributionData
-     * @return object [type]
+     * @return object 
      * @throws \Exception
      */
     public function sendMoney(string $countryISO3, DistributionData $distributionData)
@@ -54,6 +54,28 @@ class TransactionService {
         try {            
             // return $this->financialProvider->sendMoneyToAll($distributionBeneficiaries);
             return $this->financialProvider->sendMoneyToOne();
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+    
+    /**
+     * Get transaction status
+     * @param  string           $countryISO3      
+     * @param  DistributionData $distributionData 
+     * @return [type]   
+     * @throws \Exception                          
+     */
+    public function getStatus(string $countryISO3, DistributionData $distributionData)
+    {
+        try {
+            $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+        
+        try {            
+            return $this->financialProvider->getStatus();
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

@@ -75,7 +75,22 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         $body = array(
             "amount"          => 50,
             "sender_msisdn"   => "012249184",
-            "receiver_msisdn" => $phoneNumber
+            "receivers_msisdn" => $phoneNumber
+        );
+        
+        try {
+            $sent = $this->sendRequest("POST", $route, $body);
+            return $sent;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
+    public function getStatus()
+    {
+        $route = "/api/v1/sendmoney/nonwing/txn_inquiry";
+        $body = array(
+            "transaction_id" => "ABR590191"
         );
         
         try {
@@ -132,9 +147,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         curl_close($curl);
     
         if ($err) {
+            dump($err);
             throw new \Exception($err);
         } else {
             $result = json_decode($response);
+            dump($result);
             return $result;
         }
     }
