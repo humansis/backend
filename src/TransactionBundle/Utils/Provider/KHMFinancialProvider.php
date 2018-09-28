@@ -139,7 +139,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
           CURLOPT_CUSTOMREQUEST  => $type,
           CURLOPT_POSTFIELDS     => $body,
           CURLOPT_HTTPHEADER     => $headers,
-          CULROPT_FAILONERROR    => true
+          CURLOPT_FAILONERROR    => true
         ));
         
         $response = curl_exec($curl);
