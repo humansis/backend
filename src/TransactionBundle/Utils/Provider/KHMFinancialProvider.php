@@ -122,8 +122,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             }
             array_push($headers, "Authorization: Bearer " . $this->token->access_token, "Content-type: application/json");
             $body = json_encode((object) $body);
-            dump($headers);
-            dump($body);
         }
         // Authentication request
         else {
@@ -151,7 +149,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         curl_close($curl);
     
         if ($err) {
-            throw new \Exception($err);
+            throw new \Exception(0, $err);
         } else {
             $result = json_decode($response);
             if (property_exists($result, 'error_code')) {
