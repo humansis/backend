@@ -75,7 +75,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         $body = array(
             "amount"          => 50,
             "sender_msisdn"   => "012249184",
-            "receivers_msisdn" => $phoneNumber
+            "receiver_msisdn" => $phoneNumber
         );
         
         try {
@@ -144,16 +144,14 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         $response = curl_exec($curl);
         $err = curl_error($curl);
-        dump($response);
-        dump($err);
         curl_close($curl);
     
         if ($err) {
-            throw new \Exception(0, $err);
+            throw new \Exception($err);
         } else {
             $result = json_decode($response);
             if (property_exists($result, 'error_code')) {
-                throw new \Exception($result['error_code'], $result['message']);
+                throw new \Exception($result->message);
             } else {
                 
             }
