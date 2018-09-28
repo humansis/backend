@@ -20,7 +20,7 @@ class TransactionService {
     /** @var ContainerInterface $container */
     private $container;
     
-    /** @var DefaultFinancialProvider $retriever */
+    /** @var DefaultFinancialProvider $financialProvider */
     private $financialProvider;
 
     /**
