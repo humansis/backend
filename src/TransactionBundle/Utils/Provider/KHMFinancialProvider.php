@@ -138,7 +138,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
           CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
           CURLOPT_CUSTOMREQUEST  => $type,
           CURLOPT_POSTFIELDS     => $body,
-          CURLOPT_HTTPHEADER     => $headers
+          CURLOPT_HTTPHEADER     => $headers,
+          CULROPT_FAILONERROR    => true
         ));
         
         $response = curl_exec($curl);
@@ -153,6 +154,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             $result = json_decode($response);
             if (property_exists($result, 'error_code')) {
                 throw new \Exception($result['error_code'], $result['message']);
+            } else {
+                
             }
             return $result;
         }
