@@ -267,7 +267,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
         if($isInserted)
             return ['message' => $countBenef];
         else
-            return ['exist' => 'Every beneficiaries with this country code are already inserted'];
+            return ['exist' => 'All beneficiaries with this country code are already inserted'];
     }
 
     /**
