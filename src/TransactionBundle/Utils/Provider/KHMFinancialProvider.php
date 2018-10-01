@@ -90,7 +90,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             throw $e;
         }
         
-        $this->transaction = $response['transaction_id'];
+        $this->transaction = $response->transaction_id;
         dump($this->transaction);
         
         // $transaction = createOrUpdateTransaction(
