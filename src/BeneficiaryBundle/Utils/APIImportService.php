@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Utils\ImportProvider\DefaultApiProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -41,11 +42,12 @@ class APIImportService
      * Import beneficiaries from the API in the current country
      * @param  string $countryISO3
      * @param string $provider
-     * @param array $params
+     * @param string $countryCode
+     * @param Project $project
      * @return array
      * @throws \Exception
      */
-    public function import(string $countryISO3, string $provider, array $params)
+    public function import(string $countryISO3, string $provider, string $countryCode, Project $project)
     {
         try {
             $this->apiProvider = $this->getApiProviderForCountry($countryISO3, $provider);
@@ -54,7 +56,7 @@ class APIImportService
         }
 
         try {
-            return $this->apiProvider->importData($countryISO3, $params);
+            return $this->apiProvider->importData($countryISO3, $countryCode, $project);
 
         } catch (\Exception $e) {
             throw new \Exception($e);
@@ -77,5 +79,55 @@ class APIImportService
             throw new \Exception("The API provider for " . $countryISO3 . "is not properly defined");
         }
         return $provider;
+    }
+
+    /**
+     * @param string $countryISO3
+     * @return array
+     */
+    public function getApiNames(string $countryISO3) {
+        $countryISO3 = strtoupper($countryISO3);
+        $listAPI = array();
+        foreach(glob('../src/BeneficiaryBundle/Utils/ImportProvider/'.$countryISO3.'/*.*') as $file) {
+
+            $firstExplode = explode('API', $file);
+            $secondExplode = explode($countryISO3, $firstExplode[0]);
+
+
+
+            array_push($listAPI, array(
+                    'APIName' => $secondExplode[2]
+                )
+            );
+        }
+
+        return ['listAPI' => $listAPI];
+    }
+
+    /**
+     * @param string $countryISO3
+     * @param string $api
+     * @return array
+     */
+    public function getParams(string $countryISO3, string $api){
+        $countryISO3 = strtolower($countryISO3);
+        $api = strtolower($api);
+
+        $provider = $this->container->get('beneficiary.' . $countryISO3 . '_api_provider_' . $api);
+
+        $paramsFunction = $provider->getParams();
+        $params = array();
+
+        foreach ($paramsFunction->getParameters() as $parameter) {
+            if($parameter->getName() != 'project' && $parameter->getName() != 'countryIso3'){
+                array_push($params, array(
+                        'paramName' => $parameter->getName(),
+                        'paramType' => $parameter->getType()->getName()
+                    )
+                );
+            }
+        }
+
+        return $params;
     }
 }

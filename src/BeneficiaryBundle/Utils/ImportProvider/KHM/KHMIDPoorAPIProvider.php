@@ -4,12 +4,11 @@ namespace BeneficiaryBundle\Utils\ImportProvider\KHM;
 
 use CommonBundle\Entity\Adm4;
 use Doctrine\ORM\EntityManagerInterface;
+use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Utils\ImportProvider\DefaultAPIProvider;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Utils\LocationService;
 use DateTime;
@@ -65,36 +64,40 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
     /**
      * Import beneficiaries from API
      * @param string $countryIso3
-     * @param array $params
+     * @param string $countryCode
+     * @param Project $project
      * @return array
      * @throws \Exception
      */
-    public function importData(string $countryIso3, array $params)
+    public function importData(string $countryIso3, string $countryCode, Project $project)
     {
-        if(!key_exists('countryCode', $params))
-            throw new \Exception("Missing countryCode key in the array");
+        if(!$countryCode)
+            throw new \Exception("Missing countryCode in the request");
 
         $countryIso2 = "";
-        $countryCode = "";
+        $countryCodeNum = "";
 
-        for ($i = 0; $i < strlen($params['countryCode']); $i++){
+        for ($i = 0; $i < strlen($countryCode); $i++){
             if($i < 2)
-                $countryIso2 = $countryIso2 . $params['countryCode'][$i];
+                $countryIso2 = $countryIso2 . $countryCode[$i];
 
             else
-                $countryCode = $countryCode . $params['countryCode'][$i];
+                $countryCodeNum = $countryCodeNum . $countryCode[$i];
         }
 
-        $route = "/api/idpoor8/". $countryCode .".json?email=james.happell%40peopleinneed.cz&token=K45nDocxQ5sEFfqSWwDm-2DxskYEDYFe";
+        $route = "/api/idpoor8/". $countryCodeNum .".json?email=james.happell%40peopleinneed.cz&token=K45nDocxQ5sEFfqSWwDm-2DxskYEDYFe";
         
         try {
             $villages = $this->sendRequest("GET", $route);
+
+            if($villages == "badRequestCurl")
+                return ['error' => "You entered an incorrect country code"];
 
             $beneficiariesArray = array();
 
             foreach ($villages as $village) {
 
-                $location = $this->saveAdm4($village, $countryIso2, $params['countryCode']);
+                $location = $this->saveAdm4($village, $countryIso2, $countryCode);
 
                 foreach ($village['HouseholdMembers'] as $householdMember) {
                     for($i = 0; $i < strlen($householdMember['MemberName']); $i++){
@@ -132,7 +135,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
             //Sort by equityNumber
             asort($beneficiariesArray);
 
-            return $this->parseData($beneficiariesArray, $countryIso3);
+            return $this->parseData($beneficiariesArray, $countryIso3, $project);
 
         } catch (\Exception $e) {
             throw $e;
@@ -173,7 +176,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
         curl_close($curl);
 
         if ($err) {
-            throw new \Exception($err);
+            return "badRequestCurl";
         } else {
             $result = json_decode($response, true);
             return $result;
@@ -183,29 +186,39 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
     /**
      * @param array $beneficiariesArray
      * @param string $countryIso3
-     * @param string $countryIso2
-     * @param string $countryCode
-     * @param array $allCountryCode
+     * @param Project $project
      * @return array
-     * @throws ValidationException
      * @throws \Exception
      */
-    public function parseData(array $beneficiariesArray, string $countryIso3){
+    public function parseData(array $beneficiariesArray, string $countryIso3, Project $project){
         $oldEquityNumber = "";
         $beneficiariesInHousehold = array();
+
+        $countBenef = 0;
+        $isInserted = false;
 
         foreach ($beneficiariesArray as $allBeneficiary){
             if($oldEquityNumber != $allBeneficiary['equityCardNo'] && $oldEquityNumber != ""){
 
                 try {
-                    $household = $this->createAndInitHousehold($beneficiariesInHousehold);
+                    $household = $this->createAndInitHousehold($beneficiariesInHousehold, $project);
                 } catch (\Exception $e) {
                     throw $e;
                 }
 
                 if($household != 'beneficiariesExist'){
+
+                    $isInserted = true;
+
+                    $countBenef = $countBenef + count($beneficiariesInHousehold);
+
                     $household->setLocation($allBeneficiary['location']);
 
+                    $project = $this->em->getRepository(Project::class)->find($project);
+                    if (!$project instanceof Project)
+                        throw new \Exception("This project is not found");
+
+                    $household->addProject($project);
                     $this->em->persist($household);
 
                     try {
@@ -230,15 +243,19 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
             array_push($beneficiariesInHousehold, $allBeneficiary);
         }
 
-        return ['message' => 'Insertion successfully'];
+        if($isInserted)
+            return ['message' => $countBenef];
+        else
+            return ['exist' => 'Every beneficiaries with this country code are already inserted'];
     }
 
     /**
      * @param array $beneficiariesInHousehold
+     * @param Project $project
      * @return Household|string
      * @throws \Exception
      */
-    private function createAndInitHousehold(array $beneficiariesInHousehold){
+    private function createAndInitHousehold(array $beneficiariesInHousehold, Project $project){
 
         $dateOfBirth = new DateTime($beneficiariesInHousehold[0]['dateOfBirth']);
         $familyName = $beneficiariesInHousehold[0]['familyName'];
@@ -248,8 +265,26 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
         $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy(['givenName' => $givenName, 'familyName' => $familyName, 'gender' => $gender, 'status' => $status, 'dateOfBirth' => $dateOfBirth]);
 
-        if($beneficiary)
+        if($beneficiary) {
+            $household = $beneficiary->getHousehold();
+            $projects = $household->getProjects();
+
+            $projectExists = false;
+
+            foreach ($projects as $projectEntity){
+                if($projectEntity == $project){
+                    $projectExists = true;
+                }
+            }
+
+            if($projectExists == false){
+                $household->addProject($project);
+                $this->em->persist($household);
+                $this->em->flush();
+            }
+
             return "beneficiariesExist";
+        }
 
         /** @var Household $household */
         $household = new Household();
@@ -405,6 +440,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @param array $village
      * @param string $countryIso2
      * @param string $allCountryCode
+     * @return \CommonBundle\Entity\Location|null
      * @throws \Exception
      */
     private function saveAdm4(array $village, string $countryIso2, string $allCountryCode){
@@ -426,5 +462,13 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
         }
 
         return $adm4->getLocation();
+    }
+
+    /**
+     * @return \ReflectionMethod
+     * @throws \ReflectionException
+     */
+    public function getParams(){
+        return new \ReflectionMethod($this, 'importData');
     }
 }
