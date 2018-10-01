@@ -78,6 +78,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
             "amount"          => 50,
+            "currency"        => "USD",
             "sender_msisdn"   => "012249184",
             "receiver_msisdn" => $phoneNumber
         );
