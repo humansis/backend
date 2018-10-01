@@ -82,21 +82,21 @@ abstract class DefaultFinancialProvider {
             if ($phoneNumber) {
                 $transaction = $distributionBeneficiary->getTransaction();
                 if ($transaction && $transaction->getTransactionStatus()) {
-                    array_push($response['already_sent'], $distributionBeneficiary);
+                    array_push($response['already_sent'], $beneficiary);
                 } else {
                     try {
                         $sent = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary);
                         if (property_exists($sent, 'error_code')) {
-                            array_push($response['failure'], $distributionBeneficiary);
+                            array_push($response['failure'], $beneficiary);
                         } else {
-                            array_push($response['sent'], $distributionBeneficiary);
+                            array_push($response['sent'], $beneficiary);
                         }
                     } catch (Exception $e) {
                         throw $e;
                     }
                 }
             } else {
-                array_push($response['no_mobile'], $distributionBeneficiary);
+                array_push($response['no_mobile'], $beneficiary);
             }
         }
         
