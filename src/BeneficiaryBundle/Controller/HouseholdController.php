@@ -386,7 +386,7 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Get("/import/api/households/listAPI", name="get_all_api_available_for_country")
+     * @Rest\Get("/import/api/households/list", name="get_all_api_available_for_country")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Beneficiary")
      * @SWG\Response(
