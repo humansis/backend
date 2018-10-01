@@ -84,6 +84,8 @@ class TransactionController extends Controller
         catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+        
+        return new Response(json_encode($response));
     }
 
 }

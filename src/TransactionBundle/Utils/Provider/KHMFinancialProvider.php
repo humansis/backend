@@ -3,7 +3,9 @@
 namespace TransactionBundle\Utils\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
-use BeneficiaryBundle\Entity\Beneficiary;
+
+use DistributionBundle\Entity\DistributionBeneficiary;
+use TransactionBundle\Entity\Transaction;
 
 /**
  * Class KHMFinancialProvider
@@ -19,13 +21,15 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      */
     private $url = "https://stageonline.wingmoney.com:8443/RestEngine";
     /**
-     * @var
+     * @var string
      */
     private $token;
     /**
-     * @var
+     * @var \DateTime
      */
     private $lastTokenDate;
+    
+    private $transaction;
 
     /**
      * DefaultFinancialProvider constructor.
@@ -62,14 +66,14 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         }
         
     }
-
     /**
-     * Send money to beneficiaries
-     * @param string $phoneNumber
-     * @return object       transaction
+     * Send money to one beneficiary
+     * @param  string                  $phoneNumber
+     * @param  DistributionBeneficiary $distributionBeneficiary
+     * @return Transaction       
      * @throws \Exception
      */
-    public function sendMoneyToOne(string $phoneNumber = "0962620581")
+    public function sendMoneyToOne(string $phoneNumber = "0962620581", DistributionBeneficiary $distributionBeneficiary = null)
     {
         $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
@@ -79,26 +83,40 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         );
         
         try {
-            $sent = $this->sendRequest("POST", $route, $body);
-            return $sent;
+            $response = $this->sendRequest("POST", $route, $body);
+            dump($response);
         } catch (Exception $e) {
             throw $e;
         }
+        
+        $this->transaction = $response['transaction_id'];
+        dump($this->transaction);
+        
+        // $transaction = createOrUpdateTransaction(
+        //     $distributionBeneficiary, 
+        //     $response['transaction_id'],
+        //     $response['amount'],
+        //     $response['transaction_status'],
+        //     null);
+        
+        return $this->getStatus();
     }
     
     public function getStatus()
     {
         $route = "/api/v1/sendmoney/nonwing/txn_inquiry";
         $body = array(
-            "transaction_id" => "ABR490985"
+            "transaction_id" => $this->transaction
+            // "transaction_id" => $transaction->getTransactionId()
         );
         
         try {
             $sent = $this->sendRequest("POST", $route, $body);
-            return $sent;
+            dump($sent);
         } catch (Exception $e) {
             throw $e;
-        }
+        }    
+        return $sent;
     }
 
     /**
@@ -152,8 +170,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             $result = json_decode($response);
             if (property_exists($result, 'error_code')) {
                 throw new \Exception($result->message);
-            } else {
-                
             }
             return $result;
         }

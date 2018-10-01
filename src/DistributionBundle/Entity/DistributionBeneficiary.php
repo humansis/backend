@@ -20,7 +20,7 @@ class DistributionBeneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullDistributionBeneficiary", "FullDistribution"})
+     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "Transaction"})
      */
     private $id;
 
@@ -28,7 +28,7 @@ class DistributionBeneficiary
      * @var DistributionData
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="distributionBeneficiaries")
-     * @Groups({"FullDistributionBeneficiary"})
+     * @Groups({"FullDistributionBeneficiary", "Transaction"})
      */
     private $distributionData;
 
@@ -36,9 +36,17 @@ class DistributionBeneficiary
      * @var Beneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="distributionBeneficiary")
-     * @Groups({"FullDistributionBeneficiary", "FullDistribution"})
+     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "Transaction"})
      */
     private $beneficiary;
+    
+    /**
+     * @var Transaction
+     *
+     * @ORM\OneToOne(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary")
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "Transaction"})
+     */
+    private $transaction;
 
     /**
      * Get id.
@@ -97,4 +105,29 @@ class DistributionBeneficiary
     {
         return $this->beneficiary;
     }
+ 
+    /**
+     * Get the value of Transaction 
+     * 
+     * @return Transaction
+     */
+    public function getTransaction()
+    {
+        return $this->transaction;
+    }
+ 
+    /** 
+     * Set the value of Transaction 
+     * 
+     * @param Transaction transaction
+     * 
+     * @return self
+     */
+    public function setTransaction(Transaction $transaction)
+    {
+        $this->transaction = $transaction;
+ 
+        return $this;
+    }
+ 
 }
