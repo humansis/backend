@@ -2,10 +2,10 @@
 
 namespace BeneficiaryBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 use JMS\Serializer\SerializationContext;
+use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -65,32 +65,6 @@ class BeneficiaryController extends Controller
 
         $json = $this->get('jms_serializer')
             ->serialize($beneficiary, 'json', SerializationContext::create()->setSerializeNull(true));
-
-        return new Response($json);
-    }
-
-    /**
-     * @Rest\Post("/beneficiaries/import/api", name="get_all_benficiaries_via_api")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
-     * @SWG\Tag(name="Beneficiary")
-     * @SWG\Response(
-     *     response=200,
-     *     description="OK"
-     * )
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function importBeneficiariesFromAPIAction(Request $request)
-    {
-        $body = $request->request->all();
-        $countryIso3 = $body['__country'];
-        $provider = $body['provider'];
-        $params = $body['params'];
-
-        $vulnerabilityCriteria = $this->get('beneficiary.api_import_service')->import($countryIso3, $provider, $params);
-        $json = $this->get('jms_serializer')
-            ->serialize($vulnerabilityCriteria, 'json');
 
         return new Response($json);
     }

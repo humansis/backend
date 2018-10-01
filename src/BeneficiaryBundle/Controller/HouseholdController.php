@@ -21,6 +21,7 @@ use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class HouseholdController extends Controller
 {
@@ -361,5 +362,59 @@ class HouseholdController extends Controller
                 SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
             );
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Post("/import/api/households/project/{id}", name="get_all_beneficiaries_via_api")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @SWG\Tag(name="Beneficiary")
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @param Request $request
+     * @param Project $project
+     * @return Response
+     */
+    public function importBeneficiariesFromAPIAction(Request $request, Project $project)
+    {
+        $body = $request->request->all();
+        $countryIso3 = $body['__country'];
+        $provider = strtolower($body['provider']);
+        $params = $body['params'];
+
+        try {
+            $response = $this->get('beneficiary.api_import_service')->import($countryIso3, $provider, $params, $project);
+
+            $json = $this->get('jms_serializer')
+                ->serialize($response, 'json');
+
+            return new Response($json);
+        } catch (\Exception $exception) {
+            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * @Rest\Get("/import/api/households/list", name="get_all_api_available_for_country")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @SWG\Tag(name="Beneficiary")
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getAllAPIAction(Request $request)
+    {
+        $body = $request->request->all();
+        $countryIso3 = $body['__country'];
+
+        $APINames = $this->get('beneficiary.api_import_service')->getAllAPI($countryIso3);
+
+        return new Response(json_encode($APINames));
     }
 }
