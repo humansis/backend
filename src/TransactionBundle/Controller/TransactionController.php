@@ -4,7 +4,7 @@ namespace TransactionBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-
+use JMS\Serializer\SerializationContext;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -53,7 +53,8 @@ class TransactionController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         dump($response);
-        $json = json_encode($response);
+        $json = $this->get('jms_serializer')
+            ->serialize($response, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullReceivers"]));
         dump($json);
         return new Response($json);
         
