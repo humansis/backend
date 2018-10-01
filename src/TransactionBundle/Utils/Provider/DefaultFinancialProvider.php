@@ -47,11 +47,12 @@ abstract class DefaultFinancialProvider {
      * Send money to one beneficiary
      * @param  string                  $phoneNumber
      * @param  DistributionBeneficiary $distributionBeneficiary
-     * @return Transaction       
+     * @return Transaction
+     * @throws \Exception       
      */
     public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary)
     {
-        return null;
+        throw new \Exception("You need to define the financial provider for the country.");
     }
     
     /**
@@ -85,9 +86,13 @@ abstract class DefaultFinancialProvider {
                 } else {
                     try {
                         $sent = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary);
-                        array_push($response['sent'], $distributionBeneficiary);
+                        if (property_exists($sent, 'error_code')) {
+                            array_push($response['failure'], $distributionBeneficiary);
+                        } else {
+                            array_push($response['sent'], $distributionBeneficiary);
+                        }
                     } catch (Exception $e) {
-                        dump($e);
+                        throw $e;
                     }
                 }
             } else {

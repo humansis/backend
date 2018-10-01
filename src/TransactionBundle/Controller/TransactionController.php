@@ -56,36 +56,5 @@ class TransactionController extends Controller
         return new Response(json_encode($response));
         
     }
-    
-    /**
-    * Get transaction status for distribution beneficiaries
-    * @Rest\Get("/transaction/distribution/{id}/status", name="status_money_for_distribution")
-    * 
-    * @SWG\Tag(name="Transaction")
-    *
-    * @SWG\Response(
-    *     response=200,
-    *     description="OK"
-    * )
-    *
-    * @SWG\Response(
-    *     response=400,
-    *     description="HTTP_BAD_REQUEST"
-    * )
-     * @param  Request          $request          
-     * @param  DistributionData $distributionData 
-     * @return Response                             
-     */
-    public function getTransactionStatusAction(Request $request, DistributionData $distributionData) {
-        $countryISO3 = $request->request->get('__country');
-        try {
-            $response = $this->get('transaction.transaction_service')->getStatus($countryISO3, $distributionData);
-        }
-        catch (\Exception $exception) {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-        
-        return new Response(json_encode($response));
-    }
 
 }

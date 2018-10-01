@@ -85,6 +85,9 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         try {
             $sent = $this->sendRequest("POST", $route, $body);
+            if (property_exists($sent, 'error_code')) {
+                return $sent;
+            }
         } catch (Exception $e) {
             throw $e;
         }
@@ -100,7 +103,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             $response['transaction_id'],
             $response['amount'],
             $response['transaction_status'] === 'Success' ? 1 : 0,
-            $response['passcode']);
+            $response['passcode'] ?: $response['message']);
         
         return $transaction;
     }
@@ -120,7 +123,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         try {
             $sent = $this->sendRequest("POST", $route, $body);
         } catch (Exception $e) {
-            return $e;
+            throw $e;
         }    
         return $sent;
     }
@@ -169,17 +172,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         $response = curl_exec($curl);
         $err = curl_error($curl);
         curl_close($curl);
-        
-        dump($response);
-        dump($err);
     
         if ($err) {
-            return new \Exception($err);
+            throw new \Exception($err);
         } else {
             $result = json_decode($response);
-            if (property_exists($result, 'error_code')) {
-                return new \Exception($result->message);
-            }
             return $result;
         }
     }

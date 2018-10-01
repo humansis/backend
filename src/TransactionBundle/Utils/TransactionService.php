@@ -46,41 +46,17 @@ class TransactionService {
         try {            
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            throw $e;
         }
         
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
-        dump($distributionBeneficiaries);
         try {            
-            // return $this->financialProvider->sendMoneyToOne();
             return $this->financialProvider->sendMoneyToAll($distributionBeneficiaries);
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            throw $e;
         }
     }
     
-    /**
-     * Get transaction status
-     * @param  string           $countryISO3      
-     * @param  DistributionData $distributionData 
-     * @return [type]   
-     * @throws \Exception                          
-     */
-    public function getStatus(string $countryISO3, DistributionData $distributionData)
-    {
-        try {
-            $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-        } catch (\Exception $e) {
-            throw new \Exception($e);
-        }
-        
-        try {            
-            return $this->financialProvider->getStatus();
-        } catch (\Exception $e) {
-            throw new \Exception($e);
-        }
-    }
-
     /**
      * Get the financial provider corresponding to the current country
      * @param  string $countryISO3 iso3 code of the country
