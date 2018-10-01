@@ -42,12 +42,12 @@ class APIImportService
      * Import beneficiaries from the API in the current country
      * @param  string $countryISO3
      * @param string $provider
-     * @param string $countryCode
+     * @param array $params
      * @param Project $project
      * @return array
      * @throws \Exception
      */
-    public function import(string $countryISO3, string $provider, string $countryCode, Project $project)
+    public function import(string $countryISO3, string $provider, array $params, Project $project)
     {
         try {
             $this->apiProvider = $this->getApiProviderForCountry($countryISO3, $provider);
@@ -56,7 +56,7 @@ class APIImportService
         }
 
         try {
-            return $this->apiProvider->importData($countryISO3, $countryCode, $project);
+            return $this->apiProvider->importData($countryISO3, $params, $project);
 
         } catch (\Exception $e) {
             throw new \Exception($e);
@@ -85,49 +85,26 @@ class APIImportService
      * @param string $countryISO3
      * @return array
      */
-    public function getApiNames(string $countryISO3) {
+    public function getAllAPI(string $countryISO3) {
         $countryISO3 = strtoupper($countryISO3);
+
         $listAPI = array();
         foreach(glob('../src/BeneficiaryBundle/Utils/ImportProvider/'.$countryISO3.'/*.*') as $file) {
 
-            $firstExplode = explode('API', $file);
-            $secondExplode = explode($countryISO3, $firstExplode[0]);
+            $beginFile = explode('API', $file);
+            $providerKey = explode($countryISO3, $beginFile[0]);
 
+            $provider = $this->container->get('beneficiary.' . strtolower($countryISO3) . '_api_provider_' . strtolower($providerKey[2]));
+            $params = $provider->getParams();
 
+            /** @var object $api */
+            $api = (object) array();
+            $api->APIName = $providerKey[2];
+            $api->params = $params;
 
-            array_push($listAPI, array(
-                    'APIName' => $secondExplode[2]
-                )
-            );
+            array_push($listAPI, $api);
         }
 
-        return ['listAPI' => $listAPI];
-    }
-
-    /**
-     * @param string $countryISO3
-     * @param string $api
-     * @return array
-     */
-    public function getParams(string $countryISO3, string $api){
-        $countryISO3 = strtolower($countryISO3);
-        $api = strtolower($api);
-
-        $provider = $this->container->get('beneficiary.' . $countryISO3 . '_api_provider_' . $api);
-
-        $paramsFunction = $provider->getParams();
-        $params = array();
-
-        foreach ($paramsFunction->getParameters() as $parameter) {
-            if($parameter->getName() != 'project' && $parameter->getName() != 'countryIso3'){
-                array_push($params, array(
-                        'paramName' => $parameter->getName(),
-                        'paramType' => $parameter->getType()->getName()
-                    )
-                );
-            }
-        }
-
-        return $params;
+        return array('listAPI' => $listAPI);
     }
 }
