@@ -53,7 +53,7 @@ class TransactionController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         dump($response);
-        $json = $this->get('jms_serializer')->serialize($response, 'json');
+        $json = json_encode($response);
         dump($json);
         return new Response($json);
         
