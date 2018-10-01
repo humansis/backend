@@ -84,38 +84,43 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         );
         
         try {
-            $response = $this->sendRequest("POST", $route, $body);
-            dump($response);
+            $sent = $this->sendRequest("POST", $route, $body);
         } catch (Exception $e) {
             throw $e;
         }
         
-        $this->transaction = $response->transaction_id;
-        dump($this->transaction);
+        try {
+            $response = $this->getStatus($sent->transaction_id);
+        } catch (\Exception $e) {
+            throw $e;
+        }
         
-        // $transaction = createOrUpdateTransaction(
-        //     $distributionBeneficiary, 
-        //     $response['transaction_id'],
-        //     $response['amount'],
-        //     $response['transaction_status'],
-        //     null);
+        $transaction = createOrUpdateTransaction(
+            $distributionBeneficiary, 
+            $response['transaction_id'],
+            $response['amount'],
+            $response['transaction_status'] === 'Success' ? 1 : 0,
+            $response['passcode']);
         
-        return $this->getStatus();
+        return $transaction;
     }
     
-    public function getStatus()
+    /**
+     * Get status of transaction
+     * @param  string $transaction_id 
+     * @return object                 
+     */
+    public function getStatus(string $transaction_id)
     {
         $route = "/api/v1/sendmoney/nonwing/txn_inquiry";
         $body = array(
-            "transaction_id" => $this->transaction
-            // "transaction_id" => $transaction->getTransactionId()
+            "transaction_id" => $transaction_id
         );
         
         try {
             $sent = $this->sendRequest("POST", $route, $body);
-            dump($sent);
         } catch (Exception $e) {
-            throw $e;
+            return $e;
         }    
         return $sent;
     }
@@ -135,8 +140,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         // Not authentication request
         if(!preg_match('/\/oauth\/token/', $route)) {
-            dump($this->token);
-            dump($this->lastTokenDate);
             if (!$this->lastTokenDate ||
             (new \DateTime())->getTimestamp() - $this->lastTokenDate->getTimestamp() > $this->token->expires_in) {
                 $this->getToken();
@@ -171,11 +174,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         dump($err);
     
         if ($err) {
-            throw new \Exception($err);
+            return new \Exception($err);
         } else {
             $result = json_decode($response);
             if (property_exists($result, 'error_code')) {
-                throw new \Exception($result->message);
+                return new \Exception($result->message);
             }
             return $result;
         }

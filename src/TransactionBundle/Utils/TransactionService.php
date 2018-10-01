@@ -50,10 +50,10 @@ class TransactionService {
         }
         
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
-
+        dump($distributionBeneficiaries);
         try {            
-            return $this->financialProvider->sendMoneyToOne();
-            // return $this->financialProvider->sendMoneyToAll($distributionBeneficiaries);
+            // return $this->financialProvider->sendMoneyToOne();
+            return $this->financialProvider->sendMoneyToAll($distributionBeneficiaries);
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

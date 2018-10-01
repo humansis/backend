@@ -62,7 +62,7 @@ abstract class DefaultFinancialProvider {
     public function sendMoneyToAll(array $distributionBeneficiaries)
     {
         $response = array(
-            'success'       => array(),
+            'sent'       => array(),
             'failure'       => array(),
             'no_mobile'     => array(),
             'already_sent'  => array()
@@ -70,6 +70,7 @@ abstract class DefaultFinancialProvider {
         
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
             $beneficiary = $distributionBeneficiary->getBeneficiary();
+            $phoneNumber = null;
             foreach ($beneficiary->getPhones() as $phone) {
                 if ($phone->getType() == 'mobile') {
                     $phoneNumber = $phone->getNumber();
@@ -80,19 +81,21 @@ abstract class DefaultFinancialProvider {
             if ($phoneNumber) {
                 $transaction = $distributionBeneficiary->getTransaction();
                 if ($transaction && $transaction->getTransactionStatus()) {
-                    array_push(response['already_sent'], $distributionBeneficiary);
+                    array_push($response['already_sent'], $distributionBeneficiary);
                 } else {
                     try {
                         $sent = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary);
                         array_push($response['sent'], $distributionBeneficiary);
                     } catch (Exception $e) {
-                        return new \Exception($e);
+                        dump($e);
                     }
                 }
             } else {
                 array_push($response['no_mobile'], $distributionBeneficiary);
             }
         }
+        
+        return $response;
     }
     
     /**
@@ -101,7 +104,7 @@ abstract class DefaultFinancialProvider {
      * @param  string                  $transactionId           
      * @param  float                   $amountSent              
      * @param  int                     $transactionStatus       
-     * @param  string | null           $message                 
+     * @param  string                  $message                 
      * @return Transaction                                           
      */
     public function createOrUpdateTransaction(
