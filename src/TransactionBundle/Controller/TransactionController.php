@@ -52,7 +52,7 @@ class TransactionController extends Controller
         {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        
+        dump($response);
         return new Response(json_encode($response));
         
     }
