@@ -3,6 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use TransactionBundle\Entity\Transaction;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 
