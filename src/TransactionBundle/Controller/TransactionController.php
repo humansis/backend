@@ -11,6 +11,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use JMS\Serializer\SerializationContext;
 
 use DistributionBundle\Entity\DistributionData;
 
@@ -53,7 +54,7 @@ class TransactionController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         dump($response);
-        $json = $this->get('jms_serializer')->serialize($response, 'json');
+        $json = $this->get('jms_serializer')->serialize($response, 'json', SerializationContext::create()->setSerializeNull(true));
         return new Response($json);
         
     }
