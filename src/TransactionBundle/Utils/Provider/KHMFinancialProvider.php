@@ -134,6 +134,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         // Not authentication request
         if(!preg_match('/\/oauth\/token/', $route)) {
+            dump($this->token);
+            dump($this->lastTokenDate);
             if (!$this->lastTokenDate ||
             (new \DateTime())->getTimestamp() - $this->lastTokenDate->getTimestamp() > $this->token->expires_in) {
                 $this->getToken();
