@@ -73,7 +73,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      * @return Transaction       
      * @throws \Exception
      */
-    public function sendMoneyToOne(string $phoneNumber = "0962620581", DistributionBeneficiary $distributionBeneficiary = null)
+    public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary)
     {
         $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
@@ -98,7 +98,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             throw $e;
         }
         
-        $transaction = createOrUpdateTransaction(
+        $transaction = $this->createOrUpdateTransaction(
             $distributionBeneficiary, 
             $response['transaction_id'],
             $response['amount'],
