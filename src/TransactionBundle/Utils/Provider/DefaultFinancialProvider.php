@@ -123,6 +123,7 @@ abstract class DefaultFinancialProvider {
         if (!$transaction) {
             $transaction = new Transaction();
         }
+        dump($transaction);
         $transaction->setDistributionBeneficiary($distributionBeneficiary);
         $transaction->setTransactionId($transactionId);
         $transaction->setAmountSent($amountSent);
