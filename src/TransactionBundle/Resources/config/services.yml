@@ -14,4 +14,4 @@ services:
             - '@doctrine.orm.entity_manager'
 
     transaction.khm_financial_provider:
-        parent: 'transaction.default_financial_provider'
+        parent: '@transaction.default_financial_provider'
