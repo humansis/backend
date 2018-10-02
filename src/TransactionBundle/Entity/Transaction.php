@@ -82,7 +82,7 @@ class Transaction
     /**
      * @var float
      *
-     * @ORM\Column(name="money_received", type="boolean")
+     * @ORM\Column(name="money_received", type="boolean", nullable=true)
      *
      * @Groups({"Transaction"})
      */

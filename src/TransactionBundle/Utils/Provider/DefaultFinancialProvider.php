@@ -106,6 +106,7 @@ abstract class DefaultFinancialProvider {
     public function createOrUpdateTransaction(
         DistributionBeneficiary $distributionBeneficiary,
         string $transactionId,
+        \DateTime $dateSent,
         string $amountSent,
         int $transactionStatus,
         string $message = null,
@@ -115,13 +116,12 @@ abstract class DefaultFinancialProvider {
             $transaction = new Transaction();
         }
         $transaction->setDistributionBeneficiary($distributionBeneficiary);
+        $transaction->setDateSent($dateSent);
         $transaction->setTransactionId($transactionId);
         $transaction->setAmountSent($amountSent);
         $transaction->setTransactionStatus($transactionStatus);
         $transaction->setMessage($message);
-        dump($transaction);
-        dump($this->em);
-        
+
         $this->em->persist($transaction);
         $this->em->flush();
         

@@ -94,6 +94,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         try {
             $response = $this->getStatus($sent->transaction_id);
+            dump($response);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -101,6 +102,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         $transaction = $this->createOrUpdateTransaction(
             $distributionBeneficiary, 
             $response->transaction_id,
+            new \DateTime(),
             $response->amount,
             $response->transaction_status === 'Success' ? 1 : 0,
             $response->passcode ?: $response->message);
