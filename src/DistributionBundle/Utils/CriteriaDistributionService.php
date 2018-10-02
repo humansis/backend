@@ -175,24 +175,27 @@ class CriteriaDistributionService
         $vulnerabilityCriteria = $this->em->getRepository(VulnerabilityCriterion::class)->findBy(['fieldString' => $criterion['field_string']]);
 
         if (!key_exists('table_string', $criterion)){
-            $hasVC = $this->em->getRepository(Beneficiary::class)->hasDateOfBirth($criterion['value_string'], $criterion['condition_string'], $beneficiary->getId());
+            if($criterion['type'] == 'boolean'){
 
-            $count = 0;
-            if($hasVC){
-                $count = $count + 1;
+                $hasVC = $this->em->getRepository(Beneficiary::class)->hasGender($criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
+
+                $count = 0;
+                if($hasVC){
+                    $count = $criterion['weight'];
+                }
+
+                return $count;
             }
+            else {
+                $hasVC = $this->em->getRepository(Beneficiary::class)->hasDateOfBirth($criterion['value_string'], $criterion['condition_string'], $beneficiary->getId());
 
-            return $count;
-        }
-        elseif ($criterion['field_string'] == 'gender') {
-            $hasVC = $this->em->getRepository(Beneficiary::class)->hasGender($criterion['condition_string'], $beneficiary->getId());
+                $count = 0;
+                if ($hasVC) {
+                    $count = $count + 1;
+                }
 
-            $count = 0;
-            if($hasVC){
-                $count = $criterion['weight'];
+                return $count;
             }
-
-            return $count;
         }
         else {
             $hasVC = $this->em->getRepository(Beneficiary::class)->hasVulnerabilityCriterion($vulnerabilityCriteria[0]->getId(), $criterion['condition_string'], $beneficiary->getId());

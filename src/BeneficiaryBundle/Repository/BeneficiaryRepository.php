@@ -81,17 +81,26 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
     /**
-     * @param string $gender
+     * @param string $conditionString
+     * @param string $valueString
      * @param int $beneficiaryId
      * @return mixed
      */
-    public function hasGender(string $gender, int $beneficiaryId){
+    public function hasGender(string $conditionString, string $valueString, int $beneficiaryId){
         $qb = $this->createQueryBuilder('b');
 
-        $q = $qb->where(':gender = b.gender')
-            ->setParameter('gender', $gender)
-            ->andWhere(':beneficiaryId = b.id')
-            ->setParameter(':beneficiaryId', $beneficiaryId);
+        if($conditionString == '='){
+            $q = $qb->where(':gender = b.gender')
+                ->setParameter('gender', $valueString)
+                ->andWhere(':beneficiaryId = b.id')
+                ->setParameter(':beneficiaryId', $beneficiaryId);
+        }
+        else{
+            $q = $qb->where(':gender <> b.gender')
+                ->setParameter('gender', $valueString)
+                ->andWhere(':beneficiaryId = b.id')
+                ->setParameter(':beneficiaryId', $beneficiaryId);
+        }
 
         return $q->getQuery()->getResult();
     }

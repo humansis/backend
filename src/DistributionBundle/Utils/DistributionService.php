@@ -159,6 +159,9 @@ class DistributionService
         foreach ($distribution->getSelectionCriteria() as $item)
         {
             $distribution->removeSelectionCriterion($item);
+            if($item->getTableString() == null)
+                $item->setTableString("Beneficiary");
+
             $criteria[] = $this->criteriaDistributionService->save($distribution, $item, false);
         }
 
