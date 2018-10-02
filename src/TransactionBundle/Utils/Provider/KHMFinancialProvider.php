@@ -100,10 +100,10 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         $transaction = $this->createOrUpdateTransaction(
             $distributionBeneficiary, 
-            $response['transaction_id'],
-            $response['amount'],
-            $response['transaction_status'] === 'Success' ? 1 : 0,
-            $response['passcode'] ?: $response['message']);
+            $response->transaction_id,
+            $response->amount,
+            $response->transaction_status === 'Success' ? 1 : 0,
+            $response->passcode ?: $response->message);
         
         return $transaction;
     }
