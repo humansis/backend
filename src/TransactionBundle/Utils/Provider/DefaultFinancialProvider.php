@@ -14,21 +14,12 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 abstract class DefaultFinancialProvider {
 
     /** @var EntityManagerInterface $em */
-    private $em;
+    protected $em;
 
     /**
      * @var
      */
-    private $url;
-
-    /**
-     * DefaultFinancialProvider constructor.
-     * @param EntityManagerInterface $entityManager
-     */
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->em = $entityManager;
-    }
+    protected $url;
     
     /**
      * Send request to financial API

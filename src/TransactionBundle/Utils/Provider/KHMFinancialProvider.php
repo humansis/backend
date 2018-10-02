@@ -14,12 +14,12 @@ use TransactionBundle\Entity\Transaction;
 class KHMFinancialProvider extends DefaultFinancialProvider {
 
     /** @var EntityManagerInterface $em */
-    private $em;
+    protected $em;
 
     /**
      * @var string
      */
-    private $url = "https://stageonline.wingmoney.com:8443/RestEngine";
+    protected $url = "https://stageonline.wingmoney.com:8443/RestEngine";
     /**
      * @var string
      */
