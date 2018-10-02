@@ -129,6 +129,7 @@ abstract class DefaultFinancialProvider {
         $transaction->setTransactionStatus($transactionStatus);
         $transaction->setMessage($message);
         dump($transaction);
+        dump($this->em);
         
         $this->em->persist($transaction);
         $this->em->flush();
