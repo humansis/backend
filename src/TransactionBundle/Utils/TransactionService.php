@@ -8,6 +8,10 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class TransactionService
+ * @package TransactionBundle\Utils
+ */
 class TransactionService {
 
     /** @var EntityManagerInterface $em */
@@ -16,43 +20,48 @@ class TransactionService {
     /** @var ContainerInterface $container */
     private $container;
     
-    /** @var DefaultFinancialProvider $retriever */
+    /** @var DefaultFinancialProvider $financialProvider */
     private $financialProvider;
 
     /**
      * TransactionService constructor.
      * @param EntityManagerInterface $entityManager
+     * @param ContainerInterface $container
      */
     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
     {
         $this->em = $entityManager;
         $this->container = $container;
     }
-    
+
     /**
      * Send money to distribution beneficiaries
-     * @param  string           $countryISO3      
-     * @param  DistributionData $distributionData 
-     * @return [type]                             
+     * @param  string $countryISO3
+     * @param  DistributionData $distributionData
+     * @return object 
+     * @throws \Exception
      */
     public function sendMoney(string $countryISO3, DistributionData $distributionData)
     {
         try {            
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            throw $e;
         }
         
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
-        
-        // return $this->financialProvider->sendMoneyToAll($distributionBeneficiaries);
-        return $this->financialProvider->sendMoneyToOne();
+        try {            
+            return $this->financialProvider->sendMoneyToAll($distributionBeneficiaries);
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
     
     /**
      * Get the financial provider corresponding to the current country
      * @param  string $countryISO3 iso3 code of the country
-     * @return Class             
+     * @return Class
+     * @throws \Exception
      */
     private function getFinancialProviderForCountry(string $countryISO3)
     {

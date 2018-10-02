@@ -6,6 +6,10 @@ namespace DistributionBundle\Utils\Retriever;
 
 use ProjectBundle\Entity\Project;
 
+/**
+ * Class AbstractRetriever
+ * @package DistributionBundle\Utils\Retriever
+ */
 abstract class AbstractRetriever
 {
     /**

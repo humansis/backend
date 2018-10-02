@@ -7,6 +7,10 @@ use ReportingBundle\Entity\ReportingIndicator;
 
 use Doctrine\ORM\EntityManager;
 
+/**
+ * Class Finder
+ * @package ReportingBundle\Utils\Finders
+ */
 class Finder implements FinderInterface {
 
     /**

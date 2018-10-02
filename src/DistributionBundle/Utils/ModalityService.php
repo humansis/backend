@@ -8,6 +8,10 @@ use DistributionBundle\Entity\Modality;
 use DistributionBundle\Entity\ModalityType;
 use Doctrine\ORM\EntityManagerInterface;
 
+/**
+ * Class ModalityService
+ * @package DistributionBundle\Utils
+ */
 class ModalityService
 {
 

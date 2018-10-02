@@ -6,7 +6,11 @@ use Doctrine\ORM\EntityManager;
 
 use ReportingBundle\Entity\ReportingProject;
 
-class ProjectDataRetrievers 
+/**
+ * Class ProjectDataRetrievers
+ * @package ReportingBundle\Utils\DataRetrievers
+ */
+class ProjectDataRetrievers
 {
     /**
      * @var EntityManager

@@ -4,7 +4,7 @@ namespace TransactionBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-
+use JMS\Serializer\SerializationContext;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -14,11 +14,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 use DistributionBundle\Entity\DistributionData;
 
+/**
+ * Class TransactionController
+ * @package TransactionBundle\Controller
+ */
 class TransactionController extends Controller
 {
 
     /**
-     * @Rest\Get("/transaction/distribution/{id}/send", name="send_money_for_distribution")
+     * Send moeny to distribution beneficiaries via country financial provider
+     * @Rest\Post("/transaction/distribution/{id}/send", name="send_money_for_distribution")
      * 
      * @SWG\Tag(name="Transaction")
      *
@@ -36,7 +41,7 @@ class TransactionController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      */
-    public function getTransactionAction(Request $request, DistributionData $distributionData)  {
+    public function postTransactionAction(Request $request, DistributionData $distributionData)  {
         $countryISO3 = $request->request->get('__country');
         
         try
@@ -47,9 +52,8 @@ class TransactionController extends Controller
         {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        
-        $json = $this->get('jms_serializer')->serialize($response, 'json', null);
-        
+        $json = $this->get('jms_serializer')
+            ->serialize($response, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullReceivers"]));
         return new Response($json);
         
     }

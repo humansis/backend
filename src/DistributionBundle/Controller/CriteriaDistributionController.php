@@ -17,6 +17,10 @@ use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
+/**
+ * Class CriteriaDistributionController
+ * @package DistributionBundle\Controller
+ */
 class CriteriaDistributionController extends Controller
 {
 
@@ -115,7 +119,8 @@ class CriteriaDistributionController extends Controller
     {
         $filters = $request->request->all();
         $filters['countryIso3'] = $filters['__country'];
-        $threshold = $filters['threshold'];
+        // TODO Change when implemented in the frontend
+        $threshold = $filters['threshold'] ?: 1;
 
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');

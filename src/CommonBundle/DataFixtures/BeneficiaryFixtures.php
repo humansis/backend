@@ -241,9 +241,9 @@ class BeneficiaryFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $project = $manager->getRepository(Project::class)->find(1);
+        $project = $manager->getRepository(Project::class)->findAll();
         foreach($this->householdArray as $household){
-            $this->householdService->create($household, $project);
+            $this->householdService->create($household, $project[0]);
         }
     }
 }

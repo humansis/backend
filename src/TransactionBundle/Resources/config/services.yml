@@ -4,10 +4,15 @@ services:
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
-            - "@service_container"
+            - '@service_container'
+
+    transaction.default_financial_provider:
+        class: TransactionBundle\Utils\Provider\DefaultFinancialProvider
+        public: true
+        abstract: true
 
     transaction.khm_financial_provider:
         class: TransactionBundle\Utils\Provider\KHMFinancialProvider
-        public: true
+        parent: transaction.default_financial_provider
         arguments:
             - '@doctrine.orm.entity_manager'

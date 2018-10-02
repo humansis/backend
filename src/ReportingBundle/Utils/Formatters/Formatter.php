@@ -5,6 +5,10 @@ namespace ReportingBundle\Utils\Formatters;
 use ReportingBundle\Utils\Formatters\FormatterInterface;
 use JMS\Serializer\SerializationContext;
 
+/**
+ * Class Formatter
+ * @package ReportingBundle\Utils\Formatters
+ */
 class Formatter implements FormatterInterface {
 
     /** @var int  */

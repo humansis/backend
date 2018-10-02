@@ -3,16 +3,33 @@
 namespace TransactionBundle\Utils\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
-use BeneficiaryBundle\Entity\Beneficiary;
 
+use DistributionBundle\Entity\DistributionBeneficiary;
+use TransactionBundle\Entity\Transaction;
+
+/**
+ * Class KHMFinancialProvider
+ * @package TransactionBundle\Utils\Provider
+ */
 class KHMFinancialProvider extends DefaultFinancialProvider {
 
     /** @var EntityManagerInterface $em */
-    private $em;
-    
-    private $url = "https://stageonline.wingmoney.com:8443/RestEngine";
+    protected $em;
+
+    /**
+     * @var string
+     */
+    protected $url = "https://stageonline.wingmoney.com:8443/RestEngine";
+    /**
+     * @var string
+     */
     private $token;
+    /**
+     * @var \DateTime
+     */
     private $lastTokenDate;
+    
+    private $transaction;
 
     /**
      * DefaultFinancialProvider constructor.
@@ -49,35 +66,74 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         }
         
     }
-    
     /**
-     * Send money to beneficiaries
-     * @param  Beneficiary  $beneficiary
-     * @return object       transaction
+     * Send money to one beneficiary
+     * @param  string                  $phoneNumber
+     * @param  DistributionBeneficiary $distributionBeneficiary
+     * @return Transaction       
+     * @throws \Exception
      */
-    public function sendMoneyToOne(string $phoneNumber = "0962620581")
+    public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary)
     {
-        $route = "/api/v1/sendmoney/nowing/commit";
+        $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
             "amount"          => 50,
+            "currency"        => "USD",
             "sender_msisdn"   => "012249184",
             "receiver_msisdn" => $phoneNumber
         );
         
         try {
             $sent = $this->sendRequest("POST", $route, $body);
-            return $sent;
+            if (property_exists($sent, 'error_code')) {
+                return $sent;
+            }
         } catch (Exception $e) {
             throw $e;
         }
+        
+        try {
+            $response = $this->getStatus($sent->transaction_id);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        
+        $transaction = $this->createOrUpdateTransaction(
+            $distributionBeneficiary, 
+            $response->transaction_id,
+            new \DateTime(),
+            $response->amount,
+            $response->transaction_status === 'Success' ? 1 : 0,
+            $response->passcode ?: $response->message);
+        
+        return $transaction;
     }
     
     /**
+     * Get status of transaction
+     * @param  string $transaction_id 
+     * @return object                 
+     */
+    public function getStatus(string $transaction_id)
+    {
+        $route = "/api/v1/sendmoney/nonwing/txn_inquiry";
+        $body = array(
+            "transaction_id" => $transaction_id
+        );
+        
+        try {
+            $sent = $this->sendRequest("POST", $route, $body);
+        } catch (Exception $e) {
+            throw $e;
+        }    
+        return $sent;
+    }
+
+    /**
      * Send request to WING API for Cambodia
-     * @param  string $type    type of the request ("GET", "POST", etc.)
-     * @param  string $route   url of the request
-     * @param  array  $headers headers of the request (optional)
-     * @param  array  $body    body of the request (optional)
+     * @param  string $type type of the request ("GET", "POST", etc.)
+     * @param  string $route url of the request
+     * @param  array $body body of the request (optional)
      * @return mixed  response
      * @throws \Exception
      */
@@ -86,14 +142,20 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         $headers = array();
         
+        // Not authentication request
         if(!preg_match('/\/oauth\/token/', $route)) {
             if (!$this->lastTokenDate ||
             (new \DateTime())->getTimestamp() - $this->lastTokenDate->getTimestamp() > $this->token->expires_in) {
                 $this->getToken();
             }
-            array_push($headers, "Authorization: Bearer " . $this->token->access_token);
+            array_push($headers, "Authorization: Bearer " . $this->token->access_token, "Content-type: application/json");
+            $body = json_encode((object) $body);
         }
-        
+        // Authentication request
+        else {
+            $body = http_build_query($body); // Pass body as url-encoded string
+        }
+                
         curl_setopt_array($curl, array(
           CURLOPT_PORT           => "8443",
           CURLOPT_URL            => $this->url . $route,
@@ -103,10 +165,9 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
           CURLOPT_TIMEOUT        => 30,
           CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
           CURLOPT_CUSTOMREQUEST  => $type,
-          CURLOPT_POSTFIELDS     => http_build_query($body),
+          CURLOPT_POSTFIELDS     => $body,
           CURLOPT_HTTPHEADER     => $headers,
-          CURLOPT_FAILONERROR    => true,
-          CURLINFO_HEADER_OUT    => true
+          CURLOPT_FAILONERROR    => true
         ));
         
         $response = curl_exec($curl);
