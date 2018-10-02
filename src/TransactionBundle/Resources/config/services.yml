@@ -14,4 +14,5 @@ services:
             - '@doctrine.orm.entity_manager'
 
     transaction.khm_financial_provider:
-        parent: TransactionBundle\Utils\Provider\DefaultFinancialProvider
+        class: TransactionBundle\Utils\Provider\KHMFinancialProvider
+        parent: transaction.default_financial_provider
