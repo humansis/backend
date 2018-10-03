@@ -85,7 +85,7 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Put("/households/project/{id}", name="add_household")
+     * @Rest\Put("/households/project/{id}", name="add_household_project")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Households")
@@ -129,6 +129,74 @@ class HouseholdController extends Controller
         catch (\Exception $e)
         {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $household,
+                'json',
+                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Put("/households", name="add_household_projects")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Parameter(
+     *     name="household",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Household::class, groups={"FullHousehold"})
+     * )
+     * 
+     * @SWG\Parameter(
+     *     name="projects",
+     *     in="body",
+     *     required=true,
+     *     type="array"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Household created",
+     *     @Model(type=Household::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function addSeveralAction(Request $request)
+    {
+        dump($request);
+        $requestArray = $request->request->all();
+        $householdArray = $requestArray['household'];
+        $projectsArray = $requestArray['projects'];
+
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
+        foreach ($projectsArray as $project) {
+            try
+            {
+                $household = $householdService->create($householdArray, $project);
+            }
+            catch (ValidationException $exception)
+            {
+                return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
+            }
+            catch (\Exception $e)
+            {
+                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
         }
 
         $json = $this->get('jms_serializer')
