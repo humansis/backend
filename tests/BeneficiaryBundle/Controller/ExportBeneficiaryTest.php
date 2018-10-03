@@ -27,12 +27,13 @@ class ExportBeneficiaryTest extends BMSServiceTestCase {
         $exportservice = new ExportService($this->em,$this->container);
         $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
 
-        $csv = $exportservice->export($exportableTable,'actual', 'csv');
+        $filename = $exportservice->export($exportableTable, 'actual', 'csv');
+        $path = getcwd() . '/' . $filename;
 
-        $getResourceBeneficiary = fgets(fopen(__DIR__ . '/../Resources/expectedBeneficiary.csv', 'r'));
-        $getContentBeneficiary = strtok($csv['content'], "\n");
+        $this->assertEquals($filename, 'actual.csv');
+        $this->assertFileExists($path);
+        $this->assertFileIsReadable($path);
 
-        $this->assertEquals($getResourceBeneficiary, $getContentBeneficiary);
-
+        unlink($path);
     }
 }

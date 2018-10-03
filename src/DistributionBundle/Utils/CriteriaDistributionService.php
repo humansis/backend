@@ -14,6 +14,10 @@ use DistributionBundle\Entity\SelectionCriteria;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
 
+/**
+ * Class CriteriaDistributionService
+ * @package DistributionBundle\Utils
+ */
 class CriteriaDistributionService
 {
 
@@ -159,7 +163,8 @@ class CriteriaDistributionService
 
         $count = 0;
         if($hasCountry){
-            $count = $criterion['weight'];
+            // TODO Change when implemented in the frontend
+            $count = $criterion['weight'] ?: 1;
         }
 
         return $count;
@@ -187,7 +192,6 @@ class CriteriaDistributionService
                 if($hasVC){
                     $count = $criterion['weight'];
                 }
-
                 return $count;
             }
             else {
@@ -207,12 +211,12 @@ class CriteriaDistributionService
             $count = 0;
             if($hasVC){
                 if($criterion['condition_string'] == "false"){
-                    $count = $criterion['weight'];
+                    $count = $criterion['weight'] ?: 1;
                 }
                 else{
                     foreach ($beneficiary->getVulnerabilityCriteria()->getValues() as $value){
                         if ($value->getFieldString() == $criterion['field_string']){
-                            $count = $count + $criterion['weight'];
+                            $count = $count + $criterion['weight'] ?:1;
                         }
                     }
                 }

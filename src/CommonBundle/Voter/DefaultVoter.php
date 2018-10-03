@@ -27,6 +27,12 @@ class DefaultVoter extends BMSVoter
     private $requestStack;
 
 
+    /**
+     * DefaultVoter constructor.
+     * @param RoleHierarchy $roleHierarchy
+     * @param EntityManagerInterface $entityManager
+     * @param RequestStack $requestStack
+     */
     public function __construct(RoleHierarchy $roleHierarchy, EntityManagerInterface $entityManager, RequestStack $requestStack)
     {
         parent::__construct($roleHierarchy);

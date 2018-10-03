@@ -142,10 +142,18 @@ class HouseholdCSVTest extends BMSServiceTestCase
      */
     public function testExportCSV()
     {
-
         $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($this->iso3);
-        $csvGenerated = $this->exportCSVService->generate($this->iso3);
-        $csvArray = str_replace('"', '', explode(",", explode("\n", current($csvGenerated))[1]));
+        
+        $filename = $this->exportCSVService->generate($this->iso3, 'csv');
+        $path = getcwd() . '/' . $filename;
+        
+        $this->assertEquals($filename, 'pattern_household_' . $this->iso3 . '.csv');
+        $this->assertFileExists($path);
+        $this->assertFileIsReadable($path);
+        
+        $csv_content = file_get_contents($path);
+        $csvArray = str_replace('"', '', explode(",", explode("\n", $csv_content)[1]));
+        
         $this->assertContains("Address street", $csvArray);
         $this->assertContains("Address number", $csvArray);
         $this->assertContains("Address postcode", $csvArray);
@@ -170,6 +178,8 @@ class HouseholdCSVTest extends BMSServiceTestCase
         {
             $this->assertContains($countrySpecific->getFieldString(), $csvArray);
         }
+        
+        unlink($path);
     }
 
     /**
@@ -181,17 +191,18 @@ class HouseholdCSVTest extends BMSServiceTestCase
     public function testImportCSV()
     {
         $body_begin = $this->SHEET_ARRAY;
+        
         $this->removeHousehold($this->addressStreet);
         $this->removeHousehold($this->addressStreet2);
         $this->removeHousehold($this->addressStreet3);
         $this->removeHousehold($this->addressStreet4);
+        
         $projects = $this->em->getRepository(Project::class)->findAll();
         if (empty($projects))
         {
             print_r("\nThere is no project in your database.\n\n");
             return;
         }
-
 
         // TRY TO ADD CSV WITH HOUSEHOLD WITHOUT ANY KIND OF ISSUE
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);

@@ -11,6 +11,10 @@ use ReportingBundle\Utils\DataRetrievers\DistributionDataRetrievers;
 
 use Doctrine\ORM\EntityManager;
 
+/**
+ * Class Computer
+ * @package ReportingBundle\Utils\Computers
+ */
 class Computer implements ComputerInterface {
 
     /**

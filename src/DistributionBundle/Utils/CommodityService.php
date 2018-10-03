@@ -9,6 +9,10 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\ModalityType;
 use Doctrine\ORM\EntityManagerInterface;
 
+/**
+ * Class CommodityService
+ * @package DistributionBundle\Utils
+ */
 class CommodityService
 {
 

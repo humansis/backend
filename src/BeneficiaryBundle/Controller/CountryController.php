@@ -18,13 +18,14 @@ class CountryController extends Controller
     /**
      * @Rest\Get("/country_specifics", name="all_country_specifics")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
-     *@SWG\Tag(name="Country")
+     * @SWG\Tag(name="Country")
      *
      * @SWG\Response(
      *     response=200,
      *     description="OK"
      * )
      *
+     * @param Request $request
      * @return Response
      */
     public function getCountrySpecificsAction(Request $request)
@@ -73,14 +74,15 @@ class CountryController extends Controller
      * @Rest\Post("/country_specifics/{id}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
-     *@SWG\Tag(name="Country")
+     * @SWG\Tag(name="Country")
      *
-     *@SWG\Response(
+     * @SWG\Response(
      *     response=200,
      *     description="OK"
      * )
      *
      * @param Request $request
+     * @param CountrySpecific $countrySpecific
      * @return Response
      */
     public function updateAction(Request $request, CountrySpecific $countrySpecific)

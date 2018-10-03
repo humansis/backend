@@ -22,7 +22,7 @@ class Project implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold"})
      */
     private $id;
 
@@ -31,7 +31,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold"})
      */
     private $name;
 
@@ -123,7 +123,6 @@ class Project implements ExportableInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Household", mappedBy="projects")
-     * @Groups({"FullHousehold"})
      */
     private $households;
 
@@ -463,7 +462,6 @@ class Project implements ExportableInterface
     public function addUsersProject(\UserBundle\Entity\UserProject $usersProject)
     {
         $this->usersProject[] = $usersProject;
-
         return $this;
     }
 
@@ -535,7 +533,6 @@ class Project implements ExportableInterface
     public function addHousehold(\BeneficiaryBundle\Entity\Household $household)
     {
         $this->households[] = $household;
-
         return $this;
     }
 
@@ -606,21 +603,21 @@ class Project implements ExportableInterface
         //  Recover all donors with the Donors object
         $donors = [];
         foreach ($this->getDonors()->getValues() as $value) {
-            array_push($donors, $value->getNumber());
+            array_push($donors, $value->getFullname());
         }
         $donors = join(',', $donors);
 
         // Recover all sectors with the Sectors object
         $sectors = [];
         foreach ($this->getSectors()->getValues() as $value) {
-            array_push($sectors, $value->getNumber());
+            array_push($sectors, $value->getName());
         }
         $sectors = join(',', $sectors);
 
         return [
             "Project name" => $this->getName(),
-            "Start date"=> $this->getStartDate()->format('Y-m-d H:i:s'),
-            "End date" => $this->getEndDate()->format('Y-m-d H:i:s'),
+            "Start date"=> $this->getStartDate()->format('Y-m-d'),
+            "End date" => $this->getEndDate()->format('Y-m-d'),
             "Number of households" => $this->getNumberOfHouseholds(),
             "Value" => $this->getValue(),
             "Notes" => $this->getNotes(),

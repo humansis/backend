@@ -4,21 +4,22 @@ namespace TransactionBundle\Utils\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
 
+use TransactionBundle\Entity\Transaction;
+use DistributionBundle\Entity\DistributionBeneficiary;
+
+/**
+ * Class DefaultFinancialProvider
+ * @package TransactionBundle\Utils\Provider
+ */
 abstract class DefaultFinancialProvider {
 
     /** @var EntityManagerInterface $em */
-    private $em;
-    
-    private $url;
+    protected $em;
 
     /**
-     * DefaultFinancialProvider constructor.
-     * @param EntityManagerInterface $entityManager
+     * @var
      */
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->em = $entityManager;
-    }
+    protected $url;
     
     /**
      * Send request to financial API
@@ -35,12 +36,14 @@ abstract class DefaultFinancialProvider {
     
     /**
      * Send money to one beneficiary
-     * @param  $string      $beneficiary
-     * @return object       transaction
+     * @param  string                  $phoneNumber
+     * @param  DistributionBeneficiary $distributionBeneficiary
+     * @return Transaction
+     * @throws \Exception       
      */
-    public function sendMoneyToOne(string $phone_number)
+    public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary)
     {
-        return null;
+        throw new \Exception("You need to define the financial provider for the country.");
     }
     
     /**
@@ -51,31 +54,78 @@ abstract class DefaultFinancialProvider {
     public function sendMoneyToAll(array $distributionBeneficiaries)
     {
         $response = array(
-            'sentTo'        => array(),
-            'noMobilePhone' => array(),
-            'error'         => array()
+            'sent'       => array(),
+            'failure'       => array(),
+            'no_mobile'     => array(),
+            'already_sent'  => array()
         );
         
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
             $beneficiary = $distributionBeneficiary->getBeneficiary();
+            $phoneNumber = null;
             foreach ($beneficiary->getPhones() as $phone) {
-                if ($phone->getType() == "mobile") {
+                if ($phone->getType() == 'mobile') {
                     $phoneNumber = $phone->getNumber();
                     break;
                 }
             }
             
             if ($phoneNumber) {
-                try {
-                    $sent = $this->sendMoneyToOne($phoneNumber);
-                    array_push($response['sentTo'], $sent);
-                } catch (Exception $e) {
-                    array_psuh($response['error'], $e);
+                $transaction = $distributionBeneficiary->getTransaction();
+                if ($transaction && $transaction->getTransactionStatus()) {
+                    array_push($response['already_sent'], $beneficiary);
+                } else {
+                    try {
+                        $sent = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary);
+                        if (property_exists($sent, 'error_code')) {
+                            array_push($response['failure'], $beneficiary);
+                        } else {
+                            array_push($response['sent'], $beneficiary);
+                        }
+                    } catch (Exception $e) {
+                        throw $e;
+                    }
                 }
             } else {
-                array_push($response['noMobilePhone'], $beneficiary);
+                array_push($response['no_mobile'], $beneficiary);
             }
         }
+        
+        return $response;
+    }
+    
+    /**
+     * Create transaction
+     * @param  DistributionBeneficiary $distributionBeneficiary 
+     * @param  string                  $transactionId           
+     * @param  float                   $amountSent              
+     * @param  int                     $transactionStatus       
+     * @param  string                  $message                 
+     * @return Transaction                                           
+     */
+    public function createOrUpdateTransaction(
+        DistributionBeneficiary $distributionBeneficiary,
+        string $transactionId,
+        \DateTime $dateSent,
+        string $amountSent,
+        int $transactionStatus,
+        string $message = null,
+        Transaction $transaction = null)
+    {
+        if (!$transaction) {
+            $transaction = new Transaction();
+        }
+        $transaction->setDistributionBeneficiary($distributionBeneficiary);
+        $transaction->setDateSent($dateSent);
+        $transaction->setTransactionId($transactionId);
+        $transaction->setAmountSent($amountSent);
+        $transaction->setTransactionStatus($transactionStatus);
+        $transaction->setMessage($message);
+
+        $this->em->persist($transaction);
+        $this->em->flush();
+        
+        return $transaction;
     }
 
 }

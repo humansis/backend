@@ -2,6 +2,10 @@
 
 namespace ReportingBundle\Utils\Model;
 
+/**
+ * Interface IndicatorInterface
+ * @package ReportingBundle\Utils\Model
+ */
 interface IndicatorInterface
 {
 

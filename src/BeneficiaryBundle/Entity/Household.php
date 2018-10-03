@@ -82,27 +82,24 @@ class Household
     /**
      * @var string
      *
-     * @ORM\Column(name="address_street", type="string", length=255)
+     * @ORM\Column(name="address_street", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "FullReceivers"})
-     * @Assert\NotBlank(message="The address street is required.")
      */
     private $addressStreet;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="address_number", type="string", length=255)
+     * @ORM\Column(name="address_number", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "FullReceivers"})
-     * @Assert\NotBlank(message="The address number is required.")
      */
     private $addressNumber;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="address_postcode", type="string", length=255)
+     * @ORM\Column(name="address_postcode", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "FullReceivers"})
-     * @Assert\NotBlank(message="The address postcode is required.")
      */
     private $addressPostcode;
 
@@ -164,6 +161,7 @@ class Household
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households")
+     * @Groups({"FullHousehold"})
      */
     private $projects;
 
@@ -562,7 +560,7 @@ class Household
     public function addProject(\ProjectBundle\Entity\Project $project)
     {
         $this->projects[] = $project;
-
+        $project->setNumberOfHouseholds($project->getNumberOfHouseholds() + 1);
         return $this;
     }
 
@@ -575,6 +573,7 @@ class Household
      */
     public function removeProject(\ProjectBundle\Entity\Project $project)
     {
+        $project->setNumberOfHouseholds($project->getNumberOfHouseholds() - 1);
         return $this->projects->removeElement($project);
     }
 
