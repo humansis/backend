@@ -22,7 +22,7 @@ class Project implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold"})
      */
     private $id;
 
@@ -31,7 +31,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold"})
      */
     private $name;
 
@@ -123,7 +123,6 @@ class Project implements ExportableInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Household", mappedBy="projects")
-     * @Groups({"FullHousehold"})
      */
     private $households;
 

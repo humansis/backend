@@ -161,6 +161,7 @@ class Household
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households")
+     * @Groups({"FullHousehold"})
      */
     private $projects;
 
