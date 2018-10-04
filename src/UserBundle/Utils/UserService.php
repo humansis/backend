@@ -68,12 +68,9 @@ class UserService
      */
     public function update(User $user, array $userData)
     {
-        $roles = $userData['roles'];
+        $roles = $userData['rights'];
         $user->setRoles([]);
-        foreach ($roles as $role)
-        {
-            $user->addRole($role);
-        }
+        $user->addRole($roles);
 
         $this->em->persist($user);
         $this->em->flush();
