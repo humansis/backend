@@ -119,7 +119,6 @@ class CriteriaDistributionController extends Controller
     {
         $filters = $request->request->all();
         $filters['countryIso3'] = $filters['__country'];
-        // TODO Change when implemented in the frontend
         $threshold = $filters['threshold'];
 
         /** @var CriteriaDistributionService $criteriaDistributionService */

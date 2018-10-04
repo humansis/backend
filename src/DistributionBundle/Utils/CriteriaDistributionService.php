@@ -163,7 +163,6 @@ class CriteriaDistributionService
 
         $count = 0;
         if($hasCountry){
-            // TODO Change when implemented in the frontend
             $count = $criterion['weight'];
         }
 
