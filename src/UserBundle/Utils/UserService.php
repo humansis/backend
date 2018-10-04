@@ -192,10 +192,11 @@ class UserService
 
     /**
      * @param User $user
+     * @param string $role
      * @return mixed
      * @throws \Exception
      */
-    public function create(User $user)
+    public function create(User $user, string $role)
     {
         $userSaved = $this->em->getRepository(User::class)->findOneByUsername($user->getUsername());
         if (!$userSaved instanceof User)
@@ -208,7 +209,9 @@ class UserService
             ->setSalt($userSaved->getSalt())
             ->setEmail($user->getUsername())
             ->setEmailCanonical($user->getUsername())
-            ->setEnabled(1);
+            ->setEnabled(1)
+            ->setRoles([])
+            ->addRole($role);
 
         $errors = $this->validator->validate($user);
         if (count($errors) > 0)

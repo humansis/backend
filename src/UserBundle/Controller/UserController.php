@@ -169,10 +169,14 @@ class UserController extends Controller
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
 
+        $user = $request->request->all();
+        $role = $user['rights'];
+
         $user = $serializer->deserialize(json_encode($request->request->all()), User::class, 'json');
+
         try
         {
-            $return = $this->get('user.user_service')->create($user);
+            $return = $this->get('user.user_service')->create($user, $role);
         }
         catch (\Exception $exception)
         {
