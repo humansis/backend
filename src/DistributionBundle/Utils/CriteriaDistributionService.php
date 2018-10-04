@@ -181,6 +181,10 @@ class CriteriaDistributionService
 
         if (!key_exists('table_string', $criterion)){
             if($criterion['type'] == 'boolean'){
+                if($criterion['value_string'] == "Woman")
+                    $criterion['value_string'] = 0;
+                else
+                    $criterion['value_string'] = 1;
 
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasGender($criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
 
