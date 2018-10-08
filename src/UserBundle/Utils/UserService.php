@@ -3,6 +3,7 @@
 namespace UserBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -68,12 +69,9 @@ class UserService
      */
     public function update(User $user, array $userData)
     {
-        $roles = $userData['roles'];
+        $roles = $userData['rights'];
         $user->setRoles([]);
-        foreach ($roles as $role)
-        {
-            $user->addRole($role);
-        }
+        $user->addRole($roles);
 
         $this->em->persist($user);
         $this->em->flush();
@@ -192,11 +190,14 @@ class UserService
 
     /**
      * @param User $user
+     * @param array $userData
      * @return mixed
      * @throws \Exception
      */
-    public function create(User $user)
+    public function create(User $user, array $userData)
     {
+        $role = $userData['rights'];
+
         $userSaved = $this->em->getRepository(User::class)->findOneByUsername($user->getUsername());
         if (!$userSaved instanceof User)
             throw new \Exception("The user with username {$user->getUsername()} has been not preconfigured. You need to ask 
@@ -208,7 +209,20 @@ class UserService
             ->setSalt($userSaved->getSalt())
             ->setEmail($user->getUsername())
             ->setEmailCanonical($user->getUsername())
-            ->setEnabled(1);
+            ->setEnabled(1)
+            ->setRoles([])
+            ->addRole($role);
+
+        if(key_exists('projects', $userData))
+            foreach ($userData['projects'] as $project){
+                $project = $this->em->getRepository(Project::class)->find($project);
+                $userProject = new UserProject();
+                $project = $userProject->setProject($project);
+                $user->addUserProject($project);
+                //$userProject->setUser($user);
+                //$userProject->setRights($user->getRoles());
+
+            }
 
         $errors = $this->validator->validate($user);
         if (count($errors) > 0)
@@ -224,7 +238,7 @@ class UserService
         $this->em->merge($user);
         $this->em->flush();
 
-        return $user;
+        return json_encode($user);
     }
 
     /**
