@@ -30,7 +30,7 @@ class UserProject
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="userProjects")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="userProjects", cascade={"persist"})
      */
     private $user;
 

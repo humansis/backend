@@ -205,24 +205,38 @@ class UserService
         elseif ($userSaved->isEnabled())
             throw new \Exception("The user with username {$user->getUsername()} has already been added");
 
+
         $user->setId($userSaved->getId())
             ->setSalt($userSaved->getSalt())
             ->setEmail($user->getUsername())
             ->setEmailCanonical($user->getUsername())
             ->setEnabled(1)
-            ->setRoles([])
-            ->addRole($role);
+            ->setRoles([$role]);
+
+        //$user->setPassword($this->encoderFactory->getEncoder($user)->encodePassword('tester', $salt));
+
+        $this->em->merge($user);
 
         if(key_exists('projects', $userData))
             foreach ($userData['projects'] as $project){
                 $project = $this->em->getRepository(Project::class)->find($project);
-                $userProject = new UserProject();
-                $project = $userProject->setProject($project);
-                $user->addUserProject($project);
-                //$userProject->setUser($user);
-                //$userProject->setRights($user->getRoles());
+                if($project instanceof Project){
+                    $userProject = new UserProject();
+                    $userProject->setRights(1)
+                        ->setUser($user)
+                        ->setProject($project);
+                    $this->em->merge($userProject);
+                }
 
             }
+
+        if(key_exists('country', $userData)){
+            $userCountry = new UserCountry();
+            $userCountry->setUser($user)
+                ->setIso3($userData['country'])
+                ->setRights(1);
+            $this->em->merge($userCountry);
+        }
 
         $errors = $this->validator->validate($user);
         if (count($errors) > 0)
@@ -235,9 +249,7 @@ class UserService
             return $errorsArray;
         }
 
-        $this->em->merge($user);
         $this->em->flush();
-
         return json_encode($user);
     }
 

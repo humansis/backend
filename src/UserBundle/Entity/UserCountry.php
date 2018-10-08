@@ -38,7 +38,7 @@ class UserCountry
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="countries")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="countries", cascade={"persist"})
      */
     private $user;
 
