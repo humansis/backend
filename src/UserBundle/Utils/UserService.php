@@ -3,6 +3,7 @@
 namespace UserBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -189,12 +190,14 @@ class UserService
 
     /**
      * @param User $user
-     * @param string $role
+     * @param array $userData
      * @return mixed
      * @throws \Exception
      */
-    public function create(User $user, string $role)
+    public function create(User $user, array $userData)
     {
+        $role = $userData['rights'];
+
         $userSaved = $this->em->getRepository(User::class)->findOneByUsername($user->getUsername());
         if (!$userSaved instanceof User)
             throw new \Exception("The user with username {$user->getUsername()} has been not preconfigured. You need to ask 
@@ -210,6 +213,17 @@ class UserService
             ->setRoles([])
             ->addRole($role);
 
+        if(key_exists('projects', $userData))
+            foreach ($userData['projects'] as $project){
+                $project = $this->em->getRepository(Project::class)->find($project);
+                $userProject = new UserProject();
+                $project = $userProject->setProject($project);
+                $user->addUserProject($project);
+                //$userProject->setUser($user);
+                //$userProject->setRights($user->getRoles());
+
+            }
+
         $errors = $this->validator->validate($user);
         if (count($errors) > 0)
         {
@@ -224,7 +238,7 @@ class UserService
         $this->em->merge($user);
         $this->em->flush();
 
-        return $user;
+        return json_encode($user);
     }
 
     /**
