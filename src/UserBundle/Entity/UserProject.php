@@ -42,9 +42,9 @@ class UserProject
     private $project;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="rights", type="integer")
+     * @ORM\Column(name="rights", type="string")
      */
     private $rights;
 
@@ -61,7 +61,7 @@ class UserProject
     /**
      * Set rights.
      *
-     * @param int $rights
+     * @param string $rights
      *
      * @return UserProject
      */
@@ -75,7 +75,7 @@ class UserProject
     /**
      * Get rights.
      *
-     * @return int
+     * @return string
      */
     public function getRights()
     {

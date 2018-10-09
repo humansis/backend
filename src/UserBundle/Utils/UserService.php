@@ -70,8 +70,7 @@ class UserService
     public function update(User $user, array $userData)
     {
         $roles = $userData['rights'];
-        $user->setRoles([]);
-        $user->addRole($roles);
+        $roles->setRoles([$roles]);
 
         $this->em->persist($user);
         $this->em->flush();
@@ -222,7 +221,7 @@ class UserService
                 $project = $this->em->getRepository(Project::class)->find($project);
                 if($project instanceof Project){
                     $userProject = new UserProject();
-                    $userProject->setRights(1)
+                    $userProject->setRights($role)
                         ->setUser($user)
                         ->setProject($project);
                     $this->em->merge($userProject);
@@ -234,7 +233,7 @@ class UserService
             $userCountry = new UserCountry();
             $userCountry->setUser($user)
                 ->setIso3($userData['country'])
-                ->setRights(1);
+                ->setRights($role);
             $this->em->merge($userCountry);
         }
 

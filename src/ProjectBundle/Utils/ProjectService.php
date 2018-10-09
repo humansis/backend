@@ -153,7 +153,7 @@ class ProjectService
         $this->em->persist($project);
         $this->em->flush();
 
-        $this->addUser($project, $user, UserProject::RIGHT_MANAGER);
+        $this->addUser($project, $user);
 
         return $project;
     }
@@ -161,7 +161,7 @@ class ProjectService
     /**
      * @param Project $project
      * @param array $projectArray
-     * @return Project
+     * @return array|bool|Project
      * @throws \Exception
      */
     public function edit(Project $project, array $projectArray)
@@ -232,14 +232,14 @@ class ProjectService
     /**
      * @param Project $project
      * @param User $user
-     * @param int $right
      */
-    public function addUser(Project $project, User $user, int $right)
+    public function addUser(Project $project, User $user)
     {
+        $right = $user->getRoles();
         $userProject = new UserProject();
         $userProject->setUser($user)
             ->setProject($project)
-            ->setRights($right);
+            ->setRights($right[0]);
 
         $this->em->persist($userProject);
         $this->em->flush();
