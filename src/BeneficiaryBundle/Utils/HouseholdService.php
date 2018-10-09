@@ -110,6 +110,21 @@ class HouseholdService
     }
 
 
+    public function createSeveral(array $householdArray, array $projectsArray)
+    {
+        foreach($projectsArray as $projectId)  {
+            dump($projectId);
+            $project = $this->em->getRepository(Project::class)->find($projectId);
+            dump($project);
+            if( $project instanceof Project) {
+                $this->create($householdArray, $project);
+            }
+            else {
+                throw new \Exception("Fuck");
+            }
+        }
+    }
+
     /**
      * @param array $householdArray
      * @param $project
@@ -120,6 +135,7 @@ class HouseholdService
      */
     public function create(array $householdArray, Project $project, bool $flush = true)
     {
+        dump($householdArray);
         $this->requestValidator->validate(
             "household",
             HouseholdConstraints::class,

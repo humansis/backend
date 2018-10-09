@@ -179,24 +179,25 @@ class HouseholdController extends Controller
     {
         dump($request);
         $requestArray = $request->request->all();
-        $householdArray = $requestArray['household'];
         $projectsArray = $requestArray['projects'];
+
+        $householdArray = $requestArray['household'];
+        $householdArray['__country'] = $requestArray['__country'];
+        unset($householdArray['id']);
 
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
-        foreach ($projectsArray as $project) {
-            try
-            {
-                $household = $householdService->create($householdArray, $project);
-            }
-            catch (ValidationException $exception)
-            {
-                return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-            }
-            catch (\Exception $e)
-            {
-                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
+        try
+        {
+            $household = $householdService->createSeveral($householdArray, $projectsArray);
+        }
+        catch (ValidationException $exception)
+        {
+            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $json = $this->get('jms_serializer')
