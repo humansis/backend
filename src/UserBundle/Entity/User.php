@@ -42,10 +42,6 @@ class User extends BaseUser implements ExportableInterface
      * @var string
      * @Groups({"FullUser"})
      * @Assert\NotBlank(message="Email can't be empty")
-     * @Assert\Email(
-     *     message = "The email '{{ value }}' is not a valid email.",
-     *     checkMX = true
-     * )
      */
     protected $email;
 
