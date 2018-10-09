@@ -90,6 +90,7 @@ class UserControllerTest extends BMSServiceTestCase
         $body = [
             "username" => $this->username,
             "email" => $this->username,
+            "rights" => "ROLE_ADMIN",
             "password" => "PSWUNITTEST"
         ];
 
@@ -118,9 +119,9 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testEditUser($newuser)
     {
-        $roles = ["ROLE_TEST", "ROLE_USER"];
+        $roles = "ROLE_USER";
 
-        $body = ["roles" => $roles];
+        $body = ["rights" => $roles];
 
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -134,7 +135,7 @@ class UserControllerTest extends BMSServiceTestCase
         $this->em->clear();
 
         $userSearch = $this->em->getRepository(User::class)->find($newUserReceived['id']);
-        $this->assertEquals($userSearch->getRoles(), $roles);
+        $this->assertEquals($userSearch->getRoles()[0], $roles);
 
         return $newUserReceived;
     }

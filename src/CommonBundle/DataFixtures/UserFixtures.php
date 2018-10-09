@@ -60,13 +60,13 @@ class UserFixtures extends Fixture
                 $userCountry = new UserCountry();
                 $userCountry->setUser($instance)
                     ->setIso3("KHM")
-                    ->setRights(1);
+                    ->setRights("ROLE_ADMIN");
                 $manager->persist($userCountry);
                 $project = $manager->getRepository(Project::class)->findOneByName("Dev Project");
                 if ($project instanceof Project)
                 {
                     $userProject = new UserProject();
-                    $userProject->setRights(1)
+                    $userProject->setRights("ROLE_ADMIN")
                         ->setUser($instance)
                         ->setProject($project);
                     $manager->persist($userProject);

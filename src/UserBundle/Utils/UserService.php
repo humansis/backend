@@ -3,6 +3,7 @@
 namespace UserBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -68,12 +69,9 @@ class UserService
      */
     public function update(User $user, array $userData)
     {
-        $roles = $userData['roles'];
+        $roles = $userData['rights'];
         $user->setRoles([]);
-        foreach ($roles as $role)
-        {
-            $user->addRole($role);
-        }
+        $user->addRole($roles);
 
         $this->em->persist($user);
         $this->em->flush();
@@ -192,11 +190,14 @@ class UserService
 
     /**
      * @param User $user
+     * @param array $userData
      * @return mixed
      * @throws \Exception
      */
-    public function create(User $user)
+    public function create(User $user, array $userData)
     {
+        $role = $userData['rights'];
+
         $userSaved = $this->em->getRepository(User::class)->findOneByUsername($user->getUsername());
         if (!$userSaved instanceof User)
             throw new \Exception("The user with username {$user->getUsername()} has been not preconfigured. You need to ask 
@@ -204,11 +205,38 @@ class UserService
         elseif ($userSaved->isEnabled())
             throw new \Exception("The user with username {$user->getUsername()} has already been added");
 
+
         $user->setId($userSaved->getId())
             ->setSalt($userSaved->getSalt())
             ->setEmail($user->getUsername())
             ->setEmailCanonical($user->getUsername())
-            ->setEnabled(1);
+            ->setEnabled(1)
+            ->setRoles([$role]);
+
+        //$user->setPassword($this->encoderFactory->getEncoder($user)->encodePassword('tester', $salt));
+
+        $this->em->merge($user);
+
+        if(key_exists('projects', $userData))
+            foreach ($userData['projects'] as $project){
+                $project = $this->em->getRepository(Project::class)->find($project);
+                if($project instanceof Project){
+                    $userProject = new UserProject();
+                    $userProject->setRights($role)
+                        ->setUser($user)
+                        ->setProject($project);
+                    $this->em->merge($userProject);
+                }
+
+            }
+
+        if(key_exists('country', $userData)){
+            $userCountry = new UserCountry();
+            $userCountry->setUser($user)
+                ->setIso3($userData['country'])
+                ->setRights($role);
+            $this->em->merge($userCountry);
+        }
 
         $errors = $this->validator->validate($user);
         if (count($errors) > 0)
@@ -221,9 +249,7 @@ class UserService
             return $errorsArray;
         }
 
-        $this->em->merge($user);
         $this->em->flush();
-
         return $user;
     }
 

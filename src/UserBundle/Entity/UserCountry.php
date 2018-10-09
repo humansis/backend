@@ -22,9 +22,9 @@ class UserCountry
     private $id;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="rights", type="integer")
+     * @ORM\Column(name="rights", type="string")
      */
     private $rights;
 
@@ -38,7 +38,7 @@ class UserCountry
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="countries")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="countries", cascade={"persist"})
      */
     private $user;
 
@@ -56,7 +56,7 @@ class UserCountry
     /**
      * Set rights.
      *
-     * @param int $rights
+     * @param string $rights
      *
      * @return UserCountry
      */
@@ -70,7 +70,7 @@ class UserCountry
     /**
      * Get rights.
      *
-     * @return int
+     * @return string
      */
     public function getRights()
     {

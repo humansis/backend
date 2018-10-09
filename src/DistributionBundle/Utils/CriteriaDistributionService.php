@@ -163,8 +163,7 @@ class CriteriaDistributionService
 
         $count = 0;
         if($hasCountry){
-            // TODO Change when implemented in the frontend
-            $count = $criterion['weight'] ?: 1;
+            $count = $criterion['weight'];
         }
 
         return $count;
@@ -181,6 +180,10 @@ class CriteriaDistributionService
 
         if (!key_exists('table_string', $criterion)){
             if($criterion['type'] == 'boolean'){
+                if($criterion['value_string'] == "Woman")
+                    $criterion['value_string'] = 0;
+                else
+                    $criterion['value_string'] = 1;
 
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasGender($criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
 
@@ -207,12 +210,12 @@ class CriteriaDistributionService
             $count = 0;
             if($hasVC){
                 if($criterion['condition_string'] == "false"){
-                    $count = $criterion['weight'] ?: 1;
+                    $count = $criterion['weight'];
                 }
                 else{
                     foreach ($beneficiary->getVulnerabilityCriteria()->getValues() as $value){
                         if ($value->getFieldString() == $criterion['field_string']){
-                            $count = $count + $criterion['weight'] ?:1;
+                            $count = $count + $criterion['weight'];
                         }
                     }
                 }

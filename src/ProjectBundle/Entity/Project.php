@@ -22,7 +22,7 @@ class Project implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold"})
      */
     private $id;
 
@@ -31,7 +31,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold"})
      */
     private $name;
 

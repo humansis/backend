@@ -83,7 +83,7 @@ class CountryController extends Controller
      *
      * @param Request $request
      * @param CountrySpecific $countrySpecific
-     * @return Response
+     * @return Response 
      */
     public function updateAction(Request $request, CountrySpecific $countrySpecific)
     {
