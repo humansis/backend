@@ -22,9 +22,9 @@ class BeneficiaryControllerTest extends BMSServiceTestCase {
         $this->client = $this->container->get('test.client');
     }
 
-    public function testGetAllBeneficiaryApi(){
+    /*public function testGetAllBeneficiaryApi(){
 
-       /* // Fake connection with a token for the user tester (ADMIN)
+        // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
@@ -42,6 +42,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase {
         $this->assertTrue(key_exists('message', $listHousehold));
         $this->assertTrue($listHousehold['message'] == "Insertion successfull");
 
-        return true;*/
-    }
+        return true;
+    }*/
 }

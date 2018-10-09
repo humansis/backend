@@ -70,7 +70,8 @@ class UserService
     public function update(User $user, array $userData)
     {
         $roles = $userData['rights'];
-        $roles->setRoles([$roles]);
+        $user->setRoles([]);
+        $user->addRole($roles);
 
         $this->em->persist($user);
         $this->em->flush();
@@ -249,7 +250,7 @@ class UserService
         }
 
         $this->em->flush();
-        return json_encode($user);
+        return $user;
     }
 
     /**

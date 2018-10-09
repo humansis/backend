@@ -186,7 +186,12 @@ class UserController extends Controller
         if (!$user instanceof User)
             return new JsonResponse($user);
 
-        return new Response($return);
+        $userJson = $serializer->serialize(
+            $return,
+            'json',
+            SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true)
+        );
+        return new Response($userJson);
     }
 
     /**
