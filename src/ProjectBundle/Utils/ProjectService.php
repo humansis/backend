@@ -112,7 +112,8 @@ class ProjectService
                 ->setStartDate($newProject->getStartDate())        
                 ->setEndDate($newProject->getEndDate())
                 ->setIso3($countryISO3)
-                ->setValue($newProject->getValue());
+                ->setValue($newProject->getValue())
+                ->setNotes($newProject->getNotes());
 
         $errors = $this->validator->validate($project);
         if (count($errors) > 0)

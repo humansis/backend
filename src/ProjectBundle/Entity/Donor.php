@@ -243,7 +243,7 @@ class Donor implements ExportableInterface
         // Recover projects of the donor
         $project = [];
         foreach ($this->getProjects()->getValues() as $value) {
-            array_push($project, $value->getNumber());
+            array_push($project, $value->getName());
         }
         $project = join(',', $project);
 
