@@ -74,6 +74,47 @@ class UserService
         $user->addRole($roles);
 
         $this->em->persist($user);
+
+        $this->delete($user, false);
+
+        if(key_exists('projects', $userData)) {
+
+            foreach ($userData['projects'] as $project) {
+                //$findUser = false;
+
+                $project = $this->em->getRepository(Project::class)->find($project);
+                if ($project instanceof Project) {
+                    /*for ($i = 0; $i < count($user->getUserProjects()->getValues()) || $findUser == false; $i++) {
+                        if ($user->getUserProjects()->getValues()[$i]->getProject()->getId() == $project->getId()) {
+                            $findUser = true;
+                        }
+                    }*/
+
+
+                    //if ($findUser == false) {
+                        $userProject = new UserProject();
+                        $userProject->setRights($roles)
+                            ->setUser($user)
+                            ->setProject($project);
+                        $this->em->persist($userProject);
+                    //}
+                    /*else {
+                        $userProject = $this->em->getRepository(UserProject::class)->findBy(['user' => $userData['id'], 'project' => $project->getId()]);
+                        $userProject[0]->setRights($roles);
+                        $this->em->persist($userProject[0]);
+                    }*/
+                }
+            }
+        }
+
+        if(key_exists('country', $userData)){
+            $userCountry = new UserCountry();
+            $userCountry->setUser($user)
+                ->setIso3($userData['country'])
+                ->setRights($roles);
+            $this->em->persist($userCountry);
+        }
+
         $this->em->flush();
 
         return $user;
@@ -276,9 +317,10 @@ class UserService
      * Delete an user and its links in the api
      *
      * @param User $user
+     * @param bool $removeUser
      * @return bool
      */
-    public function delete(User $user)
+    public function delete(User $user, bool $removeUser = true)
     {
         $userCountries = $this->em->getRepository(UserCountry::class)->findByUser($user);
         if (!empty($userCountries))
@@ -297,14 +339,13 @@ class UserService
             }
         }
 
-        try
-        {
-            $this->em->remove($user);
-            $this->em->flush();
-        }
-        catch (\Exception $exception)
-        {
-            return false;
+        if($removeUser) {
+            try {
+                $this->em->remove($user);
+                $this->em->flush();
+            } catch (\Exception $exception) {
+                return false;
+            }
         }
 
         return true;
