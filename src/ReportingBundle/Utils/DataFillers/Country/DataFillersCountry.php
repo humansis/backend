@@ -257,7 +257,7 @@ class DataFillersCountry extends DataFillers
         try {
             $this->repository = $this->em->getRepository(Transaction::class);
             $qb = $this->repository->createQueryBuilder('t')
-                                   ->where ('t.pickupdate < CURRENT_DATE() ')
+                                   ->where ('t.pickupDate < CURRENT_DATE() ')
                                    ->select('count(t.id) AS value');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMS_Country_TTC");
