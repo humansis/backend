@@ -85,62 +85,6 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Put("/households/project/{id}", name="add_household_project")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
-     *
-     * @SWG\Tag(name="Households")
-     *
-     * @SWG\Parameter(
-     *     name="household",
-     *     in="body",
-     *     required=true,
-     *     @Model(type=Household::class, groups={"FullHousehold"})
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Household created",
-     *     @Model(type=Household::class)
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     *
-     * @param Request $request
-     * @param Project $project
-     * @return Response
-     */
-    public function addAction(Request $request, Project $project)
-    {
-        $householdArray = $request->request->all();
-        /** @var HouseholdService $householdService */
-        $householdService = $this->get('beneficiary.household_service');
-        try
-        {
-            $household = $householdService->create($householdArray, $project);
-        }
-        catch (ValidationException $exception)
-        {
-            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-        }
-        catch (\Exception $e)
-        {
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $household,
-                'json',
-                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
-            );
-        return new Response($json);
-    }
-
-    /**
      * @Rest\Put("/households", name="add_household_projects")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
@@ -175,7 +119,7 @@ class HouseholdController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function addSeveralAction(Request $request)
+    public function addAction(Request $request)
     {
         dump($request);
         $requestArray = $request->request->all();
@@ -183,13 +127,83 @@ class HouseholdController extends Controller
 
         $householdArray = $requestArray['household'];
         $householdArray['__country'] = $requestArray['__country'];
-        unset($householdArray['id']);
 
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
         try
         {
-            $household = $householdService->createSeveral($householdArray, $projectsArray);
+            $household = $householdService->createOrEdit($householdArray, $projectsArray, null);
+        }
+        catch (ValidationException $exception)
+        {
+            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $household,
+                'json',
+                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
+
+
+
+    /**
+     * @Rest\Post("/households/{id}", name="edit_household")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Parameter(
+     *     name="household",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Household::class, groups={"FullHousehold"})
+     * )
+     * 
+     * @SWG\Parameter(
+     *     name="projects",
+     *     in="body",
+     *     required=true,
+     *     type="array"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Household created",
+     *     @Model(type=Household::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     *
+     * @param Request $request
+     * @param Household $household
+     * @return Response
+     */
+    public function editAction(Request $request, Household $household)
+    {
+        dump($request);
+        $requestArray = $request->request->all();
+        $projectsArray = $requestArray['projects'];
+
+        $householdArray = $requestArray['household'];
+        $householdArray['__country'] = $requestArray['__country'];
+
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
+        try
+        {
+            $household = $householdService->createOrEdit($householdArray, $projectsArray, $household);
         }
         catch (ValidationException $exception)
         {
@@ -377,7 +391,7 @@ class HouseholdController extends Controller
      * @param Project $project
      * @return Response
      */
-    public function editAction(Request $request, Household $household, Project $project)
+    public function editOldAction(Request $request, Household $household, Project $project)
     {
         $arrayHousehold = $request->request->all();
         /** @var HouseholdService $householdService */
