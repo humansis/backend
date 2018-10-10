@@ -109,22 +109,6 @@ class HouseholdService
         return $households;
     }
 
-
-    // public function createOrEditSeveral(array $householdArray, array $projectsArray, Household $household)
-    // {
-    //     foreach($projectsArray as $projectId)  {
-    //         dump($projectId);
-    //         $project = $this->em->getRepository(Project::class)->find($projectId);
-    //         dump($project);
-    //         if( $project instanceof Project) {
-    //             $this->createOrEdit($householdArray, $project, $household);
-    //         }
-    //         else {
-    //             throw new \Exception("Fuck");
-    //         }
-    //     }
-    // }
-
     /**
      * @param array $householdArray
      * @param $projectsArray
@@ -136,7 +120,6 @@ class HouseholdService
     public function createOrEdit(array $householdArray, array $projectsArray, $household, bool $flush = true)
     {
         $actualAction = 'update';
-        dump($householdArray);
         $this->requestValidator->validate(
             "household",
             HouseholdConstraints::class,
@@ -171,6 +154,7 @@ class HouseholdService
 
             throw new \Exception($errorsMessage);
         }
+        
         // Save or update location instance
         $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
         if (null === $location)
@@ -196,13 +180,12 @@ class HouseholdService
                 $addProject = $this->em->getRepository(Project::class)->findOneBy(["id" => $addProjectId]);
                 $household->addProject($addProject);
             }
-        } else {
-
+        } 
+        else {
             foreach($projectsArray as $newProjectID)  {
                 $newProject = $this->em->getRepository(Project::class)->find($newProjectID);
-                dump($newProject);
                 if (!$newProject instanceof Project)
-                    throw new \Exception("This project is not found");
+                    throw new \Exception("The project " . $newProjectID . " was not found");
                 else {
                     $household->addProject($newProject);
                 }
@@ -237,6 +220,7 @@ class HouseholdService
                 $this->em->persist($beneficiary);
             }
         }
+        
         if (!empty($householdArray["country_specific_answers"]))
         {
             foreach ($householdArray["country_specific_answers"] as $country_specific_answer)
@@ -244,6 +228,7 @@ class HouseholdService
                 $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
             }
         }
+        
         if ($flush)
         {
             $this->em->flush();
