@@ -48,7 +48,7 @@ class LessTreatment extends AbstractTreatment
         {
             try
             {
-                $this->householdService->createOrEdit($householdToAdd['new'], $project);
+                $this->householdService->createOrEdit($householdToAdd['new'], [$project]);
                 $numberAdded++;
                 $this->em->clear();
             }

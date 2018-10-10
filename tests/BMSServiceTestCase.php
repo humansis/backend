@@ -353,7 +353,7 @@ class BMSServiceTestCase extends KernelTestCase
         $this->bodyHousehold["__country"] = $this->iso3;
         $household = $this->householdService->createOrEdit(
             $this->bodyHousehold,
-            current($projects)
+            [current($projects)]
         );
 
         $json = $this->serializer
