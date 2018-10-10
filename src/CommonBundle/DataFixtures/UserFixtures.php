@@ -57,11 +57,13 @@ class UserFixtures extends Fixture
                     ->setRoles(["ROLE_ADMIN"]);
                 $instance->setPassword($this->encoderFactory->getEncoder($instance)->encodePassword($datum[1], $salt));
                 $manager->persist($instance);
+
                 $userCountry = new UserCountry();
                 $userCountry->setUser($instance)
                     ->setIso3("KHM")
                     ->setRights("ROLE_ADMIN");
                 $manager->persist($userCountry);
+
                 $project = $manager->getRepository(Project::class)->findOneByName("Dev Project");
                 if ($project instanceof Project)
                 {

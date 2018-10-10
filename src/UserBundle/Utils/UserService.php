@@ -13,6 +13,7 @@ use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 /**
  * Class UserService
@@ -30,17 +31,22 @@ class UserService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var EncoderFactoryInterface $encoderFactory */
+    private $encoderFactory;
+
     /**
      * UserService constructor.
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
+     * @param EncoderFactoryInterface $encoderFactory
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, EncoderFactoryInterface $encoderFactory)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
+        $this->encoderFactory = $encoderFactory;
     }
 
     /**
@@ -89,6 +95,7 @@ class UserService
         $roles = $userData['rights'];
         $user->setRoles([]);
         $user->addRole($roles);
+        $user->setPassword($userData['password']);
 
         $this->em->persist($user);
 
@@ -263,16 +270,18 @@ class UserService
         elseif ($userSaved->isEnabled())
             throw new \Exception("The user with username {$user->getUsername()} has already been added");
 
+        $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
 
         $user->setId($userSaved->getId())
-            ->setSalt($userSaved->getSalt())
+            ->setSalt($salt)
             ->setEmail($user->getUsername())
             ->setEmailCanonical($user->getUsername())
             ->setEnabled(1)
+            ->setUsername($user->getUsername())
+            ->setUsernameCanonical($user->getUsername())
             ->setRoles([$role]);
 
-        //$user->setPassword($this->encoderFactory->getEncoder($user)->encodePassword('tester', $salt));
-
+        $user->setPassword($this->encoderFactory->getEncoder($user)->encodePassword($userData['password'], $salt));
         $this->em->merge($user);
 
         if(key_exists('projects', $userData))
