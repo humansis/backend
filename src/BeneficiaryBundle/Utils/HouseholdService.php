@@ -109,17 +109,17 @@ class HouseholdService
         return $households;
     }
 
-
     /**
      * @param array $householdArray
-     * @param $project
+     * @param $projectsArray
      * @param bool $flush
      * @return Household
      * @throws ValidationException
      * @throws \Exception
      */
-    public function create(array $householdArray, Project $project, bool $flush = true)
+    public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
     {
+        $actualAction = 'update';
         $this->requestValidator->validate(
             "household",
             HouseholdConstraints::class,
@@ -128,7 +128,10 @@ class HouseholdService
         );
 
         /** @var Household $household */
-        $household = new Household();
+        if (!$household) {
+            $actualAction = 'create';
+            $household = new Household();
+        }
         $household->setNotes($householdArray["notes"])
             ->setLivelihood($householdArray["livelihood"])
             ->setLongitude($householdArray["longitude"])
@@ -151,18 +154,44 @@ class HouseholdService
 
             throw new \Exception($errorsMessage);
         }
-
+        
         // Save or update location instance
         $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
         if (null === $location)
             throw new \Exception("Location was not found.");
         $household->setLocation($location);
-        $project = $this->em->getRepository(Project::class)->find($project);
-        if (!$project instanceof Project)
-            throw new \Exception("This project is not found");
-        $household->addProject($project);
 
-
+        if($actualAction === 'update') {
+            $oldProjects = $household->getProjects()->getValues();
+            $oldProjects = array_map(
+                function($project) {
+                    return $project->getId();
+                }, 
+                $household->getProjects()->getValues()
+            );
+            $newProjects = $projectsArray;
+            $toRemove = array_diff($oldProjects, $newProjects);
+            foreach($toRemove as $removeProjectId) {
+                $removeProject = $this->em->getRepository(Project::class)->findOneBy(["id" => $removeProjectId]);
+                $household->removeProject($removeProject);
+            }
+            $toAdd = array_diff($newProjects, $oldProjects);
+            foreach($toAdd as $addProjectId) {
+                $addProject = $this->em->getRepository(Project::class)->findOneBy(["id" => $addProjectId]);
+                $household->addProject($addProject);
+            }
+        } 
+        else {
+            foreach($projectsArray as $newProjectID)  {
+                $newProject = $this->em->getRepository(Project::class)->find($newProjectID);
+                if (!$newProject instanceof Project)
+                    throw new \Exception("The project " . $newProjectID . " was not found");
+                else {
+                    $household->addProject($newProject);
+                }
+            }
+        }
+        
         $this->em->persist($household);
 
         if (!empty($householdArray["beneficiaries"]))
@@ -191,7 +220,7 @@ class HouseholdService
                 $this->em->persist($beneficiary);
             }
         }
-
+        
         if (!empty($householdArray["country_specific_answers"]))
         {
             foreach ($householdArray["country_specific_answers"] as $country_specific_answer)
@@ -199,6 +228,7 @@ class HouseholdService
                 $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
             }
         }
+        
         if ($flush)
         {
             $this->em->flush();
@@ -212,9 +242,9 @@ class HouseholdService
             foreach ($beneficiaries as $beneficiary)
             {
                 $phones = $this->em->getRepository(Phone::class)
-                    ->findByBeneficiary($beneficiary);
+                ->findByBeneficiary($beneficiary);
                 $nationalIds = $this->em->getRepository(NationalId::class)
-                    ->findByBeneficiary($beneficiary);
+                ->findByBeneficiary($beneficiary);
                 foreach ($phones as $phone)
                 {
                     $beneficiary->addPhone($phone);

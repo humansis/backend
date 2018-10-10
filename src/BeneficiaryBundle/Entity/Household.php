@@ -502,6 +502,7 @@ class Household
     public function getCountrySpecificAnswers()
     {
         return $this->countrySpecificAnswers;
+        // $project->setNumberOfHouseholds($project->getNumberOfHouseholds() + 1);
     }
 
     /**
