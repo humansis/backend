@@ -4,6 +4,7 @@ namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use ProjectBundle\Entity\Project;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * UserProject
@@ -38,6 +39,7 @@ class UserProject
      * @var Project
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="usersProject")
+     * @Groups({"FullUser"})
      */
     private $project;
 

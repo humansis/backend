@@ -31,7 +31,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
      */
     private $name;
 

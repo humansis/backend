@@ -262,7 +262,7 @@ class UserController extends Controller
     }
 
     /**
-     * Show a user
+     * Show an user
      *
      * @Rest\Get("/users/{id}", name="show_user")
      * @Security("is_granted('ROLE_USER_MANAGEMENT_READ')")
@@ -287,6 +287,38 @@ class UserController extends Controller
     {
         $json = $this->get('jms_serializer')
             ->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+
+        return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
+     * Show projects of an user
+     *
+     * @Rest\Get("/users/{id}/projects", name="show_projects_user")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="User created",
+     *     @Model(type=User::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param User $user
+     * @return Response
+     */
+    public function showProjectsAction(User $user)
+    {
+        $projects = $this->get('user.user_service')->findAllProjects($user);
+
+        $json = $this->get('jms_serializer')
+            ->serialize($projects, 'json');
 
         return new Response($json, Response::HTTP_OK);
     }

@@ -54,6 +54,23 @@ class UserService
     }
 
     /**
+     * @param User $user
+     * @return array
+     */
+    public function findAllProjects(User $user)
+    {
+        $projects = $user->getUserProjects()->getValues();
+
+        $allProjects = array();
+
+        foreach ($projects as $project){
+            array_push($allProjects, $project->getProject()->getName());
+        }
+
+        return $allProjects;
+    }
+
+    /**
      * @param  string $username
      * @return User
      */
