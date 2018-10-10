@@ -117,7 +117,7 @@ class HouseholdService
      * @throws ValidationException
      * @throws \Exception
      */
-    public function createOrEdit(array $householdArray, array $projectsArray, $household, bool $flush = true)
+    public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
     {
         $actualAction = 'update';
         $this->requestValidator->validate(
