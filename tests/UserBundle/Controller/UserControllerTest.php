@@ -91,7 +91,8 @@ class UserControllerTest extends BMSServiceTestCase
             "username" => $this->username,
             "email" => $this->username,
             "rights" => "ROLE_ADMIN",
-            "password" => "PSWUNITTEST"
+            "password" => "PSWUNITTEST",
+            'salt' => $return['salt']
         ];
 
         // Fake connection with a token for the user tester (ADMIN)
@@ -121,7 +122,7 @@ class UserControllerTest extends BMSServiceTestCase
     {
         $roles = "ROLE_USER";
 
-        $body = ["rights" => $roles];
+        $body = ["rights" => $roles, 'password' => 'PSWUNITTEST'];
 
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);

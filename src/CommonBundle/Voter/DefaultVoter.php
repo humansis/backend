@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
+use UserBundle\Entity\UserProject;
 
 /**
  * Class DefaultVoter
@@ -73,15 +74,19 @@ class DefaultVoter extends BMSVoter
         /**
          * @var User $user
          */
-        if (!$this->hasRole($user->getRoles(), $attribute))
+        if (!$this->hasRole($user->getRoles(), $attribute)){
             return false;
 
-        if (!$this->requestStack->getCurrentRequest()->request->has('__country'))
+        }
+
+        if (!$this->requestStack->getCurrentRequest()->request->has('__country')){
             return false;
+        }
 
         $countryISO3 = $this->requestStack->getCurrentRequest()->request->get('__country');
-        if (!$this->hasCountry($user, $countryISO3))
+        if (!$this->hasCountry($user, $countryISO3)){
             return false;
+        }
 
         return true;
     }
@@ -94,11 +99,24 @@ class DefaultVoter extends BMSVoter
      */
     protected function hasCountry(User $user, $countryISO3)
     {
+        if($this->hasRole($user->getRoles(), "ROLE_ADMIN"))
+            return true;
+
         $userCountry = $this->em->getRepository(UserCountry::class)
             ->findOneBy([
                 "user" => $user,
                 "iso3" => $countryISO3
             ]);
-        return ($userCountry instanceof UserCountry);
+        if ($userCountry instanceof UserCountry)
+            return true;
+
+        $userProject = $this->em->getRepository(UserProject::class)
+            ->findBy(["user" => $user]);
+        foreach ($userProject as $up) {
+            if ($up->getProject()->getIso3() === $countryISO3)
+                return true;
+        }
+
+        return false;
     }
 }

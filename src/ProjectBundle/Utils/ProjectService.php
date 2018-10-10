@@ -111,7 +111,9 @@ class ProjectService
                 ->setName($newProject->getName())
                 ->setStartDate($newProject->getStartDate())        
                 ->setEndDate($newProject->getEndDate())
-                ->setIso3($countryISO3);
+                ->setIso3($countryISO3)
+                ->setValue($newProject->getValue())
+                ->setNotes($newProject->getNotes());
 
         $errors = $this->validator->validate($project);
         if (count($errors) > 0)
@@ -172,7 +174,8 @@ class ProjectService
         if($oldProject->getArchived() == 0){
             $project->setName($editedProject->getName())
                 ->setStartDate($editedProject->getStartDate())
-                ->setEndDate($editedProject->getEndDate());
+                ->setEndDate($editedProject->getEndDate())
+                ->setValue($editedProject->getValue());
 
             $sectors = $editedProject->getSectors();
             if (null !== $sectors)
