@@ -84,7 +84,7 @@ class Beneficiary implements ExportableInterface
     private $updatedOn;
 
     /**
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist", "remove"})
      * @Groups({"FullHousehold"})
      */
     private $profile;
@@ -105,19 +105,19 @@ class Beneficiary implements ExportableInterface
     private $vulnerabilityCriteria;
 
     /**
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist", "remove"})
      * @Groups({"FullHousehold", "FullReceivers"})
      */
     private $phones;
 
     /**
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist", "remove"})
      * @Groups({"FullHousehold", "FullReceivers"})
      */
     private $nationalIds;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      *
      * @var DistributionBeneficiary $distributionBeneficiary
      */

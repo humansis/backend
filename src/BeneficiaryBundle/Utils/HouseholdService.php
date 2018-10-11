@@ -198,6 +198,7 @@ class HouseholdService
         {
             $hasHead = false;
             $beneficiariesPersisted = [];
+            $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(["household" => $household]);
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave)
             {
                 try
@@ -219,6 +220,21 @@ class HouseholdService
                 }
                 $this->em->persist($beneficiary);
             }
+            
+            // Remove beneficiaries that are not in the household anymore
+            if ($actualAction === 'update') {
+                $toRemove = array_udiff($oldBeneficiaries, $beneficiariesPersisted,
+                    function($oldB, $newB) {
+                        if ($oldB->getId() === $newB->getId())
+                            return 0;
+                        else return -1;
+                    }
+                );
+                foreach ($toRemove as $beneficiaryToRemove) {
+                    $household->removeBeneficiary($beneficiaryToRemove);
+                    $this->em->remove($beneficiaryToRemove);
+                }
+            }
         }
         
         if (!empty($householdArray["country_specific_answers"]))
@@ -238,22 +254,6 @@ class HouseholdService
             foreach ($country_specific_answers as $country_specific_answer)
             {
                 $household->addCountrySpecificAnswer($country_specific_answer);
-            }
-            foreach ($beneficiaries as $beneficiary)
-            {
-                $phones = $this->em->getRepository(Phone::class)
-                ->findByBeneficiary($beneficiary);
-                $nationalIds = $this->em->getRepository(NationalId::class)
-                ->findByBeneficiary($beneficiary);
-                foreach ($phones as $phone)
-                {
-                    $beneficiary->addPhone($phone);
-                }
-                foreach ($nationalIds as $nationalId)
-                {
-                    $beneficiary->addNationalId($nationalId);
-                }
-                $household->addBeneficiary($beneficiary);
             }
         }
 

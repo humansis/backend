@@ -99,6 +99,8 @@ class BeneficiaryService
                 throw new \Exception("Beneficiary was not found.");
             if ($beneficiary->getHousehold() !== $household)
                 throw new \Exception("You are trying to update a beneficiary in the wrong household.");
+            
+            // Clear vulnerability criteria, phones and national id
             $beneficiary->setVulnerabilityCriteria(null);
             $items = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
             foreach ($items as $item)
@@ -137,7 +139,6 @@ class BeneficiaryService
                     $errorsMessage .= " ";
                 $errorsMessage .= $error->getMessage();
             }
-
             throw new \Exception($errorsMessage);
         }
 
