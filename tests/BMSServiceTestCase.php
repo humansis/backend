@@ -72,7 +72,6 @@ class BMSServiceTestCase extends KernelTestCase
     protected $namefullnameHousehold = "STREET_TEST";
 
     protected $bodyHousehold = [
-        "project" => 1,
         "address_street" => "STREET_TEST",
         "address_number" => "NUMBER_TEST",
         "address_postcode" => "POSTCODE_TEST",

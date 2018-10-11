@@ -174,7 +174,7 @@ class DistributionService
 
         $name = $distribution->getName();
         $id = $distribution->getId();
-        $distribution->setName($name.$id);
+        $distribution->setName($id.'-'.$name);
 
         $this->em->persist($distribution);
 

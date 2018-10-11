@@ -198,12 +198,16 @@ class HouseholdService
         {
             $hasHead = false;
             $beneficiariesPersisted = [];
-            $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(["household" => $household]);
+            if ($actualAction === "update") {
+                $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(["household" => $household]);
+            }
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave)
             {
                 try
                 {
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
+                    if(! array_key_exists("id", $beneficiaryToSave))
+                        $household->addBeneficiary($beneficiary);
                     $beneficiariesPersisted[] = $beneficiary;
                 }
                 catch (\Exception $exception)
