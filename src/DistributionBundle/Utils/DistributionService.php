@@ -172,6 +172,10 @@ class DistributionService
         $this->em->persist($distribution);
         $this->em->flush();
 
+        $name = $distribution->getName();
+        $id = $distribution->getId();
+        $distribution->setName($id.'-'.$name);
+
         $this->em->persist($distribution);
 
         $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['type'], $projectTmp, $threshold);
