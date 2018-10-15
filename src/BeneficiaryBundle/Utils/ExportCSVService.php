@@ -157,7 +157,7 @@ class ExportCSVService
             "Vulnerability criteria" => 'disabled',
             "Phones" => '',
             "National IDs" => '',
-            "" => 'This is an example. Please, do not erase this line'
+            "" => 'This is an example. Please, do not remove this line'
         ];
 
         $MAPPING_CSV_EXPORT = array();
