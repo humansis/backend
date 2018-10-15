@@ -11,6 +11,8 @@ use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use BeneficiaryBundle\Entity\Household;
@@ -22,6 +24,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class HouseholdController extends Controller
 {
@@ -337,9 +340,10 @@ class HouseholdController extends Controller
         try
         {
             $filename = $exportCSVService->generate($countryIso3, $type);
+
             // Create binary file to send
             $response = new BinaryFileResponse(getcwd() . '/' . $filename);
-            
+
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
             $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
             if ($mimeTypeGuesser->isSupported()) {
@@ -348,11 +352,12 @@ class HouseholdController extends Controller
                 $response->headers->set('Content-Type', 'text/plain');
             }
             $response->deleteFileAfterSend(true);
+
+            return $response;
         } catch (\Exception $e)
         {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        return $response;
     }
 
     /**

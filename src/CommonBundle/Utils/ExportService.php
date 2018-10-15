@@ -56,14 +56,15 @@ Class ExportService {
 
     /**
      * Generate file
-     * @param  Spreadsheet $spreadsheet 
-     * @param  string      $name        
-     * @param  string      $type        
-     * @return $filename                   
+     * @param  Spreadsheet $spreadsheet
+     * @param  string $name
+     * @param  string $type
+     * @return string $filename
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function generateFile(Spreadsheet $spreadsheet, string $name, string $type)
     {
-        // step 3 : scaning sheet into csv or excel
+        // step 3 : scanning sheet into csv or excel
         if($type == "csv"){
             $writer = IOFactory::createWriter($spreadsheet, 'Csv');
             $writer->setEnclosure('');
@@ -86,13 +87,14 @@ Class ExportService {
         $writer->save($filename);
         return $filename;
     }
-    
+
     /**
      * Export data to file (csv, xls or ods)
      * @param  $exportableTable
-     * @param  string $name           
-     * @param  string $type           
-     * @return $filename                 
+     * @param  string $name
+     * @param  string $type
+     * @return string $filename
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     public function export($exportableTable, string $name, string $type) {
         $rows = [];

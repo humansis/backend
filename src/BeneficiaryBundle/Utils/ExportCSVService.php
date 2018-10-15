@@ -23,27 +23,27 @@ class ExportCSVService
 
     private $MAPPING_CSV_EXPORT = [
         // Household
-        "A" => "Address street",
-        "B" => "Address number",
-        "C" => "Address postcode",
-        "D" => "Livelihood",
-        "E" => "Notes",
-        "F" => "Latitude",
-        "G" => "Longitude",
+        "Address street" => '',
+        "Address number" => '',
+        "Address postcode" => '',
+        "Livelihood" => '',
+        "Notes" => '',
+        "Latitude" => '',
+        "Longitude" => '',
         // Location
-        "H" => "Adm1",
-        "I" => "Adm2",
-        "J" => "Adm3",
-        "K" => "Adm4",
+        "Adm1" => '',
+        "Adm2" => '',
+        "Adm3" => '',
+        "Adm4" => '',
         // Beneficiary
-        "L" => "Given name",
-        "M" => "Family name",
-        "N" => "Gender",
-        "O" => "Status",
-        "P" => "Date of birth",
-        "Q" => "Vulnerability criteria",
-        "R" => "Phones",
-        "S" => "National IDs"
+        "Given name" => '',
+        "Family name" => '',
+        "Gender" => '',
+        "Status" => '',
+        "Date of birth" => '',
+        "Vulnerability criteria" => '',
+        "Phones" => '',
+        "National IDs" => ''
     ];
 
     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
@@ -53,11 +53,10 @@ class ExportCSVService
     }
 
     /**
-     * @param $countryISO3
-     * @param $type
+     * @param string $countryISO3
+     * @param string $type
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function generate(string $countryISO3, string $type)
     {
@@ -149,5 +148,21 @@ class ExportCSVService
             }
         }
         return $prefix . chr($ascii);
+    }
+
+    /**
+     * Export all projects of the country in the CSV file
+     * @param string $type
+     * @param string $countryISO3
+     * @return mixed
+     */
+    public function exportToCsv(string $type, string $countryISO3) {
+        $MAPPING_CSV_EXPORT = array();
+        $countrySpecifics = $this->getCountrySpecifics($countryISO3);
+        foreach ($countrySpecifics as $countrySpecific)
+            $this->MAPPING_CSV_EXPORT[$countrySpecific->getFieldString()] = '';
+        array_push($MAPPING_CSV_EXPORT, $this->MAPPING_CSV_EXPORT);
+
+        return $this->container->get('export_csv_service')->export($MAPPING_CSV_EXPORT, 'households_template', $type);
     }
 }

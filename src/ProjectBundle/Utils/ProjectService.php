@@ -304,6 +304,5 @@ class ProjectService
     public function exportToCsv($countryIso3, string $type) {
         $exportableTable = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
         return $this->container->get('export_csv_service')->export($exportableTable, 'projects', $type);
-
     }
 }
