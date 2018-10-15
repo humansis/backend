@@ -59,27 +59,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $country_specific_answer = current($household["country_specific_answers"]);
             $this->assertArrayHasKey('answer', $country_specific_answer);
             $this->assertArrayHasKey('country_specific', $country_specific_answer);
-            $beneficiary = current($household["beneficiaries"]);
-            $this->assertArrayHasKey('given_name', $beneficiary);
-            $this->assertArrayHasKey('family_name', $beneficiary);
-            $this->assertArrayHasKey('gender', $beneficiary);
-            $this->assertArrayHasKey('status', $beneficiary);
-            $this->assertArrayHasKey('date_of_birth', $beneficiary);
-            $this->assertArrayHasKey('updated_on', $beneficiary);
-            $this->assertArrayHasKey('profile', $beneficiary);
-            $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
-            $this->assertArrayHasKey('phones', $beneficiary);
-            $this->assertArrayHasKey('national_ids', $beneficiary);
-            $profile = $beneficiary["profile"];
-            $this->assertArrayHasKey('photo', $profile);
-            $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
-            $this->assertArrayHasKey('id', $vulnerability_criterion);
-            $phone = current($beneficiary["phones"]);
-            $this->assertArrayHasKey('number', $phone);
-            $this->assertArrayHasKey('type', $phone);
-            $national_ids = current($beneficiary["national_ids"]);
-            $this->assertArrayHasKey('id_number', $national_ids);
-            $this->assertArrayHasKey('id_type', $national_ids);
         }
         catch (\Exception $exception)
         {

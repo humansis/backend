@@ -163,6 +163,6 @@ class ExportCSVService
             $this->MAPPING_CSV_EXPORT[$countrySpecific->getFieldString()] = '';
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_CSV_EXPORT);
 
-        return $this->container->get('export_csv_service')->export($MAPPING_CSV_EXPORT, 'households_template', $type);
+        return $this->container->get('export_csv_service')->export($MAPPING_CSV_EXPORT, 'pattern_household_'  . $countryISO3, $type);
     }
 }
