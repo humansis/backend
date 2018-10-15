@@ -23,27 +23,18 @@ class ExportCSVService
 
     private $MAPPING_CSV_EXPORT = [
         // Household
-        "A" => "Address street",
-        "B" => "Address number",
-        "C" => "Address postcode",
-        "D" => "Livelihood",
-        "E" => "Notes",
-        "F" => "Latitude",
-        "G" => "Longitude",
+        "Address street" => 'Thompson Drive',
+        "Address number" => '4943',
+        "Address postcode" => '94801',
+        "Livelihood" => 'Richmond',
+        "Notes" => 'Greatest city',
+        "Latitude" => '38.018234',
+        "Longitude" => '-122.379730',
         // Location
-        "H" => "Adm1",
-        "I" => "Adm2",
-        "J" => "Adm3",
-        "K" => "Adm4",
-        // Beneficiary
-        "L" => "Given name",
-        "M" => "Family name",
-        "N" => "Gender",
-        "O" => "Status",
-        "P" => "Date of birth",
-        "Q" => "Vulnerability criteria",
-        "R" => "Phones",
-        "S" => "National IDs"
+        "Adm1" => 'USA',
+        "Adm2" => 'California',
+        "Adm3" => 'CA',
+        "Adm4" => 'Richmond'
     ];
 
     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
@@ -53,11 +44,10 @@ class ExportCSVService
     }
 
     /**
-     * @param $countryISO3
-     * @param $type
+     * @param string $countryISO3
+     * @param string $type
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function generate(string $countryISO3, string $type)
     {
@@ -149,5 +139,38 @@ class ExportCSVService
             }
         }
         return $prefix . chr($ascii);
+    }
+
+    /**
+     * Export all projects of the country in the CSV file
+     * @param string $type
+     * @param string $countryISO3
+     * @return mixed
+     */
+    public function exportToCsv(string $type, string $countryISO3) {
+        $tempBenef = [
+            "Given name" => 'Price',
+            "Family name" => 'Smith',
+            "Gender" => '0',
+            "Status" => '1',
+            "Date of birth" => '1997-10-31',
+            "Vulnerability criteria" => 'disabled',
+            "Phones" => '',
+            "National IDs" => '',
+            "" => 'This is an example. Please, do not remove this line'
+        ];
+
+        $MAPPING_CSV_EXPORT = array();
+        $countrySpecifics = $this->getCountrySpecifics($countryISO3);
+        foreach ($countrySpecifics as $countrySpecific){
+            $randomNum = rand(0, 100);
+            $this->MAPPING_CSV_EXPORT[$countrySpecific->getFieldString()] = $randomNum;
+        }
+        foreach ($tempBenef as $key => $value)
+            $this->MAPPING_CSV_EXPORT[$key] = $value;
+
+        array_push($MAPPING_CSV_EXPORT, $this->MAPPING_CSV_EXPORT);
+
+        return $this->container->get('export_csv_service')->export($MAPPING_CSV_EXPORT, 'pattern_household_'  . $countryISO3, $type);
     }
 }

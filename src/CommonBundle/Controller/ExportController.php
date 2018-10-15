@@ -74,7 +74,11 @@ class ExportController extends Controller
                 $arrayObjectBeneficiary = $request->request->get('sample');
                 $filename = $this->get('distribution.distribution_beneficiary_service')->exportToCsv($arrayObjectBeneficiary, $type);
             }
-            
+            elseif ($request->query->get('householdsTemplate')) {
+                $countryIso3 = $request->request->get("__country");
+                $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv('xls', $countryIso3);
+            }
+
             // Create binary file to send
             $response = new BinaryFileResponse(getcwd() . '/' . $filename);
             
