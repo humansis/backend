@@ -92,8 +92,9 @@ class HouseholdCSVService
         $reader = IOFactory::createReaderForFile($uploadedFile->getRealPath());
 
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
+        $worksheet->removeRow(1);
+        $worksheet->removeRow(1);
         $sheetArray = $worksheet->toArray(null, true, true, true);
-
         return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $step, $token);
     }
 

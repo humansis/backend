@@ -23,27 +23,18 @@ class ExportCSVService
 
     private $MAPPING_CSV_EXPORT = [
         // Household
-        "Address street" => '',
-        "Address number" => '',
-        "Address postcode" => '',
-        "Livelihood" => '',
-        "Notes" => '',
-        "Latitude" => '',
-        "Longitude" => '',
+        "Address street" => 'Thompson Drive',
+        "Address number" => '4943',
+        "Address postcode" => '94801',
+        "Livelihood" => 'Richmond',
+        "Notes" => 'Greatest city',
+        "Latitude" => '38.018234',
+        "Longitude" => '-122.379730',
         // Location
-        "Adm1" => '',
-        "Adm2" => '',
-        "Adm3" => '',
-        "Adm4" => '',
-        // Beneficiary
-        "Given name" => '',
-        "Family name" => '',
-        "Gender" => '',
-        "Status" => '',
-        "Date of birth" => '',
-        "Vulnerability criteria" => '',
-        "Phones" => '',
-        "National IDs" => ''
+        "Adm1" => 'USA',
+        "Adm2" => 'California',
+        "Adm3" => 'CA',
+        "Adm4" => 'Richmond'
     ];
 
     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
@@ -157,10 +148,27 @@ class ExportCSVService
      * @return mixed
      */
     public function exportToCsv(string $type, string $countryISO3) {
+        $tempBenef = [
+            "Given name" => 'Price',
+            "Family name" => 'Smith',
+            "Gender" => '0',
+            "Status" => '1',
+            "Date of birth" => '1997-10-31',
+            "Vulnerability criteria" => 'disabled',
+            "Phones" => '',
+            "National IDs" => '',
+            "" => 'This is an example. Please, do not erase this line'
+        ];
+
         $MAPPING_CSV_EXPORT = array();
         $countrySpecifics = $this->getCountrySpecifics($countryISO3);
-        foreach ($countrySpecifics as $countrySpecific)
-            $this->MAPPING_CSV_EXPORT[$countrySpecific->getFieldString()] = '';
+        foreach ($countrySpecifics as $countrySpecific){
+            $randomNum = rand(0, 100);
+            $this->MAPPING_CSV_EXPORT[$countrySpecific->getFieldString()] = $randomNum;
+        }
+        foreach ($tempBenef as $key => $value)
+            $this->MAPPING_CSV_EXPORT[$key] = $value;
+
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_CSV_EXPORT);
 
         return $this->container->get('export_csv_service')->export($MAPPING_CSV_EXPORT, 'pattern_household_'  . $countryISO3, $type);
