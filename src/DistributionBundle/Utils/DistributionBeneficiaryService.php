@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
+use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -103,7 +104,8 @@ class DistributionBeneficiaryService
         switch ($distributionData->getType())
         {
             case 0:
-                $household = $this->em->getRepository(Household::class)->find($beneficiaryArray["id"]);
+                $headHousehold = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
+                $household = $headHousehold->getHousehold();
                 if (!$household instanceof Household)
                     throw new \Exception("This household was not found.");
                 $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
@@ -162,7 +164,6 @@ class DistributionBeneficiaryService
 
         $beneficiaries = array();
         foreach ($objectBeneficiary as $value){
-            dump($value);
             array_push($beneficiaries, [
                 "Given name" => $value['given_name'],
                 "Family name"=> $value['family_name'],
@@ -172,5 +173,17 @@ class DistributionBeneficiaryService
             ]);
         }
         return $this->container->get('export_csv_service')->export($beneficiaries,'distributions', $type);
+    }
+
+    /**
+     * Get all beneficiaries in a selected project
+     *
+     * @param Project $project
+     * @param string $target
+     * @return array
+     */
+    public function getAllBeneficiariesInProject(Project $project, string $target)
+    {
+        return $this->em->getRepository(Beneficiary::class)->getAllOfProject($project->getId(), $target);
     }
 }

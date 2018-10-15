@@ -572,7 +572,7 @@ class DistributionController extends Controller
     /**
      * Get beneficiaries of one project.
      *
-     * @Rest\Get("/distributions/beneficiaries/project/{id}", name="get_beneficiaries_of_project")
+     * @Rest\Post("/distributions/beneficiaries/project/{id}", name="get_beneficiaries_of_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Distributions")
@@ -589,15 +589,20 @@ class DistributionController extends Controller
      *
      * @param Project $project
      *
+     * @param Request $request
      * @return Response
      */
-    public function getBeneficiariesInProjectAction(Project $project)
+    public function getBeneficiariesInProjectAction(Project $project, Request $request)
     {
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.distribution_service');
+        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        if(!$request->request->has('target'))
+            return new Response('You must defined a target', 500);
+
+        $target = $request->request->get('target');
 
         try {
-            $beneficiariesInProject = $distributionBeneficiaryService->getAllBeneficiariesInProject($project);
+            $beneficiariesInProject = $distributionBeneficiaryService->getAllBeneficiariesInProject($project, $target);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

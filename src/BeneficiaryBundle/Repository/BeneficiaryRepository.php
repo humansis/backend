@@ -23,14 +23,24 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      *
      * @param int $project
      *
+     * @param string $target
      * @return mixed
      */
-    public function getAllOfProject(int $project)
+    public function getAllOfProject(int $project, string $target)
     {
+        dump($target);
         $qb = $this->createQueryBuilder('b');
-        $q = $qb->leftJoin('b.household', 'hh')
-            ->where(':project MEMBER OF hh.projects')
-            ->setParameter('project', $project);
+        if ($target == 'Household'){
+            $q = $qb->leftJoin('b.household', 'hh')
+                ->where(':project MEMBER OF hh.projects')
+                ->andWhere('b.status = 1')
+                ->setParameter('project', $project);
+        }
+        else {
+            $q = $qb->leftJoin('b.household', 'hh')
+                ->where(':project MEMBER OF hh.projects')
+                ->setParameter('project', $project);
+        }
 
         return $q->getQuery()->getResult();
     }

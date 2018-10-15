@@ -299,16 +299,6 @@ class DistributionService
     }
 
     /**
-     * Get all beneficiaries in a selected project
-     *
-     * @return array
-     */
-    public function getAllBeneficiariesInProject(Project $project)
-    {
-        return $this->em->getRepository(Beneficiary::class)->getAllOfProject($project->getId());
-    }
-
-    /**
      * Edit a distribution
      *
      * @param DistributionData $distributionData
