@@ -227,7 +227,7 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Delete("beneficiaries/{id}", name="remove_one_beneficiary_in_distribution")
+     * @Rest\Delete("/beneficiaries/{id}", name="remove_one_beneficiary_in_distribution")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
@@ -244,8 +244,8 @@ class DistributionController extends Controller
      */
     public function removeOneBeneficiaryAction(Request $request, Beneficiary $beneficiary)
     {
-        if ($request->query->get('distributionId')) {
-            $distributionId = $request->query->get('distributionId');
+        if ($request->query->get('distribution')) {
+            $distributionId = $request->query->get('distribution');
 
             /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
             $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
