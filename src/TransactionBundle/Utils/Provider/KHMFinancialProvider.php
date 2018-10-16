@@ -80,7 +80,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             "amount"          => 50,
             "currency"        => "USD",
             "sender_msisdn"   => "012249184",
-            "receiver_msisdn" => $phoneNumber
+            "receiver_msisdn" => $phoneNumber,
+            "sms_to"          => "PAYEE"
         );
         
         try {
