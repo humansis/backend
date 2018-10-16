@@ -93,7 +93,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
                     new \DateTime(),
                     50,
                     0,
-                    $response->message ?: '');
+                    $sent->message ?: '');
                 
                 return $transaction;
             }
