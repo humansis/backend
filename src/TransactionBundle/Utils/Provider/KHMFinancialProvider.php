@@ -86,7 +86,17 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         try {
             $sent = $this->sendRequest("POST", $route, $body);
-            dump($sent);
+            if (property_exists($sent, 'error_code')) {
+                $transaction = $this->createOrUpdateTransaction(
+                    $distributionBeneficiary, 
+                    '',
+                    new \DateTime(),
+                    50,
+                    0,
+                    $response->message ?: '');
+                
+                return $transaction;
+            }
         } catch (Exception $e) {
             throw $e;
         }
