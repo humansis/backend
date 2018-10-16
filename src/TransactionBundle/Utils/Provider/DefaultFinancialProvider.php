@@ -90,7 +90,7 @@ abstract class DefaultFinancialProvider {
                 array_push($response['no_mobile'], $beneficiary);
 
                 if(!$transaction || $transaction->getTransactionStatus() !== 1) {
-                    $this->createOrUpdateTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2);
+                    $this->createOrUpdateTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2, null, $transaction);
                 }
             }
         }
