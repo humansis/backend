@@ -116,7 +116,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             new \DateTime(),
             $response->amount,
             $response->transaction_status === 'Success' ? 1 : 0,
-            $response->message ?: '',
+            property_exists($response, 'message') ? $response->message : '',
             $transaction);
         
         return $transaction;
