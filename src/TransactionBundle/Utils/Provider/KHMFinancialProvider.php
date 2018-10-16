@@ -85,9 +85,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         try {
             $sent = $this->sendRequest("POST", $route, $body);
-            if (property_exists($sent, 'error_code')) {
-                return $sent;
-            }
         } catch (Exception $e) {
             throw $e;
         }
@@ -104,7 +101,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             new \DateTime(),
             $response->amount,
             $response->transaction_status === 'Success' ? 1 : 0,
-            $response->passcode ?: $response->message);
+            $response->message ?: '');
         
         return $transaction;
     }

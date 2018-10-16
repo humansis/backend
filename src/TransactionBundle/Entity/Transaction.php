@@ -21,6 +21,7 @@ class Transaction
      */
      const FAILURE = 0;
      const SUCCESS = 1;
+     const NO_PHONE = 2;
     
     /**
      * @var int
@@ -66,7 +67,7 @@ class Transaction
      *
      * @ORM\Column(name="transaction_status", type="smallint")
      *
-     * @Groups({"Transaction"})
+     * @Groups({"Transaction", "FullReceivers"})
      */
     private $transactionStatus;
 

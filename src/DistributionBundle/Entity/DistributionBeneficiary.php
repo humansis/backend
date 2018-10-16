@@ -45,7 +45,7 @@ class DistributionBeneficiary
      * @var Transaction
      *
      * @ORM\OneToOne(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "Transaction"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "Transaction", "FullReceivers"})
      */
     private $transaction;
 
