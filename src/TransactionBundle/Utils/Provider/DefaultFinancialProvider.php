@@ -76,7 +76,7 @@ abstract class DefaultFinancialProvider {
                     array_push($response['already_sent'], $beneficiary);
                 } else {
                     try {
-                        $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary);
+                        $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary, $transaction);
                         if ($transaction->getTransactionStatus() === 1) {
                             array_push($response['failure'], $beneficiary);
                         } else {

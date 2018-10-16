@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use DistributionBundle\Entity\DistributionBeneficiary;
 use TransactionBundle\Entity\Transaction;
+use TransactionBundle\TransactionBundle;
 
 /**
  * Class KHMFinancialProvider
@@ -70,10 +71,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      * Send money to one beneficiary
      * @param  string                  $phoneNumber
      * @param  DistributionBeneficiary $distributionBeneficiary
+     * @param  Transaction             $transaction
      * @return Transaction       
      * @throws \Exception
      */
-    public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary)
+    public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary, Transaction $transaction)
     {
         $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
@@ -93,7 +95,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
                     new \DateTime(),
                     50,
                     0,
-                    $sent->message ?: '');
+                    $sent->message ?: '',
+                    $transaction);
                 
                 return $transaction;
             }
@@ -113,7 +116,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             new \DateTime(),
             $response->amount,
             $response->transaction_status === 'Success' ? 1 : 0,
-            $response->message ?: '');
+            $response->message ?: '',
+            $transaction);
         
         return $transaction;
     }
