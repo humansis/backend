@@ -3,6 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Commodity
@@ -23,28 +24,27 @@ class Commodity
 
     /**
      * @var ModalityType
-     *
+     * @Groups({"FullDistribution"})
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\ModalityType")
      */
     private $modalityType;
 
     /**
      * @var string
-     *
+     * @Groups({"FullDistribution"})
      * @ORM\Column(name="unit", type="string", length=45)
      */
     private $unit;
 
     /**
      * @var float
-     *
+     * @Groups({"FullDistribution"})
      * @ORM\Column(name="value", type="float")
      */
     private $value;
 
     /**
      * @var DistributionData
-     *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="commodities")
      */
     private $distributionData;

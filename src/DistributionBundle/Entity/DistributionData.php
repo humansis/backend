@@ -123,6 +123,7 @@ class DistributionData implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="distributionData")
+     * @Groups({"FullDistribution"})
      */
     private $commodities;
 
