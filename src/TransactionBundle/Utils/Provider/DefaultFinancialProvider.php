@@ -62,6 +62,7 @@ abstract class DefaultFinancialProvider {
         
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
             $beneficiary = $distributionBeneficiary->getBeneficiary();
+            $transaction = $distributionBeneficiary->getTransaction();
             $phoneNumber = null;
             foreach ($beneficiary->getPhones() as $phone) {
                 if ($phone->getType() == 'mobile') {
@@ -69,10 +70,9 @@ abstract class DefaultFinancialProvider {
                     break;
                 }
             }
-            
+
             if ($phoneNumber) {
-                $transaction = $distributionBeneficiary->getTransaction();
-                if ($transaction && $transaction->getTransactionStatus()) {
+                if ($transaction && $transaction->getTransactionStatus() === 1) {
                     array_push($response['already_sent'], $beneficiary);
                 } else {
                     try {
@@ -88,6 +88,10 @@ abstract class DefaultFinancialProvider {
                 }
             } else {
                 array_push($response['no_mobile'], $beneficiary);
+
+                if(!$transaction) {
+                    $this->createOrUpdateTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2 );
+                }
             }
         }
         
