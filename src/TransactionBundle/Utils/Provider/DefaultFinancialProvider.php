@@ -76,8 +76,8 @@ abstract class DefaultFinancialProvider {
                     array_push($response['already_sent'], $beneficiary);
                 } else {
                     try {
-                        $sent = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary);
-                        if (property_exists($sent, 'error_code')) {
+                        $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary);
+                        if ($transaction->getTransactionStatus() === 1) {
                             array_push($response['failure'], $beneficiary);
                         } else {
                             array_push($response['sent'], $beneficiary);
@@ -89,8 +89,8 @@ abstract class DefaultFinancialProvider {
             } else {
                 array_push($response['no_mobile'], $beneficiary);
 
-                if(!$transaction) {
-                    $this->createOrUpdateTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2 );
+                if(!$transaction || $transaction->getTransactionStatus() !== 1) {
+                    $this->createOrUpdateTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2);
                 }
             }
         }
