@@ -5,6 +5,7 @@ namespace TransactionBundle\Utils\Provider;
 use Doctrine\ORM\EntityManagerInterface;
 
 use TransactionBundle\Entity\Transaction;
+use TransactionBundle\TransactionBundle;
 use DistributionBundle\Entity\DistributionBeneficiary;
 
 /**
@@ -38,10 +39,11 @@ abstract class DefaultFinancialProvider {
      * Send money to one beneficiary
      * @param  string                  $phoneNumber
      * @param  DistributionBeneficiary $distributionBeneficiary
+     * @param  TransactionBundle       $transaction
      * @return Transaction
      * @throws \Exception       
      */
-    public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary)
+    public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary, Transaction $transaction)
     {
         throw new \Exception("You need to define the financial provider for the country.");
     }
