@@ -72,20 +72,28 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      * @param  string                  $phoneNumber
      * @param  DistributionBeneficiary $distributionBeneficiary
      * @param  Transaction             $transaction
+     * @param  float                   $amount
+     * @param  string                  $currency
      * @return Transaction       
      * @throws \Exception
      */
-    public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary, Transaction $transaction)
+    public function sendMoneyToOne(
+        string $phoneNumber, 
+        DistributionBeneficiary $distributionBeneficiary, 
+        Transaction $transaction,
+        float $amount,
+        string $currency)
     {
         $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
-            "amount"          => 50,
-            "currency"        => "USD",
+            "amount"          => $amount,
+            "currency"        => $currency,
             "sender_msisdn"   => "012249184",
             "receiver_msisdn" => $phoneNumber,
             "sms_to"          => "PAYEE"
         );
         
+        dump($body);
         try {
             $sent = $this->sendRequest("POST", $route, $body);
             if (property_exists($sent, 'error_code')) {

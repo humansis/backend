@@ -40,10 +40,17 @@ abstract class DefaultFinancialProvider {
      * @param  string                  $phoneNumber
      * @param  DistributionBeneficiary $distributionBeneficiary
      * @param  TransactionBundle       $transaction
+     * @param  float                   $amount
+     * @param  string                  $currency
      * @return Transaction
      * @throws \Exception       
      */
-    public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary, Transaction $transaction)
+    public function sendMoneyToOne(
+        string $phoneNumber,
+        DistributionBeneficiary $distributionBeneficiary,
+        Transaction $transaction,
+        float $amount,
+        string $currency)
     {
         throw new \Exception("You need to define the financial provider for the country.");
     }
@@ -51,9 +58,11 @@ abstract class DefaultFinancialProvider {
     /**
      * Send money to all beneficiaries
      * @param  array  $beneficiaries 
+     * @param  float  $amount
+     * @param  string $currency
      * @return array                
      */
-    public function sendMoneyToAll(array $distributionBeneficiaries)
+    public function sendMoneyToAll(array $distributionBeneficiaries, float $amount, string $currency)
     {
         $response = array(
             'sent'       => array(),
@@ -78,7 +87,7 @@ abstract class DefaultFinancialProvider {
                     array_push($response['already_sent'], $beneficiary);
                 } else {
                     try {
-                        $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary, $transaction);
+                        $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary, $transaction, $amount, $currency);
                         if ($transaction->getTransactionStatus() === 0) {
                             array_push($response['failure'], $beneficiary);
                         } else {
