@@ -71,18 +71,18 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      * Send money to one beneficiary
      * @param  string                  $phoneNumber
      * @param  DistributionBeneficiary $distributionBeneficiary
-     * @param  Transaction             $transaction
      * @param  float                   $amount
      * @param  string                  $currency
+     * @param  Transaction             $transaction
      * @return Transaction       
      * @throws \Exception
      */
     public function sendMoneyToOne(
         string $phoneNumber, 
-        DistributionBeneficiary $distributionBeneficiary, 
-        Transaction $transaction,
+        DistributionBeneficiary $distributionBeneficiary,
         float $amount,
-        string $currency)
+        string $currency,
+        $transaction = null)
     {
         $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
@@ -93,7 +93,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             "sms_to"          => "PAYEE"
         );
         
-        dump($body);
         try {
             $sent = $this->sendRequest("POST", $route, $body);
             if (property_exists($sent, 'error_code')) {
