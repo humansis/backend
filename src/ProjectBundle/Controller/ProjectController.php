@@ -198,4 +198,38 @@ class ProjectController extends Controller
         if (!$valid)
             return new Response("", Response::HTTP_BAD_REQUEST);
     }
+
+    /**
+     * Add Beneficiaries to a project
+     * @Rest\Post("/projects/{id}/beneficiaries/add", name="add_beneficiaries_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
+     *
+     * @SWG\Tag(name="Projects")
+     *
+     * @SWG\Parameter(
+     *     name="beneficiaries",
+     *     in="body",
+     *     required=true,
+     *     type ="array",
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Project updated"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Project $project
+     * @return Response
+     */
+    public function addBeneficiariesAction(Request $request, Project $project) {
+        dump($request);
+
+        return true;
+    }
 }
