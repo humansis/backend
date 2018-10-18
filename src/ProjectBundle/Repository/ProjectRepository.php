@@ -35,26 +35,4 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getResult();
     }
 
-    /**
-     * Get project if has household
-     *
-     * @param string $iso3
-     * @param Household $household
-     * @param Project $project
-     * @return Project
-     */
-    public function getIfHasHousehold(string $iso3, Household $household, Project $project)
-    {
-        $qb = $this->createQueryBuilder("p");
-        $q = $qb->where("p.iso3 = :iso3")
-                    ->setParameter("iso3", $iso3)
-                ->andWhere("p = :project")
-                    ->setParameter("project", $project)
-                ->leftJoin("p.households", "hh")
-                ->andWhere("hh = :hh")
-                ->setParameter("hh", $household);
-
-        return $q->getQuery()->getOneOrNullResult();
-    }
-
 }
