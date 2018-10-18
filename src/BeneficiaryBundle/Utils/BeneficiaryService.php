@@ -200,7 +200,8 @@ class BeneficiaryService
         $phone = new Phone();
         $phone->setBeneficiary($beneficiary)
             ->setType($phoneArray["type"])
-            ->setNumber($phoneArray["number"]);
+            ->setNumber($phoneArray["number"])
+            ->setProxy($phoneArray["proxy"]);
 
         $this->em->persist($phone);
         if ($flush)

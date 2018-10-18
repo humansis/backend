@@ -112,7 +112,8 @@ class BMSServiceTestCase extends KernelTestCase
                 "phones" => [
                     [
                         "number" => "0000_TEST",
-                        "type" => "TYPE_TEST"
+                        "type" => "TYPE_TEST",
+                        "proxy" => false
                     ]
                 ],
                 "national_ids" => [
@@ -140,7 +141,8 @@ class BMSServiceTestCase extends KernelTestCase
                 "phones" => [
                     [
                         "number" => "1111_TEST",
-                        "type" => "TYPE_TEST"
+                        "type" => "TYPE_TEST",
+                        "proxy" => true
                     ]
                 ],
                 "national_ids" => [

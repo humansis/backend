@@ -40,6 +40,14 @@ class Phone
     private $type;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="proxy", type="boolean")
+     * @Groups({"FullHousehold", "FullReceivers"})
+     */
+    private $proxy;
+
+    /**
      * @var Beneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="phones")
@@ -102,6 +110,30 @@ class Phone
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Set proxy.
+     *
+     * @param boolean $proxy
+     *
+     * @return Phone
+     */
+    public function setProxy($proxy)
+    {
+        $this->proxy = $proxy;
+
+        return $this;
+    }
+
+    /**
+     * Get proxy.
+     *
+     * @return boolean
+     */
+    public function getProxy()
+    {
+        return $this->proxy;
     }
 
     /**

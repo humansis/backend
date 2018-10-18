@@ -17,6 +17,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
         $string = new Type('string');
         $array = new Type('array');
         $null = new Type('null');
+        $boolean = new Type('bool');
         $optionalNumeric = new Optional($numeric);
         $optionalString = new Optional($string);
 
@@ -70,6 +71,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "id" => $optionalNumeric,
             "number" => $string,
             "type" => $string,
+            "proxy" => $boolean,
         ];
         $nationalId = [
             "id" => $optionalNumeric,
