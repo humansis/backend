@@ -227,9 +227,20 @@ class ProjectController extends Controller
      * @param Project $project
      * @return Response
      */
-    public function addBeneficiariesAction(Request $request, Project $project) {
-        dump($request);
+    public function addHouseholdsAction(Request $request, Project $project) {
+        $householdsArray = $request->request->get('beneficiaries');
+        $countryISO3 = $request->request->get('__country');
+        try
+        {
+            $result = $this->get('project.project_service')->AddMultipleHouseholds($project, $countryISO3, $householdsArray);
+        }
+        catch(\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
 
-        return true;
+        if ($result)
+            return new Response("" , Response::HTTP_OK);
+        if (!$result)
+            return new Response("", Response::HTTP_BAD_REQUEST);
     }
 }
