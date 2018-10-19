@@ -209,7 +209,7 @@ class HouseholdService
                         $household->addBeneficiary($beneficiary);
                     $beneficiariesPersisted[] = $beneficiary;
                 } catch (\Exception $exception) {
-                    throw $e;
+                    throw $exception;
                 }
                 if ($beneficiary->getStatus()) {
                     if ($hasHead) {
