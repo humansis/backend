@@ -162,7 +162,6 @@ class DistributionBeneficiaryService
 
         $beneficiaries = array();
         foreach ($objectBeneficiary as $value){
-            dump($value);
             array_push($beneficiaries, [
                 "Given name" => $value['given_name'],
                 "Family name"=> $value['family_name'],

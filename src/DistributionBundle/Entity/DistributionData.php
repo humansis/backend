@@ -536,7 +536,6 @@ class DistributionData implements ExportableInterface
         // $valuesdistributionbeneficiaries = [];
 
         // foreach ($this->getDistributionBeneficiaries() as $value) {
-        //     dump($value);
         //     array_push($valuesdistributionbeneficiaries, $value->getIdNumber());
         // }
         // $valuesdistributionbeneficiaries = join(',',$valuesdistributionbeneficiaries);

@@ -13,10 +13,8 @@ class CountrySpecificFixtures extends Fixture
 {
 
     private $data = [
-        ['ID Poor', 'number', 'KHM'],
-        ['WASH', 'text', 'KHM'],
-        ['ID Poor', 'number', 'UNT'],
-        ['WASH', 'text', 'UNT']
+        ['IDPoor', 'number', 'KHM'],
+        ['equityCardNo', 'text', 'KHM']
     ];
 
     /**

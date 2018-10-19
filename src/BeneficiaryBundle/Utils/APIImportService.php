@@ -52,17 +52,16 @@ class APIImportService
         try {
             $this->apiProvider = $this->getApiProviderForCountry($countryISO3, $provider);
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            throw $e;
         }
 
         try {
             return $this->apiProvider->importData($countryISO3, $params, $project);
 
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            throw $e;
         }
     }
-
 
     /**
      * Get the API provider corresponding to the current country

@@ -127,7 +127,7 @@ class BeneficiaryService
             ->setFamilyName($beneficiaryArray["family_name"])
             ->setGivenName($beneficiaryArray["given_name"])
             ->setStatus($beneficiaryArray["status"])
-            ->setUpdatedOn(new \DateTime($beneficiaryArray["updated_on"]));
+            ->setUpdatedOn(new \DateTime());
 
         $errors = $this->validator->validate($beneficiary);
         if (count($errors) > 0) {

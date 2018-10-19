@@ -58,7 +58,6 @@ class BeneficiaryFixtures extends Fixture
                   "profile" => [
                       "photo" => ""
                   ],
-                  "updated_on" => "2018-09-12 13:09:06",
               ],
               [
                   "given_name" => "Test2",
@@ -76,7 +75,6 @@ class BeneficiaryFixtures extends Fixture
                   "profile" => [
                       "photo" => ""
                   ],
-                  "updated_on" => "2018-09-12 13:09:06"
               ],
               [
                   "given_name" => "Test4",
@@ -94,7 +92,6 @@ class BeneficiaryFixtures extends Fixture
                   "profile" => [
                       "photo" => ""
                   ],
-                  "updated_on" => "2018-09-12 13:09:06",
               ],
               [
                   "given_name" => "Test5",
@@ -112,7 +109,6 @@ class BeneficiaryFixtures extends Fixture
                   "profile" => [
                       "photo" => ""
                   ],
-                  "updated_on" => "2018-09-12 13:09:06",
               ],
 
           ],
@@ -164,7 +160,6 @@ class BeneficiaryFixtures extends Fixture
                     "profile" => [
                         "photo" => ""
                     ],
-                    "updated_on" => "2018-09-12 13:09:06",
                 ],
                 [
                     "given_name" => "Test7",
@@ -182,7 +177,6 @@ class BeneficiaryFixtures extends Fixture
                     "profile" => [
                         "photo" => ""
                     ],
-                    "updated_on" => "2018-09-12 13:09:06"
                 ],
                 [
                     "given_name" => "Test8",
@@ -200,7 +194,6 @@ class BeneficiaryFixtures extends Fixture
                     "profile" => [
                         "photo" => ""
                     ],
-                    "updated_on" => "2018-09-12 13:09:06",
                 ],
                 [
                     "given_name" => "Test9",
@@ -218,7 +211,6 @@ class BeneficiaryFixtures extends Fixture
                     "profile" => [
                         "photo" => ""
                     ],
-                    "updated_on" => "2018-09-12 13:09:06",
                 ],
 
             ],
