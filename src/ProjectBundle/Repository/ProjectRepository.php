@@ -2,6 +2,8 @@
 
 namespace ProjectBundle\Repository;
 use UserBundle\Entity\User;
+use ProjectBundle\Entity\Project;
+use BeneficiaryBundle\Entity\Household;
 
 /**
  * ProjectRepository
@@ -32,4 +34,5 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
 
         return $q->getQuery()->getResult();
     }
+
 }
