@@ -61,13 +61,13 @@ Example of criteria list :
     "table_string": "countrySpecific",
     "id": 1,
     "field_string": "IDPoor",
-    "type": "Number"
+    "type": "number"
   },
   {
     "table_string": "countrySpecific",
     "id": 2,
-    "field_string": "WASH",
-    "type": "Text"
+    "field_string": "equityCardNo",
+    "type": "text"
   }
 ]
 ```

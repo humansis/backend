@@ -82,7 +82,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
             "J" => "adm3",
             "K" => "adm4",
             "L" => "IDPoor",
-            "M" => "WASH",
+            "M" => "equityCardNo",
             "N" => "Given name",
             "O" => "Family name",
             "P" => "Gender",

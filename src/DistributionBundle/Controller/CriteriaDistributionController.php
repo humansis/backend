@@ -63,7 +63,7 @@ class CriteriaDistributionController extends Controller
      *             {
      *              "table_string": "countrySpecific",
      *              "id": 2,
-     *              "field_string": "WASH",
+     *              "field_string": "equityCardNo",
      *               "type": "Text"
      *             }
      *           }
