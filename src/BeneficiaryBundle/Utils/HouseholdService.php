@@ -204,7 +204,6 @@ class HouseholdService
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 try {
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
-                    dump($beneficiary);
                     if(! array_key_exists("id", $beneficiaryToSave))
                         $household->addBeneficiary($beneficiary);
                     $beneficiariesPersisted[] = $beneficiary;
