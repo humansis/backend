@@ -67,7 +67,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "I" => "adm2",
             "J" => "adm3",
             "K" => "adm4",
-            "L" => "ID Poor",
+            "L" => "IDPoor",
             "M" => "WASH",
             "N" => "Given name",
             "O" => "Family name",

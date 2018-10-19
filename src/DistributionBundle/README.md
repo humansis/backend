@@ -60,7 +60,7 @@ Example of criteria list :
   {
     "table_string": "countrySpecific",
     "id": 1,
-    "field_string": "ID Poor",
+    "field_string": "IDPoor",
     "type": "Number"
   },
   {

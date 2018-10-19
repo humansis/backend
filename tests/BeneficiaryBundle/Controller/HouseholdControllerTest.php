@@ -168,8 +168,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         }
 
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
-            "fieldString" => 'ID Poor',
-            "type" => 'Number',
+            "fieldString" => 'IDPoor',
+            "type" => 'number',
             "countryIso3" => $this->iso3
         ]);
         $country_specific_answers = $this->bodyHousehold["country_specific_answers"];
