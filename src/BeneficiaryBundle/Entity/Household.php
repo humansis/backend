@@ -146,7 +146,7 @@ class Household
     /**
      * @var CountrySpecificAnswer
      *
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="household")
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="household", cascade={"persist", "remove"})
      * @Groups({"FullHousehold"})
      */
     private $countrySpecificAnswers;
