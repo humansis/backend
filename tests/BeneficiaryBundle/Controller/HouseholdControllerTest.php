@@ -217,7 +217,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('gender', $beneficiary);
             $this->assertArrayHasKey('status', $beneficiary);
             $this->assertArrayHasKey('date_of_birth', $beneficiary);
-            $this->assertArrayHasKey('updated_on', $beneficiary);
             $this->assertArrayHasKey('profile', $beneficiary);
             $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
             $this->assertArrayHasKey('phones', $beneficiary);
