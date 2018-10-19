@@ -198,4 +198,49 @@ class ProjectController extends Controller
         if (!$valid)
             return new Response("", Response::HTTP_BAD_REQUEST);
     }
+
+    /**
+     * Add Beneficiaries to a project
+     * @Rest\Post("/projects/{id}/beneficiaries/add", name="add_beneficiaries_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
+     *
+     * @SWG\Tag(name="Projects")
+     *
+     * @SWG\Parameter(
+     *     name="beneficiaries",
+     *     in="body",
+     *     required=true,
+     *     type ="array",
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Project updated"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Project $project
+     * @return Response
+     */
+    public function addHouseholdsAction(Request $request, Project $project) {
+        $householdsArray = $request->request->get('beneficiaries');
+        $countryISO3 = $request->request->get('__country');
+        try
+        {
+            $result = $this->get('project.project_service')->AddMultipleHouseholds($project, $countryISO3, $householdsArray);
+        }
+        catch(\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($result)
+            return new Response("" , Response::HTTP_OK);
+        if (!$result)
+            return new Response("", Response::HTTP_BAD_REQUEST);
+    }
 }
