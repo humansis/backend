@@ -115,7 +115,6 @@ class DistributionControllerTest extends BMSServiceTestCase
         $distribution = $return['distribution'];
         $this->assertArrayHasKey('id', $distribution);
         $this->assertArrayHasKey('name', $distribution);
-        $this->assertArrayHasKey('updated_on', $distribution);
         $this->assertArrayHasKey('location', $distribution);
         $this->assertArrayHasKey('project', $distribution);
         $this->assertArrayHasKey('selection_criteria', $distribution);

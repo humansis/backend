@@ -100,7 +100,6 @@ class BMSServiceTestCase extends KernelTestCase
                 "gender" => 1,
                 "status" => 1,
                 "date_of_birth" => "1976-10-06",
-                "updated_on" => "2018-06-13 12:12:12",
                 "profile" => [
                     "photo" => "PHOTO_TEST"
                 ],
@@ -129,7 +128,6 @@ class BMSServiceTestCase extends KernelTestCase
                 "gender" => 1,
                 "status" => 0,
                 "date_of_birth" => "1976-10-06",
-                "updated_on" => "2018-06-13 12:12:12",
                 "profile" => [
                     "photo" => "PHOTO_TEST"
                 ],

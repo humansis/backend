@@ -206,7 +206,6 @@ class CSVToArrayMapper extends AbstractMapper
     {
         $beneficiary = $formattedHouseholdArray["beneficiaries"];
         $beneficiary["profile"] = ["photo" => ""];
-        $beneficiary["updated_on"] = (new \DateTime())->format('Y-m-d H:m:i');
         unset($formattedHouseholdArray["beneficiaries"]);
         $formattedHouseholdArray["beneficiaries"][] = $beneficiary;
     }

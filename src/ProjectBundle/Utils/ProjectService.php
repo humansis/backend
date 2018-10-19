@@ -245,9 +245,8 @@ class ProjectService
 
         $households = $this->em->getRepository(Household::Class)->getAllByIds($countryIso3, $householdIdsArray);
         foreach($households as $hh) {
-            $test = $hh->getProjects()->contains($project);
-            $projectHousehold = $this->em->getRepository(Project::Class)->getIfHasHousehold($countryIso3, $hh, $project);
-            if (!($projectHousehold instanceof Project)) {
+            $projectHousehold = $hh->getProjects()->contains($project);
+            if (!$projectHousehold) {
                 $hh->addProject($project);
             }
             $this->em->persist($hh);
