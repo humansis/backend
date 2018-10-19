@@ -88,7 +88,8 @@ class BeneficiaryService
         $this->requestValidator->validate(
             "beneficiary",
             HouseholdConstraints::class,
-            $beneficiaryArray
+            $beneficiaryArray,
+            'any'
         );
 
         if (array_key_exists("id", $beneficiaryArray))
