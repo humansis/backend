@@ -204,11 +204,12 @@ class HouseholdService
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 try {
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
+                    dump($beneficiary);
                     if(! array_key_exists("id", $beneficiaryToSave))
                         $household->addBeneficiary($beneficiary);
                     $beneficiariesPersisted[] = $beneficiary;
                 } catch (\Exception $exception) {
-                    throw new \Exception($exception->getMessage());
+                    throw $e;
                 }
                 if ($beneficiary->getStatus()) {
                     if ($hasHead) {
