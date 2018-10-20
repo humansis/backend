@@ -131,7 +131,7 @@ class DistributionCSVService
     public function import(DistributionData $distributionData, UploadedFile $uploadedFile)
     {
         $reader = new CsvReader();
-        $reader->setDelimiter(',');
+        $reader->setDelimiter(';');
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->toArray(null, true, true, true);
         $index = 1;
@@ -446,9 +446,9 @@ class DistributionCSVService
             $toUpdate->setGivenName($beneficiaryToUpdate[11]);
             $toUpdate->setFamilyName($beneficiaryToUpdate[12]);
             $toUpdate->setGender($beneficiaryToUpdate[13]);
-            $toUpdate->setStatus($beneficiaryToUpdate[14]);
+            $toUpdate->setStatus(($beneficiaryToUpdate[14]) ? $beneficiaryToUpdate[14] : 0);
             $toUpdate->setDateOfBirth(new \DateTime($beneficiaryToUpdate[15]));
-
+            
             $toUpdate->setVulnerabilityCriteria(null);
             if (strpos($beneficiaryToUpdate[16], ",")) {
                 $vulnerabilityCriteria = explode(",", $beneficiaryToUpdate[16]);

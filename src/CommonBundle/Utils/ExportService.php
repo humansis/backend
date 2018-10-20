@@ -68,7 +68,7 @@ Class ExportService {
         if($type == "csv"){
             $writer = IOFactory::createWriter($spreadsheet, 'Csv');
             $writer->setEnclosure('');
-            $writer->setDelimiter(',');
+            $writer->setDelimiter(';');
             $writer->setUseBOM(true);
             $filename = $name.'.csv';
         }
