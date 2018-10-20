@@ -13,6 +13,10 @@ use BeneficiaryBundle\Utils\HouseholdService;
 use BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
+use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Adm3;
+use CommonBundle\Entity\Adm4;
 use JMS\Serializer\Serializer;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -62,6 +66,7 @@ class DistributionCSVService
      * @param ExportCSVService $exportCSVService
      * @param ContainerInterface $container
      * @param HouseholdToCSVMapper $householdToCSVMapper
+     * @param HouseholdService $householdService
      * @param Serializer $serializer
      * @param ValidatorInterface $validator
      * @param RequestValidator $requestValidator
@@ -80,7 +85,7 @@ class DistributionCSVService
         $this->exportCSVService = $exportCSVService;
         $this->container = $container;
         $this->householdToCSVMapper = $householdToCSVMapper;
-        $this->householService = $householdService;
+        $this->householdService = $householdService;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->requestValidator = $requestValidator;
@@ -379,35 +384,64 @@ class DistributionCSVService
         
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
-            $householdToCreate = array();
-            $householdToCreate["address_street"] = $beneficiaryToCreate[0];
-            $householdToCreate["address_number"] = $beneficiaryToCreate[1];
-            $householdToCreate["address_postcode"] = $beneficiaryToCreate[2];
-            $householdToCreate["livelihood"] = $beneficiaryToCreate[3];
-            $householdToCreate["notes"] = $beneficiaryToCreate[4];
-            $householdToCreate["latitude"] = $beneficiaryToCreate[5];
-            $householdToCreate["longitude"] = $beneficiaryToCreate[6];
-            $householdToCreate["location"] = array(
-                "country_iso3" => $countryIso3,
-                "adm1" => $beneficiaryToCreate[7],
-                "adm2" => $beneficiaryToCreate[8],
-                "adm3" => $beneficiaryToCreate[9],
-                "adm4" => $beneficiaryToCreate[10]
+            // Define location array
+            $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(["name" => $beneficiaryToCreate[7]]);
+            $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(["name" => $beneficiaryToCreate[8]]);
+            $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(["name" => $beneficiaryToCreate[9]]);
+            $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(["name" => $beneficiaryToCreate[10]]);
+            
+            $adm4Name = $beneficiaryToCreate[10];
+            if ($adm4 instanceof Adm4) {
+                $adm3 = $adm4->getAdm3();
+            }
+            if ($adm3 instanceof Adm3) {
+                $adm3Name = $adm3->getName();
+                $adm2 = $adm3->getAdm2();
+            }
+            if ($adm2 instanceof Adm2) {
+                $adm2Name = $adm2->getName();
+                $adm1 = $adm2->getAdm1();
+            }
+            if ($adm1 instanceof Adm1) {
+                $country = $adm1->getCountryISO3();
+                $adm1Name = $adm1->getName();
+            }
+            $locationArray = array(
+                "country_iso3" => $country,
+                "adm1" => $adm1Name,
+                "adm2" => $adm2Name,
+                "adm3" => $adm3Name,
+                "adm4" => $adm4Name       
             );
-            $householdToCreate["beneficiaries"] = array(
-                array(
-                    "given_name" => $beneficiaryToCreate[11],
-                    "family_name" => $beneficiaryToCreate[12],
-                    "gender" => $beneficiaryToCreate[13],
-                    "status" => 1,
-                    "date_of_birth" => $beneficiaryToCreate[15],
-                    "profile" => array(),
-                    "vulnerability_criteria" => array(),
-                    "phones" => array(),
-                    "national_ids" => array()
+            
+            $householdToCreate = array(
+                "__country" => $countryIso3,
+                "address_street" => $beneficiaryToCreate[0],
+                "address_number" => $beneficiaryToCreate[1] . "",
+                "address_postcode" => $beneficiaryToCreate[2] . "",
+                "livelihood" => $beneficiaryToCreate[3],
+                "notes" => $beneficiaryToCreate[4],
+                "latitude" => $beneficiaryToCreate[5],
+                "longitude" => $beneficiaryToCreate[6],
+                "location" => $locationArray,
+                "country_specific_answers" => array(),
+                "beneficiaries" => array(
+                    array(
+                        "given_name" => $beneficiaryToCreate[11],
+                        "family_name" => $beneficiaryToCreate[12],
+                        "gender" => $beneficiaryToCreate[13],
+                        "status" => 1,
+                        "date_of_birth" => $beneficiaryToCreate[15],
+                        "profile" => array(
+                            "photo" => ""
+                        ),
+                        "vulnerability_criteria" => array(),
+                        "phones" => array(),
+                        "national_ids" => array()
+                    )
                 )
             );
-            $this->householdService->createOrEdit($householdToCreate, $distributionProject);
+            $this->householdService->createOrEdit($householdToCreate, array($distributionProject));
             $toCreate = $this->em->getRepository(Beneficiary::class)
                 ->findOneBy(["household" => $householdToCreate]);
             $this->em->persist($toCreate);
