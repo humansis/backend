@@ -15,12 +15,23 @@ class CountrySpecificAnswerRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder('csa');
 
         $q  = $qb->where('csa.countrySpecific = :countrySpecificId')
-            ->setParameter('countrySpecificId', $countrySpecificId)
-            ->andWhere('csa.answer '. $conditionString . ' :answer')
+            ->setParameter('countrySpecificId', $countrySpecificId);
+        
+        $hasAnswers = $q->getQuery->getResult();
+        if (!$hasAnswers && $conditionString === "!=") {
+            return true;
+        }
+        else if ($hasAnswers) {
+            $q = $q->andWhere('csa.answer '. $conditionString . ' :answer')
             ->setParameter('answer', $answer)
             ->andWhere('csa.household = :householdId')
             ->setParameter('householdId', $householdId);
-
-        return $q->getQuery()->getResult();
+            
+            return $q->getQuery()->getResult();
+        }
+        else {
+            return false;
+        }
+        
     }
 }
