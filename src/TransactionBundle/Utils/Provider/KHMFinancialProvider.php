@@ -150,7 +150,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             // TODO Remove log
             dump($route);
             dump($body);
-            dump($response);
+            dump($sent);
         } catch (Exception $e) {
             throw $e;
         }    
