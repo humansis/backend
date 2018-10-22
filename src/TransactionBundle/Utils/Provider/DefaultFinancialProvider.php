@@ -5,6 +5,7 @@ namespace TransactionBundle\Utils\Provider;
 use Doctrine\ORM\EntityManagerInterface;
 
 use TransactionBundle\Entity\Transaction;
+use TransactionBundle\TransactionBundle;
 use DistributionBundle\Entity\DistributionBeneficiary;
 
 /**
@@ -38,10 +39,18 @@ abstract class DefaultFinancialProvider {
      * Send money to one beneficiary
      * @param  string                  $phoneNumber
      * @param  DistributionBeneficiary $distributionBeneficiary
+     * @param  float                   $amount
+     * @param  string                  $currency
+     * @param  Transaction             $transaction
      * @return Transaction
      * @throws \Exception       
      */
-    public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary)
+    public function sendMoneyToOne(
+        string $phoneNumber,
+        DistributionBeneficiary $distributionBeneficiary,
+        float $amount,
+        string $currency,
+        $transaction = null)
     {
         throw new \Exception("You need to define the financial provider for the country.");
     }
@@ -49,9 +58,11 @@ abstract class DefaultFinancialProvider {
     /**
      * Send money to all beneficiaries
      * @param  array  $beneficiaries 
+     * @param  float  $amount
+     * @param  string $currency
      * @return array                
      */
-    public function sendMoneyToAll(array $distributionBeneficiaries)
+    public function sendMoneyToAll(array $distributionBeneficiaries, float $amount, string $currency)
     {
         $response = array(
             'sent'       => array(),
@@ -62,6 +73,7 @@ abstract class DefaultFinancialProvider {
         
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
             $beneficiary = $distributionBeneficiary->getBeneficiary();
+            $transaction = $distributionBeneficiary->getTransaction();
             $phoneNumber = null;
             foreach ($beneficiary->getPhones() as $phone) {
                 if ($phone->getType() == 'mobile') {
@@ -69,15 +81,14 @@ abstract class DefaultFinancialProvider {
                     break;
                 }
             }
-            
+
             if ($phoneNumber) {
-                $transaction = $distributionBeneficiary->getTransaction();
-                if ($transaction && $transaction->getTransactionStatus()) {
+                if ($transaction && $transaction->getTransactionStatus() === 1) {
                     array_push($response['already_sent'], $beneficiary);
                 } else {
                     try {
-                        $sent = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary);
-                        if (property_exists($sent, 'error_code')) {
+                        $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary, $amount, $currency, $transaction);
+                        if ($transaction->getTransactionStatus() === 0) {
                             array_push($response['failure'], $beneficiary);
                         } else {
                             array_push($response['sent'], $beneficiary);
@@ -88,6 +99,10 @@ abstract class DefaultFinancialProvider {
                 }
             } else {
                 array_push($response['no_mobile'], $beneficiary);
+
+                if(!$transaction || $transaction->getTransactionStatus() !== 1) {
+                    $this->createOrUpdateTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2, null, $transaction);
+                }
             }
         }
         

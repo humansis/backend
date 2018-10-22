@@ -17,6 +17,8 @@ class HouseholdConstraints extends RequestValidatorConstraints
         $string = new Type('string');
         $array = new Type('array');
         $null = new Type('null');
+        $boolean = new Type('bool');
+        $optionalBoolean = new Optional($boolean);
         $optionalNumeric = new Optional($numeric);
         $optionalString = new Optional($string);
 
@@ -30,9 +32,9 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "latitude" => $string,
             "longitude" => $string,
             "__country" => $string,
-            "location" =>$array,
-            "country_specific_answers" =>$array,
-            "beneficiaries" =>$array,
+            "location" => $array,
+            "country_specific_answers" => $array,
+            "beneficiaries" => $array,
         ];
         $location = [
             "country_iso3" => $optionalString,
@@ -53,7 +55,6 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "gender" => $numeric,
             "status" => $numeric,
             "date_of_birth" => $string,
-            "updated_on" => $string,
             "profile" => $array,
             "vulnerability_criteria" => $array,
             "phones" => $array,
@@ -70,6 +71,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "id" => $optionalNumeric,
             "number" => $string,
             "type" => $string,
+            "proxy" => $optionalBoolean,
         ];
         $nationalId = [
             "id" => $optionalNumeric,

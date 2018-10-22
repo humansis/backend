@@ -57,7 +57,7 @@ class CriteriaDistributionControllerTest extends BMSServiceTestCase
             [
                "kind_beneficiary" => "Household",
                "table_string" => "countrySpecific",
-               "field_string" => "ID Poor",
+               "field_string" => "IDPoor",
                "condition_string" => ">",
                "id_field" => 1,
                "type" => "number",

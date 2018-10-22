@@ -100,7 +100,6 @@ class BMSServiceTestCase extends KernelTestCase
                 "gender" => 1,
                 "status" => 1,
                 "date_of_birth" => "1976-10-06",
-                "updated_on" => "2018-06-13 12:12:12",
                 "profile" => [
                     "photo" => "PHOTO_TEST"
                 ],
@@ -112,7 +111,8 @@ class BMSServiceTestCase extends KernelTestCase
                 "phones" => [
                     [
                         "number" => "0000_TEST",
-                        "type" => "TYPE_TEST"
+                        "type" => "TYPE_TEST",
+                        "proxy" => false
                     ]
                 ],
                 "national_ids" => [
@@ -128,7 +128,6 @@ class BMSServiceTestCase extends KernelTestCase
                 "gender" => 1,
                 "status" => 0,
                 "date_of_birth" => "1976-10-06",
-                "updated_on" => "2018-06-13 12:12:12",
                 "profile" => [
                     "photo" => "PHOTO_TEST"
                 ],
@@ -140,7 +139,8 @@ class BMSServiceTestCase extends KernelTestCase
                 "phones" => [
                     [
                         "number" => "1111_TEST",
-                        "type" => "TYPE_TEST"
+                        "type" => "TYPE_TEST",
+                        "proxy" => true
                     ]
                 ],
                 "national_ids" => [
@@ -338,8 +338,8 @@ class BMSServiceTestCase extends KernelTestCase
         }
 
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
-            "fieldString" => 'ID Poor',
-            "type" => 'Number',
+            "fieldString" => 'IDPoor',
+            "type" => 'number',
             "countryIso3" => $this->iso3
         ]);
         $country_specific_answers = $this->bodyHousehold["country_specific_answers"];

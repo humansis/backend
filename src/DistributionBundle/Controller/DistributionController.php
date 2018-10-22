@@ -528,28 +528,32 @@ class DistributionController extends Controller
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
 
-        $content = $request->request->all();
-        $countryIso3 = $content['__country'];
+        $countryIso3 =  $request->request->get('__country');
 
         /** @var DistributionCsvService $distributionCsvService */
         $distributionCsvService = $this->get('distribution.distribution_csv_service');
 
-        if (!$request->files->has('file')) {
-            return new Response('You must upload a file.', 500);
-        }
-
         if ($request->query->get('step')) {
             $step = $request->query->get('step');
-
+            // File Import
             if ($step == 1) {
+                if (!$request->files->has('file')) {
+                    return new Response('You must upload a file.', Response::HTTP_BAD_REQUEST);
+                }
+                
                 try {
                     $return = $distributionCsvService->parseCSV($countryIso3, $beneficiaries, $distributionData, $request->files->get('file'));
                 } catch (\Exception $e) {
                     return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
                 }
+            // Save changes
             } elseif ($step == 2) {
+                $data = $request->request->get('data');
+                if (!$data) {
+                    return new Response('You must provide the data to update.', Response::HTTP_BAD_REQUEST);
+                }
                 try {
-                    $return = $distributionCsvService->saveCSV($countryIso3, $beneficiaries, $distributionData, $request->files->get('file'));
+                    $return = $distributionCsvService->saveCSV($countryIso3, $beneficiaries, $distributionData, $data);
                 } catch (\Exception $e) {
                     return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
                 }
@@ -562,10 +566,7 @@ class DistributionController extends Controller
 
             return new Response($json);
         } else {
-            $json = $this->get('jms_serializer')
-                ->serialize('An error occured, please check the body', 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
-
-            return new Response($json);
+            return new Response('An error occured, please check the body', Response::HTTP_BAD_REQUEST);
         }
     }
 

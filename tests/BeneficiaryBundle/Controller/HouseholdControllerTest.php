@@ -168,8 +168,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         }
 
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
-            "fieldString" => 'ID Poor',
-            "type" => 'Number',
+            "fieldString" => 'IDPoor',
+            "type" => 'number',
             "countryIso3" => $this->iso3
         ]);
         $country_specific_answers = $this->bodyHousehold["country_specific_answers"];
@@ -217,7 +217,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('gender', $beneficiary);
             $this->assertArrayHasKey('status', $beneficiary);
             $this->assertArrayHasKey('date_of_birth', $beneficiary);
-            $this->assertArrayHasKey('updated_on', $beneficiary);
             $this->assertArrayHasKey('profile', $beneficiary);
             $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
             $this->assertArrayHasKey('phones', $beneficiary);

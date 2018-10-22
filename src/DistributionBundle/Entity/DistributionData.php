@@ -123,6 +123,7 @@ class DistributionData implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="distributionData")
+     * @Groups({"FullDistribution"})
      */
     private $commodities;
 
@@ -535,7 +536,6 @@ class DistributionData implements ExportableInterface
         // $valuesdistributionbeneficiaries = [];
 
         // foreach ($this->getDistributionBeneficiaries() as $value) {
-        //     dump($value);
         //     array_push($valuesdistributionbeneficiaries, $value->getIdNumber());
         // }
         // $valuesdistributionbeneficiaries = join(',',$valuesdistributionbeneficiaries);

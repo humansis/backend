@@ -118,6 +118,7 @@ class Beneficiary implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
+     * @Groups({"FullReceivers"})
      *
      * @var DistributionBeneficiary $distributionBeneficiary
      */

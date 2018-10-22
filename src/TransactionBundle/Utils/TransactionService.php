@@ -50,8 +50,12 @@ class TransactionService {
         }
         
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
+        if ($distributionData->getCommodities()[0]->getModalityType()->getModality()->getName() === "CTP") {
+            $amountToSend = $distributionData->getCommodities()[0]->getValue();
+            $currencyToSend = $distributionData->getCommodities()[0]->getUnit();
+        }
         try {            
-            return $this->financialProvider->sendMoneyToAll($distributionBeneficiaries);
+            return $this->financialProvider->sendMoneyToAll($distributionBeneficiaries, $amountToSend, $currencyToSend);
         } catch (\Exception $e) {
             throw $e;
         }

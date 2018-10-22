@@ -127,7 +127,7 @@ class BeneficiaryService
             ->setFamilyName($beneficiaryArray["family_name"])
             ->setGivenName($beneficiaryArray["given_name"])
             ->setStatus($beneficiaryArray["status"])
-            ->setUpdatedOn(new \DateTime($beneficiaryArray["updated_on"]));
+            ->setUpdatedOn(new \DateTime());
 
         $errors = $this->validator->validate($beneficiary);
         if (count($errors) > 0) {
@@ -200,7 +200,8 @@ class BeneficiaryService
         $phone = new Phone();
         $phone->setBeneficiary($beneficiary)
             ->setType($phoneArray["type"])
-            ->setNumber($phoneArray["number"]);
+            ->setNumber($phoneArray["number"])
+            ->setProxy(array_key_exists("proxy", $phoneArray) ? $phoneArray["proxy"] : false);
 
         $this->em->persist($phone);
         if ($flush)

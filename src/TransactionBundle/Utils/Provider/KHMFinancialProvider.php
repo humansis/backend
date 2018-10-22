@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use DistributionBundle\Entity\DistributionBeneficiary;
 use TransactionBundle\Entity\Transaction;
+use TransactionBundle\TransactionBundle;
 
 /**
  * Class KHMFinancialProvider
@@ -70,23 +71,45 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      * Send money to one beneficiary
      * @param  string                  $phoneNumber
      * @param  DistributionBeneficiary $distributionBeneficiary
+     * @param  float                   $amount
+     * @param  string                  $currency
+     * @param  Transaction             $transaction
      * @return Transaction       
      * @throws \Exception
      */
-    public function sendMoneyToOne(string $phoneNumber, DistributionBeneficiary $distributionBeneficiary)
+    public function sendMoneyToOne(
+        string $phoneNumber, 
+        DistributionBeneficiary $distributionBeneficiary,
+        float $amount,
+        string $currency,
+        $transaction = null)
     {
         $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
-            "amount"          => 50,
-            "currency"        => "USD",
+            "amount"          => $amount,
+            "currency"        => $currency,
             "sender_msisdn"   => "012249184",
-            "receiver_msisdn" => $phoneNumber
+            "receiver_msisdn" => $phoneNumber,
+            "sms_to"          => "PAYEE"
         );
         
         try {
             $sent = $this->sendRequest("POST", $route, $body);
+            // TODO Remove log
+            dump($route);
+            dump($body);
+            dump($sent);
             if (property_exists($sent, 'error_code')) {
-                return $sent;
+                $transaction = $this->createOrUpdateTransaction(
+                    $distributionBeneficiary, 
+                    '',
+                    new \DateTime(),
+                    50,
+                    0,
+                    $sent->message ?: '',
+                    $transaction);
+                
+                return $transaction;
             }
         } catch (Exception $e) {
             throw $e;
@@ -104,7 +127,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             new \DateTime(),
             $response->amount,
             $response->transaction_status === 'Success' ? 1 : 0,
-            $response->passcode ?: $response->message);
+            property_exists($response, 'message') ? $response->message : '',
+            $transaction);
         
         return $transaction;
     }
@@ -123,6 +147,10 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         try {
             $sent = $this->sendRequest("POST", $route, $body);
+            // TODO Remove log
+            dump($route);
+            dump($body);
+            dump($response);
         } catch (Exception $e) {
             throw $e;
         }    

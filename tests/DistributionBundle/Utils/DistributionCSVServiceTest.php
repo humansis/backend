@@ -34,22 +34,18 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
         $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
         $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiaryInDistribution.csv', 'beneficiaryInDistribution.csv');
 
-
         $jsonFromparseCSV = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
 
-
-        $errorArray = $jsonFromparseCSV['errors'];
+        $createArray = $jsonFromparseCSV['created'];
         $addArray = $jsonFromparseCSV['added'];
         $deleteArray = $jsonFromparseCSV['deleted'];
+        $updateArray = $jsonFromparseCSV['updated'];
 
-        if(!$beneficiaries && !$beneficiariesInProject){
-            $this->assertTrue(count($errorArray) > 0);
+        if (!$beneficiaries) {
+            $this->assertTrue(count($addArray) + count($createArray) > 0);
         }
-        elseif (!$beneficiaries && $beneficiariesInProject) {
-            $this->assertTrue(count($addArray) > 0);
-        }
-        elseif ($beneficiaries && $beneficiariesInProject) {
-            $this->assertTrue(count($errorArray) > 0 || count($addArray) > 0 || count($deleteArray) > 0);
+        elseif ($beneficiaries) {
+            $this->assertTrue(count($updateArray) + count($deleteArray) > 0);
         }
     }
 
