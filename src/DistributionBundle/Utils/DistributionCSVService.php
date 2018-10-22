@@ -417,12 +417,12 @@ class DistributionCSVService
             $householdToCreate = array(
                 "__country" => $countryIso3,
                 "address_street" => $beneficiaryToCreate[0],
-                "address_number" => $beneficiaryToCreate[1] . "",
-                "address_postcode" => $beneficiaryToCreate[2] . "",
+                "address_number" => strval($beneficiaryToCreate[1]),
+                "address_postcode" => strval($beneficiaryToCreate[2]),
                 "livelihood" => $beneficiaryToCreate[3],
                 "notes" => $beneficiaryToCreate[4],
-                "latitude" => $beneficiaryToCreate[5],
-                "longitude" => $beneficiaryToCreate[6],
+                "latitude" => strval($beneficiaryToCreate[5]),
+                "longitude" => strval($beneficiaryToCreate[6]),
                 "location" => $locationArray,
                 "country_specific_answers" => array(),
                 "beneficiaries" => array(
