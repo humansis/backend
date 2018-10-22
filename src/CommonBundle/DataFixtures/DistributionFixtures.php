@@ -17,12 +17,12 @@ class DistributionFixtures extends Fixture
         'adm4' => '',
         'commodities' => [
             0 => [
-                'modality' => 'Food',
+                'modality' => 'CTP',
                 'modality_type' => [
-                    'id' => 2,
+                    'id' => 1,
                 ],
-                'type' => 'Banana',
-                'unit' => '12',
+                'type' => 'Mobile',
+                'unit' => 'USD',
                 'value' => '45'
             ]
         ],
