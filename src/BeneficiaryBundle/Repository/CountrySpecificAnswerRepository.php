@@ -10,7 +10,7 @@ namespace BeneficiaryBundle\Repository;
  */
 class CountrySpecificAnswerRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function hasValue(int $countrySpecificId, int $answer, string $conditionString, int $householdId){
+    public function hasValue(int $countrySpecificId, $answer, string $conditionString, int $householdId){
 
         $qb = $this->createQueryBuilder('csa');
 
