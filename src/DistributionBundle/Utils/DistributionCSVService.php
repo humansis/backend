@@ -445,10 +445,17 @@ class DistributionCSVService
             $toCreate = $this->em->getRepository(Beneficiary::class)
                 ->findOneBy(["household" => $householdToCreate]);
             $this->em->persist($toCreate);
+            
+            // Add created beneficiary to distribution
+            $newDistributionBeneficiary = new DistributionBeneficiary();
+            $distributionBeneficiary->setBeneficiary($toCreate);
+            $distributionBeneficiary->setDistributionData($distributionData);
+            $this->em->persist($newDistributionBeneficiary);
         }
         
         // Add
         foreach ($data['added'] as $beneficiaryToAdd) {
+            $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd["id"]);
             $household = $beneficiaryToAdd->getHousehold();
             if (! $household->getProjects()->contains($distributionProject)) {
                 $household->addProject($distributionProject);
