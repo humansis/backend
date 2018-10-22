@@ -28,7 +28,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      */
     public function getAllOfProject(int $project, string $target)
     {
-        dump($target);
         $qb = $this->createQueryBuilder('b');
         if ($target == 'Household'){
             $q = $qb->leftJoin('b.household', 'hh')

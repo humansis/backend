@@ -20,13 +20,13 @@ class DistributionServiceTest extends BMSServiceTestCase
      */
     public function testGetAllBeneficiariesInProject()
     {
-        $distributionService = $this->container->get('distribution.distribution_service');
+        $distributionBeneficiaryService = $this->container->get('distribution.distribution_beneficiary_service');
         /**
          * Dev Project comes from Fixtures.
          */
         $project = $this->em->getRepository(Project::class)->findOneByName('Dev Project');
 
-        $allBeneficiariesInProject = $distributionService->getAllBeneficiariesInProject($project);
+        $allBeneficiariesInProject = $distributionBeneficiaryService->getAllBeneficiariesInProject($project, 'Beneficiary');
 
         for ($i = 0; $i < count($allBeneficiariesInProject); ++$i) {
             $this->assertTrue($allBeneficiariesInProject[$i] instanceof Beneficiary);

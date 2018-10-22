@@ -27,7 +27,6 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
 
         //distributionData will be used in the function "parseCSV" to get all the beneficiaries in a project :
         $distributionData = $this->em->getRepository(DistributionData::class)->findOneById('1');
-        $beneficiariesInProject = $this->em->getRepository(Beneficiary::class)->getAllOfProject($distributionData->getProject()->getId());
         $distributionBeneficiaryService = $this->container->get('distribution.distribution_beneficiary_service');
 
         //beneficiaries contains all beneficiaries in a distribution :
