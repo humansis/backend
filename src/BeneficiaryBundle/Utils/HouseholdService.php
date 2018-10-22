@@ -90,7 +90,14 @@ class HouseholdService
      */
     public function getAll(string $iso3, array $filters)
     {
-        $households = $this->em->getRepository(Household::class)->getAllBy($iso3, $filters);
+        $pageIndex = $filters['pageIndex'];
+        $pageSize = $filters['pageSize'];
+
+        $limitMinimum = $pageIndex * $pageSize;
+
+        $households = $this->em->getRepository(Household::class)->getAllBy($iso3, $limitMinimum, $pageSize, $filters);
+        $length = count($households[0]);
+        $households = $households[1];
         /** @var Household $household */
         foreach ($households as $household)
         {
@@ -106,7 +113,7 @@ class HouseholdService
             }
             $household->setNumberDependents($numberDependents);
         }
-        return $households;
+        return [$length, $households];
     }
 
     /**
