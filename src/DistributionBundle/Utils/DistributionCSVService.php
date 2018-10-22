@@ -462,7 +462,7 @@ class DistributionCSVService
                 $this->em->persist($household);
             }
             $distributionBeneficiary = new DistributionBeneficiary();
-            $distributionBeneficiary->setBeneficiary($beneficiary);
+            $distributionBeneficiary->setBeneficiary($beneficiaryToAdd);
             $distributionBeneficiary->setDistributionData($distributionData);
             $this->em->persist($distributionBeneficiary);
         }
