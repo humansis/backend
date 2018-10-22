@@ -504,7 +504,6 @@ class Beneficiary implements ExportableInterface
         $valuesphones = join(',', $valuesphones);
 
         // Recover the  criterions from Vulnerability criteria object
-
         $valuescriteria = [];
         foreach ($this->getVulnerabilityCriteria()->getValues() as $value) {
             array_push($valuescriteria, $value->getFieldString());
@@ -512,44 +511,61 @@ class Beneficiary implements ExportableInterface
         $valuescriteria = join(',', $valuescriteria);
 
         // Recover nationalID from nationalID object
-
         $valuesnationalID = [];
-
         foreach ($this->getNationalIds()->getValues() as $value) {
             array_push($valuesnationalID, $value->getIdNumber());
         }
         $valuesnationalID = join(',',$valuesnationalID);
 
+        //Recover country specifics for the household
+        $valueCountrySpecific = [];
+        foreach ($this->getHousehold()->getCountrySpecificAnswers()->getValues() as $value){
+            $valueCountrySpecific[$value->getCountrySpecific()->getFieldString()] = $value->getAnswer();
+        }
+            //dump($this->getHousehold()->getCountrySpecificAnswers()->getKeys());
+            //dump($this->getHousehold()->getCountrySpecificAnswers()->getValues());
+            //$valueCountrySpecific[$value] = $this->getHousehold()->getCountrySpecificAnswers()->getValues();
+
+
 
         // Recover adm1 , adm2 , adm3 , adm 4 from localisation object : we have to verify if they are null before to get the name
-
         $adm1 = ( ! empty($this->getHousehold()->getLocation()->getAdm1()) ) ? $this->getHousehold()->getLocation()->getAdm1()->getName() : '';
         $adm2 = ( ! empty($this->getHousehold()->getLocation()->getAdm2()) ) ? $this->getHousehold()->getLocation()->getAdm2()->getName() : '';
         $adm3 = ( ! empty($this->getHousehold()->getLocation()->getAdm3()) ) ? $this->getHousehold()->getLocation()->getAdm3()->getName() : '';
         $adm4 = ( ! empty($this->getHousehold()->getLocation()->getAdm4()) ) ? $this->getHousehold()->getLocation()->getAdm4()->getName() : '';
 
 
+        $finalArray = [
+            "Address street" => $this->getHousehold()->getAddressStreet(),
+            "Address number" => $this->getHousehold()->getAddressNumber(),
+            "Address postcode" => $this->getHousehold()->getAddressPostcode(),
+            "Livelihood" => $this->getHousehold()->getLivelihood(),
+            "Notes" => $this->getHousehold()->getNotes(),
+            "Latitude" => $this->getHousehold()->getLatitude(),
+            "Longitude" => $this->getHousehold()->getLongitude(),
+            "Adm1" => $adm1,
+            "Adm2" =>$adm2,
+            "Adm3" =>$adm3,
+            "Adm4" =>$adm4,
+        ];
 
-        return [
-            "Address_street" => $this->getHousehold()->getAddressStreet(),
-            "Address_number" => $this->getHousehold()->getAddressNumber(),
-            "Address_postcode" => $this->getHousehold()->getAddressPostcode(),
-            "livelihood" => $this->getHousehold()->getLivelihood(),
-            "notes" => $this->getHousehold()->getNotes(),
-            "lat" => $this->getHousehold()->getLatitude(),
-            "long" => $this->getHousehold()->getLongitude(),
-            "adm1" => $adm1,
-            "adm2" =>$adm2,
-            "adm3" =>$adm3,
-            "adm4" =>$adm4,
-            "Given name" => $this->getGivenName(),
+        $tempBenef = [ "Given name" => $this->getGivenName(),
             "Family name"=> $this->getFamilyName(),
             "Gender" => $this->getGender(),
             "Status" => $this->getStatus(),
-            "Date of birth" => $this->getDateOfBirth()->format('m/d/y'),
+            "Date of birth" => $this->getDateOfBirth()->format('Y-m-d'),
             "Vulnerability criteria" => $valuescriteria,
             "Phones" => $valuesphones ,
             "National IDs" => $valuesnationalID,
+            '' => '',
         ];
+
+        foreach ($valueCountrySpecific as $key => $value)
+            $finalArray[$key] = $value;
+
+        foreach ($tempBenef as $key => $value)
+            $finalArray[$key] = $value;
+
+        return $finalArray;
     }
 }
