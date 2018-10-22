@@ -17,7 +17,7 @@ class CountrySpecificAnswerRepository extends \Doctrine\ORM\EntityRepository
         $q  = $qb->where('csa.countrySpecific = :countrySpecificId')
             ->setParameter('countrySpecificId', $countrySpecificId);
         
-        $hasAnswers = $q->getQuery->getResult();
+        $hasAnswers = $q->getQuery()->getResult();
         if (!$hasAnswers && $conditionString === "!=") {
             return true;
         }
