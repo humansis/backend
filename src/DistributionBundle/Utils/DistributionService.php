@@ -173,8 +173,7 @@ class DistributionService
         $this->em->flush();
 
         $name = $distribution->getName();
-        $id = $distribution->getId();
-        $distribution->setName($id.'-'.$name);
+        $distribution->setName($name);
 
         $this->em->persist($distribution);
 
