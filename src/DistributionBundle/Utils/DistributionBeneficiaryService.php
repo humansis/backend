@@ -55,9 +55,9 @@ class DistributionBeneficiaryService
      * @param DistributionData $distributionData
      * @return array
      */
-    public function getDistributionBeneficiaries(DistributionData $distributionData)
+    public function getBeneficiaries(DistributionData $distributionData)
     {
-        $beneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->getAllofDistribution($distributionData);
+        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
         return $beneficiaries;
     }
 

@@ -35,15 +35,4 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
 
         return $q->getQuery()->getSingleScalarResult();
     }
-    
-    
-
-    public function getAllofDistribution(DistributionData $distributionData)
-    {
-        $qb = $this->createQueryBuilder('db');
-        $q = $qb->where('db.distributionData = :distributionData')
-            ->setParameter('distributionData', $distributionData);
-
-        return $q->getQuery()->getResult();
-    }
 }
