@@ -101,7 +101,7 @@ abstract class DefaultFinancialProvider {
                 array_push($response['no_mobile'], $distributionBeneficiary);
 
                 if(!$transaction || $transaction->getTransactionStatus() !== 1) {
-                    $this->createOrUpdateTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2, null, $transaction);
+                    $this->createOrUpdateTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2, "No Phone", $transaction);
                 }
             }
         }
@@ -138,11 +138,15 @@ abstract class DefaultFinancialProvider {
         $transaction->setAmountSent($amountSent);
         $transaction->setTransactionStatus($transactionStatus);
         $transaction->setMessage($message);
+        
+        $distributionBeneficiary->setTransaction($transaction);
+        
         if ($status === 'update') {
             $this->em->merge($transaction);
         } elseif ($status === 'create') {
             $this->em->persist($transaction);
         }
+        $this->em->merge($distributionBeneficiary);
         $this->em->flush();
         
         return $transaction;
