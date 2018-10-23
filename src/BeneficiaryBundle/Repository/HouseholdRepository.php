@@ -83,80 +83,92 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->leftJoin("adm2.adm1", "adm1d")
             ->orWhere("adm1d.countryISO3 = :iso3 AND hh.archived = 0")
             ->setParameter("iso3", $iso3);
-            //->select('COALESCE(adm1.name, adm2.name, adm3.name, adm4.name) as location_string');
+
         if (array_key_exists('sort', $sort) && array_key_exists('direction', $sort)) {
             $value = $sort['sort'];
             $direction = $sort['direction'];
 
             if ($value == 'location') {
                 $q->addSelect("(COALESCE(adm4.name, adm3.name, adm2.name, adm1.name)) AS HIDDEN order_adm");
-                $q->addOrderBy("order_adm", $direction);
+                $q->addOrderBy("order_adm", $direction)
+                    ->addGroupBy("order_adm")
+                    ->addGroupBy('hh.id');
             }
             else if ($value == 'firstName') {
                 $q->leftJoin('hh.beneficiaries', 'b')
                     ->andWhere('hh.id = b.household')
-                    ->addOrderBy('b.givenName', $direction);
+                    ->addOrderBy('b.givenName', $direction)
+                    ->addGroupBy("b.givenName")
+                    ->addGroupBy('hh.id');
             }
             else if ($value == 'familyName') {
                 $q->leftJoin('hh.beneficiaries', 'b')
                     ->andWhere('hh.id = b.household')
-                    ->addOrderBy('b.familyName', $direction);
+                    ->addOrderBy('b.familyName', $direction)
+                    ->addGroupBy("b.familyName")
+                    ->addGroupBy('hh.id');
             }
             else if ($value == 'dependents') {
                 $q->leftJoin("hh.beneficiaries", 'b')
                     ->andWhere('hh.id = b.household')
                     ->addSelect('COUNT(b.household) AS HIDDEN countBenef')
                     ->addGroupBy('b.household')
-                    ->addOrderBy('countBenef', $direction);
+                    ->addOrderBy('countBenef', $direction)
+                    ->addGroupBy('hh.id');
             }
             else if ($value == 'projects') {
                 $q->leftJoin('hh.projects', 'p')
-                    ->addOrderBy('p.name', $direction);
+                    ->addOrderBy('p.name', $direction)
+                    ->addGroupBy("p.name")
+                    ->addGroupBy('hh.id');
             }
             else if ($value == 'vulnerabilities') {
                 $q->leftJoin('hh.beneficiaries', 'b')
                     ->andWhere('hh.id = b.household')
                     ->leftJoin('b.vulnerabilityCriteria', 'vb')
-                    ->addOrderBy('vb.fieldString', $direction);
+                    ->addOrderBy('vb.fieldString', $direction)
+                    ->addGroupBy("vb.fieldString")
+                    ->addGroupBy('hh.id');
             }
         }
 
         if (array_key_exists('filter', $filters)) {
 
             if ($filters['filter'] != '') {
-                $filtred = $filters['filtred'];
+                $filtered = $filters['filtered'];
                 $filter = $filters['filter'];
 
-                if ($filtred == 'location') {
-                    $q->addSelect("(COALESCE(adm4.name, adm3.name, adm2.name, adm1.name)) AS HIDDEN order_adm");
-                    $q->andWhere("order_adm LIKE :filter")
+                if ($filtered == 'location') {
+                    $q->andWhere("adm4.name LIKE :filter")
+                        ->orWhere("adm3.name LIKE :filter")
+                        ->orWhere("adm2.name LIKE :filter")
+                        ->orWhere("adm1.name LIKE :filter")
                         ->setParameter('filter', '%' . $filter . '%');
-                } else if ($filtred == 'firstName') {
-                    $q->leftJoin('hh.beneficiaries', 'b')
-                        ->andWhere('hh.id = b.household')
-                        ->andWhere('b.givenName LIKE :filter')
+                } else if ($filtered == 'firstName') {
+                    $q->leftJoin('hh.beneficiaries', 'b2')
+                        ->andWhere('hh.id = b2.household')
+                        ->andWhere('b2.givenName LIKE :filter')
                         ->setParameter('filter', '%' . $filter . '%');
-                } else if ($filtred == 'familyName') {
-                    $q->leftJoin('hh.beneficiaries', 'b')
-                        ->andWhere('hh.id = b.household')
-                        ->andWhere('b.familyName LIKE :filter')
+                } else if ($filtered == 'familyName') {
+                    $q->leftJoin('hh.beneficiaries', 'b2')
+                        ->andWhere('hh.id = b2.household')
+                        ->andWhere('b2.familyName LIKE :filter')
                         ->setParameter('filter', '%' . $filter . '%');
-                } else if ($filtred == 'dependents') {
-                    $q->leftJoin("hh.beneficiaries", 'b')
-                        ->andWhere('hh.id = b.household')
-                        ->addSelect('COUNT(b.household) AS HIDDEN countBenef')
-                        ->addGroupBy('b.household')
-                        ->andWhere('countBenef LIKE :filter')
+                } else if ($filtered == 'dependents') {
+                    $q->leftJoin("hh.beneficiaries", 'b2')
+                        ->andWhere('hh.id = b2.household')
+                        ->andHaving('COUNT(b2.household) = :filter')
+                        ->addGroupBy('b2.household')
+                        ->setParameter('filter', $filter + 1);
+                } else if ($filtered == 'projects') {
+                    $q->leftJoin('hh.projects', 'p2')
+                        ->andWhere('p2.name LIKE :filter')
                         ->setParameter('filter', '%' . $filter . '%');
-                } else if ($filtred == 'projects') {
-                    $q->leftJoin('hh.projects', 'p')
-                        ->andWhere('p.name LIKE :filter')
-                        ->setParameter('filter', '%' . $filter . '%');
-                } else if ($filtred == 'vulnerabilities') {
-                    $q->leftJoin('hh.beneficiaries', 'b')
-                        ->andWhere('hh.id = b.household')
-                        ->leftJoin('b.vulnerabilityCriteria', 'vb')
-                        ->andWhere('vb.fieldString LIKE :filter')
+                } else if ($filtered == 'vulnerabilities') {
+                    $q->leftJoin('hh.beneficiaries', 'b2')
+                        ->andWhere('hh.id = b2.household')
+                        ->leftJoin('b2.vulnerabilityCriteria', 'vb2')
+                        ->andWhere('vb2.fieldString LIKE :filter')
                         ->setParameter('filter', '%' . $filter . '%');
                 }
             }
