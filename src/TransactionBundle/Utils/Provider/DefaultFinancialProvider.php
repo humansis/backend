@@ -127,7 +127,9 @@ abstract class DefaultFinancialProvider {
         string $message = null,
         Transaction $transaction = null)
     {
+        $status = 'update';
         if (!$transaction) {
+            $status = 'create';
             $transaction = new Transaction();
         }
         $transaction->setDistributionBeneficiary($distributionBeneficiary);
@@ -136,8 +138,11 @@ abstract class DefaultFinancialProvider {
         $transaction->setAmountSent($amountSent);
         $transaction->setTransactionStatus($transactionStatus);
         $transaction->setMessage($message);
-
-        $this->em->persist($transaction);
+        if ($status === 'update') {
+            $this->em->merge($transaction);
+        } elseif ($status === 'create') {
+            $this->em->persist($transaction);
+        }
         $this->em->flush();
         
         return $transaction;
