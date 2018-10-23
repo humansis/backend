@@ -92,23 +92,22 @@ class HouseholdService
     {
         $pageIndex = $filters['pageIndex'];
         $pageSize = $filters['pageSize'];
+        $filter = $filters['filter'];
+        $sort = $filters['sort'];
 
         $limitMinimum = $pageIndex * $pageSize;
 
-        $households = $this->em->getRepository(Household::class)->getAllBy($iso3, $limitMinimum, $pageSize, $filters);
+        $households = $this->em->getRepository(Household::class)->getAllBy($iso3, $limitMinimum, $pageSize, $sort, $filter);
         $length = count($households[0]);
         $households = $households[1];
         /** @var Household $household */
-        foreach ($households as $household)
-        {
+        foreach ($households as $household) {
             $numberDependents = 0;
             /** @var Beneficiary $beneficiary */
-            foreach ($household->getBeneficiaries() as $beneficiary)
-            {
-                if ($beneficiary->getStatus() != 1)
-                {
+            foreach ($household->getBeneficiaries() as $beneficiary) {
+                if ($beneficiary->getStatus() != 1) {
                     $numberDependents++;
-                    $household->removeBeneficiary($beneficiary);
+                    // $household->removeBeneficiary($beneficiary);
                 }
             }
             $household->setNumberDependents($numberDependents);

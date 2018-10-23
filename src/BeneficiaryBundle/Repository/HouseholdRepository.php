@@ -62,7 +62,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * @param array $selects
      * @return mixed
      */
-    public function getAllBy($iso3, $begin, $pageSize, $filters = [], $selects = [])
+    public function getAllBy($iso3, $begin, $pageSize, $sort, $filters = [], $selects = [])
     {
         $qb = $this->createQueryBuilder("hh");
         $q = $qb->leftJoin("hh.location", "l")
@@ -81,6 +81,11 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->leftJoin("adm2.adm1", "adm1d")
             ->orWhere("adm1d.countryISO3 = :iso3 AND hh.archived = 0")
             ->setParameter("iso3", $iso3);
+        dump($sort);
+        if (array_key_exists('sort', $sort) && array_key_exists('direction', $sort)) {
+            if ($sort['sort'] == 'projects')
+                $q = $q->orderBy('hh.' . $sort['sort'], $sort['direction']);
+        }
 
         $allData = $q->getQuery()->getResult();
 
