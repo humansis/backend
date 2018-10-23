@@ -139,16 +139,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getSingleScalarResult();
     }
 
-    public function getAllofDistribution(DistributionData $distributionData)
-    {
-        $qb = $this->createQueryBuilder('b');
-        $q = $qb->leftJoin('b.distributionBeneficiary', 'db')
-            ->where('db.distributionData = :distributionData')
-            ->setParameter('distributionData', $distributionData);
-
-        return $q->getQuery()->getResult();
-    }
-
     /**
      * Get the head of household.
      *

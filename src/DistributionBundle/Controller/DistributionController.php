@@ -350,14 +350,14 @@ class DistributionController extends Controller
     {
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
+        $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($distributionData);
 
         $json = $this->get('jms_serializer')
             ->serialize(
-                $beneficiaries,
+                $distributionBeneficiaries,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    'FullReceivers',
+                    'Transaction',
                 ])
             );
 
