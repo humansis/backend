@@ -50,15 +50,15 @@ class DistributionBeneficiaryService
     }
     
     /**
-     * Get all beneficiaries from a distribution
+     * Get all distribution beneficiaries from a distribution
      *
      * @param DistributionData $distributionData
      * @return array
      */
-    public function getBeneficiaries(DistributionData $distributionData)
+    public function getDistributionBeneficiaries(DistributionData $distributionData)
     {
-        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
-        return $beneficiaries;
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(["distributionData" => $distributionData]);
+        return $distributionBeneficiaries;
     }
 
 

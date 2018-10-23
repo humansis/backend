@@ -50,7 +50,7 @@ class Beneficiary implements ExportableInterface
      * @var int
      *
      * @ORM\Column(name="gender", type="smallint")
-     * @Groups({"FullHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
      * @Assert\NotBlank(message="The gender is required.")
      */
     private $gender;
@@ -59,7 +59,7 @@ class Beneficiary implements ExportableInterface
      * @var boolean
      *
      * @ORM\Column(name="status", type="boolean")
-     * @Groups({"FullHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
      * @Assert\NotBlank(message="The status is required.")
      */
     private $status;
@@ -69,7 +69,7 @@ class Beneficiary implements ExportableInterface
      *
      * @ORM\Column(name="dateOfBirth", type="date")
      * @JMS_Type("DateTime<'Y-m-d'>")
-     * @Groups({"FullHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
      * @Assert\NotBlank(message="The date of birth is required.")
      */
     private $dateOfBirth;
@@ -100,7 +100,7 @@ class Beneficiary implements ExportableInterface
      * @var VulnerabilityCriterion
      *
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "Transaction"})
      */
     private $vulnerabilityCriteria;
 
@@ -118,7 +118,7 @@ class Beneficiary implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
-     * @Groups({"FullReceivers", "Transaction"})
+     * @Groups({"FullReceivers"})
      *
      * @var DistributionBeneficiary $distributionBeneficiary
      */
