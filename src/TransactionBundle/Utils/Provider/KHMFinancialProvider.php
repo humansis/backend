@@ -95,10 +95,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         try {
             $sent = $this->sendRequest("POST", $route, $body);
-            // TODO Remove log
-            dump($route);
-            dump($body);
-            dump($sent);
             if (property_exists($sent, 'error_code')) {
                 $transaction = $this->createOrUpdateTransaction(
                     $distributionBeneficiary, 
@@ -147,10 +143,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         try {
             $sent = $this->sendRequest("POST", $route, $body);
-            // TODO Remove log
-            dump($route);
-            dump($body);
-            dump($sent);
         } catch (Exception $e) {
             throw $e;
         }    
