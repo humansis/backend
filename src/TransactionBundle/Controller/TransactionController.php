@@ -53,7 +53,7 @@ class TransactionController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         $json = $this->get('jms_serializer')
-            ->serialize($response, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullReceivers"]));
+            ->serialize($response, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["Transaction"]));
         return new Response($json);
         
     }

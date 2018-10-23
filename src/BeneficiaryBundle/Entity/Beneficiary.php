@@ -24,7 +24,7 @@ class Beneficiary implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "Transaction"})
      */
     private $id;
 
@@ -32,7 +32,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="givenName", type="string", length=255)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "Transaction"})
      * @Assert\NotBlank(message="The given name is required.")
      */
     private $givenName;
@@ -41,7 +41,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="familyName", type="string", length=255)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "Transaction"})
      * @Assert\NotBlank(message="The family name is required.")
      */
     private $familyName;
@@ -106,7 +106,7 @@ class Beneficiary implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
      */
     private $phones;
 
@@ -118,7 +118,7 @@ class Beneficiary implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
-     * @Groups({"FullReceivers"})
+     * @Groups({"FullReceivers", "Transaction"})
      *
      * @var DistributionBeneficiary $distributionBeneficiary
      */

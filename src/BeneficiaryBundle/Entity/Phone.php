@@ -19,7 +19,7 @@ class Phone
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
      */
     private $id;
 
@@ -27,7 +27,7 @@ class Phone
      * @var string
      *
      * @ORM\Column(name="number", type="string", length=45)
-     * @Groups({"FullHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
      */
     private $number;
 
@@ -35,7 +35,7 @@ class Phone
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=45)
-     * @Groups({"FullHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
      */
     private $type;
 
@@ -43,7 +43,7 @@ class Phone
      * @var boolean
      *
      * @ORM\Column(name="proxy", type="boolean")
-     * @Groups({"FullHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
      */
     private $proxy;
 
