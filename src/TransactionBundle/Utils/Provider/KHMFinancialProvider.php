@@ -114,7 +114,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         try {
             $response = $this->getStatus($sent->transaction_id);
-            dump($response);
         } catch (\Exception $e) {
             throw $e;
         }
