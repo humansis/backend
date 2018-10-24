@@ -56,7 +56,6 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
     /**
      * Get all Household by country
-     * Use $filters to add a offset and a limit. Default => offset = 0 and limit = 10
      * @param $iso3
      * @param $begin
      * @param $pageSize
@@ -175,10 +174,14 @@ class HouseholdRepository extends AbstractCriteriaRepository
         }
         $allData = $q->getQuery()->getResult();
 
-        $q->setFirstResult($begin)
+        if (is_null($begin) && is_null($pageSize)) {
+            return $allData;
+        } else {
+            $q->setFirstResult($begin)
             ->setMaxResults($pageSize);
+            return [count($allData), $q->getQuery()->getResult()];
+        }
 
-        return [$allData, $q->getQuery()->getResult()];
     }
 
     /**

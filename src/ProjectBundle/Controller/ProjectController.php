@@ -207,7 +207,7 @@ class ProjectController extends Controller
      * @SWG\Tag(name="Projects")
      *
      * @SWG\Parameter(
-     *     name="beneficiaries",
+     *     name="filter",
      *     in="body",
      *     required=true,
      *     type ="array",
@@ -228,11 +228,11 @@ class ProjectController extends Controller
      * @return Response
      */
     public function addHouseholdsAction(Request $request, Project $project) {
-        $householdsArray = $request->request->get('beneficiaries');
+        $filters = $request->request->get('filter');
         $countryISO3 = $request->request->get('__country');
         try
         {
-            $result = $this->get('project.project_service')->AddMultipleHouseholds($project, $countryISO3, $householdsArray);
+            $result = $this->get('project.project_service')->addMultipleHouseholds($project, $countryISO3, $filters);
         }
         catch(\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);

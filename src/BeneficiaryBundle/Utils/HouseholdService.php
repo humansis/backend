@@ -98,7 +98,7 @@ class HouseholdService
         $limitMinimum = $pageIndex * $pageSize;
 
         $households = $this->em->getRepository(Household::class)->getAllBy($iso3, $limitMinimum, $pageSize, $sort, $filter);
-        $length = count($households[0]);
+        $length = $households[0];
         $households = $households[1];
         /** @var Household $household */
         foreach ($households as $household) {
