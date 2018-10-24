@@ -110,32 +110,41 @@ class DistributionBeneficiaryService
      * @return DistributionBeneficiary
      * @throws \Exception
      */
-    public function addBeneficiary(DistributionData $distributionData, array $beneficiaryArray)
+    public function addBeneficiary(DistributionData $distributionData, array $beneficiariesArray)
     {
         $beneficiary = null;
-        switch ($distributionData->getType())
-        {
-            case 0:
-                $headHousehold = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
-                $household = $headHousehold->getHousehold();
-                if (!$household instanceof Household)
-                    throw new \Exception("This household was not found.");
-                $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
-                break;
-            case 1:
-                $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
-                break;
-            default:
-                throw new \Exception("The type of the distribution is undefined.");
+
+        if($beneficiariesArray && sizeof($beneficiariesArray) > 0) {
+            foreach($beneficiariesArray as $beneficiaryArray) {
+
+                $distributionBeneficiary = new DistributionBeneficiary();
+                $distributionBeneficiary->setDistributionData($distributionData);
+
+                if($beneficiaryArray !== $beneficiariesArray["__country"]) {
+                    switch ($distributionData->getType())
+                    {
+                        case 0:
+                            $headHousehold = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
+                            $household = $headHousehold->getHousehold();
+                            if (!$household instanceof Household)
+                                throw new \Exception("This household was not found.");
+                            $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
+                            break;
+                        case 1:
+                            $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
+                            break;
+                        default:
+                            throw new \Exception("The type of the distribution is undefined.");
+                    }
+                    $distributionBeneficiary->setBeneficiary($beneficiary);   
+                    $this->em->persist($distributionBeneficiary);
+                }
+            }
+            $this->em->flush();
+            
+        } else {
+            return null;
         }
-
-        $distributionBeneficiary = new DistributionBeneficiary();
-        $distributionBeneficiary->setBeneficiary($beneficiary)
-            ->setDistributionData($distributionData);
-
-        $this->em->persist($distributionBeneficiary);
-
-        $this->em->flush();
 
         return $distributionBeneficiary;
     }
