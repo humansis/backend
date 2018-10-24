@@ -34,38 +34,4 @@ class BeneficiaryController extends Controller
 
         return new Response($json);
     }
-
-    /**
-     * @Rest\Put("/households/{id}/beneficiary", name="add_beneficiary_in_household")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
-     * @SWG\Tag(name="Beneficiary")
-     *  @SWG\Response(
-     *     response=200,
-     *     description="OK"
-     * )
-     *
-     * @param Request   $request
-     * @param Household $household
-     *
-     * @return Response
-     *
-     * @throws \Exception
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
-     */
-    public function addInHousehold(Request $request, Household $household)
-    {
-        $beneficiaryArray = $request->request->all();
-        if (array_key_exists('__country', $beneficiaryArray)) {
-            unset($beneficiaryArray['__country']);
-        }
-        /** @var BeneficiaryService $beneficiaryService */
-        $beneficiaryService = $this->get('beneficiary.beneficiary_service');
-
-        $beneficiary = $beneficiaryService->updateOrCreate($household, $beneficiaryArray, true);
-
-        $json = $this->get('jms_serializer')
-            ->serialize($beneficiary, 'json', SerializationContext::create()->setSerializeNull(true));
-
-        return new Response($json);
-    }
 }

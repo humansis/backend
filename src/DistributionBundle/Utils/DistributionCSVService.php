@@ -125,38 +125,6 @@ class DistributionCSVService
 
     /**
      * @param DistributionData $distributionData
-     * @param UploadedFile     $uploadedFile
-     *
-     * @return bool
-     *
-     * @throws \Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     */
-    public function import(DistributionData $distributionData, UploadedFile $uploadedFile)
-    {
-        $reader = new CsvReader();
-        $reader->setDelimiter(';');
-        $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
-        $sheetArray = $worksheet->toArray(null, true, true, true);
-        $index = 1;
-        $columnIdSync = null;
-        // Remove useless lines (like headers)
-        while ($index < Household::firstRow) {
-            if ($index === Household::indexRowHeader) {
-                $columnIdSync = $this->findColumnId($sheetArray[$index]);
-            }
-            unset($sheetArray[$index]);
-            ++$index;
-        }
-        // Analyze each rows of the file
-        $this->analyzeArray($distributionData, $sheetArray, $columnIdSync);
-
-        return true;
-    }
-
-    /**
-     * @param DistributionData $distributionData
      * @param array            $receiversArray
      * @param $columnIdSync
      *

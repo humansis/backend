@@ -141,18 +141,6 @@ class DistributionBeneficiaryService
     }
 
     /**
-     * @param DistributionBeneficiary $distributionBeneficiary
-     * @return bool
-     */
-    public function remove(DistributionBeneficiary $distributionBeneficiary)
-    {
-        $this->em->remove($distributionBeneficiary);
-        $this->em->flush();
-
-        return true;
-    }
-
-    /**
      * @param Int $distributionId
      * @param Beneficiary $beneficiary
      * @return bool

@@ -386,19 +386,6 @@ class HouseholdService
     }
 
     /**
-     * @param Household $household
-     * @return Household
-     */
-    public function remove(Household $household)
-    {
-        $household->setArchived(true);
-        $this->em->persist($household);
-        $this->em->flush();
-
-        return $household;
-    }
-
-    /**
      * @return mixed
      */
     public function exportToCsv() {

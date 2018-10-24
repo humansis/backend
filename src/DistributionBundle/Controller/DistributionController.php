@@ -203,30 +203,6 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Delete("/distributions/{id}/beneficiary", name="remove_beneficiary_in_distribution")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
-     *
-     * @SWG\Tag(name="Distributions")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Return if the beneficiary has been remove"
-     * )
-     *
-     * @param DistributionBeneficiary $distributionBeneficiary
-     *
-     * @return Response
-     */
-    public function removeBeneficiaryAction(DistributionBeneficiary $distributionBeneficiary)
-    {
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        $return = $distributionBeneficiaryService->remove($distributionBeneficiary);
-
-        return new Response(json_encode($return));
-    }
-
-    /**
      * @Rest\Delete("/beneficiaries/{id}", name="remove_one_beneficiary_in_distribution")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
