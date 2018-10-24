@@ -14,7 +14,6 @@ If you're an experienced dev and you'd like to get involved, contact us [here](h
 
 The global project documentation is in README.md of the frontend [repository](https://github.com/ReliefApplications/bms_front)
 
-If you're an experienced dev and you'd like to get involved, contact us [here](https://reliefapps.org/career.php) 
 
 API TECH doc
 ==============
