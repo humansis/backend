@@ -135,13 +135,14 @@ class DistributionBeneficiaryService
                             break;
                         default:
                             throw new \Exception("The type of the distribution is undefined.");
-                    }
+                    } 
+                    
                     $distributionBeneficiary->setBeneficiary($beneficiary);   
                     $this->em->persist($distributionBeneficiary);
                 }
             }
             $this->em->flush();
-            
+
         } else {
             return null;
         }
