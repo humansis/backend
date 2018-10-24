@@ -301,19 +301,26 @@ class DistributionCSVService
     {
         $spreadsheet = IOFactory::load($uploadedFile->getRealPath());
         $sheetArray = $spreadsheet->getSheet(0)->toArray();
+        $headers = $sheetArray[0];
         array_shift($sheetArray);
-        
+        $arrayWithKeys = array();
+
+        for ($j = 0; $j < count($sheetArray); $j++)
+            for ($i = 0; $i < count($headers); $i++)
+                $arrayWithKeys[$j][$headers[$i]] = $sheetArray[$j][$i];
+
         // Beneficiaries that are both in the file and the distribution, data will be updated
         $updateArray = array();
         // Beneficiaries that are in the distribution but not in the file
         $deleteArray = array();
         foreach($beneficiaries as $beneficiary) {
             $inFile = false;
-            foreach($sheetArray as $arrayBeneficiary) {
-                if ($beneficiary->getGivenName() === $arrayBeneficiary[11] 
-                    && ($beneficiary->getFamilyName() === $arrayBeneficiary[12]
+            foreach($arrayWithKeys as $arrayBeneficiary) {
+                if ($beneficiary->getGivenName() === $arrayBeneficiary['givenName']
+                    && ($beneficiary->getFamilyName() === $arrayBeneficiary['familyName']
                         || $beneficiary->getFamilyName() === "")) {
                     $arrayBeneficiary['id'] = $beneficiary->getId();
+
                     array_push($updateArray, $arrayBeneficiary);
                     $inFile = true;
                 }
@@ -323,20 +330,27 @@ class DistributionCSVService
             }
         }
 
+        $finalDeleteArray = array();
+        for ($i = 0; $i < count($deleteArray); $i++){
+            $finalDeleteArray[$i]['id'] = $deleteArray[$i]->getId();
+            $finalDeleteArray[$i]['givenName'] = $deleteArray[$i]->getGivenName();
+            $finalDeleteArray[$i]['familyName'] = $deleteArray[$i]->getFamilyName();
+        }
+
         // Names that are in the file but not in the distribution
         // New beneficiaries in the database or update existing beneficiary
-        $newAndAddArray = array_udiff($sheetArray, $updateArray,
+        $newAndAddArray = array_udiff($arrayWithKeys, $updateArray,
             function($array1, $array2) {
-                if ($array1[11] === $array2[11] && $array1[12] == $array2[12]) {
+                if ($array1['givenName'] === $array2['givenName'] && $array1['familyName'] == $array2['familyName']) {
                     return 0;
-                } else if ($array1[11] > $array2[11]) {
+                } else if ($array1['givenName'] > $array2['givenName']) {
                     return 1;
                 } else {
                     return -1;
                 }
             }
         );
-        
+
         // Beneficiaries that will be created as a household of 1
         $createArray = array();
         // Beneficiaries in the database that will be added
@@ -345,8 +359,8 @@ class DistributionCSVService
         foreach ($newAndAddArray as $beneficiaryArray) {
             $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy(
                 [
-                    "givenName" => $beneficiaryArray[11],
-                    "familyName" => $beneficiaryArray[12]
+                    "givenName" => $beneficiaryArray['givenName'],
+                    "familyName" => $beneficiaryArray['familyName']
                 ]
             );
             if ($beneficiary instanceof Beneficiary) {
@@ -356,10 +370,17 @@ class DistributionCSVService
             }
         }
 
+        $finalAddArray = array();
+        for ($i = 0; $i < count($addArray); $i++){
+            $finalAddArray[$i]['id'] = $addArray[$i]->getId();
+            $finalAddArray[$i]['givenName'] = $addArray[$i]->getGivenName();
+            $finalAddArray[$i]['familyName'] = $addArray[$i]->getFamilyName();
+        }
+
         $allArray = array(
             'created' => $createArray,
-            'added'   => $addArray,
-            'deleted' => $deleteArray,
+            'added'   => $finalAddArray,
+            'deleted' => $finalDeleteArray,
             'updated' => $updateArray
         );
 
@@ -385,12 +406,12 @@ class DistributionCSVService
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
             // Define location array
-            $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(["name" => $beneficiaryToCreate[7]]);
-            $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(["name" => $beneficiaryToCreate[8]]);
-            $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(["name" => $beneficiaryToCreate[9]]);
-            $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(["name" => $beneficiaryToCreate[10]]);
+            $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(["name" => $beneficiaryToCreate['adm1']]);
+            $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(["name" => $beneficiaryToCreate['adm2']]);
+            $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(["name" => $beneficiaryToCreate['adm3']]);
+            $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(["name" => $beneficiaryToCreate['adm4']]);
             
-            $adm4Name = $beneficiaryToCreate[10];
+            $adm4Name = $beneficiaryToCreate['adm4'];
             if ($adm4 instanceof Adm4) {
                 $adm3 = $adm4->getAdm3();
             }
@@ -416,22 +437,22 @@ class DistributionCSVService
             
             $householdToCreate = array(
                 "__country" => $countryIso3,
-                "address_street" => $beneficiaryToCreate[0],
-                "address_number" => strval($beneficiaryToCreate[1]),
-                "address_postcode" => strval($beneficiaryToCreate[2]),
-                "livelihood" => $beneficiaryToCreate[3],
-                "notes" => $beneficiaryToCreate[4],
-                "latitude" => strval($beneficiaryToCreate[5]),
-                "longitude" => strval($beneficiaryToCreate[6]),
+                "address_street" => $beneficiaryToCreate['addressStreet'],
+                "address_number" => strval($beneficiaryToCreate['addressNumber']),
+                "address_postcode" => strval($beneficiaryToCreate['addressPostcode']),
+                "livelihood" => $beneficiaryToCreate['livelihood'],
+                "notes" => $beneficiaryToCreate['notes'],
+                "latitude" => strval($beneficiaryToCreate['latitude']),
+                "longitude" => strval($beneficiaryToCreate['longitude']),
                 "location" => $locationArray,
                 "country_specific_answers" => array(),
                 "beneficiaries" => array(
                     array(
-                        "given_name" => $beneficiaryToCreate[11],
-                        "family_name" => $beneficiaryToCreate[12],
-                        "gender" => $beneficiaryToCreate[13],
-                        "status" => 1,
-                        "date_of_birth" => $beneficiaryToCreate[15],
+                        "given_name" => $beneficiaryToCreate['givenName'],
+                        "family_name" => $beneficiaryToCreate['familyName'],
+                        "gender" => $beneficiaryToCreate['gender'],
+                        "status" => $beneficiaryToCreate['status'],
+                        "date_of_birth" => $beneficiaryToCreate['dateOfBirth'],
                         "profile" => array(
                             "photo" => ""
                         ),
@@ -448,14 +469,15 @@ class DistributionCSVService
             
             // Add created beneficiary to distribution
             $newDistributionBeneficiary = new DistributionBeneficiary();
-            $distributionBeneficiary->setBeneficiary($toCreate);
-            $distributionBeneficiary->setDistributionData($distributionData);
+            $newDistributionBeneficiary->setBeneficiary($toCreate);
+            $newDistributionBeneficiary->setDistributionData($distributionData);
             $this->em->persist($newDistributionBeneficiary);
         }
         
         // Add
         foreach ($data['added'] as $beneficiaryToAdd) {
             $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd["id"]);
+            dump($beneficiaryToAdd);
             $household = $beneficiaryToAdd->getHousehold();
             if (! $household->getProjects()->contains($distributionProject)) {
                 $household->addProject($distributionProject);
@@ -469,10 +491,11 @@ class DistributionCSVService
 
         // Delete
         foreach ($data['deleted'] as $beneficiaryToRemove) {
+            $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToRemove['id']);
             $toRemove = $this->em->getRepository(DistributionBeneficiary::class)
                 ->findOneBy(
                     [
-                        'beneficiary' => $beneficiaryToRemove, 
+                        'beneficiary' => $beneficiary->getId(),
                         'distributionData' => $distributionData
                     ]
                 );
@@ -484,17 +507,17 @@ class DistributionCSVService
             $toUpdate = $this->em->getRepository(Beneficiary::class)
                 ->find($beneficiaryToUpdate['id']);
             
-            $toUpdate->setGivenName($beneficiaryToUpdate[11]);
-            $toUpdate->setFamilyName($beneficiaryToUpdate[12]);
-            $toUpdate->setGender($beneficiaryToUpdate[13]);
-            $toUpdate->setStatus(($beneficiaryToUpdate[14]) ? $beneficiaryToUpdate[14] : 0);
-            $toUpdate->setDateOfBirth(new \DateTime($beneficiaryToUpdate[15]));
+            $toUpdate->setGivenName($beneficiaryToUpdate['givenName']);
+            $toUpdate->setFamilyName($beneficiaryToUpdate['familyName']);
+            $toUpdate->setGender($beneficiaryToUpdate['gender']);
+            $toUpdate->setStatus(($beneficiaryToUpdate['status']) ? $beneficiaryToUpdate['status'] : 0);
+            $toUpdate->setDateOfBirth(new \DateTime($beneficiaryToUpdate['dateOfBirth']));
             
             $toUpdate->setVulnerabilityCriteria(null);
-            if (strpos($beneficiaryToUpdate[16], ",")) {
-                $vulnerabilityCriteria = explode(",", $beneficiaryToUpdate[16]);
+            if (strpos($beneficiaryToUpdate['vulnerabilityCriteria'], ",")) {
+                $vulnerabilityCriteria = explode(",", $beneficiaryToUpdate['vulnerabilityCriteria']);
             } else {
-                $vulnerabilityCriteria = [$beneficiaryToUpdate[16]];
+                $vulnerabilityCriteria = [$beneficiaryToUpdate['vulnerabilityCriteria']];
             }
 
             foreach($vulnerabilityCriteria as $criterion) {
@@ -510,10 +533,10 @@ class DistributionCSVService
                 $this->em->remove($phone);
             }
             $toUpdate->setPhones(null);
-            if (strpos($beneficiaryToUpdate[17], ",")) {
-                $phones = explode(",", $beneficiaryToUpdate[17]);
+            if (strpos($beneficiaryToUpdate['phones'], ",")) {
+                $phones = explode(",", $beneficiaryToUpdate['phones']);
             } else {
-                $phones = [$beneficiaryToUpdate[17]];
+                $phones = [$beneficiaryToUpdate['phones']];
             }
             foreach($phones as $phone) {
                 if ($phone) {
@@ -534,10 +557,10 @@ class DistributionCSVService
                 $this->em->remove($nationalId);
             }
             $toUpdate->setNationalIds(null);
-            if (strpos($beneficiaryToUpdate[18], ",")) {
-                $nationalIds = explode(",", $beneficiaryToUpdate[18]);
+            if (strpos($beneficiaryToUpdate['nationalIds'], ",")) {
+                $nationalIds = explode(",", $beneficiaryToUpdate['nationalIds']);
             } else {
-                $nationalIds = [$beneficiaryToUpdate[18]];
+                $nationalIds = [$beneficiaryToUpdate['nationalIds']];
             }
             foreach($nationalIds as $nationalId) {
                 if ($nationalId) {
@@ -557,7 +580,7 @@ class DistributionCSVService
         $this->em->flush();
         
         return array(
-            'result' => 'Benefiiciary list updated.',
+            'result' => 'Beneficiary list updated.',
         );
     }
 
