@@ -265,8 +265,14 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
-
-        $crawler = $this->request('POST', '/api/wsse/households/get/all');
+        
+        $body = [
+            "pageIndex" => 0,
+            "pageSize" => 10,
+            "filter" => [],
+            "sort" => []
+        ];
+        $crawler = $this->request('POST', '/api/wsse/households/get/all', $body);
         $households = json_decode($this->client->getResponse()->getContent(), true);
         if (!empty($households))
         {
