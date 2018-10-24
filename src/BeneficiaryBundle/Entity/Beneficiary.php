@@ -530,28 +530,27 @@ class Beneficiary implements ExportableInterface
         $adm4 = ( ! empty($this->getHousehold()->getLocation()->getAdm4()) ) ? $this->getHousehold()->getLocation()->getAdm4()->getName() : '';
 
         $finalArray = [
-            "Address street" => $this->getHousehold()->getAddressStreet(),
-            "Address number" => $this->getHousehold()->getAddressNumber(),
-            "Address postcode" => $this->getHousehold()->getAddressPostcode(),
-            "Livelihood" => $this->getHousehold()->getLivelihood(),
-            "Notes" => $this->getHousehold()->getNotes(),
-            "Latitude" => $this->getHousehold()->getLatitude(),
-            "Longitude" => $this->getHousehold()->getLongitude(),
-            "Adm1" => $adm1,
-            "Adm2" =>$adm2,
-            "Adm3" =>$adm3,
-            "Adm4" =>$adm4,
+            "addressStreet" => $this->getHousehold()->getAddressStreet(),
+            "addressNumber" => $this->getHousehold()->getAddressNumber(),
+            "addressPostcode" => $this->getHousehold()->getAddressPostcode(),
+            "livelihood" => $this->getHousehold()->getLivelihood(),
+            "notes" => $this->getHousehold()->getNotes(),
+            "latitude" => $this->getHousehold()->getLatitude(),
+            "longitude" => $this->getHousehold()->getLongitude(),
+            "adm1" => $adm1,
+            "adm2" =>$adm2,
+            "adm3" =>$adm3,
+            "adm4" =>$adm4,
         ];
 
-        $tempBenef = [ "Given name" => $this->getGivenName(),
-            "Family name"=> $this->getFamilyName(),
-            "Gender" => $this->getGender(),
-            "Status" => $this->getStatus(),
-            "Date of birth" => $this->getDateOfBirth()->format('Y-m-d'),
-            "Vulnerability criteria" => $valuescriteria,
-            "Phones" => $valuesphones ,
-            "National IDs" => $valuesnationalID,
-            '' => '',
+        $tempBenef = [ "givenName" => $this->getGivenName(),
+            "familyName"=> $this->getFamilyName(),
+            "gender" => $this->getGender(),
+            "status" => $this->getStatus(),
+            "dateOfBirth" => $this->getDateOfBirth()->format('Y-m-d'),
+            "vulnerabilityCriteria" => $valuescriteria,
+            "phones" => $valuesphones ,
+            "nationalIds" => $valuesnationalID
         ];
 
         foreach ($valueCountrySpecific as $key => $value)
