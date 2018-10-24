@@ -448,7 +448,7 @@ class DistributionCSVService
                         "given_name" => $beneficiaryToCreate['givenName'],
                         "family_name" => $beneficiaryToCreate['familyName'],
                         "gender" => $beneficiaryToCreate['gender'],
-                        "status" => $beneficiaryToCreate['status'],
+                        "status" => 1,
                         "date_of_birth" => $beneficiaryToCreate['dateOfBirth'],
                         "profile" => array(
                             "photo" => ""
@@ -491,7 +491,7 @@ class DistributionCSVService
             $toRemove = $this->em->getRepository(DistributionBeneficiary::class)
                 ->findOneBy(
                     [
-                        'beneficiary' => $beneficiary->getId(),
+                        'beneficiary' => $beneficiary,
                         'distributionData' => $distributionData
                     ]
                 );
