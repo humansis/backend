@@ -193,10 +193,15 @@ class ProjectController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        if ($valid)
+        if ($valid === 1) {
             return new Response("", Response::HTTP_OK);
-        if (!$valid)
+        }
+        else if ($valid === 0) {
             return new Response("", Response::HTTP_BAD_REQUEST);
+        }
+        else if ($valid === -1) {
+            return new Response("Project can't be archived (unfinished distribution)", Response::HTTP_UNAUTHORIZED);
+        }
     }
 
     /**

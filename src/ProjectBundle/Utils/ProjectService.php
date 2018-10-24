@@ -15,6 +15,8 @@ use ProjectBundle\Entity\Project;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserProject;
+use JMS\Serializer\Annotation\Type as JMS_Type;
+use dateTime;
 
 /**
  * Class ProjectService
@@ -273,35 +275,53 @@ class ProjectService
 
     /**
      * @param Project $project
-     * @return bool
      */
     public function delete(Project $project)
     {
         $distributionData = $this->em->getRepository(DistributionData::class)->findByProject($project);
-        if (!empty($distributionData))
-            $this->archived($project);
 
-        $userProjects = $this->em->getRepository(UserProject::class)->findBy(["project" => $project]);
-        if (!empty($userProjects))
-        {
-            foreach ($userProjects as $userProject)
-            {
-                $this->em->remove($userProject);
+        if (empty($distributionData)) {
+            if ($this->archived($project)) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        } else {
+            foreach($distributionData as $distribution) {
+                if ($distribution->getArchived() !== 1 && $distribution->getDateDistribution() > (new DateTime('now'))) {
+                    return(-1);
+                }
+            }
+            if ($this->archived($project)) {
+                return 1;
+            }
+            else {
+                return 0;
             }
         }
-        $this->em->flush();
 
-        try
-        {
-            $this->em->remove($project);
-            $this->em->flush();
-        }
-        catch (\Exception $exception)
-        {
-            return false;
-        }
+        // $userProjects = $this->em->getRepository(UserProject::class)->findBy(["project" => $project]);
+        // if (!empty($userProjects))
+        // {
+        //     foreach ($userProjects as $userProject)
+        //     {
+        //         $this->em->remove($userProject);
+        //     }
+        // }
+        // $this->em->flush();
 
-        return true;
+        // try
+        // {
+        //     dump('in');
+        //     $this->em->remove($project);
+        //     $this->em->flush();
+        // }
+        // catch (\Exception $exception)
+        // {
+        //     dump('fail:', $exception);
+        //     return false;
+        // }
     }
 
     /**
@@ -312,8 +332,13 @@ class ProjectService
     {
         $project->setArchived(1);
 
-        $this->em->persist($project);
-        $this->em->flush();
+        try {
+            $this->em->persist($project);
+            $this->em->flush();
+        }
+        catch(\Exception $e) {
+            return(false);
+        }
 
         return true;
     }
