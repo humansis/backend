@@ -301,13 +301,15 @@ class DistributionCSVService
     {
         $spreadsheet = IOFactory::load($uploadedFile->getRealPath());
         $sheetArray = $spreadsheet->getSheet(0)->toArray();
-        $headers = $sheetArray[0];
-        array_shift($sheetArray);
+        $headers = array_shift($sheetArray);
         $arrayWithKeys = array();
-
-        for ($j = 0; $j < count($sheetArray); $j++)
-            for ($i = 0; $i < count($headers); $i++)
-                $arrayWithKeys[$j][$headers[$i]] = $sheetArray[$j][$i];
+        foreach ($sheetArray as $beneficiaryArray) {
+            $beneficiaryWithKey = array();
+            foreach ($headers as $index => $key) {
+                $beneficiaryWithKey[$key] = $beneficiaryArray[$index];
+            }
+            array_push($arrayWithKeys, $beneficiaryWithKey);
+        }
 
         // Beneficiaries that are both in the file and the distribution, data will be updated
         $updateArray = array();
@@ -320,21 +322,18 @@ class DistributionCSVService
                     && ($beneficiary->getFamilyName() === $arrayBeneficiary['familyName']
                         || $beneficiary->getFamilyName() === "")) {
                     $arrayBeneficiary['id'] = $beneficiary->getId();
-
                     array_push($updateArray, $arrayBeneficiary);
                     $inFile = true;
                 }
             }
             if (! $inFile) {
-                array_push($deleteArray, $beneficiary);
+                $beneficiaryToDelete = array(
+                    'id' => $beneficiary->getId(),
+                    'givenName' => $beneficiary->getGivenName(),
+                    'familyName' => $beneficiary->getFamilyName()
+                );
+                array_push($deleteArray, $beneficiaryToDelete);
             }
-        }
-
-        $finalDeleteArray = array();
-        for ($i = 0; $i < count($deleteArray); $i++){
-            $finalDeleteArray[$i]['id'] = $deleteArray[$i]->getId();
-            $finalDeleteArray[$i]['givenName'] = $deleteArray[$i]->getGivenName();
-            $finalDeleteArray[$i]['familyName'] = $deleteArray[$i]->getFamilyName();
         }
 
         // Names that are in the file but not in the distribution
@@ -364,23 +363,21 @@ class DistributionCSVService
                 ]
             );
             if ($beneficiary instanceof Beneficiary) {
+                $beneficiaryToAdd = array(
+                    'id' => $beneficiary->getId(),
+                    'givenName' => $beneficiary->getGivenName(),
+                    'familyName' => $beneficiary->getFamilyName()
+                );
                 array_push($addArray, $beneficiary);
             } else {
                 array_push($createArray, $beneficiaryArray);
             }
         }
 
-        $finalAddArray = array();
-        for ($i = 0; $i < count($addArray); $i++){
-            $finalAddArray[$i]['id'] = $addArray[$i]->getId();
-            $finalAddArray[$i]['givenName'] = $addArray[$i]->getGivenName();
-            $finalAddArray[$i]['familyName'] = $addArray[$i]->getFamilyName();
-        }
-
         $allArray = array(
             'created' => $createArray,
-            'added'   => $finalAddArray,
-            'deleted' => $finalDeleteArray,
+            'added'   => $addArray,
+            'deleted' => $deleteArray,
             'updated' => $updateArray
         );
 
@@ -477,7 +474,6 @@ class DistributionCSVService
         // Add
         foreach ($data['added'] as $beneficiaryToAdd) {
             $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd["id"]);
-            dump($beneficiaryToAdd);
             $household = $beneficiaryToAdd->getHousehold();
             if (! $household->getProjects()->contains($distributionProject)) {
                 $household->addProject($distributionProject);
