@@ -87,10 +87,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
-        $pageIndex = $filters['pageIndex'];
-        $pageSize = $filters['pageSize'];
-        $filter = $filters['filter'];
-        $sort = $filters['sort'];
         $body = [
             "pageIndex" => 0,
             "pageSize" => 10,
