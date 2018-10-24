@@ -1,17 +1,23 @@
 [![Build Status](https://travis-ci.org/ReliefApplications/bms_api.svg?branch=dev)](https://travis-ci.org/ReliefApplications/bms_api)
 [![GitHub version](https://badge.fury.io/gh/ReliefApplications%2Fbms_api.svg)](https://badge.fury.io/gh/ReliefApplications%2Fbms_api)
 
-BMS API
+BENEFICIARY MANAGEMENT SYSTEM
 ==============
-A platform that allows humanitarian organisations to manage relief items (Food, Non Food Items, CASH) to people in needs for life-saving humanitarian responses to emergency situations
-
 
 ## About
 
-The doc is in README.md of the frontend [repository](https://github.com/ReliefApplications/bms_front)
+A platform that allows humanitarian organisations to manage relief items (Food, Non Food Items, CASH) to people in needs for life-saving humanitarian responses to emergency situations.
+
+BMS is the first fully open-source relief platform for humanitarian actors to efficiently manage relief operations after a disaster, during a war or in response to long term crises. 
+
+If you're an experienced dev and you'd like to get involved, contact us [here](https://reliefapps.org/career.php).
+
+The global project documentation is in README.md of the frontend [repository](https://github.com/ReliefApplications/bms_front)
 
 If you're an experienced dev and you'd like to get involved, contact us [here](https://reliefapps.org/career.php) 
 
+API TECH doc
+==============
  
 #### Infos
 
