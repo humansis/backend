@@ -84,24 +84,24 @@ abstract class DefaultFinancialProvider {
 
             if ($phoneNumber) {
                 if ($transaction && $transaction->getTransactionStatus() === 1) {
-                    array_push($response['already_sent'], $beneficiary);
+                    array_push($response['already_sent'], $distributionBeneficiary);
                 } else {
                     try {
                         $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary, $amount, $currency, $transaction);
                         if ($transaction->getTransactionStatus() === 0) {
-                            array_push($response['failure'], $beneficiary);
+                            array_push($response['failure'], $distributionBeneficiary);
                         } else {
-                            array_push($response['sent'], $beneficiary);
+                            array_push($response['sent'], $distributionBeneficiary);
                         }
                     } catch (Exception $e) {
                         throw $e;
                     }
                 }
             } else {
-                array_push($response['no_mobile'], $beneficiary);
+                array_push($response['no_mobile'], $distributionBeneficiary);
 
                 if(!$transaction || $transaction->getTransactionStatus() !== 1) {
-                    $this->createOrUpdateTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2, null, $transaction);
+                    $this->createOrUpdateTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2, "No Phone", $transaction);
                 }
             }
         }
@@ -127,7 +127,9 @@ abstract class DefaultFinancialProvider {
         string $message = null,
         Transaction $transaction = null)
     {
+        $status = 'update';
         if (!$transaction) {
+            $status = 'create';
             $transaction = new Transaction();
         }
         $transaction->setDistributionBeneficiary($distributionBeneficiary);
@@ -136,8 +138,15 @@ abstract class DefaultFinancialProvider {
         $transaction->setAmountSent($amountSent);
         $transaction->setTransactionStatus($transactionStatus);
         $transaction->setMessage($message);
-
-        $this->em->persist($transaction);
+        
+        $distributionBeneficiary->setTransaction($transaction);
+        
+        if ($status === 'update') {
+            $this->em->merge($transaction);
+        } elseif ($status === 'create') {
+            $this->em->persist($transaction);
+        }
+        $this->em->merge($distributionBeneficiary);
         $this->em->flush();
         
         return $transaction;
