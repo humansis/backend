@@ -267,8 +267,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
         
         $body = [
-            "pageIndex" => 0,
-            "pageSize" => 10,
+            "pageIndex" => null,
+            "pageSize" => null,
             "filter" => [],
             "sort" => []
         ];
