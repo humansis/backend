@@ -134,7 +134,6 @@ Class ExportService {
         }
 
         $rowIndex++;
-
         foreach ($rows as $key => $value) {
 
            foreach ($tableHeaders as $colIndex => $header) {
@@ -143,7 +142,7 @@ Class ExportService {
            }
            $rowIndex++;
         }
-        
+
         try {
             $filename = $this->generateFile($spreadsheet, $name, $type);
         } catch (\Exception $e) {

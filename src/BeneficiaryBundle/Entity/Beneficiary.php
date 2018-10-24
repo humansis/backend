@@ -559,7 +559,6 @@ class Beneficiary implements ExportableInterface
         foreach ($tempBenef as $key => $value)
             $finalArray[$key] = $value;
 
-        dump($finalArray);
         return $finalArray;
     }
 }
