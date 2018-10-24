@@ -3,7 +3,16 @@
 
 BMS API
 ==============
+A platform that allows humanitarian organisations to manage relief items (Food, Non Food Items, CASH) to people in needs for life-saving humanitarian responses to emergency situations
 
+
+## About
+
+The doc is in README.md of the frontend [repository](https://github.com/ReliefApplications/bms_front)
+
+If you're an experienced dev and you'd like to get involved, contact us [here](https://reliefapps.org/career.php) 
+
+ 
 #### Infos
 
 Set the header `country` of your request, with ISO3 code, if you need something which depends on a specific country.
