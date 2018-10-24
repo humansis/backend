@@ -134,31 +134,21 @@ Class ExportService {
         }
 
         $rowIndex++;
-
         foreach ($rows as $key => $value) {
 
            foreach ($tableHeaders as $colIndex => $header) {
-               if ($rowIndex == 2 && $tableHeaders[0] == 'Address street') {
-                   $index = chr(ord('A') + $colIndex) . $rowIndex;
-                   if ($colIndex == 21)
-                       $worksheet->setCellValue($index, 'Do not remove this line');
-                   else
-                       $worksheet->setCellValue($index, '');
-               }
-               else {
-                   $index = chr(ord('A') + $colIndex) . $rowIndex;
-                   $worksheet->setCellValue($index, $value[$header]);
-               }
+               $index = chr(ord('A') + $colIndex) . $rowIndex;
+               $worksheet->setCellValue($index, $value[$header]);
            }
            $rowIndex++;
         }
-        
+
         try {
             $filename = $this->generateFile($spreadsheet, $name, $type);
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
-        
+
         return $filename;
     }
 
