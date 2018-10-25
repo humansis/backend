@@ -333,7 +333,7 @@ class UserService
             foreach ($userProjects as $userProject)
             {
                 $this->em->remove($userProject);
-            } 
+            }
         }
 
         if($removeUser) {
