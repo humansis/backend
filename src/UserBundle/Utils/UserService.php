@@ -71,15 +71,6 @@ class UserService
     }
 
     /**
-     * @param  string $username
-     * @return User
-     */
-    public function getUserByUsername(string $username)
-    {
-        return $this->em->getRepository(User::class)->findOneByUsername($username);
-    }
-
-    /**
      * @param User $user
      * @param array $userData
      * @return User
@@ -102,25 +93,12 @@ class UserService
 
                 $project = $this->em->getRepository(Project::class)->find($project);
                 if ($project instanceof Project) {
-                    /*for ($i = 0; $i < count($user->getUserProjects()->getValues()) || $findUser == false; $i++) {
-                        if ($user->getUserProjects()->getValues()[$i]->getProject()->getId() == $project->getId()) {
-                            $findUser = true;
-                        }
-                    }*/
 
-
-                    //if ($findUser == false) {
                         $userProject = new UserProject();
                         $userProject->setRights($roles)
                             ->setUser($user)
                             ->setProject($project);
                         $this->em->persist($userProject);
-                    //}
-                    /*else {
-                        $userProject = $this->em->getRepository(UserProject::class)->findBy(['user' => $userData['id'], 'project' => $project->getId()]);
-                        $userProject[0]->setRights($roles);
-                        $this->em->persist($userProject[0]);
-                    }*/
                 }
             }
         }
