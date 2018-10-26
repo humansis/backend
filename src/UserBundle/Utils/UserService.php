@@ -209,9 +209,9 @@ class UserService
                 'connected' => true,
                 'user_id' => $user->getId(),
                 'salted_password' => $user->getPassword(),
-                'username' => $user->getUsername()
+                'username' => $user->getUsername(),
+                'voters' => $user->getRoles()[0]
             ];
-
         }
         elseif ($isCreation)
         {
