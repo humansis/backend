@@ -76,8 +76,14 @@ class HouseholdController extends Controller
         $filters = $request->request->all();
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
-        $households = $householdService->getAll($filters['__country'], $filters);
-
+        try
+        {
+            $households = $householdService->getAll($filters['__country'], $filters);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
         $json = $this->get('jms_serializer')
             ->serialize(
                 $households,
