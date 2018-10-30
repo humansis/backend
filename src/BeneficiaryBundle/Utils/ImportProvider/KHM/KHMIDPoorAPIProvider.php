@@ -197,10 +197,9 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
     }
 
     /**
-     * @param array $beneficiariesInHousehold
+     * @param array $beneficiary
      * @param Project $project
-     * @return Household|string
-     * @throws \Exception
+     * @return array
      */
     private function createAndInitHousehold(array $beneficiary, Project $project) {
         // Check if household already exists by searching one of its beneficiaries
@@ -234,6 +233,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
             $household = new Household();
             $household->addProject($project);
         }
+
         // Set household location and country specifics
         $household->setLocation($beneficiary['location']);
         $country_specific_answers = $this->setCountrySpecificAnswer("KHM", $household, $beneficiary);
@@ -249,6 +249,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
     /**
      * @param Household $household
      * @param array $beneficiariesInHousehold
+     * @return int|void
      * @throws \Exception
      */
     private function insertBeneficiaries(Household $household, array $beneficiariesInHousehold) {
@@ -278,7 +279,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @param string $countryISO3
      * @param Household $household
      * @param array $beneficiary
-     * @return CountrySpecificAnswer
+     * @return array
      */
     private function setCountrySpecificAnswer(string $countryISO3, Household $household, array $beneficiary) {
         $cambodiaCountrySpecifics = ['IDPoor', 'equityCardNo'];
@@ -288,12 +289,18 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
             $countrySpecific = $this->em->getRepository(CountrySpecific::class)
             ->findOneBy(['fieldString' => $field, 'countryIso3' => $countryISO3]);
             if ($countrySpecific) {
-                $countrySpecificAnswer = new CountrySpecificAnswer();
-                $countrySpecificAnswer->setCountrySpecific($countrySpecific)
-                                      ->setHousehold($household)
-                                      ->setAnswer($beneficiary[$field]);
-                array_push($countrySpecificAnswers, $countrySpecificAnswer);
-                $this->em->persist($countrySpecificAnswer);
+                $countrySpecificAnswerHousehold = $this->em->getRepository(CountrySpecificAnswer::class)->findOneBy(['countrySpecific' => $countrySpecific, 'household' => $household]);
+
+                if (!$countrySpecificAnswerHousehold) {
+                    $countrySpecificAnswerHousehold = new CountrySpecificAnswer();
+                    $countrySpecificAnswerHousehold->setCountrySpecific($countrySpecific);
+                    $countrySpecificAnswerHousehold->setHousehold($household);
+                }
+
+                $countrySpecificAnswerHousehold->setAnswer($beneficiary[$field]);
+
+                array_push($countrySpecificAnswers, $countrySpecificAnswerHousehold);
+                $this->em->persist($countrySpecificAnswerHousehold);
             }
         }
         return $countrySpecificAnswers;
