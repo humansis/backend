@@ -290,14 +290,18 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
             ->findOneBy(['fieldString' => $field, 'countryIso3' => $countryISO3]);
             if ($countrySpecific) {
                 $countrySpecificAnswerHousehold = $this->em->getRepository(CountrySpecificAnswer::class)->findOneBy(['countrySpecific' => $countrySpecific, 'household' => $household]);
-                if (!$countrySpecificAnswerHousehold) {
-                    $countrySpecificAnswer = new CountrySpecificAnswer();
-                    $countrySpecificAnswer->setCountrySpecific($countrySpecific)
-                        ->setHousehold($household)
-                        ->setAnswer($beneficiary[$field]);
-                    array_push($countrySpecificAnswers, $countrySpecificAnswer);
-                    $this->em->persist($countrySpecificAnswer);
+
+                if ($countrySpecificAnswerHousehold) {
+                    $this->em->remove($countrySpecificAnswerHousehold);
+                    $this->em->flush();
                 }
+
+                $countrySpecificAnswer = new CountrySpecificAnswer();
+                $countrySpecificAnswer->setCountrySpecific($countrySpecific)
+                    ->setHousehold($household)
+                    ->setAnswer($beneficiary[$field]);
+                array_push($countrySpecificAnswers, $countrySpecificAnswer);
+                $this->em->persist($countrySpecificAnswer);
             }
         }
         return $countrySpecificAnswers;
