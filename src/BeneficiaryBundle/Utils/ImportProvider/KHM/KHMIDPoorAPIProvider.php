@@ -293,8 +293,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
                 if (!$countrySpecificAnswerHousehold) {
                     $countrySpecificAnswerHousehold = new CountrySpecificAnswer();
-                    $countrySpecificAnswerHousehold->setCountrySpecific($countrySpecific)
-                    ->setHousehold($household);
+                    $countrySpecificAnswerHousehold->setCountrySpecific($countrySpecific);
+                    $countrySpecificAnswerHousehold->setHousehold($household);
                 }
 
                 $countrySpecificAnswerHousehold->setAnswer($beneficiary[$field]);
