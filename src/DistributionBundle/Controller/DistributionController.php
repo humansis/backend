@@ -27,7 +27,7 @@ class DistributionController extends Controller
 {
     /**
      * @Rest\Get("/distributions/{id}/random")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Distributions")
      *
