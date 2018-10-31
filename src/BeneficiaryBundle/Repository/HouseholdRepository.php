@@ -132,46 +132,48 @@ class HouseholdRepository extends AbstractCriteriaRepository
         }
 
         if (array_key_exists('filter', $filters)) {
-
             if ($filters['filter'] != '') {
                 $filtered = $filters['filtered'];
-                $filter = $filters['filter'];
+                $filters = explode(', ', $filters['filter']);
 
-                if ($filtered == 'location') {
-                    $q->andWhere("adm4.name LIKE :filter")
-                        ->orWhere("adm3.name LIKE :filter")
-                        ->orWhere("adm2.name LIKE :filter")
-                        ->orWhere("adm1.name LIKE :filter")
-                        ->setParameter('filter', '%' . $filter . '%');
-                } else if ($filtered == 'firstName') {
-                    $q->leftJoin('hh.beneficiaries', 'b2')
-                        ->andWhere('hh.id = b2.household')
-                        ->andWhere('b2.givenName LIKE :filter')
-                        ->setParameter('filter', '%' . $filter . '%');
-                } else if ($filtered == 'familyName') {
-                    $q->leftJoin('hh.beneficiaries', 'b2')
-                        ->andWhere('hh.id = b2.household')
-                        ->andWhere('b2.familyName LIKE :filter')
-                        ->setParameter('filter', '%' . $filter . '%');
-                } else if ($filtered == 'dependents') {
-                    $q->leftJoin("hh.beneficiaries", 'b2')
-                        ->andWhere('hh.id = b2.household')
-                        ->andHaving('COUNT(b2.household) = :filter')
-                        ->addGroupBy('b2.household')
-                        ->setParameter('filter', $filter + 1);
-                } else if ($filtered == 'projects') {
-                    $q->leftJoin('hh.projects', 'p2')
-                        ->andWhere('p2.name LIKE :filter')
-                        ->setParameter('filter', '%' . $filter . '%');
-                } else if ($filtered == 'vulnerabilities') {
-                    $q->leftJoin('hh.beneficiaries', 'b2')
-                        ->andWhere('hh.id = b2.household')
-                        ->leftJoin('b2.vulnerabilityCriteria', 'vb2')
-                        ->andWhere('vb2.fieldString LIKE :filter')
-                        ->setParameter('filter', '%' . $filter . '%');
+                $q->leftJoin('hh.beneficiaries', 'b2')
+                    ->leftJoin('hh.projects', 'p2');
+
+                foreach ($filters as $filter) {
+                    if ($filtered == 'location') {
+                        $q->andWhere("adm4.name LIKE :filter")
+                            ->orWhere("adm3.name LIKE :filter")
+                            ->orWhere("adm2.name LIKE :filter")
+                            ->orWhere("adm1.name LIKE :filter")
+                            ->setParameter('filter', '%' . $filter . '%');
+                    } else if ($filtered == 'firstName') {
+                        $q->andWhere('hh.id = b2.household')
+                            ->andWhere('b2.givenName LIKE :filter')
+                            ->setParameter('filter', '%' . $filter . '%');
+                    } else if ($filtered == 'familyName') {
+                        dump($filter);
+                        $q->andWhere('hh.id = b2.household')
+                            ->andWhere('b2.familyName LIKE :filter')
+                            ->setParameter('filter', '%' . $filter . '%');
+                        dump($filter);
+                    } else if ($filtered == 'dependents') {
+                        $q->andWhere('hh.id = b2.household')
+                            ->andHaving('COUNT(b2.household) = :filter')
+                            ->addGroupBy('b2.household')
+                            ->setParameter('filter', $filter + 1);
+                    } else if ($filtered == 'projects') {
+                        $q->andWhere('p2.name LIKE :filter')
+                            ->setParameter('filter', '%' . $filter . '%');
+                    } else if ($filtered == 'vulnerabilities') {
+                        $q->andWhere('hh.id = b2.household')
+                            ->leftJoin('b2.vulnerabilityCriteria', 'vb2')
+                            ->andWhere('vb2.fieldString LIKE :filter')
+                            ->setParameter('filter', '%' . $filter . '%');
+                    }
                 }
             }
         }
+        
         $allData = $q->getQuery()->getResult();
 
         if (is_null($begin) && is_null($pageSize)) {
