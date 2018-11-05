@@ -175,7 +175,32 @@ class LocationController extends Controller
                 SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
             );
         return new Response($json);
-
-        
     }
+
+    /**
+     * @Rest\Get("/location/households", name="all_location_by_households")
+     *
+     * @SWG\Tag(name="Location")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All location by households",
+     * )
+     *
+     * @return Response
+     */
+    public function getLocationByHouseholdsAction() {
+
+        $locationService = $this->get('location_service');
+        $location = $locationService->getLocationByHouseholds();
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $location,
+                'json',
+                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
+
 }

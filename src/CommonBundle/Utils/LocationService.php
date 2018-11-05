@@ -342,4 +342,28 @@ class LocationService
         return $response;
     }
 
+    /**
+     * Get the list of all location linked to households
+     * @return object[]
+     */
+    public function getLocationByHouseholds() {
+        $locationsArray = array();
+        $households = $this->em->getRepository(Household::class)->findAll();
+
+        foreach ($households as $household) {
+            if ($household->getLocation()->getAdm1() && !array_search($household->getLocation()->getAdm1()->getName(), $locationsArray))
+                array_push($locationsArray, $household->getLocation()->getAdm1()->getName());
+
+            else if ($household->getLocation()->getAdm2() && !array_search($household->getLocation()->getAdm2()->getName(), $locationsArray))
+                array_push($locationsArray, $household->getLocation()->getAdm2()->getName());
+
+            else if ($household->getLocation()->getAdm3() && !array_search($household->getLocation()->getAdm3()->getName(), $locationsArray))
+                array_push($locationsArray, $household->getLocation()->getAdm3()->getName());
+
+            else if ($household->getLocation()->getAdm4() && !array_search($household->getLocation()->getAdm4()->getName(), $locationsArray))
+                array_push($locationsArray, $household->getLocation()->getAdm4()->getName());
+        }
+
+        return $locationsArray;
+    }
 }
