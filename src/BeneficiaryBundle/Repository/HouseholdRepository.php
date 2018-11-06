@@ -153,6 +153,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                 ->orWhere("adm3.name LIKE :filter" . $index)
                                 ->orWhere("adm2.name LIKE :filter" . $index)
                                 ->orWhere("adm1.name LIKE :filter" . $index)
+                                ->addGroupBy('hh')
                                 ->setParameter('filter' . $index, '%' . $filter . '%');
                             $countLocation++;
                         }
@@ -161,30 +162,35 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                 ->orWhere("adm3.name LIKE :filter" . $index)
                                 ->orWhere("adm2.name LIKE :filter" . $index)
                                 ->orWhere("adm1.name LIKE :filter" . $index)
+                                ->addGroupBy('hh')
                                 ->setParameter('filter' . $index, '%' . $filter . '%');
                         }
                     } else if ($category == 'firstName') {
                         if ($countFirstName == 0) {
                             $q->andWhere('hh.id = b2.household')
                                 ->andWhere('b2.givenName LIKE :filter' . $index)
+                                ->addGroupBy('hh')
                                 ->setParameter('filter' . $index, '%' . $filter . '%');
                             $countFirstName++;
                         }
                         else {
                             $q->andWhere('hh.id = b2.household')
                                 ->orWhere('b2.givenName LIKE :filter' . $index)
+                                ->addGroupBy('hh')
                                 ->setParameter('filter' . $index, '%' . $filter . '%');
                         }
                     } else if ($category == 'familyName') {
                         if ($countFamilyName == 0) {
                             $q->andWhere('hh.id = b2.household')
                                 ->andWhere('b2.familyName LIKE :filter' . $index)
+                                ->addGroupBy('hh')
                                 ->setParameter('filter' . $index, '%' . $filter . '%');
                             $countFamilyName++;
                         }
                         else {
                             $q->andWhere('hh.id = b2.household')
                                 ->orWhere('b2.familyName LIKE :filter' . $index)
+                                ->addGroupBy('hh')
                                 ->setParameter('filter' . $index, '%' . $filter . '%');
                         }
                     } else if ($category == 'dependents') {
@@ -218,12 +224,14 @@ class HouseholdRepository extends AbstractCriteriaRepository
                             $q->andWhere('hh.id = b2.household')
                                 ->leftJoin('b2.vulnerabilityCriteria', 'vb2')
                                 ->andWhere('vb2.fieldString LIKE :filter' . $index)
+                                ->addGroupBy('hh')
                                 ->setParameter('filter' . $index, '%' . $filter . '%');
                             $countVulnerabilities++;
                         }
                         else {
                             $q->andWhere('hh.id = b2.household')
                                 ->orWhere('vb2.fieldString LIKE :filter' . $index)
+                                ->addGroupBy('hh')
                                 ->setParameter('filter' . $index, '%' . $filter . '%');
                         }
                     }
