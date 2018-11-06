@@ -131,108 +131,106 @@ class HouseholdRepository extends AbstractCriteriaRepository
             }
         }
 
-        if (array_key_exists('filter', $filters)) {
-            if ($filters['filter'] != '') {
-                $category = $filters['category'];
-                $filters = explode(', ', $filters['filter']);
+        if (count($filters) > 0) {
 
-                $q->leftJoin('hh.beneficiaries', 'b2')
-                    ->leftJoin('hh.projects', 'p2');
+            $q->leftJoin('hh.beneficiaries', 'b2')
+                ->leftJoin('hh.projects', 'p2');
 
-                $countLocation = 0;
-                $countFirstName = 0;
-                $countFamilyName = 0;
-                $countDependents = 0;
-                $countProjects = 0;
-                $countVulnerabilities = 0;
+            foreach ($filters as $indexFilter => $allFilter) {
+                if (count($allFilter['filter']) > 0) {
+                    $category = $allFilter['category'];
+                    $filters = $allFilter['filter'];
 
-                foreach ($filters as $index => $filter) {
-                    if ($category == 'location') {
-                        if ($countLocation == 0) {
-                            $q->andWhere("adm4.name LIKE :filter" . $index)
-                                ->orWhere("adm3.name LIKE :filter" . $index)
-                                ->orWhere("adm2.name LIKE :filter" . $index)
-                                ->orWhere("adm1.name LIKE :filter" . $index)
-                                ->addGroupBy('hh')
-                                ->setParameter('filter' . $index, '%' . $filter . '%');
-                            $countLocation++;
-                        }
-                        else {
-                            $q->orWhere("adm4.name LIKE :filter" . $index)
-                                ->orWhere("adm3.name LIKE :filter" . $index)
-                                ->orWhere("adm2.name LIKE :filter" . $index)
-                                ->orWhere("adm1.name LIKE :filter" . $index)
-                                ->addGroupBy('hh')
-                                ->setParameter('filter' . $index, '%' . $filter . '%');
-                        }
-                    } else if ($category == 'firstName') {
-                        if ($countFirstName == 0) {
-                            $q->andWhere('hh.id = b2.household')
-                                ->andWhere('b2.givenName LIKE :filter' . $index)
-                                ->addGroupBy('hh')
-                                ->setParameter('filter' . $index, '%' . $filter . '%');
-                            $countFirstName++;
-                        }
-                        else {
-                            $q->andWhere('hh.id = b2.household')
-                                ->orWhere('b2.givenName LIKE :filter' . $index)
-                                ->addGroupBy('hh')
-                                ->setParameter('filter' . $index, '%' . $filter . '%');
-                        }
-                    } else if ($category == 'familyName') {
-                        if ($countFamilyName == 0) {
-                            $q->andWhere('hh.id = b2.household')
-                                ->andWhere('b2.familyName LIKE :filter' . $index)
-                                ->addGroupBy('hh')
-                                ->setParameter('filter' . $index, '%' . $filter . '%');
-                            $countFamilyName++;
-                        }
-                        else {
-                            $q->andWhere('hh.id = b2.household')
-                                ->orWhere('b2.familyName LIKE :filter' . $index)
-                                ->addGroupBy('hh')
-                                ->setParameter('filter' . $index, '%' . $filter . '%');
-                        }
-                    } else if ($category == 'dependents') {
-                        if ($countDependents == 0) {
-                            $q->andWhere('hh.id = b2.household')
-                                ->andHaving('COUNT(b2.household) = :filter' . $index)
-                                ->addGroupBy('b2.household')
-                                ->setParameter('filter' . $index, $filter + 1);
-                            $countDependents++;
-                        }
-                        else {
-                            $q->andWhere('hh.id = b2.household')
-                                ->orHaving('COUNT(b2.household) = :filter' . $index)
-                                ->addGroupBy('b2.household')
-                                ->setParameter('filter' . $index, $filter + 1);
-                        }
-                    } else if ($category == 'projects') {
-                        if ($countProjects == 0) {
-                            $q->andWhere('p2.name LIKE :filter' . $index)
-                                ->addGroupBy('hh')
-                                ->setParameter('filter' . $index, '%' . $filter . '%');
-                            $countProjects++;
-                        }
-                        else {
-                            $q->orWhere('p2.name LIKE :filter' . $index)
-                                ->addGroupBy('hh')
-                                ->setParameter('filter' . $index, '%' . $filter . '%');
-                        }
-                    } else if ($category == 'vulnerabilities') {
-                        if ($countVulnerabilities == 0) {
-                            $q->andWhere('hh.id = b2.household')
-                                ->leftJoin('b2.vulnerabilityCriteria', 'vb2')
-                                ->andWhere('vb2.fieldString LIKE :filter' . $index)
-                                ->addGroupBy('hh')
-                                ->setParameter('filter' . $index, '%' . $filter . '%');
-                            $countVulnerabilities++;
-                        }
-                        else {
-                            $q->andWhere('hh.id = b2.household')
-                                ->orWhere('vb2.fieldString LIKE :filter' . $index)
-                                ->addGroupBy('hh')
-                                ->setParameter('filter' . $index, '%' . $filter . '%');
+
+                    $countLocation = 0;
+                    $countFirstName = 0;
+                    $countFamilyName = 0;
+                    $countDependents = 0;
+                    $countProjects = 0;
+                    $countVulnerabilities = 0;
+
+                    foreach ($filters as $index => $filter) {
+                        if ($category == 'location') {
+                            if ($countLocation == 0) {
+                                $q->andWhere("adm4.name LIKE :filter" . $indexFilter . $index)
+                                    ->orWhere("adm3.name LIKE :filter" . $indexFilter . $index)
+                                    ->orWhere("adm2.name LIKE :filter" . $indexFilter . $index)
+                                    ->orWhere("adm1.name LIKE :filter" . $indexFilter . $index)
+                                    ->addGroupBy('hh')
+                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
+                                $countLocation++;
+                            } else {
+                                $q->orWhere("adm4.name LIKE :filter" . $indexFilter . $index)
+                                    ->orWhere("adm3.name LIKE :filter" . $indexFilter . $index)
+                                    ->orWhere("adm2.name LIKE :filter" . $indexFilter . $index)
+                                    ->orWhere("adm1.name LIKE :filter" . $indexFilter . $index)
+                                    ->addGroupBy('hh')
+                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
+                            }
+                        } else if ($category == 'firstName') {
+                            if ($countFirstName == 0) {
+                                $q->andWhere('hh.id = b2.household')
+                                    ->andWhere('b2.givenName LIKE :filter' . $indexFilter . $index)
+                                    ->addGroupBy('hh')
+                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
+                                $countFirstName++;
+                            } else {
+                                $q->andWhere('hh.id = b2.household')
+                                    ->orWhere('b2.givenName LIKE :filter' . $indexFilter . $index)
+                                    ->addGroupBy('hh')
+                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
+                            }
+                        } else if ($category == 'familyName') {
+                            if ($countFamilyName == 0) {
+                                $q->andWhere('hh.id = b2.household')
+                                    ->andWhere('b2.familyName LIKE :filter' . $indexFilter . $index)
+                                    ->addGroupBy('hh')
+                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
+                                $countFamilyName++;
+                            } else {
+                                $q->andWhere('hh.id = b2.household')
+                                    ->orWhere('b2.familyName LIKE :filter' . $indexFilter . $index)
+                                    ->addGroupBy('hh')
+                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
+                            }
+                        } else if ($category == 'dependents') {
+                            if ($countDependents == 0) {
+                                $q->andWhere('hh.id = b2.household')
+                                    ->andHaving('COUNT(b2.household) = :filter' . $indexFilter . $index)
+                                    ->addGroupBy('b2.household')
+                                    ->setParameter('filter' . $indexFilter . $index, $filter + 1);
+                                $countDependents++;
+                            } else {
+                                $q->andWhere('hh.id = b2.household')
+                                    ->orHaving('COUNT(b2.household) = :filter' . $indexFilter . $index)
+                                    ->addGroupBy('b2.household')
+                                    ->setParameter('filter' . $indexFilter . $index, $filter + 1);
+                            }
+                        } else if ($category == 'projects') {
+                            if ($countProjects == 0) {
+                                $q->andWhere('p2.name LIKE :filter' . $indexFilter . $index)
+                                    ->addGroupBy('hh')
+                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
+                                $countProjects++;
+                            } else {
+                                $q->orWhere('p2.name LIKE :filter' . $indexFilter . $index)
+                                    ->addGroupBy('hh')
+                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
+                            }
+                        } else if ($category == 'vulnerabilities') {
+                            if ($countVulnerabilities == 0) {
+                                $q->andWhere('hh.id = b2.household')
+                                    ->leftJoin('b2.vulnerabilityCriteria', 'vb2')
+                                    ->andWhere('vb2.fieldString LIKE :filter' . $indexFilter . $index)
+                                    ->addGroupBy('hh')
+                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
+                                $countVulnerabilities++;
+                            } else {
+                                $q->andWhere('hh.id = b2.household')
+                                    ->orWhere('vb2.fieldString LIKE :filter' . $indexFilter . $index)
+                                    ->addGroupBy('hh')
+                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
+                            }
                         }
                     }
                 }
