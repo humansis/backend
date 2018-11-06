@@ -150,7 +150,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     $countVulnerabilities = 0;
 
                     foreach ($filters as $index => $filter) {
-                        if ($category == 'location') {
+                        if ($category == 'locations') {
                             if ($countLocation == 0) {
                                 $q->andWhere("adm4.name LIKE :filter" . $indexFilter . $index)
                                     ->orWhere("adm3.name LIKE :filter" . $indexFilter . $index)
