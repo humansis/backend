@@ -402,6 +402,10 @@ class DistributionCSVService
         
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
+
+            if($beneficiaryToCreate['status'] != 1)
+                throw new \Exception("You must insert only a head of the household in the file to import.");
+
             // Define location array
             $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(["name" => $beneficiaryToCreate['adm1']]);
             $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(["name" => $beneficiaryToCreate['adm2']]);
@@ -461,7 +465,7 @@ class DistributionCSVService
             );
             $this->householdService->createOrEdit($householdToCreate, array($distributionProject));
             $toCreate = $this->em->getRepository(Beneficiary::class)
-                ->findOneBy(["household" => $householdToCreate]);
+                ->findOneBy(["givenName" => $beneficiaryToCreate['givenName'], 'familyName' => $beneficiaryToCreate['familyName'], 'gender' => $beneficiaryToCreate['gender']]);
             $this->em->persist($toCreate);
             
             // Add created beneficiary to distribution
