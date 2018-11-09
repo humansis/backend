@@ -22,7 +22,7 @@ class TransactionController extends Controller
 {
 
     /**
-     * Send moeny to distribution beneficiaries via country financial provider
+     * Send money to distribution beneficiaries via country financial provider
      * @Rest\Post("/transaction/distribution/{id}/send", name="send_money_for_distribution")
      * 
      * @SWG\Tag(name="Transaction")

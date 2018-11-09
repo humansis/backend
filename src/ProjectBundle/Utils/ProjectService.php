@@ -275,6 +275,7 @@ class ProjectService
 
     /**
      * @param Project $project
+     * @return int
      */
     public function delete(Project $project)
     {
@@ -300,28 +301,6 @@ class ProjectService
                 return 0;
             }
         }
-
-        // $userProjects = $this->em->getRepository(UserProject::class)->findBy(["project" => $project]);
-        // if (!empty($userProjects))
-        // {
-        //     foreach ($userProjects as $userProject)
-        //     {
-        //         $this->em->remove($userProject);
-        //     }
-        // }
-        // $this->em->flush();
-
-        // try
-        // {
-        //     dump('in');
-        //     $this->em->remove($project);
-        //     $this->em->flush();
-        // }
-        // catch (\Exception $exception)
-        // {
-        //     dump('fail:', $exception);
-        //     return false;
-        // }
     }
 
     /**

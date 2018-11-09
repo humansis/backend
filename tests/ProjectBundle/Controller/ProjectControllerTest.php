@@ -74,43 +74,11 @@ class ProjectControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateProject
-     * @throws \Exception
-     */
-    public function testShowProject($project)
-    {
-        // Fake connection with a token for the user tester (ADMIN)
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $crawler = $this->request('GET', '/api/wsse/projects/' . $project['id'], $this->body);
-        $newProject = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
-        try
-        {
-            $this->assertArrayHasKey('id', $newProject);
-            $this->assertArrayHasKey('iso3', $newProject);
-            $this->assertArrayHasKey('name', $newProject);
-            $this->assertArrayHasKey('value', $newProject);
-            $this->assertArrayHasKey('notes', $newProject);
-            $this->assertArrayHasKey('end_date', $newProject);
-            $this->assertArrayHasKey('start_date', $newProject);
-            $this->assertArrayHasKey('number_of_households', $newProject);
-            $this->assertSame($newProject['name'], $this->name);
-        }
-        catch (\Exception $exception)
-        {
-            print_r("\nThe mapping of fields of Project entity is not correct.\n");
-            $this->remove($this->name);
-            return false;
-        }
-
-        return $newProject;
-    }
-
-    /**
-     * @depends testShowProject
-     * @throws \Exception
+     * @param $project
+     * @return bool
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function testEditProject($project)
     {

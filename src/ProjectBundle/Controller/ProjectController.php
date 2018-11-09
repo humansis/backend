@@ -49,30 +49,6 @@ class ProjectController extends Controller
     }
 
     /**
-     * Get a project
-     * @Rest\Get("/projects/{id}", name="show_project")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
-     *
-     * @SWG\Tag(name="Projects")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Project asked",
-     *     @Model(type=Project::class)
-     * )
-     *
-     * @param Project $project
-     * @return Response
-     */
-    public function showAction(Project $project)
-    {
-        $json = $this->get('jms_serializer')
-            ->serialize($project, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
-
-        return new Response($json, Response::HTTP_OK);
-    }
-
-    /**
      * Create a project
      * @Rest\Put("/projects", name="add_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")

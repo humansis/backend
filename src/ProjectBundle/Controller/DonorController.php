@@ -47,31 +47,6 @@ class DonorController extends Controller
     }
 
     /**
-     * Get a donor
-     *
-     * @Rest\Get("/donors/{id}", name="show_donor")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
-     *
-     * @SWG\Tag(name="Donors")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Donor asked",
-     *     @Model(type=Donor::class)
-     * )
-     *
-     * @param Donor $donor
-     * @return Response
-     */
-    public function showAction(Donor $donor)
-    {
-        $json = $this->get('jms_serializer')
-            ->serialize($donor, 'json', SerializationContext::create()->setGroups(['FullDonor'])->setSerializeNull(true));
-
-        return new Response($json, Response::HTTP_OK);
-    }
-
-    /**
      * @Rest\Put("/donors", name="create_donor")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
