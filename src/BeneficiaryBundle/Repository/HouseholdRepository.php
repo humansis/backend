@@ -149,20 +149,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         $countVulnerabilities = 0;
 
                         foreach ($filters as $index => $filter) {
-                            if ($category == 'firstName') {
-                                if ($countFirstName == 0) {
-                                    $q->andWhere('hh.id = b2.household')
-                                        ->andWhere('b2.givenName LIKE :filter' . $indexFilter . $index)
-                                        ->addGroupBy('hh')
-                                        ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
-                                    $countFirstName++;
-                                } else {
-                                    $q->andWhere('hh.id = b2.household')
-                                        ->orWhere('b2.givenName LIKE :filter' . $indexFilter . $index)
-                                        ->addGroupBy('hh')
-                                        ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
-                                }
-                            } else if ($category == 'familyName') {
+                            if ($category == 'familyName') {
+                                dump($filter);
+
                                 if ($countFamilyName == 0) {
                                     $q->andWhere('hh.id = b2.household')
                                         ->andWhere('b2.familyName LIKE :filter' . $indexFilter . $index)
@@ -175,6 +164,12 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                         ->addGroupBy('hh')
                                         ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
                                 }
+                                $q->orWhere('b2.givenName LIKE :filter' . $indexFilter . $index)
+                                    ->addGroupBy('hh')
+                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
+
+                                dump($filter);
+
                             } else if ($category == 'dependents') {
                                 if ($countDependents == 0) {
                                     $q->andWhere('hh.id = b2.household')
