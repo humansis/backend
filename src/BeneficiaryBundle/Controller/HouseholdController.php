@@ -110,7 +110,8 @@ class HouseholdController extends Controller
      *     name="projects",
      *     in="body",
      *     required=true,
-     *     type="array"
+     *     type="array",
+     *     schema={}
      * )
      *
      * @SWG\Response(
@@ -179,7 +180,8 @@ class HouseholdController extends Controller
      *     name="projects",
      *     in="body",
      *     required=true,
-     *     type="array"
+     *     type="array",
+     *     schema={}
      * )
      *
      * @SWG\Response(
@@ -379,6 +381,7 @@ class HouseholdController extends Controller
      *     name="household",
      *     in="body",
      *     type="string",
+     *     schema={},
      *     required=true,
      *     description="fields of the household which must be updated",
      *     @Model(type=Household::class)

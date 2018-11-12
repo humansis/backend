@@ -44,10 +44,10 @@ class DistributionBeneficiary
     /**
      * @var Transaction
      *
-     * @ORM\OneToOne(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary")
+     * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary")
      * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "Transaction"})
      */
-    private $transaction;
+    private $transactions;
 
     /**
      * Get id.
@@ -112,22 +112,47 @@ class DistributionBeneficiary
      * 
      * @return Transaction
      */
-    public function getTransaction()
+    public function getTransactions()
     {
-        return $this->transaction;
+        return $this->transactions;
     }
  
     /** 
-     * Set the value of Transaction 
+     * Add a Transaction 
      * 
      * @param Transaction transaction
      * 
      * @return self
      */
-    public function setTransaction(Transaction $transaction)
+    public function addTransaction(Transaction $transaction)
     {
-        $this->transaction = $transaction;
+        $this->transactions[] = $transaction;
  
+        return $this;
+    }
+    
+    /**
+     * Remove a Transaction
+     * @param  Transaction $transaction
+     * @return self                  
+     */
+    public function removeTransaction(Transaction $transaction)
+    {
+        $this->transactions->removeElement($transaction);
+        return $this;
+    }
+    
+    /**
+     * Set transactions
+     *
+     * @param $collection
+     *
+     * @return self
+     */
+    public function setPhones(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->transactions = $collection;
+
         return $this;
     }
  

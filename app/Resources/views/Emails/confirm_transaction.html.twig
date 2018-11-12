@@ -1,0 +1,15 @@
+{# app/Resources/views/Emails/confirm_transaction.html.twig #}
+<h3>Warning! You are about to send {{amount}} to {{number}} beneficiaries.</h3>
+
+Distribution: {{distribution}}
+<br />
+Amount to send: {{amount}}
+<br />
+Beneficiaries: {{number}}
+<br />
+Date: {{date | date("m/d/Y")}}
+<br />
+Sent by: {{email}}
+<br /><br />
+To confirm this transaction, please copy this authentication code into the platform:
+<strong>{{code}}</strong>

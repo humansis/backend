@@ -11,6 +11,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 use DistributionBundle\Entity\DistributionData;
 
@@ -22,8 +23,9 @@ class TransactionController extends Controller
 {
 
     /**
-     * Send moeny to distribution beneficiaries via country financial provider
+     * Send money to distribution beneficiaries via country financial provider
      * @Rest\Post("/transaction/distribution/{id}/send", name="send_money_for_distribution")
+     * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
      * 
      * @SWG\Tag(name="Transaction")
      *
@@ -43,19 +45,75 @@ class TransactionController extends Controller
      */
     public function postTransactionAction(Request $request, DistributionData $distributionData)  {
         $countryISO3 = $request->request->get('__country');
+        $code = $request->request->get('code');
+        $user = $this->getUser();
         
-        try
-        {
-            $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $distributionData);
+        $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code);
+        if (! $validatedTransaction) {
+            return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
         }
-        catch (\Exception $exception)
-        {
+        
+        try {
+            $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $distributionData, $user);
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+        
         $json = $this->get('jms_serializer')
             ->serialize($response, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["Transaction"]));
         return new Response($json);
         
+    }
+    
+    /**
+     * Send a verification code via email to confirm the transaction
+     * @Rest\Post("/transaction/distribution/{id}/email", name="send_transaction_email_verification")
+     * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
+     * 
+     * @SWG\Tag(name="Transaction")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     * 
+     * @param  Request $request
+     * @param DistributionData $distributionData 
+     * @return Response
+     */
+    public function sendVerificationEmailAction(Request $request, DistributionData $distributionData) {
+        $user = $this->getUser();
+        try {
+            $this->get('transaction.transaction_service')->sendEmail($user, $distributionData);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return new Response("Email sent");
+    }
+    
+    /**
+     * Update the status of the transactions sent through external API
+     * @Rest\Get("/transaction/distribution/{id}/email", name="update_transaction_status")
+     * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
+     * 
+     * @SWG\Tag(name="Transaction")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     * 
+     * @param  Request $request
+     * @param DistributionData $distributionData 
+     * @return Response
+     */
+    public function updateTransactionStatusAction(Request $request, DistributionData $distributionData) {
+        try {
+            $response = $this->get('transaction.transaction_service')->updateTransactionStatus($distributionData);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return new Response();
     }
 
 }

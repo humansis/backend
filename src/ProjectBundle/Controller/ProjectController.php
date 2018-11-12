@@ -127,6 +127,7 @@ class ProjectController extends Controller
      * @SWG\Parameter(
      *     name="Project",
      *     in="body",
+     *     schema={},
      *     required=true,
      *     @Model(type=Project::class, groups={"FullProject"})
      * )
@@ -215,7 +216,8 @@ class ProjectController extends Controller
      *     name="filter",
      *     in="body",
      *     required=true,
-     *     type ="array",
+     *     type="array",
+     *     schema={}
      * )
      *
      * @SWG\Response(

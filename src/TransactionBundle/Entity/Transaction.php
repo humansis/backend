@@ -3,6 +3,7 @@
 namespace TransactionBundle\Entity;
 
 use DistributionBundle\Entity\DistributionBeneficiary;
+use UserBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
@@ -101,7 +102,7 @@ class Transaction
     /**
      * @var DistributionBeneficiary
      *
-     * @ORM\OneToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="transaction", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="transactions", cascade={"persist"})
      */
     private $distributionBeneficiary;
 
@@ -114,6 +115,13 @@ class Transaction
      * @Groups({"Transaction"})
      */
     private $updatedOn;
+    
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="transactions", cascade={"persist"})
+     */
+    private $sentBy;
 
     /**
      * Constructor
@@ -327,6 +335,30 @@ class Transaction
     }
  
     /**
+    * Get the value of Sent By 
+    * 
+    * @return User
+    */
+    public function getSentBy()
+    {
+        return $this->sentBy;
+    }
+    
+    /** 
+    * Set the value of Sent By 
+    * 
+    * @param User sentBy
+    * 
+    * @return self
+    */
+    public function setSentBy(User $sentBy)
+    {
+        $this->sentBy = $sentBy;
+        
+        return $this;
+    }
+    
+    /**
      * Get the value of Updated On 
      * 
      * @return \DateTime|null
@@ -349,5 +381,4 @@ class Transaction
  
         return $this;
     }
- 
 }
