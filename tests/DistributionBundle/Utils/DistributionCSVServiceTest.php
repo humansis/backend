@@ -33,7 +33,7 @@ class DistributionCSVServiceTest extends BMSServiceTestCase
         $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
         $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiaryInDistribution.csv', 'beneficiaryInDistribution.csv');
 
-        $jsonFromparseCSV = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $uploadedFile);
+        $jsonFromparseCSV = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
 
         $createArray = $jsonFromparseCSV['created'];
         $addArray = $jsonFromparseCSV['added'];
