@@ -249,34 +249,6 @@ class DistributionService
     }
 
     /**
-     * Distribution Type change number to string
-     * @param bool $type
-     * @return string
-     */
-    public function guessTypeString(bool $type)
-    {
-        return ($type == 1) ? 'beneficiary' : 'household';
-    }
-
-    /**
-     * Transform the object selectionCriteria to an array
-     *
-     * @param SelectionCriteria $selectionCriteria
-     * @return array
-     */
-    public function getArrayOfCriteria(SelectionCriteria $selectionCriteria)
-    {
-        return [
-            "table_string" => $selectionCriteria->getTableString(),
-            "field_string" => $selectionCriteria->getFieldString(),
-            "value_string" => $selectionCriteria->getValueString(),
-            "condition_string" => $selectionCriteria->getConditionString(),
-            "kind_beneficiary" => $selectionCriteria->getKindBeneficiary(),
-            "id_field" => $selectionCriteria->getIdField()
-        ];
-    }
-
-    /**
      * Get all distributions
      *
      * @return array
@@ -290,7 +262,8 @@ class DistributionService
     /**
      * Get all distributions
      *
-     * @return array
+     * @param int $id
+     * @return null|object
      */
     public function findOneById(int $id)
     {
@@ -298,39 +271,8 @@ class DistributionService
     }
 
     /**
-     * Edit a distribution
-     *
      * @param DistributionData $distributionData
-     * @param array $distributionArray
-     * @return DistributionData
-     * @throws \Exception
-     */
-    public function edit(DistributionData $distributionData, array $distributionArray)
-    {
-        /** @var DistributionData $distribution */
-        $editedDistribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
-        $editedDistribution->setId($distributionData->getId());
-
-        $errors = $this->validator->validate($editedDistribution);
-        if (count($errors) > 0)
-        {
-            $errorsArray = [];
-            foreach ($errors as $error)
-            {
-                $errorsArray[] = $error->getMessage();
-            }
-            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
-        }
-
-        $this->em->merge($editedDistribution);
-        $this->em->flush();
-
-        return $editedDistribution;
-    }
-
-    /**
-     * @param DistributionData $distributionData
-     * @return null|object
+     * @return null|object|string
      */
     public function archived(DistributionData $distributionData)
     {

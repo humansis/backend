@@ -36,39 +36,6 @@ class CountrySpecificService
     }
 
     /**
-     * @param $countryIso3
-     * @param array $countrySpecificArray
-     * @return CountrySpecific
-     */
-    public function create($countryIso3, array $countrySpecificArray)
-    {
-        $countrySpecific = new CountrySpecific($countrySpecificArray["field"], strtolower($countrySpecificArray["type"]), $countryIso3);
-
-        $this->em->persist($countrySpecific);
-        $this->em->flush();
-
-        return $countrySpecific;
-    }
-
-    /**
-     * @param CountrySpecific $countrySpecific
-     * @param $countryIso3
-     * @param array $countrySpecificArray
-     * @return CountrySpecific
-     */
-    public function update(CountrySpecific $countrySpecific, $countryIso3, array $countrySpecificArray)
-    {
-        $countrySpecific->setType($countrySpecificArray["type"])
-            ->setFieldString($countrySpecificArray["field"])
-            ->setCountryIso3($countryIso3);
-
-        $this->em->persist($countrySpecific);
-        $this->em->flush();
-
-        return $countrySpecific;
-    }
-
-    /**
      * @param CountrySpecific $countrySpecific
      * @return bool
      */

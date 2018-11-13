@@ -175,7 +175,5 @@ class LocationController extends Controller
                 SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
             );
         return new Response($json);
-
-        
     }
 }

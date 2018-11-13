@@ -69,7 +69,7 @@ class TransactionService {
     /**
      * Get the financial provider corresponding to the current country
      * @param  string $countryISO3 iso3 code of the country
-     * @return Class
+     * @return object|Class|DefaultFinancialProvider
      * @throws \Exception
      */
     private function getFinancialProviderForCountry(string $countryISO3)

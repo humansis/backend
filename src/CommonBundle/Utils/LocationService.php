@@ -341,5 +341,4 @@ class LocationService
 
         return $response;
     }
-
 }
