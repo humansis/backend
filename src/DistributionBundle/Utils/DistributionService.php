@@ -316,7 +316,7 @@ class DistributionService
         return $editedDistribution;
     }
 
-    
+
     /**
      * @param int $projectId
      * @param string $type
