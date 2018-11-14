@@ -18,6 +18,7 @@ class MoreVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId)
     {
+        dump($householdArray);
         /** @var Household $oldHousehold */
         $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['old']['id']);
         $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($oldHousehold);

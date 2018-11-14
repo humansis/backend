@@ -24,13 +24,18 @@ class CSVToArrayMapper extends AbstractMapper
         $mappingCSV = $this->loadMappingCSVOfCountry($countryIso3);
         $listHouseholdArray = [];
         $householdArray = null;
-        $rowHeader = null;
+        $rowHeader = [];
         $formattedHouseholdArray = null;
 
         foreach ($sheetArray as $indexRow => $row)
         {
+            if (!$row['A'] && !$row['B'] && !$row['C'] && !$row['D'] && !$row['E'] && !$row['F'] && !$row['G'] && !$row['H'] && !$row['I'] && !$row['J'] && !$row['K'] && !$row['L'] && !$row['M'] && !$row['N'] && !$row['O'] && !$row['P'] && !$row['Q'] && !$row['R'] && !$row['S'] && !$row['T'] && !$row['U'])
+                continue;
+
+            //Index == 2
             if (Household::indexRowHeader === $indexRow)
                 $rowHeader = $row;
+            //Index < 3
             if ($indexRow < Household::firstRow)
                 continue;
 
