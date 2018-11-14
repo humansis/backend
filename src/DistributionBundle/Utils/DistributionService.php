@@ -286,6 +286,38 @@ class DistributionService
     }
 
     /**
+     * Edit a distribution
+     *
+     * @param DistributionData $distributionData
+     * @param array $distributionArray
+     * @return DistributionData
+     * @throws \Exception
+     */
+    public function edit(DistributionData $distributionData, array $distributionArray)
+    {
+        /** @var DistributionData $distribution */
+        $editedDistribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
+        $editedDistribution->setId($distributionData->getId());
+
+        $errors = $this->validator->validate($editedDistribution);
+        if (count($errors) > 0)
+        {
+            $errorsArray = [];
+            foreach ($errors as $error)
+            {
+                $errorsArray[] = $error->getMessage();
+            }
+            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->em->merge($editedDistribution);
+        $this->em->flush();
+
+        return $editedDistribution;
+    }
+
+
+    /**
      * @param int $projectId
      * @param string $type
      * @return mixed

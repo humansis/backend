@@ -290,7 +290,7 @@ class ProjectService
             }
         } else {
             foreach($distributionData as $distribution) {
-                if ($distribution->getArchived() !== 1 && $distribution->getDateDistribution() > (new DateTime('now'))) {
+                if (!$distribution->getArchived() && $distribution->getDateDistribution() > (new DateTime('now'))) {
                     return(-1);
                 }
             }

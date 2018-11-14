@@ -103,7 +103,7 @@ class DistributionCSVService
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function parseCSV($countryIso3, $beneficiaries, UploadedFile $uploadedFile)
+    public function parseCSV($countryIso3, $beneficiaries, DistributionData $distributionData, UploadedFile $uploadedFile)
     {
         $spreadsheet = IOFactory::load($uploadedFile->getRealPath());
         $sheetArray = $spreadsheet->getSheet(0)->toArray();
