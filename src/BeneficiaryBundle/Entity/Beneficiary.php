@@ -59,7 +59,7 @@ class Beneficiary implements ExportableInterface
      * @var boolean
      *
      * @ORM\Column(name="status", type="boolean")
-     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction", "SmallHousehold"})
      * @Assert\NotBlank(message="The status is required.")
      */
     private $status;
