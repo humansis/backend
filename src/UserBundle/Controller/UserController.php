@@ -383,7 +383,7 @@ class UserController extends Controller
         }
         catch (\Exception $exception)
         {
-            return new Response($exception->getMessage());
+            return new Response($exception->getMessage(), Response::HTTP_UNAUTHORIZED);
         }
 
         $userJson = $this->get('jms_serializer')->serialize(
