@@ -151,7 +151,7 @@ class TransactionService {
      * @param  DistributionData $distributionData 
      * @return array                             
      */
-    public function updateTransactionStatus(DistributionData $distributionData)
+    public function updateTransactionStatus($countryISO3, DistributionData $distributionData)
     {
         try {            
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);

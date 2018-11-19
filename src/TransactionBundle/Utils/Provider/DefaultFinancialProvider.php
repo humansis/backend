@@ -140,13 +140,6 @@ abstract class DefaultFinancialProvider {
             }
         }
         
-        $response = array(
-            'sent'       => array(),
-            'failure'       => array(),
-            'no_mobile'     => array(),
-            'already_sent'  => array()
-        );
-        
         // Record transaction
         $data = "\nTRANSACTION DONE FOR"
                 . "\nUSER SENDING MONEY: "
