@@ -137,7 +137,6 @@ class HouseholdCSVService
             throw new \Exception("Your session for this import has expired");
         // If there is a treatment class for this step, call it
         $treatment = $this->guessTreatment($step);
-        dump($treatment);
         if ($treatment !== null)
             $treatReturned = $treatment->treat($project, $treatReturned);
 
@@ -146,7 +145,6 @@ class HouseholdCSVService
 
         /** @var AbstractVerifier $verifier */
         $verifier = $this->guessVerifier($step);
-        dump($verifier);
         $return = [];
         if (null === $verifier)
         {
@@ -158,7 +156,6 @@ class HouseholdCSVService
         foreach ($treatReturned as $index => $householdArray)
         {
             $returnTmp = $verifier->verify($countryIso3, $householdArray, $cache_id);
-            dump($returnTmp);
             // IF there are errors
             if (null !== $returnTmp && [] !== $returnTmp)
             {
