@@ -76,6 +76,15 @@ class HouseholdController extends Controller
         $filters = $request->request->all();
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
+
+        $actionName = $request->attributes->get('_route');
+
+        $router = $this->container->get('router');
+        $route = $router->getRouteCollection()->get($actionName);
+        $controllerName = $route->getDefault('_controller');
+
+        dump($controllerName);
+
         try
         {
             $households = $householdService->getAll($filters['__country'], $filters);
