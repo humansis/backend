@@ -136,7 +136,9 @@ class DistributionCSVService
                 $beneficiaryToDelete = array(
                     'id' => $beneficiary->getId(),
                     'givenName' => $beneficiary->getGivenName(),
-                    'familyName' => $beneficiary->getFamilyName()
+                    'familyName' => $beneficiary->getFamilyName(),
+                    'dateOfBirth' => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                    'gender' => $beneficiary->getGender()
                 );
                 array_push($deleteArray, $beneficiaryToDelete);
             }
