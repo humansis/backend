@@ -159,6 +159,8 @@ abstract class DefaultFinancialProvider {
      */
     public function updateStatusDistribution(DistributionData $distributionData)
     {
+        $response = array();
+
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
         
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
@@ -171,8 +173,9 @@ abstract class DefaultFinancialProvider {
             if ($successfulTransaction) {
                 try {
                     $this->updateStatusTransaction($successfulTransaction); 
+                    array_push($response, $distributionBeneficiary);
                 } catch (\Exception $e) {
-                    // do something
+                    throw $e;
                 }
             }
         }
