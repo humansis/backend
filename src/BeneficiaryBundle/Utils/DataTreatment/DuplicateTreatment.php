@@ -6,6 +6,10 @@ namespace BeneficiaryBundle\Utils\DataTreatment;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use ProjectBundle\Entity\Project;
+use RA\RequestValidatorBundle\RequestValidator\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
+
+
 
 class DuplicateTreatment extends AbstractTreatment
 {
@@ -16,7 +20,7 @@ class DuplicateTreatment extends AbstractTreatment
      *
      * @param Project $project
      * @param array $householdsArray
-     * @return array
+     * @return array|Response
      * @throws \Exception
      */
     public function treat(Project $project, array $householdsArray)
@@ -41,6 +45,12 @@ class DuplicateTreatment extends AbstractTreatment
                         $deleted = $this->beneficiaryService->remove($beneficiary);
                         if (!$deleted)
                             throw new \Exception("This beneficiary is head of household. You can't delete her/him");
+                    }
+
+                    $household = $this->householdService->createOrEdit($newHousehold, array($project), null);
+
+                    if (!$household) {
+                        throw new \Exception("Unable to create a new household");
                     }
                 }
                 else

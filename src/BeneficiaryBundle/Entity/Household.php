@@ -28,7 +28,7 @@ class Household
      * The row index of the header (with the name of country specifics)
      * @var int
      */
-    const indexRowHeader = 2;
+    const indexRowHeader = 1;
 
     /**
      * First row with data
