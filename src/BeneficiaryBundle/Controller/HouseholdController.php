@@ -512,4 +512,44 @@ class HouseholdController extends Controller
 
         return new Response(json_encode($APINames));
     }
+
+    /**
+     * @Rest\Post("/households/get/imported", name="get_all_households_imported")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Get all households imported by the API",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Household::class))
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getImportedAction(Request $request)
+    {
+        $householdsArray = $request->request->all();
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
+        try
+        {
+            $households = $householdService->getAllImported($householdsArray);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $households,
+                'json',
+                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
 }

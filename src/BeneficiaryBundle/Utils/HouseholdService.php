@@ -403,4 +403,19 @@ class HouseholdService
         return  $this->container->get('export_csv_service')->export($exportableTable);
 
     }
+
+    public function getAllImported(array $householdsArray) {
+        $householdsId = $householdsArray['households'];
+
+        $households = array();
+
+        foreach ($householdsId as $householdId) {
+            $household = $this->em->getRepository(Household::class)->find($householdId);
+
+            if ($household instanceof Household)
+                array_push($households, $household);
+        }
+
+        return $households;
+    }
 }

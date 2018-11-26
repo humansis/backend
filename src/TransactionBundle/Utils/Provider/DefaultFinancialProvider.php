@@ -111,7 +111,7 @@ abstract class DefaultFinancialProvider {
 
             $phoneNumber = null;
             foreach ($beneficiary->getPhones() as $phone) {
-                if ($phone->getType() == 'mobile') {
+                if ($phone->getType() == 'mobile' || $phone->getType() === 'Mobile') {
                     $phoneNumber = $phone->getNumber();
                     break;
                 }
