@@ -50,10 +50,8 @@ class LevenshteinTypoVerifier extends AbstractVerifier
     {
         $householdRepository = $this->em->getRepository(Household::class);
         $newHead = null;
-        foreach ($householdArray['beneficiaries'] as $newBeneficiaryArray)
-        {
-            if (1 == $newBeneficiaryArray['status'])
-            {
+        foreach ($householdArray['beneficiaries'] as $newBeneficiaryArray) {
+            if (1 == $newBeneficiaryArray['status']) {
                 $newHead = $newBeneficiaryArray;
                 break;
             }
@@ -70,15 +68,11 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             $newHead["family_name"],
             $this->maximumDistanceLevenshtein);
 
-        if (empty($similarHouseholds))
-        {
+        if (empty($similarHouseholds)) {
             $this->saveInCache('no_typo', $cacheId, $householdArray, null);
             return null;
-        }
-        else
-        {
-            if (0 == intval(current($similarHouseholds)["levenshtein"]))
-            {
+        } else {
+            if (0 == intval(current($similarHouseholds)["levenshtein"])) {
                 // SAVE 100% SIMILAR IN 1_typo
                 $this->saveInCache(
                     'mapping_new_old',
@@ -106,8 +100,14 @@ class LevenshteinTypoVerifier extends AbstractVerifier
     private function saveInCache(string $step, int $cacheId, array $dataToSave, Household $household = null)
     {
         if (null !== $household)
-            $arrayOldHousehold = json_decode($this->container->get('jms_serializer')
-                ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])), true);
+            $arrayOldHousehold = json_decode(
+                $this->container->get('jms_serializer')
+                    ->serialize(
+                        $household,
+                        'json',
+                        SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
+                    ),
+                true);
         else
             $arrayOldHousehold = json_encode([]);
 
@@ -125,12 +125,9 @@ class LevenshteinTypoVerifier extends AbstractVerifier
         if (!is_dir($dir_var_token))
             mkdir($dir_var_token);
 
-        if (is_file($dir_var_token . '/' . $step))
-        {
+        if (is_file($dir_var_token . '/' . $step)) {
             $listHH = json_decode(file_get_contents($dir_var_token . '/' . $step), true);
-        }
-        else
-        {
+        } else {
             $listHH = [];
         }
 
