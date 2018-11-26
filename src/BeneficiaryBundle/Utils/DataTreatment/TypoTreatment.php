@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Cache\Simple\FilesystemCache;
 
 class TypoTreatment extends AbstractTreatment
 {
@@ -22,6 +23,8 @@ class TypoTreatment extends AbstractTreatment
      * @param Project $project
      * @param array $householdsArray
      * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      * @throws \Exception
      */
     public function treat(Project $project, array $householdsArray)
@@ -30,6 +33,7 @@ class TypoTreatment extends AbstractTreatment
         // Get the list of household which are already saved in database (100% similar in typoVerifier)
         $households100Percent = [];
         $this->getFromCache('mapping_new_old', $households100Percent);
+        $this->clearCache('households.typo');
         foreach ($householdsArray as $index => $householdArray) {
             // CASE STATE IS TRUE AND NEW IS MISSING => WE KEEP ONLY THE OLD HOUSEHOLD, AND WE ADD IT TO THE CURRENT PROJECT
             if (boolval($householdArray['state']) && (!array_key_exists("new", $householdArray) || $householdArray['new'] === null)) {
@@ -60,6 +64,8 @@ class TypoTreatment extends AbstractTreatment
                     }
                 }
                 // ADD TO THE MAPPING FILE
+                $this->saveHouseholds('households.typo', $householdArray['new']);
+
                 $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold);
                 $householdArray['new']['id_tmp_cache'] = $id_tmp;
             }
@@ -71,6 +77,9 @@ class TypoTreatment extends AbstractTreatment
         }
         $this->getFromCache('no_typo', $listHouseholds);
 
+        $cache = new FilesystemCache();
+
+        dump($cache->get('households.typo'));
         return $this->mergeListHHSimilarAndNoTypo($listHouseholds, $households100Percent);
     }
 

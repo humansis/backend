@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Cache\Simple\FilesystemCache;
 
 
 
@@ -21,6 +22,8 @@ class DuplicateTreatment extends AbstractTreatment
      * @param Project $project
      * @param array $householdsArray
      * @return array|Response
+     * @throws ValidationException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Exception
      */
     public function treat(Project $project, array $householdsArray)
@@ -30,6 +33,7 @@ class DuplicateTreatment extends AbstractTreatment
         $listHouseholdsFromNotTypo = [];
         $this->getFromCache('mapping_new_old', $listHouseholdsFromTypo);
         $this->getFromCache('no_typo', $listHouseholdsFromNotTypo);
+        $this->clearCache('households.duplicate');
         foreach ($householdsArray as $householdData)
         {
             $newHousehold = $householdData['new_household'];
@@ -52,6 +56,8 @@ class DuplicateTreatment extends AbstractTreatment
                     if (!$household) {
                         throw new \Exception("Unable to create a new household");
                     }
+
+                    $this->saveHouseholds('households.duplicate', $household);
                 }
                 else
                 {
@@ -75,6 +81,11 @@ class DuplicateTreatment extends AbstractTreatment
         $this->em->flush();
         $listHouseholdsFromCache = [];
         $this->getFromCache('mapping_new_old', $listHouseholdsFromCache);
+
+        $cache = new FilesystemCache();
+
+        dump($cache->get('households.duplicate'));
+
         return $listHouseholdsFromCache;
     }
 

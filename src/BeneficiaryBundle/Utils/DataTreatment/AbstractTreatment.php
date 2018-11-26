@@ -4,10 +4,13 @@
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
 
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Cache\Simple\FilesystemCache;
+
 
 abstract class AbstractTreatment implements InterfaceTreatment
 {
@@ -65,5 +68,55 @@ abstract class AbstractTreatment implements InterfaceTreatment
         {
             $listHouseholdsArray[] = $householdCached;
         }
+    }
+
+    /**
+     * @param string $cacheName
+     * @param $householdsToSave
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    //TODO (or not) reset the cache when come back or whatever, save in a global cache and clear the step's cache when the user go to step 2
+    // and replace global cache if the user come back
+    public function saveHouseholds(string $cacheName, $householdsToSave) {
+        if (gettype($householdsToSave) == 'array') {
+            $householdsToSave = $this->em->getRepository(Household::class)->findOneBy(
+                [
+                    'addressStreet' => $householdsToSave['address_street'],
+                    'addressNumber' => $householdsToSave['address_number'],
+                    'addressPostcode' => $householdsToSave['address_postcode'],
+                    'livelihood' => $householdsToSave['livelihood'],
+                    'notes' => $householdsToSave['notes'],
+                    'latitude' => $householdsToSave['latitude'],
+                    'longitude' => $householdsToSave['longitude'],
+                ]
+            );
+        }
+
+
+        if ($householdsToSave instanceof Household) {
+            $cache = new FilesystemCache();
+
+            $householdsArray = array();
+
+            if ($cache->has($cacheName)) {
+                $householdFromCache = $cache->get($cacheName);
+
+                $householdsArray = $householdFromCache;
+                array_push($householdsArray, $householdsToSave);
+            } else
+                array_push($householdsArray, $householdsToSave);
+
+            $cache->set($cacheName, $householdsArray);
+        }
+    }
+
+    /**
+     * @param string $cacheName
+     */
+    public function clearCache(string $cacheName) {
+        $cache = new FilesystemCache();
+
+        if ($cache->has($cacheName))
+            $cache->delete($cacheName);
     }
 }

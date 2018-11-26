@@ -17,7 +17,7 @@ class LessTreatment extends AbstractTreatment
      * @param Project $project
      * @param array $householdsArray
      * @return array
-     * @throws \Exception
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function treat(Project $project, array $householdsArray)
     {
@@ -37,6 +37,7 @@ class LessTreatment extends AbstractTreatment
     /**
      * @param Project $project
      * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Exception
      */
     public function addHouseholds(Project $project)
@@ -44,11 +45,13 @@ class LessTreatment extends AbstractTreatment
         $householdsToAdd = $this->getHouseholdsNoTypo();
         $errors = [];
         $numberAdded = 0;
+        $this->clearCache('households.new');
         foreach ($householdsToAdd as $householdToAdd)
         {
             try
             {
                 $this->householdService->createOrEdit($householdToAdd['new'], [$project]);
+                $this->saveHouseholds('households.new', $householdToAdd['new']);
                 $numberAdded++;
                 $this->em->clear();
             }
