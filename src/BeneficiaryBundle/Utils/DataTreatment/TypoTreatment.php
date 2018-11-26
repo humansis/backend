@@ -30,33 +30,25 @@ class TypoTreatment extends AbstractTreatment
         // Get the list of household which are already saved in database (100% similar in typoVerifier)
         $households100Percent = [];
         $this->getFromCache('mapping_new_old', $households100Percent);
-        foreach ($householdsArray as $index => $householdArray)
-        {
+        foreach ($householdsArray as $index => $householdArray) {
             // CASE STATE IS TRUE AND NEW IS MISSING => WE KEEP ONLY THE OLD HOUSEHOLD, AND WE ADD IT TO THE CURRENT PROJECT
-            if (boolval($householdArray['state']) && (!array_key_exists("new", $householdArray) || $householdArray['new'] === null))
-            {
+            if (boolval($householdArray['state']) && (!array_key_exists("new", $householdArray) || $householdArray['new'] === null)) {
                 $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
                 $this->householdService->addToProject($oldHousehold, $project);
                 unset($householdsArray[$index]);
                 continue;
-            }
-            // IF STATE IS FALSE AND NEW CONTAINS A ARRAY OF HOUSEHOLD => WE UPDATE THE OLD WITH DATA FROM THE NEW
-            elseif (!boolval($householdArray['state']) && array_key_exists("new", $householdArray) && $householdArray['new'] !== null)
-            {
+            } // IF STATE IS FALSE AND NEW CONTAINS A ARRAY OF HOUSEHOLD => WE UPDATE THE OLD WITH DATA FROM THE NEW
+            elseif (!boolval($householdArray['state']) && array_key_exists("new", $householdArray) && $householdArray['new'] !== null) {
                 $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
-                if ($oldHousehold instanceof Household)
-                {
+                if ($oldHousehold instanceof Household) {
                     // Update only the object Household
                     $this->householdService->update($oldHousehold, $project, $householdArray['new'], false);
                     // Found data in order to update the head of this household
                     $oldHeadHH = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
-                    if ($oldHeadHH instanceof Beneficiary)
-                    {
+                    if ($oldHeadHH instanceof Beneficiary) {
                         $newHeadHH = null;
-                        foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary)
-                        {
-                            if (boolval($newBeneficiary['status']))
-                            {
+                        foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary) {
+                            if (boolval($newBeneficiary['status'])) {
                                 $newHeadHH = $newBeneficiary;
                                 $newHeadHH['id'] = $oldHeadHH->getId();
                                 break;
@@ -89,8 +81,7 @@ class TypoTreatment extends AbstractTreatment
      */
     public function mergeListHHSimilarAndNoTypo($listHouseholds, $households100Percent)
     {
-        foreach ($households100Percent as $household100Percent)
-        {
+        foreach ($households100Percent as $household100Percent) {
             $listHouseholds[] = $household100Percent;
         }
         return $listHouseholds;
@@ -106,8 +97,14 @@ class TypoTreatment extends AbstractTreatment
      */
     private function saveInCache(string $step, int $idCache, array $dataToSave, Household $household)
     {
-        $arrayNewHousehold = json_decode($this->container->get('jms_serializer')
-            ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)), true);
+        $arrayNewHousehold = json_decode(
+            $this->container->get('jms_serializer')
+                ->serialize(
+                    $household,
+                    'json',
+                    SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
+                ),
+            true);
 
         $sizeToken = 50;
         if (null === $this->token)
@@ -120,12 +117,9 @@ class TypoTreatment extends AbstractTreatment
 
         $dir_var_step = $dir_var . '/' . $step;
 
-        if (is_file($dir_var_step))
-        {
+        if (is_file($dir_var_step)) {
             $listHH = json_decode(file_get_contents($dir_var_step), true);
-        }
-        else
-        {
+        } else {
             $listHH = [];
         }
 
