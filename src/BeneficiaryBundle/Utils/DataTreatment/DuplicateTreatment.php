@@ -82,10 +82,6 @@ class DuplicateTreatment extends AbstractTreatment
         $listHouseholdsFromCache = [];
         $this->getFromCache('mapping_new_old', $listHouseholdsFromCache);
 
-        $cache = new FilesystemCache();
-
-        dump($cache->get('households.duplicate'));
-
         return $listHouseholdsFromCache;
     }
 

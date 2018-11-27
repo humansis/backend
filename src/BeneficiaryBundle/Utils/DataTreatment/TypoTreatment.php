@@ -77,9 +77,6 @@ class TypoTreatment extends AbstractTreatment
         }
         $this->getFromCache('no_typo', $listHouseholds);
 
-        $cache = new FilesystemCache();
-
-        dump($cache->get('households.typo'));
         return $this->mergeListHHSimilarAndNoTypo($listHouseholds, $households100Percent);
     }
 

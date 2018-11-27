@@ -552,4 +552,43 @@ class HouseholdController extends Controller
             );
         return new Response($json);
     }
+
+    /**
+     * @Rest\Get("/households/get/cached", name="get_all_households_imported")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Get all households imported by the API",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Household::class))
+     *     )
+     * )
+     *
+     * @return Response
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function getCachedAction()
+    {
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
+        try
+        {
+            $households = $householdService->getAllCached();
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $households,
+                'json',
+                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
 }

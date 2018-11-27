@@ -20,6 +20,7 @@ use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
+use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -404,6 +405,10 @@ class HouseholdService
 
     }
 
+    /**
+     * @param array $householdsArray
+     * @return array
+     */
     public function getAllImported(array $householdsArray) {
         $householdsId = $householdsArray['households'];
 
@@ -415,6 +420,54 @@ class HouseholdService
             if ($household instanceof Household)
                 array_push($households, $household);
         }
+
+        return $households;
+    }
+
+    /**
+     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function getAllCached() {
+        $cache = new FilesystemCache();
+
+        $householdsInTypo = array();
+        $householdsInDuplicate = array();
+        $householdsInNew = array();
+
+        $households = array();
+
+        if ($cache->has('households.typo'))
+            $householdsInTypo = $cache->get('households.typo');
+
+        if ($cache->has('households.duplicate'))
+            $householdsInDuplicate = $cache->get('households.duplicate');
+
+        if ($cache->has('households.new'))
+            $householdsInNew = $cache->get('households.new');
+
+        foreach ($householdsInTypo as $typo) {
+            $household = $this->em->getRepository(Household::class)->find($typo->getId());
+
+            if ($household instanceof Household)
+                array_push($households, $household);
+        }
+
+        foreach ($householdsInDuplicate as $duplicate){
+            $household = $this->em->getRepository(Household::class)->find($duplicate->getId());
+
+            if ($household instanceof Household)
+                array_push($households, $household);
+        }
+
+        foreach ($householdsInNew as $new){
+            $household = $this->em->getRepository(Household::class)->find($new->getId());
+
+            if ($household instanceof Household)
+                array_push($households, $household);
+        }
+
+        $cache->clear();
 
         return $households;
     }
