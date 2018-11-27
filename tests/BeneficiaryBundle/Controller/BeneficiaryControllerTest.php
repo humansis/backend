@@ -6,11 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Utils\ExportService;
 use Tests\BMSServiceTestCase;
 
-
-
 class BeneficiaryControllerTest extends BMSServiceTestCase {
-
-
 
     public function setUp()
     {
@@ -49,12 +45,16 @@ class BeneficiaryControllerTest extends BMSServiceTestCase {
     }
 
     public function testGetAllVulnerabilityCriteria() {
+
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
         $vulnerabilityCriteriaResponse = $this->request('GET', 'api/wsse/vulnerability_criteria');
         $listCriterias = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        $this->assertArrayHasKey('id', $vulnerabilityCriteriaResponse);
-        $this->assertArrayHasKey('field_string', $vulnerabilityCriteriaResponse);
+        $this->assertArrayHasKey('id', $listCriterias[0]);
+        $this->assertArrayHasKey('field_string', $listCriterias[0]);
         
         return true;
     }
