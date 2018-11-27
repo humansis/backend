@@ -49,13 +49,13 @@ class BeneficiaryControllerTest extends BMSServiceTestCase {
     }
 
     public function testGetAllVulnerabilityCriteria() {
-        $vulnerabilityCriteriaResponse = $this->request('GET', 'api/wsse/vulnerability_criteria')
-        try {
-            $this->assertArrayHasKey('id', $vulnerabilityCriteriaResponse);
-            $this->assertArrayHasKey('field_string', $vulnerabilityCriteriaResponse);
-        }
-        catch(\Exception $e) {
-            
-        }
+        $vulnerabilityCriteriaResponse = $this->request('GET', 'api/wsse/vulnerability_criteria');
+        $listCriterias = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertArrayHasKey('id', $vulnerabilityCriteriaResponse);
+        $this->assertArrayHasKey('field_string', $vulnerabilityCriteriaResponse);
+        
+        return true;
     }
 }
