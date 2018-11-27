@@ -22,17 +22,18 @@ class TypoTreatment extends AbstractTreatment
      * ET RETURN ONLY IF WE ADD THE NEW
      * @param Project $project
      * @param array $householdsArray
+     * @param string $email
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      * @throws \Exception
      */
-    public function treat(Project $project, array $householdsArray)
+    public function treat(Project $project, array $householdsArray, string $email)
     {
         $listHouseholds = [];
         // Get the list of household which are already saved in database (100% similar in typoVerifier)
         $households100Percent = [];
-        $this->getFromCache('mapping_new_old', $households100Percent);
+        $this->getFromCache('mapping_new_old', $households100Percent, $email);
         $this->clearCache('households.typo');
         foreach ($householdsArray as $index => $householdArray) {
             // CASE STATE IS TRUE AND NEW IS MISSING => WE KEEP ONLY THE OLD HOUSEHOLD, AND WE ADD IT TO THE CURRENT PROJECT
@@ -64,9 +65,9 @@ class TypoTreatment extends AbstractTreatment
                     }
                 }
                 // ADD TO THE MAPPING FILE
-                $this->saveHouseholds('households.typo', $householdArray['new']);
+                $this->saveHouseholds($email . '-households.typo', $householdArray['new']);
 
-                $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold);
+                $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold, $email);
                 $householdArray['new']['id_tmp_cache'] = $id_tmp;
             }
 
@@ -75,7 +76,7 @@ class TypoTreatment extends AbstractTreatment
             // HOUSEHOLDS HAD TYPO ERRORS
             $listHouseholds[] = $householdArray;
         }
-        $this->getFromCache('no_typo', $listHouseholds);
+        $this->getFromCache('no_typo', $listHouseholds, $email);
 
         return $this->mergeListHHSimilarAndNoTypo($listHouseholds, $households100Percent);
     }
@@ -98,10 +99,11 @@ class TypoTreatment extends AbstractTreatment
      * @param int $idCache
      * @param array $dataToSave
      * @param Household $household
+     * @param string $email
      * @return int
      * @throws \Exception
      */
-    private function saveInCache(string $step, int $idCache, array $dataToSave, Household $household)
+    private function saveInCache(string $step, int $idCache, array $dataToSave, Household $household, string $email)
     {
         $arrayNewHousehold = json_decode(
             $this->container->get('jms_serializer')
@@ -121,7 +123,7 @@ class TypoTreatment extends AbstractTreatment
         if (!is_dir($dir_var))
             mkdir($dir_var);
 
-        $dir_var_step = $dir_var . '/' . $step;
+        $dir_var_step = $dir_var . '/' . $email .'-' . $step;
 
         if (is_file($dir_var_step)) {
             $listHH = json_decode(file_get_contents($dir_var_step), true);

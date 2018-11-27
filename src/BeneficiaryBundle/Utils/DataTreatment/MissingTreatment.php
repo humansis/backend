@@ -21,10 +21,10 @@ class MissingTreatment extends AbstractTreatment
      * ET RETURN ONLY IF WE ADD THE NEW
      * @param Project $project
      * @param array $householdsArray
+     * @param string $email
      * @return array
-     * @throws \Exception
      */
-    public function treat(Project $project, array $householdsArray)
+    public function treat(Project $project, array $householdsArray, string $email)
     {
         foreach ($householdsArray as $value){
             if(!$value['address_street'] || !$value['address_number'] || !$value['address_postcode'] || !$value['location'] || !$value['beneficiaries']){

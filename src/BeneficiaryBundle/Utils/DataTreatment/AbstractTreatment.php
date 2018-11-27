@@ -48,9 +48,10 @@ abstract class AbstractTreatment implements InterfaceTreatment
     /**
      * @param $step
      * @param array $listHouseholdsArray
+     * @param string $email
      * @throws \Exception
      */
-    protected function getFromCache($step, array &$listHouseholdsArray)
+    protected function getFromCache($step, array &$listHouseholdsArray, string $email)
     {
         if (null === $this->token)
             return;
@@ -59,7 +60,7 @@ abstract class AbstractTreatment implements InterfaceTreatment
         $dir_var = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_var))
             mkdir($dir_var);
-        $dir_file = $dir_var . '/' . $step;
+        $dir_file = $dir_var . '/' . $email . '-' . $step;
         if (!is_file($dir_file))
             return;
         $fileContent = file_get_contents($dir_file);

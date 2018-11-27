@@ -425,10 +425,11 @@ class HouseholdService
     }
 
     /**
+     * @param string $email
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function getAllCached() {
+    public function getAllCached(string $email) {
         $cache = new FilesystemCache();
 
         $householdsInTypo = array();
@@ -437,15 +438,18 @@ class HouseholdService
 
         $households = array();
 
-        if ($cache->has('households.typo'))
-            $householdsInTypo = $cache->get('households.typo');
-
-        if ($cache->has('households.duplicate'))
-            $householdsInDuplicate = $cache->get('households.duplicate');
-
-        if ($cache->has('households.new'))
-            $householdsInNew = $cache->get('households.new');
-
+        if ($cache->has($email . '-households.typo')) {
+            $householdsInTypo = $cache->get($email . '-households.typo');
+            $cache->delete($email . '-households.typo');
+        }
+        if ($cache->has($email . '-households.duplicate')) {
+            $householdsInDuplicate = $cache->get($email . '-households.duplicate');
+            $cache->delete($email . '-households.duplicate');
+        }
+        if ($cache->has($email . '-households.new')) {
+            $householdsInNew = $cache->get($email . '-households.new');
+            $cache->delete($email . '-households.new');
+        }
         foreach ($householdsInTypo as $typo) {
             $household = $this->em->getRepository(Household::class)->find($typo->getId());
 
@@ -466,8 +470,6 @@ class HouseholdService
             if ($household instanceof Household)
                 array_push($households, $household);
         }
-
-        $cache->clear();
 
         return $households;
     }

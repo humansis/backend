@@ -13,11 +13,12 @@ class MoreTreatment extends AbstractTreatment
     /**
      * @param Project $project
      * @param array $householdsArray
+     * @param string $email
      * @return array
-     * @throws \Exception
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @throws \Exception
      */
-    public function treat(Project $project, array $householdsArray)
+    public function treat(Project $project, array $householdsArray, string $email)
     {
         foreach ($householdsArray as $householdArray)
         {
@@ -30,7 +31,7 @@ class MoreTreatment extends AbstractTreatment
             }
         }
         $listHouseholds = [];
-        $this->getFromCache('mapping_new_old', $listHouseholds);
+        $this->getFromCache('mapping_new_old', $listHouseholds, $email);
         return $listHouseholds;
     }
 }
