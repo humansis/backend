@@ -154,6 +154,15 @@ class BMSServiceTestCase extends KernelTestCase
     ];
 
     /**
+     * PRefilled test household object
+     *
+     * @return object
+     */
+    protected function getBodyHousehold() {
+        return $this->$bodyHousehold;
+    }
+
+    /**
      * @var $defaultSeralizerName
      * If you plan to use another serializer, use the setter before calling this setUp Method in the child class setUp method.
      * Ex :

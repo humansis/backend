@@ -39,7 +39,6 @@ class CountryControllerTest extends BMSServiceTestCase {
         $countryResponse = $this->request('PUT', 'api/wsse/country_specifics', $body);
         $listCountry = json_decode($this->client->getResponse()->getContent(), true);
 
-        dump($listCountry);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertArrayHasKey('id', $listCountry);
         $this->assertArrayHasKey('field_string', $listCountry);
