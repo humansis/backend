@@ -20,6 +20,23 @@ class CountryControllerTest extends BMSServiceTestCase {
         $this->client = $this->container->get('test.client');
     }
 
+    public function testCreateAction() {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $countryResponse = $this->request('PUT', 'api/wsse/country_specifics');
+        $listCountry = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertArrayHasKey('id', $listCountry);
+        $this->assertArrayHasKey('field_string', $listCountry);
+        $this->assertArrayHasKey('country_iso3', $listCountry);
+        $this->assertArrayHasKey('type', $listCountry);
+
+        return $listCountry;
+    }
+
     public function testGetCountrySpecificsAction() {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -37,44 +54,42 @@ class CountryControllerTest extends BMSServiceTestCase {
         return true;
     }
 
-    public function testCreateAction() {
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $countryResponse = $this->request('PUT', 'api/wsse/country_specifics');
-        $listCountry = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
-        //
-
-        return true;
-    }
-
+    /**
+     * @depends testCreateAction
+     * @param CountrySpecific $objectCountry
+     * @return void
+     */
     public function testUpdateAction() {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $countryResponse = $this->request('POST', 'api/wsse/country_specifics/{id}');
+        $countryResponse = $this->request('POST', 'api/wsse/country_specifics/' . $objectCountry['id']);
         $listCountry = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        //
+        $this->assertArrayHasKey('id', $listCountry);
+        $this->assertArrayHasKey('field_string', $listCountry);
+        $this->assertArrayHasKey('country_iso3', $listCountry);
+        $this->assertArrayHasKey('type', $listCountry);
         
         return true;
     }
 
+    /**
+     * @depends testCreateAction
+     * @param CountrySpecific $objectCountry
+     * @return void
+     */
     public function testDeleteAction() {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
         
-        $countryResponse = $this->request("DELETE", 'api/wsse/country_specifics/{id}'); 
+        $countryResponse = $this->request("DELETE", 'api/wsse/country_specifics/' . $objectCountry['id']); 
         $listCountry = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        //
 
         return true;
     }
