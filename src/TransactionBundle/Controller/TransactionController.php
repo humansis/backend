@@ -111,6 +111,7 @@ class TransactionController extends Controller
         $countryISO3 = $request->request->get('__country');
         try {
             $response = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $distributionData);
+
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

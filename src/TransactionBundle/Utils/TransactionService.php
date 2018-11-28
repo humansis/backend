@@ -81,12 +81,13 @@ class TransactionService {
         }
         return $provider;
     }
-    
+
     /**
      * Send email to confirm transaction
-     * @param  User             $user            
+     * @param  User $user
      * @param  DistributionData $distributionData
      * @return void
+     * @throws \Exception
      */
     public function sendEmail(User $user, DistributionData $distributionData)
     {
@@ -138,28 +139,32 @@ class TransactionService {
         if (! $checkedAgainst) {
             return false;
         }
-        
+
         $result = ($code === intval($checkedAgainst));
+
         if ($result) {
             unlink($file_confirmation_code);
         }
         return $result;
     }
-    
+
     /**
      * Update transaction status
-     * @param  DistributionData $distributionData 
-     * @return array                             
+     * @param $countryISO3
+     * @param  DistributionData $distributionData
+     * @return array
+     * @throws \Exception
      */
     public function updateTransactionStatus($countryISO3, DistributionData $distributionData)
     {
-        try {            
+        try {
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
+
         } catch (\Exception $e) {
             throw $e;
         }
         
-        try {            
+        try {
             return $this->financialProvider->updateStatusDistribution($distributionData);
         } catch (\Exception $e) {
             throw $e;

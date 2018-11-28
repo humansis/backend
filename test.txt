@@ -1,9 +1,31 @@
 PHPUnit 6.5.13 by Sebastian Bergmann and contributors.
 
-..................................                                34 / 34 (100%)
+........................F......TransactionController.php on line 113:
+"test"
+TransactionService.php on line 161:
+"test2"
+TransactionService.php on line 163:
+"test3"
+TransactionService.php on line 170:
+"test4"
+TransactionController.php on line 115:
+null
+TransactionController.php on line 116:
+"test78"
+DistributionControllerTest.php on line 567:
+null
+.............                      44 / 44 (100%)
 
-Time: 1.84 seconds, Memory: 72.25MB
+Time: 2.8 seconds, Memory: 104.25MB
 
-OK (34 tests, 193 assertions)
+There was 1 failure:
+
+1) Tests\DistributionBundle\Controller\DistributionControllerTest::testUpdateTransactionStatus
+Failed asserting that false is true.
+
+/var/www/html/symfony/tests/DistributionBundle/Controller/DistributionControllerTest.php:569
+
+FAILURES!
+Tests: 44, Assertions: 249, Failures: 1.
 
 Remaining deprecation notices (2)
