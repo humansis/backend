@@ -188,6 +188,7 @@ class HouseholdService
             }
         } 
         else {
+            //?
             foreach($projectsArray as $newProjectID)  {
                 $newProject = $this->em->getRepository(Project::class)->find($newProjectID);
                 if (!$newProject instanceof Project)
