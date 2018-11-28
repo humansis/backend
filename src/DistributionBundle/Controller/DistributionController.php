@@ -529,7 +529,7 @@ class DistributionController extends Controller
                     return new Response('You must provide the data to update.', Response::HTTP_BAD_REQUEST);
                 }
                 try {
-                    $return = $distributionCsvService->saveCSV($countryIso3, $beneficiaries, $distributionData, $data);
+                    $return = $distributionCsvService->saveCSV($countryIso3, $distributionData, $data);
                 } catch (\Exception $e) {
                     return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
                 }
