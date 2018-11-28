@@ -21,6 +21,7 @@ use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
 use Tests\BMSServiceTestCase;
+use TransactionBundle\Entity\Transaction;
 
 class DistributionControllerTest extends BMSServiceTestCase
 {
@@ -57,7 +58,17 @@ class DistributionControllerTest extends BMSServiceTestCase
             "adm2"=> "",
             "adm3" => "",
             "adm4" => "",
-            "commodities" =>[],
+            "commodities" => [
+                [
+                    "modality" => "Cash",
+                    "modality_type" => [
+                        "id" => "1"
+                    ],
+                    "type" => "Mobile Money",
+                    "unit" => "USD",
+                    "value" => "150"
+                ]
+            ],
             "date_distribution" => "2018-09-13",
             "location" => [
                 "adm1"=> "Banteay Meanchey",
@@ -120,18 +131,155 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $distribution);
         $this->assertArrayHasKey('validated', $distribution);
 
-        $this->removeDistribution($distribution);
-        return true;
+        return $distribution;
     }
 
     /**
+     * @depends testCreateDistribution
+     * @param $distribution
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testGetRandomBeneficiaries($distribution) {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/random?size=2');
+        $randomBenef = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertTrue(gettype($randomBenef[0]) == 'array');
+        $this->assertTrue(gettype($randomBenef[1]) == 'array');
+    }
+
+    /**
+     * @depends testCreateDistribution
+     * @param $distribution
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testValidate($distribution) {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/validate');
+        $validate = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertArrayHasKey('id', $validate);
+        $this->assertArrayHasKey('name', $validate);
+        $this->assertArrayHasKey('updated_on', $validate);
+        $this->assertArrayHasKey('date_distribution', $validate);
+        $this->assertArrayHasKey('location', $validate);
+        $this->assertArrayHasKey('project', $validate);
+        $this->assertArrayHasKey('selection_criteria', $validate);
+        $this->assertArrayHasKey('archived', $validate);
+        $this->assertArrayHasKey('validated', $validate);
+        $this->assertArrayHasKey('type', $validate);
+        $this->assertArrayHasKey('commodities', $validate);
+        $this->assertArrayHasKey('distribution_beneficiaries', $validate);
+    }
+
+
+    /**
+     * @depends testCreateDistribution
+     * @param $distribution
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testAddBeneficiary($distribution) {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('PUT', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiary');
+        $randomBenef = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertTrue(gettype($randomBenef[0]) == 'array');
+        $this->assertTrue(gettype($randomBenef[1]) == 'array');
+    }
+
+//    /**
+//     * @depends testCreateDistribution
+//     * @param $distribution
+//     * @return void
+//     * @throws \Doctrine\ORM\ORMException
+//     * @throws \Doctrine\ORM\OptimisticLockException
+//     */
+//    public function testPostTransaction($distribution) {
+//        // Fake connection with a token for the user tester (ADMIN)
+//        $user = $this->getTestUser(self::USER_TESTER);
+//        $token = $this->getUserToken($user);
+//        $this->tokenStorage->setToken($token);
+//
+//        $body = array(
+//            'code' => '265094'
+//        );
+//
+//        // Second step
+//        // Create the user with the email and the salted password. The user should be enable
+//        $crawler = $this->request('POST', '/api/wsse/transaction/distribution/'. $distribution['id'].'/send', $body);
+//        $transaction = json_decode($this->client->getResponse()->getContent(), true);
+//
+//        // Check if the second step succeed
+//        var_dump($transaction);
+//        $this->assertTrue(gettype($transaction[0]) == 'array');
+//        $this->assertTrue(gettype($transaction[1]) == 'array');
+//        $this->assertTrue(gettype($transaction[2]) == 'array');
+//        $this->assertTrue(gettype($transaction[3]) == 'array');
+//    }
+
+//    /**
+//     * @depends testCreateDistribution
+//     * @param $distribution
+//     * @return void
+//     * @throws \Doctrine\ORM\ORMException
+//     * @throws \Doctrine\ORM\OptimisticLockException
+//     */
+//    public function testSendVerificationEmail($distribution) {
+//        // Fake connection with a token for the user tester (ADMIN)
+//        $user = $this->getTestUser(self::USER_TESTER);
+//        $token = $this->getUserToken($user);
+//        $this->tokenStorage->setToken($token);
+//
+//        $body = array(
+//            'code' => '265094'
+//        );
+//
+//        // Second step
+//        // Create the user with the email and the salted password. The user should be enable
+//        $crawler = $this->request('POST', '/api/wsse/transaction/distribution/'. $distribution['id'].'/email', $body);
+//        $email = json_decode($this->client->getResponse()->getContent(), true);
+//
+//        // Check if the second step succeed
+//        $this->assertEquals($email,'Email sent');
+//    }
+
+    /**
+     * @depends testCreateDistribution
      * @param $distribution
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    private function removeDistribution($distribution)
+    public function removeDistribution($distribution)
     {
+
         $commodity = $this->em->getRepository(Commodity::class)->findOneByUnit("PHPUNIT TEST");
         if ($commodity instanceof Commodity)
         {
@@ -146,6 +294,8 @@ class DistributionControllerTest extends BMSServiceTestCase
                 ->getRepository(DistributionBeneficiary::class)->findByDistributionData($distribution);
             foreach ($distributionBeneficiaries as $distributionBeneficiary)
             {
+//                $transaction = $this->em->getRepository(Transaction::class)->findOneByDistributionBeneficiary($distributionBeneficiary);
+//                $this->em->remove($transaction);
                 $this->em->remove($distributionBeneficiary);
 
             }

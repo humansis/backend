@@ -31,36 +31,6 @@ class UserControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
-    public function testGetUsers()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $crawler = $this->request('GET', '/api/wsse/users');
-        $users = json_decode($this->client->getResponse()->getContent(), true);
-
-        if (!empty($users))
-        {
-            $user = $users[0];
-
-            $this->assertArrayHasKey('id', $user);
-            $this->assertArrayHasKey('username', $user);
-            $this->assertArrayHasKey('email', $user);
-            $this->assertArrayHasKey('roles', $user);
-            $this->assertArrayHasKey('countries', $user);
-            $this->assertArrayHasKey('user_projects', $user);
-        }
-        else
-        {
-            $this->markTestIncomplete("You currently don't have any user in your database.");
-        }
-    }
-
-    /**
-     * @throws \Exception
-     */
     public function testGetSalt()
     {
         $crawler = $this->request('GET', '/api/wsse/salt/' . $this->username);
@@ -116,7 +86,121 @@ class UserControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateUser
+     * @param $newuser
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testLogin($newuser)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $body = array(
+            'username' => $newuser['username'],
+            'salted_password' => 'PSWUNITTEST',
+            'creation' => 0
+        );
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('POST', '/api/wsse/login', $body);
+        $success = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue(gettype($success) == 'array');
+        $this->assertArrayHasKey('at', $success);
+        $this->assertArrayHasKey('username', $success);
+        $this->assertArrayHasKey('salted_password', $success);
+    }
+
+    /**
      * @throws \Exception
+     */
+    public function testCheck()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->request('GET', '/api/wsse/check');
+        $users = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (!empty($users))
+        {
+            $this->assertArrayHasKey('id', $users);
+            $this->assertArrayHasKey('username', $users);
+            $this->assertArrayHasKey('email', $users);
+            $this->assertArrayHasKey('roles', $users);
+            $this->assertArrayHasKey('countries', $users);
+            $this->assertArrayHasKey('user_projects', $users);
+        }
+        else
+        {
+            $this->markTestIncomplete("You currently don't have any user in your database.");
+        }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testGetUsers()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->request('GET', '/api/wsse/users');
+        $users = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (!empty($users))
+        {
+            $user = $users[0];
+
+            $this->assertArrayHasKey('id', $user);
+            $this->assertArrayHasKey('username', $user);
+            $this->assertArrayHasKey('email', $user);
+            $this->assertArrayHasKey('roles', $user);
+            $this->assertArrayHasKey('countries', $user);
+            $this->assertArrayHasKey('user_projects', $user);
+        }
+        else
+        {
+            $this->markTestIncomplete("You currently don't have any user in your database.");
+        }
+    }
+
+    /**
+     * @depends testCreateUser
+     * @param $newuser
+     * @return mixed
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testShowProject($newuser)
+    {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->request('GET', '/api/wsse/users/'. $newuser['id'] .'/projects');
+        $projectsUser = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue(gettype($projectsUser) == 'array');
+    }
+
+    /**
+     * @depends testCreateUser
+     * @param $newuser
+     * @return mixed
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function testEditUser($newuser)
     {

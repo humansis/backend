@@ -106,7 +106,7 @@ class DistributionBeneficiaryService
      * Add either a beneficiary of a household(in this case, we assigned the head of the household) to a distribution
      *
      * @param DistributionData $distributionData
-     * @param array $beneficiaryArray
+     * @param array $beneficiariesArray
      * @return DistributionBeneficiary
      * @throws \Exception
      */

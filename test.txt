@@ -1,0 +1,9 @@
+PHPUnit 6.5.13 by Sebastian Bergmann and contributors.
+
+..................................                                34 / 34 (100%)
+
+Time: 1.84 seconds, Memory: 72.25MB
+
+OK (34 tests, 193 assertions)
+
+Remaining deprecation notices (2)
