@@ -26,9 +26,6 @@ use TransactionBundle\Entity\Transaction;
 
 class DistributionControllerTest extends BMSServiceTestCase
 {
-    /** @var string $namefullname */
-    private $namefullname = "TEST_DISTRIBUTION_NAME_PHPUNIT";
-
     /** @var DistributionCSVService $distributionCSVService */
     private $distributionCSVService;
 

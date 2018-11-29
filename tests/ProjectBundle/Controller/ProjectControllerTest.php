@@ -158,6 +158,52 @@ class ProjectControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testEditProject
+     * @param $project
+     * @return void
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testAddHouseholds($project)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $body = array(
+                
+        );
+
+        $crawler = $this->request('POST', '/api/wsse/projects/' . $project['id'] . '/beneficiaries/add', $this->body);
+        $projects = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (!empty($projects))
+        {
+            $project = $projects[0];
+
+            $this->assertArrayHasKey('id', $project);
+            $this->assertArrayHasKey('iso3', $project);
+            $this->assertArrayHasKey('name', $project);
+            $this->assertArrayHasKey('notes', $project);
+            $this->assertArrayHasKey('value', $project);
+            $this->assertArrayHasKey('donors', $project);
+            $this->assertArrayHasKey('end_date', $project);
+            $this->assertArrayHasKey('start_date', $project);
+            $this->assertArrayHasKey('number_of_households', $project);
+            $this->assertArrayHasKey('sectors', $project);
+        }
+        else
+        {
+            $this->markTestIncomplete("You currently don't have any project in your database.");
+        }
+
+
+        return $this->remove($this->name . '(u)');
+    }
+
+    /**
+     * @depends testEditProject
      *
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
@@ -176,4 +222,5 @@ class ProjectControllerTest extends BMSServiceTestCase
             $this->em->flush();
         }
     }
+
 }

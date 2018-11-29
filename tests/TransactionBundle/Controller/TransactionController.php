@@ -30,5 +30,5 @@ class TransactionController extends BMSServiceTestCase
         $this->client = $this->container->get('test.client');
     }
 
-
+    //Transactions tests are in the DistributionBundle because we needed a distribution to test the differents routes
 }
