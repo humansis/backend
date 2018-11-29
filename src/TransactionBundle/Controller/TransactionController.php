@@ -93,7 +93,7 @@ class TransactionController extends Controller
     
     /**
      * Update the status of the transactions sent through external API
-     * @Rest\Get("/transaction/distribution/{id}/email", name="update_transaction_status")
+     * @Rest\Get("/transaction/distribution/{id}/pickup", name="update_transaction_status")
      * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
      * 
      * @SWG\Tag(name="Transaction")
@@ -110,12 +110,13 @@ class TransactionController extends Controller
     public function updateTransactionStatusAction(Request $request, DistributionData $distributionData) {
         $countryISO3 = $request->request->get('__country');
         try {
-            $response = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $distributionData);
-
+            $beneficiaries = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $distributionData);
+            $json = $this->get('jms_serializer')
+            ->serialize($beneficiaries, 'json');
+            return new Response($json);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return new Response();
     }
 
 }
