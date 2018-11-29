@@ -157,10 +157,9 @@ class ProjectControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @depends testEditProject
+     * @depends testCreateProject
      * @param $project
      * @return void
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -172,47 +171,25 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $body = array(
-                
+            'filter' => [],
         );
 
-        $crawler = $this->request('POST', '/api/wsse/projects/' . $project['id'] . '/beneficiaries/add', $this->body);
-        $projects = json_decode($this->client->getResponse()->getContent(), true);
+        $crawler = $this->request('POST', '/api/wsse/projects/' . $project['id'] . '/beneficiaries/add', $body);
 
-        if (!empty($projects))
-        {
-            $project = $projects[0];
-
-            $this->assertArrayHasKey('id', $project);
-            $this->assertArrayHasKey('iso3', $project);
-            $this->assertArrayHasKey('name', $project);
-            $this->assertArrayHasKey('notes', $project);
-            $this->assertArrayHasKey('value', $project);
-            $this->assertArrayHasKey('donors', $project);
-            $this->assertArrayHasKey('end_date', $project);
-            $this->assertArrayHasKey('start_date', $project);
-            $this->assertArrayHasKey('number_of_households', $project);
-            $this->assertArrayHasKey('sectors', $project);
-        }
-        else
-        {
-            $this->markTestIncomplete("You currently don't have any project in your database.");
-        }
-
-
-        return $this->remove($this->name . '(u)');
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
     }
 
     /**
-     * @depends testEditProject
+     * @depends testAddHouseholds
      *
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function remove($name)
+    public function remove()
     {
         $this->em->clear();
-        $project = $this->em->getRepository(Project::class)->findOneByName($name);
+        $project = $this->em->getRepository(Project::class)->findOneByName($this->name);
         if ($project instanceof Project)
         {
             $userProject = $this->em->getRepository(UserProject::class)->findOneByProject($project);
