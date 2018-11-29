@@ -1,9 +1,13 @@
 PHPUnit 6.5.13 by Sebastian Bergmann and contributors.
 
-.............................................                     45 / 45 (100%)
+..................LocationControllerTest.php on line 158:
+[]
+LocationControllerTest.php on line 159:
+"upcoming"
+..................................              52 / 52 (100%)
 
-Time: 5.74 seconds, Memory: 104.25MB
+Time: 3.87 seconds, Memory: 110.25MB
 
-OK (45 tests, 246 assertions)
+OK (52 tests, 270 assertions)
 
 Remaining deprecation notices (2)
