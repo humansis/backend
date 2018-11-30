@@ -180,24 +180,24 @@ class HouseholdCSVTest extends BMSServiceTestCase
         }
 
         // TRY TO ADD CSV WITH HOUSEHOLD WITHOUT ANY KIND OF ISSUE
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $token = $return["token"];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token, 'tester');
         $this->assertSame([], $return['error']);
         $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet);
         $this->assertInstanceOf(Household::class, $household);
@@ -205,7 +205,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
 
         // TRY TO ADD CSV WITH TYPO ERROR => UPDATE THE OLD 'GIVEN_NAME' OF THE HEAD IN DATABASE
         $this->SHEET_ARRAY[3]['N'] = $this->UPDATED_GIVEN_NAME;
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null, 'tester');
         $token = $return["token"];
         $this->assertArrayHasKey("token", $return);
         $this->assertArrayHasKey("data", $return);
@@ -220,19 +220,19 @@ class HouseholdCSVTest extends BMSServiceTestCase
                 "state" => 0
             ]
         ];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $request, 2, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $request, 2, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token, 'tester');
         $this->assertSame([], $return['error']);
         /** @var Beneficiary $headOldHousehold */
         $headOldHousehold = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
@@ -288,12 +288,12 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "T" => "Type1 - 2",
             "U" => "id-45f",
         ];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $token = $return["token"];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertArrayHasKey("token", $return);
         $this->assertArrayHasKey("new_household", current($return["data"]));
@@ -315,15 +315,15 @@ class HouseholdCSVTest extends BMSServiceTestCase
                 ]
             ]
         ];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestDuplicate, 3, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestDuplicate, 3, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token, 'tester');
         $this->assertSame([], $return['error']);
         $household2 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet2);
         $beneficiariesOfHH2 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household2);
@@ -377,12 +377,12 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "T" => "Type1 - 2",
             "U" => "id-45f",
         ];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $token = $return["token"];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertArrayHasKey("token", $return);
         $this->assertArrayHasKey("new_household", current($return["data"]));
@@ -402,15 +402,15 @@ class HouseholdCSVTest extends BMSServiceTestCase
                 ]
             ]
         ];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestDuplicate, 3, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestDuplicate, 3, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token, 'tester');
         $this->assertSame([], $return['error']);
         $household3 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet3);
         $beneficiariesOfHH3 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household3);
@@ -464,12 +464,12 @@ class HouseholdCSVTest extends BMSServiceTestCase
             "T" => "Type1 - 2",
             "U" => "id-45f",
         ];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
         $token = $return["token"];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertArrayHasKey("token", $return);
         $this->assertArrayHasKey("new_household", current($return["data"]));
@@ -489,7 +489,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
                 ]
             ]
         ];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestDuplicate, 3, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestDuplicate, 3, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertArrayHasKey("token", $return);
         $this->assertArrayHasKey("new", current($return["data"]));
@@ -502,11 +502,11 @@ class HouseholdCSVTest extends BMSServiceTestCase
                 ]
             ]
         ];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestMore, 4, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $requestMore, 4, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token, 'tester');
         $this->assertSame([], $return['error']);
         $household4 = $this->em->getRepository(Household::class)->findOneByAddressStreet($this->addressStreet4);
         $beneficiariesOfHH4 = $this->em->getRepository(Beneficiary::class)->findByHousehold($household4);
@@ -519,7 +519,7 @@ class HouseholdCSVTest extends BMSServiceTestCase
         // TRY TO ADD CSV WITH TYPO ERROR => NEW AND OLD ARE NOT THE SAME
         $body_begin[4]['N'] = "THIS IS JUST A TEST";
         $body_begin[4]['O'] = "THIS IS JUST A TEST2";
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $body_begin, 1, null);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $body_begin, 1, null, 'tester');
         $token = $return["token"];
         $this->assertArrayHasKey("token", $return);
         $this->assertArrayHasKey("data", $return);
@@ -534,19 +534,19 @@ class HouseholdCSVTest extends BMSServiceTestCase
                 "state" => 1
             ]
         ];
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $request, 2, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $request, 2, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token, 'tester');
         $this->assertArrayHasKey("data", $return);
         $this->assertSame([], $return["data"]);
         $this->assertArrayHasKey("token", $return);
-        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
+        $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token, 'tester');
         $this->assertSame([], $return['error']);
         /** @var Beneficiary $headOldHousehold */
         $headOldHousehold = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);

@@ -80,12 +80,12 @@ class HouseholdCSVService
      * @param UploadedFile $uploadedFile
      * @param int $step
      * @param $token
+     * @param string $email
      * @return array
-     * @throws \Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, int $step, $token)
+    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, int $step, $token, string $email)
     {
         // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
         // LOADING CSV
@@ -94,7 +94,7 @@ class HouseholdCSVService
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
 
         $sheetArray = $worksheet->toArray(null, true, true, true);
-        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $step, $token);
+        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $step, $token, $email);
     }
 
     /**
@@ -103,20 +103,21 @@ class HouseholdCSVService
      * @param array $sheetArray
      * @param int $step
      * @param $token
+     * @param string $email
      * @return array|bool
      * @throws \Exception
      */
-    public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, int $step, $token)
+    public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, int $step, $token, string $email)
     {
         // Get the list of households from csv with their beneficiaries
         if (1 === $step)
         {
             $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $countryIso3);
-            return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $step, $token);
+            return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $step, $token, $email);
         }
         else
         {
-            return $this->foundErrors($countryIso3, $project, $sheetArray, $step, $token);
+            return $this->foundErrors($countryIso3, $project, $sheetArray, $step, $token, $email);
         }
     }
 
@@ -126,10 +127,11 @@ class HouseholdCSVService
      * @param array $treatReturned
      * @param int $step
      * @param $token
+     * @param string $email
      * @return array|bool
      * @throws \Exception
      */
-    public function foundErrors($countryIso3, Project $project, array $treatReturned, int $step, $token)
+    public function foundErrors($countryIso3, Project $project, array $treatReturned, int $step, $token, string $email)
     {
         $this->clearData();
         $this->token = $token;
@@ -138,7 +140,7 @@ class HouseholdCSVService
         // If there is a treatment class for this step, call it
         $treatment = $this->guessTreatment($step);
         if ($treatment !== null)
-            $treatReturned = $treatment->treat($project, $treatReturned);
+            $treatReturned = $treatment->treat($project, $treatReturned, $email);
 
         if(array_key_exists("miss", $treatReturned))
             return "A line is incomplete in the imported file";
@@ -155,7 +157,7 @@ class HouseholdCSVService
         $householdsToSave = [];
         foreach ($treatReturned as $index => $householdArray)
         {
-            $returnTmp = $verifier->verify($countryIso3, $householdArray, $cache_id);
+            $returnTmp = $verifier->verify($countryIso3, $householdArray, $cache_id, $email);
             // IF there are errors
             if (null !== $returnTmp && [] !== $returnTmp)
             {
@@ -290,6 +292,7 @@ class HouseholdCSVService
     /**
      * @param int $step
      * @param $dataToSave
+     * @param string $email
      * @throws \Exception
      */
     private function saveInCache(int $step, $dataToSave)
