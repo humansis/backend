@@ -14,9 +14,10 @@ class MoreVerifier extends AbstractVerifier
      * @param string $countryISO3
      * @param array $householdArray
      * @param int $cacheId
+     * @param string $email
      * @return array|null
      */
-    public function verify(string $countryISO3, array $householdArray, int $cacheId)
+    public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
         /** @var Household $oldHousehold */
         $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['old']['id']);

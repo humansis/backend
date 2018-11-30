@@ -8,5 +8,5 @@ use ProjectBundle\Entity\Project;
 
 interface InterfaceTreatment
 {
-    public function treat(Project $project, array $householdsArray);
+    public function treat(Project $project, array $householdsArray, string $email);
 }

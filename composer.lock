@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a766e47b87a515f3780760b7ee2f042",
+    "content-hash": "36c85abf5a6f8567fa863156ae4d44aa",
     "packages": [
         {
             "name": "beberlei/DoctrineExtensions",
