@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Cache\Simple\FilesystemCache;
 
 
 
@@ -20,16 +21,20 @@ class DuplicateTreatment extends AbstractTreatment
      *
      * @param Project $project
      * @param array $householdsArray
+     * @param string $email
      * @return array|Response
+     * @throws ValidationException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Exception
      */
-    public function treat(Project $project, array $householdsArray)
+    public function treat(Project $project, array $householdsArray, string $email)
     {
         $listHouseholds = [];
         $listHouseholdsFromTypo = [];
         $listHouseholdsFromNotTypo = [];
-        $this->getFromCache('mapping_new_old', $listHouseholdsFromTypo);
-        $this->getFromCache('no_typo', $listHouseholdsFromNotTypo);
+        $this->getFromCache('mapping_new_old', $listHouseholdsFromTypo, $email);
+        $this->getFromCache('no_typo', $listHouseholdsFromNotTypo, $email);
+        $this->clearCache('households.duplicate');
         foreach ($householdsArray as $householdData)
         {
             $newHousehold = $householdData['new_household'];
@@ -52,6 +57,8 @@ class DuplicateTreatment extends AbstractTreatment
                     if (!$household) {
                         throw new \Exception("Unable to create a new household");
                     }
+
+                    $this->saveHouseholds($email . '-households.duplicate', $household);
                 }
                 else
                 {
@@ -69,21 +76,23 @@ class DuplicateTreatment extends AbstractTreatment
             }
             //UPDATE THE NEW HH IN THE CACHE
             if (array_key_exists("id_tmp_cache", $householdData))
-                $this->updateInCache($householdData["id_tmp_cache"], $newHousehold);
+                $this->updateInCache($householdData["id_tmp_cache"], $newHousehold, $email);
             $listHouseholds[] = $newHousehold;
         }
         $this->em->flush();
         $listHouseholdsFromCache = [];
-        $this->getFromCache('mapping_new_old', $listHouseholdsFromCache);
+        $this->getFromCache('mapping_new_old', $listHouseholdsFromCache, $email);
+
         return $listHouseholdsFromCache;
     }
 
     /**
      * @param $idCache
      * @param array $newHouseholdArray
+     * @param string $email
      * @throws \Exception
      */
-    private function updateInCache($idCache, array $newHouseholdArray)
+    private function updateInCache($idCache, array $newHouseholdArray, string $email)
     {
         if (null === $this->token)
             return;
@@ -93,7 +102,7 @@ class DuplicateTreatment extends AbstractTreatment
         if (!is_dir($dir_var))
             mkdir($dir_var);
 
-        $dir_file_mapping = $dir_var . '/mapping_new_old';
+        $dir_file_mapping = $dir_var . '/' . $email . '-mapping_new_old';
         if (is_file($dir_file_mapping))
         {
             $listHH = json_decode(file_get_contents($dir_file_mapping), true);
@@ -105,7 +114,7 @@ class DuplicateTreatment extends AbstractTreatment
             }
         }
 
-        $dir_file_not_typo = $dir_var . '/no_typo';
+        $dir_file_not_typo = $dir_var . '/' . $email . '-no_typo';
         if (is_file($dir_file_not_typo))
         {
             $listHH = json_decode(file_get_contents($dir_file_not_typo), true);

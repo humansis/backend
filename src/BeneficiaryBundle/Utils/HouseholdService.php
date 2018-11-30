@@ -20,6 +20,7 @@ use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
+use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -403,5 +404,74 @@ class HouseholdService
         $exportableTable = $this->em->getRepository(Household::class)->findAll();
         return  $this->container->get('export_csv_service')->export($exportableTable);
 
+    }
+
+    /**
+     * @param array $householdsArray
+     * @return array
+     */
+    public function getAllImported(array $householdsArray) {
+        $householdsId = $householdsArray['households'];
+
+        $households = array();
+
+        foreach ($householdsId as $householdId) {
+            $household = $this->em->getRepository(Household::class)->find($householdId);
+
+            if ($household instanceof Household)
+                array_push($households, $household);
+        }
+
+        return $households;
+    }
+
+    /**
+     * @param string $email
+     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function getAllCached(string $email) {
+        $cache = new FilesystemCache();
+
+        $householdsInTypo = array();
+        $householdsInDuplicate = array();
+        $householdsInNew = array();
+
+        $households = array();
+
+        if ($cache->has($email . '-households.typo')) {
+            $householdsInTypo = $cache->get($email . '-households.typo');
+            $cache->delete($email . '-households.typo');
+        }
+        if ($cache->has($email . '-households.duplicate')) {
+            $householdsInDuplicate = $cache->get($email . '-households.duplicate');
+            $cache->delete($email . '-households.duplicate');
+        }
+        if ($cache->has($email . '-households.new')) {
+            $householdsInNew = $cache->get($email . '-households.new');
+            $cache->delete($email . '-households.new');
+        }
+        foreach ($householdsInTypo as $typo) {
+            $household = $this->em->getRepository(Household::class)->find($typo->getId());
+
+            if ($household instanceof Household)
+                array_push($households, $household);
+        }
+
+        foreach ($householdsInDuplicate as $duplicate){
+            $household = $this->em->getRepository(Household::class)->find($duplicate->getId());
+
+            if ($household instanceof Household)
+                array_push($households, $household);
+        }
+
+        foreach ($householdsInNew as $new){
+            $household = $this->em->getRepository(Household::class)->find($new->getId());
+
+            if ($household instanceof Household)
+                array_push($households, $household);
+        }
+
+        return $households;
     }
 }

@@ -166,6 +166,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
         $countNew = 0;
         $countUpdated = 0;
         $countBeneficiaries = 0;
+        $householdsImported = array();
+
         foreach ($householdsArray as $beneficiariesInHousehold) {
             try {
                 $hhArray = $this->createAndInitHousehold($beneficiariesInHousehold[0], $project);
@@ -184,12 +186,13 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
             } catch (\Exception $e) {
                 throw $e;
             }
-            
+
             $this->em->flush();
+            array_push($householdsImported, $household->getId());
         }
 
         if($countNew + $countUpdated > 0) {
-            return ['message' => $countNew . " households created and " . $countUpdated . " updated (" . $countBeneficiaries . " beneficiaries)"];
+            return ['message' => $countNew . " households created and " . $countUpdated . " updated (" . $countBeneficiaries . " beneficiaries)", "households" => $householdsImported];
         }
         else {
             return ['exist' => 'All beneficiaries with this location code are already inserted for this project'];

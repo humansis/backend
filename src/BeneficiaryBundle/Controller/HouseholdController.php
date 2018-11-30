@@ -276,6 +276,8 @@ class HouseholdController extends Controller
             $token = null;
 
         $contentJson = $request->request->all();
+        $email = $request->query->get('email');
+
         $countryIso3 = $contentJson['__country'];
         unset($contentJson['__country']);
         /** @var HouseholdCSVService $householdService */
@@ -287,7 +289,7 @@ class HouseholdController extends Controller
                 return new Response("You must upload a file.", 500);
             try
             {
-                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $step, $token);
+                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $step, $token, $email);
             }
             catch (\Exception $e)
             {
@@ -298,7 +300,7 @@ class HouseholdController extends Controller
         {
             try
             {
-                $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $step, $token);
+                $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $step, $token, $email);
             }
             catch (\Exception $e)
             {
@@ -511,5 +513,87 @@ class HouseholdController extends Controller
         $APINames = $this->get('beneficiary.api_import_service')->getAllAPI($countryIso3);
 
         return new Response(json_encode($APINames));
+    }
+
+    /**
+     * @Rest\Post("/households/get/imported", name="get_all_households_imported")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Get all households imported by the API",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Household::class))
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getImportedAction(Request $request)
+    {
+        $householdsArray = $request->request->all();
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
+        try
+        {
+            $households = $householdService->getAllImported($householdsArray);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $households,
+                'json',
+                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Get("/households/get/cached", name="get_all_households_cached")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Get all households cached by the import with file",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Household::class))
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function getCachedAction(Request $request)
+    {
+        $email = $request->query->get('email');
+
+        /** @var HouseholdService $householdService */
+        $householdService = $this->get('beneficiary.household_service');
+        try
+        {
+            $households = $householdService->getAllCached($email);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $households,
+                'json',
+                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+            );
+        return new Response($json);
     }
 }
