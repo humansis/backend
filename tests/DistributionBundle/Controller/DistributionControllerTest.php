@@ -245,7 +245,6 @@ class DistributionControllerTest extends BMSServiceTestCase
         $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/11?distribution=' . $distribution['id']);
         $remove = json_decode($this->client->getResponse()->getContent(), true);
 
-        dump($remove);
         // Check if the second step succeed
         $this->assertTrue($remove);
     }
