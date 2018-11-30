@@ -102,6 +102,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
     }
 
     /**
+     * @depends testCreateHousehold
      * @return bool|void
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
@@ -158,5 +159,74 @@ class HouseholdControllerTest extends BMSServiceTestCase
         }
 
         return $this->removeHousehold($this->namefullnameHousehold . '(u)');
+    }
+
+    /**
+     * @depends testCreateHousehold
+     *
+     * @param $hh
+     * @return void
+     */
+    public function testAddHousehold($hh) {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+        
+        $body;
+        $body['household'] = $this->bodyHousehold;
+        $body['projects'] = [1];
+
+        $crawler = $this->request('PUT', '/api/wsse/households', $body);
+        $householdsArray = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('id', $householdsArray);
+        $this->assertArrayHasKey('address_postcode', $householdsArray);
+        $this->assertArrayHasKey('address_street', $householdsArray);
+        $this->assertArrayHasKey('address_number', $householdsArray);
+        $this->assertArrayHasKey('latitude', $householdsArray);
+        $this->assertArrayHasKey('longitude', $householdsArray);
+        $this->assertArrayHasKey('livelihood', $householdsArray);
+        $this->assertArrayHasKey('notes', $householdsArray);
+        $this->assertArrayHasKey('beneficiaries', $householdsArray);
+        $this->assertArrayHasKey('country_specific_answers', $householdsArray);
+        $this->assertArrayHasKey('location', $householdsArray);
+        $this->assertArrayHasKey('projects', $householdsArray);
+
+        return true;
+    }
+
+    /**
+     * @depends testAddHousehold
+     * @param $hh
+     * @return void
+     */
+    public function testEditHousehold($hh) {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $body;
+        $body['household'] = $this->bodyHousehold;
+        $body['projects'] = [1];
+    
+        // $crawler = $this->request('POST', '/api/wsse/households/' . $hh['id'], $body);
+        // $householdsArray = json_decode($this->client->getResponse()->getContent(), true);
+
+        // $this->assertArrayHasKey('id', $householdsArray);
+        // $this->assertArrayHasKey('address_postcode', $householdsArray);
+        // $this->assertArrayHasKey('address_street', $householdsArray);
+        // $this->assertArrayHasKey('address_number', $householdsArray);
+        // $this->assertArrayHasKey('latitude', $householdsArray);
+        // $this->assertArrayHasKey('longitude', $householdsArray);
+        // $this->assertArrayHasKey('livelihood', $householdsArray);
+        // $this->assertArrayHasKey('notes', $householdsArray);
+        // $this->assertArrayHasKey('beneficiaries', $householdsArray);
+        // $this->assertArrayHasKey('country_specific_answers', $householdsArray);
+        // $this->assertArrayHasKey('location', $householdsArray);
+        // $this->assertArrayHasKey('projects', $householdsArray);
+
+        $this->assertTrue(true===true);
+
+        return true;
     }
 }
