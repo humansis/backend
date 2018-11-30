@@ -201,17 +201,17 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $body = array (
             array(
-            'data_of_birth' => '1976-10-06',
-            'family_name' => 'NAME_TEST',
-            'gender' => 1,
-            'given_name' => 'FIRSTNAME_TEST',
-            'id' => 11,
-            'national_ids' => [],
-            'phones' => [],
-            'status' => true,
-            'vulnerability_criteria' => [
-                'assets/images/households/disabled.png'
-            ]
+                'data_of_birth' => '1976-10-06',
+                'family_name' => 'NAME_TEST',
+                'gender' => 1,
+                'given_name' => 'FIRSTNAME_TEST',
+                'id' => 11,
+                'national_ids' => [],
+                'phones' => [],
+                'status' => true,
+                'vulnerability_criteria' => [
+                    'assets/images/households/disabled.png'
+                ]
             )
         );
 
@@ -245,6 +245,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/11?distribution=' . $distribution['id']);
         $remove = json_decode($this->client->getResponse()->getContent(), true);
 
+        dump($remove);
         // Check if the second step succeed
         $this->assertTrue($remove);
     }
