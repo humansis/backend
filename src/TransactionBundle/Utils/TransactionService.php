@@ -87,39 +87,82 @@ class TransactionService {
      * Send email to confirm transaction
      * @param  User $user
      * @param  DistributionData $distributionData
+     * @param bool $generateCode
      * @return void
-     * @throws \Exception
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \Exception
      */
-    public function sendEmail(User $user, DistributionData $distributionData)
+    public function sendEmail(User $user, DistributionData $distributionData, bool $generateCode = true)
     {
-        $code = random_int(100000, 999999);
+        //TODO check if it works, email sent but no recieved
+        if ($generateCode) {
+            $code = random_int(100000, 999999);
 
-        $cache = new FilesystemCache();
-        $cache->set($distributionData->getId() . '-' . $user->getEmail() . '-code_transaction_confirmation', $code);
+            $email = str_replace('@', '', $user->getEmail());
+            $cache = new FilesystemCache();
+            $cache->set($distributionData->getId() . '-' . $email . '-code_transaction_confirmation', $code);
 
-        dump($code);
-        $commodity = $distributionData->getCommodities()->get(0);
-        $numberOfBeneficiaries = count($distributionData->getDistributionBeneficiaries());
-        $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
-        
-        $message = (new \Swift_Message('Confirm transaction for distribution '. $distributionData->getName()))
-           ->setFrom('admin@bmstaging.info')
-           ->setTo($user->getEmail())
-           ->setBody(
-               $this->container->get('templating')->render(
-                   'Emails/confirm_transaction.html.twig',
-                   array(
-                       'distribution' => $distributionData->getName(),
-                       'amount' => $amountToSend . ' ' . $commodity->getUnit(),
-                       'number' => $numberOfBeneficiaries,
-                       'date' => new \DateTime(),
-                       'email' => $user->getEmail(),
-                       'code' => $code
-                   )
-               ),
-               'text/html'
-        );
+            $commodity = $distributionData->getCommodities()->get(0);
+            $numberOfBeneficiaries = count($distributionData->getDistributionBeneficiaries());
+            $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
+
+            $message = (new \Swift_Message('Confirm transaction for distribution ' . $distributionData->getName()))
+                ->setFrom('admin@bmstaging.info')
+                ->setTo($user->getEmail())
+                ->setBody(
+                    $this->container->get('templating')->render(
+                        'Emails/confirm_transaction.html.twig',
+                        array(
+                            'distribution' => $distributionData->getName(),
+                            'amount' => $amountToSend . ' ' . $commodity->getUnit(),
+                            'number' => $numberOfBeneficiaries,
+                            'date' => new \DateTime(),
+                            'email' => $user->getEmail(),
+                            'code' => $code
+                        )
+                    ),
+                    'text/html'
+                );
+        }
+        else {
+            $dir_root = $this->container->get('kernel')->getRootDir();
+            $dir_var = $dir_root . '/../var/data';
+            if (! is_dir($dir_var)) mkdir($dir_var);
+            $file_record = $dir_var . '/record_' . $distributionData->getId() . '.csv';
+
+            if (file_get_contents($file_record)) {
+                $message = (new \Swift_Message('Transaction\'s log for ' . $distributionData->getName()))
+                    ->setFrom('admin@bmstaging.info')
+                    ->setTo($user->getEmail())
+                    ->setBody(
+                        $this->container->get('templating')->render(
+                            'Emails/logs_transaction.html.twig',
+                            array(
+                                'user' => $user->getUsername(),
+                                'distribution' => $distributionData->getName()
+                            )
+                        ),
+                        'text/html'
+                    );
+                $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_' . $distributionData->getId() . '.csv')->setFilename('logsTransaction.csv'));
+            }
+            else {
+                $message = (new \Swift_Message('Transaction\'s log for ' . $distributionData->getName()))
+                    ->setFrom('admin@bmstaging.info')
+                    ->setTo($user->getEmail())
+                    ->setBody(
+                        $this->container->get('templating')->render(
+                            'Emails/no_logs_transaction.html.twig',
+                            array(
+                                'user' => $user->getUsername(),
+                                'distribution' => $distributionData->getName()
+                            )
+                        ),
+                        'text/html'
+                    );
+            }
+        }
+
         $this->container->get('mailer')->send($message);
     }
 
@@ -136,8 +179,8 @@ class TransactionService {
         $cache = new FilesystemCache();
 
         $checkedAgainst = '';
-
-        if ($cache->has($distributionData->getId() . '-' . $user->getEmail() . '-code_transaction_confirmation'))
+        $email = str_replace('@', '', $user->getEmail());
+        if ($cache->has($distributionData->getId() . '-' . $email . '-code_transaction_confirmation'))
             $checkedAgainst = $cache->get($distributionData->getId() . '-' . $user->getEmail() . '-code_transaction_confirmation');
 
         $result = ($code === intval($checkedAgainst));

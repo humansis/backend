@@ -119,4 +119,28 @@ class TransactionController extends Controller
         }
     }
 
+    /**
+     * Get the logs of the transaction
+     * @Rest\Get("/distributions/{id}/logs", name="get_logs_transaction")
+     * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
+     *
+     * @SWG\Tag(name="Transaction")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @param DistributionData $distributionData
+     * @return Response
+     */
+    public function getLogsTransactionAction(DistributionData $distributionData) {
+        $user = $this->getUser();
+        try {
+            $this->get('transaction.transaction_service')->sendEmail($user, $distributionData, false);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return new Response("Email sent");
+    }
 }
