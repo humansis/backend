@@ -19,19 +19,19 @@ services:
         - "@service_container"
         public: true
 
-    log_service:
-        class: CommonBundle\Utils\LogService
-        arguments:
-        - "@doctrine.orm.entity_manager"
-        - "@service_container"
-        public: true
-
 #######################################################################################
 ##                                     LISTENER                                      ##
 #######################################################################################
     CommonBundle\Listener\RequestListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
+
+    CommonBundle\Listener\ResponseListener:
+        arguments:
+        - "@doctrine.orm.entity_manager"
+        - "@service_container"
+        tags:
+        - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
 
 #######################################################################################

@@ -71,7 +71,6 @@ class HouseholdController extends Controller
      *
      * @param Request $request
      * @return Response
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function allAction(Request $request)
     {
@@ -93,30 +92,6 @@ class HouseholdController extends Controller
                 'json',
                 SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
             );
-
-
-        $actionName = $request->attributes->get('_route');
-
-        $user = $this->getUser();
-
-        $router = $this->container->get('router');
-        $route = $router->getRouteCollection()->get($actionName);
-        $controllerName = $route->getDefault('_controller');
-
-//        $cache = new FilesystemCache();
-//        //Save the controller
-//        $cache->set($user->getEmail() . '-logsUser', $controllerName);
-
-        //Uid
-        dump($user->getId());
-        //Umail
-        dump($user->getEmail());
-        //Date
-        dump((new \DateTime('now'))->format('Y-m-d H:i:s'));
-        //Method
-        dump($route->getMethods()[0]);
-        //url
-        dump(explode('}', $route->getPath())[1]);
 
         return new Response($json);
     }
