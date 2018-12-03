@@ -417,27 +417,4 @@ class UserController extends Controller
 
         return new JsonResponse($isSuccess);
     }
-
-    /**
-     * Log user action
-     * @Rest\Post("/log/user/action", name="log_user_action")
-     * @Security("is_granted('ROLE_USER_MANAGEMENT_WRITE')")
-     *
-     * @SWG\Tag(name="Users")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Success or not",
-     *     @SWG\Schema(type="boolean")
-     * )
-     *
-     * @param User $user
-     * @return Response
-     */
-    public function deleteAction(User $user)
-    {
-        $isSuccess = $this->get('user.user_service')->delete($user);
-
-        return new JsonResponse($isSuccess);
-    }
 }

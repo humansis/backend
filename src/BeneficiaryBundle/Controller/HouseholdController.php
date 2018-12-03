@@ -77,14 +77,6 @@ class HouseholdController extends Controller
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
 
-        $actionName = $request->attributes->get('_route');
-
-        $router = $this->container->get('router');
-        $route = $router->getRouteCollection()->get($actionName);
-        $controllerName = $route->getDefault('_controller');
-
-        dump($controllerName);
-
         try
         {
             $households = $householdService->getAll($filters['__country'], $filters);
@@ -99,6 +91,28 @@ class HouseholdController extends Controller
                 'json',
                 SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
             );
+
+
+        $actionName = $request->attributes->get('_route');
+
+        dump($actionName);
+        $router = $this->container->get('router');
+        $route = $router->getRouteCollection()->get($actionName);
+        $controllerName = $route->getDefault('_controller');
+
+        dump($router);
+        dump($route);
+
+        //Date
+        dump((new \DateTime('now'))->format('Y-m-d H:i:s'));
+        //Method
+        dump($route->getMethods()[0]);
+        //url
+        dump(explode('}', $route->getPath())[1]);
+
+        //Controller
+        dump($controllerName);
+
         return new Response($json);
     }
 
