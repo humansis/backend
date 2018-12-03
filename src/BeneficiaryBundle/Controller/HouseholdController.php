@@ -11,6 +11,7 @@ use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,6 +71,7 @@ class HouseholdController extends Controller
      *
      * @param Request $request
      * @return Response
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function allAction(Request $request)
     {
@@ -95,23 +97,26 @@ class HouseholdController extends Controller
 
         $actionName = $request->attributes->get('_route');
 
-        dump($actionName);
+        $user = $this->getUser();
+
         $router = $this->container->get('router');
         $route = $router->getRouteCollection()->get($actionName);
         $controllerName = $route->getDefault('_controller');
 
-        dump($router);
-        dump($route);
+//        $cache = new FilesystemCache();
+//        //Save the controller
+//        $cache->set($user->getEmail() . '-logsUser', $controllerName);
 
+        //Uid
+        dump($user->getId());
+        //Umail
+        dump($user->getEmail());
         //Date
         dump((new \DateTime('now'))->format('Y-m-d H:i:s'));
         //Method
         dump($route->getMethods()[0]);
         //url
         dump(explode('}', $route->getPath())[1]);
-
-        //Controller
-        dump($controllerName);
 
         return new Response($json);
     }

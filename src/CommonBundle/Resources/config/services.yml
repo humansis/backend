@@ -19,6 +19,12 @@ services:
         - "@service_container"
         public: true
 
+    log_service:
+        class: CommonBundle\Utils\LogService
+        arguments:
+        - "@doctrine.orm.entity_manager"
+        - "@service_container"
+        public: true
 
 #######################################################################################
 ##                                     LISTENER                                      ##
