@@ -48,7 +48,7 @@ class TransactionController extends Controller
         $code = $request->request->get('code');
         $user = $this->getUser();
         
-        $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code);
+        $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code, $user, $distributionData);
         if (! $validatedTransaction) {
             return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
         }

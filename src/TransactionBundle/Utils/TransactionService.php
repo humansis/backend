@@ -3,6 +3,7 @@
 namespace TransactionBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Cache\Simple\FilesystemCache;
 use TransactionBundle\Utils\Provider\DefaultFinancialProvider;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
@@ -88,16 +89,16 @@ class TransactionService {
      * @param  DistributionData $distributionData
      * @return void
      * @throws \Exception
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function sendEmail(User $user, DistributionData $distributionData)
     {
         $code = random_int(100000, 999999);
-        $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/tmp';
-        if (!is_dir($dir_var)) mkdir($dir_var);
-        $file_confirmation_code = $dir_var . '/code_transaction_confirmation';
-        file_put_contents($file_confirmation_code, $code);
-        
+
+        $cache = new FilesystemCache();
+        $cache->set($distributionData->getId() . '-' . $user->getEmail() . '-code_transaction_confirmation', $code);
+
+        dump($code);
         $commodity = $distributionData->getCommodities()->get(0);
         $numberOfBeneficiaries = count($distributionData->getDistributionBeneficiaries());
         $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
@@ -121,29 +122,28 @@ class TransactionService {
         );
         $this->container->get('mailer')->send($message);
     }
-    
+
     /**
      * Verify confirmation code
-     * @param  int    $code 
+     * @param  int $code
+     * @param User $user
+     * @param DistributionData $distributionData
      * @return boolean
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function verifyCode(int $code)
+    public function verifyCode(int $code, User $user, DistributionData $distributionData)
     {
-        $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/tmp';
-        if (! is_dir($dir_var)) {
-            return false;
-        }
-        $file_confirmation_code = $dir_var . '/code_transaction_confirmation';
-        $checkedAgainst = file_get_contents($file_confirmation_code);
-        if (! $checkedAgainst) {
-            return false;
-        }
+        $cache = new FilesystemCache();
+
+        $checkedAgainst = '';
+
+        if ($cache->has($distributionData->getId() . '-' . $user->getEmail() . '-code_transaction_confirmation'))
+            $checkedAgainst = $cache->get($distributionData->getId() . '-' . $user->getEmail() . '-code_transaction_confirmation');
 
         $result = ($code === intval($checkedAgainst));
 
         if ($result) {
-            unlink($file_confirmation_code);
+            $cache->delete($distributionData->getId() . '-' . $user->getEmail() . '-code_transaction_confirmation');
         }
         return $result;
     }
