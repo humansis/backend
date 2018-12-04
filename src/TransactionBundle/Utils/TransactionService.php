@@ -94,7 +94,6 @@ class TransactionService {
      */
     public function sendEmail(User $user, DistributionData $distributionData, bool $generateCode = true)
     {
-        //TODO check if it works, email sent but no recieved
         if ($generateCode) {
             $code = random_int(100000, 999999);
 
@@ -102,6 +101,7 @@ class TransactionService {
             $cache = new FilesystemCache();
             $cache->set($distributionData->getId() . '-' . $email . '-code_transaction_confirmation', $code);
 
+            dump($code);
             $commodity = $distributionData->getCommodities()->get(0);
             $numberOfBeneficiaries = count($distributionData->getDistributionBeneficiaries());
             $amountToSend = $numberOfBeneficiaries * $commodity->getValue();

@@ -214,13 +214,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         curl_close($curl);
         
         // Record request
-        $data = "\n******\nINFO:\n"
-        . json_encode($info) 
-        . "\nRESPONSE:\n"
-        . $response
-        . "\nERROR:\n"
-        . $err
-        . "\n******";
+        $data = [$this->from, (new \DateTime())->format('Y-m-d h:i:s'), $info['url'], $info['http_code'], $response, $err];
         $this->recordTransaction($distributionData, $data);
     
         if ($err) {

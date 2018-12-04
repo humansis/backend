@@ -24,7 +24,10 @@ abstract class DefaultFinancialProvider {
 
     /** @var string $url */
     protected $url;
-    
+
+    /** @var string from */
+    protected $from;
+
     /**
      * DefaultFinancialProvider constructor.
      * @param EntityManagerInterface $entityManager
@@ -77,7 +80,8 @@ abstract class DefaultFinancialProvider {
      * @throws \Exception
      */
     public function sendMoneyToAll(DistributionData $distributionData, float $amount, string $currency, string $from)
-    {    
+    {
+        $this->from = $from;
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
 
         $response = array(
@@ -132,11 +136,6 @@ abstract class DefaultFinancialProvider {
             }
         }
 
-        $arrayCsv = array(
-            array($from, (new \DateTime())->format('Y-m-d H:i:s'), $from, (new \DateTime())->format('Y-m-d H:i:s'))
-        );
-        $this->recordTransaction($distributionData, $arrayCsv);
-        
         return $response;
     }
 
@@ -225,11 +224,9 @@ abstract class DefaultFinancialProvider {
 
         $fp = fopen($file_record, 'a');
         if (!file_get_contents($file_record))
-            fputcsv($fp, array('USER SENDING MONEY', 'DATE', 'USER SENDING MONEY','DATE'));
+            fputcsv($fp, array('FROM', 'DATE', 'URL', 'HTTP CODE', 'RESPONSE', 'ERROR'));
 
-        foreach ($data as $datum) {
-            fputcsv($fp, $datum);
-        }
+        fputcsv($fp, $data);
 
         fclose($fp);
     }
