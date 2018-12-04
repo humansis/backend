@@ -136,7 +136,7 @@ class TransactionService {
         if (! is_dir($dir_var)) mkdir($dir_var);
         $file_record = $dir_var . '/record_' . $distributionData->getId() . '.csv';
 
-        if (file_get_contents($file_record)) {
+        if (is_file($file_record) && file_get_contents($file_record)) {
             $message = (new \Swift_Message('Transaction logs for ' . $distributionData->getName()))
                 ->setFrom('admin@bmstaging.info')
                 ->setTo($user->getEmail())
