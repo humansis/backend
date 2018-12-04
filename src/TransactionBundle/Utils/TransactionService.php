@@ -92,13 +92,13 @@ class TransactionService {
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Exception
      */
-    public function sendEmail(User $user, DistributionData $distributionData)
+    public function sendVerifyEmail(User $user, DistributionData $distributionData)
     {
         $code = random_int(100000, 999999);
 
-        $email = str_replace('@', '', $user->getEmail());
+        $id = $user->getId();
         $cache = new FilesystemCache();
-        $cache->set($distributionData->getId() . '-' . $email . '-code_transaction_confirmation', $code);
+        $cache->set($distributionData->getId() . '-' . $id . '-code_transaction_confirmation', $code);
 
         $commodity = $distributionData->getCommodities()->get(0);
         $numberOfBeneficiaries = count($distributionData->getDistributionBeneficiaries());
@@ -137,7 +137,7 @@ class TransactionService {
         $file_record = $dir_var . '/record_' . $distributionData->getId() . '.csv';
 
         if (file_get_contents($file_record)) {
-            $message = (new \Swift_Message('Transaction\'s log for ' . $distributionData->getName()))
+            $message = (new \Swift_Message('Transaction logs for ' . $distributionData->getName()))
                 ->setFrom('admin@bmstaging.info')
                 ->setTo($user->getEmail())
                 ->setBody(
@@ -153,7 +153,7 @@ class TransactionService {
             $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_' . $distributionData->getId() . '.csv')->setFilename('logsTransaction.csv'));
         }
         else {
-            $message = (new \Swift_Message('Transaction\'s log for ' . $distributionData->getName()))
+            $message = (new \Swift_Message('Transaction logs for ' . $distributionData->getName()))
                 ->setFrom('admin@bmstaging.info')
                 ->setTo($user->getEmail())
                 ->setBody(
@@ -185,14 +185,14 @@ class TransactionService {
         $cache = new FilesystemCache();
 
         $checkedAgainst = '';
-        $email = str_replace('@', '', $user->getEmail());
-        if ($cache->has($distributionData->getId() . '-' . $email . '-code_transaction_confirmation'))
-            $checkedAgainst = $cache->get($distributionData->getId() . '-' . $user->getEmail() . '-code_transaction_confirmation');
+        $id = $user->getId();
+        if ($cache->has($distributionData->getId() . '-' . $id . '-code_transaction_confirmation'))
+            $checkedAgainst = $cache->get($distributionData->getId() . '-' . $id . '-code_transaction_confirmation');
 
         $result = ($code === intval($checkedAgainst));
 
         if ($result) {
-            $cache->delete($distributionData->getId() . '-' . $user->getEmail() . '-code_transaction_confirmation');
+            $cache->delete($distributionData->getId() . '-' . $id . '-code_transaction_confirmation');
         }
         return $result;
     }

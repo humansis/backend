@@ -84,7 +84,7 @@ class TransactionController extends Controller
     public function sendVerificationEmailAction(Request $request, DistributionData $distributionData) {
         $user = $this->getUser();
         try {
-            $this->get('transaction.transaction_service')->sendEmail($user, $distributionData);
+            $this->get('transaction.transaction_service')->sendVerifyEmail($user, $distributionData);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
