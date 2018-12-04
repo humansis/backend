@@ -53,18 +53,29 @@ class ResponseListener
         //HTTPStatus
         $httpStatus = $response->getStatusCode();
 
-        $log = new Logs();
+        $bundle = explode("\\", $controller);
+        dump($bundle[0]);
+        if ($bundle[0] == 'BeneficiaryBundle' || $bundle[0] == 'CommonBundle' || $bundle[0] == 'DistributionBundle' || $bundle[0] == 'ProjectBundle' || $bundle[0] == 'ReportingBundle' || $bundle[0] == 'TransactionBundle' || $bundle[0] == 'UserBundle') {
+            $log = new Logs();
 
-        $log->setUrl($url)
-            ->setIdUser($idUser)
-            ->setMailUser($mailUser)
-            ->setMethod($method)
-            ->setDate($date)
-            ->setHttpStatus($httpStatus)
-            ->setController($controller);
+            $log->setUrl($url)
+                ->setIdUser($idUser)
+                ->setMailUser($mailUser)
+                ->setMethod($method)
+                ->setDate($date)
+                ->setHttpStatus($httpStatus)
+                ->setController($controller);
 
-        $this->em->persist($log);
-        $this->em->flush();
+            if (!$this->em->isOpen()) {
+                $this->em = $this->em->create(
+                    $this->em->getConnection(),
+                    $this->em->getConfiguration()
+                );
+            }
+
+            $this->em->persist($log);
+            $this->em->flush();
+        }
     }
 
     /**
