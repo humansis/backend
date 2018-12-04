@@ -53,8 +53,7 @@ class ResponseListener
         //HTTPStatus
         $httpStatus = $response->getStatusCode();
 
-        $bundle = explode("\\", $controller);
-        if ($bundle[0] == 'BeneficiaryBundle' || $bundle[0] == 'CommonBundle' || $bundle[0] == 'DistributionBundle' || $bundle[0] == 'ProjectBundle' || $bundle[0] == 'ReportingBundle' || $bundle[0] == 'TransactionBundle' || $bundle[0] == 'UserBundle') {
+        if ($idUser) {
             $log = new Logs();
 
             $log->setUrl($url)
