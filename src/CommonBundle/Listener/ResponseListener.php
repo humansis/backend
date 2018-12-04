@@ -54,7 +54,6 @@ class ResponseListener
         $httpStatus = $response->getStatusCode();
 
         $bundle = explode("\\", $controller);
-        dump($bundle[0]);
         if ($bundle[0] == 'BeneficiaryBundle' || $bundle[0] == 'CommonBundle' || $bundle[0] == 'DistributionBundle' || $bundle[0] == 'ProjectBundle' || $bundle[0] == 'ReportingBundle' || $bundle[0] == 'TransactionBundle' || $bundle[0] == 'UserBundle') {
             $log = new Logs();
 
