@@ -92,78 +92,84 @@ class TransactionService {
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Exception
      */
-    public function sendEmail(User $user, DistributionData $distributionData, bool $generateCode = true)
+    public function sendEmail(User $user, DistributionData $distributionData)
     {
-        if ($generateCode) {
-            $code = random_int(100000, 999999);
+        $code = random_int(100000, 999999);
 
-            $email = str_replace('@', '', $user->getEmail());
-            $cache = new FilesystemCache();
-            $cache->set($distributionData->getId() . '-' . $email . '-code_transaction_confirmation', $code);
+        $email = str_replace('@', '', $user->getEmail());
+        $cache = new FilesystemCache();
+        $cache->set($distributionData->getId() . '-' . $email . '-code_transaction_confirmation', $code);
 
-            dump($code);
-            $commodity = $distributionData->getCommodities()->get(0);
-            $numberOfBeneficiaries = count($distributionData->getDistributionBeneficiaries());
-            $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
+        $commodity = $distributionData->getCommodities()->get(0);
+        $numberOfBeneficiaries = count($distributionData->getDistributionBeneficiaries());
+        $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
 
-            $message = (new \Swift_Message('Confirm transaction for distribution ' . $distributionData->getName()))
+        $message = (new \Swift_Message('Confirm transaction for distribution ' . $distributionData->getName()))
+            ->setFrom('admin@bmstaging.info')
+            ->setTo($user->getEmail())
+            ->setBody(
+                $this->container->get('templating')->render(
+                    'Emails/confirm_transaction.html.twig',
+                    array(
+                        'distribution' => $distributionData->getName(),
+                        'amount' => $amountToSend . ' ' . $commodity->getUnit(),
+                        'number' => $numberOfBeneficiaries,
+                        'date' => new \DateTime(),
+                        'email' => $user->getEmail(),
+                        'code' => $code
+                    )
+                ),
+                'text/html'
+            );
+
+        $this->container->get('mailer')->send($message);
+    }
+
+    /**
+     * Send logs by email
+     * @param User $user
+     * @param DistributionData $distributionData
+     */
+    public function sendLogsEmail(User $user, DistributionData $distributionData) {
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (! is_dir($dir_var)) mkdir($dir_var);
+        $file_record = $dir_var . '/record_' . $distributionData->getId() . '.csv';
+
+        if (file_get_contents($file_record)) {
+            $message = (new \Swift_Message('Transaction\'s log for ' . $distributionData->getName()))
                 ->setFrom('admin@bmstaging.info')
                 ->setTo($user->getEmail())
                 ->setBody(
                     $this->container->get('templating')->render(
-                        'Emails/confirm_transaction.html.twig',
+                        'Emails/logs_transaction.html.twig',
                         array(
-                            'distribution' => $distributionData->getName(),
-                            'amount' => $amountToSend . ' ' . $commodity->getUnit(),
-                            'number' => $numberOfBeneficiaries,
-                            'date' => new \DateTime(),
-                            'email' => $user->getEmail(),
-                            'code' => $code
+                            'user' => $user->getUsername(),
+                            'distribution' => $distributionData->getName()
+                        )
+                    ),
+                    'text/html'
+                );
+            $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_' . $distributionData->getId() . '.csv')->setFilename('logsTransaction.csv'));
+        }
+        else {
+            $message = (new \Swift_Message('Transaction\'s log for ' . $distributionData->getName()))
+                ->setFrom('admin@bmstaging.info')
+                ->setTo($user->getEmail())
+                ->setBody(
+                    $this->container->get('templating')->render(
+                        'Emails/no_logs_transaction.html.twig',
+                        array(
+                            'user' => $user->getUsername(),
+                            'distribution' => $distributionData->getName()
                         )
                     ),
                     'text/html'
                 );
         }
-        else {
-            $dir_root = $this->container->get('kernel')->getRootDir();
-            $dir_var = $dir_root . '/../var/data';
-            if (! is_dir($dir_var)) mkdir($dir_var);
-            $file_record = $dir_var . '/record_' . $distributionData->getId() . '.csv';
-
-            if (file_get_contents($file_record)) {
-                $message = (new \Swift_Message('Transaction\'s log for ' . $distributionData->getName()))
-                    ->setFrom('admin@bmstaging.info')
-                    ->setTo($user->getEmail())
-                    ->setBody(
-                        $this->container->get('templating')->render(
-                            'Emails/logs_transaction.html.twig',
-                            array(
-                                'user' => $user->getUsername(),
-                                'distribution' => $distributionData->getName()
-                            )
-                        ),
-                        'text/html'
-                    );
-                $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_' . $distributionData->getId() . '.csv')->setFilename('logsTransaction.csv'));
-            }
-            else {
-                $message = (new \Swift_Message('Transaction\'s log for ' . $distributionData->getName()))
-                    ->setFrom('admin@bmstaging.info')
-                    ->setTo($user->getEmail())
-                    ->setBody(
-                        $this->container->get('templating')->render(
-                            'Emails/no_logs_transaction.html.twig',
-                            array(
-                                'user' => $user->getUsername(),
-                                'distribution' => $distributionData->getName()
-                            )
-                        ),
-                        'text/html'
-                    );
-            }
-        }
 
         $this->container->get('mailer')->send($message);
+
     }
 
     /**

@@ -137,7 +137,7 @@ class TransactionController extends Controller
     public function getLogsTransactionAction(DistributionData $distributionData) {
         $user = $this->getUser();
         try {
-            $this->get('transaction.transaction_service')->sendEmail($user, $distributionData, false);
+            $this->get('transaction.transaction_service')->sendLogsEmail($user, $distributionData);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
