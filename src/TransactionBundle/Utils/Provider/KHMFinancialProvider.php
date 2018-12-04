@@ -89,7 +89,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
                     $distributionBeneficiary, 
                     '',
                     new \DateTime(),
-                    $curency . ' ' . $amount,
+                    $currency . ' ' . $amount,
                     0,
                     $sent->message ?: '');
                 
@@ -115,11 +115,12 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         return $transaction;
     }
-    
+
     /**
      * Update status of transaction (check if money has been picked up)
-     * @param  Transaction $transaction 
-     * @return object                   
+     * @param  Transaction $transaction
+     * @return object
+     * @throws \Exception
      */
     public function updateStatusTransaction(Transaction $transaction)
     {
@@ -139,11 +140,13 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         return $transaction;
     }
-    
+
     /**
      * Get status of transaction
-     * @param  string $transaction_id 
-     * @return object                 
+     * @param DistributionData $distributionData
+     * @param  string $transaction_id
+     * @return object
+     * @throws \Exception
      */
     public function getStatus(DistributionData $distributionData, string $transaction_id)
     {
@@ -211,13 +214,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         curl_close($curl);
         
         // Record request
-        $data = "\n******\nINFO:\n"
-        . json_encode($info) 
-        . "\nRESPONSE:\n"
-        . $response
-        . "\nERROR:\n"
-        . $err
-        . "\n******";
+        $data = [$this->from, (new \DateTime())->format('Y-m-d h:i:s'), $info['url'], $info['http_code'], $response, $err];
         $this->recordTransaction($distributionData, $data);
     
         if ($err) {

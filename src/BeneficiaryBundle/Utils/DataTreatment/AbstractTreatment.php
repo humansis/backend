@@ -76,8 +76,6 @@ abstract class AbstractTreatment implements InterfaceTreatment
      * @param $householdsToSave
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    //TODO (or not) reset the cache when come back or whatever, save in a global cache and clear the step's cache when the user go to step 2
-    // and replace global cache if the user come back
     public function saveHouseholds(string $cacheName, $householdsToSave) {
         if (gettype($householdsToSave) == 'array') {
             $householdsToSave = $this->em->getRepository(Household::class)->findOneBy(
