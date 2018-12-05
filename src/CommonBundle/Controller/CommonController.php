@@ -45,7 +45,7 @@ class CommonController extends Controller
             $total_beneficiaries = $this->get('beneficiary.beneficiary_service')->countAll($country);
             $active_projects = $this->get('project.project_service')->countAll($country);
             $enrolled_beneficiaries = $this->get('distribution.distribution_service')->countAllBeneficiaries($country);
-            $total_value_transactions = 0; //TODO: change once transaction has been implemented
+            $total_value_transactions = $this->get('distribution.distribution_service')->getTotalValue($country);
             
             $result = array($total_beneficiaries, $active_projects, $enrolled_beneficiaries, $total_value_transactions);
         }
