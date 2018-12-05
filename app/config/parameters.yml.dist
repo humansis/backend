@@ -9,8 +9,8 @@ parameters:
 
     mailer_transport: smtp
     mailer_host: email-smtp.eu-west-1.amazonaws.com
-    mailer_user: '%env(SES_USERNAME)%'
-    mailer_password: '%env(SES_PASSWORD)%'
+    mailer_user: 'AKIAI44XCJQXAUVER4EQ'
+    mailer_password: 'Al5xMkz/CserX1GkWbpfr5gsGbyfFw+w/Q0/fEl6YnG1'
     mailer_port: 587
     mailer_encryption: tls
     secret: ThisTokenIsNotSoSecretChangeIt

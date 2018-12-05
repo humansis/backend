@@ -360,4 +360,43 @@ class UserService
         return $this->container->get('export_csv_service')->export($exportableTable,'users', $type);
 
     }
+
+    public function getLog(User $user) {
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (! is_dir($dir_var)) mkdir($dir_var);
+        $file_record = $dir_var . '/record_log-' . $user->getId() . '.csv';
+
+        if (is_file($file_record) && file_get_contents($file_record)) {
+            $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
+                ->setFrom('admin@bmstaging.info')
+                ->setTo($user->getEmail())
+                ->setBody(
+                    $this->container->get('templating')->render(
+                        'Emails/logs.html.twig',
+                        array(
+                            'user' => $user->getUsername(),
+                        )
+                    ),
+                    'text/html'
+                );
+            $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_log-' . $user->getId() . '.csv')->setFilename('logs.csv'));
+        }
+        else {
+            $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
+                ->setFrom('admin@bmstaging.info')
+                ->setTo($user->getEmail())
+                ->setBody(
+                    $this->container->get('templating')->render(
+                        'Emails/no_logs.html.twig',
+                        array(
+                            'user' => $user->getUsername(),
+                        )
+                    ),
+                    'text/html'
+                );
+        }
+
+        $this->container->get('mailer')->send($message);
+    }
 }

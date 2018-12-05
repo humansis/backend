@@ -417,4 +417,28 @@ class UserController extends Controller
 
         return new JsonResponse($isSuccess);
     }
+
+    /**
+     * Get the log file for the user
+     * @Rest\Get("/users/{id}/logs", name="log_user")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @param User $user
+     * @return Response
+     */
+    public function getLogAction(User $user)
+    {
+        $isSuccess = $this->get('user.user_service')->getLog($user);
+
+        return new JsonResponse($isSuccess);
+    }
+
 }
