@@ -143,4 +143,31 @@ class TransactionController extends Controller
         }
         return new Response("Email sent");
     }
+    
+    /**
+     * Test transaction connection
+     * @Rest\Get("/distributions/{id}/test", name="test_transaction")
+     * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
+     *
+     * @SWG\Tag(name="Transaction")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @param Request $request 
+     * @param DistributionData $distributionData 
+     * @return Response
+     */
+    public function getTestTransactionAction(Request $request, DistributionData $distributionData) {
+        $countryISO3 = $request->request->get('__country');
+
+        try {
+            $response = $this->get('transaction.transaction_service')->testConnection($countryISO3, $distributionData);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return new Response("Connection successful: " . $response);
+    }
 }

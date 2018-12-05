@@ -9,6 +9,7 @@ use TransactionBundle\TransactionBundle;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Cache\Simple\FilesystemCache;
 
 /**
  * Class DefaultFinancialProvider
@@ -81,11 +82,15 @@ abstract class DefaultFinancialProvider {
      */
     public function sendMoneyToAll(DistributionData $distributionData, float $amount, string $currency, string $from)
     {
+        // temporary variables to limit the amount of money that can be sent for one distribution to: 1000$
+        $cache = new FilesystemCache();
+        $cache->set($distributionData->getId() . '-amount_sent', 0);
+        
         $this->from = $from;
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
 
         $response = array(
-            'sent'       => array(),
+            'sent'          => array(),
             'failure'       => array(),
             'no_mobile'     => array(),
             'already_sent'  => array()
@@ -118,16 +123,26 @@ abstract class DefaultFinancialProvider {
                 if (! $transactions->isEmpty()) {
                     array_push($response['already_sent'], $distributionBeneficiary);
                 } else {
-                    try {
-                        $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary, $amount, $currency);
-                        if ($transaction->getTransactionStatus() === 0) {
+                    if ($cache->has($distributionData->getId() . '-amount_sent')) {
+                        $amountSent = $cache->get($distributionData->getId() . '-amount_sent');
+                    }
+                    // if the limit hasn't been reached
+                    if (empty($amountSent) || $amountSent < 1000) {
+                        try {
+                            $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary, $amount, $currency);
+                            if ($transaction->getTransactionStatus() === 0) {
+                                array_push($response['failure'], $distributionBeneficiary);
+                            } else {
+                                // add amount to amount sent
+                                $cache->set($distributionData->getId() . '-amount_sent', $amountSent + $amount);
+                                array_push($response['sent'], $distributionBeneficiary);
+                            }
+                        } catch (Exception $e) {
+                            $this->createTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2, $e->getMessage());
                             array_push($response['failure'], $distributionBeneficiary);
-                        } else {
-                            array_push($response['sent'], $distributionBeneficiary);
                         }
-                    } catch (Exception $e) {
-                        $this->createTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2, $e->getMessage());
-                        array_push($response['failure'], $distributionBeneficiary);
+                    } else {
+                        $this->createTransaction($distributionBeneficiary, '', new \DateTime(), 0, 0, "The maximum amount that can be sent per distribution (USD 1000) has been reached");
                     }
                 }
             } else {
