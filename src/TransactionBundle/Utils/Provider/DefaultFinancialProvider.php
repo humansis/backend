@@ -84,7 +84,9 @@ abstract class DefaultFinancialProvider {
     {
         // temporary variables to limit the amount of money that can be sent for one distribution to: 1000$
         $cache = new FilesystemCache();
-        $cache->set($distributionData->getId() . '-amount_sent', 0);
+        if (! $cache->has($distributionData->getId() . '-amount_sent')) {
+            $cache->set($distributionData->getId() . '-amount_sent', 0);
+        }
         
         $this->from = $from;
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
@@ -127,7 +129,7 @@ abstract class DefaultFinancialProvider {
                         $amountSent = $cache->get($distributionData->getId() . '-amount_sent');
                     }
                     // if the limit hasn't been reached
-                    if (empty($amountSent) || $amountSent < 1000) {
+                    if (empty($amountSent) || $amountSent + $amount <= 1000) {
                         try {
                             $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary, $amount, $currency);
                             if ($transaction->getTransactionStatus() === 0) {
