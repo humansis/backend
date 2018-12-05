@@ -223,10 +223,11 @@ abstract class DefaultFinancialProvider {
         $file_record = $dir_var . '/record_' . $distributionData->getId() . '.csv';
 
         $fp = fopen($file_record, 'a');
-        if (!file_get_contents($file_record))
-            fputcsv($fp, array('FROM', 'DATE', 'URL', 'HTTP CODE', 'RESPONSE', 'ERROR'));
+        if (!file_get_contents($file_record)) {
+            fputcsv($fp, array('FROM', 'DATE', 'URL', 'HTTP CODE', 'RESPONSE', 'ERROR'), ';');
+        }
 
-        fputcsv($fp, $data);
+        fputcsv($fp, $data , ";");
 
         fclose($fp);
     }
