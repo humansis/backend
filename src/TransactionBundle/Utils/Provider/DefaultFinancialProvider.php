@@ -226,7 +226,7 @@ abstract class DefaultFinancialProvider {
         if (!file_get_contents($file_record))
             fputcsv($fp, array('FROM', 'DATE', 'URL', 'HTTP CODE', 'RESPONSE', 'ERROR'), ';');
 
-        fputcsv($fp, $data);
+        fputcsv($fp, $data ,";");
 
         fclose($fp);
     }
