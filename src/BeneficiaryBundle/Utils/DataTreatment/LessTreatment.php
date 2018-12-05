@@ -16,10 +16,11 @@ class LessTreatment extends AbstractTreatment
     /**
      * @param Project $project
      * @param array $householdsArray
+     * @param string $email
      * @return array
-     * @throws \Exception
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function treat(Project $project, array $householdsArray)
+    public function treat(Project $project, array $householdsArray, string $email)
     {
         foreach ($householdsArray as $householdArray)
         {
@@ -31,24 +32,28 @@ class LessTreatment extends AbstractTreatment
                 $this->beneficiaryService->remove($oldBeneficiary);
             }
         }
-        return $this->addHouseholds($project);
+        return $this->addHouseholds($project, $email);
     }
 
     /**
      * @param Project $project
+     * @param string $email
      * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Exception
      */
-    public function addHouseholds(Project $project)
+    public function addHouseholds(Project $project, string $email)
     {
-        $householdsToAdd = $this->getHouseholdsNoTypo();
+        $householdsToAdd = $this->getHouseholdsNoTypo($email);
         $errors = [];
         $numberAdded = 0;
+        $this->clearCache('households.new');
         foreach ($householdsToAdd as $householdToAdd)
         {
             try
             {
                 $this->householdService->createOrEdit($householdToAdd['new'], [$project]);
+                $this->saveHouseholds($email . '-households.new', $householdToAdd['new']);
                 $numberAdded++;
                 $this->em->clear();
             }
@@ -70,10 +75,11 @@ class LessTreatment extends AbstractTreatment
     }
 
     /**
+     * @param string $email
      * @return mixed|null
      * @throws \Exception
      */
-    private function getHouseholdsNoTypo()
+    private function getHouseholdsNoTypo(string $email)
     {
         if (null === $this->token)
             return null;
@@ -82,7 +88,7 @@ class LessTreatment extends AbstractTreatment
         $dir_var = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_var))
             mkdir($dir_var);
-        $dir_no_typo = $dir_var . '/no_typo';
+        $dir_no_typo = $dir_var . '/' . $email . '-no_typo';
         if (!is_file($dir_no_typo))
             return [];
         return json_decode(file_get_contents($dir_no_typo), true);

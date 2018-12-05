@@ -29,18 +29,18 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $q = $qb->leftJoin("hh.beneficiaries", "b")
             ->select("hh as household")
             ->addSelect("LEVENSHTEIN(
-                    CONCAT(hh.addressStreet, hh.addressNumber, hh.addressPostcode, b.givenName, b.familyName),
+                    CONCAT(COALESCE(hh.addressStreet, ''), COALESCE(hh.addressNumber, ''), COALESCE(hh.addressPostcode, ''), COALESCE(b.givenName, ''), COALESCE(b.familyName, '')),
                     :stringToSearch
                 ) as levenshtein")
             ->where("b.status = 1")
             ->andWhere("
                 LEVENSHTEIN(
-                    CONCAT(hh.addressStreet, hh.addressNumber, hh.addressPostcode, b.givenName, b.familyName),
+                    CONCAT(COALESCE(hh.addressStreet, ''), COALESCE(hh.addressNumber, ''), COALESCE(hh.addressPostcode, ''), COALESCE(b.givenName, ''), COALESCE(b.familyName, '')),
                     :stringToSearch
                 ) < 
                 CASE 
                     WHEN (LEVENSHTEIN(
-                        CONCAT(hh.addressStreet, hh.addressNumber, hh.addressPostcode, b.givenName, b.familyName),
+                        CONCAT(COALESCE(hh.addressStreet, ''), COALESCE(hh.addressNumber, ''), COALESCE(hh.addressPostcode, ''), COALESCE(b.givenName, ''), COALESCE(b.familyName, '')),
                         :stringToSearch) = 0) 
                         THEN 1
                     ELSE

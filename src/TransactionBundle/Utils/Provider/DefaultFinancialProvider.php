@@ -24,7 +24,10 @@ abstract class DefaultFinancialProvider {
 
     /** @var string $url */
     protected $url;
-    
+
+    /** @var string from */
+    protected $from;
+
     /**
      * DefaultFinancialProvider constructor.
      * @param EntityManagerInterface $entityManager
@@ -48,16 +51,15 @@ abstract class DefaultFinancialProvider {
     public function sendRequest(DistributionData $distributionData, string $type, string $route, array $body = array()) {
         throw new \Exception("You need to define the financial provider for the country.");
     }
-    
+
     /**
      * Send money to one beneficiary
-     * @param  string                  $phoneNumber
+     * @param  string $phoneNumber
      * @param  DistributionBeneficiary $distributionBeneficiary
-     * @param  float                   $amount
-     * @param  string                  $currency
-     * @param  Transaction             $transaction
-     * @return Transaction
-     * @throws \Exception       
+     * @param  float $amount
+     * @param  string $currency
+     * @return void
+     * @throws \Exception
      */
     public function sendMoneyToOne(
         string $phoneNumber,
@@ -67,27 +69,21 @@ abstract class DefaultFinancialProvider {
     {
         throw new \Exception("You need to define the financial provider for the country.");
     }
-    
+
     /**
      * Send money to all beneficiaries
-     * @param  array  $beneficiaries 
-     * @param  float  $amount
+     * @param DistributionData $distributionData
+     * @param  float $amount
      * @param  string $currency
-     * @return array                
+     * @param string $from
+     * @return array
+     * @throws \Exception
      */
     public function sendMoneyToAll(DistributionData $distributionData, float $amount, string $currency, string $from)
-    {    
+    {
+        $this->from = $from;
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
-        
-        // Record transaction
-        $data = "\n\n==============="
-                . "\nUSER SENDING MONEY: "
-                . $from
-                . "\nDATE: "
-                . (new \DateTime())->format('Y-m-d H:i:s')
-                . "\nCALLS TO EXTERNAL API: ";
-        $this->recordTransaction($distributionData, $data);
-        
+
         $response = array(
             'sent'       => array(),
             'failure'       => array(),
@@ -139,26 +135,20 @@ abstract class DefaultFinancialProvider {
                 array_push($response['no_mobile'], $distributionBeneficiary);
             }
         }
-        
-        // Record transaction
-        $data = "\nTRANSACTION DONE FOR"
-                . "\nUSER SENDING MONEY: "
-                . $from
-                . "\nDATE: "
-                . (new \DateTime())->format('Y-m-d H:i:s')
-                . "\n===============";
-        $this->recordTransaction($distributionData, $data);
-        
+
         return $response;
     }
-    
+
     /**
      * Update distribution status (check if money has been picked up)
      * @param  DistributionData $distributionData
-     * @return array                            
+     * @return void
+     * @throws \Exception
      */
     public function updateStatusDistribution(DistributionData $distributionData)
     {
+        $response = array();
+
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
         
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
@@ -171,21 +161,23 @@ abstract class DefaultFinancialProvider {
             if ($successfulTransaction) {
                 try {
                     $this->updateStatusTransaction($successfulTransaction); 
+                    array_push($response, $distributionBeneficiary);
                 } catch (\Exception $e) {
-                    // do something
+                    throw $e;
                 }
             }
         }
     }
-    
+
     /**
      * Create transaction
-     * @param  DistributionBeneficiary $distributionBeneficiary 
-     * @param  string                  $transactionId           
-     * @param  float                   $amountSent              
-     * @param  int                     $transactionStatus       
-     * @param  string                  $message                 
-     * @return Transaction                                           
+     * @param  DistributionBeneficiary $distributionBeneficiary
+     * @param  string $transactionId
+     * @param \DateTime $dateSent
+     * @param string $amountSent
+     * @param  int $transactionStatus
+     * @param  string $message
+     * @return Transaction
      */
     public function createTransaction(
         DistributionBeneficiary $distributionBeneficiary,
@@ -220,16 +212,23 @@ abstract class DefaultFinancialProvider {
     /**
      * Save transaction record in file
      * @param  DistributionData $distributionData
-     * @param  string           $data           
+     * @param  array           $data
      * @return void                           
      */
-    public function recordTransaction(DistributionData $distributionData, string $data) 
+    public function recordTransaction(DistributionData $distributionData, array $data)
     {
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data';
         if (! is_dir($dir_var)) mkdir($dir_var);
-        $file_record = $dir_var . '/record_' . $distributionData->getId();
-        file_put_contents($file_record, $data, FILE_APPEND);
+        $file_record = $dir_var . '/record_' . $distributionData->getId() . '.csv';
+
+        $fp = fopen($file_record, 'a');
+        if (!file_get_contents($file_record))
+            fputcsv($fp, array('FROM', 'DATE', 'URL', 'HTTP CODE', 'RESPONSE', 'ERROR'));
+
+        fputcsv($fp, $data);
+
+        fclose($fp);
     }
 
 }

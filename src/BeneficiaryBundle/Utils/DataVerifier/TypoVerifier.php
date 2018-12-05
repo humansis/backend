@@ -55,15 +55,15 @@ class TypoVerifier extends AbstractVerifier
      * @param string $countryISO3
      * @param array $householdArray
      * @param int $cacheId
+     * @param string $email
      * @return array|bool
      * @throws \Exception
      */
-    public function verify(string $countryISO3, array $householdArray, int $cacheId)
+    public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
         $householdRepository = $this->em->getRepository(Household::class);
         $beneficiaryRepository = $this->em->getRepository(Beneficiary::class);
-        if (null === $this->listHouseholdsSaved)
-        {
+        if (null === $this->listHouseholdsSaved) {
             $this->listHouseholdsSaved = $householdRepository
                 ->getAllBy($countryISO3, [], [
                     'hh.id',
@@ -73,10 +73,8 @@ class TypoVerifier extends AbstractVerifier
                 ]);
         }
         $newHead = null;
-        foreach ($householdArray['beneficiaries'] as $newBeneficiaryArray)
-        {
-            if (1 === intval($newBeneficiaryArray['status']))
-            {
+        foreach ($householdArray['beneficiaries'] as $newBeneficiaryArray) {
+            if (1 === intval($newBeneficiaryArray['status'])) {
                 $newHead = $newBeneficiaryArray;
                 break;
             }
@@ -87,10 +85,8 @@ class TypoVerifier extends AbstractVerifier
         $similarHousehold = null;
         $percent = $this->minimumPercentSimilar;
         /** @var Household $oldHousehold */
-        foreach ($this->listHouseholdsSaved as $oldHousehold)
-        {
-            if (null === $this->mappingHouseholdAndHead || !array_key_exists($oldHousehold['id'], $this->mappingHouseholdAndHead))
-            {
+        foreach ($this->listHouseholdsSaved as $oldHousehold) {
+            if (null === $this->mappingHouseholdAndHead || !array_key_exists($oldHousehold['id'], $this->mappingHouseholdAndHead)) {
                 // Get the head of the current household
                 /** @var Beneficiary $oldHead */
                 $oldHead = $beneficiaryRepository->getHeadOfHouseholdId($oldHousehold['id']);
@@ -115,32 +111,29 @@ class TypoVerifier extends AbstractVerifier
                 $tmpPercent
             );
 
-            if (100 == $tmpPercent)
-            {
+            if (100 == $tmpPercent) {
                 // SAVE 100% SIMILAR IN 1_typo
                 $this->saveInCache(
                     'mapping_new_old',
                     $cacheId,
                     $householdArray,
+                    $email,
                     $householdRepository->find($oldHousehold['id'])
                 );
                 return false;
-            }
-            elseif ($percent < $tmpPercent)
-            {
+            } elseif ($percent < $tmpPercent) {
                 $similarHousehold = $oldHousehold;
                 $percent = $tmpPercent;
             }
         }
-        if ($this->minimumPercentSimilar < $percent)
-        {
+        if ($this->minimumPercentSimilar < $percent) {
             $return = [
                 "old" => $householdRepository->find($similarHousehold['id']),
                 "new" => $householdArray, "id_tmp_cache" => $cacheId
             ];
             return $return;
         }
-        $this->saveInCache('no_typo', $cacheId, $householdArray, null);
+        $this->saveInCache('no_typo', $cacheId, $householdArray, $email, null);
         return null;
     }
 
@@ -149,13 +142,20 @@ class TypoVerifier extends AbstractVerifier
      * @param int $cacheId
      * @param array $dataToSave
      * @param Household|null $household
+     * @param string $email
      * @throws \Exception
      */
-    private function saveInCache(string $step, int $cacheId, array $dataToSave, Household $household = null)
+    private function saveInCache(string $step, int $cacheId, array $dataToSave, string $email, Household $household = null)
     {
         if (null !== $household)
-            $arrayNewHousehold = json_decode($this->container->get('jms_serializer')
-                ->serialize($household, 'json', SerializationContext::create()->setSerializeNull(true)), true);
+            $arrayNewHousehold = json_decode(
+                $this->container->get('jms_serializer')
+                    ->serialize(
+                        $household,
+                        'json',
+                        SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
+                    ),
+                true);
         else
             $arrayNewHousehold = json_encode([]);
 
@@ -173,17 +173,14 @@ class TypoVerifier extends AbstractVerifier
         if (!is_dir($dir_var_token))
             mkdir($dir_var_token);
 
-        if (is_file($dir_var_token . '/' . $step))
-        {
-            $listHH = json_decode(file_get_contents($dir_var_token . '/' . $step), true);
-        }
-        else
-        {
+        if (is_file($dir_var_token . '/' . $email . '-' . $step)) {
+            $listHH = json_decode(file_get_contents($dir_var_token . '/' . $email . '-' . $step), true);
+        } else {
             $listHH = [];
         }
 
         $listHH[$cacheId] = ["new" => $dataToSave, "old" => $arrayNewHousehold, "id_tmp_cache" => $cacheId];
-        file_put_contents($dir_var_token . '/' . $step, json_encode($listHH));
+        file_put_contents($dir_var_token . '/' . $email . '-' . $step, json_encode($listHH));
 
     }
 }

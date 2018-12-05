@@ -336,4 +336,13 @@ class DistributionService
         $count = (int) $this->em->getRepository(DistributionBeneficiary::class)->countAll($country);
         return $count;
     }
+    
+    /**
+     * @param string $country
+     * @return string
+     */
+    public function getTotalValue(string $country)
+    {
+        return $this->em->getRepository(DistributionData::class)->getTotalValue($country);
+    }
 }

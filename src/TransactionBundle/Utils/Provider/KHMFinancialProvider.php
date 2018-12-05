@@ -8,6 +8,7 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\TransactionBundle;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class KHMFinancialProvider
@@ -27,8 +28,26 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      * @var \DateTime
      */
     private $lastTokenDate;
+    /**
+     * @var string
+     */
+    private $username;
+    /**
+     * @var string
+     */
+    private $password;
     
-    private $transaction;
+    /**
+     * KHMFinancialProvider constructor.
+     * @param EntityManagerInterface $entityManager
+     */
+     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, string $username, string $password)
+     {
+         parent::__construct($entityManager, $container);
+         $this->username = $username;
+         $this->password = $password;
+     }
+    
 
     /**
      * Get token to connect to API
@@ -39,8 +58,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
     {
         $route = "/oauth/token";
         $body = array(
-            "username"      => "thirdParty",
-            "password"      => "ba0228f6e48ba7942d79e2b44e6072ee",
+            "username"      => $this->username,
+            "password"      => $this->password,
             "grant_type"    => "password",
             "client_id"     => "third_party",
             "client_secret" => "16681c9ff419d8ecc7cfe479eb02a7a",
@@ -89,7 +108,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
                     $distributionBeneficiary, 
                     '',
                     new \DateTime(),
-                    $curency . ' ' . $amount,
+                    $currency . ' ' . $amount,
                     0,
                     $sent->message ?: '');
                 
@@ -115,11 +134,12 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         return $transaction;
     }
-    
+
     /**
      * Update status of transaction (check if money has been picked up)
-     * @param  Transaction $transaction 
-     * @return object                   
+     * @param  Transaction $transaction
+     * @return object
+     * @throws \Exception
      */
     public function updateStatusTransaction(Transaction $transaction)
     {
@@ -139,11 +159,13 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         
         return $transaction;
     }
-    
+
     /**
      * Get status of transaction
-     * @param  string $transaction_id 
-     * @return object                 
+     * @param DistributionData $distributionData
+     * @param  string $transaction_id
+     * @return object
+     * @throws \Exception
      */
     public function getStatus(DistributionData $distributionData, string $transaction_id)
     {
@@ -211,13 +233,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         curl_close($curl);
         
         // Record request
-        $data = "\n******\nINFO:\n"
-        . json_encode($info) 
-        . "\nRESPONSE:\n"
-        . $response
-        . "\nERROR:\n"
-        . $err
-        . "\n******";
+        $data = [$this->from, (new \DateTime())->format('Y-m-d h:i:s'), $info['url'], $info['http_code'], $response, $err];
         $this->recordTransaction($distributionData, $data);
     
         if ($err) {

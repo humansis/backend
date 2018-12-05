@@ -26,7 +26,7 @@ class ExportCSVService
         "Address street" => 'Thompson Drive',
         "Address number" => '4943',
         "Address postcode" => '94801',
-        "Livelihood" => 'Richmond',
+        "Livelihood" => '2',
         "Notes" => 'Greatest city',
         "Latitude" => '38.018234',
         "Longitude" => '-122.379730',

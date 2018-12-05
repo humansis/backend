@@ -38,7 +38,7 @@ class DonorControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
-    public function testCreateDonor()
+    public function testCreate()
     {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
@@ -70,10 +70,10 @@ class DonorControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @depends testCreateDonor
+     * @depends testCreate
      * @throws \Exception
      */
-    public function testEditDonor($isSuccess = true)
+    public function testUpdate($isSuccess = true)
     {
         if (!$isSuccess)
         {
@@ -120,10 +120,10 @@ class DonorControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @depends testEditDonor
+     * @depends testUpdate
      * @throws \Exception
      */
-    public function testGetDonors($isSuccess)
+    public function testGetAll($isSuccess)
     {
         if (!$isSuccess)
         {
@@ -158,7 +158,7 @@ class DonorControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @depends testGetDonors
+     * @depends testGetAll
      *
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException

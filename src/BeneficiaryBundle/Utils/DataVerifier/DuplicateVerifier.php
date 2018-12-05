@@ -26,15 +26,16 @@ class DuplicateVerifier extends AbstractVerifier
      * @param string $countryISO3
      * @param array $householdArray
      * @param int $cacheId
+     * @param string $email
      * @return array|null
      * @throws \Exception
      */
-    public function verify(string $countryISO3, array $householdArray, int $cacheId)
+    public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
         $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria(null, $countryISO3, []);
         // GET THE SIMILAR HOUSEHOLD FROM THE DB, IF ISSET
         if (array_key_exists('id_tmp_cache', $householdArray))
-            $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache']);
+            $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache'], $email);
         else
             $similarOldHousehold = null;
 
@@ -88,10 +89,11 @@ class DuplicateVerifier extends AbstractVerifier
 
     /**
      * @param $id_tmp_cache
+     * @param string $email
      * @return null
      * @throws \Exception
      */
-    private function getOldHouseholdFromCache($id_tmp_cache)
+    private function getOldHouseholdFromCache($id_tmp_cache, string $email)
     {
         if (null === $this->token)
             return null;
@@ -100,11 +102,11 @@ class DuplicateVerifier extends AbstractVerifier
         $dir_var = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_var))
             mkdir($dir_var);
-        $dir_mapping = $dir_var . '/mapping_new_old';
+        $dir_mapping = $dir_var . '/' . $email . '-mapping_new_old';
         if (!is_file($dir_mapping))
             return null;
 
-        $fileContent = file_get_contents($dir_var . '/mapping_new_old');
+        $fileContent = file_get_contents($dir_var . '/' . $email . '-mapping_new_old');
         $householdsCached = json_decode($fileContent, true);
         if (array_key_exists($id_tmp_cache, $householdsCached))
             return $householdsCached[$id_tmp_cache]['old'];

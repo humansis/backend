@@ -17,3 +17,6 @@ services:
     transaction.khm_financial_provider:
         class: TransactionBundle\Utils\Provider\KHMFinancialProvider
         parent: transaction.default_financial_provider
+        arguments:
+            - %khm_financial_provider_username%'
+            - %khm_financial_provider_password%'

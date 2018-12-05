@@ -48,7 +48,7 @@ class TransactionController extends Controller
         $code = $request->request->get('code');
         $user = $this->getUser();
         
-        $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code);
+        $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code, $user, $distributionData);
         if (! $validatedTransaction) {
             return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
         }
@@ -84,7 +84,7 @@ class TransactionController extends Controller
     public function sendVerificationEmailAction(Request $request, DistributionData $distributionData) {
         $user = $this->getUser();
         try {
-            $this->get('transaction.transaction_service')->sendEmail($user, $distributionData);
+            $this->get('transaction.transaction_service')->sendVerifyEmail($user, $distributionData);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -93,7 +93,7 @@ class TransactionController extends Controller
     
     /**
      * Update the status of the transactions sent through external API
-     * @Rest\Get("/transaction/distribution/{id}/email", name="update_transaction_status")
+     * @Rest\Get("/transaction/distribution/{id}/pickup", name="update_transaction_status")
      * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
      * 
      * @SWG\Tag(name="Transaction")
@@ -110,11 +110,37 @@ class TransactionController extends Controller
     public function updateTransactionStatusAction(Request $request, DistributionData $distributionData) {
         $countryISO3 = $request->request->get('__country');
         try {
-            $response = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $distributionData);
+            $beneficiaries = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $distributionData);
+            $json = $this->get('jms_serializer')
+            ->serialize($beneficiaries, 'json');
+            return new Response($json);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return new Response();
     }
 
+    /**
+     * Get the logs of the transaction
+     * @Rest\Get("/distributions/{id}/logs", name="get_logs_transaction")
+     * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
+     *
+     * @SWG\Tag(name="Transaction")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @param DistributionData $distributionData
+     * @return Response
+     */
+    public function getLogsTransactionAction(DistributionData $distributionData) {
+        $user = $this->getUser();
+        try {
+            $this->get('transaction.transaction_service')->sendLogsEmail($user, $distributionData);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return new Response("Email sent");
+    }
 }

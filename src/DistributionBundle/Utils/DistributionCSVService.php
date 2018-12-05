@@ -136,7 +136,9 @@ class DistributionCSVService
                 $beneficiaryToDelete = array(
                     'id' => $beneficiary->getId(),
                     'givenName' => $beneficiary->getGivenName(),
-                    'familyName' => $beneficiary->getFamilyName()
+                    'familyName' => $beneficiary->getFamilyName(),
+                    'dateOfBirth' => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                    'gender' => $beneficiary->getGender()
                 );
                 array_push($deleteArray, $beneficiaryToDelete);
             }
@@ -277,7 +279,11 @@ class DistributionCSVService
         
         // Add
         foreach ($data['added'] as $beneficiaryToAdd) {
-            $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd["id"]);
+            if ($beneficiaryToAdd instanceof Beneficiary)
+                $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd->getId());
+            else
+                $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd['id']);
+
             $household = $beneficiaryToAdd->getHousehold();
             if (! $household->getProjects()->contains($distributionProject)) {
                 $household->addProject($distributionProject);

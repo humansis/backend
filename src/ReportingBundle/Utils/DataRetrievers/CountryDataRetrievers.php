@@ -58,6 +58,9 @@ class CountryDataRetrievers
      * @return mixed
      */
   public function getByFrequency($qb, array $filters) {
+    if (!key_exists('frequency', $filters))
+        $filters['frequency'] = "Month";
+
     if ($filters['frequency'] === "Month") {
       $qb ->select('rc.country AS name','rv.value AS value', 'rv.unity AS unity', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
       $result = $qb->getQuery()->getArrayResult();
