@@ -8,6 +8,7 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\TransactionBundle;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class KHMFinancialProvider
@@ -27,8 +28,26 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      * @var \DateTime
      */
     private $lastTokenDate;
+    /**
+     * @var string
+     */
+    private $username;
+    /**
+     * @var string
+     */
+    private $password;
     
-    private $transaction;
+    /**
+     * KHMFinancialProvider constructor.
+     * @param EntityManagerInterface $entityManager
+     */
+     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, string $username, string $password)
+     {
+         parent::__construct($entityManager, $container);
+         $this->username = $username;
+         $this->password = $password;
+     }
+    
 
     /**
      * Get token to connect to API
@@ -39,8 +58,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
     {
         $route = "/oauth/token";
         $body = array(
-            "username"      => "thirdParty",
-            "password"      => "ba0228f6e48ba7942d79e2b44e6072ee",
+            "username"      => $this->username,
+            "password"      => $this->password,
             "grant_type"    => "password",
             "client_id"     => "third_party",
             "client_secret" => "16681c9ff419d8ecc7cfe479eb02a7a",
