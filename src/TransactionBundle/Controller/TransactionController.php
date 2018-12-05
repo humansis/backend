@@ -168,6 +168,6 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return new Response("Connection successful: " . $response);
+        return new Response("Connection successful: " . json_encode($response));
     }
 }
