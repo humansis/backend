@@ -129,7 +129,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             $response->transaction_id,
             new \DateTime(),
             $response->amount,
-            $response->transaction_status === 'Success' ? 1 : 0,
+            (! property_exists($response, 'transaction_status') || $response->transaction_status === 'Success') ? 1 : 0,
             property_exists($response, 'message') ? $response->message : $sent->passcode);
         
         return $transaction;
