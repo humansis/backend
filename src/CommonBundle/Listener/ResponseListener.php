@@ -116,9 +116,9 @@ class ResponseListener
 
         $fp = fopen($file_record, 'a');
         if (!file_get_contents($file_record))
-            fputcsv($fp, array('URL', 'ID user', 'Email user', 'Method', 'Date', 'HTTP Status', 'Controller called'));
+            fputcsv($fp, array('URL', 'ID user', 'Email user', 'Method', 'Date', 'HTTP Status', 'Controller called') ,";");
 
-        fputcsv($fp, $data);
+        fputcsv($fp, $data, ";");
 
         fclose($fp);
     }
