@@ -232,9 +232,17 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         $err = curl_error($curl);
         
         curl_close($curl);
-        
+
+        $bodyString = '';
         // Record request
-        $data = [$this->from, (new \DateTime())->format('Y-m-d h:i:s'), $info['url'], $info['http_code'], $response, $err];
+        foreach ($body as $item) {
+            if ($bodyString == '')
+                $bodyString .= $item;
+            else
+                $bodyString .= ', ' . $item;
+        }
+
+        $data = [$this->from, (new \DateTime())->format('Y-m-d h:i:s'), $info['url'], $info['http_code'], $response, $err, $bodyString];
         $this->recordTransaction($distributionData, $data);
     
         if ($err) {

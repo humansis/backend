@@ -241,7 +241,7 @@ abstract class DefaultFinancialProvider {
 
         $fp = fopen($file_record, 'a');
         if (!file_get_contents($file_record)) {
-            fputcsv($fp, array('FROM', 'DATE', 'URL', 'HTTP CODE', 'RESPONSE', 'ERROR'), ';');
+            fputcsv($fp, array('FROM', 'DATE', 'URL', 'HTTP CODE', 'RESPONSE', 'ERROR', 'PARAMETERS'), ';');
         }
 
         fputcsv($fp, $data , ";");
