@@ -213,7 +213,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
                 
         curl_setopt_array($curl, array(
           CURLOPT_PORT           => "8443",
-          CURLOPT_URL            => ($this->username === 'peopleinnneed' ? $this->url_prod : $this->url) . $route,
+          CURLOPT_URL            => ($this->username === 'peopleinneed' ? $this->url_prod : $this->url) . $route,
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_ENCODING       => "",
           CURLOPT_MAXREDIRS      => 10,
