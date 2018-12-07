@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: developer3
- * Date: 3/12/18
- * Time: 15:03
- */
 
 namespace CommonBundle\Listener;
 
@@ -14,8 +8,8 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
 class ResponseListener
 {
@@ -53,7 +47,7 @@ class ResponseListener
         //HTTPStatus
         $httpStatus = $response->getStatusCode();
 
-        if ($idUser && $method != 'GET' && explode('\\', $controller)[0] != "ReportingBundle") {
+        if ($idUser && $method == 'GET' && explode('\\', $controller)[0] != "ReportingBundle") {
             $log = new Logs();
 
             $log->setUrl($url)
@@ -73,11 +67,7 @@ class ResponseListener
 
             $this->em->persist($log);
             $this->em->flush();
-
-            $data = [$url, $idUser, $mailUser, $method, (new \DateTime())->format('Y-m-d h:i:s'), $httpStatus, $controller];
-            $this->recordLog($idUser, $data);
         }
-
     }
 
     /**
@@ -100,27 +90,4 @@ class ResponseListener
 
         return ['id' => $user->getId(), 'email' => $user->getEmail()];
     }
-
-    /**
-     * Save log record in file
-     * @param int $idUser
-     * @param  array $data
-     * @return void
-     */
-    public function recordLog(int $idUser, array $data)
-    {
-        $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data';
-        if (! is_dir($dir_var)) mkdir($dir_var);
-        $file_record = $dir_var . '/record_log-' . $idUser . '.csv';
-
-        $fp = fopen($file_record, 'a');
-        if (!file_get_contents($file_record))
-            fputcsv($fp, array('URL', 'ID user', 'Email user', 'Method', 'Date', 'HTTP Status', 'Controller called') ,";");
-
-        fputcsv($fp, $data, ";");
-
-        fclose($fp);
-    }
-
 }

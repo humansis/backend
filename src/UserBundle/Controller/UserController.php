@@ -436,9 +436,10 @@ class UserController extends Controller
      */
     public function getLogAction(User $user)
     {
-        $isSuccess = $this->get('user.user_service')->getLog($user);
+        $userConnected = $this->getUser();
+        $attach = $this->get('user.user_service')->getLog($user, $userConnected);
 
-        return new JsonResponse($isSuccess);
+        return new JsonResponse($attach);
     }
 
 }
