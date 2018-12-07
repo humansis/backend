@@ -11,7 +11,6 @@ use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Request;
