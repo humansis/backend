@@ -85,30 +85,39 @@ class UserService
         $this->em->persist($user);
 
         $this->delete($user, false);
-
+        
         if(key_exists('projects', $userData)) {
-
+            $projectsCountries = [];
             foreach ($userData['projects'] as $project) {
-                //$findUser = false;
-
                 $project = $this->em->getRepository(Project::class)->find($project);
-                if ($project instanceof Project) {
 
-                        $userProject = new UserProject();
-                        $userProject->setRights($roles)
-                            ->setUser($user)
-                            ->setProject($project);
-                        $this->em->persist($userProject);
+                if(!in_array($project->getIso3(), $projectsCountries)) {
+                    array_push($projectsCountries, $project->getIso3());
+                }
+
+                if($project instanceof Project){
+                    $userProject = new UserProject();
+                    $userProject->setRights($roles)
+                        ->setUser($user)
+                        ->setProject($project);
+                    $this->em->merge($userProject);
                 }
             }
+            $userData['country'] = $projectsCountries;
         }
 
         if(key_exists('country', $userData)){
-            $userCountry = new UserCountry();
-            $userCountry->setUser($user)
-                ->setIso3($userData['country'])
-                ->setRights($roles);
-            $this->em->persist($userCountry);
+            if(gettype($userData['country']) == "string") {
+                $userData['country'] = [$userData['country']];
+            }
+            foreach($userData['country'] as $country) {
+                $userCountry = new UserCountry();
+                $userCountry->setUser($user)
+                    ->setIso3($country)
+                    ->setRights($roles);
+                $this->em->merge($userCountry);
+            }
+            
         }
 
         $this->em->flush();
@@ -190,6 +199,14 @@ class UserService
                 'username' => $user->getUsername(),
                 'voters' => $user->getRoles()[0]
             ];
+            $countryRepo = $this->em->getRepository('UserBundle:UserCountry');
+            $countries = $countryRepo->findBy(["user" => $user]);
+            if($countries) {
+                $data['country'] = [];
+                foreach($countries as $country) {
+                    array_push($data['country'], $country->getIso3());
+                }
+            }
         }
         elseif ($isCreation)
         {
@@ -255,9 +272,15 @@ class UserService
 
         $this->em->merge($user);
 
-        if(key_exists('projects', $userData))
-            foreach ($userData['projects'] as $project){
+        if(key_exists('projects', $userData)) {
+            $projectsCountries = [];
+            foreach ($userData['projects'] as $project) {
                 $project = $this->em->getRepository(Project::class)->find($project);
+
+                if(!in_array($project->getIso3(), $projectsCountries)) {
+                    array_push($projectsCountries, $project->getIso3());
+                }
+
                 if($project instanceof Project){
                     $userProject = new UserProject();
                     $userProject->setRights($role)
@@ -265,15 +288,22 @@ class UserService
                         ->setProject($project);
                     $this->em->merge($userProject);
                 }
-
             }
+            $userData['country'] = $projectsCountries;
+        }
 
         if(key_exists('country', $userData)){
-            $userCountry = new UserCountry();
-            $userCountry->setUser($user)
-                ->setIso3($userData['country'])
-                ->setRights($role);
-            $this->em->merge($userCountry);
+            if(gettype($userData['country']) == "string") {
+                $userData['country'] = [$userData['country']];
+            }
+            foreach($userData['country'] as $country) {
+                $userCountry = new UserCountry();
+                $userCountry->setUser($user)
+                    ->setIso3($country)
+                    ->setRights($role);
+                $this->em->merge($userCountry);
+            }
+            
         }
 
         $errors = $this->validator->validate($user);

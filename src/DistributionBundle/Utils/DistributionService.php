@@ -253,9 +253,20 @@ class DistributionService
      *
      * @return array
      */
-    public function findAll()
+    public function findAll(string $country)
     {
-        return $this->em->getRepository(DistributionData::class)->findAll();
+        $distributions = [];
+        $projects = $this->em->getRepository(Project::class)->findAll();
+        
+        foreach($projects as $proj) {
+            if($proj->getIso3() == $country) {
+                foreach($proj->getDistributions() as $distrib) {
+                    array_push($distributions, $distrib);
+                }
+            }
+        }
+
+        return $distributions;
     }
 
 
