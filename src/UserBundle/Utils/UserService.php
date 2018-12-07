@@ -85,14 +85,14 @@ class UserService
         $this->em->persist($user);
 
         $this->delete($user, false);
-        //
+        
         if(key_exists('projects', $userData)) {
-            $countryOfProject = [];
+            $projectsCountries = [];
             foreach ($userData['projects'] as $project) {
                 $project = $this->em->getRepository(Project::class)->find($project);
 
-                if(!in_array($project->getIso3(), $countryOfProject)) {
-                    array_push($countryOfProject, $project->getIso3());
+                if(!in_array($project->getIso3(), $projectsCountries)) {
+                    array_push($projectsCountries, $project->getIso3());
                 }
 
                 if($project instanceof Project){
@@ -103,7 +103,7 @@ class UserService
                     $this->em->merge($userProject);
                 }
             }
-            $userData['country'] = $countryOfProject;
+            $userData['country'] = $projectsCountries;
         }
 
         if(key_exists('country', $userData)){
@@ -119,7 +119,6 @@ class UserService
             }
             
         }
-        //
 
         $this->em->flush();
 
@@ -274,12 +273,12 @@ class UserService
         $this->em->merge($user);
 
         if(key_exists('projects', $userData)) {
-            $countryOfProject = [];
+            $projectsCountries = [];
             foreach ($userData['projects'] as $project) {
                 $project = $this->em->getRepository(Project::class)->find($project);
 
-                if(!in_array($project->getIso3(), $countryOfProject)) {
-                    array_push($countryOfProject, $project->getIso3());
+                if(!in_array($project->getIso3(), $projectsCountries)) {
+                    array_push($projectsCountries, $project->getIso3());
                 }
 
                 if($project instanceof Project){
@@ -290,7 +289,7 @@ class UserService
                     $this->em->merge($userProject);
                 }
             }
-            $userData['country'] = $countryOfProject;
+            $userData['country'] = $projectsCountries;
         }
 
         if(key_exists('country', $userData)){

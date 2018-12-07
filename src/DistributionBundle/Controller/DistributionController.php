@@ -251,9 +251,10 @@ class DistributionController extends Controller
      *     )
      * )
      *
+     * @param Request $request
      * @return Response
      */
-    public function getAllAction(request $request)
+    public function getAllAction(Request $request)
     {
         $country = $request->request->get('__country');
         try {
