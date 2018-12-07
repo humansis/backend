@@ -253,10 +253,11 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function getAllAction()
+    public function getAllAction(request $request)
     {
+        $country = $request->request->get('__country');
         try {
-            $distributions = $this->get('distribution.distribution_service')->findAll();
+            $distributions = $this->get('distribution.distribution_service')->findAll($country);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
