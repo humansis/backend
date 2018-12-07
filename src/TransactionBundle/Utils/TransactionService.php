@@ -203,17 +203,37 @@ class TransactionService {
      * @return array
      * @throws \Exception
      */
-    public function updateTransactionStatus($countryISO3, DistributionData $distributionData)
+    public function updateTransactionStatus(string $countryISO3, DistributionData $distributionData)
     {
         try {
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-
         } catch (\Exception $e) {
             throw $e;
         }
         
         try {
             return $this->financialProvider->updateStatusDistribution($distributionData);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+    
+    /**
+     * Test API connection
+     * @param  string           $countryISO3      
+     * @param  DistributionData $distributionData 
+     * @return string                             
+     */
+    public function testConnection(string $countryISO3, DistributionData $distributionData)
+    {
+        try {
+            $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        
+        try {
+            return $this->financialProvider->getToken($distributionData);
         } catch (\Exception $e) {
             throw $e;
         }

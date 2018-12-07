@@ -343,6 +343,7 @@ class DistributionService
      */
     public function getTotalValue(string $country)
     {
-        return $this->em->getRepository(DistributionData::class)->getTotalValue($country);
+        $value = (int) $this->em->getRepository(DistributionData::class)->getTotalValue($country);
+        return $value;
     }
 }

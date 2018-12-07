@@ -19,7 +19,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
     /**
      * @var string
      */
-    protected $url = "https://stageonline.wingmoney.com:8443/RestEngine";
+     protected $url = "https://stageonline.wingmoney.com:8443/RestEngine";
+     protected $url_prod = "https://hir.wingmoney.com:8443/RestServer";
     /**
      * @var string
      */
@@ -129,7 +130,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             $response->transaction_id,
             new \DateTime(),
             $response->amount,
-            $response->transaction_status === 'Success' ? 1 : 0,
+            (! property_exists($response, 'transaction_status') || $response->transaction_status === 'Success') ? 1 : 0,
             property_exists($response, 'message') ? $response->message : $sent->passcode);
         
         return $transaction;
@@ -212,7 +213,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
                 
         curl_setopt_array($curl, array(
           CURLOPT_PORT           => "8443",
-          CURLOPT_URL            => $this->url . $route,
+          CURLOPT_URL            => ($this->username === 'peopleinneed' ? $this->url_prod : $this->url) . $route,
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_ENCODING       => "",
           CURLOPT_MAXREDIRS      => 10,
