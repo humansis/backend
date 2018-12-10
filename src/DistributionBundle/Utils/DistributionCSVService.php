@@ -146,17 +146,19 @@ class DistributionCSVService
 
         // Names that are in the file but not in the distribution
         // New beneficiaries in the database or update existing beneficiary
-        $newAndAddArray = array_udiff($arrayWithKeys, $updateArray,
-            function($array1, $array2) {
-                if ($array1['givenName'] === $array2['givenName'] && $array1['familyName'] == $array2['familyName']) {
-                    return 0;
-                } else if ($array1['givenName'] > $array2['givenName']) {
-                    return 1;
-                } else {
-                    return -1;
+        $newAndAddArray = array();
+        foreach ($arrayWithKeys as $arrayWithKey) {
+            $inDistribution = false;
+
+            foreach ($updateArray as $value) {
+                if ($arrayWithKey['givenName'] === $value['givenName'] && $arrayWithKey['familyName'] === $value['familyName']) {
+                    $inDistribution = true;
                 }
             }
-        );
+
+            if (!$inDistribution)
+                array_push($newAndAddArray, $arrayWithKey);
+        }
 
         // Beneficiaries that will be created as a household of 1
         $createArray = array();
@@ -171,7 +173,10 @@ class DistributionCSVService
                 ]
             );
             if ($beneficiary instanceof Beneficiary) {
-                array_push($addArray, $beneficiary);
+                // Check if the beneficiary is associate to the project of the distribution
+                if (in_array($distributionData->getProject(), $beneficiary->getHousehold()->getProjects()->getValues())) {
+                    array_push($addArray, $beneficiary);
+                }
             } else {
                 array_push($createArray, $beneficiaryArray);
             }
