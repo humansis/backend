@@ -70,6 +70,12 @@ class Logs
      */
     private $controller;
 
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="request", type="text")
+     */
+    protected $request;
 
     /**
      * Get id.
@@ -247,5 +253,29 @@ class Logs
     public function getController()
     {
         return $this->controller;
+    }
+
+    /**
+     * Set request.
+     *
+     * @param array $request
+     *
+     * @return Logs
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     * Get request.
+     *
+     * @return array
+     */
+    public function getRequest()
+    {
+        return $this->request;
     }
 }

@@ -46,8 +46,10 @@ class ResponseListener
         $method = $request->getMethod();
         //HTTPStatus
         $httpStatus = $response->getStatusCode();
+        //Request
+        $requestAll = $request->request->all();
 
-        if ($idUser && $method == 'GET' && explode('\\', $controller)[0] != "ReportingBundle") {
+        if ($idUser && $method != 'GET' && explode('\\', $controller)[0] != "ReportingBundle") {
             $log = new Logs();
 
             $log->setUrl($url)
@@ -56,7 +58,8 @@ class ResponseListener
                 ->setMethod($method)
                 ->setDate($date)
                 ->setHttpStatus($httpStatus)
-                ->setController($controller);
+                ->setController($controller)
+                ->setRequest(json_encode($requestAll));
 
             if (!$this->em->isOpen()) {
                 $this->em = $this->em->create(
