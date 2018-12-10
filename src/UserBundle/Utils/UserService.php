@@ -387,6 +387,7 @@ class UserService
                         'Emails/logs.html.twig',
                         array(
                             'user' => $emailConnected->getUsername(),
+                            'userRequested' => $user->getUsername()
                         )
                     ),
                     'text/html'
@@ -402,6 +403,7 @@ class UserService
                         'Emails/no_logs.html.twig',
                         array(
                             'user' => $emailConnected->getUsername(),
+                            'userRequested' => $user->getUsername()
                         )
                     ),
                     'text/html'
