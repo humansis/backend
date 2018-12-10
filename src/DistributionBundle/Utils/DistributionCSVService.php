@@ -146,20 +146,6 @@ class DistributionCSVService
 
         // Names that are in the file but not in the distribution
         // New beneficiaries in the database or update existing beneficiary
-//        $newAndAddArray = array_udiff($arrayWithKeys, $updateArray,
-//            function($array1, $array2) {
-//                if ($array1['givenName'] === $array2['givenName'] && $array1['familyName'] == $array2['familyName']) {
-//                    return 0;
-//                } else if ($array1['givenName'] > $array2['givenName']) {
-//                    return 1;
-//                } else {
-//                    return -1;
-//                }
-//            }
-//        );
-
-        // Names that are in the file but not in the distribution
-        // New beneficiaries in the database or update existing beneficiary
         $newAndAddArray = array();
         foreach ($arrayWithKeys as $arrayWithKey) {
             $inDistribution = false;
