@@ -368,7 +368,7 @@ class UserService
 
         foreach ($logs as $log) {
             $date = $log->getDate()->format('Y-m-d H:i:s');
-            $data = [$log->getUrl(), $log->getIdUser(), $log->getMailUser(), $log->getMethod(), $date, $log->getHttpStatus(), $log->getController()];
+            $data = [$log->getUrl(), $log->getIdUser(), $log->getMailUser(), $log->getMethod(), $date, $log->getHttpStatus(), $log->getController(), $log->getRequest()];
             $this->recordLog($user->getId(), $data);
         }
 
@@ -391,7 +391,7 @@ class UserService
                     ),
                     'text/html'
                 );
-            $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_log-' . $user->getId() . '.csv')->setFilename('logs.csv'));
+            $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_log-' . $user->getId() . '.csv')->setFilename('logs-'. $user->getEmail() .'.csv'));
         }
         else {
             $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
@@ -433,7 +433,7 @@ class UserService
 
         $fp = fopen($file_record, 'a');
         if (!file_get_contents($file_record))
-            fputcsv($fp, array('URL', 'ID user', 'Email user', 'Method', 'Date', 'HTTP Status', 'Controller called') ,";");
+            fputcsv($fp, array('URL', 'ID user', 'Email user', 'Method', 'Date', 'HTTP Status', 'Controller called', 'Request parameters') ,";");
 
         fputcsv($fp, $data, ";");
 
