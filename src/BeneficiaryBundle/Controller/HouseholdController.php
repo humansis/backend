@@ -76,6 +76,7 @@ class HouseholdController extends Controller
         $filters = $request->request->all();
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
+
         try
         {
             $households = $householdService->getAll($filters['__country'], $filters);
@@ -90,6 +91,7 @@ class HouseholdController extends Controller
                 'json',
                 SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
             );
+
         return new Response($json);
     }
 

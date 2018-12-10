@@ -2,6 +2,7 @@
 
 namespace UserBundle\Utils;
 
+use CommonBundle\Entity\Logs;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\Response;
@@ -389,5 +390,85 @@ class UserService
 
         return $this->container->get('export_csv_service')->export($exportableTable,'users', $type);
 
+    }
+
+    public function getLog(User $user, User $emailConnected) {
+
+        $logs = $this->em->getRepository(Logs::class)->findBy(['idUser' => $user->getId()]);
+
+        foreach ($logs as $log) {
+            $date = $log->getDate()->format('Y-m-d H:i:s');
+            $data = [$log->getUrl(), $log->getIdUser(), $log->getMailUser(), $log->getMethod(), $date, $log->getHttpStatus(), $log->getController(), $log->getRequest()];
+            $this->recordLog($user->getId(), $data);
+        }
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (! is_dir($dir_var)) mkdir($dir_var);
+        $file_record = $dir_var . '/record_log-' . $user->getId() . '.csv';
+
+
+        if (is_file($file_record) && file_get_contents($file_record)) {
+            $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
+                ->setFrom('admin@bmstaging.info')
+                ->setTo($emailConnected->getEmail())
+                ->setBody(
+                    $this->container->get('templating')->render(
+                        'Emails/logs.html.twig',
+                        array(
+                            'user' => $emailConnected->getUsername(),
+                            'userRequested' => $user->getUsername()
+                        )
+                    ),
+                    'text/html'
+                );
+            $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_log-' . $user->getId() . '.csv')->setFilename('logs-'. $user->getEmail() .'.csv'));
+        }
+        else {
+            $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
+                ->setFrom('admin@bmstaging.info')
+                ->setTo($emailConnected->getEmail())
+                ->setBody(
+                    $this->container->get('templating')->render(
+                        'Emails/no_logs.html.twig',
+                        array(
+                            'user' => $emailConnected->getUsername(),
+                            'userRequested' => $user->getUsername()
+                        )
+                    ),
+                    'text/html'
+                );
+        }
+
+        $this->container->get('mailer')->send($message);
+
+        $transport = $this->container->get('mailer')->getTransport();
+        $spool = $transport->getSpool();
+        $spool->flushQueue($this->container->get('swiftmailer.transport.real'));
+
+        if (is_file($file_record) && file_get_contents($file_record))
+            unlink($file_record);
+    }
+
+    /**
+     * Save log record in file
+     * @param int $idUser
+     * @param  array $data
+     * @return void
+     */
+    public function recordLog(int $idUser, array $data)
+    {
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (! is_dir($dir_var)) mkdir($dir_var);
+        $file_record = $dir_var . '/record_log-' . $idUser . '.csv';
+
+        $fp = fopen($file_record, 'a');
+        if (!file_get_contents($file_record))
+            fputcsv($fp, array('URL', 'ID user', 'Email user', 'Method', 'Date', 'HTTP Status', 'Controller called', 'Request parameters') ,";");
+
+        fputcsv($fp, $data, ";");
+
+        fclose($fp);
     }
 }

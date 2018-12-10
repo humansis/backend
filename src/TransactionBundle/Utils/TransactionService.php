@@ -169,7 +169,6 @@ class TransactionService {
         }
 
         $this->container->get('mailer')->send($message);
-
     }
 
     /**
