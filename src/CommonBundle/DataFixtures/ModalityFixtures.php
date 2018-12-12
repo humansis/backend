@@ -15,7 +15,8 @@ class ModalityFixtures extends Fixture
 
     private $data = [
         // ['Food', ['Rice', 'Banana']],
-        ['CTP', ['Mobile']]
+        ['CTP', ['Mobile']],
+        ['Voucher', ['Voucher']]
     ];
 
     /**
