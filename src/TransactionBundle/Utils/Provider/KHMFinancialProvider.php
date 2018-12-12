@@ -145,7 +145,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
     public function updateStatusTransaction(Transaction $transaction)
     {
         try {
-            $response = $this->getStatus($transaction->getDistributionData(), $transaction->getTransactionId());
+            $response = $this->getStatus($transaction->getDistributionBeneficiary()->getDistributionData(), $transaction->getTransactionId());
         } catch (\Exception $e) {
             throw $e;
         }
