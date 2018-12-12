@@ -104,10 +104,6 @@ BEGIN
  RETURN c;
 END
 ```
-# Reports
-php bin/console reporting:code-indicator:add
-
-php bin/console reporting:data-indicator:add
 
 # Import & Export
 
