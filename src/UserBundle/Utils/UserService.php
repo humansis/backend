@@ -207,7 +207,7 @@ class UserService
                     array_push($data['country'], $country->getIso3());
                 }
                 if ($origin && !in_array($origin, $data['country'])) {
-                    throw new \Exception('Unable to log in form this country (' . $origin . ')', Response::HTTP_BAD_REQUEST);
+                    throw new \Exception('Unable to log in from this country (' . $origin . ')', Response::HTTP_BAD_REQUEST);
                 }
             }
         } else

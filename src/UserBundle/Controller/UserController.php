@@ -72,7 +72,7 @@ class UserController extends Controller
         
         $clientIp = $request->headers->get('x-real-ip');
         if ($clientIp) {
-            $originRequest = json_decode(file_get_contents('http://www.geoplugin.net/json.gp?ip=' . $clientIp))->geoplugin_countryCode;
+            $originRequest = json_decode(file_get_contents('http://www.geoplugin.net/json.gp?ip=' . $clientIp))->geoplugin_countryName;
             $originISO3 = json_decode(file_get_contents('https://restcountries.eu/rest/v2/name/' . $originRequest))[0]->alpha3Code;    
         } else {
             $originISO3 = null;
