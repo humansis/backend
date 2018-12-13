@@ -176,11 +176,11 @@ class UserService
     /**
      * @param string $username
      * @param string $saltedPassword
-     * @param bool $isCreation
+     * @param $origin
      * @return array
      * @throws \Exception
      */
-    public function login(string $username, string $saltedPassword, bool $isCreation)
+    public function login(string $username, string $saltedPassword, $origin)
     {
         $repository = $this->em->getRepository('UserBundle:User');
 
@@ -190,8 +190,7 @@ class UserService
             'enabled' => 1
         ]);
 
-        if ($user instanceOf User)
-        {
+        if ($user instanceOf User) {
             $data = [
                 'at' => time(),
                 'connected' => true,
@@ -202,39 +201,16 @@ class UserService
             ];
             $countryRepo = $this->em->getRepository('UserBundle:UserCountry');
             $countries = $countryRepo->findBy(["user" => $user]);
-            if($countries) {
+            if ($countries) {
                 $data['country'] = [];
                 foreach($countries as $country) {
                     array_push($data['country'], $country->getIso3());
                 }
+                if ($origin && !in_array($origin, $data['country'])) {
+                    throw new \Exception('Unable to log in form this country (' . $origin . ')', Response::HTTP_BAD_REQUEST);
+                }
             }
-        }
-        elseif ($isCreation)
-        {
-            $user = $repository->findOneBy([
-                'username' => $username
-            ]);
-            if ($user instanceOf User)
-            {
-                $user->setPassword($saltedPassword)
-                ->setEnabled(1);
-                $this->em->persist($user);
-                $this->em->flush();
-
-                $data = [
-                    'at' => time(),
-                    'registered' => true,
-                    'username' => $user->getUsername(),
-                    'salted_password' => $user->getPassword()
-                ];
-            }
-            else
-            {
-                throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
-            }
-
-        }
-        else
+        } else
         {
             throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
         }
