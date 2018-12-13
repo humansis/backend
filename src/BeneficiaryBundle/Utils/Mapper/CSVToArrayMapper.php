@@ -35,18 +35,18 @@ class CSVToArrayMapper extends AbstractMapper
             //Index == 2
             if (Household::indexRowHeader === $indexRow)
                 $rowHeader = $row;
-            //Index < 3
+            //Index < 4
             if ($indexRow < Household::firstRow)
                 continue;
 
             // Load the household array for the current row
             try
             {
-                $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $row, $rowHeader);
+                $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $indexRow, $row, $rowHeader);
             }
             catch (\Exception $exception)
             {
-                throw new \Exception("Your pattern file is not correct. Please used the last template of your country.");
+                throw new \Exception($exception->getMessage());
             }
             // Check if it's a new household or just a new beneficiary in the current row
             if ($formattedHouseholdArray["address_street"] !== null)
@@ -77,12 +77,13 @@ class CSVToArrayMapper extends AbstractMapper
      *
      * @param array $mappingCSV
      * @param $countryIso3
+     * @param int $lineNumber
      * @param array $row
      * @param array $rowHeader
      * @return array
      * @throws \Exception
      */
-    private function mappingCSV(array $mappingCSV, $countryIso3, array $row, array $rowHeader)
+    private function mappingCSV(array $mappingCSV, $countryIso3, int $lineNumber, array $row, array $rowHeader)
     {
         $formattedHouseholdArray = [];
         foreach ($mappingCSV as $formattedIndex => $csvIndex)
@@ -91,6 +92,27 @@ class CSVToArrayMapper extends AbstractMapper
             {
                 foreach ($csvIndex as $formattedIndex2 => $csvIndex2)
                 {
+                    if ($row[$mappingCSV['beneficiaries']['given_name']] == null
+                        || $row[$mappingCSV['beneficiaries']['family_name']] == null
+                        || (explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != '0' && explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != '1')
+                        || (explode('.', $row[$mappingCSV['beneficiaries']['status']])[0] != '0' && explode('.', $row[$mappingCSV['beneficiaries']['status']])[0] != '1')
+                        || $row[$mappingCSV['beneficiaries']['date_of_birth']] == null) {
+                        if ($row[$mappingCSV['beneficiaries']['given_name']] == null) {
+                            throw new \Exception("There is missing information at the column " . $mappingCSV['beneficiaries']['given_name'] . " at the line " . $lineNumber);
+                        }
+                        elseif ($row[$mappingCSV['beneficiaries']['family_name']] == null) {
+                            throw new \Exception("There is missing information at the column " . $mappingCSV['beneficiaries']['family_name'] . " at the line " . $lineNumber);
+                        }
+                        elseif (explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != '0' && explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != '1') {
+                            throw new \Exception("There is missing information at the column " . $mappingCSV['beneficiaries']['gender'] . " at the line " . $lineNumber);
+                        }
+                        elseif ((explode('.', $row[$mappingCSV['beneficiaries']['status']])[0] != '0' && explode('.', $row[$mappingCSV['beneficiaries']['status']])[0] != '1')) {
+                            throw new \Exception("There is missing information at the column " . $mappingCSV['beneficiaries']['status'] . " at the line " . $lineNumber);
+                        }
+                        elseif ($row[$mappingCSV['beneficiaries']['date_of_birth']] == null) {
+                            throw new \Exception("There is missing information at the column " . $mappingCSV['beneficiaries']['date_of_birth'] . " at the line " . $lineNumber);
+                        }
+                    }
                     if (null !== $row[$csvIndex2])
                         $row[$csvIndex2] = strval($row[$csvIndex2]);
                     $formattedHouseholdArray[$formattedIndex][$formattedIndex2] = $row[$csvIndex2];
