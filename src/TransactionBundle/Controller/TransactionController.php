@@ -47,7 +47,9 @@ class TransactionController extends Controller
         $countryISO3 = $request->request->get('__country');
         $code = $request->request->get('code');
         $user = $this->getUser();
-        
+
+        $code = trim(preg_replace('/\s+/', ' ', $code));
+
         $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code, $user, $distributionData);
         if (! $validatedTransaction) {
             return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
