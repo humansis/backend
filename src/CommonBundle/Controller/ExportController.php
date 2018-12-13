@@ -76,7 +76,9 @@ class ExportController extends Controller
             }
             elseif ($request->query->get('householdsTemplate')) {
                 $countryIso3 = $request->request->get("__country");
+                dump('entered');
                 $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
+                dump('got');
             }
 
             // Create binary file to send
