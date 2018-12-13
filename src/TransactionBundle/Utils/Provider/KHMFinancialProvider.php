@@ -235,11 +235,15 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
 
         $bodyString = '';
         // Record request
-        foreach ($body as $item) {
-            if ($bodyString == '')
+        if (is_array($body)) {
+            foreach ($body as $item) {
+                if ($bodyString == '')
                 $bodyString .= $item;
-            else
+                else
                 $bodyString .= ', ' . $item;
+            }
+        } else {
+            $bodyString = $body;
         }
 
         $data = [$this->from, (new \DateTime())->format('Y-m-d h:i:s'), $info['url'], $info['http_code'], $response, $err, $bodyString];
