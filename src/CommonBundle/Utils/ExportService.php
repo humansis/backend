@@ -60,6 +60,7 @@ Class ExportService {
      * @param  string $name
      * @param  string $type
      * @return string $filename
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function generateFile(Spreadsheet $spreadsheet, string $name, string $type)
@@ -80,6 +81,12 @@ Class ExportService {
             $writer = IOFactory::createWriter($spreadsheet, 'Ods');
             $filename = $name.'.ods';
         }
+        elseif($type == "pdf") {
+            $class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf::class;
+            IOFactory::registerWriter('Pdf', $class);
+            $writer = IOFactory::createWriter($spreadsheet, 'Pdf');
+            $filename = $name.'.pdf';
+        }
         else{
             return "An error occured with the type file";
         }
@@ -89,7 +96,7 @@ Class ExportService {
     }
 
     /**
-     * Export data to file (csv, xls or ods)
+     * Export data to file (csv, xls, ods or pdf)
      * @param  $exportableTable
      * @param  string $name
      * @param  string $type

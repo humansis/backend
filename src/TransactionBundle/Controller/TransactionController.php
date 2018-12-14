@@ -47,7 +47,9 @@ class TransactionController extends Controller
         $countryISO3 = $request->request->get('__country');
         $code = $request->request->get('code');
         $user = $this->getUser();
-        
+
+        $code = trim(preg_replace('/\s+/', ' ', $code));
+
         $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code, $user, $distributionData);
         if (! $validatedTransaction) {
             return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
@@ -169,5 +171,31 @@ class TransactionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return new Response("Connection successful: " . json_encode($response));
+    }
+
+    /**
+     * Check progression of transaction
+     * @Rest\Get("/transaction/distribution/{id}/progression", name="progression_transaction")
+     * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
+     *
+     * @SWG\Tag(name="Transaction")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @param DistributionData $distributionData
+     * @return Response
+     */
+    public function checkProgressionTransactionAction(DistributionData $distributionData) {
+        $user = $this->getUser();
+
+        try {
+            $response = $this->get('transaction.transaction_service')->checkProgression($user, $distributionData);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return new Response(json_encode($response));
     }
 }

@@ -34,7 +34,7 @@ class Household
      * First row with data
      * @var int $first_row
      */
-    const firstRow = 3;
+    const firstRow = 4;
 
     /**
      * Mapping between fields and CSV columns
