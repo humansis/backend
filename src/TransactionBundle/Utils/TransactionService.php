@@ -104,6 +104,7 @@ class TransactionService {
         $numberOfBeneficiaries = count($distributionData->getDistributionBeneficiaries());
         $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
 
+        dump($code);
         $message = (new \Swift_Message('Confirm transaction for distribution ' . $distributionData->getName()))
             ->setFrom('admin@bmstaging.info')
             ->setTo($user->getEmail())
@@ -217,12 +218,13 @@ class TransactionService {
             throw $e;
         }
     }
-    
+
     /**
      * Test API connection
-     * @param  string           $countryISO3      
-     * @param  DistributionData $distributionData 
-     * @return string                             
+     * @param  string $countryISO3
+     * @param  DistributionData $distributionData
+     * @return string
+     * @throws \Exception
      */
     public function testConnection(string $countryISO3, DistributionData $distributionData)
     {
@@ -237,6 +239,23 @@ class TransactionService {
         } catch (\Exception $e) {
             throw $e;
         }
+    }
+
+    /**
+     * Test API connection
+     * @param User $user
+     * @param  DistributionData $distributionData
+     * @return string
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function checkProgression(User $user, DistributionData $distributionData)
+    {
+        $cache = new FilesystemCache();
+        if ($cache->has($user->getEmail() . '-progression-' . $distributionData->getId()))
+            return $cache->get($user->getEmail() . '-progression-' . $distributionData->getId());
+        else
+            return 0;
+
     }
 
 }

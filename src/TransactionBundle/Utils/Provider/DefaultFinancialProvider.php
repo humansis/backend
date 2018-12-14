@@ -79,6 +79,7 @@ abstract class DefaultFinancialProvider {
      * @param string $from
      * @return array
      * @throws \Exception
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function sendMoneyToAll(DistributionData $distributionData, float $amount, string $currency, string $from)
     {
@@ -97,8 +98,10 @@ abstract class DefaultFinancialProvider {
             'no_mobile'     => array(),
             'already_sent'  => array()
         );
-        
+
+        $count = 0;
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
+            $cache->set($this->from . '-progression-' . $distributionData->getId(), $count);
             $beneficiary = $distributionBeneficiary->getBeneficiary();
             
             $transactions = $distributionBeneficiary->getTransactions();
@@ -151,7 +154,11 @@ abstract class DefaultFinancialProvider {
                 $this->createTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2, "No Phone");
                 array_push($response['no_mobile'], $distributionBeneficiary);
             }
+
+            $count++;
         }
+
+        $cache->delete($this->from . '-progression-' . $distributionData->getId());
 
         return $response;
     }
