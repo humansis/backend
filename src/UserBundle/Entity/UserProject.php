@@ -14,11 +14,6 @@ use JMS\Serializer\Annotation\Groups;
  */
 class UserProject
 {
-
-    const RIGHT_ADMIN = 3;
-    const RIGHT_MANAGER = 2;
-    const RIGHT_USER = 1;
-
     /**
      * @var int
      *
