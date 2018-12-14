@@ -143,7 +143,7 @@ class HouseholdCSVService
             $treatReturned = $treatment->treat($project, $treatReturned, $email);
 
         if(array_key_exists("miss", $treatReturned))
-            return "A line is incomplete in the imported file";
+            throw new \Exception("A line is incomplete in the imported file");
 
         /** @var AbstractVerifier $verifier */
         $verifier = $this->guessVerifier($step);
