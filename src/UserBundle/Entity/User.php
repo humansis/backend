@@ -26,6 +26,12 @@ class User extends BaseUser implements ExportableInterface
      * @Groups({"FullUser"})
      */
     protected $id;
+    
+    /**
+     * @var string
+     * @Groups({"FullUser"})
+     */
+    protected $password;
 
     /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserCountry", mappedBy="user")

@@ -86,8 +86,12 @@ class UserController extends Controller
         {
             return new Response($exception->getMessage(), $exception->getCode());
         }
-
-        return new JsonResponse($data);
+        
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+        
+        $userJson = $serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        return new Response($userJson);
     }
 
     /**

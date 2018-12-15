@@ -180,41 +180,32 @@ class UserService
         ]);
 
         if ($user instanceOf User) {
-            $data = [
-                'at' => time(),
-                'connected' => true,
-                'user_id' => $user->getId(),
-                'salted_password' => $user->getPassword(),
-                'username' => $user->getUsername(),
-                'voters' => $user->getRoles()[0]
-            ];
+            $countries = array();
+            
             $countryRepo = $this->em->getRepository('UserBundle:UserCountry');
             $userCountries = $countryRepo->findBy(["user" => $user]);
             if ($userCountries) {
-                $data['country'] = [];
                 foreach($userCountries as $userCountry) {
-                    array_push($data['country'], $userCountry->getIso3());
+                    array_push($countries, $userCountry->getIso3());
                 }
             }
+            
             $projectRepo = $this->em->getRepository('UserBundle:UserProject');
             $userProjects = $projectRepo->findBy(["user" => $user]);
             if ($userProjects) {
-                $data['country'] = [];
                 foreach($userProjects as $userProject) {
-                    array_push($data['country'], $userProject->getProject()->getIso3());
+                    array_push($countries, $userProject->getProject()->getIso3());
                 }
             }
             
-            
-            if ($origin && $data['voters'] !== "ROLE_ADMIN" && !in_array($origin, $data['country'])) {
+            if ($origin && $data['voters'] !== "ROLE_ADMIN" && !in_array($origin, array_unique($countries))) {
                 throw new \Exception('Unable to log in from this country (' . $origin . ')', Response::HTTP_BAD_REQUEST);
             }
-        } else
-        {
+        } else {
             throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
         }
 
-        return $data;
+        return $user;
 
     }
 
