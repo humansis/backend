@@ -84,7 +84,7 @@ class UserController extends Controller
         }
         catch (\Exception $exception)
         {
-            return new Response($exception->getMessage(), $exception->getCode());
+            return new Response($exception->getMessage(), 500);
         }
         
         /** @var Serializer $serializer */
