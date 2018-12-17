@@ -111,9 +111,11 @@ class UserControllerTest extends BMSServiceTestCase
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertTrue(gettype($success) == 'array');
-        $this->assertArrayHasKey('at', $success);
+        $this->assertArrayHasKey('id', $success);
         $this->assertArrayHasKey('username', $success);
-        $this->assertArrayHasKey('salted_password', $success);
+        $this->assertArrayHasKey('password', $success);
+        $this->assertArrayHasKey('roles', $success);
+        $this->assertArrayHasKey('email', $success);
     }
 
     /**

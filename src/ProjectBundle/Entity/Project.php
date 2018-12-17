@@ -85,7 +85,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="iso3", type="text")
      *
-     * @Groups({"FullProject"})
+     * @Groups({"FullProject", "FullUser"})
      */
     private $iso3;
 
