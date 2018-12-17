@@ -22,7 +22,7 @@ class Project implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
      */
     private $id;
 
