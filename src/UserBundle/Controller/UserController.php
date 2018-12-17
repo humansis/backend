@@ -84,7 +84,7 @@ class UserController extends Controller
         }
         catch (\Exception $exception)
         {
-            return new Response($exception->getMessage(), 500);
+            return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
         
         /** @var Serializer $serializer */
