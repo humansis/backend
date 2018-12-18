@@ -104,7 +104,6 @@ class TransactionService {
         $numberOfBeneficiaries = count($distributionData->getDistributionBeneficiaries());
         $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
 
-        dump($code);
         $message = (new \Swift_Message('Confirm transaction for distribution ' . $distributionData->getName()))
             ->setFrom('admin@bmstaging.info')
             ->setTo($user->getEmail())
