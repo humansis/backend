@@ -14,6 +14,3 @@ parameters:
     mailer_port: 587
     mailer_encryption: tls
     secret: ThisTokenIsNotSoSecretChangeIt
-
-    khm_wing_api_username: thirdParty
-    khm_wing_api_password: ba0228f6e48ba7942d79e2b44e6072ee

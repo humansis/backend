@@ -40,21 +40,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
     private $password;
 
     /**
-     * KHMFinancialProvider constructor.
-     * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
-     * @param string $username
-     * @param string $password
-     */
-     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, string $username, string $password)
-     {
-         parent::__construct($entityManager, $container);
-         $this->username = $username;
-         $this->password = $password;
-     }
-
-
-    /**
      * Get token to connect to API
      * @param DistributionData $distributionData
      * @return object token
@@ -62,15 +47,15 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      */
     public function getToken(DistributionData $distributionData)
     {
-        $FP = $this->em->getRepository(FinancialProvider::class)->findByCountry($distributionData->getProject()->getIso3());
+        $FP = $this->em->getRepository(FinancialProvider::class)->findOneByCountry($distributionData->getProject()->getIso3());
 
         $route = "/oauth/token";
         $body = array(
             "username"      => $this->username,
             "password"      => $this->password,
             "grant_type"    => "password",
-            "client_id"     => $FP[0]->getUsername(),
-            "client_secret" => base64_decode($FP[0]->getPassword()),
+            "client_id"     => $FP->getUsername(),
+            "client_secret" => base64_decode($FP->getPassword()),
             "scope"         => "trust"
         );
         

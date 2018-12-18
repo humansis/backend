@@ -273,14 +273,16 @@ class TransactionService {
      * @return FinancialProvider
      */
     public function updateFinancialCredential(array $data) {
-        $FP = $this->em->getRepository(FinancialProvider::class)->findByCountry($data['__country']);
+        $FP = $this->em->getRepository(FinancialProvider::class)->findOneByCountry($data['__country']);
 
-        $FP[0]->setUsername($data['username'])
-            ->setPassword($data['password'])
-            ->setCountry($data['__country']);
+        if ($FP) {
+            $FP->setUsername($data['username'])
+                ->setPassword($data['password'])
+                ->setCountry($data['__country']);
 
-        $this->em->merge($FP[0]);
-        $this->em->flush();
+            $this->em->merge($FP);
+            $this->em->flush();
+        }
 
         return $FP;
     }
