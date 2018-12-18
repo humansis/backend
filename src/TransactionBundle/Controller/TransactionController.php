@@ -202,7 +202,7 @@ class TransactionController extends Controller
     /**
      * Get the credentials of financial provider's connection
      * @Rest\Get("/financial/provider", name="credentials_financial_provider")
-     * @Security("is_granted('ROLE_USER_MANAGEMENT_READ')")
+     * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
      *
      * @SWG\Tag(name="Transaction")
      *
@@ -211,11 +211,14 @@ class TransactionController extends Controller
      *     description="OK"
      * )
      *
+     * @param Request $request
      * @return Response
      */
-    public function getFPCredentialAction() {
+    public function getFPCredentialAction(Request $request) {
+        $country = $request->request->all()['__country'];
+
         try {
-            $response = $this->get('transaction.transaction_service')->financialCredential();
+            $response = $this->get('transaction.transaction_service')->getFinancialCredential($country);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -229,7 +232,7 @@ class TransactionController extends Controller
     /**
      * Update the financial provider's credential
      * @Rest\Post("/financial/provider", name="update_financial_provider")
-     * @Security("is_granted('ROLE_USER_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
      *
      * @SWG\Tag(name="Transaction")
      *
@@ -245,7 +248,7 @@ class TransactionController extends Controller
         $data = $request->request->all();
 
         try {
-            $response = $this->get('transaction.transaction_service')->updateFinancial($data);
+            $response = $this->get('transaction.transaction_service')->updateFinancialCredential($data);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

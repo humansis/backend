@@ -62,16 +62,15 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      */
     public function getToken(DistributionData $distributionData)
     {
-        $FP = $this->em->getRepository(FinancialProvider::class)->findAll();
-        $FP = $FP[0];
+        $FP = $this->em->getRepository(FinancialProvider::class)->findByCountry($distributionData->getProject()->getIso3());
 
         $route = "/oauth/token";
         $body = array(
             "username"      => $this->username,
             "password"      => $this->password,
             "grant_type"    => "password",
-            "client_id"     => $FP->getUsername(),
-            "client_secret" => base64_decode($FP->getPassword()),
+            "client_id"     => $FP[0]->getUsername(),
+            "client_secret" => base64_decode($FP[0]->getPassword()),
             "scope"         => "trust"
         );
         

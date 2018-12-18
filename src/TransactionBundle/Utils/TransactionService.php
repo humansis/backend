@@ -259,28 +259,27 @@ class TransactionService {
     }
 
     /**
+     * @param string $country
      * @return mixed
      */
-    public function financialCredential() {
-        $wing = $this->em->getRepository(FinancialProvider::class)->findAll();
+    public function getFinancialCredential(string $country) {
+        $FP = $this->em->getRepository(FinancialProvider::class)->findByCountry($country);
 
-        return $wing;
+        return $FP;
     }
 
     /**
      * @param array $data
      * @return FinancialProvider
      */
-    public function updateFinancial(array $data) {
-        $FP = $this->em->getRepository(FinancialProvider::class)->findAll();
+    public function updateFinancialCredential(array $data) {
+        $FP = $this->em->getRepository(FinancialProvider::class)->findByCountry($data['__country']);
 
-        $FP = $FP[0];
-
-        $FP->setUsername($data['username'])
+        $FP[0]->setUsername($data['username'])
             ->setPassword($data['password'])
             ->setCountry($data['__country']);
 
-        $this->em->merge($FP);
+        $this->em->merge($FP[0]);
         $this->em->flush();
 
         return $FP;
