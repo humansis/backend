@@ -7,8 +7,6 @@ imports:
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
-    khm_financial_provider_username: '%khm_wing_api_username%'
-    khm_financial_provider_password: '%khm_wing_api_password%'
 
 framework:
     #esi: ~
