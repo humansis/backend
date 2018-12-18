@@ -88,7 +88,7 @@ abstract class DefaultFinancialProvider {
         if (! $cache->has($distributionData->getId() . '-amount_sent')) {
             $cache->set($distributionData->getId() . '-amount_sent', 0);
         }
-        
+
         $this->from = $from;
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
 

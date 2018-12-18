@@ -71,6 +71,12 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\FinancialProviderFixtures:
+        arguments:
+        - "@fos_user.user_manager"
+        - "@security.encoder_factory"
+        tags:
+        - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
         tags:
