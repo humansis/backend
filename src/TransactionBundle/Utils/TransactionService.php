@@ -4,6 +4,7 @@ namespace TransactionBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
+use TransactionBundle\Entity\FinancialProvider;
 use TransactionBundle\Utils\Provider\DefaultFinancialProvider;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
@@ -40,8 +41,9 @@ class TransactionService {
      * Send money to distribution beneficiaries
      * @param  string $countryISO3
      * @param  DistributionData $distributionData
-     * @return object 
+     * @return object
      * @throws \Exception
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function sendMoney(string $countryISO3, DistributionData $distributionData, User $user)
     {
@@ -87,10 +89,8 @@ class TransactionService {
      * Send email to confirm transaction
      * @param  User $user
      * @param  DistributionData $distributionData
-     * @param bool $generateCode
      * @return void
      * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \Exception
      */
     public function sendVerifyEmail(User $user, DistributionData $distributionData)
     {
@@ -258,4 +258,31 @@ class TransactionService {
 
     }
 
+    /**
+     * @return mixed
+     */
+    public function financialCredential() {
+        $wing = $this->em->getRepository(FinancialProvider::class)->findAll();
+
+        return $wing;
+    }
+
+    /**
+     * @param array $data
+     * @return FinancialProvider
+     */
+    public function updateFinancial(array $data) {
+        $FP = $this->em->getRepository(FinancialProvider::class)->findAll();
+
+        $FP = $FP[0];
+
+        $FP->setUsername($data['username'])
+            ->setPassword($data['password'])
+            ->setCountry($data['__country']);
+
+        $this->em->merge($FP);
+        $this->em->flush();
+
+        return $FP;
+    }
 }

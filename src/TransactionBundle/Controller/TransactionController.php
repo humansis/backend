@@ -198,4 +198,62 @@ class TransactionController extends Controller
         }
         return new Response(json_encode($response));
     }
+
+    /**
+     * Get the credentials of financial provider's connection
+     * @Rest\Get("/financial/provider", name="credentials_financial_provider")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Transaction")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @return Response
+     */
+    public function getFPCredentialAction() {
+        try {
+            $response = $this->get('transaction.transaction_service')->financialCredential();
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize($response, 'json');
+
+        return new Response($json);
+    }
+
+    /**
+     * Update the financial provider's credential
+     * @Rest\Post("/financial/provider", name="update_financial_provider")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Transaction")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function updateFPAction(Request $request) {
+        $data = $request->request->all();
+
+        try {
+            $response = $this->get('transaction.transaction_service')->updateFinancial($data);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize($response, 'json');
+
+        return new Response($json);
+    }
+
 }

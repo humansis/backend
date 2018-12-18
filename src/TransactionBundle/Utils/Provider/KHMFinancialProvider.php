@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use TransactionBundle\Entity\FinancialProvider;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\TransactionBundle;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -37,10 +38,13 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      * @var string
      */
     private $password;
-    
+
     /**
      * KHMFinancialProvider constructor.
      * @param EntityManagerInterface $entityManager
+     * @param ContainerInterface $container
+     * @param string $username
+     * @param string $password
      */
      public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, string $username, string $password)
      {
@@ -48,22 +52,26 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
          $this->username = $username;
          $this->password = $password;
      }
-    
+
 
     /**
      * Get token to connect to API
+     * @param DistributionData $distributionData
      * @return object token
      * @throws \Exception
      */
     public function getToken(DistributionData $distributionData)
     {
+        $FP = $this->em->getRepository(FinancialProvider::class)->findAll();
+        $FP = $FP[0];
+
         $route = "/oauth/token";
         $body = array(
             "username"      => $this->username,
             "password"      => $this->password,
             "grant_type"    => "password",
-            "client_id"     => "third_party",
-            "client_secret" => "16681c9ff419d8ecc7cfe479eb02a7a",
+            "client_id"     => $FP->getUsername(),
+            "client_secret" => base64_decode($FP->getPassword()),
             "scope"         => "trust"
         );
         
@@ -194,7 +202,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      */
     public function sendRequest(DistributionData $distributionData, string $type, string $route, array $body = array()) {
         $curl = curl_init();
-        
+
         $headers = array();
         
         // Not authentication request
