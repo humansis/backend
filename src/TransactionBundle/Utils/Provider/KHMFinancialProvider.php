@@ -52,7 +52,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         $route = "/oauth/token";
         $body = array(
             "username"      => $FP->getUsername(),
-            "password"      => $FP->getPassword(),
+            "password"      => base64_decode($FP->getPassword()),
             "grant_type"    => "password",
             "client_id"     => "third_party",
             "client_secret" => "16681c9ff419d8ecc7cfe479eb02a7a",
