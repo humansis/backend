@@ -2,9 +2,11 @@
 
 namespace TransactionBundle\Utils;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use TransactionBundle\Entity\FinancialProvider;
+use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Utils\Provider\DefaultFinancialProvider;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
@@ -284,5 +286,60 @@ class TransactionService {
         }
 
         return $FP;
+    }
+
+    /**
+     * @param DistributionData $distributionData
+     * @param string $type
+     * @return mixed
+     */
+    public function exportToCsv(DistributionData $distributionData, string $type) {
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
+
+        $transactions = array();
+        $exportableTable = array();
+        foreach ($distributionBeneficiary as $db) {
+            $transaction = $this->em->getRepository(Transaction::class)->findOneByDistributionBeneficiary($db);
+
+            if ($transaction) {
+                array_push($transactions, $transaction);
+            }
+        }
+
+        foreach ($transactions as $transaction) {
+
+            if ($transaction->getTransactionStatus() == 0) {
+                $status = "Success";
+            }
+            else if ($transaction->getTransactionStatus() == 1) {
+                $status = "Error";
+            }
+            else {
+                $status = "No Phone";
+            }
+
+            $beneficiary = $transaction->getDistributionBeneficiary()->getBeneficiary();
+            array_push($exportableTable, array(
+                "addressStreet" => $beneficiary->getHousehold()->getAddressStreet(),
+                "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
+                "addressPostcode" => $beneficiary->getHousehold()->getAddressPostcode(),
+                "livelihood" => $beneficiary->getHousehold()->getLivelihood(),
+                "notes" => $beneficiary->getHousehold()->getNotes(),
+                "latitude" => $beneficiary->getHousehold()->getLatitude(),
+                "longitude" => $beneficiary->getHousehold()->getLongitude(),
+                "givenName" => $beneficiary->getGivenName(),
+                "familyName"=> $beneficiary->getFamilyName(),
+                "gender" => $beneficiary->getGender(),
+                "dateOfBirth" => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                "amount_sent" => $transaction->getAmountSent(),
+                "date_sent" => $transaction->getDateSent(),
+                "transaction_status" => $status,
+                "message" => $transaction->getMessage(),
+                "money_received" => $transaction->getMoneyReceived(),
+                "pickup_date" => $transaction->getPickupDate(),
+            ));
+        }
+
+        return $this->container->get('export_csv_service')->export($exportableTable,'transaction', $type);
     }
 }

@@ -78,6 +78,11 @@ class ExportController extends Controller
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
             }
+            elseif ($request->query->get('transaction')) {
+                $idDistribution = $request->query->get('transaction');
+                $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
+                $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, $type);
+            }
 
             // Create binary file to send
             $response = new BinaryFileResponse(getcwd() . '/' . $filename);
