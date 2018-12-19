@@ -31,7 +31,7 @@ class Beneficiary implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="givenName", type="string", length=255)
+     * @ORM\Column(name="givenName", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "Transaction"})
      * @Assert\NotBlank(message="The given name is required.")
      */
@@ -40,7 +40,7 @@ class Beneficiary implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="familyName", type="string", length=255)
+     * @ORM\Column(name="familyName", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "Transaction"})
      * @Assert\NotBlank(message="The family name is required.")
      */

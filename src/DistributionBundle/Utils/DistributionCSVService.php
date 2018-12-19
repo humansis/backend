@@ -124,7 +124,8 @@ class DistributionCSVService
         foreach($beneficiaries as $beneficiary) {
             $inFile = false;
             foreach($arrayWithKeys as $arrayBeneficiary) {
-                if ($beneficiary->getGivenName() === $arrayBeneficiary['givenName']
+                if (($beneficiary->getGivenName() === $arrayBeneficiary['givenName']
+                        || $beneficiary->getGivenName() === "")
                     && ($beneficiary->getFamilyName() === $arrayBeneficiary['familyName']
                         || $beneficiary->getFamilyName() === "")) {
                     $arrayBeneficiary['id'] = $beneficiary->getId();
