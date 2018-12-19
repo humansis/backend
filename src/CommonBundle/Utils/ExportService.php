@@ -145,7 +145,9 @@ Class ExportService {
 
            foreach ($tableHeaders as $colIndex => $header) {
                $index = chr(ord('A') + $colIndex) . $rowIndex;
-               $worksheet->setCellValue($index, $value[$header]);
+               if (!empty($value[$header])) {
+                   $worksheet->setCellValue($index, $value[$header]);
+               }
            }
            $rowIndex++;
         }
