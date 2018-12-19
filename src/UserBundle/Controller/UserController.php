@@ -97,7 +97,7 @@ class UserController extends Controller
     /**
      * Get user's salt
      *
-     * @Rest\Get("/salt/{username}")
+     * @Rest\Post("/salt/{username}")
      *
      * @SWG\Tag(name="Users")
      *
@@ -107,6 +107,14 @@ class UserController extends Controller
      *     type="string",
      *     required=true,
      *     description="username of the user"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="is_login",
+     *     in="body",
+     *     type="boolean",
+     *     required=true,
+     *     description="If it's for the login"
      * )
      *
      * @SWG\Response(
@@ -133,11 +141,15 @@ class UserController extends Controller
      * @param $username
      * @return Response
      */
-    public function getSaltAction($username)
+    public function getSaltAction(Request $request, $username)
     {
+        if ($request->request->has('is_login'))
+            $isLogin = $request->request->get('is_login');
+        else
+            $isLogin = false;
         try
         {
-            $salt = $this->get('user.user_service')->getSalt($username);
+            $salt = $this->get('user.user_service')->getSalt($username, $isLogin);
         }
         catch (\Exception $exception)
         {

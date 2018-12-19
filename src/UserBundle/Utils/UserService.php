@@ -120,7 +120,7 @@ class UserService
      * @return array
      * @throws \Exception
      */
-    public function getSalt(string $username)
+    public function getSalt(string $username, $isLogin)
     {
         $validator = Validation::createValidator();
         $violations = $validator->validate($username, array(
@@ -143,6 +143,9 @@ class UserService
 
         if (!$user instanceof User)
         {
+            if ($isLogin) {
+                throw new \Exception("Bad credentials", Response::HTTP_BAD_REQUEST);
+            }
             $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
             $user = new User();
             $user->setUsername($username)
