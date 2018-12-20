@@ -71,6 +71,11 @@ class LessTreatment extends AbstractTreatment
                 ];
             }
         }
+
+        if (count($errors) > 0) {
+            throw new \Exception("An error occured when inserting new households : " . $errors[0]['error']);
+        }
+
         return ["number_added" => $numberAdded, "error" => $errors];
     }
 
