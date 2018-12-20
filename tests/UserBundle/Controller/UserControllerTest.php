@@ -33,13 +33,13 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testGetSalt()
     {
-        $crawler = $this->request('POST', '/api/wsse/salt/' . $this->username);
+        $crawler = $this->request('GET', '/api/wsse/initialize/' . $this->username);
         $data = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('user_id', $data);
         $this->assertArrayHasKey('salt', $data);
 
-        $crawler = $this->request('POST', '/api/wsse/salt/o');
+        $crawler = $this->request('GET', '/api/wsse/salt/o');
         $data = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(!$this->client->getResponse()->isSuccessful());
@@ -52,7 +52,7 @@ class UserControllerTest extends BMSServiceTestCase
     {
         // First step
         // Get salt for a new user => save the username with the salt in database (user disabled for now)
-        $return = $this->container->get('user.user_service')->getSalt($this->username, false);
+        $return = $this->container->get('user.user_service')->getSalt($this->username);
         // Check if the first step has been done correctly
         $this->assertArrayHasKey('user_id', $return);
         $this->assertArrayHasKey('salt', $return);

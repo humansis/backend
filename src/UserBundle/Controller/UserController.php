@@ -97,7 +97,7 @@ class UserController extends Controller
     /**
      * Get user's salt
      *
-     * @Rest\Post("/salt/{username}")
+     * @Rest\Get("/salt/{username}")
      *
      * @SWG\Tag(name="Users")
      *
@@ -107,14 +107,6 @@ class UserController extends Controller
      *     type="string",
      *     required=true,
      *     description="username of the user"
-     * )
-     *
-     * @SWG\Parameter(
-     *     name="is_login",
-     *     in="body",
-     *     type="boolean",
-     *     required=true,
-     *     description="If it's for the login"
      * )
      *
      * @SWG\Response(
@@ -141,15 +133,64 @@ class UserController extends Controller
      * @param $username
      * @return Response
      */
-    public function getSaltAction(Request $request, $username)
+    public function getSaltAction($username)
     {
-        if ($request->request->has('is_login'))
-            $isLogin = $request->request->get('is_login');
-        else
-            $isLogin = false;
         try
         {
-            $salt = $this->get('user.user_service')->getSalt($username, $isLogin);
+            $salt = $this->get('user.user_service')->getSalt($username);
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+
+        return new JsonResponse($salt);
+    }
+
+    /**
+     * Get user's salt
+     *
+     * @Rest\Get("/initialize/{username}")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Parameter(
+     *     name="username",
+     *     in="query",
+     *     type="string",
+     *     required=true,
+     *     description="username of the user"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *      examples={
+     *          "application/json": {
+     *              "user_id" = 1,
+     *              "salt" = "fgrgfhjjgh21h5rt"
+     *          }
+     *      }
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @SWG\Response(
+     *     response=423,
+     *     description="LOCKED"
+     * )
+     *
+     * @param $username
+     * @return Response
+     */
+    public function initializeAction($username)
+    {
+        try
+        {
+            $salt = $this->get('user.user_service')->initialize($username);
         }
         catch (\Exception $exception)
         {
