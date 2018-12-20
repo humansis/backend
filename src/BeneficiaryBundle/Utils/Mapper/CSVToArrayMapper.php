@@ -202,7 +202,12 @@ class CSVToArrayMapper extends AbstractMapper
         {
             if ("" == $item)
                 continue;
-            $item_array = array_map('trim', explode("-", $item));
+            $item_array = array_map('trim', explode("–", $item));
+
+            if (count($item_array) < 2)
+                $item_array = array_map('trim', explode("-", $item));
+
+
             $formattedHouseholdArray["beneficiaries"]["phones"][] = ["type" => $item_array[0], "number" => $item_array[1]];
         }
     }
