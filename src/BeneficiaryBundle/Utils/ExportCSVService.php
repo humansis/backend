@@ -21,6 +21,21 @@ class ExportCSVService
     /** @var ContainerInterface $container */
     private $container;
 
+    private $MAPPING_HXL = [
+        "Address street" => '#contact+address_street',
+        "Address number" => '#contact+address_number',
+        "Address postcode" => '#contact+address_postcode',
+        "Livelihood" => '',
+        "Notes" => '#description+notes',
+        "Latitude" => '#geo+lat',
+        "Longitude" => '#geo+lon',
+        // Location
+        "Adm1" => '#adm1+name',
+        "Adm2" => '#adm2+name',
+        "Adm3" => '#adm3+name',
+        "Adm4" => '#adm4+name'
+    ];
+
     private $MAPPING_CSV_EXPORT = [
         // Household
         "Address street" => 'Thompson Drive',
@@ -179,6 +194,20 @@ class ExportCSVService
      * @return mixed
      */
     public function exportToCsv(string $type, string $countryISO3) {
+        $tempHxl = [
+            "Given name" => '#beneficiary+givenName',
+            "Family name" => '#beneficiary+familyName',
+            "Gender" => '',
+            "Status" => '',
+            "Date of birth" => '#beneficiary+birth',
+            "Vulnerability criteria" => '',
+            "Phones" => '#contact+phone',
+            "National IDs" => '',
+            "  " => '',
+            "" => "     -->",
+            " " => 'Do not remove this line.'
+        ];
+
         $tempBenef = [
             "Given name" => 'Price',
             "Family name" => 'Smith',
@@ -225,10 +254,14 @@ class ExportCSVService
         $countrySpecifics = $this->getCountrySpecifics($countryISO3);
         foreach ($countrySpecifics as $countrySpecific){
             $randomNum = rand(0, 100);
+            $this->MAPPING_HXL[$countrySpecific->getFieldString()] = '';
             $this->MAPPING_CSV_EXPORT[$countrySpecific->getFieldString()] = $randomNum;
             $this->MAPPING_DEPENDENTS[$countrySpecific->getFieldString()] = '';
             $this->MAPPING_DETAILS[$countrySpecific->getFieldString()] = $countrySpecific->getType();
         }
+
+        foreach ($tempHxl as $key => $value)
+            $this->MAPPING_HXL[$key] = $value;
         foreach ($tempBenef as $key => $value)
             $this->MAPPING_CSV_EXPORT[$key] = $value;
         foreach ($dependent as $key => $value)
@@ -236,6 +269,7 @@ class ExportCSVService
         foreach($details as $key => $detail)
             $this->MAPPING_DETAILS[$key] = $detail;
 
+        array_push($MAPPING_CSV_EXPORT, $this->MAPPING_HXL);
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_CSV_EXPORT);
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_DEPENDENTS);
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_DETAILS);
