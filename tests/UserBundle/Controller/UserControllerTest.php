@@ -33,7 +33,7 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testGetSalt()
     {
-        $crawler = $this->request('GET', '/api/wsse/salt/' . $this->username);
+        $crawler = $this->request('GET', '/api/wsse/initialize/' . $this->username);
         $data = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('user_id', $data);

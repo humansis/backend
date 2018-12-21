@@ -14,6 +14,9 @@ security:
             security:   false
 
         # tester
+        tester_initialize:
+            pattern:    ^/api/wsse/initialize
+            security:   false
         tester_salt:
             pattern:    ^/api/wsse/salt
             security:   false

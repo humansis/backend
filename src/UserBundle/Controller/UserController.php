@@ -148,6 +148,59 @@ class UserController extends Controller
     }
 
     /**
+     * Get user's salt
+     *
+     * @Rest\Get("/initialize/{username}")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Parameter(
+     *     name="username",
+     *     in="query",
+     *     type="string",
+     *     required=true,
+     *     description="username of the user"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *      examples={
+     *          "application/json": {
+     *              "user_id" = 1,
+     *              "salt" = "fgrgfhjjgh21h5rt"
+     *          }
+     *      }
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @SWG\Response(
+     *     response=423,
+     *     description="LOCKED"
+     * )
+     *
+     * @param $username
+     * @return Response
+     */
+    public function initializeAction($username)
+    {
+        try
+        {
+            $salt = $this->get('user.user_service')->initialize($username);
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+
+        return new JsonResponse($salt);
+    }
+
+    /**
      * Create a new User. You must have called getSalt before use this one
      *
      * @Rest\Put("/users", name="add_user")

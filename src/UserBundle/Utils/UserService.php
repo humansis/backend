@@ -120,6 +120,33 @@ class UserService
      * @return array
      * @throws \Exception
      */
+    public function initialize(string $username)
+    {
+        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        if ($user instanceof User) {
+            throw new \Exception("Username already used.", Response::HTTP_BAD_REQUEST);
+        }
+        $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+        $user = new User();
+        $user->setUsername($username)
+            ->setUsernameCanonical($username)
+            ->setEnabled(0)
+            ->setEmail($username)
+            ->setEmailCanonical($salt)
+            ->setSalt($salt)
+            ->setPassword("");
+
+        $this->em->persist($user);
+
+        $this->em->flush();
+        return ["user_id" => $user->getId(), "salt" => $user->getSalt()];
+    }
+
+    /**
+     * @param string $username
+     * @return array
+     * @throws \Exception
+     */
     public function getSalt(string $username)
     {
         $validator = Validation::createValidator();
@@ -143,20 +170,7 @@ class UserService
 
         if (!$user instanceof User)
         {
-            $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
-            $user = new User();
-            $user->setUsername($username)
-                ->setUsernameCanonical($username)
-                ->setEnabled(0)
-                ->setEmail($username)
-                ->setEmailCanonical($salt)
-                ->setSalt($salt)
-                ->setPassword("");
-
-
-            $this->em->persist($user);
-
-            $this->em->flush();
+            throw new \Exception("Bad credentials", Response::HTTP_BAD_REQUEST);
         }
 
         return ["user_id" => $user->getId(), "salt" => $user->getSalt()];
