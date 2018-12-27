@@ -170,7 +170,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
         foreach ($householdsArray as $beneficiariesInHousehold) {
             try {
-                $hhArray = $this->createAndInitHousehold($beneficiariesInHousehold[0], $project);
+                $hhArray = $this->createAndInitHousehold($beneficiariesInHousehold, $project);
                 $household = $hhArray["household"];
                 if ($hhArray["status"] === "create") {
                     $countNew++;
@@ -205,6 +205,9 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @return array
      */
     private function createAndInitHousehold(array $beneficiary, Project $project) {
+        $allBeneficiaries = $beneficiary;
+        $beneficiary = $beneficiary[0];
+
         // Check if household already exists by searching one of its beneficiaries
         $dateOfBirth = new DateTime($beneficiary['dateOfBirth']);
         $familyName = $beneficiary['familyName'];
@@ -239,6 +242,14 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
         // Set household location and country specifics
         $household->setLocation($beneficiary['location']);
+        $countIDPoor = 0;
+
+        foreach ($allBeneficiaries as $allBeneficiary) {
+            $countIDPoor += $allBeneficiary['IDPoor'];
+        }
+
+        $beneficiary['IDPoor'] = $countIDPoor;
+
         $country_specific_answers = $this->setCountrySpecificAnswer("KHM", $household, $beneficiary);
         foreach ($country_specific_answers as $country_specific_answer)
         {
