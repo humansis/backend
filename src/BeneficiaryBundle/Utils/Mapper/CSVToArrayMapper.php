@@ -202,13 +202,14 @@ class CSVToArrayMapper extends AbstractMapper
         {
             if ("" == $item)
                 continue;
-            $item_array = array_map('trim', explode("–", $item));
+//            $item_array = array_map('trim', explode("–", $item));
+//
+//            if (count($item_array) < 2)
+//                $item_array = array_map('trim', explode("-", $item));
 
-            if (count($item_array) < 2)
-                $item_array = array_map('trim', explode("-", $item));
 
-
-            $formattedHouseholdArray["beneficiaries"]["phones"][] = ["type" => $item_array[0], "number" => $item_array[1]];
+//            $formattedHouseholdArray["beneficiaries"]["phones"][] = ["type" => $item_array[0], "number" => $item_array[1]];
+              $formattedHouseholdArray["beneficiaries"]["phones"][] = ["number" => $item];
         }
     }
 
@@ -225,8 +226,9 @@ class CSVToArrayMapper extends AbstractMapper
         {
             if ("" == $item)
                 continue;
-            $item_array = array_map('trim', explode("-", $item));
-            $formattedHouseholdArray["beneficiaries"]["national_ids"][] = ["id_type" => $item_array[0], "id_number" => $item_array[1]];
+//            $item_array = array_map('trim', explode("-", $item));
+//            $formattedHouseholdArray["beneficiaries"]["national_ids"][] = ["id_type" => $item_array[0], "id_number" => $item_array[1]];
+              $formattedHouseholdArray["beneficiaries"]["national_ids"][] = ["id_number" => $item];
         }
     }
 

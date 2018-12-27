@@ -215,8 +215,8 @@ class ExportCSVService
             "Status" => '1',
             "Date of birth" => '1997-10-31',
             "Vulnerability criteria" => 'disabled',
-            "Phones" => 'Mobile - 0145678348',
-            "National IDs" => 'IDCard - 030617701',
+            "Phones" => '0145678348',
+            "National IDs" => '030617701',
             "  " => '[Head]',
             "" => "     -->",
             " " => 'This Example line and the Type Helper line below must not be removed.'
@@ -243,8 +243,8 @@ class ExportCSVService
             "Status" => 'Number [0-1]*',
             "Date of birth" => 'YYYY-MM-DD',
             "Vulnerability criteria" => 'String',
-            "Phones" => '"TypeAsString" - Number',
-            "National IDs" => '"TypeAsString" - Number',
+            "Phones" => 'Number',
+            "National IDs" => 'Number',
             "  " => '',
             "" => "     -->",
             " " => "'*' means that the property is needed -- Use ';' to separate multiple values -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
