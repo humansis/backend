@@ -54,7 +54,7 @@ class DistributionFixtures extends Fixture
                 'weight' => '1'
             ]
         ],
-        'type' => 'Beneficiary',
+        'type' => 'Individual',
         'threshold' => '1'
     ];
 
@@ -70,6 +70,7 @@ class DistributionFixtures extends Fixture
      * Load data fixtures with the passed EntityManager
      *
      * @param ObjectManager $manager
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
     public function load(ObjectManager $manager)
     {
