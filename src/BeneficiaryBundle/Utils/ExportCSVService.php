@@ -203,6 +203,7 @@ class ExportCSVService
             "Vulnerability criteria" => '',
             "Phones" => '#contact+phone',
             "National IDs" => '',
+            "Proxy" => '',
             "  " => '',
             "" => "     -->",
             " " => 'Do not remove this line.'
@@ -217,6 +218,7 @@ class ExportCSVService
             "Vulnerability criteria" => 'disabled',
             "Phones" => '0145678348',
             "National IDs" => '030617701',
+            "Proxy" => 'N',
             "  " => '[Head]',
             "" => "     -->",
             " " => 'This Example line and the Type Helper line below must not be removed.'
@@ -231,6 +233,7 @@ class ExportCSVService
             "Vulnerability criteria" => '',
             "Phones" => '',
             "National IDs" => '',
+            "Proxy" => 'Y',
             "  " => '[Member]',
             "" => "     -->",
             " " => "'*' means that the property is needed -- Use ';' to separate multiple values -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
@@ -245,6 +248,7 @@ class ExportCSVService
             "Vulnerability criteria" => 'String',
             "Phones" => 'Number',
             "National IDs" => 'Number',
+            "Proxy" => 'Y(es) or N(o)',
             "  " => '',
             "" => "     -->",
             " " => "'*' means that the property is needed -- Use ';' to separate multiple values -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
