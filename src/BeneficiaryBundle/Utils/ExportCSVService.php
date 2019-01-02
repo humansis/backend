@@ -203,7 +203,6 @@ class ExportCSVService
             "Vulnerability criteria" => '',
             "Phones" => '#contact+phone',
             "National IDs" => '',
-            "Proxy" => '',
             "  " => '',
             "" => "     -->",
             " " => 'Do not remove this line.'
@@ -216,9 +215,8 @@ class ExportCSVService
             "Status" => '1',
             "Date of birth" => '1997-10-31',
             "Vulnerability criteria" => 'disabled',
-            "Phones" => '0145678348',
-            "National IDs" => '030617701',
-            "Proxy" => 'N',
+            "Phones" => 'Mobile - 0145678348 - N',
+            "National IDs" => 'IDCard - 030617701',
             "  " => '[Head]',
             "" => "     -->",
             " " => 'This Example line and the Type Helper line below must not be removed.'
@@ -231,9 +229,8 @@ class ExportCSVService
             "Status" => '0',
             "Date of birth" => '07/25/2001',
             "Vulnerability criteria" => '',
-            "Phones" => '',
+            "Phones" => 'Mobile - 0214844628 - Y',
             "National IDs" => '',
-            "Proxy" => 'Y',
             "  " => '[Member]',
             "" => "     -->",
             " " => "'*' means that the property is needed -- Use ';' to separate multiple values -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
@@ -246,9 +243,8 @@ class ExportCSVService
             "Status" => 'Number [0-1]*',
             "Date of birth" => 'YYYY-MM-DD',
             "Vulnerability criteria" => 'String',
-            "Phones" => 'Number',
-            "National IDs" => 'Number',
-            "Proxy" => 'Y(es) or N(o)',
+            "Phones" => '"TypeAsString" - Number - Y / N (Proxy)',
+            "National IDs" => '"TypeAsString" - Number',
             "  " => '',
             "" => "     -->",
             " " => "'*' means that the property is needed -- Use ';' to separate multiple values -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
