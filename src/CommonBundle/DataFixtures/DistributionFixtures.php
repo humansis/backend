@@ -73,6 +73,6 @@ class DistributionFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        // $this->distributionService->create("KHM", $this->distributionArray, 1);
+        $this->distributionService->create("KHM", $this->distributionArray, 1);
     }
 }

@@ -161,7 +161,7 @@ class HouseholdService
 
             throw new \Exception($errorsMessage);
         }
-        
+
         // Save or update location instance
         $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
         if (null === $location)

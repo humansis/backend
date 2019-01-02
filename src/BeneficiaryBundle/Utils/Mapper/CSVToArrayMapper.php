@@ -208,7 +208,7 @@ class CSVToArrayMapper extends AbstractMapper
                 $item_array = array_map('trim', explode("-", $item));
 
 
-            $formattedHouseholdArray["beneficiaries"]["phones"][] = ["type" => $item_array[0], "number" => $item_array[1]];
+            $formattedHouseholdArray["beneficiaries"]["phones"][] = ["type" => $item_array[0], "number" => $item_array[1], 'proxy' => $item_array[2]];
         }
     }
 
