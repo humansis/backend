@@ -61,7 +61,7 @@ class CriteriaDistributionService
         if($distributionType == "household" || $distributionType == "Household"){
             $finalArray = $this->loadHousehold($filters['criteria'], $threshold, $countryISO3, $project);
         }
-        elseif ($distributionType == "beneficiary" || $distributionType == "Beneficiary"){
+        elseif ($distributionType == "individual" || $distributionType == "Individual"){
             $finalArray = $this->loadBeneficiary($filters['criteria'], $threshold, $countryISO3, $project);
         }
         else

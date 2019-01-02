@@ -142,6 +142,7 @@ class BeneficiaryService
             throw new \Exception($errorsMessage);
         }
 
+
         foreach ($beneficiaryArray["vulnerability_criteria"] as $vulnerability_criterion)
         {
             $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion["id"]));
@@ -191,12 +192,18 @@ class BeneficiaryService
      */
     public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
+        if ($phoneArray['proxy'] && $phoneArray['proxy'] == 'N')
+            $phoneArray['proxy'] = false;
+        elseif ($phoneArray['proxy'] && $phoneArray['proxy'] == 'Y')
+            $phoneArray['proxy'] = true;
+
         $this->requestValidator->validate(
             "phone",
             HouseholdConstraints::class,
             $phoneArray,
             'any'
         );
+        
         $phone = new Phone();
         $phone->setBeneficiary($beneficiary)
             ->setType($phoneArray["type"])

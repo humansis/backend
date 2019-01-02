@@ -87,7 +87,7 @@ class CriteriaDistributionControllerTest extends BMSServiceTestCase
                "value_string" => "1",
                "weight" => 1
             ]),
-            'distribution_type' => 'beneficiary',
+            'distribution_type' => 'individual',
             'threshold' => '2'
         );
 
