@@ -10,8 +10,7 @@ use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use PhpOffice\PhpSpreadsheet\Reader\Csv;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\HttpKernel\Kernel;
@@ -49,6 +48,8 @@ class LocationFixtures extends Fixture
      */
     public function parseDirectory(ObjectManager $manager)
     {
+        $manager->getConnection()->getConfiguration()->setSQLLogger(null);
+        
         $dir_root = $this->kernel->getRootDir();
         $dir_files = $dir_root . '/../src/CommonBundle/DataFixtures/LocationFiles';
         if (!is_dir($dir_files))
@@ -62,7 +63,8 @@ class LocationFixtures extends Fixture
             if ("." == $file || ".." == $file)
                 continue;
 
-            $reader = new Xlsx();
+            print_r("\n\nFILE : $file \n");
+            $reader = new Xls();
             $spreadSheet = $reader->load($dir_files . "/" . $file);
             $iso3 = strtoupper(current(explode("_", $file)));
             $countSheets = $spreadSheet->getSheetCount();
@@ -72,10 +74,9 @@ class LocationFixtures extends Fixture
             $adm2List = [];
             $adm3List = [];
             $nbLines = $sheet->getHighestRow();
-            print_r("\n\nFILE : $file \n");
             $progressBar = new ProgressBar(new ConsoleOutput(), $nbLines);
             $progressBar->start();
-            while ($rowIterator->current()->getCellIterator()->current()->getValue() != null)
+            while (!empty($rowIterator->current()->getCellIterator()->current()->getValue()))
             {
                 $rowIndex = $rowIterator->current()->getRowIndex();
                 if (!array_key_exists($sheet->getCell('C' . $rowIndex)->getValue(), $adm1List))
@@ -135,16 +136,22 @@ class LocationFixtures extends Fixture
                 }
                 $adm4 = new Adm4();
                 $adm4->setName($sheet->getCell('I' . $rowIndex)->getValue())
+                    ->setCode($sheet->getCell('J' . $rowIndex)->getValue())
                     ->setAdm3($adm3);
                 $manager->persist($adm4);
 
                 $rowIterator->next();
-
+                
+                if ($rowIndex % 25 == 0) { 
+                    $manager->flush(); 
+                }
+                
                 $progressBar->advance();
             }
             $progressBar->finish();
 
             $manager->flush();
+            $manager->clear();
             $nbFilesLoaded++;
         }
         return $nbFilesLoaded;
