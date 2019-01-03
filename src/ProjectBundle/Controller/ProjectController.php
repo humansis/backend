@@ -140,7 +140,7 @@ class ProjectController extends Controller
     }
 
     /**
-     * Edit a project
+     * Delete a project
      * @Rest\Delete("/projects/{id}", name="delete_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
      *
