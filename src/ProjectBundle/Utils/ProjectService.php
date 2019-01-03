@@ -291,7 +291,7 @@ class ProjectService
         } else {
             foreach($distributionData as $distribution) {
                 if (!$distribution->getArchived() && $distribution->getDateDistribution() > (new DateTime('now'))) {
-                    return(-1);
+                    return -1;
                 }
             }
             if ($this->archived($project)) {
