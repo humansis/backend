@@ -416,7 +416,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
     public function getParams(){
         $params = array();
         array_push($params, (object) array(
-            'paramName' => 'locationCode (KHXXXXXX)',
+            'paramName' => 'locationCode (KHXXXXXX)', 
             'paramType' => 'string'
         ));
         return $params;
