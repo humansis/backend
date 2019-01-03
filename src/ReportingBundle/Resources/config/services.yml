@@ -60,3 +60,9 @@ services:
     reporting.finder:
         class: ReportingBundle\Utils\Finders\Finder
         arguments: ['@doctrine.orm.entity_manager']
+
+    ################################## Data Removes ################################
+    reporting.data_removes.default:
+        class: ReportingBundle\Utils\DataRemoves\DataRemoves
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
