@@ -102,8 +102,8 @@ class DataFillersCountry extends DataFillers
         try {
             $this->repository = $this->em->getRepository(Project::class);
             $qb = $this->repository->createQueryBuilder('p')
-                                   ->where("DATE_FORMAT(p.endDate, '%Y-%m-%d') < DATE_FORMAT(CURRENT_DATE(), '%Y-%m-%d') ")
                                    ->select('count(p) AS value', 'p.iso3 AS country')
+                                   ->where("DATE_FORMAT(p.endDate, '%Y-%m-%d') > DATE_FORMAT(CURRENT_DATE(), '%Y-%m-%d') ")
                                    ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();
 
@@ -257,7 +257,7 @@ class DataFillersCountry extends DataFillers
         try {
             $this->repository = $this->em->getRepository(Transaction::class);
             $qb = $this->repository->createQueryBuilder('t')
-                                   ->where ('t.pickupDate < CURRENT_DATE() ')
+                                   ->where ('t.transactionStatus = 1')
                                    ->select('count(t.id) AS value');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMS_Country_TTC");

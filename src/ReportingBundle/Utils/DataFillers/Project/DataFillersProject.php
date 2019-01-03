@@ -107,7 +107,7 @@ class DataFillersProject
                     $new_reportingProject->setProject($project);
 
                     $this->em->persist($new_reportingProject);
-                    $this->em->flush();   
+                    $this->em->flush();
                 }
                 $this->em->getConnection()->commit();
             }catch (Exception $e) {
@@ -354,7 +354,7 @@ class DataFillersProject
                         $new_reportingProject->setProject($project);
 
                         $this->em->persist($new_reportingProject);
-                        $this->em->flush();   
+                        $this->em->flush();
                     }
                     $this->em->getConnection()->commit();
                 }catch (Exception $e) {
@@ -410,7 +410,7 @@ class DataFillersProject
                         $new_reportingProject->setProject($project);
 
                         $this->em->persist($new_reportingProject);
-                        $this->em->flush();   
+                        $this->em->flush();
                     }
                     $this->em->getConnection()->commit();
                 }catch (Exception $e) {
@@ -421,7 +421,7 @@ class DataFillersProject
     }
 
      /**
-     * Fill in ReportingValue and ReportingProject with number of household served in a project
+     * Fill in ReportingValue and ReportingProject with age breakdown in a project
      */
     public function BMS_Project_AB() {
         $projects = $this->getProject();
@@ -450,6 +450,7 @@ class DataFillersProject
                 $this->em->getConnection()->beginTransaction();
                 try {
                     $reference = $this->getReferenceId("BMS_Project_AB");
+
                     $new_value = new ReportingValue();
                     $new_value->setValue($ageBreakdown['value']);
                     $new_value->setUnity($ageBreakdown['unity']);
