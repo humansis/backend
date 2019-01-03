@@ -4,11 +4,26 @@
 namespace CommonBundle\Listener;
 
 
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
+use UserBundle\Entity\User;
 
 class RequestListener
 {
+    /** @var EntityManagerInterface $em */
+    private $em;
+
+    /** @var ContainerInterface $container */
+    private $container;
+
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
+    {
+        $this->em = $entityManager;
+        $this->container = $container;
+    }
+
     /**
      * @param GetResponseEvent $event
      * @throws \Exception
@@ -17,8 +32,39 @@ class RequestListener
     {
         if ($event->getRequest()->headers->has('country'))
         {
-            $countryIso3 = $event->getRequest()->headers->get('country');
-            $event->getRequest()->request->add(["__country" => $countryIso3]);
+            if ($this->getUser()) {
+                $user = $this->em->getRepository(User::class)->find($this->getUser());
+
+                $countries = $user->getCountries()->getValues();
+                $projects = $user->getUserProjects()->getValues();
+                $hasCountry = false;
+
+                foreach ($countries as $country) {
+                    if ($country->getIso3() == $event->getRequest()->headers->get('country')) {
+                        $hasCountry = true;
+                    }
+                }
+
+                foreach ($projects as $project) {
+                    if ($project->getProject()->getIso3() == $event->getRequest()->headers->get('country')) {
+                    }
+                }
+
+                if ($user->getRoles()[0] == "ROLE_ADMIN" || $hasCountry) {
+                    $countryIso3 = $event->getRequest()->headers->get('country');
+                    $event->getRequest()->request->add(["__country" => $countryIso3]);
+                }
+                else {
+                    $response = new Response("You can die, thanks", Response::HTTP_BAD_REQUEST);
+                    $event->setResponse($response);
+                }
+            }
+            else {
+                $countryIso3 = $event->getRequest()->headers->get('country');
+                $event->getRequest()->request->add(["__country" => $countryIso3]);
+            }
+
+
         }
         // return error response if api request (i.e. not profiler or doc) or login routes (for api tester)
         elseif (preg_match('/api/', $event->getRequest()->getPathInfo()) &&
@@ -27,5 +73,26 @@ class RequestListener
             $response = new Response("'country' header missing from request (iso3 code).", Response::HTTP_BAD_REQUEST);
             $event->setResponse($response);
         }
+    }
+
+    /**
+     * Get the user
+     */
+    protected function getUser()
+    {
+        if (!$this->container->has('security.token_storage')) {
+            throw new \LogicException('The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".');
+        }
+
+        if (null === $token = $this->container->get('security.token_storage')->getToken()) {
+            return;
+        }
+
+        if (!\is_object($user = $token->getUser())) {
+            // e.g. anonymous authentication
+            return;
+        }
+
+        return $user->getId();
     }
 }

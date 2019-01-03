@@ -23,6 +23,9 @@ services:
 ##                                     LISTENER                                      ##
 #######################################################################################
     CommonBundle\Listener\RequestListener:
+        arguments:
+        - "@doctrine.orm.entity_manager"
+        - "@service_container"
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
