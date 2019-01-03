@@ -32,6 +32,8 @@ class RequestListener
     {
         if ($event->getRequest()->headers->has('country'))
         {
+            $countryISO3 = $event->getRequest()->headers->get('country');
+            
             if ($this->getUser()) {
                 $user = $this->em->getRepository(User::class)->find($this->getUser());
 
@@ -40,28 +42,29 @@ class RequestListener
                 $hasCountry = false;
 
                 foreach ($countries as $country) {
-                    if ($country->getIso3() == $event->getRequest()->headers->get('country')) {
+                    if ($country->getIso3() == $countryISO3) {
                         $hasCountry = true;
+                        break;
                     }
                 }
 
                 foreach ($projects as $project) {
-                    if ($project->getProject()->getIso3() == $event->getRequest()->headers->get('country')) {
+                    if ($project->getProject()->getIso3() == $countryISO3) {
+                        $hasCountry = true;
+                        break;
                     }
                 }
 
                 if ($user->getRoles()[0] == "ROLE_ADMIN" || $hasCountry) {
-                    $countryIso3 = $event->getRequest()->headers->get('country');
-                    $event->getRequest()->request->add(["__country" => $countryIso3]);
+                    $event->getRequest()->request->add(["__country" => $countryISO3]);
                 }
                 else {
-                    $response = new Response("You can die, thanks", Response::HTTP_BAD_REQUEST);
+                    $response = new Response("You are not allowed to acces data for this country", Response::HTTP_FORBIDDEN);
                     $event->setResponse($response);
                 }
             }
             else {
-                $countryIso3 = $event->getRequest()->headers->get('country');
-                $event->getRequest()->request->add(["__country" => $countryIso3]);
+                $event->getRequest()->request->add(["__country" => $countryISO3]);
             }
 
 
