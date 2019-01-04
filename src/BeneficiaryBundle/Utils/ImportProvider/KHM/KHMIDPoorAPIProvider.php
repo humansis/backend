@@ -70,7 +70,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @throws \Exception
      */
     public function importData(string $countryIso3, array $params, Project $project) {
-        if (key_exists('locationCode', $params)) {
+        if (key_exists('locationCode (KHXXXXXX)', $params)) {
                 $householdsArray = $this->importByCountryCode($params);
 
                 if($householdsArray == "errorLocationCode") {
@@ -78,7 +78,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
                 }
 
                 return $this->parseData($householdsArray, $countryIso3, $project);
-        } else if(!key_exists('locationCode', $params)) {
+        } else if(!key_exists('locationCode (KHXXXXXX)', $params)) {
             throw new \Exception("Missing locationCode in the request");
         } else {
             throw new \Exception("Error occured with the request");
@@ -92,7 +92,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      */
     private function importByCountryCode(array $params)
     {
-        $locationCode = $params['locationCode'];
+        $locationCode = $params['locationCode (KHXXXXXX)'];
         $locationCodeNum = substr($locationCode, 2);
 
         $route = $locationCodeNum . ".json?email=james.happell%40peopleinneed.cz&token=K45nDocxQ5sEFfqSWwDm-2DxskYEDYFe";
