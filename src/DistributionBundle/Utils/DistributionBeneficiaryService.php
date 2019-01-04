@@ -174,10 +174,17 @@ class DistributionBeneficiaryService
 
         $beneficiaries = array();
         foreach ($objectBeneficiary as $value){
+            $gender = '';
+
+            if ($value['gender'] == 0)
+                $gender = 'Female';
+            else
+                $gender = 'Male';
+
             array_push($beneficiaries, [
                 "Given name" => $value['given_name'],
                 "Family name"=> $value['family_name'],
-                "Gender" => $value['gender'],
+                "Gender" => $gender,
                 "Status" => $value['status'],
                 "Date of birth" => $value['date_of_birth']
             ]);

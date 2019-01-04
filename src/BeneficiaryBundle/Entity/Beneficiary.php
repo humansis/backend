@@ -523,6 +523,13 @@ class Beneficiary implements ExportableInterface
             $valueCountrySpecific[$value->getCountrySpecific()->getFieldString()] = $value->getAnswer();
         }
 
+        $valueGender = "";
+
+        if ($this->getGender() == 0)
+            $valueGender = "Female";
+        else
+            $valueGender = "Male";
+
         // Recover adm1 , adm2 , adm3 , adm 4 from localisation object : we have to verify if they are null before to get the name
         $adm1 = ( ! empty($this->getHousehold()->getLocation()->getAdm1()) ) ? $this->getHousehold()->getLocation()->getAdm1()->getName() : '';
         $adm2 = ( ! empty($this->getHousehold()->getLocation()->getAdm2()) ) ? $this->getHousehold()->getLocation()->getAdm2()->getName() : '';
@@ -545,7 +552,7 @@ class Beneficiary implements ExportableInterface
 
         $tempBenef = [ "givenName" => $this->getGivenName(),
             "familyName"=> $this->getFamilyName(),
-            "gender" => $this->getGender(),
+            "gender" => $valueGender,
             "status" => $this->getStatus(),
             "dateOfBirth" => $this->getDateOfBirth()->format('Y-m-d'),
             "vulnerabilityCriteria" => $valuescriteria,
