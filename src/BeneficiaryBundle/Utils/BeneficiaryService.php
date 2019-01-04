@@ -90,7 +90,7 @@ class BeneficiaryService
             $beneficiaryArray["gender"] = 1;
         elseif ($beneficiaryArray["gender"] == 'Female')
             $beneficiaryArray["gender"] = 0;
-        
+
         $this->requestValidator->validate(
             "beneficiary",
             HouseholdConstraints::class,
