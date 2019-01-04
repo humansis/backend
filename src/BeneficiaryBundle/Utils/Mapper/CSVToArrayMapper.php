@@ -94,7 +94,7 @@ class CSVToArrayMapper extends AbstractMapper
                 {
                     if ($row[$mappingCSV['beneficiaries']['given_name']] == null
                         || $row[$mappingCSV['beneficiaries']['family_name']] == null
-                        || (explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != '0' && explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != '1')
+                        || (explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != 'Female' && explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != 'Male')
                         || (explode('.', $row[$mappingCSV['beneficiaries']['status']])[0] != '0' && explode('.', $row[$mappingCSV['beneficiaries']['status']])[0] != '1')
                         || $row[$mappingCSV['beneficiaries']['date_of_birth']] == null) {
                         if ($row[$mappingCSV['beneficiaries']['given_name']] == null) {
@@ -103,7 +103,7 @@ class CSVToArrayMapper extends AbstractMapper
                         elseif ($row[$mappingCSV['beneficiaries']['family_name']] == null) {
                             throw new \Exception("There is missing information at the column " . $mappingCSV['beneficiaries']['family_name'] . " at the line " . $lineNumber);
                         }
-                        elseif (explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != '0' && explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != '1') {
+                        elseif (explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != 'Female' && explode('.', $row[$mappingCSV['beneficiaries']['gender']])[0] != 'Male') {
                             throw new \Exception("There is missing information at the column " . $mappingCSV['beneficiaries']['gender'] . " at the line " . $lineNumber);
                         }
                         elseif ((explode('.', $row[$mappingCSV['beneficiaries']['status']])[0] != '0' && explode('.', $row[$mappingCSV['beneficiaries']['status']])[0] != '1')) {

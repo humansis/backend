@@ -211,6 +211,11 @@ class HouseholdService
             }
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 try {
+                    if ($beneficiaryToSave['gender'] == 'Male')
+                        $beneficiaryToSave['gender'] = 1;
+                    elseif ($beneficiaryToSave['gender'] == 'Female')
+                        $beneficiaryToSave['gender'] = 0;
+
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
                     if(! array_key_exists("id", $beneficiaryToSave))
                         $household->addBeneficiary($beneficiary);
@@ -312,8 +317,14 @@ class HouseholdService
         {
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave)
             {
+
                 if ($updateBeneficiary)
                 {
+                    if ($beneficiaryToSave['gender'] == 'Male')
+                        $beneficiaryToSave['gender'] = 1;
+                    elseif ($beneficiaryToSave['gender'] == 'Female')
+                        $beneficiaryToSave['gender'] = 0;
+
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
                     $this->em->persist($beneficiary);
                 }
@@ -329,6 +340,7 @@ class HouseholdService
         }
 
         $this->em->flush();
+        dump($householdArray["beneficiaries"]);
 
         return $household;
     }

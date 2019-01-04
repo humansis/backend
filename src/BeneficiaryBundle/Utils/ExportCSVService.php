@@ -211,7 +211,7 @@ class ExportCSVService
         $tempBenef = [
             "Given name" => 'Price',
             "Family name" => 'Smith',
-            "Gender" => '0',
+            "Gender" => 'Female',
             "Status" => '1',
             "Date of birth" => '1997-10-31',
             "Vulnerability criteria" => 'disabled',
@@ -225,7 +225,7 @@ class ExportCSVService
         $dependent = [
             "Given name" => 'James',
             "Family name" => 'Smith',
-            "Gender" => '1',
+            "Gender" => 'Male',
             "Status" => '0',
             "Date of birth" => '07/25/2001',
             "Vulnerability criteria" => '',
@@ -239,7 +239,7 @@ class ExportCSVService
         $details = [
             "Given name" => 'String*',
             "Family name" => 'String*',
-            "Gender" => 'Number [0-1]*',
+            "Gender" => 'Male / Female*',
             "Status" => 'Number [0-1]*',
             "Date of birth" => 'YYYY-MM-DD',
             "Vulnerability criteria" => 'String',
