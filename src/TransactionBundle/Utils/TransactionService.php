@@ -319,6 +319,13 @@ class TransactionService {
             }
 
             $beneficiary = $transaction->getDistributionBeneficiary()->getBeneficiary();
+            $gender = '';
+
+            if ($beneficiary->getGender() == 0)
+                $gender = 'Female';
+            else
+                $gender = 'Male';
+
             array_push($exportableTable, array(
                 "addressStreet" => $beneficiary->getHousehold()->getAddressStreet(),
                 "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
@@ -329,7 +336,7 @@ class TransactionService {
                 "longitude" => $beneficiary->getHousehold()->getLongitude(),
                 "givenName" => $beneficiary->getGivenName(),
                 "familyName"=> $beneficiary->getFamilyName(),
-                "gender" => $beneficiary->getGender(),
+                "gender" => $gender,
                 "dateOfBirth" => $beneficiary->getDateOfBirth()->format('Y-m-d'),
                 "amount_sent" => $transaction->getAmountSent(),
                 "date_sent" => $transaction->getDateSent(),

@@ -110,8 +110,16 @@ class DistributionCSVService
         $headers = array_shift($sheetArray);
         $arrayWithKeys = array();
         foreach ($sheetArray as $beneficiaryArray) {
+
             $beneficiaryWithKey = array();
             foreach ($headers as $index => $key) {
+                if ($key == "gender") {
+                    if ($beneficiaryArray[$index] == 'Male')
+                        $beneficiaryArray[$index] = 1;
+                    else
+                        $beneficiaryArray[$index] = 0;
+                }
+
                 $beneficiaryWithKey[$key] = $beneficiaryArray[$index];
             }
             array_push($arrayWithKeys, $beneficiaryWithKey);

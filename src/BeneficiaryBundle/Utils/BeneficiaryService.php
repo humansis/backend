@@ -85,6 +85,12 @@ class BeneficiaryService
      */
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
+
+        if ($beneficiaryArray["gender"] == 'Male')
+            $beneficiaryArray["gender"] = 1;
+        elseif ($beneficiaryArray["gender"] == 'Female')
+            $beneficiaryArray["gender"] = 0;
+
         $this->requestValidator->validate(
             "beneficiary",
             HouseholdConstraints::class,
