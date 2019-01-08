@@ -79,6 +79,13 @@ class User extends BaseUser implements ExportableInterface
      */
     private $transactions;
 
+        /**
+     * @var string
+     * @ORM\Column(name="language", type="string", length=255, nullable=true)
+     * @Groups({"FullUser"})
+     */
+    protected $language;
+
     public function __construct()
     {
         parent::__construct();
@@ -228,5 +235,13 @@ class User extends BaseUser implements ExportableInterface
             'email' => $this->getEmail(),
             'role' => $this->getRoles()[0]
         ];
+    }
+
+    function getLanguage(): string {
+        return $this->language;
+    } 
+
+    function setLanguage($language) {
+        $this->language = $language;
     }
 }
