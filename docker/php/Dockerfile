@@ -11,7 +11,10 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     zlib1g-dev \
     libicu-dev \
-    g++
+    g++ \
+    cron
+    
+RUN apt-get install -y sudo
 
 
 RUN docker-php-ext-configure intl
@@ -34,22 +37,39 @@ RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
 RUN "date"
 
 RUN useradd -ms /bin/bash symfony
+RUN echo "symfony:symfony" | chpasswd
+RUN usermod -aG sudo symfony
 
 RUN /bin/bash -c  "echo 'devsymfony:x:407:symfony' >> /etc/group"
 RUN /bin/bash -c  "echo '%devsymfony ALL=NOPASSWD: /sbin/cleanAndTest /sbin/clean' >> /etc/sudoers"
 
-
 RUN /bin/bash -c  "echo 'alias sf=\"php bin/console\"' >> /home/symfony/.bashrc"
 WORKDIR /var/www/html/symfony
-COPY cleanAndTest.sh /usr/bin/cleanAndTest
 
+COPY cleanAndTest.sh /usr/bin/cleanAndTest
 RUN chgrp devsymfony /usr/bin/cleanAndTest
 RUN chmod g+x /usr/bin/cleanAndTest
 
 COPY clean.sh /usr/bin/clean
-
 RUN chgrp devsymfony /usr/bin/clean
 RUN chmod g+x /usr/bin/clean
 
+RUN touch /etc/cron.allow
+RUN echo "symfony"  > /etc/cron.allow
+
+COPY crontab /etc/cron.d/reporting-cron
+RUN chmod 0644 /etc/cron.d/reporting-cron
+RUN crontab -u symfony /etc/cron.d/reporting-cron
+
+COPY cron-launch.sh /usr/bin/cron-launch
+RUN chgrp devsymfony /usr/bin/cron-launch
+RUN chmod g+x /usr/bin/cron-launch
+
+RUN touch /var/log/result
+RUN chmod 777 /var/log/result
+
 USER symfony
+
+
+ENTRYPOINT ["cron-launch"]
 
