@@ -56,11 +56,22 @@ class LocationService
             'any'
         );
 
+        dump($locationArray);
         // Define location array
         $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(["name" => $locationArray['adm1']]);
-        $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(["name" => $locationArray['adm2']]);
-        $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(["name" => $locationArray['adm3']]);
-        $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(["name" => $locationArray['adm4']]);
+        $adm2 = null;
+        $adm3 = null;
+        $adm4 = null;
+
+        if (array_key_exists("adm2", $locationArray)) {
+            $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(["name" => $locationArray['adm2']]);
+        }
+        if (array_key_exists("adm3", $locationArray)) {
+            $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(["name" => $locationArray['adm3']]);
+        }
+        if (array_key_exists("adm4", $locationArray)) {
+            $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(["name" => $locationArray['adm4']]);
+        }
 
         if ($adm4 instanceof Adm4) {
             return $adm4->getLocation();
