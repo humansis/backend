@@ -238,13 +238,12 @@ class ProjectService
      * Add multiple households to project.
      *
      * @param Project $project
-     * @param string $countryIso3
-     * @param array $filters
+     * @param array $households
      * @return array
      */
-    public function addMultipleHouseholds(Project $project, string $countryIso3, array $filters) {
-        $households = $this->em->getRepository(Household::Class)->getAllBy($countryIso3, null, null, [], $filters);
+    public function addMultipleHouseholds(Project $project, array $households) {
         foreach($households as $hh) {
+            $hh = $this->em->getRepository(Household::class)->find($hh['id']);
             $projectHousehold = $hh->getProjects()->contains($project);
             if (!$projectHousehold) {
                 $hh->addProject($project);

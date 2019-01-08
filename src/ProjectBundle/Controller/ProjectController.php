@@ -211,11 +211,10 @@ class ProjectController extends Controller
      * @return Response
      */
     public function addHouseholdsAction(Request $request, Project $project) {
-        $filters = $request->request->get('filter');
-        $countryISO3 = $request->request->get('__country');
+        $beneficiaries = $request->request->get('beneficiaries');
         try
         {
-            $result = $this->get('project.project_service')->addMultipleHouseholds($project, $countryISO3, $filters);
+            $result = $this->get('project.project_service')->addMultipleHouseholds($project, $beneficiaries);
         }
         catch(\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
