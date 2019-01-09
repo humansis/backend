@@ -4,6 +4,7 @@
 namespace Tests\ProjectBundle\Controller;
 
 
+use BeneficiaryBundle\Entity\Household;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
@@ -170,8 +171,14 @@ class ProjectControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        $household = $this->em->getRepository(Household::class)->findBy(
+            [
+                'addressStreet' => $this->bodyHousehold['address_street'],
+                'addressNumber' => $this->bodyHousehold['address_number']
+            ]);
+
         $body = array(
-            'filter' => [],
+            'beneficiaries' => $household
         );
 
         $crawler = $this->request('POST', '/api/wsse/projects/' . $project['id'] . '/beneficiaries/add', $body);
