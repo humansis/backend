@@ -357,4 +357,20 @@ class DistributionService
         $value = (int) $this->em->getRepository(DistributionData::class)->getTotalValue($country);
         return $value;
     }
+
+    /**
+     * @param $distributions
+     * @return string
+     */
+    public function filterDistributions($distributions)
+    {
+        $distributionArray = $distributions->getValues();
+        $filteredArray = array();
+        foreach ($distributionArray as $key) {
+            if (!$key->getArchived()) {
+                $filteredArray[] = $key;
+            };
+        }
+        return $filteredArray;
+    }
 }

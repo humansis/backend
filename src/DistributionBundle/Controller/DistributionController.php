@@ -450,6 +450,7 @@ class DistributionController extends Controller
     {
         try {
             $distributions = $project->getDistributions();
+            $filtered = $this->get('distribution.distribution_service')->filterDistributions($distributions);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
