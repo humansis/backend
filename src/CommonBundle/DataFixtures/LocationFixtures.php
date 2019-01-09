@@ -35,8 +35,10 @@ class LocationFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $nbFilesLoaded = $this->parseDirectory($manager);
-        print_r("\n\n $nbFilesLoaded file(s) loaded.\n\n");
+        if ($this->kernel->getEnvironment() !== "test") {
+            $nbFilesLoaded = $this->parseDirectory($manager);
+            print_r("\n\n $nbFilesLoaded file(s) loaded.\n\n");
+        }
     }
 
 
