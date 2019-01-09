@@ -39,7 +39,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
     /**
      * @var string
      */
-    private $url = "http://hub.cam-monitoring.info/api/idpoor8/";
+    private $url = "http://hub.cam-monitoring.info:8383/api/idpoor8/";
 
     /** @var LocationService $locationService */
     private $locationService;
