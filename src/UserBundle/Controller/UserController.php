@@ -399,10 +399,10 @@ class UserController extends Controller
     }
 
 
-        /**
-     * Edit a user {id} with data in the body
+    /**
+     * Edit user's language with data in the body
      *
-     * @Rest\Post("/users/{id}/updateLanguage", name="update_user")
+     * @Rest\Post("/users/{id}/language", name="language_user")
      * @Security("is_granted('ROLE_USER_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Users")
