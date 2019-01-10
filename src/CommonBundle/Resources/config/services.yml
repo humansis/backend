@@ -52,6 +52,8 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\LocationUnitTestFixtures:
+        arguments:
+            - "@kernel"
         tags:
             - { name: doctrine.fixture.orm }
 
