@@ -28,8 +28,8 @@ class DistributionFixtures extends Fixture
         ],
         'date_distribution' => '2018-09-13',
         'location' => [
-            'adm1' => 'Battambang',
-            'adm2' => 'Bavel',
+            'adm1' => 'Banteay Meanchey',
+            'adm2' => 'Mongkol Borei',
             'adm3' => '',
             'adm4' => '',
             'country_iso3' => 'KHM'
