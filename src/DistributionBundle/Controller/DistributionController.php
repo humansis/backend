@@ -450,13 +450,14 @@ class DistributionController extends Controller
     {
         try {
             $distributions = $project->getDistributions();
+            $filtered = $this->get('distribution.distribution_service')->filterDistributions($distributions);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         $json = $this->get('jms_serializer')
             ->serialize(
-                $distributions,
+                $filtered,
                 'json',
                 SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
             );
