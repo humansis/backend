@@ -398,6 +398,40 @@ class UserController extends Controller
         return new Response($json);
     }
 
+
+    /**
+     * Edit user's language with data in the body
+     *
+     * @Rest\Post("/users/{id}/language", name="language_user")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @Model(type=User::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param User $user
+     * @return Response
+     */
+    public function updateLanguage(Request $request, User $user)
+    {
+        $language = $request->request->get('language');
+        $userUpdated = $this->get('user.user_service')->updateLanguage($user, $language);
+        $json = $this->get('jms_serializer')->serialize($userUpdated, 'json', SerializationContext::create()->setGroups(['FullUser']));
+        return new Response($json);
+    }
+
+
+
     /**
      * Change the password of user {id}. Must send oldPassword and newPassword
      *

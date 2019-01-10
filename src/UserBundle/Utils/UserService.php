@@ -441,4 +441,13 @@ class UserService
 
         fclose($fp);
     }
+
+    public function updateLanguage(User $user, string $language) {
+        $user->setLanguage($language);
+
+        $this->em->merge($user);
+        $this->em->flush();
+
+        return $user;
+    }
 }
