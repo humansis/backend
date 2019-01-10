@@ -392,7 +392,6 @@ class DistributionDataRetrievers
     public function conditionSelect($qb, $nameFunction, $frequency) {
         switch ($nameFunction) {
             case 'BMS_Distribution_NEB':
-            case 'BMS_Distribution_M':
                 if ($frequency === 'Month' || $frequency === "Period") {
                     $qb ->select('d.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
                 } else if ($frequency === 'Year') {
@@ -405,14 +404,13 @@ class DistributionDataRetrievers
                 return $qb;
             case 'BMS_Distribution_TDV' :
                 if ($frequency === 'Month' || $frequency === "Period") {
-                    $qb ->select('d.name AS name', 'd.id AS id','SUM(rv.value) AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date")
-                        ->groupBy('name', 'id', 'date');
-                } else if ($frequency === 'Year') {
-                    $qb ->select('d.name AS name', 'd.id AS id','SUM(rv.value) AS value', "DATE_FORMAT(rv.creationDate, '%Y') AS date")
-                        ->groupBy('name', 'id', 'date');
-                } else if ($frequency === 'Quarter') {
-                    $qb ->select('d.name AS name', 'd.id AS id','SUM(rv.value) AS value', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
-                    ->groupBy('name', 'id', 'date');
+                    $qb ->select('d.name AS name', 'd.id AS id','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+                } 
+                else if ($frequency === 'Year') {
+                    $qb ->select('d.name AS name', 'd.id AS id','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y') AS date");
+                } 
+                else if ($frequency === 'Quarter') {
+                    $qb ->select('DISTINCT rv.value AS value', 'd.name AS name', 'd.id AS id', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date");
                 }
                 return $qb;
             case 'BMSU_Distribution_NM' :
@@ -451,6 +449,15 @@ class DistributionDataRetrievers
                     $qb ->select('SUM(rv.value) AS value', 'rv.unity AS name', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
                         ->groupBy('name', 'date');
                 }
+                return $qb;
+            case 'BMS_Distribution_M':
+                if ($frequency === 'Month' || $frequency === "Period") {
+                    $qb ->select('DISTINCT d.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
+                } else if ($frequency === 'Year') {
+                    $qb ->select('DISTINCT d.name AS name','rv.value AS value', "DATE_FORMAT(rv.creationDate, '%Y') AS date");
+                } else if ($frequency === 'Quarter') {
+                    $qb ->select('DISTINCT d.name AS name','rv.value AS value', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date");
+                } 
                 return $qb;     
         }
     }

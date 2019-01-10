@@ -322,7 +322,7 @@ class ProjectDataRetrievers
                     $qb ->select('MAX(rv.value)  AS value', 'p.name AS name', 'p.id as id',  "DATE_FORMAT(rv.creationDate, '%Y') AS date")
                         ->groupBy('name', 'date');
                 } else if ($frequency === 'Quarter') {
-                    $qb ->select('MAX(rv.value)  AS value', 'p.name AS name', 'p.id as id',  "DATE_FORMAT(rv.creationDate, '%Y') AS date")
+                    $qb ->select('MAX(rv.value)  AS value', 'p.name AS name', 'p.id as id',  "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
                         ->groupBy('name', 'date');
                 }
                 return $qb;     
