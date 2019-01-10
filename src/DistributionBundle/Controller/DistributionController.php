@@ -457,7 +457,7 @@ class DistributionController extends Controller
 
         $json = $this->get('jms_serializer')
             ->serialize(
-                $distributions,
+                $filtered,
                 'json',
                 SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
             );
