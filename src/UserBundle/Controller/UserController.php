@@ -319,7 +319,6 @@ class UserController extends Controller
         $offset = ($request->query->has('offset'))? $request->query->get('offset') : null;
 
         $users = $this->get('user.user_service')->findAll($limit, $offset);
-        dump($users);
         $json = $this->get('jms_serializer')->serialize($users, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
 
         return new Response($json, Response::HTTP_OK);

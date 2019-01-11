@@ -237,7 +237,8 @@ class User extends BaseUser implements ExportableInterface
         ];
     }
 
-    function getLanguage(): string {
+    function getLanguage()
+    {
         return $this->language;
     } 
 
