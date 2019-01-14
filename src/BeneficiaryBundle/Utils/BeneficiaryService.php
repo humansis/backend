@@ -91,6 +91,12 @@ class BeneficiaryService
         elseif ($beneficiaryArray["gender"] == 'Female')
             $beneficiaryArray["gender"] = 0;
 
+        if (array_key_exists('type', $beneficiaryArray)) {
+            unset($beneficiaryArray['type']);
+            unset($beneficiaryArray['proxy']);
+            unset($beneficiaryArray['id_type']);
+        }
+
         $this->requestValidator->validate(
             "beneficiary",
             HouseholdConstraints::class,

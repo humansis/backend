@@ -29,7 +29,7 @@ class CSVToArrayMapper extends AbstractMapper
 
         foreach ($sheetArray as $indexRow => $row)
         {
-            if (!$row['A'] && !$row['B'] && !$row['C'] && !$row['D'] && !$row['E'] && !$row['F'] && !$row['G'] && !$row['H'] && !$row['I'] && !$row['J'] && !$row['K'] && !$row['L'] && !$row['M'] && !$row['N'] && !$row['O'] && !$row['P'] && !$row['Q'] && !$row['R'] && !$row['S'] && !$row['T'] && !$row['U'])
+            if (!$row['A'] && !$row['B'] && !$row['C'] && !$row['D'] && !$row['E'] && !$row['F'] && !$row['G'] && !$row['H'] && !$row['I'] && !$row['J'] && !$row['K'] && !$row['L'] && !$row['M'] && !$row['N'] && !$row['O'] && !$row['P'] && !$row['Q'] && !$row['R'] && !$row['S'] && !$row['T'] && !$row['U'] && !$row['V'] && !$row['W'] && !$row['X'])
                 continue;
 
             //Index == 2
@@ -115,6 +115,7 @@ class CSVToArrayMapper extends AbstractMapper
                     }
                     if (null !== $row[$csvIndex2])
                         $row[$csvIndex2] = strval($row[$csvIndex2]);
+
                     $formattedHouseholdArray[$formattedIndex][$formattedIndex2] = $row[$csvIndex2];
                 }
             }
@@ -122,6 +123,7 @@ class CSVToArrayMapper extends AbstractMapper
             {
                 if (null !== $row[$csvIndex])
                     $row[$csvIndex] = strval($row[$csvIndex]);
+
                 $formattedHouseholdArray[$formattedIndex] = $row[$csvIndex];
             }
         }
@@ -195,20 +197,20 @@ class CSVToArrayMapper extends AbstractMapper
      */
     private function fieldPhones(&$formattedHouseholdArray)
     {
+        $types_string = $formattedHouseholdArray["beneficiaries"]["type"];
         $phones_string = $formattedHouseholdArray["beneficiaries"]["phones"];
+        $proxy_string = $formattedHouseholdArray["beneficiaries"]["proxy"];
         $phones_array = array_map('trim', explode(";", $phones_string));
+        $types_array = array_map('trim', explode(";", $types_string));
+
         $formattedHouseholdArray["beneficiaries"]["phones"] = [];
-        foreach ($phones_array as $item)
+        foreach ($phones_array as $index => $item)
         {
             if ("" == $item)
                 continue;
-            $item_array = array_map('trim', explode("–", $item));
-
-            if (count($item_array) < 2)
-                $item_array = array_map('trim', explode("-", $item));
 
 
-            $formattedHouseholdArray["beneficiaries"]["phones"][] = ["type" => $item_array[0], "number" => $item_array[1], 'proxy' => $item_array[2]];
+            $formattedHouseholdArray["beneficiaries"]["phones"][] = ["type" => $types_array[$index], "number" => $item, 'proxy' => $proxy_string];
         }
     }
 
@@ -218,15 +220,17 @@ class CSVToArrayMapper extends AbstractMapper
      */
     private function fieldNationalIds(&$formattedHouseholdArray)
     {
+        $types_national_ids = $formattedHouseholdArray["beneficiaries"]["id_type"];
         $national_ids_string = $formattedHouseholdArray["beneficiaries"]["national_ids"];
         $national_ids_array = array_map('trim', explode(";", $national_ids_string));
+        $types_national_ids_array = array_map('trim', explode(";", $types_national_ids));
         $formattedHouseholdArray["beneficiaries"]["national_ids"] = [];
-        foreach ($national_ids_array as $item)
+        foreach ($national_ids_array as $index => $item)
         {
             if ("" == $item)
                 continue;
-            $item_array = array_map('trim', explode("-", $item));
-            $formattedHouseholdArray["beneficiaries"]["national_ids"][] = ["id_type" => $item_array[0], "id_number" => $item_array[1]];
+
+            $formattedHouseholdArray["beneficiaries"]["national_ids"][] = ["id_type" => $types_national_ids_array[$index], "id_number" => $item];
         }
     }
 
