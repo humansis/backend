@@ -91,12 +91,23 @@ class BeneficiaryService
         elseif ($beneficiaryArray["gender"] == 'Female')
             $beneficiaryArray["gender"] = 0;
 
-        if (array_key_exists('type', $beneficiaryArray)) {
-            unset($beneficiaryArray['type']);
-            unset($beneficiaryArray['proxy']);
+        if (array_key_exists('type1', $beneficiaryArray)) {
+            unset($beneficiaryArray['type1']);
+            unset($beneficiaryArray['prefix1']);
+            unset($beneficiaryArray['phones1']);
+            unset($beneficiaryArray['proxy1']);
             unset($beneficiaryArray['id_type']);
         }
 
+        if (array_key_exists('type2', $beneficiaryArray)) {
+            unset($beneficiaryArray['type2']);
+            unset($beneficiaryArray['prefix2']);
+            unset($beneficiaryArray['phones2']);
+            unset($beneficiaryArray['proxy2']);
+        }
+
+
+        dump($beneficiaryArray);
         $this->requestValidator->validate(
             "beneficiary",
             HouseholdConstraints::class,
@@ -215,11 +226,12 @@ class BeneficiaryService
             $phoneArray,
             'any'
         );
-        
+
         $phone = new Phone();
         $phone->setBeneficiary($beneficiary)
             ->setType($phoneArray["type"])
             ->setNumber($phoneArray["number"])
+            ->setPrefix($phoneArray["prefix"])
             ->setProxy(array_key_exists("proxy", $phoneArray) ? $phoneArray["proxy"] : false);
 
         $this->em->persist($phone);

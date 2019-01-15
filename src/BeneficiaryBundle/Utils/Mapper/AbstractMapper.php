@@ -18,6 +18,8 @@ abstract class AbstractMapper
         $this->em = $entityManager;
     }
 
+    protected $moreThanZ = false;
+
     /**
      * Load the mapping CSV for a specific country. Some columns can move because on the number of country specifics
      *
@@ -39,7 +41,7 @@ abstract class AbstractMapper
                 foreach ($indexCSV as $indexFormatted2 => $indexCSV2)
                 {
                     // If the column is before the non-static columns, change nothing
-                    if ($indexCSV2 < Household::firstColumnNonStatic)
+                    if ($indexCSV2 < Household::firstColumnNonStatic && !$countrySpecificsAreLoaded)
                         $mappingCSVCountry[$indexFormatted][$indexFormatted2] = $indexCSV2;
                     // Else we increment the column.
                     // Example : if $nbCountrySpecific = 1, we shift the column by 1 (if the column is X, it will became Y)
@@ -97,6 +99,11 @@ abstract class AbstractMapper
     {
         $ascii = ord($letter1) + $number;
         $prefix = '';
+        if ($letter1 == 'AA' || $this->moreThanZ) {
+            $prefix = 'A';
+            $this->moreThanZ = true;
+        }
+
         if ($ascii > 90)
         {
             $prefix = 'A';

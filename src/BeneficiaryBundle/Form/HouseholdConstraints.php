@@ -71,6 +71,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "id" => $optionalNumeric,
             "number" => $string,
             "type" => $string,
+            "prefix" => $string,
             "proxy" => $optionalBoolean,
         ];
         $nationalId = [

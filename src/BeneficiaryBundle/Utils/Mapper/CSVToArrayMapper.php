@@ -29,7 +29,7 @@ class CSVToArrayMapper extends AbstractMapper
 
         foreach ($sheetArray as $indexRow => $row)
         {
-            if (!$row['A'] && !$row['B'] && !$row['C'] && !$row['D'] && !$row['E'] && !$row['F'] && !$row['G'] && !$row['H'] && !$row['I'] && !$row['J'] && !$row['K'] && !$row['L'] && !$row['M'] && !$row['N'] && !$row['O'] && !$row['P'] && !$row['Q'] && !$row['R'] && !$row['S'] && !$row['T'] && !$row['U'] && !$row['V'] && !$row['W'] && !$row['X'])
+            if (!$row['A'] && !$row['B'] && !$row['C'] && !$row['D'] && !$row['E'] && !$row['F'] && !$row['G'] && !$row['H'] && !$row['I'] && !$row['J'] && !$row['K'] && !$row['L'] && !$row['M'] && !$row['N'] && !$row['O'] && !$row['P'] && !$row['Q'] && !$row['R'] && !$row['S'] && !$row['T'] && !$row['U'] && !$row['V'] && !$row['W'] && !$row['X'] && !$row['Y'] && !$row['Z'] && !$row['AA'] && !$row['AB'] && !$row['AC'] && !$row['AD'] && !$row['AE'] && !$row['AF'] && !$row['AG'] && !$row['AH'])
                 continue;
 
             //Index == 2
@@ -130,7 +130,7 @@ class CSVToArrayMapper extends AbstractMapper
         // Add the country iso3 from the request
         $formattedHouseholdArray["location"]["country_iso3"] = $countryIso3;
 
-        // Traitment on field with multiple value or foreign key inside (switch name to id for example)
+        // Treatment on field with multiple value or foreign key inside (switch name to id for example)
         try
         {
             $this->fieldCountrySpecifics($mappingCSV, $formattedHouseholdArray, $rowHeader);
@@ -197,20 +197,27 @@ class CSVToArrayMapper extends AbstractMapper
      */
     private function fieldPhones(&$formattedHouseholdArray)
     {
-        $types_string = $formattedHouseholdArray["beneficiaries"]["type"];
-        $phones_string = $formattedHouseholdArray["beneficiaries"]["phones"];
-        $proxy_string = $formattedHouseholdArray["beneficiaries"]["proxy"];
-        $phones_array = array_map('trim', explode(";", $phones_string));
-        $types_array = array_map('trim', explode(";", $types_string));
+        $types1_string = $formattedHouseholdArray["beneficiaries"]["type1"];
+        $prefix1_string = $formattedHouseholdArray["beneficiaries"]["prefix1"];
+        $phones1_string = $formattedHouseholdArray["beneficiaries"]["phones1"];
+        $proxy1_string = $formattedHouseholdArray["beneficiaries"]["proxy1"];
+
+        $prefix1_string = str_replace("'", "", $prefix1_string);
+        $phones1_string = str_replace("'", "", $phones1_string);
 
         $formattedHouseholdArray["beneficiaries"]["phones"] = [];
-        foreach ($phones_array as $index => $item)
-        {
-            if ("" == $item)
-                continue;
+        array_push($formattedHouseholdArray["beneficiaries"]["phones"], array("type" => $types1_string, "prefix" => $prefix1_string, "number" => $phones1_string, 'proxy' => $proxy1_string));
 
+        if (key_exists('type2', $formattedHouseholdArray["beneficiaries"])) {
+            $types2_string = $formattedHouseholdArray["beneficiaries"]["type2"];
+            $prefix2_string = $formattedHouseholdArray["beneficiaries"]["prefix2"];
+            $phones2_string = $formattedHouseholdArray["beneficiaries"]["phones2"];
+            $proxy2_string = $formattedHouseholdArray["beneficiaries"]["proxy2"];
 
-            $formattedHouseholdArray["beneficiaries"]["phones"][] = ["type" => $types_array[$index], "number" => $item, 'proxy' => $proxy_string];
+            $prefix2_string = str_replace("'", "", $prefix2_string);
+            $phones2_string = str_replace("'", "", $phones2_string);
+
+            array_push($formattedHouseholdArray["beneficiaries"]["phones"], ["type" => $types2_string, "prefix" => $prefix2_string, "number" => $phones2_string, 'proxy' => $proxy2_string]);
         }
     }
 
