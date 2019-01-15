@@ -1,1 +1,1 @@
-10 12 2-31 * * [[ "$(date --date=tomorrow +\%d)" == "09" ]] && echo "yo" > /var/log/result 2 > &1
+17 12 * * * cron-script

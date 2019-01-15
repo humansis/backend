@@ -65,6 +65,10 @@ COPY cron-launch.sh /usr/bin/cron-launch
 RUN chgrp devsymfony /usr/bin/cron-launch
 RUN chmod g+x /usr/bin/cron-launch
 
+COPY cron-script.sh /usr/bin/cron-script
+RUN chgrp devsymfony /usr/bin/cron-script
+RUN chmod g+x /usr/bin/cron-script
+
 RUN touch /var/log/result
 RUN chmod 777 /var/log/result
 
