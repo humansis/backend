@@ -4,7 +4,7 @@
 BENEFICIARY MANAGEMENT SYSTEM
 ==============
 
-## About
+# About
 
 A platform that allows humanitarian organisations to manage relief items (Food, Non Food Items, CASH) to people in needs for life-saving humanitarian responses to emergency situations.
 
@@ -14,9 +14,7 @@ If you're an experienced dev and you'd like to get involved, contact us on twitt
 
 The global project documentation is in README.md of the frontend [repository](https://github.com/ReliefApplications/bms_front)
 
-
-API TECH doc
-==============
+# Documentation
  
 #### Infos
 
@@ -24,32 +22,28 @@ Set the header `country` of your request, with ISO3 code, if you need something 
 Header `country` contains the ISO3 of a country. A listener will add it to the body of the request (`__country`)
 before that the controller process.
 
-#### Documentation
+#### Specific Documentation
 - [Beneficiary Bundle](src/BeneficiaryBundle/README.md)
 - [Distribution Bundle](src/DistributionBundle/README.md)
 - [Project Bundle](src/ProjectBundle/README.md)
 - [Reporting Bundle](src/ReportingBundle/README.md)
 
-# Docker
-
-#### Informations
+#### General Information
 
 We are using the doctrine extension `LevenshteinFunction`, from the package `jrk/levenshtein-bundle`
 - The Git repository : https://github.com/jr-k/JrkLevenshteinBundle
+To trick Levenshtein activation, run: `php bin/console jrk:levenshtein:install`
 
-##### Trick Levenshtein activation
-
-`php bin/console jrk:levenshtein:install`
-
-#### On your computer
+#### Docker
 
 - `docker-compose up --build` : build and run the docker image
 - `docker-compose exec php bash` : access to the container bash of PHP image
 
 #### Inside Docker
 
-- `cleanAndTest` : Delete your database, create a new one, migrate migrations, load fixtures, clean cache of import CSV and execute unit tests
-- `clean` : Delete your database, create a new one, migrate migrations, load fixtures and clean cache of import CSV
+- `cleanAndTest` : Delete your database, create a new one, migrate migrations, load fixtures, clean cache of import CSV, start the cron service and execute unit tests
+- `clean` : Delete your database, create a new one, migrate migrations, load fixtures, start the cron service and clean cache of import CSV
+- `cron-launch` : Start the cron service
 
 #### Git Hooks
 
@@ -57,17 +51,14 @@ Just after installation, don't forget to set your hook directory in order to ena
 
 `git config core.hooksPath hooks`
 
-# Command
+### Useful Commands
 
 - `php bin/console r:c:c` : clear cache files created for the import process of households
 - `php bin/console r:i:t` : test and display execution time of import process of households
 
-# AWS
+### AWS
 
-- The API is hosted on AWS Elastic Beanstalk and the database on AWS RDS
-- To initialize Elastic Beanstalk on your computer run `eb init --interactive`, to deploy the app run `eb deploy`
-
-- Symfony configuration for AWS is defined in [symfony.config](.ebextensions/symfony.config) : the commands execute databases migrations and clean the cache
+- The API is hosted on AWS EC2 and the database on AWS RDS
 
 - When the database is dumped, you need to create the Levenshtein function manually in the RDS database :
 ```
@@ -105,9 +96,9 @@ BEGIN
 END
 ```
 
-# Import & Export
+### Import & Export
 
 It's now possible to import or export data in the application. You can export data in the app in different formats : CSV, XLS or ODS.
 
 Note that during the import part, all beneficiaries you modify in the imported file will be updated. Moreover, if a beneficiary is missing in the distribution but is present in all the beneficiaries of the project, he'll be removed from the distribution. 
-The same process goes for beneficiaries added in the imported file. Finally, if you add a beneficiary that is not part of the project (in the database), he'll be added in "errors" array that shows all users that won't be added to the distirbution.
+The same process goes for beneficiaries added in the imported file. Finally, if you add a beneficiary that is not part of the project (in the database), he'll be added in "errors" array that shows all users that won't be added to the distribution.
