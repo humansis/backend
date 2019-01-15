@@ -69,11 +69,4 @@ COPY cron-script.sh /usr/bin/cron-script
 RUN chgrp devsymfony /usr/bin/cron-script
 RUN chmod g+x /usr/bin/cron-script
 
-RUN touch /var/log/result
-RUN chmod 777 /var/log/result
-
 USER symfony
-
-
-ENTRYPOINT ["cron-launch"]
-

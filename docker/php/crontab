@@ -1,1 +1,1 @@
-17 12 * * * cron-script
+00 12 * * * cron-script
