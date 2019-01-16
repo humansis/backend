@@ -227,6 +227,7 @@ class CSVToArrayMapper extends AbstractMapper
      */
     private function fieldNationalIds(&$formattedHouseholdArray)
     {
+        dump($formattedHouseholdArray);
         $type_national_id = $formattedHouseholdArray["beneficiaries"]["national_id_type"];
         $national_id_string = $formattedHouseholdArray["beneficiaries"]["national_id_number"];
         $formattedHouseholdArray["beneficiaries"]["national_ids"] = [];

@@ -105,6 +105,11 @@ class BeneficiaryService
             unset($beneficiaryArray['phone2_proxy']);
         }
 
+        if (array_key_exists('national_id_type', $beneficiaryArray)) {
+            unset($beneficiaryArray['national_id_type']);
+            unset($beneficiaryArray['national_id_number']);
+        }
+
 
         $this->requestValidator->validate(
             "beneficiary",
@@ -217,6 +222,9 @@ class BeneficiaryService
             $phoneArray['proxy'] = false;
         elseif ($phoneArray['proxy'] && $phoneArray['proxy'] === 'Y')
             $phoneArray['proxy'] = true;
+            
+        if (preg_match('/^0/', $phoneArray['number']))
+            $phoneArray['number'] = substr($phoneArray['number'], 1);
 
         $this->requestValidator->validate(
             "phone",
