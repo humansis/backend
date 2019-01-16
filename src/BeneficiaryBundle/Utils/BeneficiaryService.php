@@ -219,7 +219,6 @@ class BeneficiaryService
         elseif ($phoneArray['proxy'] && $phoneArray['proxy'] === 'Y')
             $phoneArray['proxy'] = true;
 
-        dump($phoneArray);
         $this->requestValidator->validate(
             "phone",
             HouseholdConstraints::class,
