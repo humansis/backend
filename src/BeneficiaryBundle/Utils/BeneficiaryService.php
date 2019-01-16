@@ -94,7 +94,7 @@ class BeneficiaryService
         if (array_key_exists('type1', $beneficiaryArray)) {
             unset($beneficiaryArray['type1']);
             unset($beneficiaryArray['prefix1']);
-            unset($beneficiaryArray['phones1']);
+            unset($beneficiaryArray['phone1']);
             unset($beneficiaryArray['proxy1']);
             unset($beneficiaryArray['id_type']);
         }
@@ -102,7 +102,7 @@ class BeneficiaryService
         if (array_key_exists('type2', $beneficiaryArray)) {
             unset($beneficiaryArray['type2']);
             unset($beneficiaryArray['prefix2']);
-            unset($beneficiaryArray['phones2']);
+            unset($beneficiaryArray['phone2']);
             unset($beneficiaryArray['proxy2']);
         }
 

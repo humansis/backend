@@ -199,25 +199,25 @@ class CSVToArrayMapper extends AbstractMapper
     {
         $types1_string = $formattedHouseholdArray["beneficiaries"]["type1"];
         $prefix1_string = $formattedHouseholdArray["beneficiaries"]["prefix1"];
-        $phones1_string = $formattedHouseholdArray["beneficiaries"]["phones1"];
+        $phone1_string = $formattedHouseholdArray["beneficiaries"]["phone1"];
         $proxy1_string = $formattedHouseholdArray["beneficiaries"]["proxy1"];
 
         $prefix1_string = str_replace("'", "", $prefix1_string);
-        $phones1_string = str_replace("'", "", $phones1_string);
+        $phone1_string = str_replace("'", "", $phone1_string);
 
         $formattedHouseholdArray["beneficiaries"]["phones"] = [];
-        array_push($formattedHouseholdArray["beneficiaries"]["phones"], array("type" => $types1_string, "prefix" => $prefix1_string, "number" => $phones1_string, 'proxy' => $proxy1_string));
+        array_push($formattedHouseholdArray["beneficiaries"]["phones"], array("type" => $types1_string, "prefix" => $prefix1_string, "number" => $phone1_string, 'proxy' => $proxy1_string));
 
         if (key_exists('type2', $formattedHouseholdArray["beneficiaries"])) {
             $types2_string = $formattedHouseholdArray["beneficiaries"]["type2"];
             $prefix2_string = $formattedHouseholdArray["beneficiaries"]["prefix2"];
-            $phones2_string = $formattedHouseholdArray["beneficiaries"]["phones2"];
+            $phone2_string = $formattedHouseholdArray["beneficiaries"]["phone2"];
             $proxy2_string = $formattedHouseholdArray["beneficiaries"]["proxy2"];
 
             $prefix2_string = str_replace("'", "", $prefix2_string);
-            $phones2_string = str_replace("'", "", $phones2_string);
+            $phone2_string = str_replace("'", "", $phone2_string);
 
-            array_push($formattedHouseholdArray["beneficiaries"]["phones"], ["type" => $types2_string, "prefix" => $prefix2_string, "number" => $phones2_string, 'proxy' => $proxy2_string]);
+            array_push($formattedHouseholdArray["beneficiaries"]["phones"], ["type" => $types2_string, "prefix" => $prefix2_string, "number" => $phone2_string, 'proxy' => $proxy2_string]);
         }
     }
 

@@ -65,11 +65,11 @@ class Household
             "vulnerability_criteria" => "Q",
             "type1" => "R",
             "prefix1" => "S",
-            "phones1" => "T",
+            "phone1" => "T",
             "proxy1" => "U",
             "type2" => "V",
             "prefix2" => "W",
-            "phones2" => "X",
+            "phone2" => "X",
             "proxy2" => "Y",
             "id_type" => "Z",
             "national_ids" => "AA"
