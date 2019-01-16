@@ -107,7 +107,6 @@ class BeneficiaryService
         }
 
 
-        dump($beneficiaryArray);
         $this->requestValidator->validate(
             "beneficiary",
             HouseholdConstraints::class,
@@ -215,9 +214,9 @@ class BeneficiaryService
      */
     public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
-        if ($phoneArray['proxy'] && $phoneArray['proxy'] == 'N')
+        if ($phoneArray['proxy'] && $phoneArray['proxy'] === 'N')
             $phoneArray['proxy'] = false;
-        elseif ($phoneArray['proxy'] && $phoneArray['proxy'] == 'Y')
+        elseif ($phoneArray['proxy'] && $phoneArray['proxy'] === 'Y')
             $phoneArray['proxy'] = true;
 
         $this->requestValidator->validate(
