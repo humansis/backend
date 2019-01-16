@@ -138,6 +138,7 @@ class BMSServiceTestCase extends KernelTestCase
                 ],
                 "phones" => [
                     [
+                        "prefix" => "+855",
                         "number" => "1111_TEST",
                         "type" => "TYPE_TEST",
                         "proxy" => true
