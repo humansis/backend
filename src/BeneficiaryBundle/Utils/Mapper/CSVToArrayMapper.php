@@ -197,27 +197,27 @@ class CSVToArrayMapper extends AbstractMapper
      */
     private function fieldPhones(&$formattedHouseholdArray)
     {
-        $types1_string = $formattedHouseholdArray["beneficiaries"]["type1"];
-        $prefix1_string = $formattedHouseholdArray["beneficiaries"]["prefix1"];
-        $phone1_string = $formattedHouseholdArray["beneficiaries"]["phone1"];
-        $proxy1_string = $formattedHouseholdArray["beneficiaries"]["proxy1"];
+        $types1_string = $formattedHouseholdArray["beneficiaries"]["phone1_type"];
+        $phone1_prefix_string = $formattedHouseholdArray["beneficiaries"]["phone1_prefix"];
+        $phone1_number_string = $formattedHouseholdArray["beneficiaries"]["phone1_number"];
+        $phone1_proxy_string = $formattedHouseholdArray["beneficiaries"]["phone1_proxy"];
 
-        $prefix1_string = str_replace("'", "", $prefix1_string);
-        $phone1_string = str_replace("'", "", $phone1_string);
+        $phone1_prefix_string = str_replace("'", "", $phone1_prefix_string);
+        $phone1_number_string = str_replace("'", "", $phone1_number_string);
 
         $formattedHouseholdArray["beneficiaries"]["phones"] = [];
-        array_push($formattedHouseholdArray["beneficiaries"]["phones"], array("type" => $types1_string, "prefix" => $prefix1_string, "number" => $phone1_string, 'proxy' => $proxy1_string));
+        array_push($formattedHouseholdArray["beneficiaries"]["phones"], array("type" => $types1_string, "prefix" => $phone1_prefix_string, "number" => $phone1_number_string, 'proxy' => $phone1_proxy_string));
 
-        if (key_exists('type2', $formattedHouseholdArray["beneficiaries"])) {
-            $types2_string = $formattedHouseholdArray["beneficiaries"]["type2"];
-            $prefix2_string = $formattedHouseholdArray["beneficiaries"]["prefix2"];
-            $phone2_string = $formattedHouseholdArray["beneficiaries"]["phone2"];
-            $proxy2_string = $formattedHouseholdArray["beneficiaries"]["proxy2"];
+        if (key_exists('phone2_type', $formattedHouseholdArray["beneficiaries"])) {
+            $phone2_type_string = $formattedHouseholdArray["beneficiaries"]["phone2_type"];
+            $phone2_prefix_string = $formattedHouseholdArray["beneficiaries"]["phone2_prefix"];
+            $phone2_number_string = $formattedHouseholdArray["beneficiaries"]["phone2_number"];
+            $phone2_proxy_string = $formattedHouseholdArray["beneficiaries"]["phone2_proxy"];
 
-            $prefix2_string = str_replace("'", "", $prefix2_string);
-            $phone2_string = str_replace("'", "", $phone2_string);
+            $phone2_prefix_string = str_replace("'", "", $phone2_prefix_string);
+            $phone2_number_string = str_replace("'", "", $phone2_number_string);
 
-            array_push($formattedHouseholdArray["beneficiaries"]["phones"], ["type" => $types2_string, "prefix" => $prefix2_string, "number" => $phone2_string, 'proxy' => $proxy2_string]);
+            array_push($formattedHouseholdArray["beneficiaries"]["phones"], ["type" => $phone2_type_string, "prefix" => $phone2_prefix_string, "number" => $phone2_number_string, 'proxy' => $phone2_proxy_string]);
         }
     }
 
@@ -227,17 +227,11 @@ class CSVToArrayMapper extends AbstractMapper
      */
     private function fieldNationalIds(&$formattedHouseholdArray)
     {
-        $types_national_ids = $formattedHouseholdArray["beneficiaries"]["id_type"];
-        $national_ids_string = $formattedHouseholdArray["beneficiaries"]["national_ids"];
-        $national_ids_array = array_map('trim', explode(";", $national_ids_string));
-        $types_national_ids_array = array_map('trim', explode(";", $types_national_ids));
+        $type_national_id = $formattedHouseholdArray["beneficiaries"]["national_id_type"];
+        $national_id_string = $formattedHouseholdArray["beneficiaries"]["national_id_number"];
         $formattedHouseholdArray["beneficiaries"]["national_ids"] = [];
-        foreach ($national_ids_array as $index => $item)
-        {
-            if ("" == $item)
-                continue;
-
-            $formattedHouseholdArray["beneficiaries"]["national_ids"][] = ["id_type" => $types_national_ids_array[$index], "id_number" => $item];
+        if ($national_id_string != "") {
+            $formattedHouseholdArray["beneficiaries"]["national_ids"][] = ["id_type" => $type_national_id, "id_number" => $national_id_string];
         }
     }
 

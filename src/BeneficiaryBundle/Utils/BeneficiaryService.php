@@ -91,19 +91,18 @@ class BeneficiaryService
         elseif ($beneficiaryArray["gender"] == 'Female')
             $beneficiaryArray["gender"] = 0;
 
-        if (array_key_exists('type1', $beneficiaryArray)) {
-            unset($beneficiaryArray['type1']);
-            unset($beneficiaryArray['prefix1']);
-            unset($beneficiaryArray['phone1']);
-            unset($beneficiaryArray['proxy1']);
-            unset($beneficiaryArray['id_type']);
+        if (array_key_exists('phone1_type', $beneficiaryArray)) {
+            unset($beneficiaryArray['phone1_type']);
+            unset($beneficiaryArray['phone1_prefix']);
+            unset($beneficiaryArray['phone1_number']);
+            unset($beneficiaryArray['phone1_proxy']);
         }
 
-        if (array_key_exists('type2', $beneficiaryArray)) {
-            unset($beneficiaryArray['type2']);
-            unset($beneficiaryArray['prefix2']);
-            unset($beneficiaryArray['phone2']);
-            unset($beneficiaryArray['proxy2']);
+        if (array_key_exists('phone2_type', $beneficiaryArray)) {
+            unset($beneficiaryArray['phone2_type']);
+            unset($beneficiaryArray['phone2_prefix']);
+            unset($beneficiaryArray['phone2_number']);
+            unset($beneficiaryArray['phone2_proxy']);
         }
 
 
