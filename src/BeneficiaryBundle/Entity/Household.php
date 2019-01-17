@@ -63,8 +63,16 @@ class Household
             "status" => "O",
             "date_of_birth" => "P",
             "vulnerability_criteria" => "Q",
-            "phones" => "R",
-            "national_ids" => "S"
+            "phone1_type" => "R",
+            "phone1_prefix" => "S",
+            "phone1_number" => "T",
+            "phone1_proxy" => "U",
+            "phone2_type" => "V",
+            "phone2_prefix" => "W",
+            "phone2_number" => "X",
+            "phone2_proxy" => "Y",
+            "national_id_type" => "Z",
+            "national_id_number" => "AA"
         ]
     ];
 

@@ -40,6 +40,14 @@ class Phone
     private $type;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="prefix", type="string", length=45)
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
+     */
+    private $prefix;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="proxy", type="boolean")
@@ -86,6 +94,30 @@ class Phone
     public function getNumber()
     {
         return $this->number;
+    }
+
+    /**
+     * Set prefix.
+     *
+     * @param string $prefix
+     *
+     * @return Phone
+     */
+    public function setPrefix($prefix)
+    {
+        $this->prefix = $prefix;
+
+        return $this;
+    }
+
+    /**
+     * Get number.
+     *
+     * @return string
+     */
+    public function getPrefix()
+    {
+        return $this->prefix;
     }
 
     /**

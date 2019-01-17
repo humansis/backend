@@ -201,8 +201,16 @@ class ExportCSVService
             "Status" => '',
             "Date of birth" => '#beneficiary+birth',
             "Vulnerability criteria" => '',
-            "Phones" => '#contact+phone',
-            "National IDs" => '',
+            "Type phone 1" => "",
+            "Prefix phone 1" => "",
+            "Number phone 1" => '#contact+phone',
+            "Proxy phone 1" => "",
+            "Type phone 2" => "",
+            "Prefix phone 2" => "",
+            "Number phone 2" => '#contact+phone',
+            "Proxy phone 2" => "",
+            "Type national ID" => '',
+            "Number national ID" => '',
             "  " => '',
             "" => "     -->",
             " " => 'Do not remove this line.'
@@ -215,8 +223,16 @@ class ExportCSVService
             "Status" => '1',
             "Date of birth" => '1997-10-31',
             "Vulnerability criteria" => 'disabled',
-            "Phones" => 'Mobile - 0145678348 - N',
-            "National IDs" => 'IDCard - 030617701',
+            "Type phone 1" => "Mobile",
+            "Prefix phone 1" => "'+855",
+            "Number phone 1" => "'145678348",
+            "Proxy phone 1" => "N",
+            "Type phone 2" => "Landline",
+            "Prefix phone 2" => "'+855",
+            "Number phone 2" => "'223543767",
+            "Proxy phone 2" => "N",
+            "Type national ID" => 'IDCard',
+            "Number national ID" => '030617701',
             "  " => '[Head]',
             "" => "     -->",
             " " => 'This Example line and the Type Helper line below must not be removed.'
@@ -229,11 +245,19 @@ class ExportCSVService
             "Status" => '0',
             "Date of birth" => '07/25/2001',
             "Vulnerability criteria" => '',
-            "Phones" => 'Mobile - 0214844628 - Y',
-            "National IDs" => '',
+            "Type phone 1" => "Mobile",
+            "Prefix phone 1" => "'+855",
+            "Number phone 1" => "'145678323",
+            "Proxy phone 1" => "Y",
+            "Type phone 2" => "Landline",
+            "Prefix phone 2" => "'+855",
+            "Number phone 2" => "'265348764",
+            "Proxy phone 2" => "Y",
+            "Type national ID" => '',
+            "Number national ID" => '',
             "  " => '[Member]',
             "" => "     -->",
-            " " => "'*' means that the property is needed -- Use ';' to separate multiple values -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
+            " " => "'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
         ];
 
         $details = [
@@ -243,11 +267,19 @@ class ExportCSVService
             "Status" => 'Number [0-1]*',
             "Date of birth" => 'YYYY-MM-DD',
             "Vulnerability criteria" => 'String',
-            "Phones" => '"TypeAsString" - Number - Y / N (Proxy)',
-            "National IDs" => '"TypeAsString" - Number',
+            "Type phone 1" => 'Mobile / Landline',
+            "Prefix phone 1" => "'+X",
+            "Number phone 1" => 'Number',
+            "Proxy phone 1" => "Y / N (Proxy)",
+            "Type phone 2" => 'Mobile / Landline',
+            "Prefix phone 2" => "'+X",
+            "Number phone 2" => 'Number',
+            "Proxy phone 2" => "Y / N (Proxy)",
+            "Type national ID" => '"TypeAsString"',
+            "Number national ID" => 'Number',
             "  " => '',
             "" => "     -->",
-            " " => "'*' means that the property is needed -- Use ';' to separate multiple values -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
+            " " => "'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
         ];
 
         $MAPPING_CSV_EXPORT = array();
