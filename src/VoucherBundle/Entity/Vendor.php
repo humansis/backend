@@ -2,6 +2,8 @@
 
 namespace VoucherBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -55,6 +57,16 @@ class Vendor
      * @ORM\Column(name="password", type="string", length=255)
      */
     private $password;
+
+    /**
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="vendor", orphanRemoval=true)
+     */
+    private $vouchers;
+
+    public function __construct()
+    {
+        $this->vouchers = new ArrayCollection();
+    }
 
 
     /**
@@ -185,5 +197,36 @@ class Vendor
     public function getPassword()
     {
         return $this->password;
+    }
+
+    /**
+     * @return Collection|Voucher[]
+     */
+    public function getVouchers(): Collection
+    {
+        return $this->vouchers;
+    }
+
+    public function addVoucher(Voucher $voucher): self
+    {
+        if (!$this->vouchers->contains($voucher)) {
+            $this->vouchers[] = $voucher;
+            $voucher->setVendor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVoucher(Voucher $voucher): self
+    {
+        if ($this->vouchers->contains($voucher)) {
+            $this->vouchers->removeElement($voucher);
+            // set the owning side to null (unless already changed)
+            if ($voucher->getVendor() === $this) {
+                $voucher->setVendor(null);
+            }
+        }
+
+        return $this;
     }
 }

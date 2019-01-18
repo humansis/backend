@@ -2,7 +2,10 @@
 
 namespace VoucherBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use \VoucherBundle\Entity\Product;
 
 /**
  * Booklet
@@ -62,6 +65,22 @@ class Booklet
      * @ORM\Column(name="password", type="string", length=255, nullable=true)
      */
     private $password;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="booklets")
+     */
+    private $product;
+
+    /**
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", orphanRemoval=true)
+     */
+    private $vouchers;
+
+    public function __construct()
+    {
+        $this->product = new ArrayCollection();
+        $this->vouchers = new ArrayCollection();
+    }
 
 
     /**
@@ -216,5 +235,62 @@ class Booklet
     public function getPassword()
     {
         return $this->password;
+    }
+
+    /**
+     * @return Collection|Product[]
+     */
+    public function getProduct(): Collection
+    {
+        return $this->product;
+    }
+
+    public function addProduct(Product $product): self
+    {
+        if (!$this->product->contains($product)) {
+            $this->product[] = $product;
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): self
+    {
+        if ($this->product->contains($product)) {
+            $this->product->removeElement($product);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Voucher[]
+     */
+    public function getVouchers(): Collection
+    {
+        return $this->vouchers;
+    }
+
+    public function addVoucher(Voucher $voucher): self
+    {
+        if (!$this->vouchers->contains($voucher)) {
+            $this->vouchers[] = $voucher;
+            $voucher->setBooklet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVoucher(Voucher $voucher): self
+    {
+        if ($this->vouchers->contains($voucher)) {
+            $this->vouchers->removeElement($voucher);
+            // set the owning side to null (unless already changed)
+            if ($voucher->getBooklet() === $this) {
+                $voucher->setBooklet(null);
+            }
+        }
+
+        return $this;
     }
 }
