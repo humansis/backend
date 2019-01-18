@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Entity;
 
+use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -75,6 +76,11 @@ class Booklet
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", orphanRemoval=true)
      */
     private $vouchers;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="booklets")
+     */
+    private $distribution_beneficiary;
 
     public function __construct()
     {
@@ -290,6 +296,18 @@ class Booklet
                 $voucher->setBooklet(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDistributionBeneficiary(): ?DistributionBeneficiary
+    {
+        return $this->distribution_beneficiary;
+    }
+
+    public function setDistributionBeneficiary(?DistributionBeneficiary $distribution_beneficiary): self
+    {
+        $this->distribution_beneficiary = $distribution_beneficiary;
 
         return $this;
     }
