@@ -31,8 +31,7 @@ class AppKernel extends Kernel
             new CommonBundle\CommonBundle(),
             new ReportingBundle\ReportingBundle(),
             new Jrk\LevenshteinBundle\JrkLevenshteinBundle(),
-            new VoucherBundle\VoucherBundle(),
-            new Symfony\Bundle\MakerBundle\MakerBundle()
+            new VoucherBundle\VoucherBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
