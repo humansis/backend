@@ -30,7 +30,9 @@ class AppKernel extends Kernel
             new RA\RequestValidatorBundle\RARequestValidatorBundle(),
             new CommonBundle\CommonBundle(),
             new ReportingBundle\ReportingBundle(),
-            new Jrk\LevenshteinBundle\JrkLevenshteinBundle()
+            new Jrk\LevenshteinBundle\JrkLevenshteinBundle(),
+            new VoucherBundle\VoucherBundle(),
+            new Symfony\Bundle\MakerBundle\MakerBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
