@@ -124,21 +124,45 @@ Class ExportService {
         }
 
         $rowIndex = 1;
+        $addKey = false;
+        $newKey = '';
 
         // get table headers titles
         reset($rows);
         $tableHeaders = array_keys($rows[0]);
 
         foreach ($tableHeaders as $key => $value) {
-            $index = chr(ord('A')+ $key).$rowIndex;
+            if ($key == 26) {
+                $addKey = true;
+            }
+
+            if ($addKey) {
+                $newKey = 'A';
+                $key = $key - 26;
+            }
+
+            $index = $newKey.chr(ord('A')+ $key).$rowIndex;
             $worksheet->setCellValue($index, $value);
         }
 
+
+
         $rowIndex++;
         foreach ($rows as $key => $value) {
+            $addKey = false;
+            $newKey = '';
 
            foreach ($tableHeaders as $colIndex => $header) {
-               $index = chr(ord('A') + $colIndex) . $rowIndex;
+               if ($colIndex == 26) {
+                   $addKey = true;
+               }
+
+               if ($addKey) {
+                   $newKey = 'A';
+                   $colIndex = $colIndex - 26;
+               }
+
+               $index = $newKey.chr(ord('A') + $colIndex) . $rowIndex;
                if (!empty($value[$header])) {
                    $worksheet->setCellValue($index, $value[$header]);
                }

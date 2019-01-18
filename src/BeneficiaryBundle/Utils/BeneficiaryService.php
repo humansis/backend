@@ -91,6 +91,26 @@ class BeneficiaryService
         elseif ($beneficiaryArray["gender"] == 'Female')
             $beneficiaryArray["gender"] = 0;
 
+        if (array_key_exists('phone1_type', $beneficiaryArray)) {
+            unset($beneficiaryArray['phone1_type']);
+            unset($beneficiaryArray['phone1_prefix']);
+            unset($beneficiaryArray['phone1_number']);
+            unset($beneficiaryArray['phone1_proxy']);
+        }
+
+        if (array_key_exists('phone2_type', $beneficiaryArray)) {
+            unset($beneficiaryArray['phone2_type']);
+            unset($beneficiaryArray['phone2_prefix']);
+            unset($beneficiaryArray['phone2_number']);
+            unset($beneficiaryArray['phone2_proxy']);
+        }
+
+        if (array_key_exists('national_id_type', $beneficiaryArray)) {
+            unset($beneficiaryArray['national_id_type']);
+            unset($beneficiaryArray['national_id_number']);
+        }
+
+
         $this->requestValidator->validate(
             "beneficiary",
             HouseholdConstraints::class,
@@ -198,10 +218,13 @@ class BeneficiaryService
      */
     public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
-        if ($phoneArray['proxy'] && $phoneArray['proxy'] == 'N')
+        if ($phoneArray['proxy'] && $phoneArray['proxy'] === 'N')
             $phoneArray['proxy'] = false;
-        elseif ($phoneArray['proxy'] && $phoneArray['proxy'] == 'Y')
+        elseif ($phoneArray['proxy'] && $phoneArray['proxy'] === 'Y')
             $phoneArray['proxy'] = true;
+            
+        if (preg_match('/^0/', $phoneArray['number']))
+            $phoneArray['number'] = substr($phoneArray['number'], 1);
 
         $this->requestValidator->validate(
             "phone",
@@ -209,11 +232,12 @@ class BeneficiaryService
             $phoneArray,
             'any'
         );
-        
+
         $phone = new Phone();
         $phone->setBeneficiary($beneficiary)
             ->setType($phoneArray["type"])
             ->setNumber($phoneArray["number"])
+            ->setPrefix($phoneArray["prefix"])
             ->setProxy(array_key_exists("proxy", $phoneArray) ? $phoneArray["proxy"] : false);
 
         $this->em->persist($phone);
