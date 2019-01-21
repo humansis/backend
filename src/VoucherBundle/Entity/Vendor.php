@@ -59,7 +59,7 @@ class Vendor
     private $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="vendor")
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="vendor", orphanRemoval=true)
      */
     private $vouchers;
 

@@ -40,7 +40,7 @@ class Donor implements ExportableInterface
      *
      * @ORM\Column(name="shortname", type="string", length=255, nullable=true)
      *
-     * @Groups({"FullDonor"})
+     * @Groups({"FullDonor", "FullProject"})
      */
     private $shortname;
 

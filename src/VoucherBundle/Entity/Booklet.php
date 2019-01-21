@@ -6,6 +6,7 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use \VoucherBundle\Entity\Product;
 
 /**
  * Booklet
@@ -39,13 +40,6 @@ class Booklet
     private $numberVouchers;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="individual_value", type="integer")
-     */
-    private $individualValue;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="currency", type="string", length=255)
@@ -60,14 +54,14 @@ class Booklet
     private $status;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(name="password", type="string", length=255)
+     * @ORM\Column(name="password", type="string", length=255, nullable=true)
      */
     private $password;
 
     /**
-     * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Product", inversedBy="booklets")
+     * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="booklets")
      */
     private $product;
 
@@ -221,11 +215,11 @@ class Booklet
     /**
      * Set password.
      *
-     * @param string $password
+     * @param string|null $password
      *
      * @return Booklet
      */
-    public function setPassword($password)
+    public function setPassword($password = null)
     {
         $this->password = $password;
 
@@ -235,7 +229,7 @@ class Booklet
     /**
      * Get password.
      *
-     * @return string
+     * @return string|null
      */
     public function getPassword()
     {
@@ -295,18 +289,6 @@ class Booklet
                 $voucher->setBooklet(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getDistributionBeneficiary(): ?DistributionBeneficiary
-    {
-        return $this->distribution_beneficiary;
-    }
-
-    public function setDistributionBeneficiary(?DistributionBeneficiary $distribution_beneficiary): self
-    {
-        $this->distribution_beneficiary = $distribution_beneficiary;
 
         return $this;
     }
