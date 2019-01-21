@@ -1,17 +1,71 @@
 <?php
-
 namespace VoucherBundle\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\BMSServiceTestCase;
+use VoucherBundle\Entity\Vendor;
 
-class DefaultControllerTest extends WebTestCase
+class DefaultControllerTest extends BMSServiceTestCase
 {
-    public function testIndex()
+    /** @var string $username */
+    private $username = "TESTER_PHPUNIT@gmail.com";
+    /**
+     * @throws \Exception
+     */
+    public function setUp()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/');
-
-        $this->assertContains('Hello World', $client->getResponse()->getContent());
+        // Configuration of BMSServiceTest
+        $this->setDefaultSerializerName("jms_serializer");
+        parent::setUpFunctionnal();
+        // Get a Client instance for simulate a browser
+        $this->client = $this->container->get('test.client');
     }
+    public function testCreateVendor()
+    {
+        $body = [
+            "name" => 'Carrefour',
+            "shop" => 'Fruit and Veg',
+            "address" => 'Agusto Figuroa',
+            "username" => $this->username,
+            'password' => "PSWUNITTEST"
+        ];
+
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the vendor with the email and the salted password. The user should be enable
+        $crawler = $this->request('PUT', '/api/wsse/new_vendor', $body);
+        $vendor = json_decode($this->client->getResponse()->getContent(), true);
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertArrayHasKey('username', $vendor);
+        $this->assertArrayHasKey('shop', $vendor);
+        return $vendor;
+    }
+
+    public function testGetAllVendors()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->request('GET', '/api/wsse/vendors');
+        $vendors = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (!empty($vendors)) {
+            $vendor = $vendors[0];
+
+            $this->assertArrayHasKey('username', $vendor);
+            $this->assertArrayHasKey('shop', $vendor);
+            $this->assertArrayHasKey('name', $vendor);
+            $this->assertArrayHasKey('address', $vendor);
+        } else {
+            $this->markTestIncomplete("You currently don't have any vendors in your database.");
+        }
+    }
+
+    
 }

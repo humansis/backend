@@ -5,6 +5,7 @@ namespace VoucherBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Vendor
@@ -27,6 +28,7 @@ class Vendor
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Groups({"FullVendor"})
      */
     private $name;
 
@@ -34,6 +36,7 @@ class Vendor
      * @var string
      *
      * @ORM\Column(name="shop", type="string", length=255)
+     * @Groups({"FullVendor"})
      */
     private $shop;
 
@@ -41,6 +44,7 @@ class Vendor
      * @var string
      *
      * @ORM\Column(name="address", type="string", length=255)
+     * @Groups({"FullVendor"})
      */
     private $address;
 
@@ -48,6 +52,7 @@ class Vendor
      * @var string
      *
      * @ORM\Column(name="username", type="string", length=255, unique=true)
+     * @Groups({"FullVendor"})
      */
     private $username;
 
@@ -55,6 +60,7 @@ class Vendor
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=255)
+     * @Groups({"FullVendor"})
      */
     private $password;
 

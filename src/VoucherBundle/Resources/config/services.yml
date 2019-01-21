@@ -1,1 +1,11 @@
 services:
+
+
+#######################################################################################
+##                                       CRUD                                        ##
+#######################################################################################
+
+    voucher.voucher_service:
+        class: VoucherBundle\Utils\VoucherService
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        public: true
