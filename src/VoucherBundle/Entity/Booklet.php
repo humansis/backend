@@ -40,13 +40,6 @@ class Booklet
     private $numberVouchers;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="individual_value", type="integer")
-     */
-    private $individualValue;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="currency", type="string", length=255)
@@ -296,18 +289,6 @@ class Booklet
                 $voucher->setBooklet(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getDistributionBeneficiary(): ?DistributionBeneficiary
-    {
-        return $this->distribution_beneficiary;
-    }
-
-    public function setDistributionBeneficiary(?DistributionBeneficiary $distribution_beneficiary): self
-    {
-        $this->distribution_beneficiary = $distribution_beneficiary;
 
         return $this;
     }

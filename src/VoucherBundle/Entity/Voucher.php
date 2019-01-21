@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Entity;
 
+use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -44,6 +45,13 @@ class Voucher
      * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="vouchers")
      */
     private $product;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="individual_value", type="integer")
+     */
+    private $individualValue;
 
     /**
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Booklet", inversedBy="vouchers")
@@ -147,26 +155,38 @@ class Voucher
         return $this;
     }
 
-    public function getBooklet(): ?Booklet
+    public function getBooklet(): Booklet
     {
         return $this->booklet;
     }
 
-    public function setBooklet(?Booklet $booklet): self
+    public function setBooklet(Booklet $booklet): self
     {
         $this->booklet = $booklet;
 
         return $this;
     }
 
-    public function getVendor(): ?Vendor
+    public function getVendor(): Vendor
     {
         return $this->vendor;
     }
 
-    public function setVendor(?Vendor $vendor): self
+    public function setVendor(Vendor $vendor): self
     {
         $this->vendor = $vendor;
+
+        return $this;
+    }
+
+    public function getDistributionBeneficiary(): DistributionBeneficiary
+    {
+        return $this->distribution_beneficiary;
+    }
+
+    public function setDistributionBeneficiary(DistributionBeneficiary $distribution_beneficiary): self
+    {
+        $this->distribution_beneficiary = $distribution_beneficiary;
 
         return $this;
     }
