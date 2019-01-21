@@ -3,9 +3,12 @@
 namespace DistributionBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use TransactionBundle\Entity\Transaction;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use VoucherBundle\Entity\Booklet;
 
 /**
  * DistributionBeneficiary
@@ -48,6 +51,16 @@ class DistributionBeneficiary
      * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "Transaction"})
      */
     private $transactions;
+
+    /**
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary")
+     */
+    private $booklets;
+
+    public function __construct()
+    {
+        $this->booklets = new ArrayCollection();
+    }
 
     /**
      * Get id.
@@ -152,6 +165,37 @@ class DistributionBeneficiary
     public function setPhones(\Doctrine\Common\Collections\Collection $collection = null)
     {
         $this->transactions = $collection;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Booklet[]
+     */
+    public function getBooklets(): Collection
+    {
+        return $this->booklets;
+    }
+
+    public function addBooklet(Booklet $booklet): self
+    {
+        if (!$this->booklets->contains($booklet)) {
+            $this->booklets[] = $booklet;
+            $booklet->setDistributionBeneficiary($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBooklet(Booklet $booklet): self
+    {
+        if ($this->booklets->contains($booklet)) {
+            $this->booklets->removeElement($booklet);
+            // set the owning side to null (unless already changed)
+            if ($booklet->getDistributionBeneficiary() === $this) {
+                $booklet->setDistributionBeneficiary(null);
+            }
+        }
 
         return $this;
     }

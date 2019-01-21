@@ -22,3 +22,6 @@ rest_common:
 
 rest_transaction:
     resource: "@TransactionBundle/Resources/config/routing.yml"
+
+rest_voucher:
+    resource: "@VoucherBundle/Resources/config/routing.yml"
