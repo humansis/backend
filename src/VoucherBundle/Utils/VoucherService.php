@@ -57,11 +57,43 @@ class VoucherService
     $this->em->merge($vendor);
 
     $this->em->flush();
-    return $vendor;
+    $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
+    return $createdVendor;
   }
+
 
   public function findAll()
   {
     return $this->em->getRepository(Vendor::class)->findAll();
+  }
+
+
+  /**
+   * @param Vendor $vendor
+   * @param array $vendorData
+   * @return Vendor
+   */
+  public function update(Vendor $vendor, array $vendorData)
+  {
+
+    foreach($vendorData as $key => $value) {
+      if ($key == 'name') {
+        $vendor->setName($value);
+      } elseif ($key == 'shop') {
+        $vendor->setShop($value);
+      } elseif ($key == 'address') {
+        $vendor->setAddress($value);
+      } elseif ($key == 'username') {
+        $vendor->setUsername($value);
+      } elseif ($key == 'password') {
+        $vendor->setPassword($value);
+      }
+    }
+
+    $this->em->merge($vendor);
+
+    $this->em->flush();
+
+    return $vendor;
   }
 }

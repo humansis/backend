@@ -15,10 +15,10 @@ use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Vendor;
 
 /**
- * Class VoucherController
+ * Class VendorController
  * @package VoucherBundle\Controller
  */
-class VoucherController extends Controller
+class VendorController extends Controller
 {
     /**
      * Create a new Vendor. You must have called getSalt before use this one
@@ -31,7 +31,7 @@ class VoucherController extends Controller
      *     name="vendor",
      *     in="body",
      *     required=true,
-     *     @Model(type=User::class, groups={"FullVendor"})
+     *     @Model(type=Vendor::class, groups={"FullVendor"})
      * )
      *
      * @SWG\Response(
@@ -86,7 +86,7 @@ class VoucherController extends Controller
      *     description="Vendors delivered",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=User::class, groups={"FullVendor"}))
+     *         @SWG\Items(ref=@Model(type=Vendor::class, groups={"FullVendor"}))
      *     )
      * )
      *
@@ -103,6 +103,77 @@ class VoucherController extends Controller
         $vendors = $this->get('voucher.voucher_service')->findAll();
         $json = $this->get('jms_serializer')->serialize($vendors, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
         
+        return new Response($json);
+    }
+
+    /**
+     * Get single vendor
+     *
+     * @Rest\Get("/vendors/{id}", name="get_single_vendor")
+     *
+     * @SWG\Tag(name="Single Vendor")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Vendor delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Vendor::class, groups={"FullVendor"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Vendor $vendor
+     * @return Response
+     */
+    public function getSingleVendor(Vendor $vendor)
+    {
+        $json = $this->get('jms_serializer')->serialize($vendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
+        
+        return new Response($json);
+    }
+
+
+    /**
+     * Edit a vendor {id} with data in the body
+     *
+     * @Rest\Post("/vendors/{id}", name="update_vendor")
+     *
+     * @SWG\Tag(name="Vendors")
+     *
+     * @SWG\Parameter(
+     *     name="vendor",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="fields of the vendor which must be updated",
+     *     @Model(type=Vendor::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @Model(type=User::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Vendor $vendor
+     * @return Response
+     */
+    public function updateAction(Request $request, Vendor $vendor)
+    {
+        $vendorData = $request->request->all();
+        $newVendor = $this->get('voucher.voucher_service')->update($vendor, $vendorData);
+        $json = $this->get('jms_serializer')->serialize($newVendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
         return new Response($json);
     }
 }
