@@ -4,7 +4,7 @@ namespace VoucherBundle\Tests\Controller;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Vendor;
 
-class DefaultControllerTest extends BMSServiceTestCase
+class VendorControllerTest extends BMSServiceTestCase
 {
     /** @var string $username */
     private $username = "TESTER_PHPUNIT@gmail.com";
@@ -180,7 +180,4 @@ class DefaultControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertTrue($success);
     }
-
-
-
 }

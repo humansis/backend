@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use \VoucherBundle\Entity\Product;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Booklet
@@ -22,6 +23,7 @@ class Booklet
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullBooklet"})
      */
     private $id;
 
@@ -29,6 +31,7 @@ class Booklet
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
+     * @Groups({"FullBooklet"})
      */
     private $code;
 
@@ -36,6 +39,7 @@ class Booklet
      * @var int
      *
      * @ORM\Column(name="number_vouchers", type="integer")
+     * @Groups({"FullBooklet"})
      */
     private $numberVouchers;
 
@@ -43,6 +47,7 @@ class Booklet
      * @var string
      *
      * @ORM\Column(name="currency", type="string", length=255)
+     * @Groups({"FullBooklet"})
      */
     private $currency;
 
@@ -50,6 +55,7 @@ class Booklet
      * @var int|null
      *
      * @ORM\Column(name="status", type="integer", nullable=true)
+     * @Groups({"FullBooklet"})
      */
     private $status;
 
@@ -62,16 +68,19 @@ class Booklet
 
     /**
      * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="booklets")
+     * @Groups({"FullBooklet"})
      */
     private $product;
 
     /**
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", orphanRemoval=true)
+     * @Groups({"FullBooklet"})
      */
     private $vouchers;
 
     /**
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="booklets")
+     * @Groups({"FullBooklet"})
      */
     private $distribution_beneficiary;
 

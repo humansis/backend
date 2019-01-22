@@ -37,7 +37,7 @@ class VendorController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="Vendor created",
-     *     @Model(type=User::class)
+     *     @Model(type=Vendor::class)
      * )
      *
      * @SWG\Response(
@@ -58,7 +58,7 @@ class VendorController extends Controller
         $vendor = $serializer->deserialize(json_encode($request->request->all()), Vendor::class, 'json');
 
         try {
-            $return = $this->get('voucher.voucher_service')->create($vendor, $vendorData);
+            $return = $this->get('vendor.vendor_service')->create($vendor, $vendorData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), 500);
         }
@@ -97,7 +97,7 @@ class VendorController extends Controller
      */
     public function getAllAction(Request $request)
     {
-        $vendors = $this->get('voucher.voucher_service')->findAll();
+        $vendors = $this->get('vendor.vendor_service')->findAll();
         $json = $this->get('jms_serializer')->serialize($vendors, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
 
         return new Response($json);
@@ -169,7 +169,7 @@ class VendorController extends Controller
     public function updateAction(Request $request, Vendor $vendor)
     {
         $vendorData = $request->request->all();
-        $newVendor = $this->get('voucher.voucher_service')->update($vendor, $vendorData);
+        $newVendor = $this->get('vendor.vendor_service')->update($vendor, $vendorData);
         $json = $this->get('jms_serializer')->serialize($newVendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
         return new Response($json);
     }
@@ -199,7 +199,7 @@ class VendorController extends Controller
      */
     public function archiveVendor(Request $request, Vendor $vendor)
     {
-        $archivedVendor = $this->get('voucher.voucher_service')->archiveVendor($vendor);
+        $archivedVendor = $this->get('vendor.vendor_service')->archiveVendor($vendor);
         $json = $this->get('jms_serializer')->serialize($archivedVendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
         return new Response($json);
     }
@@ -222,7 +222,7 @@ class VendorController extends Controller
      */
     public function deleteAction(Vendor $vendor)
     {
-        $isSuccess = $this->get('voucher.voucher_service')->deleteFromDatabase($vendor);
+        $isSuccess = $this->get('vendor.vendor_service')->deleteFromDatabase($vendor);
         return new Response(json_encode($isSuccess));
     }
 }

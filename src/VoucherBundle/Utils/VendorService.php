@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Vendor;
 use Psr\Container\ContainerInterface;
 
-class VoucherService
+class VendorService
 {
 
   /** @var EntityManagerInterface $em */
@@ -38,7 +38,7 @@ class VoucherService
   }
 
   /**
-   * @param Voucher $vendor
+   * @param Vendor $vendor
    * @param array $vendorData
    * @return mixed
    * @throws \Exception
