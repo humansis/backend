@@ -66,6 +66,14 @@ class Vendor
     private $password;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="archived", type="boolean")
+     * @Groups({"FullVendor"})
+     */
+    private $archived;
+
+    /**
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="vendor", orphanRemoval=true)
      */
     private $vouchers;
@@ -73,6 +81,7 @@ class Vendor
     public function __construct()
     {
         $this->vouchers = new ArrayCollection();
+        $this->archived = false;
     }
 
 
@@ -207,14 +216,38 @@ class Vendor
     }
 
     /**
+     * Set archived.
+     *
+     * @param bool $archived
+     *
+     * @return Vender
+     */
+    public function setArchived($archived)
+    {
+        $this->archived = $archived;
+
+        return $this;
+    }
+
+    /**
+     * Get archived.
+     *
+     * @return bool
+     */
+    public function getArchived()
+    {
+        return $this->archived;
+    }
+
+    /**
      * @return Collection|Voucher[]
      */
-    public function getVouchers(): Collection
+    public function getVouchers() : Collection
     {
         return $this->vouchers;
     }
 
-    public function addVoucher(Voucher $voucher): self
+    public function addVoucher(Voucher $voucher) : self
     {
         if (!$this->vouchers->contains($voucher)) {
             $this->vouchers[] = $voucher;
@@ -224,7 +257,7 @@ class Vendor
         return $this;
     }
 
-    public function removeVoucher(Voucher $voucher): self
+    public function removeVoucher(Voucher $voucher) : self
     {
         if ($this->vouchers->contains($voucher)) {
             $this->vouchers->removeElement($voucher);

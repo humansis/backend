@@ -132,9 +132,55 @@ class DefaultControllerTest extends BMSServiceTestCase
         return $newVendorReceived;
     }
 
+    /**
+     * @depends testEditVendor
+     * @param $vendor
+     * @return mixed
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testArchiveVendor($vendor)
+    {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->request('POST', '/api/wsse/vendors/' . $vendor['id'] . '/archive');
+        $newVendorReceived = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        $vendorSearch = $this->em->getRepository(Vendor::class)->find($newVendorReceived['id']);
+        $this->assertEquals($vendorSearch->getArchived(), true);
+
+        return $newVendorReceived;
+    }
 
 
-    
+    /**
+     * @depends testEditVendor
+     *
+     * @param $vendorToDelete
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testDeleteFromDatabase($vendorToDelete)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('DELETE', '/api/wsse/vendors/' . $vendorToDelete['id']);
+        $success = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($success);
+    }
+
 
 
 }

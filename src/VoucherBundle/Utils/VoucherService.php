@@ -48,14 +48,14 @@ class VoucherService
     $vendorSaved = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
     if (!$vendorSaved) {
       $vendor->setName($vendorData['name'])
-        ->setShop($vendorData['shop'])
-        ->setAddress($vendorData['address'])
-        ->setUsername($vendorData['username'])
-        ->setPassword($vendorData['password']);
+      ->setShop($vendorData['shop'])
+      ->setAddress($vendorData['address'])
+      ->setUsername($vendorData['username'])
+      ->setPassword($vendorData['password'])
+      ->setArchived(false);
     }
-
+    
     $this->em->merge($vendor);
-
     $this->em->flush();
     $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
     return $createdVendor;
@@ -76,7 +76,7 @@ class VoucherService
   public function update(Vendor $vendor, array $vendorData)
   {
 
-    foreach($vendorData as $key => $value) {
+    foreach ($vendorData as $key => $value) {
       if ($key == 'name') {
         $vendor->setName($value);
       } elseif ($key == 'shop') {
@@ -96,4 +96,44 @@ class VoucherService
 
     return $vendor;
   }
+
+  /**
+   * Archive Vendor
+   *
+   * @param Vendor $vendor
+   * @param bool $archiveVendor
+   * @return bool
+   */
+  public function archiveVendor(Vendor $vendor, bool $archiveVendor = true)
+  {
+      try {
+        $vendor->setArchived($archiveVendor);
+        $this->em->merge($vendor);
+        $this->em->flush();
+      } catch (\Exception $exception) {
+        return $exception;
+      }
+    return $vendor;
+  }
+
+  /**
+   * Perminantly delete the record from the database
+   *
+   * @param Vendor $vendor
+   * @param bool $removeVendor
+   * @return bool
+   */
+  public function deleteFromDatabase(Vendor $vendor, bool $removeVendor = true)
+  {
+    if ($removeVendor) {
+      try {
+        $this->em->remove($vendor);
+        $this->em->flush();
+      } catch (\Exception $exception) {
+        return $exception;
+      }
+    }
+    return true;
+  }
+
 }

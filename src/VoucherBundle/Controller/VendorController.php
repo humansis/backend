@@ -52,17 +52,14 @@ class VendorController extends Controller
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
-        
+
         $vendor = $request->request->all();
         $vendorData = $vendor;
         $vendor = $serializer->deserialize(json_encode($request->request->all()), Vendor::class, 'json');
 
-        try
-        {
+        try {
             $return = $this->get('voucher.voucher_service')->create($vendor, $vendorData);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), 500);
         }
 
@@ -102,7 +99,7 @@ class VendorController extends Controller
     {
         $vendors = $this->get('voucher.voucher_service')->findAll();
         $json = $this->get('jms_serializer')->serialize($vendors, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
-        
+
         return new Response($json);
     }
 
@@ -133,7 +130,7 @@ class VendorController extends Controller
     public function getSingleVendor(Vendor $vendor)
     {
         $json = $this->get('jms_serializer')->serialize($vendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
-        
+
         return new Response($json);
     }
 
@@ -175,5 +172,57 @@ class VendorController extends Controller
         $newVendor = $this->get('voucher.voucher_service')->update($vendor, $vendorData);
         $json = $this->get('jms_serializer')->serialize($newVendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
         return new Response($json);
+    }
+
+
+    /**
+     * Archive a Vendor using their id
+     *
+     * @Rest\Post("/vendors/{id}/archive", name="archive_vendor")
+     *
+     * @SWG\Tag(name="Vendors")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @Model(type=User::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Vendor $vendor
+     * @return Response
+     */
+    public function archiveVendor(Request $request, Vendor $vendor)
+    {
+        $archivedVendor = $this->get('voucher.voucher_service')->archiveVendor($vendor);
+        $json = $this->get('jms_serializer')->serialize($archivedVendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
+        return new Response($json);
+    }
+
+
+    /**
+     * Delete an vendor with its links in the api
+     * @Rest\Delete("/vendors/{id}", name="delete_vendor")
+     *
+     * @SWG\Tag(name="Vendors")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @param Vendor $vendor
+     * @return Response
+     */
+    public function deleteAction(Vendor $vendor)
+    {
+        $isSuccess = $this->get('voucher.voucher_service')->deleteFromDatabase($vendor);
+        return new Response(json_encode($isSuccess));
     }
 }
