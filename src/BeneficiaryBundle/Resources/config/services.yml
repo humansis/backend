@@ -1,4 +1,8 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
 
 #######################################################################################
 ##                                       CRUD                                        ##
@@ -46,6 +50,7 @@ services:
             - '@doctrine.orm.entity_manager'
             - "@service_container"
         public: true
+        autowire: true
 
 
     beneficiary.khm_api_provider_idpoor:
@@ -90,4 +95,9 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@jms_serializer"
             - "@location_service"
+        public: true
+
+    BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper:
+        class: BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper
+        autowire: true
         public: true

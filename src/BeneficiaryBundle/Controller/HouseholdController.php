@@ -7,6 +7,7 @@ namespace BeneficiaryBundle\Controller;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
+use BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper;
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
@@ -25,6 +26,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Throwable;
 
 class HouseholdController extends Controller
 {
@@ -493,6 +495,50 @@ class HouseholdController extends Controller
         } catch (\Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    /**
+     * @Rest\Post(
+     *     "/import/households/project/{id}/{model}",
+     *     name="import_household_by_model",
+     *     requirements={
+     *          "model":"syria"
+     *     }
+     * )
+     * To Allow another model, please do: "model":"syria|another|a_third"
+     *
+     * @ Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @SWG\Tag(name="Beneficiary")
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @param Request $request
+     * @param Project $project
+     * @return Response
+     */
+    public function importBeneficiariesFromSyriaFileAction(
+        Request $request,
+        string $model
+    ) : Response {
+        if (! $request->files->has('file')) {
+            return new JsonResponse("You must upload a file.", Response::HTTP_BAD_REQUEST);
+        }
+
+        // get mapper
+        $mapper = $this->container->get(SyriaFileToTemplateMapper::class);
+
+        try {
+            $output = $mapper->map([
+                'file' => $request->files->get('file')
+            ]);
+        } catch (Throwable $exception) {
+            // TODO: remove file and line
+            return new JsonResponse($exception->getMessage() . $exception->getFile() . $exception->getLine(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new JsonResponse($output['outputFile']);
     }
 
     /**

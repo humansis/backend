@@ -13,6 +13,10 @@ security:
             pattern:    ^/(_(profiler|wdt)|css|images|js)/
             security:   false
 
+        importSyriaModel:
+            pattern:    ^/api/wsse/import/households/project/[0-9]+/syria
+            security:   false
+
         # tester
         tester_initialize:
             pattern:    ^/api/wsse/initialize
