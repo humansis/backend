@@ -38,53 +38,75 @@ class BookletService
   }
 
   /**
-   * @param Booklet $booklet
-   * @param array $bookletData
-   * @return mixed
-   * @throws \Exception
+   * @return int
    */
-  public function create(Booklet $booklet, array $bookletData)
+  public function getBookletBatch()
   {
+    $allBooklets = $this->em->getRepository(Booklet::class)->findAll();
+    end($allBooklets); 
+    if ($allBooklets) {
+      $bookletBatch = $allBooklets[key($allBooklets)]->getId() + 1;
+      return $bookletBatch;
+    } else {
+      return 0;
+    }
 
-
-    for ($x = 0; $x <= $bookletData['numberBooklets']; $x++) {
-      // $booklet->setCode($vendorData['name']);
-    };
-    
-    // ->setShop($vendorData['shop'])
-    // ->setAddress($vendorData['address'])
-    // ->setUsername($vendorData['username'])
-    // ->setPassword($vendorData['password'])
-    // ->setArchived(false);
-    
-    // $this->em->merge($vendor);
-    // $this->em->flush();
-    // $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
-    return $booklet;
   }
 
   /**
    * @param Booklet $booklet
    * @param array $bookletData
-   * @return Booklet
+   * @param int $currentBatch
+   * @return mixed
+   * @throws \Exception
    */
-  public function generateCode(Booklet $booklet, array $bookletData)
+  public function create(Booklet $booklet, array $bookletData, int $currentBatch, int $bookletBatch)
   {
-    // // CREATE BOOKLET CODE #1stBatchNumber-lastBatchNumber-BookletId
+    $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
+
+    $booklet->setCode($code)
+      ->setNumberVouchers($bookletData['numberVouchers'])
+      ->setCurrency($bookletData['currency']);
+
+    $this->em->merge($booklet);
+    $this->em->flush();
+    $createdBooklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet->getCode());
+    return $createdBooklet;
+  }
+
+  /**
+   * @param array $bookletData
+   * @param int $counter
+   * @param int $bookletBatch
+   * @return string
+   */
+  public function generateCode(array $bookletData, int $currentBatch, int $bookletBatch)
+  {
+    // CREATE BOOKLET CODE #1stBatchNumber-lastBatchNumber-BookletId
+    
+    // ASSIGN EACH NUMBER TO 3 DIGITS
     // $allBooklets = $this->em->getRepository(Booklet::class)->findAll();
-    // $bookletBatch;
     // end($allBooklets);
+    $bookletBatchNumber;
+    $lastBatchNumber = sprintf("%03d", $bookletBatch + ($bookletData['numberBooklets'] - 1));
+    $currentBooklet = sprintf("%03d", $currentBatch);
+    if ($bookletBatch > 1) {
+      $bookletBatchNumber = sprintf("%03d", $bookletBatch);
+    } elseif (!$bookletBatch) {
+      $bookletBatchNumber = "000";
+    }
+    // GENERATES 5 RANDOM LETTERS/SYMBLES
+    $rand = '';
+    $seed = str_split('abcdefghijklmnopqrstuvwxyz'
+    . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    . '0123456789');
+    shuffle($seed);
+    foreach (array_rand($seed, 5) as $k) $rand .= $seed[$k];
+    
+    // JOINS ALL PARTS, CREATING FINAL CODE
+    $fullCode = $rand . '#' . $bookletBatchNumber . '-' . $lastBatchNumber . '-' . $currentBooklet;
 
-    // if (count($allBooklets) > 1) {
-    //   $bookletBatch = sprintf("%03d", $allBooklets[key($allBooklets)]->getId() + 1);
-    // } elseif (count($allBooklets) == 1) {
-    //   $bookletBatch = "002";
-    // } elseif (!allBooklets) {
-    //   $bookletBatch = "001";
-    // }
-    // var_dump($allBooklets);
-
-    return $booklet;
+    return $fullCode;
   }
 
 }

@@ -12,32 +12,32 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use VoucherBundle\Entity\Booklet;
+use VoucherBundle\Entity\Voucher;
 
 /**
- * Class BookletController
+ * Class VoucherController
  * @package VoucherBundle\Controller
  */
-class BookletController extends Controller
+class VoucherController extends Controller
 {
     /**
-     * Create a new Booklet.
+     * Create a new Voucher.
      *
-     * @Rest\Put("/new_booklet", name="add_booklet")
+     * @Rest\Put("/new_voucher", name="add_voucher")
      *
-     * @SWG\Tag(name="Booklets")
+     * @SWG\Tag(name="Vouchers")
      *
      * @SWG\Parameter(
-     *     name="booklet",
+     *     name="voucher",
      *     in="body",
      *     required=true,
-     *     @Model(type=Booklet::class, groups={"FullBooklet"})
+     *     @Model(type=Voucher::class, groups={"FullVoucher"})
      * )
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Booklet created",
-     *     @Model(type=Booklet::class)
+     *     description="Voucher created",
+     *     @Model(type=Voucher::class)
      * )
      *
      * @SWG\Response(
@@ -48,24 +48,17 @@ class BookletController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createBooklet(Request $request)
+    public function createVoucher(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
 
-        $booklet = $request->request->all();
-        $bookletData = $booklet;
-        $booklet = $serializer->deserialize(json_encode($request->request->all()), Booklet::class, 'json');
+        $voucher = $request->request->all();
+        $voucherData = $voucher;
+        $voucher = $serializer->deserialize(json_encode($request->request->all()), Voucher::class, 'json');
 
         try {
-            $bookletBatch = $this->get('booklet.booklet_service')->getBookletBatch();
-            $currentBatch = $bookletBatch;
-            $counter = 1;
-            for ($x = 0; $x < $bookletData['numberBooklets']; $x++) {
-                $return = $this->get('booklet.booklet_service')->create($booklet, $bookletData, $currentBatch, $bookletBatch);
-                $counter++;
-                $currentBatch++;
-            };
+            $return = $this->get('voucher.voucher_service')->create($voucher, $voucherData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), 500);
         }
@@ -77,6 +70,4 @@ class BookletController extends Controller
         // );
         // return new Response($booklet);
     }
-
-    
 }

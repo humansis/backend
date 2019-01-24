@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use \VoucherBundle\Entity\Product;
 use \VoucherBundle\Entity\Booklet;
 use \VoucherBundle\Entity\Vendor;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Voucher
@@ -24,6 +25,7 @@ class Voucher
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullVoucher"})
      */
     private $id;
 
@@ -31,6 +33,7 @@ class Voucher
      * @var bool
      *
      * @ORM\Column(name="used", type="boolean")
+     * @Groups({"FullVoucher"})
      */
     private $used;
 
@@ -38,11 +41,13 @@ class Voucher
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
+     * @Groups({"FullVoucher"})
      */
     private $code;
 
     /**
      * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="vouchers")
+     * @Groups({"FullVoucher"})
      */
     private $product;
 
@@ -50,18 +55,21 @@ class Voucher
      * @var int
      *
      * @ORM\Column(name="individual_value", type="integer")
+     * @Groups({"FullVoucher"})
      */
     private $individualValue;
 
     /**
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Booklet", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"FullVoucher"})
      */
     private $booklet;
 
     /**
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"FullVoucher"})
      */
     private $vendor;
 
