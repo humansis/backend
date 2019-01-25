@@ -88,7 +88,8 @@ class LevenshteinTypoVerifier extends AbstractVerifier
 
             return [
                 "old" => $householdRepository->find(current($similarHouseholds)["household"]),
-                "new" => $householdArray, "id_tmp_cache" => $cacheId
+                "new" => $householdArray,
+                "id_tmp_cache" => $cacheId
             ];
         }
     }

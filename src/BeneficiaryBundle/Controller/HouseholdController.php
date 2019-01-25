@@ -285,6 +285,7 @@ class HouseholdController extends Controller
         /** @var HouseholdCSVService $householdService */
         $householdService = $this->get('beneficiary.household_csv_service');
 
+        dump($contentJson);
         if (1 === intval($step))
         {
             if (!$request->files->has('file'))

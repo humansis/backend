@@ -30,12 +30,17 @@ class TypoTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array $householdsArray, string $email)
     {
+        dump("TREATTYPO");
         $listHouseholds = [];
         // Get the list of household which are already saved in database (100% similar in typoVerifier)
         $households100Percent = [];
         $this->getFromCache('mapping_new_old', $households100Percent, $email);
         $this->clearCache('households.typo');
+        dump("HOUSEHOLDS100PERCENT");
+        dump($households100Percent);
         foreach ($householdsArray as $index => $householdArray) {
+            dump("HOUSEHOLDARRAY");
+            dump($householdArray);
             // CASE STATE IS TRUE AND NEW IS MISSING => WE KEEP ONLY THE OLD HOUSEHOLD, AND WE ADD IT TO THE CURRENT PROJECT
             if (boolval($householdArray['state']) && (!array_key_exists("new", $householdArray) || $householdArray['new'] === null)) {
                 $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
@@ -70,6 +75,16 @@ class TypoTreatment extends AbstractTreatment
                 $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold, $email);
                 $householdArray['new']['id_tmp_cache'] = $id_tmp;
             }
+            elseif (boolval($householdArray['state']) && array_key_exists("new", $householdArray) && $householdArray['new'] !== null) {
+                $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
+                $projects = array();
+                array_push($projects, $project);
+                $this->householdService->createOrEdit($householdArray['new'], $projects);
+
+                $this->saveHouseholds($email . '-households.typo', $householdArray['new']);
+                $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold, $email);
+                $householdArray['new']['id_tmp_cache'] = $id_tmp;
+            }
 
 
             // WE SAVE EVERY HOUSEHOLD WHICH HAVE BEEN TREATED BY THIS FUNCTION BECAUSE IN NEXT STEP WE HAVE TO KNOW WHICH
@@ -91,6 +106,8 @@ class TypoTreatment extends AbstractTreatment
         foreach ($households100Percent as $household100Percent) {
             $listHouseholds[] = $household100Percent;
         }
+        dump("LISTTYPO");
+        dump($listHouseholds);
         return $listHouseholds;
     }
 

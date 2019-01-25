@@ -32,12 +32,11 @@ class DuplicateVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
+        dump("VERIFDUPLICATES");
         $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria(null, $countryISO3, []);
         // GET THE SIMILAR HOUSEHOLD FROM THE DB, IF ISSET
-        if (array_key_exists('id_tmp_cache', $householdArray))
-            $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache'], $email);
-        else
-            $similarOldHousehold = null;
+        dump($householdArray);
+        $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache'], $email);
 
         $listDuplicateBeneficiaries = [];
         $newHouseholdEmpty = $householdArray['new'];
@@ -63,23 +62,22 @@ class DuplicateVerifier extends AbstractVerifier
                     ];
 
                     $listDuplicateBeneficiaries[] = $arrayTmp;
+                    dump("LISTDUPLICATE");
+                    dump($listDuplicateBeneficiaries);
                     break;
                 }
             }
             $newHouseholdEmpty['beneficiaries'] = [];
+            dump("NEXT BENEF");
         }
 
         if (!empty($listDuplicateBeneficiaries))
         {
-            if (array_key_exists("id_tmp_cache", $householdArray))
-                return [
-                    "new_household" => $householdArray['new'],
-                    "id_tmp_cache" => $householdArray["id_tmp_cache"],
-                    "data" => $listDuplicateBeneficiaries
-                ];
-
+            dump('NONEMPTY');
+            dump($householdArray);
             return [
                 "new_household" => $householdArray['new'],
+                "id_tmp_cache" => $householdArray["id_tmp_cache"],
                 "data" => $listDuplicateBeneficiaries
             ];
         }

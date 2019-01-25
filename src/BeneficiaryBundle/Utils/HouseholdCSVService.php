@@ -139,9 +139,12 @@ class HouseholdCSVService
             throw new \Exception("Your session for this import has expired");
         // If there is a treatment class for this step, call it
         $treatment = $this->guessTreatment($step);
+        dump("BEFORETREAT");
+        dump($treatReturned);
         if ($treatment !== null)
             $treatReturned = $treatment->treat($project, $treatReturned, $email);
-
+        dump("AFTERTREAT");
+        dump($treatReturned);
         if(array_key_exists("miss", $treatReturned))
             throw new \Exception("A line is incomplete in the imported file");
 
@@ -157,6 +160,8 @@ class HouseholdCSVService
         $householdsToSave = [];
         foreach ($treatReturned as $index => $householdArray)
         {
+            dump($householdArray);
+            dump("VERIFY");
             $returnTmp = $verifier->verify($countryIso3, $householdArray, $cache_id, $email);
             // IF there are errors
             if (null !== $returnTmp && [] !== $returnTmp)
@@ -170,9 +175,15 @@ class HouseholdCSVService
                 $householdsToSave[$cache_id] = $householdArray;
             }
             $cache_id++;
+            dump("RETURNTMP");
+            dump($returnTmp);
+            dump("RETURNCUMUL");
+            dump($return);
             unset($treatReturned[$index]);
         }
 
+        dump("RETURN");
+        dump($return);
         $this->saveInCache($step, json_encode($householdsToSave));
         unset($householdsToSave);
         $this->setTimeExpiry();
