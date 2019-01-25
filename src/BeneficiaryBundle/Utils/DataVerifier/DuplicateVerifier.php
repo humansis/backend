@@ -32,10 +32,8 @@ class DuplicateVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
-        dump("VERIFDUPLICATES");
         $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria(null, $countryISO3, []);
         // GET THE SIMILAR HOUSEHOLD FROM THE DB, IF ISSET
-        dump($householdArray);
         $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache'], $email);
 
         $listDuplicateBeneficiaries = [];
@@ -62,19 +60,14 @@ class DuplicateVerifier extends AbstractVerifier
                     ];
 
                     $listDuplicateBeneficiaries[] = $arrayTmp;
-                    dump("LISTDUPLICATE");
-                    dump($listDuplicateBeneficiaries);
                     break;
                 }
             }
             $newHouseholdEmpty['beneficiaries'] = [];
-            dump("NEXT BENEF");
         }
 
         if (!empty($listDuplicateBeneficiaries))
         {
-            dump('NONEMPTY');
-            dump($householdArray);
             return [
                 "new_household" => $householdArray['new'],
                 "id_tmp_cache" => $householdArray["id_tmp_cache"],

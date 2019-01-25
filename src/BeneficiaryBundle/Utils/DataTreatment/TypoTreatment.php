@@ -30,17 +30,12 @@ class TypoTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array $householdsArray, string $email)
     {
-        dump("TREATTYPO");
         $listHouseholds = [];
         // Get the list of household which are already saved in database (100% similar in typoVerifier)
         $households100Percent = [];
         $this->getFromCache('mapping_new_old', $households100Percent, $email);
         $this->clearCache('households.typo');
-        dump("HOUSEHOLDS100PERCENT");
-        dump($households100Percent);
         foreach ($householdsArray as $index => $householdArray) {
-            dump("HOUSEHOLDARRAY");
-            dump($householdArray);
             // CASE STATE IS TRUE AND NEW IS MISSING => WE KEEP ONLY THE OLD HOUSEHOLD, AND WE ADD IT TO THE CURRENT PROJECT
             if (boolval($householdArray['state']) && (!array_key_exists("new", $householdArray) || $householdArray['new'] === null)) {
                 $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
@@ -106,8 +101,6 @@ class TypoTreatment extends AbstractTreatment
         foreach ($households100Percent as $household100Percent) {
             $listHouseholds[] = $household100Percent;
         }
-        dump("LISTTYPO");
-        dump($listHouseholds);
         return $listHouseholds;
     }
 
