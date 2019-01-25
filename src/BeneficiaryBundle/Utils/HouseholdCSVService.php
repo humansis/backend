@@ -160,8 +160,13 @@ class HouseholdCSVService
             // IF there are errors
             if (null !== $returnTmp && [] !== $returnTmp)
             {
-                if ($returnTmp !== false)
-                    $return[] = $returnTmp;
+                if ($returnTmp !== false) {
+                    if ($verifier instanceof DuplicateVerifier) {
+                        $return = array_merge($return, $returnTmp);
+                    } else {
+                        $return[] = $returnTmp;
+                    }
+                }
             }
             // If no error we saved the household with a cache id (used to map household between front and back)
             else

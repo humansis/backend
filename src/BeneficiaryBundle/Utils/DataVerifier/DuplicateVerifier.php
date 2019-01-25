@@ -54,11 +54,16 @@ class DuplicateVerifier extends AbstractVerifier
                 )
                 {
                     $newHouseholdEmpty['beneficiaries'][] = $newBeneficiary;
+                    
+                    $old = clone $oldBeneficiary->getHousehold()->resetBeneficiaries();
+                    
                     $arrayTmp = [
                         "new" => $newHouseholdEmpty,
-                        "old" => $oldBeneficiary->getHousehold()->resetBeneficiaries()->addBeneficiary($oldBeneficiary)
+                        "old" => $old->addBeneficiary($oldBeneficiary),
+                        "id_tmp_cache" => $householdArray["id_tmp_cache"],
+                        "new_household" => $householdArray["new"]
                     ];
-
+                    
                     $listDuplicateBeneficiaries[] = $arrayTmp;
                     break;
                 }
@@ -68,11 +73,8 @@ class DuplicateVerifier extends AbstractVerifier
 
         if (!empty($listDuplicateBeneficiaries))
         {
-            return [
-                "new_household" => $householdArray['new'],
-                "id_tmp_cache" => $householdArray["id_tmp_cache"],
-                "data" => $listDuplicateBeneficiaries
-            ];
+            dump($listDuplicateBeneficiaries);
+            return $listDuplicateBeneficiaries;
         }
 
         return null;
