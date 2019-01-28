@@ -55,11 +55,12 @@ class DuplicateVerifier extends AbstractVerifier
                 {
                     $newHouseholdEmpty['beneficiaries'][] = $newBeneficiary;
                     
-                    $old = clone $oldBeneficiary->getHousehold()->resetBeneficiaries();
+                    $clonedHH = clone $oldBeneficiary->getHousehold();
+                    $old = $clonedHH->resetBeneficiaries()->addBeneficiary($oldBeneficiary);
                     
                     $arrayTmp = [
                         "new" => $newHouseholdEmpty,
-                        "old" => $old->addBeneficiary($oldBeneficiary),
+                        "old" => $old,
                         "id_tmp_cache" => $householdArray["id_tmp_cache"],
                         "new_household" => $householdArray["new"]
                     ];
