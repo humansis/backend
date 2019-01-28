@@ -62,11 +62,12 @@ class DuplicateTreatment extends AbstractTreatment
                 }
                 else
                 {
+                    $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryData['id_old']);
                     // we delete the beneficiary in the household which must be saved
                     foreach ($newHousehold['beneficiaries'] as $index => $newBeneficiary)
                     {
-                        if ($newBeneficiary['given_name'] === $beneficiaryData['to_delete']['given_name']
-                            && $newBeneficiary['family_name'] === $beneficiaryData['to_delete']['family_name'])
+                        if ($newBeneficiary['given_name'] === $beneficiary->getGivenName()
+                            && $newBeneficiary['family_name'] === $beneficiary->getFamilyName())
                         {
                             unset($newHousehold['beneficiaries'][$index]);
                             break;
