@@ -59,6 +59,9 @@ class DuplicateTreatment extends AbstractTreatment
                     }
 
                     $this->saveHouseholds($email . '-households.duplicate', $household);
+
+                    //UPDATE THE NEW HH IN THE CACHE
+                    $this->updateInCache($householdData["id_tmp_cache"], $newHousehold, $email);
                 }
                 else
                 {
@@ -75,10 +78,6 @@ class DuplicateTreatment extends AbstractTreatment
                     }
                 }
             }
-            //UPDATE THE NEW HH IN THE CACHE
-            if (array_key_exists("id_tmp_cache", $householdData))
-                $this->updateInCache($householdData["id_tmp_cache"], $newHousehold, $email);
-            $listHouseholds[] = $newHousehold;
         }
         $this->em->flush();
         $listHouseholdsFromCache = [];
