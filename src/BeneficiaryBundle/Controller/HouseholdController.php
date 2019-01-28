@@ -8,6 +8,7 @@ use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper;
+use CommonBundle\Response\CommonBinaryFileResponse;
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
@@ -525,20 +526,28 @@ class HouseholdController extends Controller
         if (! $request->files->has('file')) {
             return new JsonResponse("You must upload a file.", Response::HTTP_BAD_REQUEST);
         }
-
-        // get mapper
-        $mapper = $this->container->get(SyriaFileToTemplateMapper::class);
-
-        try {
-            $output = $mapper->map([
-                'file' => $request->files->get('file')
-            ]);
-        } catch (Throwable $exception) {
-            // TODO: remove file and line
-            return new JsonResponse($exception->getMessage() . $exception->getFile() . $exception->getLine(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        if (! $request->request->has('location')) {
+            return new JsonResponse("A location is required.", Response::HTTP_BAD_REQUEST);
         }
 
-        return new JsonResponse($output['outputFile']);
+        try {
+            // get mapper and map
+            $output = $this->container
+                ->get(SyriaFileToTemplateMapper::class)
+                ->map([
+                    'file' => $request->files->get('file'),
+                    'location' =>  $request->request->get('location'),
+                ]);
+
+            // Create binary file to send
+            $response = new CommonBinaryFileResponse($output['outputFile'], getcwd() . '/');
+            $response->headers->set('X-times-loadingTime', $output['loadingTime']);
+            $response->headers->set('X-times-executionTime', $output['executionTime']);
+            $response->headers->set('X-times-writeTime', $output['writeTime']);
+            return $response;
+        } catch (Throwable $exception) {
+            return new JsonResponse($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

@@ -120,3 +120,12 @@ services:
             - "@doctrine.orm.entity_manager"
         tags:
             - { name: security.voter }
+
+#######################################################################################
+##                                       EXPORT                                      ##
+#######################################################################################
+
+    CommonBundle\Utils\ExportService:
+        class: CommonBundle\Utils\ExportService
+        autowire: true
+        public: true

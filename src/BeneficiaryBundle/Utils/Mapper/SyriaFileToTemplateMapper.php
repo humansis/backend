@@ -5,13 +5,22 @@ declare(strict_types=1);
 namespace BeneficiaryBundle\Utils\Mapper;
 
 use ArrayObject;
+use BeneficiaryBundle\Exception\MapperException;
+use CommonBundle\Utils\ExportService;
 use DateInterval;
 use DateTime;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Symfony\Component\HttpFoundation\File\File;
-use Throwable;
+use function explode;
+use function implode;
 use function in_array;
+use function microtime;
 use function sprintf;
+use function set_time_limit;
+use function strpos;
+use function str_replace;
+use function trim;
 
 class SyriaFileToTemplateMapper
 {
@@ -29,12 +38,10 @@ class SyriaFileToTemplateMapper
     private const MALE   = 'Male';
     private const FEMALE = 'Female';
 
-    /**
-     * Used to avoid copy of this array during copy
-     *
-     * @var array $outputHeaderRow
-     */
-    private $outputHeaderRow = [];
+    private const INPUT_COLUMN_START = 'A';
+    private const INPUT_COLUMN_END   = 'Y';
+
+    private const SPACE_SEPARATOR   = ' ';
 
     /**
      * Used to avoid copy of this array during copy
@@ -43,8 +50,19 @@ class SyriaFileToTemplateMapper
      */
     private $mapping = [];
 
-    public function __construct()
+    /**
+     * Used to avoid copy of this array during copy
+     *
+     * @var array $birthdays
+     */
+    private $birthdays = [];
+
+    /** @var ExportService $defaultExportService */
+    private $defaultExportService;
+
+    public function __construct(ExportService $defaultExportService)
     {
+        $this->defaultExportService = $defaultExportService;
         self::$TODAY = new DateTime();
     }
 
@@ -59,100 +77,279 @@ class SyriaFileToTemplateMapper
      *
      * @return array
      * {
-     *   outputFile: File
+     *   outputFile: File,
+     *   loadingTime: Numeric,
+     *   executionTime: Numeric,
+     *   writeTime: Numeric,
      * }
      */
     public function map(array $input) : array
     {
         /** @var File $file */
-        $file  = $input['file'];
+        $file     = $input['file'];
+        $location = $input['location'];
 
-        $reader = IOFactory::createReaderForFile($file->getRealPath());
-        $worksheet = $reader->load($file->getRealPath())
-            ->getActiveSheet();
+        // Load input file
+        $time        = microtime(true);
+        $reader      = IOFactory::createReaderForFile($file->getRealPath());
+        $worksheet   = $reader->load($file->getRealPath())->getActiveSheet();
+        $loadingTime = microtime(true) - $time;
 
+        // Map and generate output content
         // security to avoid infinite loop during test
-        // TODO: remove it when the the function is coded
-        set_time_limit(30);
+        set_time_limit(30); // after 30 seconds it should crash to avoid server termination
+        $time          = microtime(true);
+        $sheetArray    = $worksheet->toArray(null, true, true, true);
+        $output        = $this->doMap($sheetArray, [
+            'location' => $location,
+        ]);
+        $executionTime = microtime(true) - $time;
 
-        $sheetArray = $worksheet->toArray(null, true, true, true);
+        // create new speadsheet
+        $time        = microtime(true);
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->createSheet();
+        $worksheet = $spreadsheet->getActiveSheet();
 
-        $output = $this->doMap($sheetArray);
+        // Write header
+        $currentIndex = 1;
+        foreach ($this->prepareOutputHeaderRow() as $letter => $value) {
+            $worksheet->setCellValue($letter . $currentIndex, $value);
+        }
+
+        // Write content
+        $currentIndex = 6;
+        foreach ($output as $row) {
+            $currentIndex++;
+            foreach ($row as $letter => $cell) {
+                $worksheet->setCellValue($letter . $currentIndex, $cell);
+            }
+        }
+
+        $filename  = $this->defaultExportService->generateFile(
+            $spreadsheet,
+            'syriaToStandard' . (new DateTime())->getTimestamp(),
+            ExportService::FORMAT_XLS
+        );
+        $writeTime = microtime(true) - $time;
+
+        set_time_limit(0);
 
         return [
-            'outputFile' => $output
+            'outputFile' => $filename,
+            'loadingTime' => $loadingTime,
+            'executionTime' => $executionTime,
+            'writeTime' => $writeTime,
         ];
     }
 
     /**
-     * Map the uploaded file to the standard template
+     * Map the given array to the standard template
      *
      * @param array $sheetArray The uploaded file converted to an array
      *
-     * @return null|File
+     * @return string[][]
      */
-    private function doMap(array $sheetArray) //: ?File
+    private function doMap(array $sheetArray, $parameters = []) : array
     {
-        $outputRows = [];
+        // O. Validation step
+        $admType  = '';
+        $location = '';
+
+        foreach ($parameters['location'] as $adm => $value) {
+            if (! empty($value)) {
+                $location = $value;
+                $admType  = $adm;
+                break;
+            }
+        }
+        if (empty($location)) {
+            throw new MapperException('A location is required with admX:value format');
+        }
+        if (empty($admType)) {
+            throw new MapperException('Adm type was not recognized');
+        }
+
+        // End 0.
+
+        $this->initializeBirthdays();
         $defaultMapping = $this->getMapping();
-        $J2Int = ord('J');
-        $V2Int = ord('V');
+        $outputRows = [];
+
+        $addressStreet = trim(str_replace('LOCATION:','', $sheetArray[2]['A']));;
 
         foreach ($sheetArray as $indexRow => $row) {
-            // I. HANDLE SHARED COLUMNS
+            if ($indexRow < 10) {
+                // we start at row 10
+                continue;
+            }
 
+            if (empty($row['A'])){
+                // we break at the first empty row
+                break;
+            }
+
+            // A. HANDLE SHARED COLUMNS
             /**
              * we use the same variable to store the columns shared between
              * members of a family
              * @var mixed[] $mutualOutputRow
              */
-            $mutualOutputRow = [];
+            $mutualOutputRow = ['AE' => $indexRow];
+            $secondBeneficiaryValues = ['AE' => $indexRow];
+            $secondBeneficiaryExists = false;
 
-            foreach ($row as $letter => $cell) {
-                if (in_array($letter, ['C', 'D'])) { // auto filling following the mapping
-                    $mutualOutputRow[$defaultMapping[$letter]] = $cell;
+            /**
+             * Names
+             * M => Family name
+             * L => Given name
+             */
+            $C = $row['C'];
+            if (strpos($C, DIRECTORY_SEPARATOR) !== false) { // 2 names found => second beneficiary exists
+                $secondBeneficiaryExists = true;
+                $values = explode(DIRECTORY_SEPARATOR, $C);
+                $nameA = trim($values[0]); // head
+                if (strpos($nameA, self::SPACE_SEPARATOR) !== false) { // family and first name found
+                    $names = explode(self::SPACE_SEPARATOR, $nameA);
+                    $mutualOutputRow['M'] = $names[0];
+                    unset($names[0]);
+                    $mutualOutputRow['L'] = implode(' ', $names);
                 } else {
-                    switch ($letter) {
-                        case 'E' : // Phone number extraction
-                            break;
-                        case 'F' : // Status: IPD
-                            if (intval($cell) === 1) {
-                                $mutualOutputRow['O'] = $cell;
-                            }
-                            break;
-                        case 'G' : // Status: Resident
-                            if (intval($cell) === 1) {
-                                $mutualOutputRow['O'] = $cell;
-                            }
-                            break;
-                        case 'J' :
-                            break 2; // break switch and foreachcase 'J' :
-                        case 'W' :
-                            // sex of the beneficiary:
-                            // column N will be erased for each beneficiaries in the household
-                            $mutualOutputRow['N'] = intval($cell) === 1 ? self::FEMALE : self::MALE;
-                            break 2;
-                    }
+                    $mutualOutputRow['M'] = $nameA;
+                }
+                $nameB = trim($values[1]); // second beneficiary
+                if (strpos($nameB, self::SPACE_SEPARATOR) !== false) { // family and first name found
+                    $names = explode(self::SPACE_SEPARATOR, $nameB);
+                    $secondBeneficiaryValues['M'] = $names[0];
+                    unset($names[0]);
+                    $secondBeneficiaryValues['L'] = implode(' ', $names);
+                } else {
+                    $secondBeneficiaryValues['M'] = $nameB;
+                }
+            } else { // only one name found => second beneficiary doesnt exist
+                if (strpos($C, self::SPACE_SEPARATOR) !== false) { // family and first name found
+                    $names = explode(self::SPACE_SEPARATOR, $C);
+                    $mutualOutputRow['M'] = $names[0];
+                    unset($names[0]);
+                    $mutualOutputRow['L'] = implode(' ', $names);
+                }else {
+                    $mutualOutputRow['M'] = $C;
                 }
             }
 
-            // B. LET ADD HEAD OF HOUSEHOLD
+            // Ids
+            $D = strval($row['D']);
+            if (! empty($D)) {
+                $mutualOutputRow['Z'] = 'ID Card';
+                if (strpos($D, DIRECTORY_SEPARATOR) !== false) { // if 2 Id found
+                    $values = explode(DIRECTORY_SEPARATOR, $D);
+                    $mutualOutputRow[$defaultMapping['D']] = trim($values[0]);
+
+                    if ($secondBeneficiaryExists) {
+                        $secondBeneficiaryValues[$defaultMapping['D']] = trim($values[1]);
+                        $secondBeneficiaryValues['Z'] = 'ID Card';
+                    } else {
+                        // File badly filled in
+//                    throw new Exception('Die' . $indexRow);
+                    }
+                } else { // only one Id found
+                    $mutualOutputRow[$defaultMapping['D']] = $D;
+                }
+            }
+
+            // sex of the beneficiary:
+            $headOfSex = $row['X']; // this variable is used lower in the code
+            // column N will be erased for each beneficiaries in the household
+            $mutualOutputRow['N'] = intval($headOfSex) === 1 ? self::FEMALE : self::MALE;
+
+            // set head of household status
+            $mutualOutputRow['O'] = 1;
+            if ($secondBeneficiaryExists) {
+                $secondBeneficiaryValues['O'] = 0;
+            }
+
+            /**
+             * remove and potential second from list of benefiaries by guessing their ages
+             * Strategy:
+             * Find the oldest person having the sex of the head
+             * Find the second adult person
+             */
+            $mainHeadRemoved = false;
+            $subHeadRemoved  = false;
+            $letters = range('Q', 'V');
+            for ($i = count($letters) - 1; $i>=0; $i--) {
+                $letter = $letters[$i];
+                $cellValue = intval($row[$letter]);
+                if ($cellValue <= 0) {
+                    // we ignore a empty column
+                    continue;
+                }
+                // the 1st index (column V) is odd and matches a woman
+                // if the current person has the same sex than the main and the main has not been remove yet
+                if (! $mainHeadRemoved) {
+                    // odd means woman, $headOfSex===1 also means woman
+                    if (($i%2!=0 && intval($headOfSex) === 1) || ($i%2==0 && intval($headOfSex) === 0)) {
+                        //we potentially found the first older person having the head of household sex
+                        //we remove him
+                        $row[$letter] = --$cellValue;
+                        $mainHeadRemoved = true;
+                        if (! $secondBeneficiaryExists) {
+                            break;
+                        }
+                    }
+                }
+
+                // there's another person in the same sex-age group
+                // and the sub has not been remove yet
+                if ($secondBeneficiaryExists && $cellValue > 0 && ! $subHeadRemoved) {
+                    $row[$letter] = intval($row[$letter]) - 1;
+                    $subHeadRemoved = true;
+                    // set second beneciary sex: odd means woman
+                    $secondBeneficiaryValues['N'] = $i%2!=0 ? self::FEMALE : self::MALE;
+                    if ($mainHeadRemoved) {
+                        break;
+                    }
+                }
+            }
+            unset($letters);
+
+            // B. LET ADD HEAD OF HOUSEHOLD and its second
             $headOfHouseholdRow = new ArrayObject($mutualOutputRow);
+            // address
+            $headOfHouseholdRow['A'] = $addressStreet;
+            $headOfHouseholdRow['B'] = $row[$defaultMapping['B']];
+            $headOfHouseholdRow['C'] = 'Unknown';
+            $headOfHouseholdRow[$defaultMapping[$admType]] = $location;
+            if (! empty($row['E'])) {
+                // head phone number
+                $headOfHouseholdRow['R'] = 'Mobile';
+                $headOfHouseholdRow['S'] = '+963';
+                $headOfHouseholdRow['T'] = $row['E'];
+                $headOfHouseholdRow['U'] = 'N';
+            }
+
             $outputRows[] = $headOfHouseholdRow;
+            if ($secondBeneficiaryExists) {
+                $outputRows[] = new ArrayObject($secondBeneficiaryValues);
+            }
 
             // C. HANDLE NON SHARED COLUMNS: Let add each beneficiary
+            // knowing that mainhead and subhead have been removed
 
+            // remove head status for beneficiaries
+            $mutualOutputRow['O'] = 0;
             // starting from here, we create a row per value of column
             $mutualOutputRowToArrayObject = new ArrayObject($mutualOutputRow);
             $letters = range('J', 'V');
             for ($i = 0; $i < count($letters); $i++) {
+                // $i is MALE
                 $column = $letters[$i];
                 // count members of family in a age class
-                try{
-                    $ageGroupCount = intval($row[$column]);
-                } catch (Throwable $exception) {
-                    $ageGroupCount = null;
-                }
+                $ageGroupCount = intval($row[$column]);
+//                try{
+//                } catch (Throwable $exception) {
+//                    $ageGroupCount = 0;
+//                }
 
                 // ignore null or 0 values
                 if ($ageGroupCount === 0) {
@@ -175,60 +372,16 @@ class SyriaFileToTemplateMapper
                     // given name
                     $outputRow['L'] = sprintf("%s_%s_%s", $outputRow['M'], $column, $j);
 
-                    // other beneficiary properties
-                    switch ($i + $J2Int) {
-                        case ord('J'):
-                            $outputRow['N'] = self::MALE;
-                            $outputRow['P'] = $this->getBirthday('P3M');
-                            break;
-                        case ord('K'):
-                            $outputRow['N'] = self::FEMALE;
-                            $outputRow['P'] = $this->getBirthday('P3M');
-                            break;
-                        case ord('L'):
-                            $outputRow['N'] = self::MALE;
-                            $outputRow['P'] = $this->getBirthday('P1Y'); // - 12 months
-                            break;
-                        case ord('M'):
-                            $outputRow['N'] = self::FEMALE;
-                            $outputRow['P'] = $this->getBirthday('P1Y'); // - 12 months
-                            break;
-                        case ord('N'):
-                            $outputRow['N'] = self::MALE;
-                            $outputRow['P'] = $this->getBirthday('P21M');
-                            break;
-                        case ord('O'):
-                            $outputRow['N'] = self::FEMALE;
-                            $outputRow['P'] = $this->getBirthday('P21M');
-                            break;
-                        case ord('P'):
-                            $outputRow['N'] = '??????????????????????????????????????????????';
-                            $outputRow['P'] = $this->getBirthday('P3Y');
-                            break;
-                        case ord('Q'):
-                            $outputRow['N'] = self::MALE;
-                            $outputRow['P'] = $this->getBirthday('P11Y');
-                            break;
-                        case ord('R'):
-                            $outputRow['N'] = self::FEMALE;
-                            $outputRow['P'] = $this->getBirthday('P11Y');
-                            break;
-                        case ord('S'):
-                            $outputRow['N'] = self::MALE;
-                            $outputRow['P'] = $this->getBirthday('P39Y');
-                            break;
-                        case ord('T'):
-                            $outputRow['N'] = self::FEMALE;
-                            $outputRow['P'] = $this->getBirthday('P39Y');
-                            break;
-                        case ord('U'):
-                            $outputRow['N'] = self::MALE;
-                            $outputRow['P'] = $this->getBirthday('P61Y');
-                            break;
-                        case ord('V'):
-                            $outputRow['N'] = self::FEMALE;
-                            $outputRow['P'] = $this->getBirthday('P61Y');
-                            break;
+                    // birthday
+                    $outputRow['P'] = $this->getBirthday($column);
+
+                    // sex
+                    if (in_array($column, ['J', 'L', 'N', 'Q', 'S', 'U'])) {
+                        $outputRow['N'] = self::MALE;
+                    } else if (in_array($column, ['K', 'M', 'O', 'R', 'T', 'V'])) {
+                        $outputRow['N'] = self::FEMALE;
+                    } else {
+                        $outputRow['N'] = 'not defined';
                     }
 
                     $outputRows[] = $outputRow;
@@ -239,19 +392,6 @@ class SyriaFileToTemplateMapper
         }
 
         return $outputRows;
-        // write new file
-
-        // Write header
-        foreach ($this->prepareOutputHeaderRow() as $letter => $value) {
-            //
-        }
-
-        // Write content
-
-        // Download file
-
-
-        return null;
     }
 
     /**
@@ -259,13 +399,9 @@ class SyriaFileToTemplateMapper
      *
      * @return array
      */
-    private function &prepareOutputHeaderRow() : array
+    private function prepareOutputHeaderRow() : array
     {
-        if (! empty($this->outputHeaderRow)) {
-            return $this->outputHeaderRow;
-        }
-
-        $this->outputHeaderRow = [
+        return [
             'A' => 'Address street',
             'B' => 'Address number',
             'C' => 'Address postcode',
@@ -294,8 +430,6 @@ class SyriaFileToTemplateMapper
             'Z' => 'Type national ID',
             'AA' => 'Number national ID',
         ];
-
-        return $this->outputHeaderRow;
     }
 
     /**
@@ -311,47 +445,47 @@ class SyriaFileToTemplateMapper
         }
 
         $this->mapping = [
-            'A' => '',  // id
-            'B' => '',  // tent number
-            'C' => 'M',  // name of beneficiary
+            self::INPUT_COLUMN_START => '',  // id
+            'B' => 'B',  // tent number
             'D' => 'AA',  // id number ob beneficiary
-            'E' => 'RSTU',  // phone number 1 (there are not 2 hone numbers)
-            'F' => 'O',  // Status: IPD
-            'G' => 'O',  // Status: Resident
-            'H' => '',  // Number of the 1st check
-            'I' => '',  // Number of the last check
-            'J' => 'MNP',  // Number of persons in family::0-2years::0-5monthsM
-            'K' => 'MNP',  // Number of persons in family::0-2years::0-5monthsF
-            'L' => 'MNP',  // Number of persons in family::0-2years::6-17monthsM
-            'M' => 'MNP',  // Number of persons in family::0-2years::6-17monthsF
-            'N' => 'MNP',  // Number of persons in family::0-2years::18-23monthsM
-            'O' => 'MNP',  // Number of persons in family::0-2years::18-23monthsF
-            'P' => 'MNP',  // Number of persons in family::2-5years
-            'Q' => 'MNP',  // Number of persons in family::5-17yearsM
-            'R' => 'MNP',  // Number of persons in family::5-17yearsF
-            'S' => 'MNP',  // Number of persons in family::18-59yearsM
-            'T' => 'MNP',  // Number of persons in family::18-59yearsF
-            'U' => 'MNP',  // Number of persons in family::p60yearsM
-            'V' => 'MNP',  // Number of persons in family::p60yearsF
-            'W' => 'N',  // Gender of head of family M
-            'X' => 'N',  // Gender of head of family F
-            'Y' => '',  // Signature / Thumbprint of beneficiary
+            'adm1' => 'H',
+            'adm2' => 'I',
+            'adm3' => 'J',
+            'adm4' => 'K',
+            self::INPUT_COLUMN_END => '',  // Signature / Thumbprint of beneficiary
         ];
 
         return $this->mapping;
     }
 
     /**
-     * Compute the birthday from the given interval specification.
-     * Ex: P3M will remove 3 months to the current date and return the matching date
+     * Retrieve the birthday from the given column.
      *
-     * @param string $intervalSpec The interface specification
+     * @param string $intervalSpec The column from the input file
      *
      * @return string The formated date
      */
-    private function getBirthday(string $intervalSpec) : string
+    private function getBirthday(string $column) : string
     {
-        return (clone self::$TODAY)->sub(new DateInterval($intervalSpec))
-            ->format('Y-m-d');
+        return $this->birthdays[$column];
+    }
+
+    private function initializeBirthdays() : void
+    {
+        $this->birthdays = [
+            'J' => (clone self::$TODAY)->sub(new DateInterval('P3M'))->format('Y-m-d'),
+            'K' => (clone self::$TODAY)->sub(new DateInterval('P3M'))->format('Y-m-d'),
+            'L' => (clone self::$TODAY)->sub(new DateInterval('P1Y'))->format('Y-m-d'),
+            'M' => (clone self::$TODAY)->sub(new DateInterval('P1Y'))->format('Y-m-d'),
+            'N' => (clone self::$TODAY)->sub(new DateInterval('P21M'))->format('Y-m-d'),
+            'O' => (clone self::$TODAY)->sub(new DateInterval('P21M'))->format('Y-m-d'),
+            'P' => (clone self::$TODAY)->sub(new DateInterval('P3Y'))->format('Y-m-d'),
+            'Q' => (clone self::$TODAY)->sub(new DateInterval('P11Y'))->format('Y-m-d'),
+            'R' => (clone self::$TODAY)->sub(new DateInterval('P11Y'))->format('Y-m-d'),
+            'S' => (clone self::$TODAY)->sub(new DateInterval('P39Y'))->format('Y-m-d'),
+            'T' => (clone self::$TODAY)->sub(new DateInterval('P39Y'))->format('Y-m-d'),
+            'U' => (clone self::$TODAY)->sub(new DateInterval('P61Y'))->format('Y-m-d'),
+            'V' => (clone self::$TODAY)->sub(new DateInterval('P61Y'))->format('Y-m-d'),
+        ];
     }
 }
