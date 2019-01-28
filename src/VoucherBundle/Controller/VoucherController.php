@@ -52,14 +52,11 @@ class VoucherController extends Controller
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
-
-        $voucher = $request->request->all();
-        $voucherData = $voucher;
-        $voucher = $serializer->deserialize(json_encode($request->request->all()), Voucher::class, 'json');
-
+        $voucherData = $request->request->all();
         try {
-            $return = $this->get('voucher.voucher_service')->create($voucher, $voucherData);
+            $return = $this->get('voucher.voucher_service')->create($voucherData);
         } catch (\Exception $exception) {
+            var_dump($exception->getMessage());
             return new Response($exception->getMessage(), 500);
         }
 

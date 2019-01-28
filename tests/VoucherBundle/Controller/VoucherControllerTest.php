@@ -24,11 +24,11 @@ class VoucherControllerTest extends BMSServiceTestCase
     public function testCreateVoucher()
     {
         $body = [
-            'currency' => 'USD',
+            'used' => false,
             'numberVouchers' => 5,
-            'bookletBatch' => 100,
-            'numberBooklets' => 5,
-            'currentBatch' => 102,
+            'bookletCode' => 'leMhk#145-147-145',
+            'currency' => 'USD',
+            'bookletID' => 146, 
             'value' => 10,
         ];
 
@@ -41,6 +41,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         // Create the vendor with the email and the salted password. The user should be enable
         $crawler = $this->request('PUT', '/api/wsse/new_voucher', $body);
         $voucher = json_decode($this->client->getResponse()->getContent(), true);
+        var_dump($voucher);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         // $this->assertArrayHasKey('username', $booklet);

@@ -154,7 +154,7 @@ class VendorController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="SUCCESS",
-     *     @Model(type=User::class)
+     *     @Model(type=Booklet::class)
      * )
      *
      * @SWG\Response(

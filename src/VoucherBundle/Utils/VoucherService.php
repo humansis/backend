@@ -11,6 +11,8 @@ use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Voucher;
 use Psr\Container\ContainerInterface;
+use VoucherBundle\Entity\Booklet;
+use VoucherBundle\Entity\Vendor;
 
 class VoucherService
 {
@@ -38,23 +40,44 @@ class VoucherService
   }
 
   /**
-   * @param Voucher $voucher
    * @param array $voucherData
+   * @param int $counter
    * @return mixed
    * @throws \Exception
    */
-  public function create(Voucher $voucher, array $voucherData)
+  public function create(array $voucherData)
   {
-    $counter = 0;
-    for ($x = 0; $x <= $numberVouchers; $x++) {
-      $code = $this->generateCode($voucherData, $counter);
-      $counter++;
-      var_dump($code);
-    };
-    
-    
-    // $this->em->merge($vendor);
-    // $this->em->flush();
+    $allVoucher = $this->em->getRepository(Voucher::class)->findAll();
+
+    $id;
+
+    if ($allVoucher) {
+      end($allVoucher);
+      $id = (int)$allVoucher[key($allVoucher)]->getId();
+    } else {
+      $id = 0;
+    }
+
+    for ($x = 0; $x < $voucherData['numberVouchers']; $x++) {
+      $id++;
+      $voucher = new Voucher();
+
+      $code = $this->generateCode($voucherData, $id);
+      $booklet = $this->em->getRepository(Booklet::class)->find(143);
+
+      $voucher->setUsed(false)
+        ->setCode($code)
+        ->setBooklet($booklet)
+        ->setVendor(null)
+        ->setIndividualValue($voucherData['value']);
+
+
+      $this->em->persist($voucher);
+      $this->em->flush();
+      
+      // end($lastId);
+      $id = (int)$voucher->getId();
+    }
     // $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
     return $voucher;
   }
@@ -66,13 +89,17 @@ class VoucherService
    */
   public function generateCode(array $voucherData, int $counter)
   {
-    $bookletBatch = sprintf("%03d", $voucherData['bookletBatch']);
-    $currentBooklet = sprintf("%03d", $voucherData['currentBatch']);
-    $lastBatchNumber = sprintf("%03d", $voucherData['bookletBatch'] + $voucherData['numberBooklets']);
-    $individualValue = $voucherData['value'];
-    $count = sprintf("%03d", $counter);
+    // CREATE VOUCHER CODE #1stBatchNumber-lastBatchNumber-BookletId-VoucherId
+    $parts = explode("#", $voucherData['bookletCode']);
+    $currentVoucher = sprintf("%03d", $counter);
+    $value = $voucherData['value'];
+    $currency = $voucherData['currency'];
 
-    return '#' . $voucherData['currency'] . $individualValue . '#' . $bookletBatch . '-' . $lastBatchNumber . '-' . $currentBooklet . '-' . $count;
+    $fullCode = $currency . $value . '#' . $parts[1] . '-' . $currentVoucher;
+
+    return $fullCode;
   }
+
+  
 
 }

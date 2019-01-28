@@ -70,12 +70,135 @@ class BookletController extends Controller
             return new Response($exception->getMessage(), 500);
         }
 
-        // $vendorJson = $serializer->serialize(
-        //     $return,
-        //     'json',
-        //     SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true)
-        // );
-        // return new Response($booklet);
+        $bookletJson = $serializer->serialize(
+            $return,
+            'json',
+            SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true)
+        );
+        return new Response($bookletJson);
+    }
+
+    /**
+     * Get all booklets
+     *
+     * @Rest\Get("/booklets", name="get_all_booklets")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Booklets delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Booklet::class, groups={"FullBooklet"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getAllAction(Request $request)
+    {
+        $booklets = $this->get('booklet.booklet_service')->findAll();
+        $json = $this->get('jms_serializer')->serialize($booklets, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+
+        return new Response($json);
+    }
+
+    /**
+     * Get single booklet
+     *
+     * @Rest\Get("/booklets/{id}", name="get_single_booklet")
+     *
+     * @SWG\Tag(name="Single Booklet")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Booklet delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Booklet::class, groups={"FullBooklet"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Booklet $booklet
+     * @return Response
+     */
+    public function getSingleBooklet(Booklet $booklet)
+    {
+        $json = $this->get('jms_serializer')->serialize($booklet, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+
+        return new Response($json);
+    }
+
+    /**
+     * Edit a booklet {id} with data in the body
+     *
+     * @Rest\Post("/booklets/{id}", name="update_booklet")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Parameter(
+     *     name="booklet",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="fields of the booklet which must be updated",
+     *     @Model(type=Booklet::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @Model(type=Booklet::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Booklet $booklet
+     * @return Response
+     */
+    public function updateAction(Request $request, Booklet $booklet)
+    {
+        $bookletData = $request->request->all();
+        $newBooklet = $this->get('booklet.booklet_service')->update($booklet, $bookletData);
+        $json = $this->get('jms_serializer')->serialize($newBooklet, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+        return new Response($json);
+    }
+
+    /**
+     * Delete a booklet
+     * @Rest\Delete("/booklets/{id}", name="delete_booklet")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @param Booklet $booklet
+     * @return Response
+     */
+    public function deleteAction(Booklet $booklet)
+    {
+        $isSuccess = $this->get('booklet.booklet_service')->deleteFromDatabase($booklet);
+        return new Response(json_encode($isSuccess));
     }
 
     

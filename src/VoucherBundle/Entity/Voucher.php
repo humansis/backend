@@ -68,7 +68,7 @@ class Voucher
 
     /**
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor", inversedBy="vouchers")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      * @Groups({"FullVoucher"})
      */
     private $vendor;
@@ -113,6 +113,30 @@ class Voucher
         return $this->used;
     }
 
+    /**
+     * Set used.
+     *
+     * @param bool $used
+     *
+     * @return Voucher
+     */
+    public function setIndividualValue($individualValue)
+    {
+        $this->individualValue = $individualValue;
+
+        return $this;
+    }
+
+    /**
+     * Get used.
+     *
+     * @return integer
+     */
+    public function getIndividualValue()
+    {
+        return $this->individualValue;
+    }
+    
     /**
      * Set code.
      *
@@ -180,7 +204,7 @@ class Voucher
         return $this->vendor;
     }
 
-    public function setVendor(Vendor $vendor): self
+    public function setVendor(Vendor $vendor = null): self
     {
         $this->vendor = $vendor;
 

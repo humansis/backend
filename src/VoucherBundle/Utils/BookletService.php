@@ -83,10 +83,6 @@ class BookletService
   public function generateCode(array $bookletData, int $currentBatch, int $bookletBatch)
   {
     // CREATE BOOKLET CODE #1stBatchNumber-lastBatchNumber-BookletId
-    
-    // ASSIGN EACH NUMBER TO 3 DIGITS
-    // $allBooklets = $this->em->getRepository(Booklet::class)->findAll();
-    // end($allBooklets);
     $bookletBatchNumber;
     $lastBatchNumber = sprintf("%03d", $bookletBatch + ($bookletData['numberBooklets'] - 1));
     $currentBooklet = sprintf("%03d", $currentBatch);
@@ -107,6 +103,62 @@ class BookletService
     $fullCode = $rand . '#' . $bookletBatchNumber . '-' . $lastBatchNumber . '-' . $currentBooklet;
 
     return $fullCode;
+  }
+
+  
+  /**
+   * @return string
+   */
+  public function findAll()
+  {
+    return $this->em->getRepository(Booklet::class)->findAll();
+  }
+
+  
+  /**
+   * @param Booklet $booklet
+   * @param array $bookletData
+   * @return Booklet
+   */
+  public function update(Booklet $booklet, array $bookletData)
+  {
+
+    foreach ($bookletData as $key => $value) {
+      if ($key == 'code') {
+        $booklet->setCode($value);
+      } elseif ($key == 'currency') {
+        $booklet->setCurrency($value);
+      } elseif ($key == 'status') {
+        $booklet->setStatus($value);
+      } elseif ($key == 'password') {
+        $booklet->setPassword($value);
+      }
+    }
+
+    $this->em->merge($booklet);
+    $this->em->flush();
+    return $booklet;
+  }
+
+
+  /**
+   * Perminantly delete the record from the database
+   *
+   * @param Booklet $booklet
+   * @param bool $removeBooklet
+   * @return bool
+   */
+  public function deleteFromDatabase(Booklet $booklet, bool $removeBooklet = true)
+  {
+    if ($removeBooklet) {
+      try {
+        $this->em->remove($booklet);
+        $this->em->flush();
+      } catch (\Exception $exception) {
+        return $exception;
+      }
+    }
+    return true;
   }
 
 }
