@@ -73,7 +73,6 @@ class DuplicateVerifier extends AbstractVerifier
 
         if (!empty($listDuplicateBeneficiaries))
         {
-            dump($listDuplicateBeneficiaries);
             return $listDuplicateBeneficiaries;
         }
 
