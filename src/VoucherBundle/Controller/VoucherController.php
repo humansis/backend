@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Voucher;
+use VoucherBundle\Entity\Booklet;
 
 /**
  * Class VoucherController
@@ -53,6 +54,7 @@ class VoucherController extends Controller
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
         $voucherData = $request->request->all();
+        $return;
         try {
             $return = $this->get('voucher.voucher_service')->create($voucherData);
         } catch (\Exception $exception) {
@@ -60,11 +62,159 @@ class VoucherController extends Controller
             return new Response($exception->getMessage(), 500);
         }
 
-        // $vendorJson = $serializer->serialize(
-        //     $return,
-        //     'json',
-        //     SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true)
-        // );
-        // return new Response($booklet);
+        $voucherJson = $serializer->serialize(
+            $return,
+            'json',
+            SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true)
+        );
+        return new Response($voucherJson);
+    }
+
+    /**
+     * Get all vouchers
+     *
+     * @Rest\Get("/vouchers", name="get_all_vouchers")
+     *
+     * @SWG\Tag(name="Vouchers")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Vouchers delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Voucher::class, groups={"FullVoucher"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getAllAction(Request $request)
+    {
+        $vouchers = $this->get('voucher.voucher_service')->findAll();
+        $json = $this->get('jms_serializer')->serialize($vouchers, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+
+        return new Response($json);
+    }
+
+
+    /**
+     * Get single voucher
+     *
+     * @Rest\Get("/vouchers/{id}", name="get_single_voucher")
+     *
+     * @SWG\Tag(name="Single Voucher")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Voucher delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Voucher::class, groups={"FullVoucher"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Voucher $voucher
+     * @return Response
+     */
+    public function getSingleVoucher(Voucher $voucher)
+    {
+        $json = $this->get('jms_serializer')->serialize($voucher, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+
+        return new Response($json);
+    }
+
+
+    /**
+     * When a voucher {id} is scanned by a Vendor 
+     *
+     * @Rest\Post("/vouchers/scanned/{id}", name="scanned_voucher")
+     *
+     * @SWG\Tag(name="Vouchers")
+     *
+     * @SWG\Parameter(
+     *     name="voucher",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="fields of the voucher which must be updated",
+     *     @Model(type=Voucher::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @Model(type=Voucher::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Voucher $voucher
+     * @return Response
+     */
+    public function scannedVoucher(Request $request, Voucher $voucher)
+    {
+        $voucherData = $request->request->all();
+        $newVoucher = $this->get('voucher.voucher_service')->scanned($voucher, $voucherData);
+        $json = $this->get('jms_serializer')->serialize($newVoucher, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        return new Response($json);
+    }
+
+
+    /**
+     * Delete a booklet
+     * @Rest\Delete("/vouchers/{id}", name="delete_voucher")
+     *
+     * @SWG\Tag(name="Vouchers")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @param Voucher $voucher
+     * @return Response
+     */
+    public function deleteAction(Voucher $voucher)
+    {
+        $isSuccess = $this->get('voucher.voucher_service')->deleteOneFromDatabase($voucher);
+        return new Response(json_encode($isSuccess));
+    }
+
+
+    /**
+     * Delete a batch of vouchers
+     * @Rest\Delete("/vouchers/delete_batch/{id}", name="delete_batch_vouchers")
+     *
+     * @SWG\Tag(name="Vouchers")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @param Booklet $booklet
+     * @return Response
+     */
+    public function deleteBatchVouchersAction(Booklet $booklet)
+    {
+        $isSuccess = $this->get('voucher.voucher_service')->deleteBatchVouchers($booklet);
+        return new Response(json_encode($isSuccess));
     }
 }

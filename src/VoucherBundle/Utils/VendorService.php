@@ -43,22 +43,26 @@ class VendorService
    * @return mixed
    * @throws \Exception
    */
-  public function create(Vendor $vendor, array $vendorData)
+  public function create(array $vendorData)
   {
     $vendorSaved = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
     if (!$vendorSaved) {
+      $vendor = new Vendor();
       $vendor->setName($vendorData['name'])
       ->setShop($vendorData['shop'])
       ->setAddress($vendorData['address'])
       ->setUsername($vendorData['username'])
       ->setPassword($vendorData['password'])
       ->setArchived(false);
+      
+      $this->em->merge($vendor);
+      $this->em->flush();
+
+      $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
+      return $createdVendor;
+    } else {
+      throw new \Exception('A vendor with this username already exists.');
     }
-    
-    $this->em->merge($vendor);
-    $this->em->flush();
-    $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
-    return $createdVendor;
   }
 
 

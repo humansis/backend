@@ -41,12 +41,12 @@ class VoucherService
 
   /**
    * @param array $voucherData
-   * @param int $counter
    * @return mixed
    * @throws \Exception
    */
   public function create(array $voucherData)
   {
+    var_dump('ENTERS');
     $allVoucher = $this->em->getRepository(Voucher::class)->findAll();
 
     $id;
@@ -63,7 +63,7 @@ class VoucherService
       $voucher = new Voucher();
 
       $code = $this->generateCode($voucherData, $id);
-      $booklet = $this->em->getRepository(Booklet::class)->find(143);
+      $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
 
       $voucher->setUsed(false)
         ->setCode($code)
@@ -100,6 +100,66 @@ class VoucherService
     return $fullCode;
   }
 
-  
+  /**
+   * @return string
+   */
+  public function findAll()
+  {
+    return $this->em->getRepository(Voucher::class)->findAll();
+  }
+
+  /**
+   * @param Voucher $voucher
+   * @param array $voucherData
+   * @return Voucher
+   */
+  public function scanned(Voucher $voucher, array $voucherData)
+  {
+    $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendor']);
+    $voucher->setVendor($vendor)
+      ->setUsed(true);
+
+    $this->em->merge($voucher);
+    $this->em->flush();
+    return $voucher;
+  }
+
+  /**
+   * Perminantly delete the record from the database
+   *
+   * @param Voucher $voucher
+   * @param bool $removeVoucher
+   * @return bool
+   */
+  public function deleteOneFromDatabase(Voucher $voucher, bool $removeVoucher = true)
+  {
+    if ($removeVoucher && !$voucher->getUsed()) {
+      try {
+        $this->em->remove($voucher);
+        $this->em->flush();
+      } catch (\Exception $exception) {
+        return $exception;
+      }
+    } else {
+      var_dump('$voucher has been used, unable to delete');
+    }
+    return true;
+  }
+
+  /**
+   * Perminantly delete the record from the database
+   *
+   * @param Booklet $booklet
+   * @return bool
+   */
+  public function deleteBatchVouchers(Booklet $booklet)
+  {
+    $bookletId = $booklet->getId();
+    $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $bookletId]);
+    foreach($vouchers as $value) {
+      $this->deleteOneFromDatabase($value);
+    };
+    return true;
+  }
 
 }

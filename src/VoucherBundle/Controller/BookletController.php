@@ -48,26 +48,17 @@ class BookletController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createBooklet(Request $request)
+    public function createBookletAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
 
-        $booklet = $request->request->all();
-        $bookletData = $booklet;
-        $booklet = $serializer->deserialize(json_encode($request->request->all()), Booklet::class, 'json');
+        $bookletData = $request->request->all();
 
         try {
-            $bookletBatch = $this->get('booklet.booklet_service')->getBookletBatch();
-            $currentBatch = $bookletBatch;
-            $counter = 1;
-            for ($x = 0; $x < $bookletData['numberBooklets']; $x++) {
-                $return = $this->get('booklet.booklet_service')->create($booklet, $bookletData, $currentBatch, $bookletBatch);
-                $counter++;
-                $currentBatch++;
-            };
+            $return = $this->get('booklet.booklet_service')->create($bookletData);
         } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), 500);
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         $bookletJson = $serializer->serialize(
@@ -134,7 +125,7 @@ class BookletController extends Controller
      * @param Booklet $booklet
      * @return Response
      */
-    public function getSingleBooklet(Booklet $booklet)
+    public function getSingleBookletAction(Booklet $booklet)
     {
         $json = $this->get('jms_serializer')->serialize($booklet, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
 
@@ -197,9 +188,13 @@ class BookletController extends Controller
      */
     public function deleteAction(Booklet $booklet)
     {
-        $isSuccess = $this->get('booklet.booklet_service')->deleteFromDatabase($booklet);
+        try {
+            $isSuccess = $this->get('booklet.booklet_service')->deleteBookletFromDatabase($booklet);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
         return new Response(json_encode($isSuccess));
     }
 
-    
+
 }

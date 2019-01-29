@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
+use VoucherBundle\Entity\Voucher;
 use Psr\Container\ContainerInterface;
 
 class BookletService
@@ -54,23 +55,42 @@ class BookletService
   }
 
   /**
-   * @param Booklet $booklet
    * @param array $bookletData
-   * @param int $currentBatch
    * @return mixed
    * @throws \Exception
    */
-  public function create(Booklet $booklet, array $bookletData, int $currentBatch, int $bookletBatch)
+  public function create(array $bookletData)
   {
-    $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
+    $bookletBatch = $this->getBookletBatch();
+    $currentBatch = $bookletBatch;
+    $booklet;
+    $createdBooklet;
+    
+    for ($x = 0; $x < $bookletData['numberBooklets']; $x++) {
+      $booklet = new Booklet();
+      $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
 
-    $booklet->setCode($code)
-      ->setNumberVouchers($bookletData['numberVouchers'])
-      ->setCurrency($bookletData['currency']);
+      $booklet->setCode($code)
+        ->setNumberVouchers($bookletData['numberVouchers'])
+        ->setCurrency($bookletData['currency']);
 
-    $this->em->merge($booklet);
-    $this->em->flush();
-    $createdBooklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet->getCode());
+        $this->em->merge($booklet);
+        $this->em->flush();
+        $currentBatch++;
+        $createdBooklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet->getCode());
+
+        $voucherData = [
+          'used' => false,
+          'numberVouchers' => $bookletData['numberVouchers'],
+          'bookletCode' => $code,
+          'currency' => $bookletData['currency'],
+          'bookletID' => $createdBooklet->getId(), 
+          'value' => $bookletData['voucherValue'],
+        ];
+
+        $this->container->get('voucher.voucher_service')->create($voucherData);
+    }
+
     return $createdBooklet;
   }
 
@@ -91,6 +111,7 @@ class BookletService
     } elseif (!$bookletBatch) {
       $bookletBatchNumber = "000";
     }
+
     // GENERATES 5 RANDOM LETTERS/SYMBLES
     $rand = '';
     $seed = str_split('abcdefghijklmnopqrstuvwxyz'
@@ -101,7 +122,6 @@ class BookletService
     
     // JOINS ALL PARTS, CREATING FINAL CODE
     $fullCode = $rand . '#' . $bookletBatchNumber . '-' . $lastBatchNumber . '-' . $currentBooklet;
-
     return $fullCode;
   }
 
@@ -147,16 +167,30 @@ class BookletService
    * @param Booklet $booklet
    * @param bool $removeBooklet
    * @return bool
+   * @throws \Exception
    */
-  public function deleteFromDatabase(Booklet $booklet, bool $removeBooklet = true)
+  public function deleteBookletFromDatabase(Booklet $booklet, bool $removeBooklet = true)
   {
-    if ($removeBooklet) {
+    $bookletId = $booklet->getId();
+    $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $bookletId]);
+    if ($removeBooklet && !$vouchers) {
       try {
         $this->em->remove($booklet);
         $this->em->flush();
       } catch (\Exception $exception) {
-        return $exception;
+        throw new $exception('Unable to delete Booklet');
       }
+    } elseif ($removeBooklet && $vouchers) {
+      try {
+        $this->container->get('voucher.voucher_service')->deleteBatchVouchers($booklet);
+        $this->em->remove($booklet);
+        $this->em->flush();
+        var_dump('VOUCHERS DELETED');
+      } catch (\Exception $exception) {
+        throw new $exception('This booklet still contains potentially used vouchers.');
+      } 
+    } else {
+      return false;
     }
     return true;
   }

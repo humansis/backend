@@ -77,8 +77,6 @@ class BookletControllerTest extends BMSServiceTestCase
         return $booklets[0];
     }
 
-
-
     /**
      * @depends testCreateBooklet
      * @param $newBooklet
@@ -102,7 +100,6 @@ class BookletControllerTest extends BMSServiceTestCase
 
         return $booklet;
     }
-
 
     /**
      * @depends testCreateBooklet
@@ -156,6 +153,5 @@ class BookletControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertTrue($success);
     }
-    
 
 }

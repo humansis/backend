@@ -25,8 +25,8 @@ class VoucherControllerTest extends BMSServiceTestCase
     {
         $body = [
             'used' => false,
-            'numberVouchers' => 5,
-            'bookletCode' => 'leMhk#145-147-145',
+            'numberVouchers' => 3,
+            'bookletCode' => 'test#145-147-145',
             'currency' => 'USD',
             'bookletID' => 146, 
             'value' => 10,
@@ -41,11 +41,138 @@ class VoucherControllerTest extends BMSServiceTestCase
         // Create the vendor with the email and the salted password. The user should be enable
         $crawler = $this->request('PUT', '/api/wsse/new_voucher', $body);
         $voucher = json_decode($this->client->getResponse()->getContent(), true);
-        var_dump($voucher);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        // $this->assertArrayHasKey('username', $booklet);
-        // $this->assertArrayHasKey('shop', $booklet);
+        $this->assertArrayHasKey('id', $voucher);
+        $this->assertArrayHasKey('booklet', $voucher);
         return $voucher;
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function testGetAllVouchers()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->request('GET', '/api/wsse/vouchers');
+        $vouchers = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (!empty($vouchers)) {
+            $voucher = $vouchers[0];
+
+            $this->assertArrayHasKey('code', $voucher);
+            $this->assertArrayHasKey('booklet', $voucher);
+            $this->assertArrayHasKey('id', $voucher);
+        } else {
+            $this->markTestIncomplete("You currently don't have any vouchers in your database.");
+        }
+
+        return $vouchers;
+    }
+
+
+    /**
+     * @depends testCreateVoucher
+     * @param $newVoucher
+     * @return mixed
+     */
+    public function testGetVoucher($newVoucher)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+
+        $crawler = $this->request('GET', '/api/wsse/vouchers/' . $newVoucher['id']);
+        $voucher = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertArrayHasKey('id', $voucher);
+        $this->assertArrayHasKey('code', $voucher);
+        $this->assertArrayHasKey('booklet', $voucher);
+
+        return $voucher;
+    }
+
+    /**
+     * @depends testCreateVoucher
+     * @param $newVoucher
+     * @return mixed
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testUseVoucher($newVoucher)
+    {
+        $vendor = 18;
+        $body = ["vendor" => $vendor];
+
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->request('POST', '/api/wsse/vouchers/scanned/' . $newVoucher['id'], $body);
+        $newVoucherReceived = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        $voucherSearch = $this->em->getRepository(Voucher::class)->find($newVoucherReceived['id']);
+        $this->assertEquals($voucherSearch->getUsed(), true);
+
+        return $newVoucherReceived;
+    }
+
+    /**
+     * @depends testGetVoucher
+     *
+     * @param $voucherToDelete
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testDeleteFromDatabase($voucherToDelete)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('DELETE', '/api/wsse/vouchers/' . $voucherToDelete['id']);
+        $success = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($success);
+    }
+
+
+    /**
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testDeleteBatchVouchers()
+    {
+        $bookletId = 143;
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('DELETE', '/api/wsse/vouchers/delete_batch/' . $bookletId);
+        $success = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($success);
+    }
+
+
 }

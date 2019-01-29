@@ -53,14 +53,12 @@ class VendorController extends Controller
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
 
-        $vendor = $request->request->all();
-        $vendorData = $vendor;
-        $vendor = $serializer->deserialize(json_encode($request->request->all()), Vendor::class, 'json');
+        $vendorData = $request->request->all();
 
         try {
-            $return = $this->get('vendor.vendor_service')->create($vendor, $vendorData);
+            $return = $this->get('vendor.vendor_service')->create($vendorData);
         } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), 500);
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         $vendorJson = $serializer->serialize(
