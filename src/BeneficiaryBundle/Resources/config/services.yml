@@ -97,7 +97,7 @@ services:
             - "@location_service"
         public: true
 
-    BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper:
+    beneficiary.syria_file_to_template_mapper:
         class: BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper
         autowire: true
         public: true

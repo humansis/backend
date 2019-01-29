@@ -500,7 +500,7 @@ class HouseholdController extends Controller
 
     /**
      * @Rest\Post(
-     *     "/import/households/project/{id}/{model}",
+     *     "/import/households",
      *     name="import_household_by_model",
      *     requirements={
      *          "model":"syria"
@@ -516,12 +516,10 @@ class HouseholdController extends Controller
      * )
      *
      * @param Request $request
-     * @param Project $project
      * @return Response
      */
     public function importBeneficiariesFromSyriaFileAction(
-        Request $request,
-        string $model
+        Request $request
     ) : Response {
         if (! $request->files->has('file')) {
             return new JsonResponse("You must upload a file.", Response::HTTP_BAD_REQUEST);
@@ -533,7 +531,7 @@ class HouseholdController extends Controller
         try {
             // get mapper and map
             $output = $this->container
-                ->get(SyriaFileToTemplateMapper::class)
+                ->get('beneficiary.syria_file_to_template_mapper')
                 ->map([
                     'file' => $request->files->get('file'),
                     'location' =>  $request->request->get('location'),
