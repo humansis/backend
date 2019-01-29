@@ -501,10 +501,7 @@ class HouseholdController extends Controller
     /**
      * @Rest\Post(
      *     "/import/households",
-     *     name="import_household_by_model",
-     *     requirements={
-     *          "model":"syria"
-     *     }
+     *     name="import_household_by_model"
      * )
      * To Allow another model, please do: "model":"syria|another|a_third"
      *
