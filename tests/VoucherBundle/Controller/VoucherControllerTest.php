@@ -28,7 +28,7 @@ class VoucherControllerTest extends BMSServiceTestCase
             'numberVouchers' => 3,
             'bookletCode' => 'test#145-147-145',
             'currency' => 'USD',
-            'bookletID' => 146, 
+            'bookletID' => 143, 
             'value' => 10,
         ];
 
@@ -39,7 +39,7 @@ class VoucherControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the vendor with the email and the salted password. The user should be enable
-        $crawler = $this->request('PUT', '/api/wsse/new_voucher', $body);
+        $crawler = $this->request('PUT', '/api/wsse/voucher', $body);
         $voucher = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -140,7 +140,6 @@ class VoucherControllerTest extends BMSServiceTestCase
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
-
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('DELETE', '/api/wsse/vouchers/' . $voucherToDelete['id']);

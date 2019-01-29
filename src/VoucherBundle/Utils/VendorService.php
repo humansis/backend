@@ -37,6 +37,7 @@ class VendorService
     $this->container = $container;
   }
 
+  // =============== CREATE VENDOR ===============
   /**
    * @param Vendor $vendor
    * @param array $vendorData
@@ -46,6 +47,7 @@ class VendorService
   public function create(array $vendorData)
   {
     $vendorSaved = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
+
     if (!$vendorSaved) {
       $vendor = new Vendor();
       $vendor->setName($vendorData['name'])
@@ -65,13 +67,17 @@ class VendorService
     }
   }
 
-
+    // =============== RETURNS ALL VENDORS ===============
+  /**
+   * @return array
+   */
   public function findAll()
   {
     return $this->em->getRepository(Vendor::class)->findAll();
   }
 
 
+  // =============== UPDATE VENDOR ===============
   /**
    * @param Vendor $vendor
    * @param array $vendorData
@@ -79,28 +85,31 @@ class VendorService
    */
   public function update(Vendor $vendor, array $vendorData)
   {
-
-    foreach ($vendorData as $key => $value) {
-      if ($key == 'name') {
-        $vendor->setName($value);
-      } elseif ($key == 'shop') {
-        $vendor->setShop($value);
-      } elseif ($key == 'address') {
-        $vendor->setAddress($value);
-      } elseif ($key == 'username') {
-        $vendor->setUsername($value);
-      } elseif ($key == 'password') {
-        $vendor->setPassword($value);
+    try {
+      foreach ($vendorData as $key => $value) {
+        if ($key == 'name') {
+          $vendor->setName($value);
+        } elseif ($key == 'shop') {
+          $vendor->setShop($value);
+        } elseif ($key == 'address') {
+          $vendor->setAddress($value);
+        } elseif ($key == 'username') {
+          $vendor->setUsername($value);
+        } elseif ($key == 'password') {
+          $vendor->setPassword($value);
+        }
       }
+      $this->em->merge($vendor);
+      $this->em->flush();
+    } catch (\Exception $e) {
+      throw new $e('Error updating Vendor');
     }
-
-    $this->em->merge($vendor);
-
-    $this->em->flush();
 
     return $vendor;
   }
 
+
+  // =============== ARCHIVE VENDOR ===============
   /**
    * Archive Vendor
    *
@@ -115,11 +124,13 @@ class VendorService
         $this->em->merge($vendor);
         $this->em->flush();
       } catch (\Exception $exception) {
-        return $exception;
+        throw new $e('Error archiving Vendor');
       }
     return $vendor;
   }
 
+
+  // =============== DELETE VENDOR FROM DATABASE ===============
   /**
    * Perminantly delete the record from the database
    *

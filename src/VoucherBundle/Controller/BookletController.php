@@ -23,7 +23,7 @@ class BookletController extends Controller
     /**
      * Create a new Booklet.
      *
-     * @Rest\Put("/new_booklet", name="add_booklet")
+     * @Rest\Put("/booklet", name="add_booklet")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -95,9 +95,13 @@ class BookletController extends Controller
      */
     public function getAllAction(Request $request)
     {
-        $booklets = $this->get('booklet.booklet_service')->findAll();
-        $json = $this->get('jms_serializer')->serialize($booklets, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+        try {
+            $booklets = $this->get('booklet.booklet_service')->findAll();
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
 
+        $json = $this->get('jms_serializer')->serialize($booklets, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
         return new Response($json);
     }
 
@@ -166,7 +170,13 @@ class BookletController extends Controller
     public function updateAction(Request $request, Booklet $booklet)
     {
         $bookletData = $request->request->all();
-        $newBooklet = $this->get('booklet.booklet_service')->update($booklet, $bookletData);
+
+        try {
+            $newBooklet = $this->get('booklet.booklet_service')->update($booklet, $bookletData);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
         $json = $this->get('jms_serializer')->serialize($newBooklet, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
         return new Response($json);
     }
@@ -193,6 +203,7 @@ class BookletController extends Controller
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+        
         return new Response(json_encode($isSuccess));
     }
 

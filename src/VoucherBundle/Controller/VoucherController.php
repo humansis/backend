@@ -24,7 +24,7 @@ class VoucherController extends Controller
     /**
      * Create a new Voucher.
      *
-     * @Rest\Put("/new_voucher", name="add_voucher")
+     * @Rest\Put("/voucher", name="add_voucher")
      *
      * @SWG\Tag(name="Vouchers")
      *
@@ -49,17 +49,17 @@ class VoucherController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createVoucher(Request $request)
+    public function createVoucherAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
+
         $voucherData = $request->request->all();
-        $return;
+
         try {
             $return = $this->get('voucher.voucher_service')->create($voucherData);
         } catch (\Exception $exception) {
-            var_dump($exception->getMessage());
-            return new Response($exception->getMessage(), 500);
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         $voucherJson = $serializer->serialize(
@@ -67,6 +67,7 @@ class VoucherController extends Controller
             'json',
             SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true)
         );
+
         return new Response($voucherJson);
     }
 
@@ -96,9 +97,13 @@ class VoucherController extends Controller
      */
     public function getAllAction(Request $request)
     {
-        $vouchers = $this->get('voucher.voucher_service')->findAll();
-        $json = $this->get('jms_serializer')->serialize($vouchers, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        try {
+            $vouchers = $this->get('voucher.voucher_service')->findAll();
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
 
+        $json = $this->get('jms_serializer')->serialize($vouchers, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
         return new Response($json);
     }
 
@@ -127,7 +132,7 @@ class VoucherController extends Controller
      * @param Voucher $voucher
      * @return Response
      */
-    public function getSingleVoucher(Voucher $voucher)
+    public function getSingleVoucherAction(Voucher $voucher)
     {
         $json = $this->get('jms_serializer')->serialize($voucher, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
 
@@ -166,10 +171,16 @@ class VoucherController extends Controller
      * @param Voucher $voucher
      * @return Response
      */
-    public function scannedVoucher(Request $request, Voucher $voucher)
+    public function scannedVoucherAction(Request $request, Voucher $voucher)
     {
         $voucherData = $request->request->all();
-        $newVoucher = $this->get('voucher.voucher_service')->scanned($voucher, $voucherData);
+
+        try {
+            $newVoucher = $this->get('voucher.voucher_service')->scanned($voucher, $voucherData);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
         $json = $this->get('jms_serializer')->serialize($newVoucher, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
         return new Response($json);
     }
@@ -192,7 +203,12 @@ class VoucherController extends Controller
      */
     public function deleteAction(Voucher $voucher)
     {
-        $isSuccess = $this->get('voucher.voucher_service')->deleteOneFromDatabase($voucher);
+        try {
+            $isSuccess = $this->get('voucher.voucher_service')->deleteOneFromDatabase($voucher);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
         return new Response(json_encode($isSuccess));
     }
 
@@ -214,7 +230,12 @@ class VoucherController extends Controller
      */
     public function deleteBatchVouchersAction(Booklet $booklet)
     {
-        $isSuccess = $this->get('voucher.voucher_service')->deleteBatchVouchers($booklet);
+        try {
+            $isSuccess = $this->get('voucher.voucher_service')->deleteBatchVouchers($booklet);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        
         return new Response(json_encode($isSuccess));
     }
 }

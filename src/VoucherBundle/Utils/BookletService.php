@@ -38,22 +38,25 @@ class BookletService
     $this->container = $container;
   }
 
+  // =============== GETS BOOKLET BATCH ===============
   /**
    * @return int
    */
   public function getBookletBatch()
   {
     $allBooklets = $this->em->getRepository(Booklet::class)->findAll();
-    end($allBooklets); 
+    end($allBooklets);
+
     if ($allBooklets) {
       $bookletBatch = $allBooklets[key($allBooklets)]->getId() + 1;
       return $bookletBatch;
     } else {
       return 0;
     }
-
   }
 
+
+  // =============== CREATES BOOKLET ===============
   /**
    * @param array $bookletData
    * @return mixed
@@ -65,102 +68,125 @@ class BookletService
     $currentBatch = $bookletBatch;
     $booklet;
     $createdBooklet;
-    
+
     for ($x = 0; $x < $bookletData['numberBooklets']; $x++) {
-      $booklet = new Booklet();
-      $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
 
-      $booklet->setCode($code)
-        ->setNumberVouchers($bookletData['numberVouchers'])
-        ->setCurrency($bookletData['currency']);
-
+      // === creates booklet ===
+      try {
+        $booklet = new Booklet();
+        $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
+  
+        $booklet->setCode($code)
+          ->setNumberVouchers($bookletData['numberVouchers'])
+          ->setCurrency($bookletData['currency']);
+  
         $this->em->merge($booklet);
         $this->em->flush();
+  
         $currentBatch++;
         $createdBooklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet->getCode());
+      } catch (\Exception $e) {
+        throw new $e('Error creating Booklet');
+      }
 
+      //=== creates vouchers ===
+      try {
         $voucherData = [
           'used' => false,
           'numberVouchers' => $bookletData['numberVouchers'],
           'bookletCode' => $code,
           'currency' => $bookletData['currency'],
-          'bookletID' => $createdBooklet->getId(), 
+          'bookletID' => $createdBooklet->getId(),
           'value' => $bookletData['voucherValue'],
         ];
-
+  
         $this->container->get('voucher.voucher_service')->create($voucherData);
+      } catch (\Exception $e) {
+        throw new $e('Error creating vouchers');
+      }
     }
 
     return $createdBooklet;
   }
 
+
+  // =============== GENERATES BOOKLET CODE ===============
   /**
    * @param array $bookletData
-   * @param int $counter
+   * @param int $currentBatch
    * @param int $bookletBatch
    * @return string
    */
   public function generateCode(array $bookletData, int $currentBatch, int $bookletBatch)
   {
-    // CREATE BOOKLET CODE #1stBatchNumber-lastBatchNumber-BookletId
+    // === randomCode#bookletBatchNumber-lastBatchNumber-currentBooklet ===
     $bookletBatchNumber;
     $lastBatchNumber = sprintf("%03d", $bookletBatch + ($bookletData['numberBooklets'] - 1));
     $currentBooklet = sprintf("%03d", $currentBatch);
+
     if ($bookletBatch > 1) {
       $bookletBatchNumber = sprintf("%03d", $bookletBatch);
     } elseif (!$bookletBatch) {
       $bookletBatchNumber = "000";
     }
 
-    // GENERATES 5 RANDOM LETTERS/SYMBLES
+    // === generates randomCode before # ===
     $rand = '';
     $seed = str_split('abcdefghijklmnopqrstuvwxyz'
-    . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    . '0123456789');
+      . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      . '0123456789');
     shuffle($seed);
     foreach (array_rand($seed, 5) as $k) $rand .= $seed[$k];
     
-    // JOINS ALL PARTS, CREATING FINAL CODE
+    // === joins all parts together ===
     $fullCode = $rand . '#' . $bookletBatchNumber . '-' . $lastBatchNumber . '-' . $currentBooklet;
     return $fullCode;
   }
 
   
+  // =============== RETURNS ALL BOOKLETS ===============
   /**
-   * @return string
+   * @return array
    */
   public function findAll()
   {
     return $this->em->getRepository(Booklet::class)->findAll();
   }
 
-  
+
+  // =============== UPDATE BOOKLET ===============
   /**
    * @param Booklet $booklet
    * @param array $bookletData
    * @return Booklet
+   * @throws \Exception
    */
   public function update(Booklet $booklet, array $bookletData)
   {
 
-    foreach ($bookletData as $key => $value) {
-      if ($key == 'code') {
-        $booklet->setCode($value);
-      } elseif ($key == 'currency') {
-        $booklet->setCurrency($value);
-      } elseif ($key == 'status') {
-        $booklet->setStatus($value);
-      } elseif ($key == 'password') {
-        $booklet->setPassword($value);
+    try {
+      foreach ($bookletData as $key => $value) {
+        if ($key == 'code') {
+          $booklet->setCode($value);
+        } elseif ($key == 'currency') {
+          $booklet->setCurrency($value);
+        } elseif ($key == 'status') {
+          $booklet->setStatus($value);
+        } elseif ($key == 'password') {
+          $booklet->setPassword($value);
+        }
       }
+  
+      $this->em->merge($booklet);
+      $this->em->flush();
+    } catch (\Exception $e) {
+      throw new $e('Error updating Booklet');
     }
-
-    $this->em->merge($booklet);
-    $this->em->flush();
     return $booklet;
   }
 
 
+  // =============== DELETE 1 BOOKLET AND ITS VOUCHERS FROM DATABASE ===============
   /**
    * Perminantly delete the record from the database
    *
@@ -171,25 +197,29 @@ class BookletService
    */
   public function deleteBookletFromDatabase(Booklet $booklet, bool $removeBooklet = true)
   {
+    // === check if booklet has any vouchers ===
     $bookletId = $booklet->getId();
     $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $bookletId]);
     if ($removeBooklet && !$vouchers) {
       try {
+        // === if no vouchers then delete ===
         $this->em->remove($booklet);
         $this->em->flush();
       } catch (\Exception $exception) {
         throw new $exception('Unable to delete Booklet');
       }
-    } elseif ($removeBooklet && $vouchers) {
+    } 
+    elseif ($removeBooklet && $vouchers) {
       try {
+        // === if there are vouchers then delete those that are not used ===
         $this->container->get('voucher.voucher_service')->deleteBatchVouchers($booklet);
         $this->em->remove($booklet);
         $this->em->flush();
-        var_dump('VOUCHERS DELETED');
       } catch (\Exception $exception) {
         throw new $exception('This booklet still contains potentially used vouchers.');
-      } 
-    } else {
+      }
+    } 
+    else {
       return false;
     }
     return true;

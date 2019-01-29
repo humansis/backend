@@ -39,6 +39,7 @@ class VoucherService
     $this->container = $container;
   }
 
+  // =============== CREATE VOUCHER ===============
   /**
    * @param array $voucherData
    * @return mixed
@@ -46,109 +47,117 @@ class VoucherService
    */
   public function create(array $voucherData)
   {
-    var_dump('ENTERS');
-    $allVoucher = $this->em->getRepository(Voucher::class)->findAll();
-
-    $id;
-
-    if ($allVoucher) {
-      end($allVoucher);
-      $id = (int)$allVoucher[key($allVoucher)]->getId();
-    } else {
-      $id = 0;
+    try {
+      $allVoucher = $this->em->getRepository(Voucher::class)->findAll();
+      $id;
+      if ($allVoucher) {
+        end($allVoucher);
+        $id = (int)$allVoucher[key($allVoucher)]->getId();
+      } else {
+        $id = 0;
+      }
+    } catch (\Exception $e) {
+      throw new $e('Error finding last voucher id');
     }
 
-    for ($x = 0; $x < $voucherData['numberVouchers']; $x++) {
-      $id++;
-      $voucher = new Voucher();
+    try {
+      for ($x = 0; $x < $voucherData['numberVouchers']; $x++) {
+        $id++;
+        $voucher = new Voucher();
+  
+        $code = $this->generateCode($voucherData, $id);
+        $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
+  
+        $voucher->setUsed(false)
+          ->setCode($code)
+          ->setBooklet($booklet)
+          ->setVendor(null)
+          ->setIndividualValue($voucherData['value']);
 
-      $code = $this->generateCode($voucherData, $id);
-      $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
+        $this->em->persist($voucher);
+        $this->em->flush();
 
-      $voucher->setUsed(false)
-        ->setCode($code)
-        ->setBooklet($booklet)
-        ->setVendor(null)
-        ->setIndividualValue($voucherData['value']);
-
-
-      $this->em->persist($voucher);
-      $this->em->flush();
-      
-      // end($lastId);
-      $id = (int)$voucher->getId();
+        $id = (int)$voucher->getId();
+      }
+    } catch (\Exception $e) {
+      throw new $e('Error creating voucher');
     }
-    // $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
+
     return $voucher;
   }
 
+
+  // =============== GENERATE VOUCHER CODE ===============
   /**
    * @param array $voucherData
-   * @param int $counter
+   * @param int $voucherId
    * @return string
    */
-  public function generateCode(array $voucherData, int $counter)
+  public function generateCode(array $voucherData, int $voucherId)
   {
-    // CREATE VOUCHER CODE #1stBatchNumber-lastBatchNumber-BookletId-VoucherId
+    // CREATE VOUCHER CODE #BookletBatchNumber-lastBatchNumber-BookletId-VoucherId
     $parts = explode("#", $voucherData['bookletCode']);
-    $currentVoucher = sprintf("%03d", $counter);
+    $currentVoucher = sprintf("%03d", $voucherId);
     $value = $voucherData['value'];
     $currency = $voucherData['currency'];
 
     $fullCode = $currency . $value . '#' . $parts[1] . '-' . $currentVoucher;
-
     return $fullCode;
   }
 
+
+  // =============== RETURNS ALL VOUCHERS ===============
   /**
-   * @return string
+   * @return array
    */
   public function findAll()
   {
     return $this->em->getRepository(Voucher::class)->findAll();
   }
 
+
+  // =============== SCAN A VOUCHER ===============
   /**
    * @param Voucher $voucher
    * @param array $voucherData
    * @return Voucher
+   * @throws \Exception
    */
   public function scanned(Voucher $voucher, array $voucherData)
   {
-    $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendor']);
-    $voucher->setVendor($vendor)
-      ->setUsed(true);
-
-    $this->em->merge($voucher);
-    $this->em->flush();
+    try {
+      $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendor']);
+      $voucher->setVendor($vendor)
+        ->setUsed(true);
+  
+      $this->em->merge($voucher);
+      $this->em->flush();
+    } catch (\Exception $e) {
+      throw new $e('Error setting Vendor or changing used status');
+    }
     return $voucher;
   }
 
+  // =============== DELETE A VOUCHER FROM DATABASE ===============
   /**
-   * Perminantly delete the record from the database
-   *
    * @param Voucher $voucher
    * @param bool $removeVoucher
    * @return bool
    */
   public function deleteOneFromDatabase(Voucher $voucher, bool $removeVoucher = true)
   {
+    $used = $voucher->getUsed();
     if ($removeVoucher && !$voucher->getUsed()) {
-      try {
         $this->em->remove($voucher);
         $this->em->flush();
-      } catch (\Exception $exception) {
-        return $exception;
-      }
     } else {
-      var_dump('$voucher has been used, unable to delete');
+      throw new \Exception('$voucher has been used, unable to delete');
     }
     return true;
   }
 
+  // =============== DELETE A BATCH OF VOUCHERS ===============
   /**
-   * Perminantly delete the record from the database
-   *
    * @param Booklet $booklet
    * @return bool
    */

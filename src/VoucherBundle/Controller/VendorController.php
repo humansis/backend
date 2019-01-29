@@ -23,7 +23,7 @@ class VendorController extends Controller
     /**
      * Create a new Vendor. You must have called getSalt before use this one
      *
-     * @Rest\Put("/new_vendor", name="add_vendor")
+     * @Rest\Put("/vendor", name="add_vendor")
      *
      * @SWG\Tag(name="Vendors")
      *
@@ -48,7 +48,7 @@ class VendorController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createVendor(Request $request)
+    public function createVendorAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -95,9 +95,13 @@ class VendorController extends Controller
      */
     public function getAllAction(Request $request)
     {
-        $vendors = $this->get('vendor.vendor_service')->findAll();
-        $json = $this->get('jms_serializer')->serialize($vendors, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
+        try {
+            $vendors = $this->get('vendor.vendor_service')->findAll();
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
 
+        $json = $this->get('jms_serializer')->serialize($vendors, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
         return new Response($json);
     }
 
@@ -125,7 +129,7 @@ class VendorController extends Controller
      * @param Vendor $vendor
      * @return Response
      */
-    public function getSingleVendor(Vendor $vendor)
+    public function getSingleVendorAction(Vendor $vendor)
     {
         $json = $this->get('jms_serializer')->serialize($vendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
 
@@ -167,7 +171,13 @@ class VendorController extends Controller
     public function updateAction(Request $request, Vendor $vendor)
     {
         $vendorData = $request->request->all();
-        $newVendor = $this->get('vendor.vendor_service')->update($vendor, $vendorData);
+
+        try {
+            $newVendor = $this->get('vendor.vendor_service')->update($vendor, $vendorData);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
         $json = $this->get('jms_serializer')->serialize($newVendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
         return new Response($json);
     }
@@ -195,9 +205,14 @@ class VendorController extends Controller
      * @param Vendor $vendor
      * @return Response
      */
-    public function archiveVendor(Request $request, Vendor $vendor)
+    public function archiveVendorAction(Request $request, Vendor $vendor)
     {
-        $archivedVendor = $this->get('vendor.vendor_service')->archiveVendor($vendor);
+        try {
+            $archivedVendor = $this->get('vendor.vendor_service')->archiveVendor($vendor);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
         $json = $this->get('jms_serializer')->serialize($archivedVendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
         return new Response($json);
     }
@@ -220,7 +235,12 @@ class VendorController extends Controller
      */
     public function deleteAction(Vendor $vendor)
     {
-        $isSuccess = $this->get('vendor.vendor_service')->deleteFromDatabase($vendor);
+        try {
+            $isSuccess = $this->get('vendor.vendor_service')->deleteFromDatabase($vendor);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        
         return new Response(json_encode($isSuccess));
     }
 }
