@@ -520,9 +520,14 @@ class HouseholdController extends Controller
         if (! $request->files->has('file')) {
             return new JsonResponse("You must upload a file.", Response::HTTP_BAD_REQUEST);
         }
-        if (! $request->request->has('location')) {
+        if (! $request->query->has('adm')) {
             return new JsonResponse("A location is required.", Response::HTTP_BAD_REQUEST);
         }
+        if (! $request->query->has('name')) {
+            return new JsonResponse("A location is required.", Response::HTTP_BAD_REQUEST);
+        }
+
+        $location = array($request->query->get('adm') => $request->query->get('name'));
 
         try {
             // get mapper and map
@@ -530,7 +535,7 @@ class HouseholdController extends Controller
                 ->get('beneficiary.syria_file_to_template_mapper')
                 ->map([
                     'file' => $request->files->get('file'),
-                    'location' =>  $request->request->get('location'),
+                    'location' =>  $location,
                 ]);
 
             // Create binary file to send
