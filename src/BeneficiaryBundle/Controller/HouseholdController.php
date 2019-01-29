@@ -503,7 +503,6 @@ class HouseholdController extends Controller
      *     "/import/households",
      *     name="import_household_by_model"
      * )
-     * To Allow another model, please do: "model":"syria|another|a_third"
      *
      * @ Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Beneficiary")
