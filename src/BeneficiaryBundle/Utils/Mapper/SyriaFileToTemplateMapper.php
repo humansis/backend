@@ -102,7 +102,7 @@ class SyriaFileToTemplateMapper
 
             // Map and generate output content
             // security to avoid infinite loop during test
-            set_time_limit(30); // after 30 seconds it should crash to avoid server termination
+            set_time_limit(60); // after 60 seconds it should crash to avoid server termination
             $time          = microtime(true);
             $sheetArray    = $worksheet->toArray(null, true, true, true);
             $output        = $this->doMap($sheetArray, [
@@ -123,7 +123,7 @@ class SyriaFileToTemplateMapper
             }
 
             // Write content
-            $currentIndex = 6;
+            $currentIndex = 5;
             foreach ($output as $row) {
                 $currentIndex++;
                 foreach ($row as $letter => $cell) {
@@ -286,6 +286,21 @@ class SyriaFileToTemplateMapper
                 $secondBeneficiaryValues['O'] = 0;
             }
 
+            // B. LET ADD HEAD OF HOUSEHOLD and its second
+            $headOfHouseholdRow = new ArrayObject($mutualOutputRow);
+            // address
+            $headOfHouseholdRow['A'] = $addressStreet;
+            $headOfHouseholdRow['B'] = $row[$defaultMapping['B']] ? $row[$defaultMapping['B']] : 'Unknown';
+            $headOfHouseholdRow['C'] = 'Unknown';
+            $headOfHouseholdRow[$defaultMapping[$admType]] = $location;
+            if (! empty($row['E'])) {
+                // head phone number
+                $headOfHouseholdRow['R'] = 'Mobile';
+                $headOfHouseholdRow['S'] = '+963';
+                $headOfHouseholdRow['T'] = $row['E'];
+                $headOfHouseholdRow['U'] = 'N';
+            }
+
             /**
              * remove and potential second from list of benefiaries by guessing their ages
              * Strategy:
@@ -294,21 +309,26 @@ class SyriaFileToTemplateMapper
              */
             $mainHeadRemoved = false;
             $subHeadRemoved  = false;
-            $letters = range('Q', 'V');
+            $letters = range('P', 'V');
+            $genders = [self::MALE, self::FEMALE];
+
             for ($i = count($letters) - 1; $i>=0; $i--) {
                 $letter = $letters[$i];
                 $cellValue = intval($row[$letter]);
                 if ($cellValue <= 0) {
-                    // we ignore a empty column
+                    // we ignore an empty column
                     continue;
                 }
                 // the 1st index (column V) is odd and matches a woman
                 // if the current person has the same sex than the main and the main has not been remove yet
                 if (! $mainHeadRemoved) {
-                    // odd means woman, $headOfSex===1 also means woman
-                    if (($i%2!=0 && intval($headOfSex) === 1) || ($i%2==0 && intval($headOfSex) === 0)) {
+                    // even means woman, $headOfSex===1 also means woman
+                    if (($i%2==0 && intval($headOfSex) === 1) || ($i%2!=0 && intval($headOfSex) === 0)) {
                         //we potentially found the first older person having the head of household sex
                         //we remove him
+
+                        $headOfHouseholdRow['P'] = $this->getBirthday($letter);
+
                         $row[$letter] = --$cellValue;
                         $mainHeadRemoved = true;
                         if (! $secondBeneficiaryExists) {
@@ -322,29 +342,20 @@ class SyriaFileToTemplateMapper
                 if ($secondBeneficiaryExists && $cellValue > 0 && ! $subHeadRemoved) {
                     $row[$letter] = intval($row[$letter]) - 1;
                     $subHeadRemoved = true;
-                    // set second beneciary sex: odd means woman
-                    $secondBeneficiaryValues['N'] = $i%2!=0 ? self::FEMALE : self::MALE;
+                    // set second beneficiary sex: odd means woman
+                    if ($letter == 'P') {
+                        $secondBeneficiaryValues['N'] = $genders[array_rand($genders)];
+                    } else {
+                        $secondBeneficiaryValues['N'] = $i%2==0 ? self::FEMALE : self::MALE;
+                    }
+                    $secondBeneficiaryValues['P'] = $this->getBirthday($letter);
+
                     if ($mainHeadRemoved) {
                         break;
                     }
                 }
             }
             unset($letters);
-
-            // B. LET ADD HEAD OF HOUSEHOLD and its second
-            $headOfHouseholdRow = new ArrayObject($mutualOutputRow);
-            // address
-            $headOfHouseholdRow['A'] = $addressStreet;
-            $headOfHouseholdRow['B'] = $row[$defaultMapping['B']];
-            $headOfHouseholdRow['C'] = 'Unknown';
-            $headOfHouseholdRow[$defaultMapping[$admType]] = $location;
-            if (! empty($row['E'])) {
-                // head phone number
-                $headOfHouseholdRow['R'] = 'Mobile';
-                $headOfHouseholdRow['S'] = '+963';
-                $headOfHouseholdRow['T'] = $row['E'];
-                $headOfHouseholdRow['U'] = 'N';
-            }
 
             $outputRows[] = $headOfHouseholdRow;
             if ($secondBeneficiaryExists) {
@@ -364,10 +375,6 @@ class SyriaFileToTemplateMapper
                 $column = $letters[$i];
                 // count members of family in a age class
                 $ageGroupCount = intval($row[$column]);
-//                try{
-//                } catch (Throwable $exception) {
-//                    $ageGroupCount = 0;
-//                }
 
                 // ignore null or 0 values
                 if ($ageGroupCount === 0) {
@@ -399,7 +406,7 @@ class SyriaFileToTemplateMapper
                     } else if (in_array($column, ['K', 'M', 'O', 'R', 'T', 'V'])) {
                         $outputRow['N'] = self::FEMALE;
                     } else {
-                        $outputRow['N'] = 'not defined';
+                        $outputRow['N'] = $genders[array_rand($genders)];
                     }
 
                     $outputRows[] = $outputRow;
