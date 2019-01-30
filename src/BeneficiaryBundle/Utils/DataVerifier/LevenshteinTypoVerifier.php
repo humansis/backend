@@ -62,6 +62,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             return null;
 
         $similarHouseholds = $householdRepository->foundSimilarLevenshtein(
+            $countryISO3,
             $householdArray["address_street"] .
             $householdArray["address_number"] .
             $householdArray["address_postcode"] .
