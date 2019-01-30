@@ -79,10 +79,14 @@ class TransactionService {
      */
     private function getFinancialProviderForCountry(string $countryISO3)
     {
-        $provider = $this->container->get('transaction.' . strtolower($countryISO3) . '_financial_provider');
+        try {
+            $provider = $this->container->get('transaction.' . strtolower($countryISO3) . '_financial_provider');
+        } catch (\Exception $e) {
+            $provider = null;
+        }
         
         if (! ($provider instanceof DefaultFinancialProvider)) {
-            throw new \Exception("The financial provider for " . $countryISO3 . "is not properly defined");
+            throw new \Exception("The financial provider for " . $countryISO3 . " is not properly defined");
         }
         return $provider;
     }
