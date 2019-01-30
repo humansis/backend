@@ -13,7 +13,7 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
     public function countAll(string $iso3)
     {
         $qb = $this->createQueryBuilder("db");
-        $q = $qb->select("COUNT(db)")
+        $q = $qb->select("COUNT(DISTINCT db.beneficiary)")
                 ->leftJoin("db.beneficiary", "b")
                 ->leftJoin("b.household","hh")
                 ->leftJoin("hh.location", "l")
