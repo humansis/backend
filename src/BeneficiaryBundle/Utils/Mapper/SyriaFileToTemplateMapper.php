@@ -11,7 +11,11 @@ use DateInterval;
 use DateTime;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Exception as PhpOfficeException;
+use PhpOffice\PhpSpreadsheet\Reader\Exception as PhpOfficeReaderException;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpOfficeWriterException;
 use Symfony\Component\HttpFoundation\File\File;
+use Throwable;
 use function explode;
 use function implode;
 use function in_array;
@@ -21,7 +25,6 @@ use function set_time_limit;
 use function strpos;
 use function str_replace;
 use function trim;
-
 class SyriaFileToTemplateMapper
 {
     /**
@@ -82,65 +85,72 @@ class SyriaFileToTemplateMapper
      *   executionTime: Numeric,
      *   writeTime: Numeric,
      * }
+     * @throws MapperException
      */
     public function map(array $input) : array
     {
-        /** @var File $file */
-        $file     = $input['file'];
-        $location = $input['location'];
+        try {
+            /** @var File $file */
+            $file     = $input['file'];
+            $location = $input['location'];
 
-        // Load input file
-        $time        = microtime(true);
-        $reader      = IOFactory::createReaderForFile($file->getRealPath());
-        $worksheet   = $reader->load($file->getRealPath())->getActiveSheet();
-        $loadingTime = microtime(true) - $time;
+            // Load input file
+            $time        = microtime(true);
+            $reader      = IOFactory::createReaderForFile($file->getRealPath());
+            $worksheet   = $reader->load($file->getRealPath())->getActiveSheet();
+            $loadingTime = microtime(true) - $time;
 
-        // Map and generate output content
-        // security to avoid infinite loop during test
-        set_time_limit(30); // after 30 seconds it should crash to avoid server termination
-        $time          = microtime(true);
-        $sheetArray    = $worksheet->toArray(null, true, true, true);
-        $output        = $this->doMap($sheetArray, [
-            'location' => $location,
-        ]);
-        $executionTime = microtime(true) - $time;
+            // Map and generate output content
+            // security to avoid infinite loop during test
+            set_time_limit(30); // after 30 seconds it should crash to avoid server termination
+            $time          = microtime(true);
+            $sheetArray    = $worksheet->toArray(null, true, true, true);
+            $output        = $this->doMap($sheetArray, [
+                'location' => $location,
+            ]);
+            $executionTime = microtime(true) - $time;
 
-        // create new speadsheet
-        $time        = microtime(true);
-        $spreadsheet = new Spreadsheet();
-        $spreadsheet->createSheet();
-        $worksheet = $spreadsheet->getActiveSheet();
+            // create new speadsheet
+            $time        = microtime(true);
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->createSheet();
+            $worksheet = $spreadsheet->getActiveSheet();
 
-        // Write header
-        $currentIndex = 1;
-        foreach ($this->prepareOutputHeaderRow() as $letter => $value) {
-            $worksheet->setCellValue($letter . $currentIndex, $value);
-        }
-
-        // Write content
-        $currentIndex = 6;
-        foreach ($output as $row) {
-            $currentIndex++;
-            foreach ($row as $letter => $cell) {
-                $worksheet->setCellValue($letter . $currentIndex, $cell);
+            // Write header
+            $currentIndex = 1;
+            foreach ($this->prepareOutputHeaderRow() as $letter => $value) {
+                $worksheet->setCellValue($letter . $currentIndex, $value);
             }
+
+            // Write content
+            $currentIndex = 6;
+            foreach ($output as $row) {
+                $currentIndex++;
+                foreach ($row as $letter => $cell) {
+                    $worksheet->setCellValue($letter . $currentIndex, $cell);
+                }
+            }
+
+            $filename  = $this->defaultExportService->generateFile(
+                $spreadsheet,
+                'syriaToStandard' . (new DateTime())->getTimestamp(),
+                ExportService::FORMAT_XLS
+            );
+            $writeTime = microtime(true) - $time;
+
+            set_time_limit(0);
+
+            return [
+                'outputFile' => $filename,
+                'loadingTime' => $loadingTime,
+                'executionTime' => $executionTime,
+                'writeTime' => $writeTime,
+            ];
+        } catch (PhpOfficeReaderException|PhpOfficeWriterException|PhpOfficeException $exception) {
+            throw new MapperException(sprintf('[PhpOffice] %s', $exception->getMessage()));
+        } catch (Throwable $exception) {
+            throw new MapperException($exception->getMessage());
         }
-
-        $filename  = $this->defaultExportService->generateFile(
-            $spreadsheet,
-            'syriaToStandard' . (new DateTime())->getTimestamp(),
-            ExportService::FORMAT_XLS
-        );
-        $writeTime = microtime(true) - $time;
-
-        set_time_limit(0);
-
-        return [
-            'outputFile' => $filename,
-            'loadingTime' => $loadingTime,
-            'executionTime' => $executionTime,
-            'writeTime' => $writeTime,
-        ];
     }
 
     /**
@@ -148,7 +158,15 @@ class SyriaFileToTemplateMapper
      *
      * @param array $sheetArray The uploaded file converted to an array
      *
+     * @param array $parameters An array with all required informations
+     *                       {
+     *                          location: {
+     *                              admIndex: number,
+     *                              name: string,
+     *                          },
+     *                       }
      * @return string[][]
+     * @throws MapperException
      */
     private function doMap(array $sheetArray, $parameters = []) : array
     {
@@ -156,10 +174,10 @@ class SyriaFileToTemplateMapper
         $admType  = '';
         $location = '';
 
-        foreach ($parameters['location'] as $adm => $value) {
+        foreach ($parameters['location'] as $admIndex => $value) {
             if (! empty($value)) {
                 $location = $value;
-                $admType  = $adm;
+                $admType  = 'adm' . $admIndex;
                 break;
             }
         }
@@ -461,7 +479,7 @@ class SyriaFileToTemplateMapper
     /**
      * Retrieve the birthday from the given column.
      *
-     * @param string $intervalSpec The column from the input file
+     * @param string $column The column from the input file
      *
      * @return string The formated date
      */

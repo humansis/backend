@@ -545,7 +545,7 @@ class HouseholdController extends Controller
             $response->headers->set('X-times-writeTime', $output['writeTime']);
             return $response;
         } catch (Throwable $exception) {
-            return new JsonResponse($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse($exception->getMessage() . ' - ' . $exception->getFile() . " - " . $exception->getLine(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
