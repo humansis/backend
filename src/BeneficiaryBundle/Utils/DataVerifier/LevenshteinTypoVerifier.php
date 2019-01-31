@@ -62,6 +62,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             return null;
 
         $similarHouseholds = $householdRepository->foundSimilarLevenshtein(
+            $countryISO3,
             $householdArray["address_street"] .
             $householdArray["address_number"] .
             $householdArray["address_postcode"] .
@@ -88,7 +89,8 @@ class LevenshteinTypoVerifier extends AbstractVerifier
 
             return [
                 "old" => $householdRepository->find(current($similarHouseholds)["household"]),
-                "new" => $householdArray, "id_tmp_cache" => $cacheId
+                "new" => $householdArray,
+                "id_tmp_cache" => $cacheId
             ];
         }
     }

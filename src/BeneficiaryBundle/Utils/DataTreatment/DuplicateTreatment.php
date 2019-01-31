@@ -59,14 +59,18 @@ class DuplicateTreatment extends AbstractTreatment
                     }
 
                     $this->saveHouseholds($email . '-households.duplicate', $household);
+
+                    //UPDATE THE NEW HH IN THE CACHE
+                    $this->updateInCache($householdData["id_tmp_cache"], $newHousehold, $email);
                 }
                 else
                 {
+                    $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryData['id_old']);
                     // we delete the beneficiary in the household which must be saved
                     foreach ($newHousehold['beneficiaries'] as $index => $newBeneficiary)
                     {
-                        if ($newBeneficiary['given_name'] === $beneficiaryData['to_delete']['given_name']
-                            && $newBeneficiary['family_name'] === $beneficiaryData['to_delete']['family_name'])
+                        if ($newBeneficiary['given_name'] === $beneficiary->getGivenName()
+                            && $newBeneficiary['family_name'] === $beneficiary->getFamilyName())
                         {
                             unset($newHousehold['beneficiaries'][$index]);
                             break;
@@ -74,10 +78,6 @@ class DuplicateTreatment extends AbstractTreatment
                     }
                 }
             }
-            //UPDATE THE NEW HH IN THE CACHE
-            if (array_key_exists("id_tmp_cache", $householdData))
-                $this->updateInCache($householdData["id_tmp_cache"], $newHousehold, $email);
-            $listHouseholds[] = $newHousehold;
         }
         $this->em->flush();
         $listHouseholdsFromCache = [];
