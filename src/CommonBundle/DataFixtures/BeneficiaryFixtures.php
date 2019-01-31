@@ -7,6 +7,7 @@ use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\HttpKernel\Kernel;
 
 class BeneficiaryFixtures extends Fixture
 {
@@ -219,10 +220,13 @@ class BeneficiaryFixtures extends Fixture
     ];
 
     private $householdService;
+    
+    private $kernel;
 
-    public function __construct(HouseholdService $householdService)
+    public function __construct(Kernel $kernel, HouseholdService $householdService)
     {
         $this->householdService = $householdService;
+        $this->kernel = $kernel;
     }
 
 
@@ -233,9 +237,11 @@ class BeneficiaryFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $project = $manager->getRepository(Project::class)->findAll();
-        foreach($this->householdArray as $household){
-            $this->householdService->createOrEdit($household, $project);
+        if ($this->kernel->getEnvironment() !== "prod") {
+            $project = $manager->getRepository(Project::class)->findAll();
+            foreach($this->householdArray as $household){
+                $this->householdService->createOrEdit($household, $project);
+            }
         }
     }
 }

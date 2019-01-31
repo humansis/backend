@@ -7,6 +7,8 @@ namespace BeneficiaryBundle\Controller;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
+use BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper;
+use CommonBundle\Response\CommonBinaryFileResponse;
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
@@ -25,6 +27,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Throwable;
 
 class HouseholdController extends Controller
 {
@@ -492,6 +495,57 @@ class HouseholdController extends Controller
             return new Response($json);
         } catch (\Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * @Rest\Post(
+     *     "/import/households",
+     *     name="import_household_by_model"
+     * )
+     *
+     * @ Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @SWG\Tag(name="Beneficiary")
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function importBeneficiariesFromSyriaFileAction(
+        Request $request
+    ) : Response {
+        if (! $request->files->has('file')) {
+            return new JsonResponse("You must upload a file.", Response::HTTP_BAD_REQUEST);
+        }
+        if (! $request->query->has('adm')) {
+            return new JsonResponse("A location is required.", Response::HTTP_BAD_REQUEST);
+        }
+        if (! $request->query->has('name')) {
+            return new JsonResponse("A location is required.", Response::HTTP_BAD_REQUEST);
+        }
+
+        $location = array($request->query->get('adm') => $request->query->get('name'));
+
+        try {
+            // get mapper and map
+            $output = $this->container
+                ->get('beneficiary.syria_file_to_template_mapper')
+                ->map([
+                    'file' => $request->files->get('file'),
+                    'location' =>  $location,
+                ]);
+
+            // Create binary file to send
+            $response = new CommonBinaryFileResponse($output['outputFile'], getcwd() . '/');
+            $response->headers->set('X-times-loadingTime', $output['loadingTime']);
+            $response->headers->set('X-times-executionTime', $output['executionTime']);
+            $response->headers->set('X-times-writeTime', $output['writeTime']);
+            return $response;
+        } catch (Throwable $exception) {
+            return new JsonResponse($exception->getMessage() . ' - ' . $exception->getFile() . " - " . $exception->getLine(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
