@@ -59,7 +59,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     CONCAT(COALESCE(hh.addressStreet, ''), COALESCE(hh.addressNumber, ''), COALESCE(hh.addressPostcode, ''), COALESCE(b.givenName, ''), COALESCE(b.familyName, '')),
                     :stringToSearch
                 ) as levenshtein")
-            ->where("b.status = 1")
+            ->andWhere("b.status = 1")
             ->andWhere("
                 LEVENSHTEIN(
                     CONCAT(COALESCE(hh.addressStreet, ''), COALESCE(hh.addressNumber, ''), COALESCE(hh.addressPostcode, ''), COALESCE(b.givenName, ''), COALESCE(b.familyName, '')),
