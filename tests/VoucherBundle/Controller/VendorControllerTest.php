@@ -76,11 +76,12 @@ class VendorControllerTest extends BMSServiceTestCase
     }
 
 
-
     /**
      * @depends testCreateVendor
      * @param $newVendor
      * @return mixed
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function testGetVendor($newVendor)
     {
@@ -100,12 +101,10 @@ class VendorControllerTest extends BMSServiceTestCase
     }
 
 
-
     /**
      * @depends testCreateVendor
      * @param $newVendor
      * @return mixed
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -136,7 +135,6 @@ class VendorControllerTest extends BMSServiceTestCase
      * @depends testEditVendor
      * @param $vendor
      * @return mixed
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */

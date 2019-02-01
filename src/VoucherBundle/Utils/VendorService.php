@@ -38,15 +38,15 @@ class VendorService
   }
 
   // =============== CREATE VENDOR ===============
-  /**
-   * @param Vendor $vendor
-   * @param array $vendorData
-   * @return mixed
-   * @throws \Exception
-   */
+
+    /**
+     * @param array $vendorData
+     * @return mixed
+     * @throws \Exception
+     */
   public function create(array $vendorData)
   {
-    $vendorSaved = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
+    $vendorSaved = $this->em->getRepository(Vendor::class)->findOneByUsername($vendorData['username']);
 
     if (!$vendorSaved) {
       $vendor = new Vendor();
