@@ -49,7 +49,6 @@ class VoucherService
   {
     try {
       $allVoucher = $this->em->getRepository(Voucher::class)->findAll();
-      $id;
       if ($allVoucher) {
         end($allVoucher);
         $id = (int)$allVoucher[key($allVoucher)]->getId();
@@ -57,11 +56,11 @@ class VoucherService
         $id = 0;
       }
     } catch (\Exception $e) {
-      throw new $e('Error finding last voucher id');
+      throw new \Exception('Error finding last voucher id');
     }
 
     try {
-      for ($x = 0; $x < $voucherData['numberVouchers']; $x++) {
+      for ($x = 0; $x < $voucherData['number_vouchers']; $x++) {
         $id++;
         $voucher = new Voucher();
   
@@ -80,7 +79,7 @@ class VoucherService
         $id = (int)$voucher->getId();
       }
     } catch (\Exception $e) {
-      throw new $e('Error creating voucher');
+      throw new \Exception('Error creating voucher');
     }
 
     return $voucher;
@@ -133,7 +132,7 @@ class VoucherService
       $this->em->merge($voucher);
       $this->em->flush();
     } catch (\Exception $e) {
-      throw new $e('Error setting Vendor or changing used status');
+      throw new \Exception('Error setting Vendor or changing used status');
     }
     return $voucher;
   }

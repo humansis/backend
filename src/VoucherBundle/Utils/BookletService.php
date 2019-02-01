@@ -66,10 +66,8 @@ class BookletService
   {
     $bookletBatch = $this->getBookletBatch();
     $currentBatch = $bookletBatch;
-    $booklet;
-    $createdBooklet;
 
-    for ($x = 0; $x < $bookletData['numberBooklets']; $x++) {
+    for ($x = 0; $x < $bookletData['number_booklets']; $x++) {
 
       // === creates booklet ===
       try {
@@ -77,7 +75,7 @@ class BookletService
         $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
   
         $booklet->setCode($code)
-          ->setNumberVouchers($bookletData['numberVouchers'])
+          ->setNumberVouchers($bookletData['number_vouchers'])
           ->setCurrency($bookletData['currency']);
   
         $this->em->merge($booklet);
@@ -86,23 +84,23 @@ class BookletService
         $currentBatch++;
         $createdBooklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet->getCode());
       } catch (\Exception $e) {
-        throw new $e('Error creating Booklet');
+        throw new \Exception('Error creating Booklet');
       }
 
       //=== creates vouchers ===
       try {
         $voucherData = [
           'used' => false,
-          'numberVouchers' => $bookletData['numberVouchers'],
+          'number_vouchers' => $bookletData['number_vouchers'],
           'bookletCode' => $code,
           'currency' => $bookletData['currency'],
           'bookletID' => $createdBooklet->getId(),
-          'value' => $bookletData['voucherValue'],
+          'value' => $bookletData['individual_value'],
         ];
   
         $this->container->get('voucher.voucher_service')->create($voucherData);
       } catch (\Exception $e) {
-        throw new $e('Error creating vouchers');
+        throw new \Exception('Error creating vouchers');
       }
     }
 
@@ -120,8 +118,7 @@ class BookletService
   public function generateCode(array $bookletData, int $currentBatch, int $bookletBatch)
   {
     // === randomCode#bookletBatchNumber-lastBatchNumber-currentBooklet ===
-    $bookletBatchNumber;
-    $lastBatchNumber = sprintf("%03d", $bookletBatch + ($bookletData['numberBooklets'] - 1));
+    $lastBatchNumber = sprintf("%03d", $bookletBatch + ($bookletData['number_booklets'] - 1));
     $currentBooklet = sprintf("%03d", $currentBatch);
 
     if ($bookletBatch > 1) {
@@ -180,7 +177,7 @@ class BookletService
       $this->em->merge($booklet);
       $this->em->flush();
     } catch (\Exception $e) {
-      throw new $e('Error updating Booklet');
+      throw new \Exception('Error updating Booklet');
     }
     return $booklet;
   }
@@ -206,7 +203,7 @@ class BookletService
         $this->em->remove($booklet);
         $this->em->flush();
       } catch (\Exception $exception) {
-        throw new $exception('Unable to delete Booklet');
+        throw new \Exception('Unable to delete Booklet');
       }
     } 
     elseif ($removeBooklet && $vouchers) {
@@ -216,7 +213,7 @@ class BookletService
         $this->em->remove($booklet);
         $this->em->flush();
       } catch (\Exception $exception) {
-        throw new $exception('This booklet still contains potentially used vouchers.');
+        throw new \Exception('This booklet still contains potentially used vouchers.');
       }
     } 
     else {

@@ -26,10 +26,10 @@ class BookletControllerTest extends BMSServiceTestCase
     public function testCreateBooklet()
     {
         $body = [
-            "numberVouchers" => 5,
-            "voucherValue" => 10,
+            "number_booklets" => 5,
+            "individual_value" => 10,
             "currency" => 'USD',
-            "numberBooklets" => 3
+            "number_booklets" => 3
         ];
 
         // Fake connection with a token for the user tester (ADMIN)

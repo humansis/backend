@@ -73,7 +73,15 @@ class VendorService
    */
   public function findAll()
   {
-    return $this->em->getRepository(Vendor::class)->findAll();
+    $vendors = $this->em->getRepository(Vendor::class)->findAll();
+
+    foreach ($vendors as $index => $vendor) {
+        if ($vendor->getArchived() === true) {
+            array_splice($vendors, $index, 1);
+        }
+    }
+
+    return $vendors;
   }
 
 
