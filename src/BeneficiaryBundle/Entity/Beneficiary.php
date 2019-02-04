@@ -497,11 +497,20 @@ class Beneficiary implements ExportableInterface
     function getMappedValueForExport(): array
     {
         // Recover the phones of the beneficiary
-        $valuesphones = [];
+        $typephones = ["",""];
+        $prefixphones = ["",""];
+        $valuesphones = ["",""];
+        $proxyphones = ["",""];
+
+        $index = 0;
         foreach ($this->getPhones()->getValues() as $value) {
-            array_push($valuesphones, $value->getNumber());
+            dump($value);
+            $typephones[$index] = $value->getType();
+            $prefixphones[$index] = $value->getPrefix();
+            $valuesphones[$index] = $value->getNumber();
+            $proxyphones[$index] = $value->getProxy();
+            $index++;
         }
-        $valuesphones = join(',', $valuesphones);
 
         // Recover the  criterions from Vulnerability criteria object
         $valuescriteria = [];
@@ -511,10 +520,13 @@ class Beneficiary implements ExportableInterface
         $valuescriteria = join(',', $valuescriteria);
 
         // Recover nationalID from nationalID object
+        $typenationalID = [];
         $valuesnationalID = [];
         foreach ($this->getNationalIds()->getValues() as $value) {
+            array_push($typenationalID, $value->getIdType());
             array_push($valuesnationalID, $value->getIdNumber());
         }
+        $typenationalID = join(',', $typenationalID);
         $valuesnationalID = join(',',$valuesnationalID);
 
         //Recover country specifics for the household
@@ -522,8 +534,6 @@ class Beneficiary implements ExportableInterface
         foreach ($this->getHousehold()->getCountrySpecificAnswers()->getValues() as $value){
             $valueCountrySpecific[$value->getCountrySpecific()->getFieldString()] = $value->getAnswer();
         }
-
-        $valueGender = "";
 
         if ($this->getGender() == 0)
             $valueGender = "Female";
@@ -556,7 +566,15 @@ class Beneficiary implements ExportableInterface
             "status" => $this->getStatus(),
             "dateOfBirth" => $this->getDateOfBirth()->format('Y-m-d'),
             "vulnerabilityCriteria" => $valuescriteria,
-            "phones" => $valuesphones ,
+            "type phone 1" => $typephones[0],
+            "prefix phone 1" => $prefixphones[0],
+            "phones 1" => $valuesphones[0],
+            "proxy phone 1" => $proxyphones[0],
+            "type phone 2" => $typephones[1],
+            "prefix phone 2" => $prefixphones[1],
+            "phones 2" => $valuesphones[1],
+            "proxy phone 2" => $proxyphones[1],
+            "type national ID" => $typenationalID,
             "nationalIds" => $valuesnationalID
         ];
 

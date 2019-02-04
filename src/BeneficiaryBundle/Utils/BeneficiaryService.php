@@ -175,10 +175,8 @@ class BeneficiaryService
         }
         foreach ($beneficiaryArray["phones"] as $phoneArray)
         {
-            if (!empty($phoneArray[0])) {
-                $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
-                $beneficiary->addPhone($phone);
-            }
+            $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
+            $beneficiary->addPhone($phone);
         }
 
         foreach ($beneficiaryArray["national_ids"] as $nationalIdArray)
@@ -220,6 +218,7 @@ class BeneficiaryService
      */
     public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
+        dump($phoneArray);
         if ($phoneArray['proxy'] && $phoneArray['proxy'] === 'N')
             $phoneArray['proxy'] = false;
         elseif ($phoneArray['proxy'] && $phoneArray['proxy'] === 'Y')
@@ -235,6 +234,8 @@ class BeneficiaryService
             'any'
         );
 
+
+        dump($phoneArray);
         $phone = new Phone();
         $phone->setBeneficiary($beneficiary)
             ->setType($phoneArray["type"])
@@ -246,6 +247,7 @@ class BeneficiaryService
         if ($flush)
             $this->em->flush();
 
+        dump($phone);
         return $phone;
     }
 
