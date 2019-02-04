@@ -218,7 +218,6 @@ class BeneficiaryService
      */
     public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
-        dump($phoneArray);
         if ($phoneArray['proxy'] && $phoneArray['proxy'] === 'N')
             $phoneArray['proxy'] = false;
         elseif ($phoneArray['proxy'] && $phoneArray['proxy'] === 'Y')
@@ -235,7 +234,6 @@ class BeneficiaryService
         );
 
 
-        dump($phoneArray);
         $phone = new Phone();
         $phone->setBeneficiary($beneficiary)
             ->setType($phoneArray["type"])
@@ -247,7 +245,6 @@ class BeneficiaryService
         if ($flush)
             $this->em->flush();
 
-        dump($phone);
         return $phone;
     }
 

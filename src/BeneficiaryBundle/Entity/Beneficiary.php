@@ -504,7 +504,6 @@ class Beneficiary implements ExportableInterface
 
         $index = 0;
         foreach ($this->getPhones()->getValues() as $value) {
-            dump($value);
             $typephones[$index] = $value->getType();
             $prefixphones[$index] = $value->getPrefix();
             $valuesphones[$index] = $value->getNumber();
