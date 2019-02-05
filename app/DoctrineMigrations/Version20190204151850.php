@@ -8,7 +8,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20190122110214 extends AbstractMigration
+final class Version20190204151850 extends AbstractMigration
 {
     public function up(Schema $schema) : void
     {
@@ -56,7 +56,7 @@ final class Version20190122110214 extends AbstractMigration
         $this->addSql('CREATE TABLE booklet (id INT AUTO_INCREMENT NOT NULL, distribution_beneficiary_id INT DEFAULT NULL, code VARCHAR(255) NOT NULL, number_vouchers INT NOT NULL, currency VARCHAR(255) NOT NULL, status INT DEFAULT NULL, password VARCHAR(255) DEFAULT NULL, UNIQUE INDEX UNIQ_818DB72077153098 (code), INDEX IDX_818DB72095AAFAA9 (distribution_beneficiary_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
         $this->addSql('CREATE TABLE booklet_product (booklet_id INT NOT NULL, product_id INT NOT NULL, INDEX IDX_950E688C668144B3 (booklet_id), INDEX IDX_950E688C4584665A (product_id), PRIMARY KEY(booklet_id, product_id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
         $this->addSql('CREATE TABLE vendor (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, shop VARCHAR(255) NOT NULL, address VARCHAR(255) NOT NULL, username VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, archived TINYINT(1) NOT NULL, UNIQUE INDEX UNIQ_F52233F6F85E0677 (username), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE voucher (id INT AUTO_INCREMENT NOT NULL, booklet_id INT NOT NULL, vendor_id INT NOT NULL, used TINYINT(1) NOT NULL, code VARCHAR(255) NOT NULL, individual_value INT NOT NULL, UNIQUE INDEX UNIQ_1392A5D877153098 (code), INDEX IDX_1392A5D8668144B3 (booklet_id), INDEX IDX_1392A5D8F603EE73 (vendor_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE voucher (id INT AUTO_INCREMENT NOT NULL, booklet_id INT NOT NULL, vendor_id INT DEFAULT NULL, used TINYINT(1) NOT NULL, code VARCHAR(255) NOT NULL, individual_value INT NOT NULL, UNIQUE INDEX UNIQ_1392A5D877153098 (code), INDEX IDX_1392A5D8668144B3 (booklet_id), INDEX IDX_1392A5D8F603EE73 (vendor_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
         $this->addSql('CREATE TABLE voucher_product (voucher_id INT NOT NULL, product_id INT NOT NULL, INDEX IDX_10872EAA28AA1B6F (voucher_id), INDEX IDX_10872EAA4584665A (product_id), PRIMARY KEY(voucher_id, product_id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
         $this->addSql('ALTER TABLE user_project ADD CONSTRAINT FK_77BECEE4A76ED395 FOREIGN KEY (user_id) REFERENCES `user` (id)');
         $this->addSql('ALTER TABLE user_project ADD CONSTRAINT FK_77BECEE4166D1F9C FOREIGN KEY (project_id) REFERENCES project (id)');

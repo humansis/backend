@@ -220,7 +220,7 @@ class Vendor
      *
      * @param bool $archived
      *
-     * @return Vender
+     * @return Vendor
      */
     public function setArchived($archived)
     {

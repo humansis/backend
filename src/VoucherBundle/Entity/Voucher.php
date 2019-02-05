@@ -54,10 +54,10 @@ class Voucher
     /**
      * @var int
      *
-     * @ORM\Column(name="individual_value", type="integer")
-     * @Groups({"FullVoucher"})
+     * @ORM\Column(name="value", type="integer")
+     * @Groups({"FullVoucher", "FullBooklet"})
      */
-    private $individualValue;
+    private $value;
 
     /**
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Booklet", inversedBy="vouchers")
@@ -116,25 +116,25 @@ class Voucher
     /**
      * Set used.
      *
-     * @param bool $used
+     * @param integer $value
      *
      * @return Voucher
      */
-    public function setIndividualValue($individualValue)
+    public function setValue($value)
     {
-        $this->individualValue = $individualValue;
+        $this->value = $value;
 
         return $this;
     }
 
     /**
-     * Get used.
+     * Get individual value.
      *
      * @return integer
      */
-    public function getIndividualValue()
+    public function getValue()
     {
-        return $this->individualValue;
+        return $this->value;
     }
     
     /**
@@ -207,18 +207,6 @@ class Voucher
     public function setVendor(Vendor $vendor = null): self
     {
         $this->vendor = $vendor;
-
-        return $this;
-    }
-
-    public function getDistributionBeneficiary(): DistributionBeneficiary
-    {
-        return $this->distribution_beneficiary;
-    }
-
-    public function setDistributionBeneficiary(DistributionBeneficiary $distribution_beneficiary): self
-    {
-        $this->distribution_beneficiary = $distribution_beneficiary;
 
         return $this;
     }

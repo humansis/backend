@@ -2,7 +2,9 @@
 
 namespace VoucherBundle\Utils;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Logs;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Length;
@@ -73,18 +75,20 @@ class BookletService
       try {
         $booklet = new Booklet();
         $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
-  
+
         $booklet->setCode($code)
           ->setNumberVouchers($bookletData['number_vouchers'])
-          ->setCurrency($bookletData['currency']);
-  
+          ->setCurrency($bookletData['currency'])
+          ->setStatus(0)
+          ->setArchived(0);
+
         $this->em->merge($booklet);
         $this->em->flush();
-  
+
         $currentBatch++;
         $createdBooklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet->getCode());
       } catch (\Exception $e) {
-        throw new \Exception('Error creating Booklet');
+        throw new \Exception('Error creating Booklet ' . $e->getMessage() . ' ' . $e->getLine());
       }
 
       //=== creates vouchers ===
@@ -147,7 +151,7 @@ class BookletService
    */
   public function findAll()
   {
-    return $this->em->getRepository(Booklet::class)->findAll();
+    return  $this->em->getRepository(Booklet::class)->findBy(['archived' => false]);
   }
 
 
@@ -162,20 +166,18 @@ class BookletService
   {
 
     try {
-      foreach ($bookletData as $key => $value) {
-        if ($key == 'code') {
-          $booklet->setCode($value);
-        } elseif ($key == 'currency') {
-          $booklet->setCurrency($value);
-        } elseif ($key == 'status') {
-          $booklet->setStatus($value);
-        } elseif ($key == 'password') {
-          $booklet->setPassword($value);
+
+        $booklet->setCurrency($bookletData['currency']);
+        $this->em->merge($booklet);
+
+        $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
+        foreach ($vouchers as $voucher) {
+            $voucher->setValue($bookletData['individual_value']);
+            $this->em->merge($voucher);
         }
-      }
-  
-      $this->em->merge($booklet);
-      $this->em->flush();
+
+        $this->em->flush();
+
     } catch (\Exception $e) {
       throw new \Exception('Error updating Booklet');
     }
@@ -183,9 +185,78 @@ class BookletService
   }
 
 
+    /**
+     * Archive a booklet
+     *
+     * @param Booklet $booklet
+     * @return string
+     */
+    public function archive(Booklet $booklet) {
+        $booklet->setArchived(true);
+
+        $this->em->merge($booklet);
+        $this->em->flush();
+
+        return "Booklet has been archived";
+    }
+
+    /**
+     * Update the password of the booklet
+     *
+     * @param string $booklet
+     * @param int $code
+     * @throws \Exception
+     *
+     * @return string
+     */
+    public function updatePassword(string $booklet, $code) {
+        $booklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet);
+
+        if (!$booklet) {
+            throw new \Exception("Unable to recover a booklet with this name");
+        }
+        if ($booklet->getArchived()){
+            throw new \Exception("This booklet has already been used and is actually archived");
+        }
+
+        $booklet->setPassword($code);
+        $this->em->merge($booklet);
+        $this->em->flush();
+
+        return "Password has been set";
+    }
+
+    /**
+     * Assign the booklet to a beneficiary
+     *
+     * @param string $booklet
+     * @param Beneficiary $beneficiary
+     * @throws \Exception
+     *
+     * @return string
+     */
+    public function assign(string $booklet, Beneficiary $beneficiary) {
+        $booklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet);
+
+        if (!$booklet) {
+            throw new \Exception("Unable to recover a booklet with this name");
+        }
+        if ($booklet->getArchived()){
+            throw new \Exception("This booklet has already been used and is actually archived");
+        }
+
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneByBeneficiary($beneficiary);
+
+        $booklet->setDistributionBeneficiary($distributionBeneficiary);
+        $this->em->merge($booklet);
+        $this->em->flush();
+
+        return "Booklet assigned to the beneficiary";
+    }
+
   // =============== DELETE 1 BOOKLET AND ITS VOUCHERS FROM DATABASE ===============
   /**
-   * Perminantly delete the record from the database
+   * Permanently delete the record from the database
    *
    * @param Booklet $booklet
    * @param bool $removeBooklet

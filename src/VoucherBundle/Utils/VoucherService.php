@@ -66,12 +66,12 @@ class VoucherService
   
         $code = $this->generateCode($voucherData, $id);
         $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
-  
+
         $voucher->setUsed(false)
           ->setCode($code)
           ->setBooklet($booklet)
           ->setVendor(null)
-          ->setIndividualValue($voucherData['value']);
+          ->setValue($voucherData['value']);
 
         $this->em->persist($voucher);
         $this->em->flush();

@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Controller;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -182,8 +183,33 @@ class BookletController extends Controller
     }
 
     /**
+     * Archive a booklet
+     * @Rest\Delete("/booklets/{id}", name="archive_booklet")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @param Booklet $booklet
+     * @return Response
+     */
+    public function archiveAction(Booklet $booklet){
+        try {
+            $isSuccess = $this->get('booklet.booklet_service')->archive($booklet);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return new Response(json_encode($isSuccess));
+    }
+
+    /**
      * Delete a booklet
-     * @Rest\Delete("/booklets/{id}", name="delete_booklet")
+     * @Rest\Delete("/booklet/{id}", name="delete_booklet")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -203,9 +229,80 @@ class BookletController extends Controller
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        
+
         return new Response(json_encode($isSuccess));
     }
 
+    /**
+     * Update password of the booklet
+     * @Rest\Post("/booklets/password/", name="update_password_booklet")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @SWG\Schema(type="string")
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function updatePasswordAction(Request $request)
+    {
+        $allRequest = $request->request->all();
+         if (!key_exists('code', $allRequest)) {
+            return new Response("The code is missing");
+        }
+        if (!key_exists('booklet', $allRequest)) {
+            return new Response("The booklet is missing");
+        }
+
+        $booklet = $request->request->get('booklet');
+        $code = $request->request->get('code');
+
+        try {
+            $return = $this->get('booklet.booklet_service')->updatePassword($booklet, $code);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return new Response(json_encode($return));
+    }
+
+
+    /**
+     * Assign the booklet to a specific beneficiary
+     * @Rest\Post("/booklets/assign/{id}", name="assign_booklet")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @SWG\Schema(type="string")
+     * )
+     *
+     * @param Beneficiary $beneficiary
+     * @param Request $request
+     * @return Response
+     */
+    public function assignAction(Beneficiary $beneficiary, Request $request)
+    {
+        $allRequest = $request->request->all();
+        if (!key_exists('booklet', $allRequest)) {
+            return new Response("The booklet is missing");
+        }
+
+        $booklet = $request->request->get('booklet');
+
+        try {
+            $return = $this->get('booklet.booklet_service')->assign($booklet, $beneficiary);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return new Response(json_encode($return));
+    }
 
 }

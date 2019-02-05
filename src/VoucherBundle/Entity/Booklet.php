@@ -67,6 +67,14 @@ class Booklet
     private $password;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="archived", type="boolean")
+     * @Groups({"FullVendor"})
+     */
+    private $archived;
+
+    /**
      * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="booklets")
      * @Groups({"FullBooklet"})
      */
@@ -150,30 +158,6 @@ class Booklet
     }
 
     /**
-     * Set individualValue.
-     *
-     * @param int $individualValue
-     *
-     * @return Booklet
-     */
-    public function setIndividualValue($individualValue)
-    {
-        $this->individualValue = $individualValue;
-
-        return $this;
-    }
-
-    /**
-     * Get individualValue.
-     *
-     * @return int
-     */
-    public function getIndividualValue()
-    {
-        return $this->individualValue;
-    }
-
-    /**
      * Set currency.
      *
      * @param string $currency
@@ -246,6 +230,30 @@ class Booklet
     }
 
     /**
+     * Set archived.
+     *
+     * @param bool $archived
+     *
+     * @return Booklet
+     */
+    public function setArchived($archived)
+    {
+        $this->archived = $archived;
+
+        return $this;
+    }
+
+    /**
+     * Get archived.
+     *
+     * @return bool
+     */
+    public function getArchived()
+    {
+        return $this->archived;
+    }
+
+    /**
      * @return Collection|Product[]
      */
     public function getProduct(): Collection
@@ -298,6 +306,18 @@ class Booklet
                 $voucher->setBooklet(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDistributionBeneficiary(): DistributionBeneficiary
+    {
+        return $this->distribution_beneficiary;
+    }
+
+    public function setDistributionBeneficiary(DistributionBeneficiary $distribution_beneficiary): self
+    {
+        $this->distribution_beneficiary = $distribution_beneficiary;
 
         return $this;
     }
