@@ -6,6 +6,7 @@ namespace CommonBundle\DataFixtures;
 use DistributionBundle\Utils\DistributionService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\HttpKernel\Kernel;
 
 class DistributionFixtures extends Fixture
 {
@@ -59,10 +60,12 @@ class DistributionFixtures extends Fixture
     ];
 
     private $distributionService;
+    private $kernel;
 
-    public function __construct(DistributionService $distributionService)
+    public function __construct(Kernel $kernel, DistributionService $distributionService)
     {
         $this->distributionService = $distributionService;
+        $this->kernel = $kernel;
     }
 
 
@@ -74,6 +77,8 @@ class DistributionFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $this->distributionService->create("KHM", $this->distributionArray, 1);
+        if ($this->kernel->getEnvironment() !== "prod") {
+            $this->distributionService->create("KHM", $this->distributionArray, 1);
+        }
     }
 }

@@ -70,6 +70,16 @@ class TypoTreatment extends AbstractTreatment
                 $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold, $email);
                 $householdArray['new']['id_tmp_cache'] = $id_tmp;
             }
+            elseif (boolval($householdArray['state']) && array_key_exists("new", $householdArray) && $householdArray['new'] !== null) {
+                $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
+                $projects = array();
+                array_push($projects, $project);
+                $this->householdService->createOrEdit($householdArray['new'], $projects);
+
+                $this->saveHouseholds($email . '-households.typo', $householdArray['new']);
+                $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold, $email);
+                $householdArray['new']['id_tmp_cache'] = $id_tmp;
+            }
 
 
             // WE SAVE EVERY HOUSEHOLD WHICH HAVE BEEN TREATED BY THIS FUNCTION BECAUSE IN NEXT STEP WE HAVE TO KNOW WHICH

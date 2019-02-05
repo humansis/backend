@@ -21,6 +21,10 @@ use Symfony\Component\HttpFoundation\Response;
  */
 Class ExportService {
 
+    const FORMAT_CSV = 'csv';
+    const FORMAT_XLS = 'xls';
+    const FORMAT_ODS = 'ods';
+
     /** @var EntityManagerInterface $em */
     private $em;
 
@@ -66,18 +70,18 @@ Class ExportService {
     public function generateFile(Spreadsheet $spreadsheet, string $name, string $type)
     {
         // step 3 : scanning sheet into csv or excel
-        if($type == "csv"){
+        if($type == self::FORMAT_CSV){
             $writer = IOFactory::createWriter($spreadsheet, 'Csv');
             $writer->setEnclosure('');
             $writer->setDelimiter(';');
             $writer->setUseBOM(true);
             $filename = $name.'.csv';
         }
-        elseif($type == "xls"){
+        elseif($type == self::FORMAT_XLS){
             $writer = IOFactory::createWriter($spreadsheet, 'Xls');
             $filename = $name.'.xls';
         }
-        elseif($type == "ods"){
+        elseif($type == self::FORMAT_ODS){
             $writer = IOFactory::createWriter($spreadsheet, 'Ods');
             $filename = $name.'.ods';
         }

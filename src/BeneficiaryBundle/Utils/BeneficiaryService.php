@@ -86,9 +86,9 @@ class BeneficiaryService
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
 
-        if ($beneficiaryArray["gender"] == 'Male')
+        if ($beneficiaryArray["gender"] === 'Male')
             $beneficiaryArray["gender"] = 1;
-        elseif ($beneficiaryArray["gender"] == 'Female')
+        elseif ($beneficiaryArray["gender"] === 'Female')
             $beneficiaryArray["gender"] = 0;
 
         if (array_key_exists('phone1_type', $beneficiaryArray)) {
@@ -175,8 +175,10 @@ class BeneficiaryService
         }
         foreach ($beneficiaryArray["phones"] as $phoneArray)
         {
-            $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
-            $beneficiary->addPhone($phone);
+            if (!empty($phoneArray[0])) {
+                $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
+                $beneficiary->addPhone($phone);
+            }
         }
 
         foreach ($beneficiaryArray["national_ids"] as $nationalIdArray)

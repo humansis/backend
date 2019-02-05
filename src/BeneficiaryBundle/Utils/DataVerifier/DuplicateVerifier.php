@@ -34,10 +34,7 @@ class DuplicateVerifier extends AbstractVerifier
     {
         $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria(null, $countryISO3, []);
         // GET THE SIMILAR HOUSEHOLD FROM THE DB, IF ISSET
-        if (array_key_exists('id_tmp_cache', $householdArray))
-            $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache'], $email);
-        else
-            $similarOldHousehold = null;
+        $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache'], $email);
 
         $listDuplicateBeneficiaries = [];
         $newHouseholdEmpty = $householdArray['new'];
@@ -57,11 +54,17 @@ class DuplicateVerifier extends AbstractVerifier
                 )
                 {
                     $newHouseholdEmpty['beneficiaries'][] = $newBeneficiary;
+                    
+                    $clonedHH = clone $oldBeneficiary->getHousehold();
+                    $old = $clonedHH->resetBeneficiaries()->addBeneficiary($oldBeneficiary);
+                    
                     $arrayTmp = [
                         "new" => $newHouseholdEmpty,
-                        "old" => $oldBeneficiary->getHousehold()->resetBeneficiaries()->addBeneficiary($oldBeneficiary)
+                        "old" => $old,
+                        "id_tmp_cache" => $householdArray["id_tmp_cache"],
+                        "new_household" => $householdArray["new"]
                     ];
-
+                    
                     $listDuplicateBeneficiaries[] = $arrayTmp;
                     break;
                 }
@@ -71,17 +74,7 @@ class DuplicateVerifier extends AbstractVerifier
 
         if (!empty($listDuplicateBeneficiaries))
         {
-            if (array_key_exists("id_tmp_cache", $householdArray))
-                return [
-                    "new_household" => $householdArray['new'],
-                    "id_tmp_cache" => $householdArray["id_tmp_cache"],
-                    "data" => $listDuplicateBeneficiaries
-                ];
-
-            return [
-                "new_household" => $householdArray['new'],
-                "data" => $listDuplicateBeneficiaries
-            ];
+            return $listDuplicateBeneficiaries;
         }
 
         return null;

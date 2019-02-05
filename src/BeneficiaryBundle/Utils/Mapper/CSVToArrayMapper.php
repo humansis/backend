@@ -29,7 +29,7 @@ class CSVToArrayMapper extends AbstractMapper
 
         foreach ($sheetArray as $indexRow => $row)
         {
-            if (!$row['A'] && !$row['B'] && !$row['C'] && !$row['D'] && !$row['E'] && !$row['F'] && !$row['G'] && !$row['H'] && !$row['I'] && !$row['J'] && !$row['K'] && !$row['L'] && !$row['M'] && !$row['N'] && !$row['O'] && !$row['P'] && !$row['Q'] && !$row['R'] && !$row['S'] && !$row['T'] && !$row['U'] && !$row['V'] && !$row['W'] && !$row['X'] && !$row['Y'] && !$row['Z'] && !$row['AA'] && !$row['AB'] && !$row['AC'] && !$row['AD'] && !$row['AE'] && !$row['AF'] && !$row['AG'] && !$row['AH'])
+            if (!$row['A'] && !$row['B'] && !$row['C'] && !$row['D'] && !$row['E'] && !$row['F'] && !$row['G'] && !$row['H'] && !$row['I'] && !$row['J'] && !$row['K'] && !$row['L'] && !$row['M'] && !$row['N'] && !$row['O'] && !$row['P'] && !$row['Q'] && !$row['R'] && !$row['S'] && !$row['T'] && !$row['U'] && !$row['V'] && !$row['W'] && !$row['X'] && !$row['Y'] && !$row['Z'] && !$row['AA'])
                 continue;
 
             //Index == 2
