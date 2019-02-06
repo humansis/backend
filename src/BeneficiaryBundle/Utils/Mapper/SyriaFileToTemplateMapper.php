@@ -9,10 +9,12 @@ use BeneficiaryBundle\Exception\MapperException;
 use CommonBundle\Utils\ExportService;
 use DateInterval;
 use DateTime;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Exception as PhpOfficeException;
 use PhpOffice\PhpSpreadsheet\Reader\Exception as PhpOfficeReaderException;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpOfficeWriterException;
 use Symfony\Component\HttpFoundation\File\File;
 use Throwable;
@@ -104,7 +106,9 @@ class SyriaFileToTemplateMapper
             // security to avoid infinite loop during test
             set_time_limit(60); // after 60 seconds it should crash to avoid server termination
             $time          = microtime(true);
-            $sheetArray    = $worksheet->toArray(null, true, true, true);
+            $highestRow = $worksheet->getHighestRow();
+            $sheetArray = $worksheet
+                ->rangeToArray('A1:Z' . $highestRow, NULL,TRUE,TRUE,TRUE);
             $output        = $this->doMap($sheetArray, [
                 'location' => $location,
             ]);
