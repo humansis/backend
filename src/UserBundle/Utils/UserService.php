@@ -180,7 +180,7 @@ class UserService
      * @param string $username
      * @param string $saltedPassword
      * @param $origin
-     * @return array
+     * @return mixed
      * @throws \Exception
      */
     public function login(string $username, string $saltedPassword, $origin)

@@ -19,3 +19,8 @@ services:
         class: VoucherBundle\Utils\VoucherService
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
         public: true
+
+    product.product_service:
+        class: VoucherBundle\Utils\ProductService
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        public: true
