@@ -42,6 +42,7 @@ install:
 
 # Run script
 script:
+  - phpunit --version
   - phpunit
 
 # After a build, send email notification with the build results
