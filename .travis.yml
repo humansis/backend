@@ -42,7 +42,6 @@ install:
 
 # Run script
 script:
-  - ./vendor/bin/phpunit --version
   - ./vendor/bin/phpunit
 
 # After a build, send email notification with the build results
