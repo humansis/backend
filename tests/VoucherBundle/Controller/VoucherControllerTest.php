@@ -7,6 +7,9 @@ use VoucherBundle\Entity\Voucher;
 
 class VoucherControllerTest extends BMSServiceTestCase
 {
+    /** @var Booklet */
+    protected $booklet;
+
     /**
      * @throws \Exception
      */
@@ -17,6 +20,19 @@ class VoucherControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
         // Get a Client instance for simulate a browser
         $this->client = $this->container->get('test.client');
+
+        // We create a new booklet if we have not already created one
+        $randomBookletCode = join('-', [rand(0, 999), rand(0, 999), rand(0, 999)]);
+        $this->booklet = new Booklet();
+        $this->booklet
+            ->setCode('test#' . $randomBookletCode)
+            ->setArchived(0)
+            ->setNumberVouchers(0)
+            ->setStatus(0)
+            ->setCurrency('USD');
+
+        $this->em->persist($this->booklet);
+        $this->em->flush();
     }
 
     /**
@@ -24,12 +40,10 @@ class VoucherControllerTest extends BMSServiceTestCase
      */
     public function testCreateVoucher()
     {
-        $randomBookletCode = join('-', [rand(0, 999), rand(0, 999), rand(0, 999)]);
-
         $body = [
             'used' => false,
             'number_vouchers' => 3,
-            'bookletCode' => 'test#' . $randomBookletCode,
+            'bookletCode' => 'test#' . $this->booklet->getCode(),
             'currency' => 'USD',
             'bookletID' => NULL,
             'value' => 10,
@@ -40,18 +54,8 @@ class VoucherControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        // We create a new booklet
-        $booklet = new Booklet();
-        $booklet
-            ->setCode('test#' . $randomBookletCode)
-            ->setArchived(0)
-            ->setNumberVouchers(0)
-            ->setStatus(0)
-            ->setCurrency('USD');
 
-        $this->em->persist($booklet);
-        $this->em->flush();
-        $body['bookletID'] = $booklet->getId();
+        $body['bookletID'] = $this->booklet->getId();
 
         // Second step
         // Create the vendor with the email and the salted password. The user should be enable
@@ -100,6 +104,8 @@ class VoucherControllerTest extends BMSServiceTestCase
      * @depends testCreateVoucher
      * @param $newVoucher
      * @return mixed
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function testGetVoucher($newVoucher)
     {
@@ -124,7 +130,6 @@ class VoucherControllerTest extends BMSServiceTestCase
      * @depends testCreateVoucher
      * @param $newVoucher
      * @return mixed
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -181,7 +186,7 @@ class VoucherControllerTest extends BMSServiceTestCase
      */
     public function testDeleteBatchVouchers()
     {
-        $bookletId = 143;
+        $bookletId = $this->booklet->getId();
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -195,6 +200,9 @@ class VoucherControllerTest extends BMSServiceTestCase
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertTrue($success);
+
+        $this->em->remove($this->booklet);
+        $this->em->flush();
     }
 
 
