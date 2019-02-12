@@ -171,6 +171,7 @@ class BookletService
         $this->em->merge($booklet);
 
         $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
+        /** @var $voucher Voucher */
         foreach ($vouchers as $voucher) {
             $voucher->setValue($bookletData['individual_value']);
             $this->em->merge($voucher);

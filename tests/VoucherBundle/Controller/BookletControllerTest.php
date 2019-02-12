@@ -112,7 +112,7 @@ class BookletControllerTest extends BMSServiceTestCase
     public function testEditBooklet($newBooklet)
     {
         $currency = 'GBP';
-        $body = ["currency" => $currency];
+        $body = ["currency" => $currency, "individual_value" => 5];
 
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -151,7 +151,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        $this->assertTrue($success);
+        $this->assertTrue($success == "Booklet has been archived");
     }
 
 }
