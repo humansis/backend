@@ -104,7 +104,8 @@ class SyriaFileToTemplateMapper
             // security to avoid infinite loop during test
             set_time_limit(60); // after 60 seconds it should crash to avoid server termination
             $time          = microtime(true);
-            $sheetArray    = $worksheet->toArray(null, true, true, true);
+            $highestRow    = $worksheet->getHighestRow();
+            $sheetArray    = $worksheet->rangeToArray('A1:Z' . $highestRow, null, true, true, true);
             $output        = $this->doMap($sheetArray, [
                 'location' => $location,
             ]);
