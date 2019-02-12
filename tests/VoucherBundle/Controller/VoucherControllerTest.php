@@ -2,6 +2,7 @@
 namespace VoucherBundle\Tests\Controller;
 
 use Tests\BMSServiceTestCase;
+use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
 
 class VoucherControllerTest extends BMSServiceTestCase
@@ -23,12 +24,14 @@ class VoucherControllerTest extends BMSServiceTestCase
      */
     public function testCreateVoucher()
     {
+        $randomBookletCode = join('-', [rand(0, 999), rand(0, 999), rand(0, 999)]);
+
         $body = [
             'used' => false,
-            'numberVouchers' => 3,
-            'bookletCode' => 'test#145-147-145',
+            'number_vouchers' => 3,
+            'bookletCode' => 'test#' . $randomBookletCode,
             'currency' => 'USD',
-            'bookletID' => 143, 
+            'bookletID' => NULL,
             'value' => 10,
         ];
 
@@ -37,10 +40,28 @@ class VoucherControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        // We create a new booklet
+        $booklet = new Booklet();
+        $booklet
+            ->setCode('test#' . $randomBookletCode)
+            ->setArchived(0)
+            ->setNumberVouchers(0)
+            ->setStatus(0)
+            ->setCurrency('USD');
+
+        $this->em->persist($booklet);
+        $this->em->flush();
+        $body['bookletID'] = $booklet->getId();
+
         // Second step
         // Create the vendor with the email and the salted password. The user should be enable
         $crawler = $this->request('PUT', '/api/wsse/voucher', $body);
         $voucher = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Delete the booklet that was created for the test
+        // $this->em->remove($booklet);
+        // $this->em->flush();
+
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertArrayHasKey('id', $voucher);
@@ -136,6 +157,9 @@ class VoucherControllerTest extends BMSServiceTestCase
      */
     public function testDeleteFromDatabase($voucherToDelete)
     {
+        // Get the previous voucher because the last one was set as used so deletion won't work
+        $voucherToDelete['id']--;
+
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
