@@ -106,7 +106,7 @@ class SyriaFileToTemplateMapper
             $time          = microtime(true);
             $highestRow = $worksheet->getHighestRow();
             $sheetArray = $worksheet
-                ->rangeToArray('A1:Z' . $highestRow, NULL,TRUE,TRUE,TRUE);
+                ->rangeToArray('A1:Z' . $highestRow, null, true, true, true);
             $output        = $this->doMap($sheetArray, [
                 'location' => $location,
             ]);
