@@ -152,9 +152,6 @@ class ProjectControllerTest extends BMSServiceTestCase
         {
             $this->markTestIncomplete("You currently don't have any project in your database.");
         }
-
-
-        return $this->remove($this->name . '(u)');
     }
 
     /**
@@ -187,16 +184,37 @@ class ProjectControllerTest extends BMSServiceTestCase
     }
 
     /**
+     * @depends testCreateProject
+     * @param $project
+     * @return void
+     * @throws \Exception
+     */
+    public function testArchiveProject($project) {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('DELETE', '/api/wsse/projects/' . $project['id']);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        $this->remove($this->name . '(u)');
+    }
+
+    /**
      * @depends testAddHouseholds
+     *
+     * @param string
      *
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function remove()
+    public function remove($projectName)
     {
         $this->em->clear();
-        $project = $this->em->getRepository(Project::class)->findOneByName($this->name);
+        $project = $this->em->getRepository(Project::class)->findOneByName($projectName);
         if ($project instanceof Project)
         {
             $userProject = $this->em->getRepository(UserProject::class)->findOneByProject($project);

@@ -175,10 +175,8 @@ class BeneficiaryService
         }
         foreach ($beneficiaryArray["phones"] as $phoneArray)
         {
-            if (!empty($phoneArray[0])) {
-                $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
-                $beneficiary->addPhone($phone);
-            }
+            $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
+            $beneficiary->addPhone($phone);
         }
 
         foreach ($beneficiaryArray["national_ids"] as $nationalIdArray)
@@ -234,6 +232,7 @@ class BeneficiaryService
             $phoneArray,
             'any'
         );
+
 
         $phone = new Phone();
         $phone->setBeneficiary($beneficiary)

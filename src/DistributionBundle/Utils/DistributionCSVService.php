@@ -106,7 +106,8 @@ class DistributionCSVService
     public function parseCSV($countryIso3, $beneficiaries, DistributionData $distributionData, UploadedFile $uploadedFile)
     {
         $spreadsheet = IOFactory::load($uploadedFile->getRealPath());
-        $sheetArray = $spreadsheet->getSheet(0)->toArray();
+        $worksheet = $spreadsheet->getSheet(0);
+        $sheetArray = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $worksheet->getHighestRow(), null, true, true, true);
         $headers = array_shift($sheetArray);
         $arrayWithKeys = array();
         foreach ($sheetArray as $beneficiaryArray) {

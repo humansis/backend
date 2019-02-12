@@ -35,7 +35,7 @@ class HouseholdToCSVMapper extends AbstractMapper
      */
     public function fromHouseholdToCSV(Worksheet $worksheet, array $receivers, $countryISO3)
     {
-        $arraySheet = $worksheet->toArray(null, true, true, true);
+        $arraySheet = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $worksheet->getHighestRow(), null, true, true, true);
         $mapping = $this->loadMappingCSVOfCountry($countryISO3);
         $householdsArrayCSV = $arraySheet;
         $lastColumn = null;

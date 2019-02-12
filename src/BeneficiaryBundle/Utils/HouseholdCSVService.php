@@ -92,8 +92,7 @@ class HouseholdCSVService
         $reader = IOFactory::createReaderForFile($uploadedFile->getRealPath());
 
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
-
-        $sheetArray = $worksheet->toArray(null, true, true, true);
+        $sheetArray = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $worksheet->getHighestRow(), null, true, true, true);
         return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $step, $token, $email);
     }
 
