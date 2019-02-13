@@ -268,8 +268,8 @@ class BookletController extends Controller
     /**
      * Assign the booklet to a specific beneficiary
      * @Rest\Post("/booklets/{bookletId}/assign/{beneficiaryId}", name="assign_booklet")
-     * @ParamConverter("booklet", options={"mapping": {"code": "bookletId"}})
-     * @ParamConverter("beneficiary", options={"mapping": {"id": "beneficiaryId"}})
+     * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      *
      * @SWG\Tag(name="Booklets")
      *
