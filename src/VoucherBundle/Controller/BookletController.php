@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Booklet;
@@ -266,7 +267,9 @@ class BookletController extends Controller
 
     /**
      * Assign the booklet to a specific beneficiary
-     * @Rest\Post("/booklets/assign/{id}", name="assign_booklet")
+     * @Rest\Post("/booklets/{bookletId}/assign/{beneficiaryId}", name="assign_booklet")
+     * @ParamConverter("booklet", options={"mapping": {"code": "bookletId"}})
+     * @ParamConverter("beneficiary", options={"mapping": {"id": "beneficiaryId"}})
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -276,19 +279,12 @@ class BookletController extends Controller
      *     @SWG\Schema(type="string")
      * )
      *
+     * @param Booklet $booklet
      * @param Beneficiary $beneficiary
-     * @param Request $request
      * @return Response
      */
-    public function assignAction(Beneficiary $beneficiary, Request $request)
+    public function assignAction(Booklet $booklet, Beneficiary $beneficiary)
     {
-        $allRequest = $request->request->all();
-        if (!key_exists('booklet', $allRequest)) {
-            return new Response("The booklet is missing", Response::HTTP_BAD_REQUEST);
-        }
-
-        $booklet = $request->request->get('booklet');
-
         try {
             $return = $this->get('booklet.booklet_service')->assign($booklet, $beneficiary);
         } catch (\Exception $exception) {

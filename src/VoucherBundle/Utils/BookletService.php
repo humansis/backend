@@ -225,18 +225,13 @@ class BookletService
     /**
      * Assign the booklet to a beneficiary
      *
-     * @param string $booklet
+     * @param Booklet $booklet
      * @param Beneficiary $beneficiary
      * @throws \Exception
      *
      * @return string
      */
-    public function assign(string $booklet, Beneficiary $beneficiary) {
-        $booklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet);
-
-        if (!$booklet) {
-            throw new \Exception("Unable to recover a booklet with this name");
-        }
+    public function assign(Booklet $booklet, Beneficiary $beneficiary) {
         if ($booklet->getArchived()){
             throw new \Exception("This booklet has already been used and is actually archived");
         }
