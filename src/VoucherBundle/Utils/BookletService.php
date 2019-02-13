@@ -252,7 +252,7 @@ class BookletService
         $this->em->merge($booklet);
         $this->em->flush();
 
-        return "Booklet assigned to the beneficiary";
+        return "Booklet successfully assigned to the beneficiary";
     }
 
   // =============== DELETE 1 BOOKLET AND ITS VOUCHERS FROM DATABASE ===============

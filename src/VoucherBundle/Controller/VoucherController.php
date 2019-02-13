@@ -92,10 +92,9 @@ class VoucherController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
-     * @param Request $request
      * @return Response
      */
-    public function getAllAction(Request $request)
+    public function getAllAction()
     {
         try {
             $vouchers = $this->get('voucher.voucher_service')->findAll();

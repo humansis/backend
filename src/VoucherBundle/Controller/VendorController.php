@@ -201,11 +201,10 @@ class VendorController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
-     * @param Request $request
      * @param Vendor $vendor
      * @return Response
      */
-    public function archiveVendorAction(Request $request, Vendor $vendor)
+    public function archiveVendorAction(Vendor $vendor)
     {
         try {
             $archivedVendor = $this->get('vendor.vendor_service')->archiveVendor($vendor);

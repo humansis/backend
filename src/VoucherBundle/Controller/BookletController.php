@@ -199,12 +199,12 @@ class BookletController extends Controller
      */
     public function archiveAction(Booklet $booklet){
         try {
-            $isSuccess = $this->get('booklet.booklet_service')->archive($booklet);
+            $this->get('booklet.booklet_service')->archive($booklet);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return new Response(json_encode($isSuccess));
+        return new Response(json_encode('Booklet successfully archived'));
     }
 
     /**
@@ -225,17 +225,17 @@ class BookletController extends Controller
     public function deleteAction(Booklet $booklet)
     {
         try {
-            $isSuccess = $this->get('booklet.booklet_service')->deleteBookletFromDatabase($booklet);
+            $this->get('booklet.booklet_service')->deleteBookletFromDatabase($booklet);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return new Response(json_encode($isSuccess));
+        return new Response(json_encode('Booklet successfully deleted'));
     }
 
     /**
      * Update password of the booklet
-     * @Rest\Post("/booklets/password/", name="update_password_booklet")
+     * @Rest\Post("/booklets/password", name="update_password_booklet")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -252,10 +252,10 @@ class BookletController extends Controller
     {
         $allRequest = $request->request->all();
          if (!key_exists('code', $allRequest)) {
-            return new Response("The code is missing");
+            return new Response("The code is missing", Response::HTTP_BAD_REQUEST);
         }
         if (!key_exists('booklet', $allRequest)) {
-            return new Response("The booklet is missing");
+            return new Response("The booklet is missing", Response::HTTP_BAD_REQUEST);
         }
 
         $booklet = $request->request->get('booklet');
@@ -291,7 +291,7 @@ class BookletController extends Controller
     {
         $allRequest = $request->request->all();
         if (!key_exists('booklet', $allRequest)) {
-            return new Response("The booklet is missing");
+            return new Response("The booklet is missing", Response::HTTP_BAD_REQUEST);
         }
 
         $booklet = $request->request->get('booklet');
