@@ -151,7 +151,6 @@ class BookletControllerTest extends BMSServiceTestCase
 
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        $this->assertTrue($success == "Booklet has been archived");
     }
 
 }
