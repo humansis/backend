@@ -204,23 +204,18 @@ class BookletService
     /**
      * Update the password of the booklet
      *
-     * @param string $booklet
+     * @param Booklet $booklet
      * @param int $code
      * @throws \Exception
      *
      * @return string
      */
-    public function updatePassword(string $booklet, $code) {
-        $booklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet);
-
-        if (!$booklet) {
-            throw new \Exception("Unable to recover a booklet with this name");
-        }
+    public function updatePassword(Booklet $booklet, $password) {
         if ($booklet->getArchived()){
             throw new \Exception("This booklet has already been used and is actually archived");
         }
 
-        $booklet->setPassword($code);
+        $booklet->setPassword($password);
         $this->em->merge($booklet);
         $this->em->flush();
 

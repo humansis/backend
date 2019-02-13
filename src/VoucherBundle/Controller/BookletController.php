@@ -6,11 +6,9 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Booklet;
@@ -235,7 +233,7 @@ class BookletController extends Controller
 
     /**
      * Update password of the booklet
-     * @Rest\Post("/booklets/password", name="update_password_booklet")
+     * @Rest\Post("/booklets/{code}/password", name="update_password_booklet")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -246,23 +244,18 @@ class BookletController extends Controller
      * )
      *
      * @param Request $request
+     * @param Booklet $booklet
      * @return Response
      */
-    public function updatePasswordAction(Request $request)
+    public function updatePasswordAction(Request $request, Booklet $booklet)
     {
-        $allRequest = $request->request->all();
-         if (!key_exists('code', $allRequest)) {
-            return new Response("The code is missing", Response::HTTP_BAD_REQUEST);
+        $password = $request->request->get('password');
+         if (!isset($password) || empty($password)) {
+            return new Response("The password is missing", Response::HTTP_BAD_REQUEST);
         }
-        if (!key_exists('booklet', $allRequest)) {
-            return new Response("The booklet is missing", Response::HTTP_BAD_REQUEST);
-        }
-
-        $booklet = $request->request->get('booklet');
-        $code = $request->request->get('code');
 
         try {
-            $return = $this->get('booklet.booklet_service')->updatePassword($booklet, $code);
+            $return = $this->get('booklet.booklet_service')->updatePassword($booklet, $password);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
