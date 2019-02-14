@@ -242,4 +242,69 @@ class VendorController extends Controller
         
         return new Response(json_encode($isSuccess));
     }
+
+    /**
+     * Log a vendor with its username and salted password. Create a new one if not in the db (remove this part for prod env)
+     * @Rest\Post("/login_app", name="vendor_login")
+     *
+     * @SWG\Tag(name="Vendors")
+     *
+     * @SWG\Response(
+     *      response=200,
+     *      description="SUCCESS",
+     *      examples={
+     *          "application/json": {
+     *              "at"="2018-01-12 12:11:05",
+     *              "registered"="true",
+     *              "user"="username"
+     *          }
+     *      }
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="username",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="username of the vendor",
+     *     @SWG\Schema()
+     * )
+     * @SWG\Parameter(
+     *     name="salted_password",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="salted password of the vendor",
+     *     @SWG\Schema()
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="Bad credentials (username: myUsername)"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function loginAction(Request $request)
+    {
+        $username = $request->request->get('username');
+        $saltedPassword = $request->request->get('salted_password');
+        
+        try
+        {
+            $user = $this->container->get('user.user_service')->login($username, $saltedPassword, null);
+            $vendor = $this->container->get('vendor.vendor_service')->login($user);
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
+        }
+        
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+        
+        $vendorJson = $serializer->serialize($vendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
+        return new Response($vendorJson);
+    }
 }

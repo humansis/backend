@@ -48,19 +48,17 @@ class VendorService
      */
   public function create(array $vendorData)
   {
-
     $username = $vendorData['username'];
     $userSaved = $this->em->getRepository(User::class)->findOneByUsername($username);
     $vendorSaved = $userSaved ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
 
     if (!$vendorSaved) {
-      $initializedUser = $this->container->get('user.user_service')->initialize($username);
-      $user = $this->em->getRepository(User::class)->findOneById($initializedUser['user_id']);
+      $userSaved = $this->em->getRepository(User::class)->findOneByUsername($vendorData['username']);
       $user = $this->container->get('user.user_service')->create(
-        $user, 
+        $userSaved, 
         [
           'rights' => 'ROLE_VENDOR',
-          'salt' => $initializedUser['salt'],
+          'salt' => $vendorData['salt'],
           'password' => $vendorData['password']
         ]);
 
@@ -174,4 +172,17 @@ class VendorService
     return true;
   }
 
+  /**
+     * @param User $user
+     * @throws \Exception
+     */
+    public function login(User $user)
+    {
+      $vendor = $this->em->getRepository(Vendor::class)->findOneByUser($user);
+      if (!$vendor) {
+          throw new \Exception('You cannot log if you are not a vendor', Response::HTTP_BAD_REQUEST);
+      }
+
+        return $vendor;
+    }
 }
