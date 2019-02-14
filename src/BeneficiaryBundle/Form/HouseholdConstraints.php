@@ -54,6 +54,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "family_name" => $string,
             "gender" => $numeric,
             "status" => $numeric,
+            "residency_status" => $string,
             "date_of_birth" => $string,
             "profile" => $array,
             "vulnerability_criteria" => $array,

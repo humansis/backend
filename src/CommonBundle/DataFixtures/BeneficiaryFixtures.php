@@ -48,6 +48,7 @@ class BeneficiaryFixtures extends Fixture
                   "family_name" => "Tester",
                   "gender" => "0",
                   "status" => "1",
+                  "residency_status" => "resident",
                   "date_of_birth" => "1996/10/10",
                   "vulnerability_criteria" => [
                       [
@@ -65,6 +66,7 @@ class BeneficiaryFixtures extends Fixture
                   "family_name" => "Tester",
                   "gender" => "1",
                   "status" => "0",
+                  "residency_status" => "idp",
                   "date_of_birth" => "1996/10/11",
                   "vulnerability_criteria" => [
                       [
@@ -82,6 +84,7 @@ class BeneficiaryFixtures extends Fixture
                   "family_name" => "Tester",
                   "gender" => "1",
                   "status" => "0",
+                  "residency_status" => "refugee",
                   "date_of_birth" => "1996/10/12",
                   "vulnerability_criteria" => [
                       [
@@ -99,6 +102,7 @@ class BeneficiaryFixtures extends Fixture
                   "family_name" => "Tester",
                   "gender" => "1",
                   "status" => "0",
+                  "residency_status" => "resident",
                   "date_of_birth" => "1996/10/13",
                   "vulnerability_criteria" => [
                       [
@@ -150,6 +154,7 @@ class BeneficiaryFixtures extends Fixture
                     "family_name" => "Bis",
                     "gender" => "1",
                     "status" => "1",
+                    "residency_status" => "resident",
                     "date_of_birth" => "1996/10/14",
                     "vulnerability_criteria" => [
                         [
@@ -167,6 +172,7 @@ class BeneficiaryFixtures extends Fixture
                     "family_name" => "Bis",
                     "gender" => "1",
                     "status" => "0",
+                    "residency_status" => "resident",
                     "date_of_birth" => "1996/10/15",
                     "vulnerability_criteria" => [
                         [
@@ -184,6 +190,7 @@ class BeneficiaryFixtures extends Fixture
                     "family_name" => "Bis",
                     "gender" => "1",
                     "status" => "0",
+                    "residency_status" => "resident",
                     "date_of_birth" => "1996/10/16",
                     "vulnerability_criteria" => [
                         [
@@ -201,6 +208,7 @@ class BeneficiaryFixtures extends Fixture
                     "family_name" => "Bis",
                     "gender" => "1",
                     "status" => "0",
+                    "residency_status" => "resident",
                     "date_of_birth" => "1996/10/17",
                     "vulnerability_criteria" => [
                         [
@@ -238,9 +246,9 @@ class BeneficiaryFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         if ($this->kernel->getEnvironment() !== "prod") {
-            $project = $manager->getRepository(Project::class)->findAll();
+            $projects = $manager->getRepository(Project::class)->findAll();
             foreach($this->householdArray as $household){
-                $this->householdService->createOrEdit($household, $project);
+                $this->householdService->createOrEdit($household, $projects);
             }
         }
     }
