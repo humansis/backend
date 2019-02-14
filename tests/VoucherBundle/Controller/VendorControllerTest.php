@@ -45,7 +45,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $vendor = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        $this->assertArrayHasKey('username', $vendor);
+        $this->assertArrayHasKey('user', $vendor);
         $this->assertArrayHasKey('shop', $vendor);
         return $vendor;
     }
