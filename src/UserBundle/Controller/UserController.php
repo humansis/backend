@@ -80,17 +80,21 @@ class UserController extends Controller
         
         try
         {
-            $data = $this->container->get('user.user_service')->login($username, $saltedPassword, $originISO3);
+            $user = $this->container->get('user.user_service')->login($username, $saltedPassword, $originISO3);
         }
         catch (\Exception $exception)
         {
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
+
+        if ($user->getRoles()[0] === 'ROLE_VENDOR') {
+            return new Response('You cannot connect on this site, please use the app.', Response::HTTP_FORBIDDEN);
+        }
         
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
         
-        $userJson = $serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
         return new Response($userJson);
     }
 

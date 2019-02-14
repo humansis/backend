@@ -64,7 +64,7 @@ class Vendor
 
     /**
      * @ORM\OneToOne(targetEntity="\UserBundle\Entity\User")
-     * @Groups({"FullUser"})
+     * @Groups({"FullVendor"})
      */
     private $user;
 

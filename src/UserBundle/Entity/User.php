@@ -54,7 +54,7 @@ class User extends BaseUser implements ExportableInterface
 
     /**
      * @var string
-     * @Groups({"FullUser"})
+     * @Groups({"FullUser", "FullVendor"})
      * @Assert\NotBlank(message="Username can't be empty")
      * @Assert\Length(
      *      min = 2,
