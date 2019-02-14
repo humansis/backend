@@ -591,6 +591,7 @@ class Beneficiary implements ExportableInterface
             "familyName"=> $this->getFamilyName(),
             "gender" => $valueGender,
             "status" => $this->getStatus(),
+            "residencyStatus" => $this->getResidencyStatus(),
             "dateOfBirth" => $this->getDateOfBirth()->format('Y-m-d'),
             "vulnerabilityCriteria" => $valuescriteria,
             "type phone 1" => $typephones[0],
