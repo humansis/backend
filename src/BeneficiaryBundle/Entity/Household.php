@@ -61,18 +61,19 @@ class Household
             "family_name" => "M",
             "gender" => "N",
             "status" => "O",
-            "date_of_birth" => "P",
-            "vulnerability_criteria" => "Q",
-            "phone1_type" => "R",
-            "phone1_prefix" => "S",
-            "phone1_number" => "T",
-            "phone1_proxy" => "U",
-            "phone2_type" => "V",
-            "phone2_prefix" => "W",
-            "phone2_number" => "X",
-            "phone2_proxy" => "Y",
-            "national_id_type" => "Z",
-            "national_id_number" => "AA"
+            "residency_status" => "P",
+            "date_of_birth" => "Q",
+            "vulnerability_criteria" => "R",
+            "phone1_type" => "S",
+            "phone1_prefix" => "T",
+            "phone1_number" => "U",
+            "phone1_proxy" => "V",
+            "phone2_type" => "W",
+            "phone2_prefix" => "X",
+            "phone2_number" => "Y",
+            "phone2_proxy" => "Z",
+            "national_id_type" => "AA",
+            "national_id_number" => "AB"
         ]
     ];
 
