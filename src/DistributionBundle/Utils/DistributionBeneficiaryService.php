@@ -186,6 +186,7 @@ class DistributionBeneficiaryService
                 "Family name"=> $value['family_name'],
                 "Gender" => $gender,
                 "Status" => $value['status'],
+                "Residency status" => $value['residency_status'],
                 "Date of birth" => $value['date_of_birth']
             ]);
         }
