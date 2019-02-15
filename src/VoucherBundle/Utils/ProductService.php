@@ -42,8 +42,9 @@ class ProductService
   }
 
 
-    // =============== CREATES BOOKLET ===============
     /**
+     * Creates a new Product entity
+     *
      * @param array $productData
      * @return mixed
      * @throws \Exception
@@ -69,11 +70,18 @@ class ProductService
         return $product;
     }
 
+    /**
+     * Returns all the products
+     *
+     * @return array
+     */
     public function findAll() {
         return $this->em->getRepository(Product::class)->findBy(['archived' => false]);
     }
 
     /**
+     * Updates a product according to the $productData
+     *
      * @param Product $product
      * @param array $productData
      * @return Product
@@ -89,6 +97,8 @@ class ProductService
     }
 
     /**
+     * Archives a product
+     *
      * @param Product $product
      * @return string
      */

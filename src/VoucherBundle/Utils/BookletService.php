@@ -40,8 +40,9 @@ class BookletService
     $this->container = $container;
   }
 
-  // =============== GETS BOOKLET BATCH ===============
   /**
+   * Returns the index of the next booklet to be inserted in the database
+   *
    * @return int
    */
   public function getBookletBatch()
@@ -58,8 +59,9 @@ class BookletService
   }
 
 
-  // =============== CREATES BOOKLET ===============
   /**
+   * Creates a new Booklet entity
+   *
    * @param array $bookletData
    * @return mixed
    * @throws \Exception
@@ -112,8 +114,9 @@ class BookletService
   }
 
 
-  // =============== GENERATES BOOKLET CODE ===============
   /**
+   * Generates a random code for a booklet
+   *
    * @param array $bookletData
    * @param int $currentBatch
    * @param int $bookletBatch
@@ -145,8 +148,9 @@ class BookletService
   }
 
   
-  // =============== RETURNS ALL BOOKLETS ===============
   /**
+   * Get all the non-archived booklets from the database
+   *
    * @return array
    */
   public function findAll()
@@ -155,8 +159,9 @@ class BookletService
   }
 
 
-  // =============== UPDATE BOOKLET ===============
   /**
+   * Updates a booklet
+   *
    * @param Booklet $booklet
    * @param array $bookletData
    * @return Booklet
