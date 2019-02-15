@@ -5,12 +5,12 @@ services:
 ##                                       CRUD                                        ##
 #######################################################################################
 
-    vendor.vendor_service:
+    voucher.vendor_service:
         class: VoucherBundle\Utils\VendorService
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
         public: true
 
-    booklet.booklet_service:
+    voucher.booklet_service:
         class: VoucherBundle\Utils\BookletService
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
         public: true
@@ -20,7 +20,7 @@ services:
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
         public: true
 
-    product.product_service:
+    voucher.product_service:
         class: VoucherBundle\Utils\ProductService
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
         public: true

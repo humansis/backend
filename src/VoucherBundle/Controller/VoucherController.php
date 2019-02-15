@@ -24,7 +24,7 @@ class VoucherController extends Controller
     /**
      * Create a new Voucher.
      *
-     * @Rest\Put("/voucher", name="add_voucher")
+     * @Rest\Put("/vouchers", name="add_voucher")
      *
      * @SWG\Tag(name="Vouchers")
      *
