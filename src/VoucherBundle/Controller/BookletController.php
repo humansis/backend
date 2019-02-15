@@ -182,6 +182,31 @@ class BookletController extends Controller
     }
 
     /**
+     * Deactivate booklets
+     * @Rest\Post("/deactivate-booklets", name="deactivate_booklets")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @return Response
+     */
+    public function deactivateBooklets(Request $request){
+        try {
+            $booklets = $request->request->all();
+            $this->get('booklet.booklet_service')->archiveMany($booklets);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return new Response(json_encode('Booklet successfully archived'));
+    }
+
+    /**
      * Archive a booklet
      * @Rest\Delete("/booklets/{id}", name="archive_booklet")
      *

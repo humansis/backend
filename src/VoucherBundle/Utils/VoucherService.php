@@ -117,14 +117,14 @@ class VoucherService
 
   // =============== SCAN A VOUCHER ===============
   /**
-   * @param Voucher $voucher
    * @param array $voucherData
    * @return Voucher
    * @throws \Exception
    */
-  public function scanned(Voucher $voucher, array $voucherData)
+  public function scanned(array $voucherData)
   {
     try {
+      $voucher = $this->em->getRepository(Voucher::class)->findOneBy(["id" => $voucherData['id']]);
       $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendor']);
       $voucher->setVendor($vendor)
         ->setUsed(true);

@@ -202,6 +202,26 @@ class BookletService
     }
 
     /**
+     * Archive many booklet
+     *
+     * @param int[] $bookletIds
+     * @return string
+     */
+    public function archiveMany(?array $bookletIds = [])
+    {
+      foreach ($bookletIds as $bookletId) {
+        $booklet = $this->em->getRepository(Booklet::class)->find($bookletId);
+        $booklet->setArchived(true);
+        $this->em->merge($booklet);
+      }
+      
+      $this->em->flush();
+
+      return "Booklets have been archived";
+    }
+
+
+    /**
      * Update the password of the booklet
      *
      * @param Booklet $booklet
