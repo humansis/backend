@@ -24,7 +24,7 @@ class DistributionBeneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "Transaction"})
+     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "Transaction", "FullBooklet"})
      */
     private $id;
 

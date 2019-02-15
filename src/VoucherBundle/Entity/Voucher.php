@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use \VoucherBundle\Entity\Product;
 use \VoucherBundle\Entity\Booklet;
 use \VoucherBundle\Entity\Vendor;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Voucher
@@ -24,6 +25,7 @@ class Voucher
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullVoucher"})
      */
     private $id;
 
@@ -31,6 +33,7 @@ class Voucher
      * @var bool
      *
      * @ORM\Column(name="used", type="boolean")
+     * @Groups({"FullVoucher"})
      */
     private $used;
 
@@ -38,30 +41,35 @@ class Voucher
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
+     * @Groups({"FullVoucher"})
      */
     private $code;
 
     /**
      * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="vouchers")
+     * @Groups({"FullVoucher"})
      */
     private $product;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="individual_value", type="integer")
+     * @ORM\Column(name="value", type="integer")
+     * @Groups({"FullVoucher", "FullBooklet"})
      */
-    private $individualValue;
+    private $value;
 
     /**
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Booklet", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"FullVoucher"})
      */
     private $booklet;
 
     /**
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor", inversedBy="vouchers")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
+     * @Groups({"FullVoucher"})
      */
     private $vendor;
 
@@ -105,6 +113,30 @@ class Voucher
         return $this->used;
     }
 
+    /**
+     * Set used.
+     *
+     * @param integer $value
+     *
+     * @return Voucher
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get individual value.
+     *
+     * @return integer
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+    
     /**
      * Set code.
      *
@@ -172,21 +204,9 @@ class Voucher
         return $this->vendor;
     }
 
-    public function setVendor(Vendor $vendor): self
+    public function setVendor(Vendor $vendor = null): self
     {
         $this->vendor = $vendor;
-
-        return $this;
-    }
-
-    public function getDistributionBeneficiary(): DistributionBeneficiary
-    {
-        return $this->distribution_beneficiary;
-    }
-
-    public function setDistributionBeneficiary(DistributionBeneficiary $distribution_beneficiary): self
-    {
-        $this->distribution_beneficiary = $distribution_beneficiary;
 
         return $this;
     }

@@ -168,11 +168,11 @@ class ProjectControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $household = $this->em->getRepository(Household::class)->findBy(
-            [
-                'addressStreet' => $this->bodyHousehold['address_street'],
-                'addressNumber' => $this->bodyHousehold['address_number']
-            ]);
+        $household = $this->em->getRepository(Household::class)->findBy([], null, 3);
+
+        if (empty($household)) {
+            $this->markTestIncomplete("You have no households in your database");
+        }
 
         $body = array(
             'beneficiaries' => $household

@@ -1,1 +1,26 @@
 services:
+
+
+#######################################################################################
+##                                       CRUD                                        ##
+#######################################################################################
+
+    voucher.vendor_service:
+        class: VoucherBundle\Utils\VendorService
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        public: true
+
+    voucher.booklet_service:
+        class: VoucherBundle\Utils\BookletService
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        public: true
+
+    voucher.voucher_service:
+        class: VoucherBundle\Utils\VoucherService
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        public: true
+
+    voucher.product_service:
+        class: VoucherBundle\Utils\ProductService
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        public: true
