@@ -124,8 +124,8 @@ class VoucherService
   public function scanned(array $voucherData)
   {
     try {
-      $voucher = $this->em->getRepository(Voucher::class)->findOneBy(["id" => $voucherData['id']]);
-      $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendor']);
+      $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
+      $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendorId']);
       $voucher->setVendor($vendor)
         ->setUsed(true);
   
