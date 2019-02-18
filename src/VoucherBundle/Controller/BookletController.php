@@ -198,7 +198,7 @@ class BookletController extends Controller
     public function deactivateBooklets(Request $request){
         try {
             $booklets = $request->request->all();
-            $this->get('booklet.booklet_service')->archiveMany($booklets);
+            $this->get('voucher.booklet_service')->archiveMany($booklets);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
