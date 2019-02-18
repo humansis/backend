@@ -334,7 +334,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
                         ->setDateOfBirth(new \DateTime($beneficiaryArray["dateOfBirth"]))
                         ->setFamilyName($beneficiaryArray["familyName"])
                         ->setGivenName($beneficiaryArray["givenName"])
-                        ->setStatus($beneficiaryArray["status"]);
+                        ->setStatus($beneficiaryArray["status"])
+                        ->setResidencyStatus($beneficiaryArray["residencyStatus"]);
             $profile = new Profile();
         
             /** @var Profile $profile */
