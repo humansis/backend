@@ -67,7 +67,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         // Second step
-        // Create the user with the email and the salted password. The user should be enable
+        // Create the vendor with the email and the salted password. The user should be enable
         $crawler = $this->request('PUT', '/api/wsse/vendor', $vendor);
         $vendor = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
