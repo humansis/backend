@@ -209,6 +209,7 @@ class DistributionControllerTest extends BMSServiceTestCase
                 'national_ids' => [],
                 'phones' => [],
                 'status' => true,
+                'residency_status' => 'refugee',
                 'vulnerability_criteria' => [
                     'assets/images/households/disabled.png'
                 ]
@@ -505,6 +506,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('family_name', $beneficiaries[0]);
         $this->assertArrayHasKey('gender', $beneficiaries[0]);
         $this->assertArrayHasKey('status', $beneficiaries[0]);
+        $this->assertArrayHasKey('residency_status', $beneficiaries[0]);
         $this->assertArrayHasKey('date_of_birth', $beneficiaries[0]);
         $this->assertArrayHasKey('updated_on', $beneficiaries[0]);
         $this->assertArrayHasKey('profile', $beneficiaries[0]);
