@@ -39,8 +39,9 @@ class VoucherService
     $this->container = $container;
   }
 
-  // =============== CREATE VOUCHER ===============
   /**
+   * Creates a new Voucher entity
+   *
    * @param array $voucherData
    * @return mixed
    * @throws \Exception
@@ -86,8 +87,9 @@ class VoucherService
   }
 
 
-  // =============== GENERATE VOUCHER CODE ===============
   /**
+   * Generate a new random code for a voucher
+   *
    * @param array $voucherData
    * @param int $voucherId
    * @return string
@@ -105,8 +107,9 @@ class VoucherService
   }
 
 
-  // =============== RETURNS ALL VOUCHERS ===============
   /**
+   * Returns all the vouchers
+   *
    * @return array
    */
   public function findAll()
@@ -115,7 +118,6 @@ class VoucherService
   }
 
 
-  // =============== SCAN A VOUCHER ===============
   /**
    * @param array $voucherData
    * @return Voucher
@@ -137,11 +139,13 @@ class VoucherService
     return $voucher;
   }
 
-  // =============== DELETE A VOUCHER FROM DATABASE ===============
   /**
+   * Deletes a voucher from the database
+   *
    * @param Voucher $voucher
    * @param bool $removeVoucher
    * @return bool
+   * @throws \Exception
    */
   public function deleteOneFromDatabase(Voucher $voucher, bool $removeVoucher = true)
   {
@@ -157,8 +161,11 @@ class VoucherService
 
   // =============== DELETE A BATCH OF VOUCHERS ===============
   /**
+   * Deletes all the vouchers of the given booklet
+   *
    * @param Booklet $booklet
    * @return bool
+   * @throws \Exception
    */
   public function deleteBatchVouchers(Booklet $booklet)
   {

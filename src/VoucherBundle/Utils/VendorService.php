@@ -39,9 +39,9 @@ class VendorService
     $this->container = $container;
   }
 
-  // =============== CREATE VENDOR ===============
-
     /**
+     * Creates a new Vendor entity
+     *
      * @param array $vendorData
      * @return mixed
      * @throws \Exception
@@ -79,8 +79,9 @@ class VendorService
     }
   }
 
-    // =============== RETURNS ALL VENDORS ===============
   /**
+   * Returns all the vendors
+   *
    * @return array
    */
   public function findAll()
@@ -97,8 +98,9 @@ class VendorService
   }
 
 
-  // =============== UPDATE VENDOR ===============
   /**
+   * Updates a vendor according to $vendorData
+   *
    * @param Vendor $vendor
    * @param array $vendorData
    * @return Vendor
@@ -130,13 +132,13 @@ class VendorService
   }
 
 
-  // =============== ARCHIVE VENDOR ===============
   /**
-   * Archive Vendor
+   * Archives Vendor
    *
    * @param Vendor $vendor
    * @param bool $archiveVendor
-   * @return bool
+   * @return Vendor
+   * @throws \Exception
    */
   public function archiveVendor(Vendor $vendor, bool $archiveVendor = true)
   {
@@ -145,15 +147,14 @@ class VendorService
         $this->em->merge($vendor);
         $this->em->flush();
       } catch (\Exception $exception) {
-        throw new $e('Error archiving Vendor');
+        throw new \Exception('Error archiving Vendor');
       }
     return $vendor;
   }
 
 
-  // =============== DELETE VENDOR FROM DATABASE ===============
   /**
-   * Perminantly delete the record from the database
+   * Permanently deletes the record from the database
    *
    * @param Vendor $vendor
    * @param bool $removeVendor

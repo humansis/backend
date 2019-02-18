@@ -23,7 +23,7 @@ class BookletController extends Controller
     /**
      * Create a new Booklet.
      *
-     * @Rest\Put("/booklet", name="add_booklet")
+     * @Rest\Put("/booklets", name="add_booklet")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -56,7 +56,7 @@ class BookletController extends Controller
         $bookletData = $request->request->all();
 
         try {
-            $return = $this->get('booklet.booklet_service')->create($bookletData);
+            $return = $this->get('voucher.booklet_service')->create($bookletData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -96,7 +96,7 @@ class BookletController extends Controller
     public function getAllAction(Request $request)
     {
         try {
-            $booklets = $this->get('booklet.booklet_service')->findAll();
+            $booklets = $this->get('voucher.booklet_service')->findAll();
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -172,7 +172,7 @@ class BookletController extends Controller
         $bookletData = $request->request->all();
 
         try {
-            $newBooklet = $this->get('booklet.booklet_service')->update($booklet, $bookletData);
+            $newBooklet = $this->get('voucher.booklet_service')->update($booklet, $bookletData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -223,7 +223,7 @@ class BookletController extends Controller
      */
     public function archiveAction(Booklet $booklet){
         try {
-            $this->get('booklet.booklet_service')->archive($booklet);
+            $this->get('voucher.booklet_service')->archive($booklet);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -233,7 +233,7 @@ class BookletController extends Controller
 
     /**
      * Delete a booklet
-     * @Rest\Delete("/booklet/{id}", name="delete_booklet")
+     * @Rest\Delete("/booklets/{id}", name="delete_booklet")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -249,7 +249,7 @@ class BookletController extends Controller
     public function deleteAction(Booklet $booklet)
     {
         try {
-            $this->get('booklet.booklet_service')->deleteBookletFromDatabase($booklet);
+            $this->get('voucher.booklet_service')->deleteBookletFromDatabase($booklet);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -281,7 +281,7 @@ class BookletController extends Controller
         }
 
         try {
-            $return = $this->get('booklet.booklet_service')->updatePassword($booklet, $password);
+            $return = $this->get('voucher.booklet_service')->updatePassword($booklet, $password);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -311,7 +311,7 @@ class BookletController extends Controller
     public function assignAction(Booklet $booklet, Beneficiary $beneficiary)
     {
         try {
-            $return = $this->get('booklet.booklet_service')->assign($booklet, $beneficiary);
+            $return = $this->get('voucher.booklet_service')->assign($booklet, $beneficiary);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

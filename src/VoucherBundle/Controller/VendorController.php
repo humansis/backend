@@ -23,7 +23,7 @@ class VendorController extends Controller
     /**
      * Create a new Vendor. You must have called getSalt before use this one
      *
-     * @Rest\Put("/vendor", name="add_vendor")
+     * @Rest\Put("/vendors", name="add_vendor")
      *
      * @SWG\Tag(name="Vendors")
      *
@@ -56,7 +56,7 @@ class VendorController extends Controller
         $vendorData = $request->request->all();
 
         try {
-            $return = $this->get('vendor.vendor_service')->create($vendorData);
+            $return = $this->get('voucher.vendor_service')->create($vendorData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -96,7 +96,7 @@ class VendorController extends Controller
     public function getAllAction(Request $request)
     {
         try {
-            $vendors = $this->get('vendor.vendor_service')->findAll();
+            $vendors = $this->get('voucher.vendor_service')->findAll();
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -173,7 +173,7 @@ class VendorController extends Controller
         $vendorData = $request->request->all();
 
         try {
-            $newVendor = $this->get('vendor.vendor_service')->update($vendor, $vendorData);
+            $newVendor = $this->get('voucher.vendor_service')->update($vendor, $vendorData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -207,7 +207,7 @@ class VendorController extends Controller
     public function archiveVendorAction(Vendor $vendor)
     {
         try {
-            $archivedVendor = $this->get('vendor.vendor_service')->archiveVendor($vendor);
+            $archivedVendor = $this->get('voucher.vendor_service')->archiveVendor($vendor);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -235,7 +235,7 @@ class VendorController extends Controller
     public function deleteAction(Vendor $vendor)
     {
         try {
-            $isSuccess = $this->get('vendor.vendor_service')->deleteFromDatabase($vendor);
+            $isSuccess = $this->get('voucher.vendor_service')->deleteFromDatabase($vendor);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
