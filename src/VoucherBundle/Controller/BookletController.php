@@ -106,6 +106,42 @@ class BookletController extends Controller
     }
 
     /**
+     * Get booklets that have been deactivated
+     *
+     * @Rest\Get("/deactivated-booklets", name="get_deactivated_booklets")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Booklets delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Booklet::class, groups={"FullBooklet"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getDeactivatedAction(Request $request)
+    {
+        try {
+            $booklets = $this->get('voucher.booklet_service')->findDeactivated();
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $json = $this->get('jms_serializer')->serialize($booklets, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+        return new Response($json);
+    }
+
+    /**
      * Get single booklet
      *
      * @Rest\Get("/booklets/{id}", name="get_single_booklet")
