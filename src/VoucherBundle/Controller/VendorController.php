@@ -294,7 +294,7 @@ class VendorController extends Controller
         try
         {
             $user = $this->container->get('user.user_service')->login($username, $saltedPassword, null);
-            $vendor = $this->container->get('vendor.vendor_service')->login($user);
+            $vendor = $this->container->get('voucher.vendor_service')->login($user);
         }
         catch (\Exception $exception)
         {
