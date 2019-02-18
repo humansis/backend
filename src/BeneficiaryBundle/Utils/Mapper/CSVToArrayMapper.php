@@ -85,17 +85,22 @@ class CSVToArrayMapper extends AbstractMapper
         foreach ($mappingCSV as $formattedIndex => $csvIndex) {
             if (is_array($csvIndex)) {
                 foreach ($csvIndex as $formattedIndex2 => $csvIndex2) {
+
+                    // Retrieve the beneficiary's information from the array
                     $givenName = $row[$mappingCSV['beneficiaries']['given_name']];
                     $familyName = $row[$mappingCSV['beneficiaries']['family_name']];
                     $gender = $row[$mappingCSV['beneficiaries']['gender']];
                     $dateOfBirth = $row[$mappingCSV['beneficiaries']['date_of_birth']];
                     $status = $row[$mappingCSV['beneficiaries']['status']];
+                    $residencyStatus = $row[$mappingCSV['beneficiaries']['residency_status']];
 
+                    // Verify that there are no missing information in each beneficiary
                     if ($givenName == null
                         || $familyName == null
                         || (explode('.', $gender)[0] != 'Female' && explode('.', $gender)[0] != 'Male')
                         || (explode('.', $status)[0] != '0' && explode('.', $status)[0] != '1')
-                        || $dateOfBirth == null) {
+                        || $dateOfBirth == null
+                        || $residencyStatus == null) {
                         if ($givenName == null) {
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['given_name'].' at the line '.$lineNumber);
                         } elseif ($familyName == null) {
@@ -106,9 +111,18 @@ class CSVToArrayMapper extends AbstractMapper
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['status'].' at the line '.$lineNumber);
                         } elseif ($dateOfBirth == null) {
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['date_of_birth'].' at the line '.$lineNumber);
+                        } elseif ($residencyStatus == null) {
+                            throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['residency_status'].' at the line '.$lineNumber);
                         }
                     }
 
+                    // Check that residencyStatus has one of the authorized values
+                    $authorizedResidencyStatus = ['refugee', 'idp', 'resident'];
+                    if (!in_array($residencyStatus, $authorizedResidencyStatus)) {
+                        throw new \Exception('Your residency status must be either refugee, idp or resident');
+                    }
+
+                    // Check that the year of birth is between 1900 and today
                     $yearOfBirth = intval(explode('-', $dateOfBirth)[0]);
                     if ($yearOfBirth < 1900 || $yearOfBirth > intval(date('Y'))) {
                         throw new \Exception('Your year of birth can not be before 1900 or after the current year');

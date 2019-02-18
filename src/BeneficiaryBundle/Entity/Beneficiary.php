@@ -65,6 +65,15 @@ class Beneficiary implements ExportableInterface
     private $status;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="residency_status", type="string", length=20)
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction", "SmallHousehold"})
+     * @Assert\Regex("/^(refugee|idp|resident)$/")
+     */
+    private $residencyStatus;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="dateOfBirth", type="date")
@@ -466,6 +475,25 @@ class Beneficiary implements ExportableInterface
     }
 
     /**
+     * @return string
+     */
+    public function getResidencyStatus()
+    {
+        return $this->residencyStatus;
+    }
+
+    /**
+     * @param string $residencyStatus
+     *
+     * @return Beneficiary
+     */
+    public function setResidencyStatus($residencyStatus)
+    {
+        $this->residencyStatus = $residencyStatus;
+        return $this;
+    }
+
+    /**
      * Set profile.
      *
      * @param \BeneficiaryBundle\Entity\Profile|null $profile
@@ -563,6 +591,7 @@ class Beneficiary implements ExportableInterface
             "familyName"=> $this->getFamilyName(),
             "gender" => $valueGender,
             "status" => $this->getStatus(),
+            "residencyStatus" => $this->getResidencyStatus(),
             "dateOfBirth" => $this->getDateOfBirth()->format('Y-m-d'),
             "vulnerabilityCriteria" => $valuescriteria,
             "type phone 1" => $typephones[0],

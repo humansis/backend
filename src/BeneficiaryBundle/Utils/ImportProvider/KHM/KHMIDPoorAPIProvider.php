@@ -131,6 +131,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
                     array_push($beneficiariesArray, array(
                             'equityCardNo' => $householdMember['EquityCardNo'],
                             'status' => $headOfHousehold,
+                            'residencyStatus' => 'resident',
                             'givenName' => $givenName,
                             'familyName' => $familyName,
                             'IDPoor' => $householdMember['PovertyLevel'],
