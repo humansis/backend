@@ -81,6 +81,38 @@ class VendorControllerTest extends BMSServiceTestCase
     }
 
     /**
+     * @depends testCreateVendor
+     * @param $newVendor
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testLogin($newVendor)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $body = array(
+            'username' => $newVendor['user']['username'],
+            'salted_password' => 'PSWUNITTEST',
+            'creation' => 0
+        );
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('POST', '/api/wsse/login_app', $body);
+        $success = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue(gettype($success) == 'array');
+        $this->assertArrayHasKey('id', $success);
+        $this->assertArrayHasKey('user', $success);
+        $this->assertArrayHasKey('shop', $success);
+    }
+
+    /**
      * @throws \Exception
      */
     public function testGetAllVendors()
