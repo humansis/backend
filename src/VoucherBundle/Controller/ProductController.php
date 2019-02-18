@@ -26,7 +26,7 @@ class ProductController extends Controller
     /**
      * Create a new Product.
      *
-     * @Rest\Put("/product", name="add_product")
+     * @Rest\Put("/products", name="add_product")
      *
      * @SWG\Tag(name="Product")
      *
@@ -59,7 +59,7 @@ class ProductController extends Controller
         $productData = $request->request->all();
 
         try {
-            $return = $this->get('product.product_service')->create($productData);
+            $return = $this->get('voucher.product_service')->create($productData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -105,7 +105,7 @@ class ProductController extends Controller
         $serializer = $this->get('jms_serializer');
 
         try {
-            $return = $this->get('product.product_service')->findAll();
+            $return = $this->get('voucher.product_service')->findAll();
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -121,7 +121,7 @@ class ProductController extends Controller
     /**
      * Update Products.
      *
-     * @Rest\Post("/product/{id}", name="update_product")
+     * @Rest\Post("/products/{id}", name="update_product")
      *
      * @SWG\Tag(name="Product")
      *
@@ -155,7 +155,7 @@ class ProductController extends Controller
         $productData = $request->request->all();
 
         try {
-            $return = $this->get('product.product_service')->update($product, $productData);
+            $return = $this->get('voucher.product_service')->update($product, $productData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -171,7 +171,7 @@ class ProductController extends Controller
     /**
      * Delete a Product.
      *
-     * @Rest\Delete("/product/{id}", name="delete_product")
+     * @Rest\Delete("/products/{id}", name="delete_product")
      *
      * @SWG\Tag(name="Product")
      *
@@ -199,7 +199,7 @@ class ProductController extends Controller
     public function deleteProductAction(Product $product)
     {
         try {
-            $return = $this->get('product.product_service')->archive($product);
+            $return = $this->get('voucher.product_service')->archive($product);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
