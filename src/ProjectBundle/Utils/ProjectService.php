@@ -7,11 +7,13 @@ use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
+use mysql_xdevapi\Exception;
 use ProjectBundle\Entity\Donor;
 use ProjectBundle\Entity\Sector;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserProject;
@@ -276,50 +278,40 @@ class ProjectService
 
     /**
      * @param Project $project
-     * @return int
+     * @return void
+     * @throws error if one or more distributions prevent the project from being deleted
      */
     public function delete(Project $project)
     {
         $distributionData = $this->em->getRepository(DistributionData::class)->findByProject($project);
 
-        if (empty($distributionData)) {
-            if ($this->archived($project)) {
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        } else {
-            foreach($distributionData as $distribution) {
-                if (!$distribution->getArchived() && $distribution->getDateDistribution() > (new DateTime('now'))) {
-                    return -1;
-                }
-            }
-            if ($this->archived($project)) {
-                return 1;
-            }
-            else {
-                return 0;
+        if(! empty($distributionData)) {
+            if(! $this->allDistributionClosed($distributionData)) {
+                throw new \Exception("You can't delete this project as it has an unfinished distribution");
             }
         }
+
+        $this->em->remove($project);
+        $this->em->flush();
+
     }
 
     /**
-     * @param Project $project
-     * @return bool
+     * Check if all distributions allow for the project to be deleted
+     * @param DistributionData $distributionData
+     * @return boolean
+     *
      */
-    public function archived(Project $project)
-    {
-        $project->setArchived(1);
+    private function allDistributionClosed(array $distributionData) {
+        foreach( $distributionData as $distributionDatum ) {
+            if (!$distributionDatum->getArchived() && $distributionDatum->getDateDistribution() > (
+                new DateTime('now')
+                )
+            ) {
+                return false;
+            }
 
-        try {
-            $this->em->persist($project);
-            $this->em->flush();
         }
-        catch(\Exception $e) {
-            return(false);
-        }
-
         return true;
     }
 
