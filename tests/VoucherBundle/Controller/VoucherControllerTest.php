@@ -135,19 +135,25 @@ class VoucherControllerTest extends BMSServiceTestCase
      */
     public function testUseVoucher($newVoucher)
     {
-        $vendor = 18;
-        $body = ["vendor" => $vendor];
+        $vendorId = 18;
+        $body = [
+            [
+            "id" => $newVoucher['id'],
+            "vendorId" => $vendorId
+            ]
+        ];
 
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->request('POST', '/api/wsse/vouchers/scanned/' . $newVoucher['id'], $body);
+        // Using a fake header or else a country is gonna be put in the body
+        $crawler = $this->request('POST', '/api/wsse/vouchers/scanned', $body, [], ['fakeHeader']);
         $newVoucherReceived = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
-        $voucherSearch = $this->em->getRepository(Voucher::class)->find($newVoucherReceived['id']);
+        $voucherSearch = $this->em->getRepository(Voucher::class)->find($newVoucherReceived[0]['id']);
         $this->assertEquals($voucherSearch->getUsed(), true);
 
         return $newVoucherReceived;

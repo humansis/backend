@@ -7,7 +7,7 @@ use VoucherBundle\Entity\Vendor;
 class VendorControllerTest extends BMSServiceTestCase
 {
     /** @var string $username */
-    private $username = "TESTER_PHPUNIT@gmail.com";
+    private $username = "VENDOR_PHPUNIT@gmail.com";
 
     /**
      * @throws \Exception
@@ -21,17 +21,44 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->client = $this->container->get('test.client');
     }
 
+
+    // Need to do this step for the next test to pass
+    /**
+     * @throws \Exception
+     */
+   /**
+     * @throws \Exception
+     */
+    public function testGetSalt()
+    {
+        $crawler = $this->request('GET', '/api/wsse/initialize/' . $this->username);
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('user_id', $data);
+        $this->assertArrayHasKey('salt', $data);
+    }
+
     /**
      * @throws \Exception
      */
     public function testCreateVendor()
     {
-        $body = [
+        // First step
+        // Get salt for a new vendor => save the username with the salt in database (user disabled for now)
+        $return = $this->container->get('user.user_service')->getSalt($this->username);
+        // Check if the first step has been done correctly
+        $this->assertArrayHasKey('user_id', $return);
+        $this->assertArrayHasKey('salt', $return);
+
+        $vendor = [
+            "username" => $this->username,
+            "email" => $this->username,
+            "rights" => "ROLE_ADMIN",
+            "password" => "PSWUNITTEST",
+            'salt' => $return['salt'],
             "name" => 'Carrefour',
             "shop" => 'Fruit and Veg',
-            "address" => 'Agusto Figuroa',
-            "username" => $this->username,
-            'password' => "PSWUNITTEST"
+            "address" => 'Agusto Figuroa'
         ];
 
         // Fake connection with a token for the user tester (ADMIN)
@@ -40,13 +67,16 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         // Second step
-        // Create the vendor with the email and the salted password. The user should be enable
-        $crawler = $this->request('PUT', '/api/wsse/vendor', $body);
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('PUT', '/api/wsse/vendor', $vendor);
         $vendor = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertArrayHasKey('id', $vendor);
         $this->assertArrayHasKey('user', $vendor);
-        $this->assertArrayHasKey('shop', $vendor);
+        $this->assertArrayHasKey('username', $vendor['user']);
+        $this->assertSame($vendor['user']['username'], $this->username);
+
         return $vendor;
     }
 
@@ -66,7 +96,8 @@ class VendorControllerTest extends BMSServiceTestCase
         if (!empty($vendors)) {
             $vendor = $vendors[0];
 
-            $this->assertArrayHasKey('username', $vendor);
+            $this->assertArrayHasKey('user', $vendor);
+            $this->assertArrayHasKey('username', $vendor['user']);
             $this->assertArrayHasKey('shop', $vendor);
             $this->assertArrayHasKey('name', $vendor);
             $this->assertArrayHasKey('address', $vendor);
@@ -126,7 +157,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
         $vendorSearch = $this->em->getRepository(Vendor::class)->find($newVendorReceived['id']);
         $this->assertEquals($vendorSearch->getAddress(), $address);
-        $this->assertEquals($vendorSearch->getPassword(), $password);
+        $this->assertEquals($vendorSearch->getUser()->getPassword(), $password);
 
         return $newVendorReceived;
     }
