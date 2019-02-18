@@ -545,19 +545,35 @@ class Beneficiary implements ExportableInterface
         $adm3 = ( ! empty($this->getHousehold()->getLocation()->getAdm3()) ) ? $this->getHousehold()->getLocation()->getAdm3()->getName() : '';
         $adm4 = ( ! empty($this->getHousehold()->getLocation()->getAdm4()) ) ? $this->getHousehold()->getLocation()->getAdm4()->getName() : '';
 
-        $finalArray = [
-            "addressStreet" => $this->getHousehold()->getAddressStreet(),
-            "addressNumber" => $this->getHousehold()->getAddressNumber(),
-            "addressPostcode" => $this->getHousehold()->getAddressPostcode(),
-            "livelihood" => $this->getHousehold()->getLivelihood(),
-            "notes" => $this->getHousehold()->getNotes(),
-            "latitude" => $this->getHousehold()->getLatitude(),
-            "longitude" => $this->getHousehold()->getLongitude(),
-            "adm1" => $adm1,
-            "adm2" =>$adm2,
-            "adm3" =>$adm3,
-            "adm4" =>$adm4,
-        ];
+        if ($this->status === true) {
+            $finalArray = [
+                "addressStreet" => $this->getHousehold()->getAddressStreet(),
+                "addressNumber" => $this->getHousehold()->getAddressNumber(),
+                "addressPostcode" => $this->getHousehold()->getAddressPostcode(),
+                "livelihood" => $this->getHousehold()->getLivelihood(),
+                "notes" => $this->getHousehold()->getNotes(),
+                "latitude" => $this->getHousehold()->getLatitude(),
+                "longitude" => $this->getHousehold()->getLongitude(),
+                "adm1" => $adm1,
+                "adm2" =>$adm2,
+                "adm3" =>$adm3,
+                "adm4" =>$adm4,
+            ];
+        } else {
+            $finalArray = [
+                "addressStreet" => "",
+                "addressNumber" => "",
+                "addressPostcode" => "",
+                "livelihood" => "",
+                "notes" => "",
+                "latitude" => "",
+                "longitude" => "",
+                "adm1" => "",
+                "adm2" => "",
+                "adm3" => "",
+                "adm4" => "",
+            ];
+        }
 
         $tempBenef = [ "givenName" => $this->getGivenName(),
             "familyName"=> $this->getFamilyName(),
