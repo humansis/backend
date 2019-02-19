@@ -195,7 +195,7 @@ class SyriaFileToTemplateMapper
         $defaultMapping = $this->getMapping();
         $outputRows = [];
 
-        $addressStreet = trim(str_replace('LOCATION:','', $sheetArray[2]['A']));;
+        $addressStreet = trim(str_replace('LOCATION:','', $sheetArray[2]['A']));
 
         foreach ($sheetArray as $indexRow => $row) {
             if ($indexRow < 10) {
@@ -314,7 +314,7 @@ class SyriaFileToTemplateMapper
             $headOfHouseholdRow = new ArrayObject($mutualOutputRow);
             // address
             $headOfHouseholdRow['A'] = $addressStreet;
-            $headOfHouseholdRow['B'] = $row[$defaultMapping['B']] ? $row[$defaultMapping['B']] : 'Unknown';
+            $headOfHouseholdRow['B'] = 'Unknown';
             $headOfHouseholdRow['C'] = 'Unknown';
             $headOfHouseholdRow[$defaultMapping[$admType]] = $location;
             if (!empty($row['E'])) {
