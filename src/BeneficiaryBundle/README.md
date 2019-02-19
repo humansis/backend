@@ -170,6 +170,7 @@ PUT ("/households/project/{id}")
 			"family_name": "family",
 			"gender": 1,
 			"status": 0,
+			"residency_status": "resident",
 			"date_of_birth": "1976-10-06",
 			"updated_on": "2018-06-13 12:12:12",
 			"profile": {
@@ -198,6 +199,7 @@ PUT ("/households/project/{id}")
 			"family_name": "family2222",
 			"gender": 0,
 			"status": 0,
+			"residency_status": "resident",
 			"date_of_birth": "1976-10-06",
 			"updated_on": "2018-06-13 12:12:12",
 			"profile": {
@@ -257,6 +259,7 @@ POST ("/households/{id_household}/project/{id_project}")
 			"family_name": "family",
 			"gender": 1,
 			"status": 0,
+			"residency_status": "resident",
 			"date_of_birth": "1976-10-06",
 			"updated_on": "2018-06-13 12:12:12",
 			"profile": {

@@ -65,6 +65,15 @@ class Beneficiary implements ExportableInterface
     private $status;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="residency_status", type="string", length=20)
+     * @Groups({"FullHousehold", "FullReceivers", "Transaction", "SmallHousehold"})
+     * @Assert\Regex("/^(refugee|idp|resident)$/")
+     */
+    private $residencyStatus;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="dateOfBirth", type="date")
@@ -466,6 +475,25 @@ class Beneficiary implements ExportableInterface
     }
 
     /**
+     * @return string
+     */
+    public function getResidencyStatus()
+    {
+        return $this->residencyStatus;
+    }
+
+    /**
+     * @param string $residencyStatus
+     *
+     * @return Beneficiary
+     */
+    public function setResidencyStatus($residencyStatus)
+    {
+        $this->residencyStatus = $residencyStatus;
+        return $this;
+    }
+
+    /**
      * Set profile.
      *
      * @param \BeneficiaryBundle\Entity\Profile|null $profile
@@ -545,24 +573,41 @@ class Beneficiary implements ExportableInterface
         $adm3 = ( ! empty($this->getHousehold()->getLocation()->getAdm3()) ) ? $this->getHousehold()->getLocation()->getAdm3()->getName() : '';
         $adm4 = ( ! empty($this->getHousehold()->getLocation()->getAdm4()) ) ? $this->getHousehold()->getLocation()->getAdm4()->getName() : '';
 
-        $finalArray = [
-            "addressStreet" => $this->getHousehold()->getAddressStreet(),
-            "addressNumber" => $this->getHousehold()->getAddressNumber(),
-            "addressPostcode" => $this->getHousehold()->getAddressPostcode(),
-            "livelihood" => $this->getHousehold()->getLivelihood(),
-            "notes" => $this->getHousehold()->getNotes(),
-            "latitude" => $this->getHousehold()->getLatitude(),
-            "longitude" => $this->getHousehold()->getLongitude(),
-            "adm1" => $adm1,
-            "adm2" =>$adm2,
-            "adm3" =>$adm3,
-            "adm4" =>$adm4,
-        ];
+        if ($this->status === true) {
+            $finalArray = [
+                "addressStreet" => $this->getHousehold()->getAddressStreet(),
+                "addressNumber" => $this->getHousehold()->getAddressNumber(),
+                "addressPostcode" => $this->getHousehold()->getAddressPostcode(),
+                "livelihood" => $this->getHousehold()->getLivelihood(),
+                "notes" => $this->getHousehold()->getNotes(),
+                "latitude" => $this->getHousehold()->getLatitude(),
+                "longitude" => $this->getHousehold()->getLongitude(),
+                "adm1" => $adm1,
+                "adm2" =>$adm2,
+                "adm3" =>$adm3,
+                "adm4" =>$adm4,
+            ];
+        } else {
+            $finalArray = [
+                "addressStreet" => "",
+                "addressNumber" => "",
+                "addressPostcode" => "",
+                "livelihood" => "",
+                "notes" => "",
+                "latitude" => "",
+                "longitude" => "",
+                "adm1" => "",
+                "adm2" => "",
+                "adm3" => "",
+                "adm4" => "",
+            ];
+        }
 
         $tempBenef = [ "givenName" => $this->getGivenName(),
             "familyName"=> $this->getFamilyName(),
             "gender" => $valueGender,
             "status" => $this->getStatus(),
+            "residencyStatus" => $this->getResidencyStatus(),
             "dateOfBirth" => $this->getDateOfBirth()->format('Y-m-d'),
             "vulnerabilityCriteria" => $valuescriteria,
             "type phone 1" => $typephones[0],

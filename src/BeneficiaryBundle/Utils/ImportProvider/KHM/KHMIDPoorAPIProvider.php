@@ -131,6 +131,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
                     array_push($beneficiariesArray, array(
                             'equityCardNo' => $householdMember['EquityCardNo'],
                             'status' => $headOfHousehold,
+                            'residencyStatus' => 'resident',
                             'givenName' => $givenName,
                             'familyName' => $familyName,
                             'IDPoor' => $householdMember['PovertyLevel'],
@@ -333,7 +334,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
                         ->setDateOfBirth(new \DateTime($beneficiaryArray["dateOfBirth"]))
                         ->setFamilyName($beneficiaryArray["familyName"])
                         ->setGivenName($beneficiaryArray["givenName"])
-                        ->setStatus($beneficiaryArray["status"]);
+                        ->setStatus($beneficiaryArray["status"])
+                        ->setResidencyStatus($beneficiaryArray["residencyStatus"]);
             $profile = new Profile();
         
             /** @var Profile $profile */
