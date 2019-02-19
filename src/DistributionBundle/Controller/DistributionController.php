@@ -237,7 +237,7 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Get("/distributions", name="get_all_distributions")
+     * @Rest\Get("/all_distributions", name="get_all_distributions")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Distributions")
@@ -259,6 +259,43 @@ class DistributionController extends Controller
         $country = $request->request->get('__country');
         try {
             $distributions = $this->get('distribution.distribution_service')->findAll($country);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $distributions,
+                'json',
+                SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
+            );
+
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Get("/distributions", name="get_distributions")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Filtered distributions",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=DistributionData::class))
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getActiveAction(Request $request)
+    {
+        $country = $request->request->get('__country');
+        try {
+            $distributions = $this->get('distribution.distribution_service')->getActive($country);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

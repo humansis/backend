@@ -373,4 +373,16 @@ class DistributionService
         }
         return $filteredArray;
     }
+
+    /**
+     * @param $distributions
+     * @return string
+     */
+    public function getActive()
+    {
+        $active = $this->em->getRepository(DistributionData::class)->findBy([
+            "archived" => 0,
+        ]);
+        return $active;
+    }
 }
