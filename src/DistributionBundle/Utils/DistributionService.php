@@ -378,7 +378,7 @@ class DistributionService
      * @param $distributions
      * @return string
      */
-    public function getActive()
+    public function getActiveDistributions()
     {
         $active = $this->em->getRepository(DistributionData::class)->findBy([
             "archived" => 0,

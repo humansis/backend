@@ -15,7 +15,6 @@ use ProjectBundle\Entity\Project;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserProject;
-use JMS\Serializer\Annotation\Type as JMS_Type;
 use dateTime;
 
 /**
@@ -285,18 +284,35 @@ class ProjectService
 
         if( empty($distributionData)) {
 
-            $this->deleteFromDb($project);
+            try {
+                $this->em->remove($project);
+            } catch (\Exception $error) {
+                throw new \Exception("Error deleting project");
+            }
 
         } else {
 
-            if(! $this->allDistributionClosed($distributionData)) {
+            if(! $this->checkIfAllDistributionClosed($distributionData)) {
                 throw new \Exception("You can't delete this project as it has an unfinished distribution");
-            } else {
-                $this->archiveAllProjectsDistributions($distributionData);
-                $this->archive($project);
-            }
 
+            } else {
+                try {
+                    foreach ($distributionData as $distributionDatum) {
+                        $distributionDatum->setArchived(1);
+                    }
+
+                    $project->setArchived(true);
+                    $this->em->persist($project);
+
+                    $this->archive($project);
+
+                } catch (\Exception $error) {
+                    throw new \Exception("Error archiving project");
+                }
+            }
         }
+        $this->em->flush();
+
     }
 
     /**
@@ -304,7 +320,7 @@ class ProjectService
      * @param DistributionData $distributionData
      * @return boolean
      */
-    private function allDistributionClosed(array $distributionData) {
+    private function checkIfAllDistributionClosed(array $distributionData) {
         foreach( $distributionData as $distributionDatum ) {
             if (!$distributionDatum->getArchived() && $distributionDatum->getDateDistribution() > (new DateTime('now'))) {
                 return false;
@@ -314,43 +330,6 @@ class ProjectService
         return true;
     }
 
-    /**
-     * Delete project from database
-     * @param Project $project
-     */
-    private function deleteFromDb(Project $project) {
-        try {
-            $this->em->remove($project);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            throw new \Exception("Error deleting project");
-        }
-    }
-
-    /**
-     * Archive project
-     * @param Project $project
-     */
-    private function archive(Project $project) {
-        try {
-            $project->setArchived(true);
-            $this->em->persist($project);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            throw new \Exception("Error archiving project");
-        }
-    }
-
-    /**
-     * Archive project's distributions
-     * @param array $distributionData
-     */
-    private function archiveAllProjectsDistributions(array $distributionData)
-    {
-        foreach ($distributionData as $distributionDatum) {
-            $distributionDatum->setArchived(1);
-        }
-    }
 
     /**
      * Export all projects of the country in the CSV file
