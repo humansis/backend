@@ -41,7 +41,6 @@ class VoucherControllerTest extends BMSServiceTestCase
     public function testCreateVoucher()
     {
         $body = [
-            'used' => false,
             'number_vouchers' => 3,
             'bookletCode' => 'test#' . $this->booklet->getCode(),
             'currency' => 'USD',
@@ -154,7 +153,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         $voucherSearch = $this->em->getRepository(Voucher::class)->find($newVoucherReceived[0]['id']);
-        $this->assertEquals($voucherSearch->getUsed(), true);
+        $this->assertTrue($voucherSearch->getUsedAt() !== null);
 
         return $newVoucherReceived;
     }

@@ -62,6 +62,11 @@ class Product
      */
     private $booklets;
 
+     /**
+     * @ORM\OneToMany(targetEntity="\VoucherBundle\Entity\ProductQuantity", mappedBy="product")
+     */
+    private $productQuantities;
+
     public function __construct()
     {
         $this->booklets = new ArrayCollection();
@@ -198,6 +203,30 @@ class Product
             $this->booklets->removeElement($booklet);
             $booklet->removeProduct($this);
         }
+
+        return $this;
+    }
+
+     /**
+     * Get productQuantities.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getProductQuantities()
+    {
+        return $this->productQuantities;
+    }
+
+    /**
+     * Set productQuantities.
+     *
+     * @param $collection
+     *
+     * @return Product
+     */
+    public function setProductQuantities(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->productQuantities = $collection;
 
         return $this;
     }

@@ -30,12 +30,12 @@ class Voucher
     private $id;
 
     /**
-     * @var bool
+     * @var \DateTime
      *
-     * @ORM\Column(name="used", type="boolean")
+     * @ORM\Column(name="used_at", type="datetime", nullable=true)
      * @Groups({"FullVoucher"})
      */
-    private $used;
+    private $usedAt;
 
     /**
      * @var string
@@ -68,6 +68,11 @@ class Voucher
      */
     private $vendor;
 
+     /**
+     * @ORM\OneToMany(targetEntity="\VoucherBundle\Entity\ProductQuantity", mappedBy="voucher")
+     */
+    private $productQuantities;
+
     public function __construct()
     {
     }
@@ -84,31 +89,31 @@ class Voucher
     }
 
     /**
-     * Set used.
+     * Set usedAt.
      *
-     * @param bool $used
+     * @param \DateTime $usedAt
      *
      * @return Voucher
      */
-    public function setUsed($used)
+    public function setusedAt($usedAt)
     {
-        $this->used = $used;
+        $this->usedAt = $usedAt;
 
         return $this;
     }
 
     /**
-     * Get used.
+     * Get usedAt.
      *
-     * @return bool
+     * @return \DateTime
      */
-    public function getUsed()
+    public function getusedAt()
     {
-        return $this->used;
+        return $this->usedAt;
     }
 
     /**
-     * Set used.
+     * Set value.
      *
      * @param integer $value
      *
@@ -175,6 +180,30 @@ class Voucher
     public function setVendor(Vendor $vendor = null): self
     {
         $this->vendor = $vendor;
+
+        return $this;
+    }
+
+    /**
+     * Get productQuantities.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getProductQuantities()
+    {
+        return $this->productQuantities;
+    }
+
+    /**
+     * Set productQuantities.
+     *
+     * @param $collection
+     *
+     * @return Voucher
+     */
+    public function setProductQuantities(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->productQuantities = $collection;
 
         return $this;
     }

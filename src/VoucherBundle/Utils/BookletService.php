@@ -96,7 +96,6 @@ class BookletService
       //=== creates vouchers ===
       try {
         $voucherData = [
-          'used' => false,
           'number_vouchers' => $bookletData['number_vouchers'],
           'bookletCode' => $code,
           'currency' => $bookletData['currency'],

@@ -3,6 +3,7 @@
 namespace VoucherBundle\Utils;
 
 use CommonBundle\Entity\Logs;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Length;
@@ -10,9 +11,11 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Voucher;
+use VoucherBundle\Entity\ProductQuantity;
 use Psr\Container\ContainerInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Entity\Product;
 
 class VoucherService
 {
@@ -68,7 +71,7 @@ class VoucherService
         $code = $this->generateCode($voucherData, $id);
         $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
 
-        $voucher->setUsed(false)
+        $voucher->setUsedAt(null)
           ->setCode($code)
           ->setBooklet($booklet)
           ->setVendor(null)
@@ -129,7 +132,17 @@ class VoucherService
       $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
       $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendorId']);
       $voucher->setVendor($vendor)
-        ->setUsed(true);
+        ->setUsedAt(new DateTime($voucherData['used_at']));
+
+      foreach ($voucherData['products'] as $productInfo) {
+        $productQuantity = new ProductQuantity;
+        $product = $this->em->getRepository(Product::class)->find($productInfo['product']['id']);
+        $productQuantity->setProduct($product)
+          ->setVoucher($voucher)
+          ->setQuantity($productInfo['quantity'])
+          ->setPrice($productInfo['price']);
+        $this->em->merge($productQuantity);
+      }
   
       $this->em->merge($voucher);
       $this->em->flush();
@@ -149,8 +162,7 @@ class VoucherService
    */
   public function deleteOneFromDatabase(Voucher $voucher, bool $removeVoucher = true)
   {
-    $used = $voucher->getUsed();
-    if ($removeVoucher && !$voucher->getUsed()) {
+    if ($removeVoucher && $voucher->getUsedAt() === null) {
         $this->em->remove($voucher);
         $this->em->flush();
     } else {
