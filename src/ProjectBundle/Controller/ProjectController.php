@@ -166,7 +166,7 @@ class ProjectController extends Controller
 
         try
         {
-            $valid = $this->get('project.project_service')->delete($project);
+            $this->get('project.project_service')->delete($project);
         }
         catch (\Exception $e)
         {

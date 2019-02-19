@@ -7,13 +7,11 @@ use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
-use mysql_xdevapi\Exception;
 use ProjectBundle\Entity\Donor;
 use ProjectBundle\Entity\Sector;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use ProjectBundle\Entity\Project;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserProject;
@@ -285,34 +283,73 @@ class ProjectService
     {
         $distributionData = $this->em->getRepository(DistributionData::class)->findByProject($project);
 
-        if(! empty($distributionData)) {
+        if( empty($distributionData)) {
+
+            $this->deleteFromDb($project);
+
+        } else {
+
             if(! $this->allDistributionClosed($distributionData)) {
                 throw new \Exception("You can't delete this project as it has an unfinished distribution");
+            } else {
+                $this->archiveAllProjectsDistributions($distributionData);
+                $this->archive($project);
             }
+
         }
-
-        $this->em->remove($project);
-        $this->em->flush();
-
     }
 
     /**
      * Check if all distributions allow for the project to be deleted
      * @param DistributionData $distributionData
      * @return boolean
-     *
      */
     private function allDistributionClosed(array $distributionData) {
         foreach( $distributionData as $distributionDatum ) {
-            if (!$distributionDatum->getArchived() && $distributionDatum->getDateDistribution() > (
-                new DateTime('now')
-                )
-            ) {
+            if (!$distributionDatum->getArchived() && $distributionDatum->getDateDistribution() > (new DateTime('now'))) {
                 return false;
             }
 
         }
         return true;
+    }
+
+    /**
+     * Delete project from database
+     * @param Project $project
+     */
+    private function deleteFromDb(Project $project) {
+        try {
+            $this->em->remove($project);
+            $this->em->flush();
+        } catch (\Exception $e) {
+            throw new \Exception("Error deleting project");
+        }
+    }
+
+    /**
+     * Archive project
+     * @param Project $project
+     */
+    private function archive(Project $project) {
+        try {
+            $project->setArchived(true);
+            $this->em->persist($project);
+            $this->em->flush();
+        } catch (\Exception $e) {
+            throw new \Exception("Error archiving project");
+        }
+    }
+
+    /**
+     * Archive project's distributions
+     * @param array $distributionData
+     */
+    private function archiveAllProjectsDistributions(array $distributionData)
+    {
+        foreach ($distributionData as $distributionDatum) {
+            $distributionDatum->setArchived(1);
+        }
     }
 
     /**
