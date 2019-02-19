@@ -139,8 +139,6 @@ class SyriaFileToTemplateMapper
             );
             $writeTime = microtime(true) - $time;
 
-            set_time_limit(0);
-
             return [
                 'outputFile' => $filename,
                 'loadingTime' => $loadingTime,
@@ -314,14 +312,14 @@ class SyriaFileToTemplateMapper
             $headOfHouseholdRow = new ArrayObject($mutualOutputRow);
             // address
             $headOfHouseholdRow['A'] = $addressStreet;
-            $headOfHouseholdRow['B'] = 'Unknown';
+            $headOfHouseholdRow['B'] = $row['A'];
             $headOfHouseholdRow['C'] = 'Unknown';
             $headOfHouseholdRow[$defaultMapping[$admType]] = $location;
-            if (!empty($row['E'])) {
+            if (!empty($row['D'])) {
                 // head phone number
                 $headOfHouseholdRow['R'] = 'Mobile';
                 $headOfHouseholdRow['S'] = '\'+963';
-                $headOfHouseholdRow['T'] = '\'' . $row['E'];
+                $headOfHouseholdRow['T'] = '\'' . $row['D'];
                 $headOfHouseholdRow['U'] = 'N';
             }
 
