@@ -45,7 +45,6 @@ class ProjectController extends Controller
         $json = $this->get('jms_serializer')
             ->serialize($projects, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
 
-        dump("GETPROJECTS");
         return new Response($json, Response::HTTP_OK);
     }
 
