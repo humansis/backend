@@ -27,4 +27,14 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
                     ->select("SUM(c.value)");
         return $qb->getQuery()->getSingleScalarResult();
     }
+    
+    public function getActiveByCountry(string $country)
+    {
+        $qb = $this->createQueryBuilder("dd")
+                    ->leftJoin("dd.project", "p")
+                    ->where("p.iso3 = :country")
+                    ->setParameter("country", $country)
+                    ->andWhere("dd.archived = 0");
+        return $qb->getQuery()->getResult();
+    }
 }

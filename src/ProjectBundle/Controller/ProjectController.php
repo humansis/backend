@@ -161,8 +161,6 @@ class ProjectController extends Controller
      */
     public function deleteAction(Project $project)
     {
-
-
         try
         {
             $this->get('project.project_service')->delete($project);

@@ -330,7 +330,6 @@ class ProjectService
         return true;
     }
 
-
     /**
      * Export all projects of the country in the CSV file
      * @param $countryIso3
