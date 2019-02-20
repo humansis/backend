@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\SelectionCriteria;
+use PhpParser\Node\Scalar\String_;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -378,10 +379,11 @@ class DistributionService
      * @param $distributions
      * @return string
      */
-    public function getActiveDistributions()
+    public function getActiveDistributions($country)
     {
         $active = $this->em->getRepository(DistributionData::class)->findBy([
             "archived" => 0,
+            "location" => $country,
         ]);
         return $active;
     }
