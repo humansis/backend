@@ -376,7 +376,7 @@ class DistributionService
     }
 
     /**
-     * @param $distributions
+     * @param $country
      * @return string
      */
     public function getActiveDistributions($country)
