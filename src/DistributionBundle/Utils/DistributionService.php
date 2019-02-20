@@ -373,4 +373,14 @@ class DistributionService
         }
         return $filteredArray;
     }
+
+    /**
+     * @param $country
+     * @return string
+     */
+    public function getActiveDistributions($country)
+    {
+        $active = $this->em->getRepository(DistributionData::class)->getActiveByCountry($country);
+        return $active;
+    }
 }

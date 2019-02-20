@@ -237,14 +237,14 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Get("/distributions", name="get_all_distributions")
+     * @Rest\Get("/distributions", name="get_all_active_distributions")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Distributions")
      *
      * @SWG\Response(
      *     response=200,
-     *     description="All distributions",
+     *     description="Filtered distributions",
      *     @SWG\Schema(
      *          type="array",
      *          @SWG\Items(ref=@Model(type=DistributionData::class))
@@ -258,7 +258,7 @@ class DistributionController extends Controller
     {
         $country = $request->request->get('__country');
         try {
-            $distributions = $this->get('distribution.distribution_service')->findAll($country);
+            $distributions = $this->get('distribution.distribution_service')->getActiveDistributions($country);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -272,6 +272,7 @@ class DistributionController extends Controller
 
         return new Response($json);
     }
+
 
     /**
      * @Rest\Get("/distributions/{id}", name="get_one_distribution", requirements={"id"="\d+"})
