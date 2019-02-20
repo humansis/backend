@@ -45,6 +45,11 @@ class Voucher
      */
     private $code;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="vouchers")
+     * @Groups({"FullVoucher"})
+     */
+    private $product;
 
     /**
      * @var int
@@ -75,6 +80,7 @@ class Voucher
 
     public function __construct()
     {
+        $this->product = new ArrayCollection();
     }
 
 
@@ -158,6 +164,32 @@ class Voucher
     public function getCode()
     {
         return $this->code;
+    }
+
+    /**
+     * @return Collection|Product[]
+     */
+    public function getProduct(): Collection
+    {
+        return $this->product;
+    }
+
+    public function addProduct(Product $product): self
+    {
+        if (!$this->product->contains($product)) {
+            $this->product[] = $product;
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): self
+    {
+        if ($this->product->contains($product)) {
+            $this->product->removeElement($product);
+        }
+
+        return $this;
     }
 
     public function getBooklet(): Booklet

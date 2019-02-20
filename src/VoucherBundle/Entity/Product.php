@@ -62,14 +62,15 @@ class Product
      */
     private $booklets;
 
-     /**
-     * @ORM\OneToMany(targetEntity="\VoucherBundle\Entity\ProductQuantity", mappedBy="product")
+    /**
+     * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="product")
      */
-    private $productQuantities;
+    private $vouchers;
 
     public function __construct()
     {
         $this->booklets = new ArrayCollection();
+        $this->vouchers = new ArrayCollection();
     }
 
 
@@ -207,26 +208,30 @@ class Product
         return $this;
     }
 
-     /**
-     * Get productQuantities.
-     *
-     * @return \Doctrine\Common\Collections\Collection
+    /**
+     * @return Collection|Voucher[]
      */
-    public function getProductQuantities()
+    public function getVouchers(): Collection
     {
-        return $this->productQuantities;
+        return $this->vouchers;
     }
 
-    /**
-     * Set productQuantities.
-     *
-     * @param $collection
-     *
-     * @return Product
-     */
-    public function setProductQuantities(\Doctrine\Common\Collections\Collection $collection = null)
+    public function addVoucher(Voucher $voucher): self
     {
-        $this->productQuantities = $collection;
+        if (!$this->vouchers->contains($voucher)) {
+            $this->vouchers[] = $voucher;
+            $voucher->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVoucher(Voucher $voucher): self
+    {
+        if ($this->vouchers->contains($voucher)) {
+            $this->vouchers->removeElement($voucher);
+            $voucher->removeProduct($this);
+        }
 
         return $this;
     }
