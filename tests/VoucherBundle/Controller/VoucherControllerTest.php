@@ -4,6 +4,8 @@ namespace VoucherBundle\Tests\Controller;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
+use VoucherBundle\Entity\Vendor;
+use DateTime;
 
 class VoucherControllerTest extends BMSServiceTestCase
 {
@@ -134,11 +136,14 @@ class VoucherControllerTest extends BMSServiceTestCase
      */
     public function testUseVoucher($newVoucher)
     {
-        $vendorId = 18;
+        $vendor = $this->em->getRepository(Vendor::class)->findOneByName('vendor');
+        $vendorId = $vendor->getId();
         $body = [
             [
-            "id" => $newVoucher['id'],
-            "vendorId" => $vendorId
+                "id" => $newVoucher['id'],
+                "vendorId" => $vendorId,
+                "productIds" => [1, 2],
+                "used_at" => "2019-02-20 09:00:00"
             ]
         ];
 

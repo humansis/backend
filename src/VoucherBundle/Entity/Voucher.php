@@ -73,16 +73,6 @@ class Voucher
      */
     private $vendor;
 
-     /**
-     * @ORM\OneToMany(targetEntity="\VoucherBundle\Entity\ProductQuantity", mappedBy="voucher")
-     */
-    private $productQuantities;
-
-    public function __construct()
-    {
-        $this->product = new ArrayCollection();
-    }
-
 
     /**
      * Get id.
@@ -212,30 +202,6 @@ class Voucher
     public function setVendor(Vendor $vendor = null): self
     {
         $this->vendor = $vendor;
-
-        return $this;
-    }
-
-    /**
-     * Get productQuantities.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getProductQuantities()
-    {
-        return $this->productQuantities;
-    }
-
-    /**
-     * Set productQuantities.
-     *
-     * @param $collection
-     *
-     * @return Voucher
-     */
-    public function setProductQuantities(\Doctrine\Common\Collections\Collection $collection = null)
-    {
-        $this->productQuantities = $collection;
 
         return $this;
     }

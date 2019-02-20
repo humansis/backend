@@ -73,6 +73,7 @@ class VendorControllerTest extends BMSServiceTestCase
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertArrayHasKey('id', $vendor);
+        $this->assertArrayHasKey('shop', $vendor);
         $this->assertArrayHasKey('user', $vendor);
         $this->assertArrayHasKey('username', $vendor['user']);
         $this->assertSame($vendor['user']['username'], $this->username);

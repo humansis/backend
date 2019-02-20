@@ -11,7 +11,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Voucher;
-use VoucherBundle\Entity\ProductQuantity;
 use Psr\Container\ContainerInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Vendor;
@@ -134,18 +133,14 @@ class VoucherService
       $voucher->setVendor($vendor)
         ->setUsedAt(new DateTime($voucherData['used_at']));
 
-      foreach ($voucherData['products'] as $productInfo) {
-        $productQuantity = new ProductQuantity;
-        $product = $this->em->getRepository(Product::class)->find($productInfo['product']['id']);
-        $productQuantity->setProduct($product)
-          ->setVoucher($voucher)
-          ->setQuantity($productInfo['quantity'])
-          ->setPrice($productInfo['price']);
-        $this->em->merge($productQuantity);
+      foreach ($voucherData['productIds'] as $productId) {
+        $product = $this->em->getRepository(Product::class)->find($productId);
+        $voucher = $voucher->addProduct($product);
       }
   
       $this->em->merge($voucher);
       $this->em->flush();
+
     } catch (\Exception $e) {
       throw new \Exception('Error setting Vendor or changing used status');
     }
