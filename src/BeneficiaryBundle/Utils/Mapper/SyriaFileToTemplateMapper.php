@@ -279,7 +279,7 @@ class SyriaFileToTemplateMapper
             $beneficiaryId = strval($row['C']);
             if (!empty($beneficiaryId)) {
                 // Writes 'ID Card' in the column Z
-                $mutualOutputRow['Z'] = 'ID Card';
+                $mutualOutputRow['AA'] = 'ID Card';
                 // If there is a slash in the id => two ids
                 if (strpos($beneficiaryId, DIRECTORY_SEPARATOR) !== false) {
                     $beneficiariesId = explode(DIRECTORY_SEPARATOR, $beneficiaryId);
@@ -287,7 +287,7 @@ class SyriaFileToTemplateMapper
 
                     if ($secondBeneficiaryExists) {
                         $secondBeneficiaryValues[$defaultMapping['C']] = trim($beneficiariesId[1]);
-                        $secondBeneficiaryValues['Z'] = 'ID Card';
+                        $secondBeneficiaryValues['AA'] = 'ID Card';
                     } else {
                         // File badly filled in
 //                    throw new Exception('Die' . $indexRow);
@@ -301,6 +301,10 @@ class SyriaFileToTemplateMapper
             $headGender = $row['T'];
             // Writes the gender in column N
             $mutualOutputRow['N'] = intval($headGender) === 1 ? self::FEMALE : self::MALE;
+            // Residency status
+            $houseHoldResidencyStatus = intval($row['E']) === 1 ? 'IPD' : 'Resident';
+            $mutualOutputRow['P'] = $houseHoldResidencyStatus;
+            $secondBeneficiaryValues['P'] = $houseHoldResidencyStatus;
 
             // Set head of household status
             $mutualOutputRow['O'] = 1;
@@ -315,12 +319,12 @@ class SyriaFileToTemplateMapper
             $headOfHouseholdRow['B'] = $row['A'];
             $headOfHouseholdRow['C'] = 'Unknown';
             $headOfHouseholdRow[$defaultMapping[$admType]] = $location;
+            // Head phone number
             if (!empty($row['D'])) {
-                // head phone number
-                $headOfHouseholdRow['R'] = 'Mobile';
-                $headOfHouseholdRow['S'] = '\'+963';
-                $headOfHouseholdRow['T'] = '\'' . $row['D'];
-                $headOfHouseholdRow['U'] = 'N';
+                $headOfHouseholdRow['S'] = 'Mobile';
+                $headOfHouseholdRow['T'] = '\'+963';
+                $headOfHouseholdRow['U'] = '\'' . $row['D'];
+                $headOfHouseholdRow['V'] = 'N';
             }
 
             /**
@@ -349,7 +353,7 @@ class SyriaFileToTemplateMapper
                         //we potentially found the first older person having the head of household sex
                         //we remove him
 
-                        $headOfHouseholdRow['P'] = $this->getBirthday($letter);
+                        $headOfHouseholdRow['Q'] = $this->getBirthday($letter);
 
                         $row[$letter] = --$cellValue;
                         $mainHeadRemoved = true;
@@ -366,7 +370,7 @@ class SyriaFileToTemplateMapper
                     $subHeadRemoved = true;
                     // set second beneficiary sex and birthday: odd means woman
                     $secondBeneficiaryValues['N'] = $i % 2 != 0 ? self::FEMALE : self::MALE;
-                    $secondBeneficiaryValues['P'] = $this->getBirthday($letter);
+                    $secondBeneficiaryValues['Q'] = $this->getBirthday($letter);
 
                     if ($mainHeadRemoved) {
                         break;
@@ -416,7 +420,7 @@ class SyriaFileToTemplateMapper
                     $outputRow['L'] = sprintf("%s_%s_%s", $outputRow['M'], $column, $j);
 
                     // birthday
-                    $outputRow['P'] = $this->getBirthday($column);
+                    $outputRow['Q'] = $this->getBirthday($column);
 
                     // sex
                     if (in_array($column, ['I', 'K', 'M', 'O', 'Q'])) {
@@ -460,18 +464,19 @@ class SyriaFileToTemplateMapper
             'M' => 'Family name',
             'N' => 'Gender',
             'O' => 'Status',
-            'P' => 'Date of birth',
-            'Q' => 'Vulnerability criteria',
-            'R' => 'Type phone 1',
-            'S' => 'Prefix phone 1',
-            'T' => 'Number phone 1',
-            'U' => 'Proxy phone 1',
-            'V' => 'Type phone 2',
-            'W' => 'Prefix phone 2',
-            'X' => 'Number phone 2',
-            'Y' => 'Proxy phone 2',
-            'Z' => 'Type national ID',
-            'AA' => 'Number national ID',
+            'P' => 'Residency Status',
+            'Q' => 'Date of birth',
+            'R' => 'Vulnerability criteria',
+            'S' => 'Type phone 1',
+            'T' => 'Prefix phone 1',
+            'U' => 'Number phone 1',
+            'V' => 'Proxy phone 1',
+            'W' => 'Type phone 2',
+            'X' => 'Prefix phone 2',
+            'Y' => 'Number phone 2',
+            'Z' => 'Proxy phone 2',
+            'AA' => 'Type national ID',
+            'AB' => 'Number national ID',
         ];
     }
 
@@ -490,7 +495,7 @@ class SyriaFileToTemplateMapper
         $this->mapping = [
             self::INPUT_COLUMN_START => '',  // id
             'B' => 'B',  // tent number
-            'C' => 'AA',  // id number ob beneficiary
+            'C' => 'AB',  // id number ob beneficiary
             'adm1' => 'H',
             'adm2' => 'I',
             'adm3' => 'J',
