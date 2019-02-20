@@ -5,7 +5,6 @@ use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
 use VoucherBundle\Entity\Vendor;
-use DateTime;
 
 class VoucherControllerTest extends BMSServiceTestCase
 {
