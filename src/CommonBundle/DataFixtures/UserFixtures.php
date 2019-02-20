@@ -30,7 +30,8 @@ class UserFixtures extends Fixture
     }
 
     private $data = [
-        ['tester', 'tester']
+        ['tester', 'tester'],
+        ['vendor', 'vendor']
     ];
 
     /**

@@ -30,12 +30,12 @@ class Voucher
     private $id;
 
     /**
-     * @var bool
+     * @var \DateTime
      *
-     * @ORM\Column(name="used", type="boolean")
+     * @ORM\Column(name="used_at", type="datetime", nullable=true)
      * @Groups({"FullVoucher"})
      */
-    private $used;
+    private $usedAt;
 
     /**
      * @var string
@@ -73,11 +73,6 @@ class Voucher
      */
     private $vendor;
 
-    public function __construct()
-    {
-        $this->product = new ArrayCollection();
-    }
-
 
     /**
      * Get id.
@@ -90,31 +85,31 @@ class Voucher
     }
 
     /**
-     * Set used.
+     * Set usedAt.
      *
-     * @param bool $used
+     * @param \DateTime $usedAt
      *
      * @return Voucher
      */
-    public function setUsed($used)
+    public function setusedAt($usedAt)
     {
-        $this->used = $used;
+        $this->usedAt = $usedAt;
 
         return $this;
     }
 
     /**
-     * Get used.
+     * Get usedAt.
      *
-     * @return bool
+     * @return \DateTime
      */
-    public function getUsed()
+    public function getusedAt()
     {
-        return $this->used;
+        return $this->usedAt;
     }
 
     /**
-     * Set used.
+     * Set value.
      *
      * @param integer $value
      *

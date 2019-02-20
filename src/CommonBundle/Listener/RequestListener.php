@@ -66,8 +66,6 @@ class RequestListener
             else {
                 $event->getRequest()->request->add(["__country" => $countryISO3]);
             }
-
-
         }
         // return error response if api request (i.e. not profiler or doc) or login routes (for api tester)
         elseif (preg_match('/api/', $event->getRequest()->getPathInfo()) &&

@@ -13,6 +13,7 @@ use VoucherBundle\Entity\Voucher;
 use Psr\Container\ContainerInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Entity\Product;
 
 class VoucherService
 {
@@ -68,7 +69,7 @@ class VoucherService
         $code = $this->generateCode($voucherData, $id);
         $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
 
-        $voucher->setUsed(false)
+        $voucher->setUsedAt(null)
           ->setCode($code)
           ->setBooklet($booklet)
           ->setVendor(null)
@@ -119,22 +120,26 @@ class VoucherService
 
 
   /**
-   * Sets a voucher as used when it has been scanned
-   *
-   * @param Voucher $voucher
    * @param array $voucherData
    * @return Voucher
    * @throws \Exception
    */
-  public function scanned(Voucher $voucher, array $voucherData)
+  public function scanned(array $voucherData)
   {
     try {
-      $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendor']);
+      $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
+      $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendorId']);
       $voucher->setVendor($vendor)
-        ->setUsed(true);
+        ->setUsedAt(new \DateTime($voucherData['used_at']));
+
+      foreach ($voucherData['productIds'] as $productId) {
+        $product = $this->em->getRepository(Product::class)->find($productId);
+        $voucher = $voucher->addProduct($product);
+      }
   
       $this->em->merge($voucher);
       $this->em->flush();
+
     } catch (\Exception $e) {
       throw new \Exception('Error setting Vendor or changing used status');
     }
@@ -151,8 +156,7 @@ class VoucherService
    */
   public function deleteOneFromDatabase(Voucher $voucher, bool $removeVoucher = true)
   {
-    $used = $voucher->getUsed();
-    if ($removeVoucher && !$voucher->getUsed()) {
+    if ($removeVoucher && $voucher->getUsedAt() === null) {
         $this->em->remove($voucher);
         $this->em->flush();
     } else {

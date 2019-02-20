@@ -140,25 +140,14 @@ class VoucherController extends Controller
 
 
     /**
-     * When a voucher {id} is scanned by a Vendor 
+     * When a vendor sends their scanned vouchers
      *
-     * @Rest\Post("/vouchers/scanned/{id}", name="scanned_voucher")
-     *
+     * @Rest\Post("/vouchers/scanned", name="scanned_vouchers")
      * @SWG\Tag(name="Vouchers")
-     *
-     * @SWG\Parameter(
-     *     name="voucher",
-     *     in="body",
-     *     type="string",
-     *     required=true,
-     *     description="fields of the voucher which must be updated",
-     *     @Model(type=Voucher::class)
-     * )
      *
      * @SWG\Response(
      *     response=200,
      *     description="SUCCESS",
-     *     @Model(type=Voucher::class)
      * )
      *
      * @SWG\Response(
@@ -167,20 +156,23 @@ class VoucherController extends Controller
      * )
      *
      * @param Request $request
-     * @param Voucher $voucher
      * @return Response
      */
-    public function scannedVoucherAction(Request $request, Voucher $voucher)
+    public function scannedVouchersAction(Request $request)
     {
-        $voucherData = $request->request->all();
+        $vouchersData = $request->request->all();
+        $newVouchers = [];
 
-        try {
-            $newVoucher = $this->get('voucher.voucher_service')->scanned($voucher, $voucherData);
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        foreach ($vouchersData as $voucherData) {
+            try {
+                $newVoucher = $this->get('voucher.voucher_service')->scanned($voucherData);
+                $newVouchers[] = $newVoucher;
+            } catch (\Exception $exception) {
+                return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            }
         }
 
-        $json = $this->get('jms_serializer')->serialize($newVoucher, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        $json = $this->get('jms_serializer')->serialize($newVouchers, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
         return new Response($json);
     }
 

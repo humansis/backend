@@ -10,6 +10,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Vendor;
+use UserBundle\Entity\User;
+use JMS\Serializer\Serializer;
 use Psr\Container\ContainerInterface;
 
 class VendorService
@@ -46,21 +48,31 @@ class VendorService
      */
   public function create(array $vendorData)
   {
-    $vendorSaved = $this->em->getRepository(Vendor::class)->findOneByUsername($vendorData['username']);
+    $username = $vendorData['username'];
+    $userSaved = $this->em->getRepository(User::class)->findOneByUsername($username);
+    $vendorSaved = $userSaved ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
 
     if (!$vendorSaved) {
+      $userSaved = $this->em->getRepository(User::class)->findOneByUsername($vendorData['username']);
+      $user = $this->container->get('user.user_service')->create(
+        $userSaved, 
+        [
+          'rights' => 'ROLE_VENDOR',
+          'salt' => $vendorData['salt'],
+          'password' => $vendorData['password']
+        ]);
+
       $vendor = new Vendor();
       $vendor->setName($vendorData['name'])
       ->setShop($vendorData['shop'])
       ->setAddress($vendorData['address'])
-      ->setUsername($vendorData['username'])
-      ->setPassword($vendorData['password'])
-      ->setArchived(false);
+      ->setArchived(false)
+      ->setUser($user);
       
       $this->em->merge($vendor);
       $this->em->flush();
 
-      $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUsername($vendor->getUsername());
+      $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUser($user);
       return $createdVendor;
     } else {
       throw new \Exception('A vendor with this username already exists.');
@@ -96,6 +108,7 @@ class VendorService
   public function update(Vendor $vendor, array $vendorData)
   {
     try {
+      $user = $vendor->getUser();
       foreach ($vendorData as $key => $value) {
         if ($key == 'name') {
           $vendor->setName($value);
@@ -104,9 +117,9 @@ class VendorService
         } elseif ($key == 'address') {
           $vendor->setAddress($value);
         } elseif ($key == 'username') {
-          $vendor->setUsername($value);
+          $user->setUsername($value);
         } elseif ($key == 'password') {
-          $vendor->setPassword($value);
+          $user->setPassword($value);
         }
       }
       $this->em->merge($vendor);
@@ -160,4 +173,17 @@ class VendorService
     return true;
   }
 
+  /**
+     * @param User $user
+     * @throws \Exception
+     */
+    public function login(User $user)
+    {
+      $vendor = $this->em->getRepository(Vendor::class)->findOneByUser($user);
+      if (!$vendor) {
+          throw new \Exception('You cannot log if you are not a vendor', Response::HTTP_BAD_REQUEST);
+      }
+
+        return $vendor;
+    }
 }

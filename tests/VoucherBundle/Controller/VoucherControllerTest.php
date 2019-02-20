@@ -4,6 +4,7 @@ namespace VoucherBundle\Tests\Controller;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
+use VoucherBundle\Entity\Vendor;
 
 class VoucherControllerTest extends BMSServiceTestCase
 {
@@ -41,7 +42,6 @@ class VoucherControllerTest extends BMSServiceTestCase
     public function testCreateVoucher()
     {
         $body = [
-            'used' => false,
             'number_vouchers' => 3,
             'bookletCode' => 'test#' . $this->booklet->getCode(),
             'currency' => 'USD',
@@ -135,20 +135,29 @@ class VoucherControllerTest extends BMSServiceTestCase
      */
     public function testUseVoucher($newVoucher)
     {
-        $vendor = 18;
-        $body = ["vendor" => $vendor];
+        $vendor = $this->em->getRepository(Vendor::class)->findOneByName('vendor');
+        $vendorId = $vendor->getId();
+        $body = [
+            [
+                "id" => $newVoucher['id'],
+                "vendorId" => $vendorId,
+                "productIds" => [1, 2],
+                "used_at" => "2019-02-20 09:00:00"
+            ]
+        ];
 
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->request('POST', '/api/wsse/vouchers/scanned/' . $newVoucher['id'], $body);
+        // Using a fake header or else a country is gonna be put in the body
+        $crawler = $this->request('POST', '/api/wsse/vouchers/scanned', $body, [], ['fakeHeader']);
         $newVoucherReceived = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
-        $voucherSearch = $this->em->getRepository(Voucher::class)->find($newVoucherReceived['id']);
-        $this->assertEquals($voucherSearch->getUsed(), true);
+        $voucherSearch = $this->em->getRepository(Voucher::class)->find($newVoucherReceived[0]['id']);
+        $this->assertTrue($voucherSearch->getUsedAt() !== null);
 
         return $newVoucherReceived;
     }

@@ -112,7 +112,7 @@ class Project implements ExportableInterface
     private $archived = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="project")
+     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="project", cascade={"remove"})
      */
     private $usersProject;
 

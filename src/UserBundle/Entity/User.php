@@ -26,10 +26,23 @@ class User extends BaseUser implements ExportableInterface
      * @Groups({"FullUser"})
      */
     protected $id;
+
+    /**
+     * @var string
+     * @Groups({"FullUser", "FullVendor"})
+     * @Assert\NotBlank(message="Username can't be empty")
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Your username must be at least {{ limit }} characters long",
+     *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
+     * )
+     */
+    protected $username;
     
     /**
      * @var string
-     * @Groups({"FullUser"})
+     * @Groups({"FullUser", "FullVendor"})
      */
     protected $password;
 
@@ -51,19 +64,6 @@ class User extends BaseUser implements ExportableInterface
      * @Assert\NotBlank(message="Email can't be empty")
      */
     protected $email;
-
-    /**
-     * @var string
-     * @Groups({"FullUser"})
-     * @Assert\NotBlank(message="Username can't be empty")
-     * @Assert\Length(
-     *      min = 2,
-     *      max = 50,
-     *      minMessage = "Your username must be at least {{ limit }} characters long",
-     *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
-     * )
-     */
-    protected $username;
 
     /**
      * @var array
