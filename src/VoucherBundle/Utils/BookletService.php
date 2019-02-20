@@ -96,7 +96,6 @@ class BookletService
       //=== creates vouchers ===
       try {
         $voucherData = [
-          'used' => false,
           'number_vouchers' => $bookletData['number_vouchers'],
           'bookletCode' => $code,
           'currency' => $bookletData['currency'],
@@ -158,6 +157,17 @@ class BookletService
     return  $this->em->getRepository(Booklet::class)->findBy(['archived' => false]);
   }
 
+  /**
+   * Get all the archived booklets from the database
+   *
+   * @return array
+   */
+  public function findDeactivated()
+  {
+    return  $this->em->getRepository(Booklet::class)->findBy(['archived' => true]);
+  }
+
+
 
   /**
    * Updates a booklet
@@ -205,6 +215,26 @@ class BookletService
 
         return "Booklet has been archived";
     }
+
+    /**
+     * Archive many booklet
+     *
+     * @param int[] $bookletIds
+     * @return string
+     */
+    public function archiveMany(?array $bookletIds = [])
+    {
+      foreach ($bookletIds as $bookletId) {
+        $booklet = $this->em->getRepository(Booklet::class)->find($bookletId);
+        $booklet->setArchived(true);
+        $this->em->merge($booklet);
+      }
+      
+      $this->em->flush();
+
+      return "Booklets have been archived";
+    }
+
 
     /**
      * Update the password of the booklet

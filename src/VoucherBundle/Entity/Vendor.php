@@ -50,22 +50,6 @@ class Vendor
     private $address;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="username", type="string", length=255, unique=true)
-     * @Groups({"FullVendor"})
-     */
-    private $username;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="password", type="string", length=255)
-     * @Groups({"FullVendor"})
-     */
-    private $password;
-
-    /**
      * @var bool
      *
      * @ORM\Column(name="archived", type="boolean")
@@ -77,6 +61,12 @@ class Vendor
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="vendor", orphanRemoval=true)
      */
     private $vouchers;
+
+    /**
+     * @ORM\OneToOne(targetEntity="\UserBundle\Entity\User")
+     * @Groups({"FullVendor"})
+     */
+    private $user;
 
     public function __construct()
     {
@@ -168,54 +158,6 @@ class Vendor
     }
 
     /**
-     * Set username.
-     *
-     * @param string $username
-     *
-     * @return Vendor
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    /**
-     * Get username.
-     *
-     * @return string
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * Set password.
-     *
-     * @param string $password
-     *
-     * @return Vendor
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Get password.
-     *
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
      * Set archived.
      *
      * @param bool $archived
@@ -268,5 +210,29 @@ class Vendor
         }
 
         return $this;
+    }
+
+    /**
+     * Set user.
+     *
+     * @param \UserBundle\Entity\User|null $user
+     *
+     * @return Vendor
+     */
+    public function setUser(\UserBundle\Entity\User $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user.
+     *
+     * @return \UserBundle\Entity\User|null
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }

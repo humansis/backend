@@ -2,6 +2,8 @@
 
 namespace VoucherBundle\Repository;
 
+use Doctrine\ORM\QueryBuilder;
+
 /**
  * VendorRepository
  *
@@ -10,4 +12,12 @@ namespace VoucherBundle\Repository;
  */
 class VendorRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getVendorByUser($user) 
+    {
+        $qb = $this->createQueryBuilder('v');
+        $q = $qb->where('v.user = :user')
+            ->setParameter('user', $user);
+        
+        return $q->getQuery()->getResult();
+    }
 }
