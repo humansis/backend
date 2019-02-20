@@ -12,13 +12,12 @@ use Doctrine\ORM\QueryBuilder;
  */
 class VendorRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getVendorByUser($user) {
-
-        return $user ?
-            $this->createQueryBuilder('vendor')
-            ->where('vendor.user = :user')
-            ->setParameter('user', $user)
-            ->getQuery()->getResult() :
-            null;
+    public function getVendorByUser($user) 
+    {
+        $qb = $this->createQueryBuilder('v');
+        $q = $qb->where('v.user = :user')
+            ->setParameter('user', $user);
+        
+        return $q->getQuery()->getResult();
     }
 }
