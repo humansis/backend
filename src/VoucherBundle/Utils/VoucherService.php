@@ -3,7 +3,6 @@
 namespace VoucherBundle\Utils;
 
 use CommonBundle\Entity\Logs;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Length;
@@ -131,7 +130,7 @@ class VoucherService
       $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
       $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendorId']);
       $voucher->setVendor($vendor)
-        ->setUsedAt(new DateTime($voucherData['used_at']));
+        ->setUsedAt(new \DateTime($voucherData['used_at']));
 
       foreach ($voucherData['productIds'] as $productId) {
         $product = $this->em->getRepository(Product::class)->find($productId);
