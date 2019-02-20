@@ -94,8 +94,6 @@ class CSVToArrayMapper extends AbstractMapper
                     $status = $row[$mappingCSV['beneficiaries']['status']];
                     $residencyStatus = $row[$mappingCSV['beneficiaries']['residency_status']];
 
-                    dump($row);
-                    dump($mappingCSV);
                     // Verify that there are no missing information in each beneficiary
                     if ($givenName == null
                         || $familyName == null

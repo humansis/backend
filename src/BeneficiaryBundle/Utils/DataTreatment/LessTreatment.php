@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils\DataTreatment;
 
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,6 +49,21 @@ class LessTreatment extends AbstractTreatment
         $errors = [];
         $numberAdded = 0;
         $this->clearCache('households.new');
+
+        // Gets the households already persisted in the database that haven't change
+        $alreadyPersistedHouseholdsArray = $this->getExistingHouseholds($email);
+        foreach ($alreadyPersistedHouseholdsArray as $householdArray) {
+            /** @var Household $household */
+            $household = $this->em->getRepository(Household::class)->find($householdArray['old']['id']);
+            // If they are not in the current project, we had them
+            if (!$household->getProjects()->contains($project)) {
+                $household->addProject($project);
+                $this->saveHouseholds($email . '-households.new', $household);
+                $numberAdded++;
+            }
+        }
+
+
         foreach ($householdsToAdd as $householdToAdd)
         {
             try
@@ -97,5 +113,27 @@ class LessTreatment extends AbstractTreatment
         if (!is_file($dir_no_typo))
             return [];
         return json_decode(file_get_contents($dir_no_typo), true);
+    }
+
+    /**
+     * @param string $email
+     * @return mixed|null
+     * @throws \Exception
+     */
+    private function getExistingHouseholds(string $email)
+    {
+        if (null === $this->token) {
+            return null;
+        }
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data/' . $this->token;
+        if (!is_dir($dir_var)) {
+            mkdir($dir_var);
+        }
+        $cacheFile = $dir_var . '/' . $email . '-mapping_new_old';
+        if (!is_file($cacheFile))
+            return [];
+        return json_decode(file_get_contents($cacheFile), true);
     }
 }
