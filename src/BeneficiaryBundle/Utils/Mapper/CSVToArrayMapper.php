@@ -102,22 +102,16 @@ class CSVToArrayMapper extends AbstractMapper
                         || $dateOfBirth == null
                         || $residencyStatus == null) {
                         if ($givenName == null) {
-                            dump('givenName');
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['given_name'].' at the line '.$lineNumber);
                         } elseif ($familyName == null) {
-                            dump('familyName');
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['family_name'].' at the line '.$lineNumber);
                         } elseif (explode('.', $gender)[0] != 'Female' && explode('.', $gender)[0] != 'Male') {
-                            dump('gender');
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['gender'].' at the line '.$lineNumber);
                         } elseif ((explode('.', $status)[0] != '0' && explode('.', $status)[0] != '1')) {
-                            dump('status');
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['status'].' at the line '.$lineNumber);
                         } elseif ($dateOfBirth == null) {
-                            dump('dateBirth');
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['date_of_birth'].' at the line '.$lineNumber);
                         } elseif ($residencyStatus == null) {
-                            dump('residency');
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['residency_status'].' at the line '.$lineNumber);
                         }
                     }
