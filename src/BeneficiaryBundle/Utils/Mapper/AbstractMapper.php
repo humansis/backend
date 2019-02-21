@@ -28,6 +28,7 @@ abstract class AbstractMapper
      */
     protected function loadMappingCSVOfCountry($countryIso3)
     {
+        /** @var CountrySpecific[] $countrySpecifics */
         $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($countryIso3);
         // Get the number of country specific for the specific country countryIso3
         $nbCountrySpecific = count($countrySpecifics);

@@ -69,7 +69,7 @@ class Beneficiary implements ExportableInterface
      *
      * @ORM\Column(name="residency_status", type="string", length=20)
      * @Groups({"FullHousehold", "FullReceivers", "Transaction", "SmallHousehold"})
-     * @Assert\Regex("/^(refugee|idp|resident)$/")
+     * @Assert\Regex("/^(refugee|idp|resident)$/i")
      */
     private $residencyStatus;
 
