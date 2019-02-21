@@ -233,8 +233,8 @@ class UserService
     {
         $role = $userData['rights'];
 
-        if (empty($role)) {
-            $role = 'ROLE_USER';
+        if (!isset($role) || empty($role)) {
+            throw new \Exception("Rights can not be empty");
         }
 
         $userSaved = $this->em->getRepository(User::class)->findOneByUsername($user->getUsername());
@@ -348,6 +348,43 @@ class UserService
             } catch (\Exception $exception) {
                 return false;
             }
+        }
+
+        return true;
+    }
+
+    /**
+     * Delete an user and its links in the api
+     *
+     * @param string $username
+     * @return bool
+     */
+    public function deleteByUsername(string $username)
+    {
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+
+        $userCountries = $this->em->getRepository(UserCountry::class)->findByUser($user);
+        if (!empty($userCountries))
+        {
+            foreach ($userCountries as $userCountry)
+            {
+                $this->em->remove($userCountry);
+            }
+        }
+        $userProjects = $this->em->getRepository(UserProject::class)->findByUser($user);
+        if (!empty($userProjects))
+        {
+            foreach ($userProjects as $userProject)
+            {
+                $this->em->remove($userProject);
+            }
+        }
+
+        try {
+            $this->em->remove($user);
+            $this->em->flush();
+        } catch (\Exception $exception) {
+            return false;
         }
 
         return true;
