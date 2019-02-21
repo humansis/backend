@@ -233,6 +233,10 @@ class UserService
     {
         $role = $userData['rights'];
 
+        if (empty($role)) {
+            $role = 'ROLE_USER';
+        }
+
         $userSaved = $this->em->getRepository(User::class)->findOneByUsername($user->getUsername());
         if (!$userSaved instanceof User)
             throw new \Exception("The user with username " . $user->getUsername() . " has been not preconfigured. You need to ask 
