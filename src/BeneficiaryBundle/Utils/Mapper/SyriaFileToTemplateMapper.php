@@ -302,7 +302,7 @@ class SyriaFileToTemplateMapper
             // Writes the gender in column N
             $mutualOutputRow['N'] = intval($headGender) === 1 ? self::FEMALE : self::MALE;
             // Residency status
-            $houseHoldResidencyStatus = intval($row['E']) === 1 ? 'IPD' : 'Resident';
+            $houseHoldResidencyStatus = intval($row['E']) === 1 ? 'idp' : 'resident';
             $mutualOutputRow['P'] = $houseHoldResidencyStatus;
             $secondBeneficiaryValues['P'] = $houseHoldResidencyStatus;
 
