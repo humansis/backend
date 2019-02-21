@@ -75,6 +75,7 @@ services:
         arguments:
             - "@fos_user.user_manager"
             - "@security.encoder_factory"
+            - "@kernel"
         tags:
             - { name: doctrine.fixture.orm }
 
