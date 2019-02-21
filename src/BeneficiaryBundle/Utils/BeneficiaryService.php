@@ -176,14 +176,18 @@ class BeneficiaryService
         }
         foreach ($beneficiaryArray["phones"] as $phoneArray)
         {
-            $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
-            $beneficiary->addPhone($phone);
+            if (!empty($phoneArray["type"]) && !empty($phoneArray["proxy"]) && !empty($phoneArray["prefix"]) && !empty($phoneArray["number"])) {
+                $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
+                $beneficiary->addPhone($phone);
+            }
         }
 
         foreach ($beneficiaryArray["national_ids"] as $nationalIdArray)
         {
-            $nationalId = $this->getOrSaveNationalId($beneficiary, $nationalIdArray, false);
-            $beneficiary->addNationalId($nationalId);
+            if (!empty($nationalIdArray["id_type"]) && !empty($nationalIdArray["id_number"])) {
+                $nationalId = $this->getOrSaveNationalId($beneficiary, $nationalIdArray, false);
+                $beneficiary->addNationalId($nationalId);
+            }
         }
 
         $this->getOrSaveProfile($beneficiary, $beneficiaryArray["profile"], false);
