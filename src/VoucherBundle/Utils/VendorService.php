@@ -118,7 +118,7 @@ class VendorService
           $vendor->setAddress($value);
         } elseif ($key == 'username') {
           $user->setUsername($value);
-        } elseif ($key == 'password') {
+        } elseif ($key == 'password' && !empty($value)) {
           $user->setPassword($value);
         }
       }
