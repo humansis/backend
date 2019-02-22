@@ -80,7 +80,7 @@ class UserService
     {
         $role = $userData['rights'];
         $user->setRoles([$role]);
-        if ($userData['password'] !== null && $userData['password'] !== "") {
+        if (!empty($userData['password'])) {
             $user->setPassword($userData['password']);
         }
 
