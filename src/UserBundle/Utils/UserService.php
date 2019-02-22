@@ -79,7 +79,10 @@ class UserService
     public function update(User $user, array $userData)
     {
         $role = $userData['rights'];
-        $user->setRoles([$role]);
+        if (!empty($role)) {
+            $user->setRoles([$role]);
+        }
+
         if (!empty($userData['password'])) {
             $user->setPassword($userData['password']);
         }
