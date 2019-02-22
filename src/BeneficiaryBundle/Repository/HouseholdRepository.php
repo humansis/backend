@@ -197,7 +197,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                 if ($countFamilyName == 0) {
                                     //We do a AND WHERE clause to add the filter in our initial request
                                     $q->andWhere('hh.id = b2.household')
-                                        ->andWhere('b2.familyName LIKE :filter' . $indexFilter . $index)
+                                        ->andWhere('b2.familyName LIKE :filter' . $indexFilter . $index . ' OR b2.givenName LIKE :filter' . $indexFilter . $index)
                                         ->addGroupBy('hh')
                                         ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
                                     //And we increment the count to don't come back in this condition if there is iteration
@@ -206,13 +206,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                 } else {
                                     //We do a OR WHERE clause to add the Xth filter in our initial request and don't erase the AND WHERE when count's value is 0
                                     $q->orWhere('b2.familyName LIKE :filter' . $indexFilter . $index)
+                                        ->orWhere('b2.givenName LIKE :filter' . $indexFilter . $index . ' OR b2.givenName LIKE :filter' . $indexFilter . $index)
                                         ->addGroupBy('hh')
                                         ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
                                 }
-                                //We also check for the given name to get the familyName or the givenName with the search bar
-                                $q->orWhere('b2.givenName LIKE :filter' . $indexFilter . $index)
-                                    ->addGroupBy('hh')
-                                    ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
                             //We check if the category is the number of dependents
                             } else if ($category == 'dependents') {
                                 //If this is the first time we get there
