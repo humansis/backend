@@ -80,7 +80,9 @@ class UserService
     {
         $role = $userData['rights'];
         $user->setRoles([$role]);
-        $user->setPassword($userData['password']);
+        if ($userData['password'] !== null && $userData['password'] !== "") {
+            $user->setPassword($userData['password']);
+        }
 
         $this->em->persist($user);
 
