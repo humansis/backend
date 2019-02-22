@@ -241,26 +241,31 @@ class UserController extends Controller
         $user = $request->request->all();
         $userData = $user;
 
-        $user = $serializer->deserialize(json_encode($request->request->all()), User::class, 'json');
-
         try
         {
+            $user = $serializer->deserialize(json_encode($request->request->all()), User::class, 'json');
             $return = $this->get('user.user_service')->create($user, $userData);
+
+            if (!$user instanceof User)
+                return new JsonResponse($user);
+
+            $userJson = $serializer->serialize(
+                $return,
+                'json',
+                SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true)
+            );
+            return new Response($userJson);
         }
         catch (\Exception $exception)
         {
+            if ($user instanceof User) {
+                $this->get('user.user_service')->deleteByUsername($user->getUsername());
+            } else {
+                $this->get('user.user_service')->deleteByUsername($user['username']);
+            }
+
             return new Response($exception->getMessage(), 500);
         }
-
-        if (!$user instanceof User)
-            return new JsonResponse($user);
-
-        $userJson = $serializer->serialize(
-            $return,
-            'json',
-            SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true)
-        );
-        return new Response($userJson);
     }
 
     /**
