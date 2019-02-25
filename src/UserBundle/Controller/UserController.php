@@ -369,7 +369,7 @@ class UserController extends Controller
      * Edit a user {id} with data in the body
      *
      * @Rest\Post("/users/{id}", name="update_user")
-     * @Security("is_granted('ROLE_USER_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_ADMIN')")
      *
      * @SWG\Tag(name="Users")
      *
