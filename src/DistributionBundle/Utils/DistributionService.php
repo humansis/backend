@@ -114,7 +114,7 @@ class DistributionService
         $commodities = $distributionData->getCommodities();
         foreach ($commodities as $commodity) {
             $modality = $commodity->getModalityType()->getModality();
-            if ($modality->getName === 'General Relief') {
+            if ($modality->getName() === 'General Relief') {
                 $this->createGeneralReliefItems($distributionData);
             }
         }
