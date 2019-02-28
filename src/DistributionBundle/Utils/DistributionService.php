@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\SelectionCriteria;
+use DistributionBundle\Entity\GeneralReliefItem;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -99,14 +100,31 @@ class DistributionService
     /**
      * @param DistributionData $distributionData
      * @return DistributionData
+     * @throws \Exception
      */
     public function validateDistribution(DistributionData $distributionData)
     {
-        $distributionData->setValidated(true);
-        $this->em->persist($distributionData);
-        $this->em->flush();
+        try {
+            $distributionData->setValidated(true);
+            $commodities = $distributionData->getCommodities();
+            foreach ($commodities as $commodity) {
+                $modality = $commodity->getModalityType()->getModality();
+                if ($modality->getName() === 'General Relief') {
+                    $beneficiaries = $distributionData->getDistributionBeneficiaries();
+                    foreach ($beneficiaries as $beneficiary) {
+                        $generalRelief = new GeneralReliefItem();
+                        $generalRelief->setDistributionBeneficiary($beneficiary);
+                        $this->em->persist($generalRelief);
+                    }
+                }
+            }
 
-        return $distributionData;
+            $this->em->flush();
+            return $distributionData;
+
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     /**
@@ -382,5 +400,71 @@ class DistributionService
     {
         $active = $this->em->getRepository(DistributionData::class)->getActiveByCountry($country);
         return $active;
+    }
+    
+    /**
+     * Initialise GRI for a distribution
+     * @param  DistributionData $distributionData
+     * @return void                           
+     */
+    public function createGeneralReliefItems(DistributionData $distributionData)
+    {
+        $distributionBeneficiaries = $distributionData->getDistributionBeneficiaries();
+        foreach ($distributionBeneficiaries as $index => $distributionBeneficiary) {
+            $$index = new GeneralReliefItem();
+            $$index->setDistributionBeneficiary($distributionBeneficiary);
+            $distributionBeneficiary->addGeneralRelief($$index);
+
+            $this->em->persist($$index);
+            $this->em->merge($distributionBeneficiary);
+        }
+        $this->em->flush();
+    }
+
+    /**
+     * Edit notes of general relief item
+     * @param  GeneralReliefItem $generalRelief
+     * @param  string            $notes
+     * @return DistributionBeneficiary
+     */
+    public function editGeneralReliefItemNotes(GeneralReliefItem $generalRelief, string $notes)
+    {
+        try {
+            $generalRelief->setNotes($notes);
+            $this->em->flush();
+        } catch (\Exception $e) {
+            throw new \Exception("Error updating general relief item");
+        }
+
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->getByGRI($generalRelief);
+        return $distributionBeneficiary;
+    }
+
+    /**
+     * Set general relief items as distributed
+     * @param array    $griIds
+     * @param DateTime $distributedAt
+     * @return array
+     */
+    public function setGeneralReliefItemsAsDistributed(array $griIds)
+    {
+        $errorArray = array();
+        $successArray = array();
+
+        foreach ($griIds as $griId) {
+            $gri = $this->em->getRepository(GeneralReliefItem::class)->find($griId);
+
+            if (!($gri instanceof GeneralReliefItem)) {
+                array_push($errorArray, $griId);
+            } else {
+                $gri->setDistributedAt(new \DateTime());
+                $this->em->merge($gri);
+                array_push($successArray, $gri);
+            }
+        }
+
+        $this->em->flush();
+
+        return array($errorArray, $successArray);
     }
 }

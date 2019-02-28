@@ -1,6 +1,7 @@
 <?php
 
 namespace DistributionBundle\Repository;
+use DistributionBundle\Entity\GeneralReliefItem;
 
 /**
  * DistributionBeneficiaryRepository
@@ -34,5 +35,15 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter("iso3", $iso3);
 
         return $q->getQuery()->getSingleScalarResult();
+    }
+    
+    public function getByGRI(GeneralReliefItem $gri)
+    {
+        $qb = $this->createQueryBuilder("db");
+        $q = $qb->leftJoin("db.generalReliefs", "gr")
+                    ->where("gr.id = :gri")
+                    ->setParameter('gri', $gri->getId());
+        
+        return $q->getQuery()->getOneOrNullResult();
     }
 }

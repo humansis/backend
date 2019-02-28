@@ -31,7 +31,7 @@ class Transaction
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"Transaction"})
+     * @Groups({"ValidatedDistribution"})
      * 
      */
     private $id;
@@ -41,7 +41,7 @@ class Transaction
      *
      * @ORM\Column(name="transaction_id", type="string", length=45)
      *
-     * @Groups({"Transaction"})
+     * @Groups({"ValidatedDistribution"})
      */
     private $transactionId;
 
@@ -50,7 +50,7 @@ class Transaction
      *
      * @ORM\Column(name="amount_sent", type="string")
      *
-     * @Groups({"Transaction"})
+     * @Groups({"ValidatedDistribution"})
      */
     private $amountSent;
 
@@ -59,7 +59,7 @@ class Transaction
      *
      * @ORM\Column(name="date_sent", type="datetime")
      *
-     * @Groups({"Transaction"})
+     * @Groups({"ValidatedDistribution"})
      */
     private $dateSent;
 
@@ -68,7 +68,7 @@ class Transaction
      *
      * @ORM\Column(name="transaction_status", type="smallint")
      *
-     * @Groups({"Transaction", "FullReceivers", "FullDistribution"})
+     * @Groups({"ValidatedDistribution", "FullReceivers", "FullDistribution"})
      */
     private $transactionStatus;
 
@@ -77,7 +77,7 @@ class Transaction
      *
      * @ORM\Column(name="message", type="string", length=255, nullable=true)
      *
-     * @Groups({"Transaction"})
+     * @Groups({"ValidatedDistribution"})
      */
     private $message;
 
@@ -86,7 +86,7 @@ class Transaction
      *
      * @ORM\Column(name="money_received", type="boolean", nullable=true)
      *
-     * @Groups({"Transaction"})
+     * @Groups({"ValidatedDistribution"})
      */
     private $moneyReceived;
 
@@ -95,7 +95,7 @@ class Transaction
      *
      * @ORM\Column(name="pickup_date", type="datetime", nullable=true)
      *
-     * @Groups({"Transaction"})
+     * @Groups({"ValidatedDistribution"})
      */
     private $pickupDate;
 
@@ -112,7 +112,7 @@ class Transaction
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
      * 
-     * @Groups({"Transaction"})
+     * @Groups({"ValidatedDistribution"})
      */
     private $updatedOn;
     

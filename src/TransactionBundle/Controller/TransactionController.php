@@ -62,7 +62,7 @@ class TransactionController extends Controller
         }
         
         $json = $this->get('jms_serializer')
-            ->serialize($response, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["Transaction"]));
+            ->serialize($response, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["ValidatedDistribution"]));
         return new Response($json);
         
     }

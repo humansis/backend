@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\GeneralReliefItem;
 use BeneficiaryBundle\Entity\Beneficiary;
 use ProjectBundle\Entity\Project;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -336,7 +337,7 @@ class DistributionController extends Controller
                 $distributionBeneficiaries,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    'Transaction',
+                    "ValidatedDistribution",
                 ])
             );
 
@@ -590,6 +591,95 @@ class DistributionController extends Controller
 
         $json = $this->get('jms_serializer')
         ->serialize($beneficiariesInProject, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
+
+        return new Response($json, Response::HTTP_OK);
+    }
+    
+    /**
+     * Edit general relief item
+     *
+     * @Rest\Post("/distributions/generalrelief/{id}", requirements={"id"="\d+"}, name="edit_general_relief")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="General Relief")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param  GeneralReliefItem $generalRelief
+     * @param  Request           $request
+     * @return Response
+     */
+    public function editGeneralReliefItemAction(GeneralReliefItem $generalRelief, Request $request)
+    {
+        $body = (array) json_decode($request->getContent());
+        $notes = $body['notes'];
+
+        try {
+            $response = $this->get('distribution.distribution_service')
+                ->editGeneralReliefItemNotes($generalRelief, $notes);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $response,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                    "ValidatedDistribution",
+                ])
+            );
+
+        return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
+     * Set general relief items as distributed
+     *
+     * @Rest\Post("/distributions/generalrelief/distributed", name="distribute_general_relief")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="General Relief")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     * 
+     * @param  Request           $request
+     * @return Response
+     */
+    public function setGeneralReliefItemsAsDistributedAction(Request $request)
+    {
+        $body = (array) json_decode($request->getContent());
+        $griIds = $body["ids"];
+
+        try {
+            $response = $this->get('distribution.distribution_service')
+                ->setGeneralReliefItemsAsDistributed($griIds);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $response,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups(["ValidatedDistribution",])
+            );
 
         return new Response($json, Response::HTTP_OK);
     }
