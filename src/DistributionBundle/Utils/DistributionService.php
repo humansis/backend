@@ -100,26 +100,31 @@ class DistributionService
     /**
      * @param DistributionData $distributionData
      * @return DistributionData
+     * @throws \Exception
      */
     public function validateDistribution(DistributionData $distributionData)
     {
         try {
             $distributionData->setValidated(true);
-            $this->em->persist($distributionData);
+            $commodities = $distributionData->getCommodities();
+            foreach ($commodities as $commodity) {
+                $modality = $commodity->getModalityType()->getModality();
+                if ($modality->getName() === 'General Relief') {
+                    $beneficiaries = $distributionData->getDistributionBeneficiaries();
+                    foreach ($beneficiaries as $beneficiary) {
+                        $generalRelief = new GeneralReliefItem();
+                        $generalRelief->setDistributionBeneficiary($beneficiary);
+                        $this->em->persist($generalRelief);
+                    }
+                }
+            }
+
             $this->em->flush();
+            return $distributionData;
+
         } catch (\Exception $e) {
             throw $e;
         }
-        
-        $commodities = $distributionData->getCommodities();
-        foreach ($commodities as $commodity) {
-            $modality = $commodity->getModalityType()->getModality();
-            if ($modality->getName() === 'General Relief') {
-                $this->createGeneralReliefItems($distributionData);
-            }
-        }
-
-        return $distributionData;
     }
 
     /**
@@ -409,13 +414,13 @@ class DistributionService
             $$index = new GeneralReliefItem();
             $$index->setDistributionBeneficiary($distributionBeneficiary);
             $distributionBeneficiary->addGeneralRelief($$index);
-            
+
             $this->em->persist($$index);
             $this->em->merge($distributionBeneficiary);
         }
         $this->em->flush();
     }
-    
+
     /**
      * Edit notes of general relief item
      * @param  GeneralReliefItem $generalRelief
@@ -426,40 +431,40 @@ class DistributionService
     {
         try {
             $generalRelief->setNotes($notes);
-            $this->em->merge($generalRelief);
             $this->em->flush();
         } catch (\Exception $e) {
             throw new \Exception("Error updating general relief item");
         }
-        
+
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->getByGRI($generalRelief);
         return $distributionBeneficiary;
     }
-    
+
     /**
      * Set general relief items as distributed
      * @param array    $griIds
      * @param DateTime $distributedAt
      * @return array
      */
-    public function setGeneralReliefItemsAsDistributed(array $griIds, \DateTime $distributedAt)
+    public function setGeneralReliefItemsAsDistributed(array $griIds)
     {
         $errorArray = array();
         $successArray = array();
-        
+
         foreach ($griIds as $griId) {
-            $$griId = $this->em->getRepository(GeneralReliefItem::class)->find($griId);
-            
-            if (! $$griId instanceof GeneralReliefItem) {
+            $gri = $this->em->getRepository(GeneralReliefItem::class)->find($griId);
+
+            if (!($gri instanceof GeneralReliefItem)) {
                 array_push($errorArray, $griId);
             } else {
-                $$griId->setDistributedAt(new \DateTime($distributedAt));
-                $this->em->merge($$griId);
-                array_push($successArray, $$griId);
+                $gri->setDistributedAt(new \DateTime());
+                $this->em->merge($gri);
+                array_push($successArray, $gri);
             }
         }
-        $this->em->merge();
-        
-        return array($errorArray, $succesArray);
+
+        $this->em->flush();
+
+        return array($errorArray, $successArray);
     }
 }

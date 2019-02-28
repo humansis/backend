@@ -598,7 +598,7 @@ class DistributionController extends Controller
     /**
      * Edit general relief item
      *
-     * @Rest\Post("/distributions/generalrelief/{id}", name="edit_general_relief")
+     * @Rest\Post("/distributions/generalrelief/{id}", requirements={"id"="\d+"}, name="edit_general_relief")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="General Relief")
@@ -612,14 +612,15 @@ class DistributionController extends Controller
      *     response=400,
      *     description="BAD_REQUEST"
      * )
-     * 
+     *
      * @param  GeneralReliefItem $generalRelief
      * @param  Request           $request
      * @return Response
      */
     public function editGeneralReliefItemAction(GeneralReliefItem $generalRelief, Request $request)
     {
-        $notes = $request->request->get('notes');
+        $body = (array) json_decode($request->getContent());
+        $notes = $body['notes'];
 
         try {
             $response = $this->get('distribution.distribution_service')
@@ -627,7 +628,7 @@ class DistributionController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        
+
         $json = $this->get('jms_serializer')
             ->serialize(
                 $response,
@@ -639,11 +640,11 @@ class DistributionController extends Controller
 
         return new Response($json, Response::HTTP_OK);
     }
-    
+
     /**
      * Set general relief items as distributed
      *
-     * @Rest\Post("/distributions/generalrelief/distributed", name="edit_general_relief")
+     * @Rest\Post("/distributions/generalrelief/distributed", name="distribute_general_relief")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="General Relief")
@@ -663,12 +664,12 @@ class DistributionController extends Controller
      */
     public function setGeneralReliefItemsAsDistributedAction(Request $request)
     {
-        $griIds = $request->request->get('data');
-        $distributedAt = $request->request->get('distributedAt');
+        $body = (array) json_decode($request->getContent());
+        $griIds = $body["ids"];
 
         try {
             $response = $this->get('distribution.distribution_service')
-                ->setGeneralReliefItemsAsDistributed($griIds, $distributedAt);
+                ->setGeneralReliefItemsAsDistributed($griIds);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -677,9 +678,7 @@ class DistributionController extends Controller
             ->serialize(
                 $response,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    "ValidatedDistribution",
-                ])
+                SerializationContext::create()->setSerializeNull(true)->setGroups(["ValidatedDistribution",])
             );
 
         return new Response($json, Response::HTTP_OK);

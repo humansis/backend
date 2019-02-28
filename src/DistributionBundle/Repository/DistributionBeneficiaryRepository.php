@@ -40,9 +40,9 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
     public function getByGRI(GeneralReliefItem $gri)
     {
         $qb = $this->createQueryBuilder("db");
-        $q = $this->leftJoin("db.generalReliefs", "gr")
-                    ->where("gr.id = :gri.id")
-                    ->setParameter('gri', $gri);
+        $q = $qb->leftJoin("db.generalReliefs", "gr")
+                    ->where("gr.id = :gri")
+                    ->setParameter('gri', $gri->getId());
         
         return $q->getQuery()->getOneOrNullResult();
     }
