@@ -9,6 +9,7 @@ use TransactionBundle\Entity\Transaction;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use VoucherBundle\Entity\Booklet;
+use DistributionBundle\Entity\GeneralReliefItem;
 
 /**
  * DistributionBeneficiary
@@ -24,7 +25,7 @@ class DistributionBeneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "Transaction", "FullBooklet"})
+     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "ValidatedDistribution", "FullBooklet"})
      */
     private $id;
 
@@ -40,7 +41,7 @@ class DistributionBeneficiary
      * @var Beneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="distributionBeneficiary")
-     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "Transaction"})
+     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "ValidatedDistribution"})
      */
     private $beneficiary;
     
@@ -48,14 +49,25 @@ class DistributionBeneficiary
      * @var Transaction
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "Transaction"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
      */
     private $transactions;
 
     /**
+     * @var Booklet
+     * 
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary")
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
      */
     private $booklets;
+
+    /**
+     * @var GeneralReliefItem
+     *
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="distributionBeneficiary")
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
+     */
+    private $generalReliefs;
 
     public function __construct()
     {
@@ -197,6 +209,41 @@ class DistributionBeneficiary
             }
         }
 
+        return $this;
+    }
+    
+    /**
+     * Get the value of Transaction 
+     * 
+     * @return GeneralReliefItem
+     */
+    public function getGeneralReliefs()
+    {
+        return $this->generalReliefs;
+    }
+ 
+    /** 
+     * Add a GeneralReliefItem 
+     * 
+     * @param GeneralReliefItem $generalRelief
+     * 
+     * @return self
+     */
+    public function addGeneralRelief(GeneralReliefItem $generalRelief)
+    {
+        $this->generalReliefs[] = $generalRelief;
+ 
+        return $this;
+    }
+    
+    /**
+     * Remove a GeneralReliefItem
+     * @param  GeneralReliefItem $generalRelief
+     * @return self                  
+     */
+    public function removeGeneralRelief(GeneralReliefItem $generalRelief)
+    {
+        $this->generalReliefs->removeElement($generalRelief);
         return $this;
     }
  

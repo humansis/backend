@@ -24,7 +24,7 @@ class Beneficiary implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "Transaction"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $id;
 
@@ -32,7 +32,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="givenName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "Transaction"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
      * @Assert\NotBlank(message="The given name is required.")
      */
     private $givenName;
@@ -41,7 +41,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="familyName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "Transaction"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
      * @Assert\NotBlank(message="The family name is required.")
      */
     private $familyName;
@@ -50,7 +50,7 @@ class Beneficiary implements ExportableInterface
      * @var int
      *
      * @ORM\Column(name="gender", type="smallint")
-     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      * @Assert\NotBlank(message="The gender is required.")
      */
     private $gender;
@@ -59,7 +59,7 @@ class Beneficiary implements ExportableInterface
      * @var boolean
      *
      * @ORM\Column(name="status", type="boolean")
-     * @Groups({"FullHousehold", "FullReceivers", "Transaction", "SmallHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold"})
      * @Assert\NotBlank(message="The status is required.")
      */
     private $status;
@@ -68,7 +68,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="residency_status", type="string", length=20)
-     * @Groups({"FullHousehold", "FullReceivers", "Transaction", "SmallHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold"})
      * @Assert\Regex("/^(refugee|idp|resident)$/i")
      */
     private $residencyStatus;
@@ -78,7 +78,7 @@ class Beneficiary implements ExportableInterface
      *
      * @ORM\Column(name="dateOfBirth", type="date")
      * @JMS_Type("DateTime<'Y-m-d'>")
-     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      * @Assert\NotBlank(message="The date of birth is required.")
      */
     private $dateOfBirth;
@@ -109,13 +109,13 @@ class Beneficiary implements ExportableInterface
      * @var VulnerabilityCriterion
      *
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "Transaction"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $vulnerabilityCriteria;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "FullReceivers", "Transaction"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $phones;
 
