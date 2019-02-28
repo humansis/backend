@@ -4,6 +4,7 @@ namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * GeneralReliefItem
