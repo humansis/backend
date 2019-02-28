@@ -668,7 +668,7 @@ class DistributionController extends Controller
 
         try {
             $response = $this->get('distribution.distribution_service')
-                ->editGeneralReliefItemNotes($DistributionData, $distributionArray);
+                ->setGeneralReliefItemsAsDistributed($griIds, $distributedAt);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
