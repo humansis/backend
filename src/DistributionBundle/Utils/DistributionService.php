@@ -429,7 +429,7 @@ class DistributionService
     public function editGeneralReliefItemNotes(int $id, string $notes)
     {
         try {
-            $generalRelief = $this->em->getRepository(DistributionBeneficiary::class)->find($id);
+            $generalRelief = $this->em->getRepository(GeneralReliefItem::class)->find($id);
             $generalRelief->setNotes($notes);
             $this->em->flush();
         } catch (\Exception $e) {
