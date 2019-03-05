@@ -425,19 +425,16 @@ class DistributionService
      * Edit notes of general relief item
      * @param  GeneralReliefItem $generalRelief
      * @param  string            $notes
-     * @return DistributionBeneficiary
      */
-    public function editGeneralReliefItemNotes(GeneralReliefItem $generalRelief, string $notes)
+    public function editGeneralReliefItemNotes(int $id, string $notes)
     {
         try {
+            $generalRelief = $this->em->getRepository(GeneralReliefItem::class)->find($id);
             $generalRelief->setNotes($notes);
             $this->em->flush();
         } catch (\Exception $e) {
             throw new \Exception("Error updating general relief item");
         }
-
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->getByGRI($generalRelief);
-        return $distributionBeneficiary;
     }
 
     /**
