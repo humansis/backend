@@ -619,8 +619,7 @@ class DistributionController extends Controller
      */
     public function editGeneralReliefItemAction(GeneralReliefItem $generalRelief, Request $request)
     {
-        $body = (array) json_decode($request->getContent());
-        $notes = $body['notes'];
+        $notes = $request->request->get('notes');
 
         try {
             $response = $this->get('distribution.distribution_service')
@@ -664,8 +663,7 @@ class DistributionController extends Controller
      */
     public function setGeneralReliefItemsAsDistributedAction(Request $request)
     {
-        $body = (array) json_decode($request->getContent());
-        $griIds = $body["ids"];
+        $griIds = $request->request->get('ids');
 
         try {
             $response = $this->get('distribution.distribution_service')
