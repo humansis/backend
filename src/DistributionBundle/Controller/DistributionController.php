@@ -598,7 +598,7 @@ class DistributionController extends Controller
     /**
      * Edit general relief item
      *
-     * @Rest\Post("/distributions/generalrelief/{id}", requirements={"id"="\d+"}, name="edit_general_relief")
+     * @Rest\Post("/distributions/generalrelief/notes", name="edit_general_relief_notes")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="General Relief")
@@ -613,32 +613,25 @@ class DistributionController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
-     * @param  GeneralReliefItem $generalRelief
      * @param  Request           $request
      * @return Response
      */
-    public function editGeneralReliefItemAction(GeneralReliefItem $generalRelief, Request $request)
+    public function editGeneralReliefNotesAction(Request $request)
     {
-        $body = (array) json_decode($request->getContent());
-        $notes = $body['notes'];
-
+        $generalReliefs = $request->request->get('generalReliefs');
         try {
-            $response = $this->get('distribution.distribution_service')
-                ->editGeneralReliefItemNotes($generalRelief, $notes);
+
+        foreach ($generalReliefs as $generalRelief) {
+
+            $this->get('distribution.distribution_service')
+                ->editGeneralReliefItemNotes($generalRelief['id'], $generalRelief['notes']);
+        }
+
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $response,
-                'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    "ValidatedDistribution",
-                ])
-            );
-
-        return new Response($json, Response::HTTP_OK);
+        return new Response(null,Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -664,8 +657,7 @@ class DistributionController extends Controller
      */
     public function setGeneralReliefItemsAsDistributedAction(Request $request)
     {
-        $body = (array) json_decode($request->getContent());
-        $griIds = $body["ids"];
+        $griIds = $request->request->get('ids');
 
         try {
             $response = $this->get('distribution.distribution_service')
