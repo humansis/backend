@@ -17,14 +17,17 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
     }
     
     public function getTotalValue(string $country) {
-        $qb = $this->createQueryBuilder("dd")
-                    ->leftJoin("dd.project", "p")
-                    ->where("p.iso3 = :country")
-                    ->setParameter("country", $country)
-                    ->leftJoin("dd.commodities", "c")
-                    ->leftJoin("c.modalityType", "mt")
-                    ->andWhere("mt.name = 'Mobile'")
-                    ->select("SUM(c.value)");
+        $qb = $this->createQueryBuilder("dd");
+
+        $qb
+            ->select("SUM(c.value)")
+            ->leftJoin("dd.project", "p")
+            ->where("p.iso3 = :country")
+                ->setParameter("country", $country)
+            ->leftJoin("dd.commodities", "c")
+            ->leftJoin("c.modalityType", "mt")
+            ->andWhere("mt.name = 'Mobile'");
+
         return $qb->getQuery()->getSingleScalarResult();
     }
     
@@ -35,6 +38,29 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
                     ->where("p.iso3 = :country")
                     ->setParameter("country", $country)
                     ->andWhere("dd.archived = 0");
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getCodeOfUpcomingDistribution(string $countryISO) {
+        $qb = $this->createQueryBuilder('dd');
+        $qb
+            ->addSelect('p')
+            ->addSelect('l')
+            ->addSelect('adm1')
+            ->addSelect('adm2')
+            ->addSelect('adm3')
+            ->addSelect('adm4')
+            ->innerJoin('dd.project', 'p')
+            ->innerJoin('dd.location', 'l')
+            ->leftJoin('l.adm1', 'adm1')
+            ->leftJoin('l.adm2', 'adm2')
+            ->leftJoin('l.adm3', 'adm3')
+            ->leftJoin('l.adm4', 'adm4')
+            ->andWhere('p.iso3 = :country')
+                ->setParameter('country', $countryISO)
+            ->andWhere('dd.dateDistribution > :now')
+                ->setParameter('now', new \DateTime());
+
         return $qb->getQuery()->getResult();
     }
 }
