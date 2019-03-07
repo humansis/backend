@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * CountrySpecificAnswer
@@ -18,13 +19,15 @@ class CountrySpecificAnswer
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullHousehold"})
      */
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="answer", type="string", length=255)
+     * @ORM\Column(name="answer", type="string", length=255, nullable=true)
+     * @Groups({"FullHousehold"})
      */
     private $answer;
 
@@ -32,15 +35,16 @@ class CountrySpecificAnswer
      * @var CountrySpecific
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\CountrySpecific", inversedBy="countrySpecificAnswers")
+     * @Groups({"FullHousehold"})
      */
     private $countrySpecific;
 
     /**
-     * @var BeneficiaryProfile
+     * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\BeneficiaryProfile", inversedBy="countrySpecificAnswers")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="countrySpecificAnswers")
      */
-    private $beneficiaryProfile;
+    private $household;
 
     /**
      * Get id.
@@ -101,26 +105,26 @@ class CountrySpecificAnswer
     }
 
     /**
-     * Set beneficiaryProfile.
+     * Set household.
      *
-     * @param \BeneficiaryBundle\Entity\BeneficiaryProfile|null $beneficiaryProfile
+     * @param \BeneficiaryBundle\Entity\Household|null $household
      *
      * @return CountrySpecificAnswer
      */
-    public function setBeneficiaryProfile(\BeneficiaryBundle\Entity\BeneficiaryProfile $beneficiaryProfile = null)
+    public function setHousehold(\BeneficiaryBundle\Entity\Household $household = null)
     {
-        $this->beneficiaryProfile = $beneficiaryProfile;
+        $this->household = $household;
 
         return $this;
     }
 
     /**
-     * Get beneficiaryProfile.
+     * Get household.
      *
-     * @return \BeneficiaryBundle\Entity\BeneficiaryProfile|null
+     * @return \BeneficiaryBundle\Entity\Household|null
      */
-    public function getBeneficiaryProfile()
+    public function getHousehold()
     {
-        return $this->beneficiaryProfile;
+        return $this->household;
     }
 }

@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * NationalId
@@ -18,6 +19,7 @@ class NationalId
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullHousehold", "FullReceivers"})
      */
     private $id;
 
@@ -25,6 +27,7 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_number", type="string", length=45)
+     * @Groups({"FullHousehold", "FullReceivers"})
      */
     private $idNumber;
 
@@ -32,13 +35,14 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_type", type="string", length=45)
+     * @Groups({"FullHousehold", "FullReceivers"})
      */
     private $idType;
 
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="nationalIds")
      */
     private $beneficiary;
 

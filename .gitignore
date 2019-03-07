@@ -21,6 +21,10 @@
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
+# PHP CS
+.phpcs-cache
+phpcs.xml
+
 
 # IDE
 /.idea/

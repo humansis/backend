@@ -6,15 +6,34 @@ namespace ProjectBundle\Controller;
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Donor;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+/**
+ * Class DonorController
+ * @package ProjectBundle\Controller
+ */
 class DonorController extends Controller
 {
 
     /**
      * @Rest\Get("/donors", name="get_all_donor")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Donors")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All donors",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Donor::class))
+     *     )
+     * )
      *
      * @return Response
      */
@@ -28,22 +47,28 @@ class DonorController extends Controller
     }
 
     /**
-     * Get a donor
-     * @Rest\Get("/donor/{id}", name="get_donor")
+     * @Rest\Put("/donors", name="create_donor")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
-     * @param Donor $donor
-     * @return Response
-     */
-    public function getAction(Donor $donor)
-    {
-        $json = $this->get('jms_serializer')
-            ->serialize($donor, 'json', SerializationContext::create()->setGroups(['FullDonor'])->setSerializeNull(true));
-
-        return new Response($json, Response::HTTP_OK);
-    }
-
-    /**
-     * @Rest\Put("/donor", name="create_donor")
+     * @SWG\Tag(name="Donors")
+     *
+     * @SWG\Parameter(
+     *     name="donor",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Donor::class, groups={"FullDonor"})
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Donor created",
+     *     @Model(type=Donor::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @param Request $request
      * @return Response
@@ -68,13 +93,34 @@ class DonorController extends Controller
     }
 
     /**
-     * @Rest\Post("/donor/{id}", name="edit_donor")
+     * @Rest\Post("/donors/{id}", name="update_donor")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Donors")
+     *
+     * @SWG\Parameter(
+     *     name="donor",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Donor::class, groups={"FullDonor"})
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Donor updated",
+     *     @Model(type=Donor::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
      *
      * @param Request $request
      * @param Donor $donor
      * @return Response
      */
-    public function editAction(Request $request, Donor $donor)
+    public function updateAction(Request $request, Donor $donor)
     {
         $donorArray = $request->request->all();
 
@@ -91,5 +137,42 @@ class DonorController extends Controller
             ->serialize($donor, 'json', SerializationContext::create()->setGroups(['FullDonor'])->setSerializeNull(true));
 
         return new Response($donorJson);
+    }
+
+    /**
+     * Edit a donor
+     * @Rest\Delete("/donors/{id}", name="delete_donor")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Donors")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Donor $donor
+     * @return Response
+     */
+    public function deleteAction(Donor $donor)
+    {
+        try
+        {
+            $valid = $this->get('project.donor_service')->delete($donor);
+        }
+        catch (\Exception $e)
+        {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($valid)
+            return new Response("", Response::HTTP_OK);
+        if (!$valid)
+            return new Response("", Response::HTTP_BAD_REQUEST);
     }
 }

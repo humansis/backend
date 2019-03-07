@@ -1,4 +1,73 @@
 services:
-#    distribution.example:
-#        class: DistributionBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+
+
+#######################################################################################
+##                                       CRUD                                        ##
+#######################################################################################
+
+    distribution.distribution_service:
+        class: DistributionBundle\Utils\DistributionService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@jms_serializer'
+            - '@validator'
+            - '@location_service'
+            - '@distribution.commodity_service'
+            - '@distribution.configuration_loader'
+            - '@distribution.criteria_distribution_service'
+            - '%distribution.retriever%'
+            - '@service_container'
+
+    distribution.distribution_beneficiary_service:
+        class: DistributionBundle\Utils\DistributionBeneficiaryService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@jms_serializer'
+            - '@validator'
+            - '@service_container'
+
+    distribution.criteria_distribution_service:
+        class: DistributionBundle\Utils\CriteriaDistributionService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@distribution.configuration_loader'
+
+    distribution.configuration_loader:
+        class: DistributionBundle\Utils\ConfigurationLoader
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '%distribution.criteria%'
+
+    distribution.modality_service:
+        class: DistributionBundle\Utils\ModalityService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+
+    distribution.commodity_service:
+        class: DistributionBundle\Utils\CommodityService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+
+
+#######################################################################################
+##                                       CSV                                         ##
+#######################################################################################
+
+    distribution.distribution_csv_service:
+        class: DistributionBundle\Utils\DistributionCSVService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@beneficiary.household_export_csv_service'
+            - '@service_container'
+            - '@beneficiary.household_to_csv_mapper'
+            - '@beneficiary.household_service'
+            - '@jms_serializer'
+            - '@validator'
+            - "@request_validator"

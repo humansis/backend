@@ -1,4 +1,103 @@
 services:
-#    beneficiary.example:
-#        class: BeneficiaryBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+#######################################################################################
+##                                       CRUD                                        ##
+#######################################################################################
+
+    beneficiary.household_service:
+        class: BeneficiaryBundle\Utils\HouseholdService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@jms_serializer"
+            - "@beneficiary.beneficiary_service"
+            - "@request_validator"
+            - "@location_service"
+            - "@validator"
+            - "@service_container"
+        public: true
+        
+    beneficiary.beneficiary_service:
+        class: BeneficiaryBundle\Utils\BeneficiaryService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@jms_serializer"
+            - "@request_validator"
+            - "@validator"
+            - "@service_container"
+            - "@distribution.distribution_beneficiary_service"
+        public: true
+
+    beneficiary.country_specific_service:
+        class: BeneficiaryBundle\Utils\CountrySpecificService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@service_container"
+
+        public: true
+
+
+#######################################################################################
+##                                      IMPORT                                       ##
+#######################################################################################
+
+    beneficiary.api_import_service:
+        class: BeneficiaryBundle\Utils\APIImportService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "@service_container"
+        public: true
+        autowire: true
+
+
+    beneficiary.khm_api_provider_idpoor:
+        class: BeneficiaryBundle\Utils\ImportProvider\KHM\KHMIDPoorAPIProvider
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "@validator"
+            - "@service_container"
+
+
+#######################################################################################
+##                                        CSV                                        ##
+#######################################################################################
+
+    beneficiary.household_export_csv_service:
+        class: BeneficiaryBundle\Utils\ExportCSVService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@service_container"
+        public: true
+
+    beneficiary.household_csv_service:
+        class: BeneficiaryBundle\Utils\HouseholdCSVService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@beneficiary.household_service"
+            - "@beneficiary.beneficiary_service"
+            - "@beneficiary.csv_to_array_mapper"
+            - "@service_container"
+        public: true
+
+    beneficiary.csv_to_array_mapper:
+        class: BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper
+        arguments:
+            - "@doctrine.orm.entity_manager"
+        public: true
+
+    beneficiary.household_to_csv_mapper:
+        class: BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@jms_serializer"
+            - "@location_service"
+        public: true
+
+    beneficiary.syria_file_to_template_mapper:
+        class: BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper
+        autowire: true
+        public: true

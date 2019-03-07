@@ -2,10 +2,12 @@
 
 namespace UserBundle\Entity;
 
+use CommonBundle\Utils\ExportableInterface;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use TransactionBundle\Entity\Transaction;
 
 /**
  * User
@@ -13,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="`user")
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserRepository")
  */
-class User extends BaseUser
+class User extends BaseUser implements ExportableInterface
 {
     /**
      * @var int
@@ -24,6 +26,25 @@ class User extends BaseUser
      * @Groups({"FullUser"})
      */
     protected $id;
+
+    /**
+     * @var string
+     * @Groups({"FullUser", "FullVendor"})
+     * @Assert\NotBlank(message="Username can't be empty")
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Your username must be at least {{ limit }} characters long",
+     *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
+     * )
+     */
+    protected $username;
+    
+    /**
+     * @var string
+     * @Groups({"FullUser", "FullVendor"})
+     */
+    protected $password;
 
     /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserCountry", mappedBy="user")
@@ -41,27 +62,29 @@ class User extends BaseUser
      * @var string
      * @Groups({"FullUser"})
      * @Assert\NotBlank(message="Email can't be empty")
-     * @Assert\Email(
-     *     message = "The email '{{ value }}' is not a valid email.",
-     *     checkMX = true
-     * )
      */
     protected $email;
 
     /**
-     * @var string
+     * @var array
      * @Groups({"FullUser"})
-     * @Assert\NotBlank(message="Username can't be empty")
-     * @Assert\Length(
-     *      min = 2,
-     *      max = 50,
-     *      minMessage = "Your username must be at least {{ limit }} characters long",
-     *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
-     * )
      */
-    protected $username;
+    protected $roles;
+    
+    /**
+     * @var Transaction
+     *
+     * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="sentBy")
+     * @Groups({"FullUser"})
+     */
+    private $transactions;
 
-
+        /**
+     * @var string
+     * @ORM\Column(name="language", type="string", length=255, nullable=true)
+     * @Groups({"FullUser"})
+     */
+    protected $language;
 
     public function __construct()
     {
@@ -151,5 +174,75 @@ class User extends BaseUser
     public function getUserProjects()
     {
         return $this->userProjects;
+    }
+    
+    /**
+     * Get the value of Transaction 
+     * 
+     * @return Transaction
+     */
+    public function getTransactions()
+    {
+        return $this->transactions;
+    }
+ 
+    /** 
+     * Add a Transaction 
+     * 
+     * @param Transaction transaction
+     * 
+     * @return self
+     */
+    public function addTransaction(Transaction $transaction)
+    {
+        $this->transactions[] = $transaction;
+ 
+        return $this;
+    }
+    
+    /**
+     * Remove a Transaction
+     * @param  Transaction $transaction
+     * @return self
+     */
+    public function removeTransaction(Transaction $transaction)
+    {
+        $this->transactions->removeElement($transaction);
+        return $this;
+    }
+    
+    /**
+     * Set transactions
+     *
+     * @param $collection
+     *
+     * @return self
+     */
+    public function setPhones(\Doctrine\Common\Collections\Collection $collection = null)
+    {
+        $this->transactions = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Returns an array representation of this class in order to prepare the export
+     * @return array
+     */
+    function getMappedValueForExport(): array
+    {
+        return [
+            'email' => $this->getEmail(),
+            'role' => $this->getRoles()[0]
+        ];
+    }
+
+    function getLanguage()
+    {
+        return $this->language;
+    } 
+
+    function setLanguage($language) {
+        $this->language = $language;
     }
 }

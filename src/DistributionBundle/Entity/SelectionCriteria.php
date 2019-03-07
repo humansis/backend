@@ -3,6 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * SelectionCriteria
@@ -18,36 +19,88 @@ class SelectionCriteria
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullDistribution"})
      */
     private $id;
+
+    /**
+     * @var DistributionData
+     *
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="selectionCriteria")
+     */
+    private $distributionData;
 
     /**
      * @var string
      *
      * @ORM\Column(name="table_string", type="string", length=255)
+     * @Groups({"FullDistribution"})
      */
     private $tableString;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="field_string", type="string", length=255)
+     * @ORM\Column(name="kind_beneficiary", type="string", length=255, nullable=true)
+     * @Groups({"FullDistribution"})
+     */
+    private $kindBeneficiary;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="field_string", type="string", length=255, nullable=true)
+     * @Groups({"FullDistribution"})
      */
     private $fieldString;
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="value_string", type="string", length=255)
+     * @ORM\Column(name="field_id", type="integer", nullable=true)
+     * @Groups({"FullDistribution"})
      */
-    private $valueString;
+    private $idField;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="condition_string", type="string", length=255)
+     * @ORM\Column(name="condition_string", type="string", length=255, nullable=true)
+     * @Groups({"FullDistribution"})
      */
     private $conditionString;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="value_string", type="string", length=255, nullable=true)
+     * @Groups({"FullDistribution"})
+     */
+    private $valueString;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="weight", type="integer")
+     * @Groups({"FullDistribution"})
+     */
+    private $weight;
+
+    /**
+     * @return int
+     */
+    public function getWeight(): int
+    {
+        return $this->weight;
+    }
+
+    /**
+     * @param int $weight
+     */
+    public function setWeight(int $weight)
+    {
+        $this->weight = $weight;
+    }
 
     /**
      * Get id.
@@ -153,5 +206,77 @@ class SelectionCriteria
     public function getConditionString()
     {
         return $this->conditionString;
+    }
+
+    /**
+     * Set kindBeneficiary.
+     *
+     * @param string|null $kindBeneficiary
+     *
+     * @return SelectionCriteria
+     */
+    public function setKindBeneficiary($kindBeneficiary = null)
+    {
+        $this->kindBeneficiary = $kindBeneficiary;
+
+        return $this;
+    }
+
+    /**
+     * Get kindBeneficiary.
+     *
+     * @return string|null
+     */
+    public function getKindBeneficiary()
+    {
+        return $this->kindBeneficiary;
+    }
+
+    /**
+     * Set idField.
+     *
+     * @param int|null $idField
+     *
+     * @return SelectionCriteria
+     */
+    public function setIdField($idField = null)
+    {
+        $this->idField = $idField;
+
+        return $this;
+    }
+
+    /**
+     * Get idField.
+     *
+     * @return int|null
+     */
+    public function getIdField()
+    {
+        return $this->idField;
+    }
+
+    /**
+     * Set distributionData.
+     *
+     * @param \DistributionBundle\Entity\DistributionData|null $distributionData
+     *
+     * @return SelectionCriteria
+     */
+    public function setDistributionData(\DistributionBundle\Entity\DistributionData $distributionData = null)
+    {
+        $this->distributionData = $distributionData;
+
+        return $this;
+    }
+
+    /**
+     * Get distributionData.
+     *
+     * @return \DistributionBundle\Entity\DistributionData|null
+     */
+    public function getDistributionData()
+    {
+        return $this->distributionData;
     }
 }

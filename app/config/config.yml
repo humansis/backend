@@ -2,7 +2,6 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
-    - { resource: "@TransactionBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -34,6 +33,11 @@ framework:
     php_errors:
         log: true
 
+
+sensio_framework_extra:
+    router:
+        annotations: false
+
 # Twig Configuration
 twig:
     debug: '%kernel.debug%'
@@ -52,29 +56,43 @@ doctrine:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+        dql:
+            string_functions:
+                 soundex:       DoctrineExtensions\Query\Mysql\Soundex
+                 date_format:   DoctrineExtensions\Query\Mysql\DateFormat
+                 timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
+                 quarter: DoctrineExtensions\Query\Mysql\Quarter
+                 month: DoctrineExtensions\Query\Mysql\Month
+                 year: DoctrineExtensions\Query\Mysql\Year
+
+            numeric_functions:
+                levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
+                levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
 
 # Swiftmailer Configuration
 swiftmailer:
-    transport: '%mailer_transport%'
-    host: '%mailer_host%'
-    username: '%mailer_user%'
-    password: '%mailer_password%'
-    spool: { type: memory }
+    transport:  '%mailer_transport%'
+    host:       '%mailer_host%'
+    username:   '%mailer_user%'
+    password:   '%mailer_password%'
+    port:       '%mailer_port%'
+    encryption: '%mailer_encryption%'
+    spool:      { type: memory }
 
 doctrine_migrations:
-    dir_name: "%kernel.root_dir%/DoctrineMigrations"
-    namespace: Application\Migrations
-    table_name: migration_versions
-    name: Application Migrations
-    organize_migrations: false # Version >= 1.2, possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false
-    custom_template: ~ # Version >= 1.2, path to your custom migrations template
+      dir_name:             "%kernel.root_dir%/DoctrineMigrations"
+      namespace:            Application\Migrations
+      table_name:           migration_versions
+      name:                 Application Migrations
+      organize_migrations:  false # Version >= 1.2, possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false
+      custom_template:      ~ # Version >= 1.2, path to your custom migrations template
 
 fos_user:
     db_driver: orm
     firewall_name: main
     user_class: UserBundle\Entity\User
     from_email:
-        address: "support@bms.com"
+        address: "admin@bmstaging.info"
         sender_name: "BMS Support"
 
 fos_rest:
@@ -128,3 +146,12 @@ nelmio_cors:
             allow_methods: ['POST', 'PUT', 'GET', 'DELETE']
             max_age: 3600
             hosts: ['^api\.']
+
+distribution:
+    retriever: BeneficiaryBundle\Utils\Distribution\DefaultRetriever
+    criteria: {
+        gender: boolean,
+        dateOfBirth: date,
+        vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
+        countrySpecific: BeneficiaryBundle\Entity\CountrySpecific
+        }

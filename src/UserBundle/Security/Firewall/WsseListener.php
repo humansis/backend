@@ -49,12 +49,11 @@ class WsseListener implements ListenerInterface
             // if ($token instanceof WsseUserToken && $this->providerKey === $token->getProviderKey()) {
             //     $this->tokenStorage->setToken(null);
             // }
-            // return;
-        }
 
-        // By default deny authorization
-        $response = new Response();
-        $response->setStatusCode(Response::HTTP_FORBIDDEN);
-        $event->setResponse($response);
+            // By default deny authorization
+            $response = new Response();
+            $response->setStatusCode(Response::HTTP_FORBIDDEN);
+            $event->setResponse($response);
+        }
     }
 }

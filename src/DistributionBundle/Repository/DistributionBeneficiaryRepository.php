@@ -1,6 +1,7 @@
 <?php
 
 namespace DistributionBundle\Repository;
+use DistributionBundle\Entity\GeneralReliefItem;
 
 /**
  * DistributionBeneficiaryRepository
@@ -10,4 +11,39 @@ namespace DistributionBundle\Repository;
  */
 class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function countAll(string $iso3)
+    {
+        $qb = $this->createQueryBuilder("db");
+        $q = $qb->select("COUNT(DISTINCT db.beneficiary)")
+                ->leftJoin("db.beneficiary", "b")
+                ->leftJoin("b.household","hh")
+                ->leftJoin("hh.location", "l")
+                ->leftJoin("l.adm1", "adm1")
+                ->leftJoin("l.adm2", "adm2")
+                ->leftJoin("l.adm3", "adm3")
+                ->leftJoin("l.adm4", "adm4")
+                ->where("adm1.countryISO3 = :iso3 AND hh.archived = 0")
+                ->leftJoin("adm4.adm3", "adm3b")
+                ->leftJoin("adm3b.adm2", "adm2b")
+                ->leftJoin("adm2b.adm1", "adm1b")
+                ->orWhere("adm1b.countryISO3 = :iso3 AND hh.archived = 0")
+                ->leftJoin("adm3.adm2", "adm2c")
+                ->leftJoin("adm2c.adm1", "adm1c")
+                ->orWhere("adm1c.countryISO3 = :iso3 AND hh.archived = 0")
+                ->leftJoin("adm2.adm1", "adm1d")
+                ->orWhere("adm1d.countryISO3 = :iso3 AND hh.archived = 0")
+                ->setParameter("iso3", $iso3);
+
+        return $q->getQuery()->getSingleScalarResult();
+    }
+    
+    public function getByGRI(GeneralReliefItem $gri)
+    {
+        $qb = $this->createQueryBuilder("db");
+        $q = $qb->leftJoin("db.generalReliefs", "gr")
+                    ->where("gr.id = :gri")
+                    ->setParameter('gri', $gri->getId());
+        
+        return $q->getQuery()->getOneOrNullResult();
+    }
 }

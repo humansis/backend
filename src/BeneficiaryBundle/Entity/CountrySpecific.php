@@ -2,7 +2,10 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use CommonBundle\Utils\ExportableInterface;
+use DistributionBundle\Model\Criteria;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * CountrySpecific
@@ -10,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="country_specific")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CountrySpecificRepository")
  */
-class CountrySpecific
+class CountrySpecific extends Criteria implements ExportableInterface
 {
     /**
      * @var int
@@ -18,20 +21,23 @@ class CountrySpecific
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullCountrySpecific", "FullHousehold", "Criteria"})
      */
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="field", type="string", length=45)
+     * @ORM\Column(name="field_string", type="string", length=45)
+     * @Groups({"FullCountrySpecific", "FullHousehold", "Criteria"})
      */
-    private $field;
+    private $fieldString;
 
     /**
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=45)
+     * @Groups({"FullCountrySpecific", "FullHousehold", "Criteria"})
      */
     private $type;
 
@@ -39,20 +45,28 @@ class CountrySpecific
      * @var string
      *
      * @ORM\Column(name="country_iso3", type="string", length=45)
+     * @Groups({"FullCountrySpecific", "FullHousehold"})
      */
     private $countryIso3;
 
     /**
      * @var CountrySpecificAnswer
      *
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="countrySpecific")
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="countrySpecific", cascade={"remove"})
      */
     private $countrySpecificAnswers;
+
     /**
-     * Constructor
+     * CountrySpecific constructor.
+     * @param $field
+     * @param $type
+     * @param $countryIso3
      */
-    public function __construct()
+    public function __construct($field, $type, $countryIso3)
     {
+        $this->setFieldString($field)
+            ->setType($type)
+            ->setCountryIso3($countryIso3);
         $this->countrySpecificAnswers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -64,30 +78,6 @@ class CountrySpecific
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set field.
-     *
-     * @param string $field
-     *
-     * @return CountrySpecific
-     */
-    public function setField($field)
-    {
-        $this->field = $field;
-
-        return $this;
-    }
-
-    /**
-     * Get field.
-     *
-     * @return string
-     */
-    public function getField()
-    {
-        return $this->field;
     }
 
     /**
@@ -172,5 +162,47 @@ class CountrySpecific
     public function getCountrySpecificAnswers()
     {
         return $this->countrySpecificAnswers;
+    }
+
+    /**
+     * Set fieldString.
+     *
+     * @param string $fieldString
+     *
+     * @return CountrySpecific
+     */
+    public function setFieldString($fieldString)
+    {
+        $this->fieldString = $fieldString;
+
+        return $this;
+    }
+
+    /**
+     * Get fieldString.
+     *
+     * @return string
+     */
+    public function getFieldString()
+    {
+        return $this->fieldString;
+    }
+
+
+    function getMappedValueForExport(): array
+    {
+        $countrySpecificAnswers = array();
+
+        foreach ($this->getCountrySpecificAnswers()->getValues() as $value) {
+            array_push($countrySpecificAnswers, $value->getAnswer());
+        }
+        $countrySpecificAnswers = join(',', $countrySpecificAnswers);
+
+        return [
+            "type" => $this->getType(),
+            "Country Iso3"=> $this->getCountryIso3(),
+            "Field" => $this->getFieldString(),
+            "country specific answers " => $countrySpecificAnswers,
+        ];
     }
 }

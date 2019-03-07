@@ -1,4 +1,19 @@
 services:
-#    transaction.example:
-#        class: TransactionBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    transaction.transaction_service:
+        class: TransactionBundle\Utils\TransactionService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    transaction.default_financial_provider:
+        class: TransactionBundle\Utils\Provider\DefaultFinancialProvider
+        public: true
+        abstract: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    transaction.khm_financial_provider:
+        class: TransactionBundle\Utils\Provider\KHMFinancialProvider
+        parent: transaction.default_financial_provider

@@ -5,3 +5,23 @@ rest_user:
 rest_project:
     type: rest
     resource: "@ProjectBundle/Resources/config/routing.yml"
+
+rest_beneficiary:
+    type: rest
+    resource: "@BeneficiaryBundle/Resources/config/routing.yml"
+
+rest_distribution:
+    type: rest
+    resource: "@DistributionBundle/Resources/config/routing.yml"
+
+rest_reporting:
+    resource: "@ReportingBundle/Resources/config/routing.yml"
+
+rest_common:
+    resource: "@CommonBundle/Resources/config/routing.yml"
+
+rest_transaction:
+    resource: "@TransactionBundle/Resources/config/routing.yml"
+
+rest_voucher:
+    resource: "@VoucherBundle/Resources/config/routing.yml"

@@ -4,6 +4,7 @@ namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use ProjectBundle\Entity\Project;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * UserProject
@@ -13,11 +14,6 @@ use ProjectBundle\Entity\Project;
  */
 class UserProject
 {
-
-    const RIGHT_ADMIN = 3;
-    const RIGHT_MANAGER = 2;
-    const RIGHT_USER = 1;
-
     /**
      * @var int
      *
@@ -30,7 +26,7 @@ class UserProject
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="userProjects")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="userProjects", cascade={"persist"})
      */
     private $user;
 
@@ -38,13 +34,14 @@ class UserProject
      * @var Project
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="usersProject")
+     * @Groups({"FullUser"})
      */
     private $project;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="rights", type="integer")
+     * @ORM\Column(name="rights", type="string")
      */
     private $rights;
 
@@ -61,7 +58,7 @@ class UserProject
     /**
      * Set rights.
      *
-     * @param int $rights
+     * @param string $rights
      *
      * @return UserProject
      */
@@ -75,7 +72,7 @@ class UserProject
     /**
      * Get rights.
      *
-     * @return int
+     * @return string
      */
     public function getRights()
     {

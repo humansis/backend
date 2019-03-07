@@ -1,6 +1,7 @@
 <?php
 
 namespace BeneficiaryBundle\Repository;
+use BeneficiaryBundle\Entity\Household;
 
 /**
  * CountrySpecificAnswerRepository
@@ -10,4 +11,27 @@ namespace BeneficiaryBundle\Repository;
  */
 class CountrySpecificAnswerRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function hasValue(int $countrySpecificId, $answer, string $conditionString, Household $household){
+
+        $qb = $this->createQueryBuilder('csa');
+
+        $q  = $qb->where('csa.countrySpecific = :countrySpecificId')
+            ->setParameter('countrySpecificId', $countrySpecificId);
+        
+        $hasAnswers = $q->getQuery()->getResult();
+        if (!$hasAnswers && $conditionString === "!=") {
+            return true;
+        }
+        else if ($hasAnswers) {
+            $q = $q->andWhere('csa.answer '. $conditionString . ' :answer OR csa.answer IS NULL')
+            ->setParameter('answer', $answer)
+            ->andWhere('csa.household = :household')
+            ->setParameter('household', $household);
+            return $q->getQuery()->getResult();
+        }
+        else {
+            return false;
+        }
+        
+    }
 }

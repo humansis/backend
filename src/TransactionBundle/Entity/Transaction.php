@@ -2,8 +2,11 @@
 
 namespace TransactionBundle\Entity;
 
-use DistributionBundle\Entity\CommodityDistributionBeneficiary;
+use DistributionBundle\Entity\DistributionBeneficiary;
+use UserBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Type as JMS_Type;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Transaction
@@ -14,269 +17,368 @@ use Doctrine\ORM\Mapping as ORM;
 class Transaction
 {
     /**
+     * Transaction status 
+     * @var boolean
+     */
+     const FAILURE = 0;
+     const SUCCESS = 1;
+     const NO_PHONE = 2;
+    
+    /**
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @Groups({"ValidatedDistribution"})
+     * 
      */
     private $id;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="transaction_id", type="string", length=45)
+     *
+     * @Groups({"ValidatedDistribution"})
+     */
+    private $transactionId;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="transactionIdServiceProvider", type="string", length=45)
-     */
-    private $transactionIdServiceProvider;
-
-    /**
-     * @var float
+     * @ORM\Column(name="amount_sent", type="string")
      *
-     * @ORM\Column(name="amountsent", type="float")
+     * @Groups({"ValidatedDistribution"})
      */
-    private $amountsent;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="statusServiceprovider", type="boolean")
-     */
-    private $statusServiceprovider;
+    private $amountSent;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="transactiontime", type="datetime")
+     * @ORM\Column(name="date_sent", type="datetime")
+     *
+     * @Groups({"ValidatedDistribution"})
      */
-    private $transactiontime;
+    private $dateSent;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="transaction_status", type="smallint")
+     *
+     * @Groups({"ValidatedDistribution", "FullReceivers", "FullDistribution"})
+     */
+    private $transactionStatus;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="message", type="string", length=255, nullable=true)
+     *
+     * @Groups({"ValidatedDistribution"})
+     */
+    private $message;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="moneyReceived", type="float")
+     * @ORM\Column(name="money_received", type="boolean", nullable=true)
+     *
+     * @Groups({"ValidatedDistribution"})
      */
     private $moneyReceived;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="pickupdate", type="datetime")
+     * @ORM\Column(name="pickup_date", type="datetime", nullable=true)
+     *
+     * @Groups({"ValidatedDistribution"})
      */
-    private $pickupdate;
+    private $pickupDate;
 
     /**
-     * @var FinancialServiceConfiguration
+     * @var DistributionBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="TransactionBundle\Entity\FinancialServiceConfiguration")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="transactions", cascade={"persist"})
      */
-    private $financialServiceConfiguration;
+    private $distributionBeneficiary;
 
     /**
-     * @var CommodityDistributionBeneficiary
+     * @var \DateTime|null
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\CommodityDistributionBeneficiary")
+     * @ORM\Column(name="updated_on", type="datetime", nullable=true)
+     * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
+     * 
+     * @Groups({"ValidatedDistribution"})
      */
-    private $commodityDistributionBeneficiary;
+    private $updatedOn;
+    
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="transactions", cascade={"persist"})
+     */
+    private $sentBy;
 
     /**
-     * Get id.
-     *
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->setUpdatedOn(new \DateTime());
+    }
+
+    /**
+     * Get the value of Id 
+     * 
      * @return int
      */
     public function getId()
     {
         return $this->id;
     }
-
+ 
     /**
-     * Set transactionIdServiceProvider.
-     *
-     * @param string $transactionIdServiceProvider
-     *
-     * @return Transaction
-     */
-    public function setTransactionIdServiceProvider($transactionIdServiceProvider)
-    {
-        $this->transactionIdServiceProvider = $transactionIdServiceProvider;
-
-        return $this;
-    }
-
-    /**
-     * Get transactionIdServiceProvider.
-     *
+     * Get the value of Transaction Id 
+     * 
      * @return string
      */
-    public function getTransactionIdServiceProvider()
+    public function getTransactionId()
     {
-        return $this->transactionIdServiceProvider;
+        return $this->transactionId;
     }
-
-    /**
-     * Set amountsent.
-     *
-     * @param float $amountsent
-     *
-     * @return Transaction
+ 
+    /** 
+     * Set the value of Transaction Id 
+     * 
+     * @param string transactionId
+     * 
+     * @return self
      */
-    public function setAmountsent($amountsent)
+    public function setTransactionId($transactionId)
     {
-        $this->amountsent = $amountsent;
-
+        $this->transactionId = $transactionId;
+ 
         return $this;
     }
-
+ 
     /**
-     * Get amountsent.
-     *
-     * @return float
+     * Get the value of Amount Sent 
+     * 
+     * @return string
      */
-    public function getAmountsent()
+    public function getAmountSent()
     {
-        return $this->amountsent;
+        return $this->amountSent;
     }
-
-    /**
-     * Set statusServiceprovider.
-     *
-     * @param bool $statusServiceprovider
-     *
-     * @return Transaction
+ 
+    /** 
+     * Set the value of Amount Sent 
+     * 
+     * @param string amountSent
+     * 
+     * @return self
      */
-    public function setStatusServiceprovider($statusServiceprovider)
+    public function setAmountSent($amountSent)
     {
-        $this->statusServiceprovider = $statusServiceprovider;
-
+        $this->amountSent = $amountSent;
+ 
         return $this;
     }
-
+ 
     /**
-     * Get statusServiceprovider.
-     *
-     * @return bool
-     */
-    public function getStatusServiceprovider()
-    {
-        return $this->statusServiceprovider;
-    }
-
-    /**
-     * Set transactiontime.
-     *
-     * @param \DateTime $transactiontime
-     *
-     * @return Transaction
-     */
-    public function setTransactiontime($transactiontime)
-    {
-        $this->transactiontime = $transactiontime;
-
-        return $this;
-    }
-
-    /**
-     * Get transactiontime.
-     *
+     * Get the value of Date Sent 
+     * 
      * @return \DateTime
      */
-    public function getTransactiontime()
+    public function getDateSent()
     {
-        return $this->transactiontime;
+        return $this->dateSent;
     }
-
-    /**
-     * Set moneyReceived.
-     *
-     * @param float $moneyReceived
-     *
-     * @return Transaction
+ 
+    /** 
+     * Set the value of Date Sent 
+     * 
+     * @param \DateTime dateSent
+     * 
+     * @return self
      */
-    public function setMoneyReceived($moneyReceived)
+    public function setDateSent(\DateTime $dateSent)
     {
-        $this->moneyReceived = $moneyReceived;
-
+        $this->dateSent = $dateSent;
+ 
         return $this;
     }
-
+ 
     /**
-     * Get moneyReceived.
-     *
+     * Get the value of Transaction Status 
+     * 
+     * @return int
+     */
+    public function getTransactionStatus()
+    {
+        return $this->transactionStatus;
+    }
+ 
+    /** 
+     * Set the value of Transaction Status 
+     * 
+     * @param int transactionStatus
+     * 
+     * @return self
+     */
+    public function setTransactionStatus($transactionStatus)
+    {
+        $this->transactionStatus = $transactionStatus;
+ 
+        return $this;
+    }
+ 
+    /**
+     * Get the value of Message 
+     * 
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+ 
+    /** 
+     * Set the value of Message 
+     * 
+     * @param string message
+     * 
+     * @return self
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
+ 
+        return $this;
+    }
+ 
+    /**
+     * Get the value of Money Received 
+     * 
      * @return float
      */
     public function getMoneyReceived()
     {
         return $this->moneyReceived;
     }
-
-    /**
-     * Set pickupdate.
-     *
-     * @param \DateTime $pickupdate
-     *
-     * @return Transaction
+ 
+    /** 
+     * Set the value of Money Received 
+     * 
+     * @param float moneyReceived
+     * 
+     * @return self
      */
-    public function setPickupdate($pickupdate)
+    public function setMoneyReceived($moneyReceived)
     {
-        $this->pickupdate = $pickupdate;
-
+        $this->moneyReceived = $moneyReceived;
+ 
         return $this;
     }
-
+ 
     /**
-     * Get pickupdate.
-     *
+     * Get the value of Pickup Date 
+     * 
      * @return \DateTime
      */
-    public function getPickupdate()
+    public function getPickupDate()
     {
-        return $this->pickupdate;
+        return $this->pickupDate;
     }
-
-    /**
-     * Set financialServiceConfiguration.
-     *
-     * @param \TransactionBundle\Entity\FinancialServiceConfiguration|null $financialServiceConfiguration
-     *
-     * @return Transaction
+ 
+    /** 
+     * Set the value of Pickup Date 
+     * 
+     * @param \DateTime pickupDate
+     * 
+     * @return self
      */
-    public function setFinancialServiceConfiguration(\TransactionBundle\Entity\FinancialServiceConfiguration $financialServiceConfiguration = null)
+    public function setPickupDate(\DateTime $pickupDate)
     {
-        $this->financialServiceConfiguration = $financialServiceConfiguration;
-
+        $this->pickupDate = $pickupDate;
+ 
         return $this;
     }
+ 
 
     /**
-     * Get financialServiceConfiguration.
-     *
-     * @return \TransactionBundle\Entity\FinancialServiceConfiguration|null
+     * Get the value of Distribution Beneficiary 
+     * 
+     * @return DistributionBeneficiary
      */
-    public function getFinancialServiceConfiguration()
+    public function getDistributionBeneficiary()
     {
-        return $this->financialServiceConfiguration;
+        return $this->distributionBeneficiary;
     }
-
-    /**
-     * Set commodityDistributionBeneficiary.
-     *
-     * @param \DistributionBundle\Entity\CommodityDistributionBeneficiary|null $commodityDistributionBeneficiary
-     *
-     * @return Transaction
+ 
+    /** 
+     * Set the value of Distribution Beneficiary 
+     * 
+     * @param DistributionBeneficiary distributionBeneficiary
+     * 
+     * @return self
      */
-    public function setCommodityDistributionBeneficiary(\DistributionBundle\Entity\CommodityDistributionBeneficiary $commodityDistributionBeneficiary = null)
+    public function setDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
     {
-        $this->commodityDistributionBeneficiary = $commodityDistributionBeneficiary;
-
+        $this->distributionBeneficiary = $distributionBeneficiary;
+ 
         return $this;
     }
-
+ 
     /**
-     * Get commodityDistributionBeneficiary.
-     *
-     * @return \DistributionBundle\Entity\CommodityDistributionBeneficiary|null
-     */
-    public function getCommodityDistributionBeneficiary()
+    * Get the value of Sent By 
+    * 
+    * @return User
+    */
+    public function getSentBy()
     {
-        return $this->commodityDistributionBeneficiary;
+        return $this->sentBy;
+    }
+    
+    /** 
+    * Set the value of Sent By 
+    * 
+    * @param User sentBy
+    * 
+    * @return self
+    */
+    public function setSentBy(User $sentBy)
+    {
+        $this->sentBy = $sentBy;
+        
+        return $this;
+    }
+    
+    /**
+     * Get the value of Updated On 
+     * 
+     * @return \DateTime|null
+     */
+    public function getUpdatedOn()
+    {
+        return $this->updatedOn;
+    }
+ 
+    /** 
+     * Set the value of Updated On 
+     * 
+     * @param \DateTime|null updatedOn
+     * 
+     * @return self
+     */
+    public function setUpdatedOn($updatedOn)
+    {
+        $this->updatedOn = new \DateTime();
+ 
+        return $this;
     }
 }

@@ -1,0 +1,62 @@
+services:
+
+    ############################### Data Fillers ###############################
+
+    reporting.data_fillers.reference:
+        class: ReportingBundle\Utils\DataFillers\DataFillersIndicator
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    reporting.data_fillers.default:
+        class: ReportingBundle\Utils\DataFillers\DataFillers
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    reporting.data_fillers.country:
+        class: ReportingBundle\Utils\DataFillers\Country\DataFillersCountry
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    reporting.data_fillers.project:
+        class: ReportingBundle\Utils\DataFillers\Project\DataFillersProject
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    reporting.data_fillers.distribution:
+        class: ReportingBundle\Utils\DataFillers\Distribution\DataFillersDistribution
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    ################################## Computers ##################################
+
+    reporting.computer:
+        class: ReportingBundle\Utils\Computers\Computer
+        arguments: ['@doctrine.orm.entity_manager', '@reporting.data_retrievers.project']
+
+    ############################### Data Retrievers ###############################
+
+    reporting.data_retrievers.country:
+        class: ReportingBundle\Utils\DataRetrievers\CountryDataRetrievers
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    reporting.data_retrievers.project:
+        class: ReportingBundle\Utils\DataRetrievers\ProjectDataRetrievers
+        arguments: ['@doctrine.orm.entity_manager']
+        public: true
+
+    reporting.data_retrievers.distribution:
+        class: ReportingBundle\Utils\DataRetrievers\DistributionDataRetrievers
+        arguments: ['@doctrine.orm.entity_manager', '@reporting.data_retrievers.project']
+        public: true
+
+    ################################## Formatters ##################################
+
+    reporting.formatter:
+        class: ReportingBundle\Utils\Formatters\Formatter
+
+    ################################## Finders ##################################
+
+    reporting.finder:
+        class: ReportingBundle\Utils\Finders\Finder
+        arguments: ['@doctrine.orm.entity_manager']

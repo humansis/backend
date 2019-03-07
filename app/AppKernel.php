@@ -28,12 +28,17 @@ class AppKernel extends Kernel
             new DistributionBundle\DistributionBundle(),
             new TransactionBundle\TransactionBundle(),
             new RA\RequestValidatorBundle\RARequestValidatorBundle(),
+            new CommonBundle\CommonBundle(),
+            new ReportingBundle\ReportingBundle(),
+            new Jrk\LevenshteinBundle\JrkLevenshteinBundle(),
+            new VoucherBundle\VoucherBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
+            $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
 
             if ('dev' === $this->getEnvironment()) {
                 $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();

@@ -1,0 +1,149 @@
+services:
+
+
+#######################################################################################
+##                                       CRUD                                        ##
+#######################################################################################
+
+    location_service:
+        class: CommonBundle\Utils\LocationService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "@request_validator"
+
+    export_csv_service:
+        class: CommonBundle\Utils\ExportService
+        arguments:
+        - "@doctrine.orm.entity_manager"
+        - "@service_container"
+        public: true
+
+#######################################################################################
+##                                     LISTENER                                      ##
+#######################################################################################
+    CommonBundle\Listener\RequestListener:
+        arguments:
+        - "@doctrine.orm.entity_manager"
+        - "@service_container"
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
+
+    CommonBundle\Listener\ResponseListener:
+        arguments:
+        - "@doctrine.orm.entity_manager"
+        - "@service_container"
+        tags:
+        - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+
+
+#######################################################################################
+##                                      FIXTURE                                      ##
+#######################################################################################
+
+    CommonBundle\DataFixtures\CountrySpecificFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\LocationFixtures:
+        arguments:
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\LocationUnitTestFixtures:
+        arguments:
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\ModalityFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\ProjectFixtures:
+        arguments:
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\SectorFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\UserFixtures:
+        arguments:
+            - "@fos_user.user_manager"
+            - "@security.encoder_factory"
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\FinancialProviderFixtures:
+        arguments:
+        - "@fos_user.user_manager"
+        - "@security.encoder_factory"
+        tags:
+        - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\BeneficiaryFixtures:
+        arguments:
+            - "@kernel"
+            - "@beneficiary.household_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\DistributionFixtures:
+        arguments:
+            - "@kernel"
+            - "@distribution.distribution_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\ProductFixtures:
+        arguments:
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\VendorFixtures:
+        arguments:
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+
+
+#######################################################################################
+##                                       VOTER                                       ##
+#######################################################################################
+
+    voter_default:
+        class: CommonBundle\Voter\DefaultVoter
+        arguments:
+            - "@security.role_hierarchy"
+            - "@doctrine.orm.entity_manager"
+            - "@request_stack"
+        tags:
+            - { name: security.voter }
+
+    voter_project:
+        class: CommonBundle\Voter\ProjectVoter
+        arguments:
+            - "@security.role_hierarchy"
+            - "@doctrine.orm.entity_manager"
+        tags:
+            - { name: security.voter }
+
+#######################################################################################
+##                                       EXPORT                                      ##
+#######################################################################################
+
+    CommonBundle\Utils\ExportService:
+        class: CommonBundle\Utils\ExportService
+        autowire: true
+        public: true

@@ -3,6 +3,7 @@
 namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * UserCountry
@@ -22,9 +23,9 @@ class UserCountry
     private $id;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="rights", type="integer")
+     * @ORM\Column(name="rights", type="string")
      */
     private $rights;
 
@@ -32,13 +33,14 @@ class UserCountry
      * @var string
      *
      * @ORM\Column(name="iso3", type="string", length=3)
+     * @Groups({"FullUser"})
      */
     private $iso3;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="countries")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="countries", cascade={"persist"})
      */
     private $user;
 
@@ -56,7 +58,7 @@ class UserCountry
     /**
      * Set rights.
      *
-     * @param int $rights
+     * @param string $rights
      *
      * @return UserCountry
      */
@@ -70,7 +72,7 @@ class UserCountry
     /**
      * Get rights.
      *
-     * @return int
+     * @return string
      */
     public function getRights()
     {
@@ -124,4 +126,6 @@ class UserCountry
     {
         return $this->user;
     }
+
+
 }

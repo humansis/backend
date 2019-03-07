@@ -10,4 +10,31 @@ namespace DistributionBundle\Repository;
  */
 class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getLastId() {
+        $qb = $this->createQueryBuilder('dd')
+                   ->select("MAX(dd.id)" );
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+    
+    public function getTotalValue(string $country) {
+        $qb = $this->createQueryBuilder("dd")
+                    ->leftJoin("dd.project", "p")
+                    ->where("p.iso3 = :country")
+                    ->setParameter("country", $country)
+                    ->leftJoin("dd.commodities", "c")
+                    ->leftJoin("c.modalityType", "mt")
+                    ->andWhere("mt.name = 'Mobile'")
+                    ->select("SUM(c.value)");
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+    
+    public function getActiveByCountry(string $country)
+    {
+        $qb = $this->createQueryBuilder("dd")
+                    ->leftJoin("dd.project", "p")
+                    ->where("p.iso3 = :country")
+                    ->setParameter("country", $country)
+                    ->andWhere("dd.archived = 0");
+        return $qb->getQuery()->getResult();
+    }
 }

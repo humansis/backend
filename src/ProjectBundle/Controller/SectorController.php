@@ -9,67 +9,41 @@ use ProjectBundle\Entity\Sector;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use FOS\RestBundle\Controller\Annotations as Rest;
 
+use FOS\RestBundle\Controller\Annotations as Rest;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+
+/**
+ * Class SectorController
+ * @package ProjectBundle\Controller
+ */
 class SectorController extends Controller
 {
 
     /**
-     * @Rest\Get("/sectors", name="get_sectors")
+     * @Rest\Get("/sectors", name="get_all_sectors")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Sectors")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All Sectors",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Sector::class))
+     *     )
+     * )
+     * @return Response
      */
-    public function getAllAction(Request $request)
+    public function getAllAction()
     {
         $sectors = $this->get('project.sector_service')->findAll();
 
         $json = $this->get('jms_serializer')
             ->serialize($sectors, 'json', SerializationContext::create()->setGroups(['FullSector'])->setSerializeNull(true));
-
-        return new Response($json);
-    }
-
-    /**
-     * @Rest\Put("/sector", name="create_sector")
-     * @param Request $request
-     * @return Response
-     */
-    public function createAction(Request $request)
-    {
-        $sectorArray = $request->request->all();
-        try
-        {
-            $sector = $this->get('project.sector_service')->create($sectorArray);
-        }
-        catch (\Exception $exception)
-        {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-
-        $json = $this->get('jms_serializer')
-            ->serialize($sector, 'json', SerializationContext::create()->setGroups(['FullSector'])->setSerializeNull(true));
-
-        return new Response($json);
-    }
-
-    /**
-     * @Rest\Post("/sector/{id}", name="edit_sector")
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function editAction(Request $request, Sector $sector)
-    {
-        $sectorArray = $request->request->all();
-        try
-        {
-            $sector = $this->get('project.sector_service')->edit($sector, $sectorArray);
-        }
-        catch (\Exception $exception)
-        {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-
-        $json = $this->get('jms_serializer')
-            ->serialize($sector, 'json', SerializationContext::create()->setGroups(['FullSector'])->setSerializeNull(true));
 
         return new Response($json);
     }
