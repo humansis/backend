@@ -494,7 +494,7 @@ class Project implements ExportableInterface
      */
     public function getReportingProject()
     {
-        return $this->ReportingProject;
+        return $this->reportingProject;
     }
 
     /**

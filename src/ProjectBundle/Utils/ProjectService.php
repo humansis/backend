@@ -109,8 +109,7 @@ class ProjectService
         $newProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
         $project = new Project();
         $project->setName($newProject->getName())
-                ->setName($newProject->getName())
-                ->setStartDate($newProject->getStartDate())        
+                ->setStartDate($newProject->getStartDate())
                 ->setEndDate($newProject->getEndDate())
                 ->setIso3($countryISO3)
                 ->setValue($newProject->getValue())
