@@ -9,6 +9,8 @@ use ReportingBundle\Utils\Formatters\Formatter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use JMS\Serializer\SerializationContext;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,6 +20,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 
 use ReportingBundle\Entity\ReportingIndicator;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Class ReportingController
@@ -95,7 +98,6 @@ class ReportingController extends Controller
      */
     public function getAction()
     {
-        $indicatorFinded = [];
         $indicatorFinded = $this->get('reporting.finder')->findIndicator();
         $json = json_encode($indicatorFinded);
         return new Response($json, Response::HTTP_OK);
@@ -136,9 +138,14 @@ class ReportingController extends Controller
      * @throws \Exception
      */
 
-    public function exportToCsv(Request $request, ReportingIndicator $indicator) {
+    public function exportData(Request $request, ReportingIndicator $indicator) {
 
-        $filters = $request->request->get('filters'); //on utilisera les filtres dans le csv
+        $filters  = $request->request->get('filters');
+        $fileType = $request->request->get('fileType');
+
+        if (!in_array($fileType, [ExportService::FORMAT_XLS, ExportService::FORMAT_CSV, ExportService::FORMAT_ODS])) {
+            return new Response('Bad format.', Response::HTTP_BAD_REQUEST);
+        }
 
         $contentJson = $request->request->all();
         $filters['country'] = $contentJson['__country'];
@@ -152,22 +159,25 @@ class ReportingController extends Controller
             return new Response($e->getMessage(), $e->getCode() > 200 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
         }
 
-        $extraData = [
-            ["Frequency", $filters['frequency']],
-            ["Country", $contentJson['__country']],
-            ["Indicator name", $indicator->getCode()],
-            ["Indicator Reference", $indicator->getReference()],
-            ["Graph type", $indicator->getGraph()],
-        ];
-
         /** @var ExportService $exporter */
         $exporter = $this->get('export_csv_service');
 
-        $toExport = $exporter
-            ->setHeaders($extraData)
-            ->export($dataFormatted, $indicator->getReference());
+        $filename = $exporter
+            ->export($dataFormatted, $indicator->getReference(), $fileType);
 
-        return new JsonResponse($toExport);
+        // Create binary file to send
+        $response = new BinaryFileResponse(getcwd() . '/' . $filename);
+
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
+        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+        if ($mimeTypeGuesser->isSupported()) {
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
+        } else {
+            $response->headers->set('Content-Type', 'text/plain');
+        }
+        $response->deleteFileAfterSend(true);
+
+        return $response;
     }
 
 
