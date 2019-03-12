@@ -83,6 +83,11 @@ class ExportController extends Controller
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, $type);
             }
+            elseif ($request->query->get('generalrelief')) {
+                $idDistribution = $request->query->get('generalrelief');
+                $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
+                $filename = $this->get('distribution.distribution_service')->exportGeneralReliefToCsv($distribution, $type);
+            }
 
             // Create binary file to send
             $response = new BinaryFileResponse(getcwd() . '/' . $filename);
