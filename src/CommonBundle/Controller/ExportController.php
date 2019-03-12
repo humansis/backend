@@ -91,6 +91,10 @@ class ExportController extends Controller
                 $country       = $request->request->get('__country');
 
                 $filename = $this->get('reporting.reporting_service')->exportToCsv($indicatorsId, $frequency, $projects, $distributions, $country, $type);
+            elseif ($request->query->get('generalrelief')) {
+                $idDistribution = $request->query->get('generalrelief');
+                $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
+                $filename = $this->get('distribution.distribution_service')->exportGeneralReliefToCsv($distribution, $type);
             }
 
             // Create binary file to send
