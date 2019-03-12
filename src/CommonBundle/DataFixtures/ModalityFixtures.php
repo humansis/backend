@@ -14,9 +14,37 @@ class ModalityFixtures extends Fixture
 {
 
     private $data = [
-        ['CTP', ['Mobile']],
-        // ['Voucher', ['Voucher']],
-        ['General Relief', ['Voucher', 'Food', 'Shelter Kit']]
+        [
+            'Cash', 
+            [
+                'Mobile Money'
+                // 'Electronic Bank Transfer',
+                // 'Digital Wallet',
+            ]
+        ],
+        [
+            'Voucher',
+            [
+                // 'E-Voucher',
+                'QR Code Voucher'
+            ]
+        ],
+        [
+            'In Kind', 
+            [
+                'Food',
+                'RTE Kit',
+                'Bread',
+                'Agricultural Kit',
+                'WASH Kit'
+            ]
+        ],
+        [
+            'Other',
+            [
+                'Loan'
+            ]
+        ]
     ];
 
     /**
