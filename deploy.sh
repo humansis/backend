@@ -17,6 +17,6 @@ ssh -i $2 ubuntu@$ec2 \
     "cd /var/www/html/bms_api; \
     git checkout $1; \
     git pull origin $1; \
-    composer install; \
+    sudo docker-compose exec -T php bash -c 'composer install'; \
     sudo docker-compose exec -T php bash -c 'php bin/console c:c'; \
     sudo docker-compose exec  -T php bash -c 'php bin/console d:m:m -n'"
