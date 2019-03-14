@@ -87,7 +87,7 @@ class UserController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
 
-        if ($user->getRoles()[0] === 'ROLE_VENDOR') {
+        if ($user->getVendor() !== null) {
             return new Response('You cannot connect on this site, please use the app.', Response::HTTP_FORBIDDEN);
         }
         
