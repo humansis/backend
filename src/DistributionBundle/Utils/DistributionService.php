@@ -109,7 +109,7 @@ class DistributionService
             $commodities = $distributionData->getCommodities();
             foreach ($commodities as $commodity) {
                 $modality = $commodity->getModalityType()->getModality();
-                if ($modality->getName() === 'General Relief') {
+                if ($modality->getName() !== 'Cash') {
                     $beneficiaries = $distributionData->getDistributionBeneficiaries();
                     foreach ($beneficiaries as $beneficiary) {
                         $generalRelief = new GeneralReliefItem();
@@ -463,5 +463,56 @@ class DistributionService
         $this->em->flush();
 
         return array($errorArray, $successArray);
+    }
+    
+    /**
+     * @param DistributionData $distributionData
+     * @param string $type
+     * @return mixed
+     */
+    public function exportGeneralReliefToCsv(DistributionData $distributionData, string $type) {
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
+
+        $generalreliefs = array();
+        $exportableTable = array();
+        foreach ($distributionBeneficiary as $db) {
+            $generalrelief = $this->em->getRepository(GeneralReliefItem::class)->findOneByDistributionBeneficiary($db);
+
+            if ($generalrelief) {
+                array_push($generalreliefs, $generalrelief);
+            }
+        }
+
+        foreach ($generalreliefs as $generalrelief) {
+            $beneficiary = $generalrelief->getDistributionBeneficiary()->getBeneficiary();
+            $gender = '';
+
+            if ($beneficiary->getGender() == 0)
+                $gender = 'Female';
+            else
+                $gender = 'Male';
+                
+            $commodity = $distributionData->getCommodities()[0];
+
+            array_push($exportableTable, array(
+                "addressStreet" => $beneficiary->getHousehold()->getAddressStreet(),
+                "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
+                "addressPostcode" => $beneficiary->getHousehold()->getAddressPostcode(),
+                "livelihood" => $beneficiary->getHousehold()->getLivelihood(),
+                "notes" => $beneficiary->getHousehold()->getNotes(),
+                "latitude" => $beneficiary->getHousehold()->getLatitude(),
+                "longitude" => $beneficiary->getHousehold()->getLongitude(),
+                "givenName" => $beneficiary->getGivenName(),
+                "familyName"=> $beneficiary->getFamilyName(),
+                "gender" => $gender,
+                "dateOfBirth" => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                "commodity" => $commodity->getModalityType()->getName(),
+                "value" => $commodity->getValue() . ' ' . $commodity->getUnit(),
+                "distributedAt" => $generalrelief->getDistributedAt(),
+                "notesDistribution" => $generalrelief->getNotes()
+            ));
+        }
+
+        return $this->container->get('export_csv_service')->export($exportableTable,'generalrelief', $type);
     }
 }

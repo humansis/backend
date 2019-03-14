@@ -9,6 +9,8 @@ use ReportingBundle\Utils\Formatters\Formatter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use JMS\Serializer\SerializationContext;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,6 +20,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 
 use ReportingBundle\Entity\ReportingIndicator;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Class ReportingController
@@ -95,80 +98,10 @@ class ReportingController extends Controller
      */
     public function getAction()
     {
-        $indicatorFinded = [];
         $indicatorFinded = $this->get('reporting.finder')->findIndicator();
         $json = json_encode($indicatorFinded);
         return new Response($json, Response::HTTP_OK);
         
     }
-
-
-    /**
-     * Send data formatted corresponding to code to display it in front
-     * @Rest\Post("/indicators/export/{id}")
-     *
-     * @SWG\Tag(name="Reporting")
-     *
-     * @SWG\Parameter(
-     *     name="Project",
-     *     in="body",
-     *     required=true,
-     *     @Model(type=ReportingIndicator::class)
-     * )
-     *
-     * @SWG\Response(
-     *      response=200,
-     *          description="Get data reporting",
-     *          @SWG\Schema(
-     *              type="array",
-     *              @SWG\Items(ref=@Model(type=ReportingIndicator::class))
-     *          )
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param ReportingIndicator $indicator
-     * @param Request $request
-     * @return Response
-     * @throws \Exception
-     */
-
-    public function exportToCsv(Request $request, ReportingIndicator $indicator) {
-
-        $filters = $request->request->get('filters'); //on utilisera les filtres dans le csv
-
-        $contentJson = $request->request->all();
-        $filters['country'] = $contentJson['__country'];
-
-        try {
-            $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
-            $dataFormatted = $this->get('reporting.formatter')->format(Formatter::CsvFormat, $dataComputed, $indicator->getGraph());
-        }
-        catch (\Exception $e)
-        {
-            return new Response($e->getMessage(), $e->getCode() > 200 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
-        }
-
-        $extraData = [
-            ["Frequency", $filters['frequency']],
-            ["Country", $contentJson['__country']],
-            ["Indicator name", $indicator->getCode()],
-            ["Indicator Reference", $indicator->getReference()],
-            ["Graph type", $indicator->getGraph()],
-        ];
-
-        /** @var ExportService $exporter */
-        $exporter = $this->get('export_csv_service');
-
-        $toExport = $exporter
-            ->setHeaders($extraData)
-            ->export($dataFormatted, $indicator->getReference());
-
-        return new JsonResponse($toExport);
-    }
-
 
 }

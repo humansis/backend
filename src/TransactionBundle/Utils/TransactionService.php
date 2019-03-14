@@ -62,7 +62,7 @@ class TransactionService {
             throw new \Exception("The commodity of the distribution does not allow this operation.");
         }
         
-        $from = $user->getEmail();
+        $from = $user->getId();
         
         try {            
             return $this->financialProvider->sendMoneyToAll($distributionData, $amountToSend, $currencyToSend, $from);
