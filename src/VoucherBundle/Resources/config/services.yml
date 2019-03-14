@@ -24,3 +24,8 @@ services:
         class: VoucherBundle\Utils\ProductService
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
         public: true
+
+    common.upload_service:
+        class: CommonBundle\Utils\UploadService
+        arguments: ['%aws_access_key_id%', '%aws_secret_access_key%', '%aws_s3_region%', '@service_container' ]
+        public: true

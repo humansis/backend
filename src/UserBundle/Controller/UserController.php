@@ -333,6 +333,40 @@ class UserController extends Controller
         return new Response($json, Response::HTTP_OK);
     }
 
+    /**	
+     * Get web users	
+     *	
+     * @Rest\Get("/web-users", name="get_web_users")	
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_READ')")	
+     *	
+     * @SWG\Tag(name="Users")	
+     *	
+     * @SWG\Response(	
+     *     response=200,	
+     *     description="Users fetched",	
+     *     @SWG\Schema(	
+     *         type="array",	
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"FullUser"}))	
+     *     )	
+     * )	
+     *	
+     * @SWG\Response(	
+     *     response=400,	
+     *     description="BAD_REQUEST"	
+     * )	
+     *	
+     * @param Request $request	
+     * @return Response	
+     */	
+    public function getWebUsersAction(Request $request)	
+    {	
+        $limit = ($request->query->has('limit'))? $request->query->get('limit') : null;	
+        $offset = ($request->query->has('offset'))? $request->query->get('offset') : null;	
+         $users = $this->get('user.user_service')->findWebUsers($limit, $offset);	
+        $json = $this->get('jms_serializer')->serialize($users, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));	
+         return new Response($json, Response::HTTP_OK);	
+    }
+
     /**
      * Show projects of an user
      *

@@ -83,6 +83,9 @@ class ExportController extends Controller
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, $type);
             }
+            elseif ($request->query->get('booklets')) {
+                $filename = $this->get('voucher.booklet_service')->exportToCsv($type);
+            }
             elseif ($request->query->get('reporting')) {
                 $indicatorsId  = $request->request->get('indicators');
                 $frequency     = $request->request->get('frequency');

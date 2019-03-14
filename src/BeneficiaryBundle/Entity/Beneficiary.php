@@ -32,7 +32,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="givenName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet"})
      * @Assert\NotBlank(message="The given name is required.")
      */
     private $givenName;

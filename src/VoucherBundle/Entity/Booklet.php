@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use \VoucherBundle\Entity\Product;
 use JMS\Serializer\Annotation\Groups;
+use CommonBundle\Utils\ExportableInterface;
 
 /**
  * Booklet
@@ -15,8 +16,13 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="booklet")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\BookletRepository")
  */
-class Booklet
+class Booklet implements ExportableInterface
 {
+    public const UNASSIGNED = 0;
+    public const DISTRIBUTED = 1;
+    public const USED = 2;
+    public const DEACTIVATED = 3;
+
     /**
      * @var int
      *
@@ -64,15 +70,7 @@ class Booklet
      *
      * @ORM\Column(name="password", type="string", length=255, nullable=true)
      */
-    private $password;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="archived", type="boolean")
-     * @Groups({"FullVendor"})
-     */
-    private $archived;
+    public $password;
 
     /**
      * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="booklets")
@@ -230,30 +228,6 @@ class Booklet
     }
 
     /**
-     * Set archived.
-     *
-     * @param bool $archived
-     *
-     * @return Booklet
-     */
-    public function setArchived($archived)
-    {
-        $this->archived = $archived;
-
-        return $this;
-    }
-
-    /**
-     * Get archived.
-     *
-     * @return bool
-     */
-    public function getArchived()
-    {
-        return $this->archived;
-    }
-
-    /**
      * @return Collection|Product[]
      */
     public function getProduct(): Collection
@@ -310,7 +284,7 @@ class Booklet
         return $this;
     }
 
-    public function getDistributionBeneficiary(): DistributionBeneficiary
+    public function getDistributionBeneficiary(): ?DistributionBeneficiary
     {
         return $this->distribution_beneficiary;
     }
@@ -320,5 +294,49 @@ class Booklet
         $this->distribution_beneficiary = $distribution_beneficiary;
 
         return $this;
+    }
+
+      /**
+     * Returns an array representation of this class in order to prepare the export
+     * @return array
+     */
+    function getMappedValueForExport(): array
+    {
+        if ($this->getStatus() === 0) {
+            $status = 'Unassigned';
+        } else if ($this->getStatus() === 1) {
+            $status = 'Distributed';
+        } else if ($this->getStatus() === 2) {
+            $status = 'Used';
+        } else if ($this->getStatus() === 3) {
+            $status = 'Deactivated';
+        }
+
+        $password = empty($this->getPassword()) ? 'No' : 'Yes';
+        $distribution = $this->getDistributionBeneficiary() ?
+            $this->getDistributionBeneficiary()->getDistributionData()->getName() :
+            null;
+        $beneficiary = $this->getDistributionBeneficiary() ?
+            $this->getDistributionBeneficiary()->getBeneficiary()->getGivenName() :
+            null;
+
+        $finalArray = [
+            'Code' => $this->getCode(),
+            'Quantity of vouchers' => $this->getNumberVouchers(),
+            'Currency' => $this->getCurrency(),
+            'Status' => $status,
+            'Password' => $password,
+            'Beneficiary' => $beneficiary,
+            'Distribution' => $distribution
+        ];
+
+        $vouchers = $this->getVouchers();
+
+        foreach ($vouchers as $index => $voucher) {
+            $displayIndex = $index + 1;
+            $finalArray['Voucher '.$displayIndex] = $voucher->getValue().$this->getCurrency();
+        }
+
+        return $finalArray;
     }
 }

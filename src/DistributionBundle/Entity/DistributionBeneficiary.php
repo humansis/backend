@@ -33,7 +33,7 @@ class DistributionBeneficiary
      * @var DistributionData
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="distributionBeneficiaries")
-     * @Groups({"FullDistributionBeneficiary"})
+     * @Groups({"FullDistributionBeneficiary", "FullBooklet"})
      */
     private $distributionData;
 
@@ -41,7 +41,7 @@ class DistributionBeneficiary
      * @var Beneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="distributionBeneficiary")
-     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "ValidatedDistribution"})
+     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "ValidatedDistribution", "FullBooklet"})
      */
     private $beneficiary;
     

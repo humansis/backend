@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
+use Gaufrette\Adapter\AwsS3;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class ProductController
@@ -204,6 +206,45 @@ class ProductController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
+        return new Response(json_encode($return));
+    }
+
+    /**
+     * @Rest\Post("/products/upload/image", name="upload_image")
+     * 
+     * @SWG\Tag(name="UploadImage")
+     *
+     * @SWG\Parameter(
+     *     name="file",
+     *     in="formData",
+     *     required=true,
+     *     type="file"
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     @SWG\Schema(
+     *          type="string"
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function uploadImage(Request $request) {
+        $content = $request->getContent();
+        $file = $request->files->get('file');
+
+        $type = $file->getMimeType();
+        if ($type !== 'image/gif' && $type !== 'image/jpeg' && $type !== 'image/png') {
+            return new Response('The image type must be gif, png or jpg.', Response::HTTP_BAD_REQUEST);
+        }
+
+        $adapter = $this->container->get('knp_gaufrette.filesystem_map')->get('products')->getAdapter();
+        $filename = $this->get('common.upload_service')->uploadImage($file, $adapter);
+        $bucketName = $this->getParameter('aws_s3_bucket_name');
+        $region = $this->getParameter('aws_s3_region');
+
+        $return = 'https://s3.'.$region.'.amazonaws.com/'.$bucketName.'/products/'.$filename;
         return new Response(json_encode($return));
     }
 }

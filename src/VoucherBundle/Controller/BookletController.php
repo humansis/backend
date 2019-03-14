@@ -13,6 +13,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Booklet;
+use Doctrine\Common\Collections\Collection;
+
 
 /**
  * Class BookletController
@@ -142,6 +144,50 @@ class BookletController extends Controller
     }
 
     /**
+     * Get booklets that are protected by a password
+     *
+     * @Rest\Get("/protected-booklets", name="get_protected_booklets")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Booklets delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Booklet::class, groups={"FullBooklet"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getProtectedAction(Request $request)
+    {
+        try {
+            $booklets = $this->get('voucher.booklet_service')->findProtected();
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $bookletPasswords = [];
+        
+        foreach($booklets as $booklet) {
+            $bookletPasswords[] = [
+                $booklet->getCode() => $booklet->getPassword()
+            ];
+        }
+
+        $json = $this->get('jms_serializer')->serialize($bookletPasswords, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+        return new Response($json);
+    }
+
+    /**
      * Get single booklet
      *
      * @Rest\Get("/booklets/{id}", name="get_single_booklet")
@@ -233,18 +279,19 @@ class BookletController extends Controller
      */
     public function deactivateBooklets(Request $request){
         try {
-            $booklets = $request->request->all();
-            $this->get('voucher.booklet_service')->archiveMany($booklets);
+            $data = $request->request->all();
+            $bookletCodes = $data['bookletCodes'];
+            $this->get('voucher.booklet_service')->deactivateMany($bookletCodes);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return new Response(json_encode('Booklet successfully archived'));
+        return new Response(json_encode('Booklet successfully deactivated'));
     }
 
     /**
-     * Archive a booklet
-     * @Rest\Delete("/booklets/{id}", name="archive_booklet")
+     * Deactivate a booklet
+     * @Rest\Delete("/deactivate-booklets/{id}", name="deactivate_booklet")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -257,14 +304,14 @@ class BookletController extends Controller
      * @param Booklet $booklet
      * @return Response
      */
-    public function archiveAction(Booklet $booklet){
+    public function deactivateAction(Booklet $booklet) {
         try {
-            $this->get('voucher.booklet_service')->archive($booklet);
+            $this->get('voucher.booklet_service')->deactivate($booklet);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return new Response(json_encode('Booklet successfully archived'));
+        return new Response(json_encode('Booklet successfully deactivated'));
     }
 
     /**
@@ -295,7 +342,7 @@ class BookletController extends Controller
 
     /**
      * Update password of the booklet
-     * @Rest\Post("/booklets/{code}/password", name="update_password_booklet")
+     * @Rest\Post("/booklets/update/password", name="update_password_booklet")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -306,13 +353,14 @@ class BookletController extends Controller
      * )
      *
      * @param Request $request
-     * @param Booklet $booklet
      * @return Response
      */
-    public function updatePasswordAction(Request $request, Booklet $booklet)
+    public function updatePasswordAction(Request $request)
     {
         $password = $request->request->get('password');
-         if (!isset($password) || empty($password)) {
+        $code = $request->request->get('code');
+        $booklet = $this->get('voucher.booklet_service')->getOne($code);
+        if (!isset($password) || empty($password)) {
             return new Response("The password is missing", Response::HTTP_BAD_REQUEST);
         }
 
@@ -328,7 +376,7 @@ class BookletController extends Controller
 
     /**
      * Assign the booklet to a specific beneficiary
-     * @Rest\Post("/booklets/{bookletId}/assign/{beneficiaryId}", name="assign_booklet")
+     * @Rest\Post("/booklets/assign/{beneficiaryId}", name="assign_booklet")
      * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      *
@@ -344,8 +392,10 @@ class BookletController extends Controller
      * @param Beneficiary $beneficiary
      * @return Response
      */
-    public function assignAction(Booklet $booklet, Beneficiary $beneficiary)
+    public function assignAction(Request $request, Beneficiary $beneficiary)
     {
+        $code = $request->request->get('code');
+        $booklet = $this->get('voucher.booklet_service')->getOne($code);
         try {
             $return = $this->get('voucher.booklet_service')->assign($booklet, $beneficiary);
         } catch (\Exception $exception) {
@@ -355,4 +405,62 @@ class BookletController extends Controller
         return new Response(json_encode($return));
     }
 
+    /**
+     * To print a batch of booklets
+     *
+     * @Rest\Post("/booklets-print", name="print_booklets")
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function printBookletsAction(Request $request)
+    {
+        $bookletData = $request->request->all();
+        $bookletIds = $bookletData['bookletIds'];
+
+        try {
+            return $this->get('voucher.booklet_service')->printMany($bookletIds);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * To print a booklet
+     *
+     * @Rest\Get("/booklets/print/{id}", name="print_booklet")
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Booklet $booklet
+     * @return Response
+     */
+    public function printBookletAction(Booklet $booklet)
+    {
+        try {
+            return $this->get('voucher.booklet_service')->generatePdf([$booklet]);;
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
 }

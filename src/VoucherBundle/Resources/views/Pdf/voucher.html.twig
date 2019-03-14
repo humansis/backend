@@ -1,0 +1,15 @@
+<div class="beneficiary-info">
+    <p class="name">
+        <span>Beneficiary :</span>
+        <span class="beneficiary-name"> Mr/Mrs {{ name }}</span>
+    </p>
+    <p class="value">
+        <span>Value : </span>
+        <span class="voucher-value">{{ value }}{{ currency }}</span>
+    </p>
+    <p class="explanation"> This voucher can be detached and used individually.</p>
+    <div class="qr-code">
+        <img src="{{ qrCodeLink }}" />
+    </div>
+</div>
+<p class="next-voucher"></p>

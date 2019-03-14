@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>{{ source('@Voucher/Pdf/main.css') }}</style>
+        <style>
+           .column-left {
+                float: left;
+            }
+
+            .column-right {
+                text-align: right;
+            }
+
+            /* Clear floats after the columns */
+            .row:after {
+            content: "";
+            display: table;
+            clear: both;
+            }
+
+            td {
+                text-align: center;
+            }
+
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+            
+            table {
+                margin-top: 30px;
+            }
+
+            .bold {
+                font-weight: bold;
+            }
+
+            .terms-conditions {
+                font-style: italic;
+                text-align: center;
+                margin-top: 30px;
+                page-break-inside: avoid;
+            }
+        </style>
+    </head>
+    <body>
+        {{ include('@Voucher/Pdf/header.html.twig') }}
+        <main>
+            <div class="row">
+                    <div class="column-left">
+                        <p>From : <br>
+                        Hawala desk Investopedia<br>
+                        New York City<br>
+                        114 West 41st Street<br>
+                        New York, NY 10036</p>
+                    </div>
+                    <div class="column-right">
+                        <h1>INVOICE</h1>
+                    </div>
+            </div>
+            <div class="row">
+                <div class="column-left">
+                    <p>To :<br>
+                    Mr {{ name }} <br>
+                    {{ shop }} <br>
+                    {{ address }}</p>
+                </div>
+                <div class="column-right">
+                    <p>Signed in : _______  <br>
+                    On the : {{ date }}</p>
+                </div>
+            </div>
+            <table style="width:100%">
+                <tr>
+                    <th>Date</th>
+                    <th>Voucher's code</th>
+                    <th>Value</th> 
+                </tr>
+
+                {% for voucher in vouchers %}
+                    <tr>
+                        <td>{{ voucher.usedAt }}</td>
+                        <td>{{ voucher.code }}</td>
+                        <td>{{ voucher.value }} {{ voucher.booklet.currency }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td class="bold">TOTAL</td>
+                    <td>{{ totalValue }} {{ vouchers[0].booklet.currency }}</td> 
+                </tr>
+            </table>
+            <p class="terms-conditions">Those are example terms and conditions about the invoice. They will be filled by Hawala as soon as they five them to us.<br>
+                Maybe there are some conditions on the payment, or maybe they will add something about the invoice being a proof of payment. <br>
+                Or if there are going to verify the vouchers, maybe there will be an explanation on how to scan the qrCode to link it with the appropriate column
+            </p>
+        </main>
+    </body>
+</html>

@@ -40,7 +40,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=45)
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "FullBooklet"})
      */
     private $name;
 
