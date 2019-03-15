@@ -35,6 +35,7 @@ class ModalityType
      * @var Modality
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Modality", inversedBy="modalityTypes")
+     * @Groups({"FullModalityType", "FullDistribution"})
      */
     private $modality;
 

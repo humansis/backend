@@ -109,7 +109,9 @@ class DistributionService
             $commodities = $distributionData->getCommodities();
             foreach ($commodities as $commodity) {
                 $modality = $commodity->getModalityType()->getModality();
-                if ($modality->getName() !== 'Cash') {
+                if ($modality->getName() === 'In Kind' ||
+                    $modality->getName() === 'Other' ||
+                    $commodity->getModalityType()->getName() === 'Cash') {
                     $beneficiaries = $distributionData->getDistributionBeneficiaries();
                     foreach ($beneficiaries as $beneficiary) {
                         $generalRelief = new GeneralReliefItem();
