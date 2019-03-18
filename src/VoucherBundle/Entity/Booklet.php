@@ -29,7 +29,7 @@ class Booklet implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullBooklet"})
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
     private $id;
 
@@ -37,7 +37,7 @@ class Booklet implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
-     * @Groups({"FullBooklet"})
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
     private $code;
 
@@ -53,7 +53,7 @@ class Booklet implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="currency", type="string", length=255)
-     * @Groups({"FullBooklet"})
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
     private $currency;
 
@@ -61,7 +61,7 @@ class Booklet implements ExportableInterface
      * @var int|null
      *
      * @ORM\Column(name="status", type="integer", nullable=true)
-     * @Groups({"FullBooklet"})
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
     private $status;
 
@@ -80,7 +80,7 @@ class Booklet implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", orphanRemoval=true)
-     * @Groups({"FullBooklet"})
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
     private $vouchers;
 
