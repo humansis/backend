@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Booklet;
+use DistributionBundle\Entity\DistributionData;
 use Doctrine\Common\Collections\Collection;
 
 
@@ -376,9 +377,10 @@ class BookletController extends Controller
 
     /**
      * Assign the booklet to a specific beneficiary
-     * @Rest\Post("/booklets/assign/{beneficiaryId}", name="assign_booklet")
+     * @Rest\Post("/booklets/assign/{beneficiaryId}/{distributionId}", name="assign_booklet")
      * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
+     * @ParamConverter("distributionData", options={"mapping": {"distributionId": "id"}})
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -390,14 +392,15 @@ class BookletController extends Controller
      *
      * @param Booklet $booklet
      * @param Beneficiary $beneficiary
+     * @param DistributionData $distributionData
      * @return Response
      */
-    public function assignAction(Request $request, Beneficiary $beneficiary)
+    public function assignAction(Request $request, Beneficiary $beneficiary, DistributionData $distributionData)
     {
         $code = $request->request->get('code');
         $booklet = $this->get('voucher.booklet_service')->getOne($code);
         try {
-            $return = $this->get('voucher.booklet_service')->assign($booklet, $beneficiary);
+            $return = $this->get('voucher.booklet_service')->assign($booklet, $beneficiary, $distributionData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

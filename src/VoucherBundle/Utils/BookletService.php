@@ -19,6 +19,7 @@ use Dompdf\Options;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use DistributionBundle\Entity\DistributionData;
 
 class BookletService
 {
@@ -356,16 +357,18 @@ class BookletService
      *
      * @param Booklet $booklet
      * @param Beneficiary $beneficiary
+     * @param DistributionData $distributionData
      * @throws \Exception
      *
      * @return string
      */
-    public function assign(Booklet $booklet, Beneficiary $beneficiary) {
+    public function assign(Booklet $booklet, Beneficiary $beneficiary, DistributionData $distributionData) {
         if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED){
             throw new \Exception("This booklet has already been used and is actually deactivated");
         }
 
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneByBeneficiary($beneficiary);
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(
+          ['beneficiary' => $beneficiary, "distributionData" => $distributionData]);
         $booklet->setDistributionBeneficiary($distributionBeneficiary)
                 ->setStatus(Booklet::DISTRIBUTED);
         $this->em->merge($booklet);
