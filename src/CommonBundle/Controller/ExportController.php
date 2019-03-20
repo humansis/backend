@@ -78,8 +78,8 @@ class ExportController extends Controller
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
             }
-            elseif ($request->query->get('transaction')) {
-                $idDistribution = $request->query->get('transaction');
+            elseif ($request->query->get('transactionDistribution')) {
+                $idDistribution = $request->query->get('transactionDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, $type);
             }
@@ -95,10 +95,15 @@ class ExportController extends Controller
 
                 $filename = $this->get('reporting.reporting_service')->exportToCsv($indicatorsId, $frequency, $projects, $distributions, $country, $type);
             }
-            elseif ($request->query->get('generalrelief')) {
-                $idDistribution = $request->query->get('generalrelief');
+            elseif ($request->query->get('generalreliefDistribution')) {
+                $idDistribution = $request->query->get('generalreliefDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
-                $filename = $this->get('distribution.distribution_service')->exportGeneralReliefToCsv($distribution, $type);
+                $filename = $this->get('distribution.distribution_service')->exportGeneralReliefDistributionToCsv($distribution, $type);
+            }
+            elseif ($request->query->get('voucherDistribution')) {
+                $idDistribution = $request->query->get('voucherDistribution');
+                $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
+                $filename = $this->$this->get('voucher.booklet_service')->exportVouchersDistributionToCsv($distribution, $type);
             }
 
             // Create binary file to send

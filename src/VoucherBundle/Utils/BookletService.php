@@ -25,44 +25,44 @@ class BookletService
 {
 
   /** @var EntityManagerInterface $em */
-  private $em;
+    private $em;
 
-  /** @var ValidatorInterface $validator */
-  private $validator;
+    /** @var ValidatorInterface $validator */
+    private $validator;
 
-  /** @var ContainerInterface $container */
-  private $container;
+    /** @var ContainerInterface $container */
+    private $container;
 
-  /**
-   * UserService constructor.
-   * @param EntityManagerInterface $entityManager
-   * @param ValidatorInterface $validator
-   * @param ContainerInterface $container
-   */
-  public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
-  {
-    $this->em = $entityManager;
-    $this->validator = $validator;
-    $this->container = $container;
-  }
-
-  /**
-   * Returns the index of the next booklet to be inserted in the database
-   *
-   * @return int
-   */
-  public function getBookletBatch()
-  {
-    $allBooklets = $this->em->getRepository(Booklet::class)->findAll();
-    end($allBooklets);
-
-    if ($allBooklets) {
-      $bookletBatch = $allBooklets[key($allBooklets)]->getId() + 1;
-      return $bookletBatch;
-    } else {
-      return 0;
+    /**
+     * UserService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param ValidatorInterface $validator
+     * @param ContainerInterface $container
+     */
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    {
+        $this->em = $entityManager;
+        $this->validator = $validator;
+        $this->container = $container;
     }
-  }
+
+    /**
+     * Returns the index of the next booklet to be inserted in the database
+     *
+     * @return int
+     */
+    public function getBookletBatch()
+    {
+        $allBooklets = $this->em->getRepository(Booklet::class)->findAll();
+        end($allBooklets);
+
+        if ($allBooklets) {
+            $bookletBatch = $allBooklets[key($allBooklets)]->getId() + 1;
+            return $bookletBatch;
+        } else {
+            return 0;
+        }
+    }
 
     /**
      * Find one booklet by code
@@ -71,50 +71,51 @@ class BookletService
      * @return Booklet
      */
 
-    public function getOne(string $code) {
+    public function getOne(string $code)
+    {
         return $this->em->getRepository(Booklet::class)->findOneBy(['code' => $code]);
     }
 
-  /**
-   * Creates a new Booklet entity
-   *
-   * @param array $bookletData
-   * @return mixed
-   * @throws \Exception
-   */
-  public function create(array $bookletData)
-  {
-    $bookletBatch = $this->getBookletBatch();
-    $currentBatch = $bookletBatch;
+    /**
+     * Creates a new Booklet entity
+     *
+     * @param array $bookletData
+     * @return mixed
+     * @throws \Exception
+     */
+    public function create(array $bookletData)
+    {
+        $bookletBatch = $this->getBookletBatch();
+        $currentBatch = $bookletBatch;
 
-    for ($x = 0; $x < $bookletData['number_booklets']; $x++) {
+        for ($x = 0; $x < $bookletData['number_booklets']; $x++) {
 
       // === creates booklet ===
-      try {
-        $booklet = new Booklet();
-        $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
+            try {
+                $booklet = new Booklet();
+                $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
 
-        $booklet->setCode($code)
+                $booklet->setCode($code)
           ->setNumberVouchers($bookletData['number_vouchers'])
           ->setCurrency($bookletData['currency'])
           ->setStatus(Booklet::UNASSIGNED);
 
-        if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
-          $booklet->setPassword($bookletData['password']);
-        }
+                if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
+                    $booklet->setPassword($bookletData['password']);
+                }
 
-        $this->em->merge($booklet);
-        $this->em->flush();
+                $this->em->merge($booklet);
+                $this->em->flush();
 
-        $currentBatch++;
-        $createdBooklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet->getCode());
-      } catch (\Exception $e) {
-        throw new \Exception('Error creating Booklet ' . $e->getMessage() . ' ' . $e->getLine());
-      }
+                $currentBatch++;
+                $createdBooklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet->getCode());
+            } catch (\Exception $e) {
+                throw new \Exception('Error creating Booklet ' . $e->getMessage() . ' ' . $e->getLine());
+            }
 
-      //=== creates vouchers ===
-      try {
-        $voucherData = [
+            //=== creates vouchers ===
+            try {
+                $voucherData = [
           'number_vouchers' => $bookletData['number_vouchers'],
           'bookletCode' => $code,
           'currency' => $bookletData['currency'],
@@ -122,99 +123,97 @@ class BookletService
           'values' => $bookletData['individual_values'],
         ];
   
-        $this->container->get('voucher.voucher_service')->create($voucherData);
-      } catch (\Exception $e) {
-        throw new \Exception('Error creating vouchers');
-      }
+                $this->container->get('voucher.voucher_service')->create($voucherData);
+            } catch (\Exception $e) {
+                throw new \Exception('Error creating vouchers');
+            }
+        }
+
+        return $createdBooklet;
     }
 
-    return $createdBooklet;
-  }
 
+    /**
+     * Generates a random code for a booklet
+     *
+     * @param array $bookletData
+     * @param int $currentBatch
+     * @param int $bookletBatch
+     * @return string
+     */
+    public function generateCode(array $bookletData, int $currentBatch, int $bookletBatch)
+    {
+        // === randomCode*bookletBatchNumber-lastBatchNumber-currentBooklet ===
+        $lastBatchNumber = $bookletBatch + ($bookletData['number_booklets'] - 1);
 
-  /**
-   * Generates a random code for a booklet
-   *
-   * @param array $bookletData
-   * @param int $currentBatch
-   * @param int $bookletBatch
-   * @return string
-   */
-  public function generateCode(array $bookletData, int $currentBatch, int $bookletBatch)
-  {
-    // === randomCode*bookletBatchNumber-lastBatchNumber-currentBooklet ===
-    $lastBatchNumber = $bookletBatch + ($bookletData['number_booklets'] - 1);
-
-    if ($bookletBatch > 1) {
-      $bookletBatchNumber = $bookletBatch;
-    } elseif (!$bookletBatch) {
-      $bookletBatchNumber = "0";
-    }
+        if ($bookletBatch > 1) {
+            $bookletBatchNumber = $bookletBatch;
+        } elseif (!$bookletBatch) {
+            $bookletBatchNumber = "0";
+        }
 
     
     
-    // === joins all parts together ===
-    $fullCode = $bookletBatchNumber . '-' . $lastBatchNumber . '-' . $currentBatch;
-    return $fullCode;
-  }
+        // === joins all parts together ===
+        $fullCode = $bookletBatchNumber . '-' . $lastBatchNumber . '-' . $currentBatch;
+        return $fullCode;
+    }
 
   
-  /**
-   * Get all the non-deactivated booklets from the database
-   *
-   * @return array
-   */
-  public function findAll()
-  {
-    return  $this->em->getRepository(Booklet::class)->getActiveBooklets();
-  }
+    /**
+     * Get all the non-deactivated booklets from the database
+     *
+     * @return array
+     */
+    public function findAll()
+    {
+        return  $this->em->getRepository(Booklet::class)->getActiveBooklets();
+    }
 
-  /**
-   * Get all the deactivated booklets from the database
-   *
-   * @return array
-   */
-  public function findDeactivated()
-  {
-    return  $this->em->getRepository(Booklet::class)->findBy(['status' => Booklet::DEACTIVATED]);
-  }
+    /**
+     * Get all the deactivated booklets from the database
+     *
+     * @return array
+     */
+    public function findDeactivated()
+    {
+        return  $this->em->getRepository(Booklet::class)->findBy(['status' => Booklet::DEACTIVATED]);
+    }
 
-  /**
-   * Get all the protected booklets from the database
-   *
-   * @return array
-   */
-  public function findProtected()
-  {
-    return  $this->em->getRepository(Booklet::class)->getProtectedBooklets();
-  }
+    /**
+     * Get all the protected booklets from the database
+     *
+     * @return array
+     */
+    public function findProtected()
+    {
+        return  $this->em->getRepository(Booklet::class)->getProtectedBooklets();
+    }
 
-  /**
-   * Updates a booklet
-   *
-   * @param Booklet $booklet
-   * @param array $bookletData
-   * @return Booklet
-   * @throws \Exception
-   */
-  public function update(Booklet $booklet, array $bookletData)
-  {
+    /**
+     * Updates a booklet
+     *
+     * @param Booklet $booklet
+     * @param array $bookletData
+     * @return Booklet
+     * @throws \Exception
+     */
+    public function update(Booklet $booklet, array $bookletData)
+    {
+        try {
+            $booklet->setCurrency($bookletData['currency']);
+            $initialNumberVouchers = $booklet->getNumberVouchers();
 
-    try {
+            $newNumberVouchers = $bookletData['number_vouchers'];
+            $booklet->setNumberVouchers($newNumberVouchers);
 
-        $booklet->setCurrency($bookletData['currency']);
-        $initialNumberVouchers = $booklet->getNumberVouchers();
+            $vouchersToAdd = (int)$bookletData['number_vouchers'] - $initialNumberVouchers;
 
-        $newNumberVouchers = $bookletData['number_vouchers'];
-        $booklet->setNumberVouchers($newNumberVouchers);
-
-        $vouchersToAdd = (int)$bookletData['number_vouchers'] - $initialNumberVouchers;
-
-        // Create vouchers without default value and no password
-        if ($vouchersToAdd > 0) {
-          try {
-            $values = array_fill(0, $vouchersToAdd, 1);
-            $voucherData = [
+            // Create vouchers without default value and no password
+            if ($vouchersToAdd > 0) {
+                try {
+                    $values = array_fill(0, $vouchersToAdd, 1);
+                    $voucherData = [
               'number_vouchers' => $vouchersToAdd,
               'bookletCode' => $booklet->getCode(),
               'currency' => $bookletData['currency'],
@@ -222,74 +221,71 @@ class BookletService
               'values' => $values,
             ];
       
-            $this->container->get('voucher.voucher_service')->create($voucherData);
-          } catch (\Exception $e) {
-            throw new \Exception('Error creating vouchers');
-          }
-        } else if ($vouchersToAdd < 0) {
-          $vouchersToRemove = - $vouchersToAdd;
-          $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
-          foreach($vouchers as $voucher) {
-            if ($vouchersToRemove > 0) {
-              $this->container->get('voucher.voucher_service')->deleteOneFromDatabase($voucher);
-              $vouchersToRemove -= 1;
+                    $this->container->get('voucher.voucher_service')->create($voucherData);
+                } catch (\Exception $e) {
+                    throw new \Exception('Error creating vouchers');
+                }
+            } elseif ($vouchersToAdd < 0) {
+                $vouchersToRemove = - $vouchersToAdd;
+                $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
+                foreach ($vouchers as $voucher) {
+                    if ($vouchersToRemove > 0) {
+                        $this->container->get('voucher.voucher_service')->deleteOneFromDatabase($voucher);
+                        $vouchersToRemove -= 1;
+                    }
+                }
             }
-          }
-        }
 
-        if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
-          $booklet->setPassword($bookletData['password']);
-        }
-        $this->em->merge($booklet);
+            if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
+                $booklet->setPassword($bookletData['password']);
+            }
+            $this->em->merge($booklet);
         
-        $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
-        $values = array_key_exists('individual_values', $bookletData) ? $bookletData['individual_values'] : [];
-        foreach ($vouchers as $index => $voucher) {
-          $password = array_key_exists('password', $bookletData) ? $bookletData['password'] : null;
-          $value = $values[$index] ?: null;
-          $this->updateVoucherCode($voucher, $password, $value, $bookletData['currency']);
+            $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
+            $values = array_key_exists('individual_values', $bookletData) ? $bookletData['individual_values'] : [];
+            foreach ($vouchers as $index => $voucher) {
+                $password = array_key_exists('password', $bookletData) ? $bookletData['password'] : null;
+                $value = $values[$index] ?: null;
+                $this->updateVoucherCode($voucher, $password, $value, $bookletData['currency']);
+            }
+
+            $this->em->flush();
+        } catch (\Exception $e) {
+            throw new \Exception('Error updating Booklet');
         }
-
-        $this->em->flush();
-
-    } catch (\Exception $e) {
-      throw new \Exception('Error updating Booklet');
+        return $booklet;
     }
-    return $booklet;
-  }
 
-  public function updateVoucherCode(Voucher $voucher, ?string $password, ?string $value, ?string $currency) {
+    public function updateVoucherCode(Voucher $voucher, ?string $password, ?string $value, ?string $currency)
+    {
+        $qrCode = $voucher->getCode();
+        // To know if we need to add a new password or replace an existant one
+        preg_match('/^([A-Z]+)(\d+)\*[\d]+-[\d]+-[\d]+-[\d]+-([\dA-Z=+-\/]+)$/i', $qrCode, $matches);
 
-      $qrCode = $voucher->getCode();
-      // To know if we need to add a new password or replace an existant one
-      preg_match('/^([A-Z]+)(\d+)\*[\d]+-[\d]+-[\d]+-[\d]+-([\dA-Z=+-\/]+)$/i', $qrCode, $matches);
-
-      if ($matches === null || count($matches) < 3) {
-        preg_match('/^([A-Z]+)(\d+)\*[\d]+-[\d]+-[\d]+-[\d]+$/i', $qrCode, $matches);
-        if (!empty($password)) {
-          $qrCode .= '-' . $password;
-
+        if ($matches === null || count($matches) < 3) {
+            preg_match('/^([A-Z]+)(\d+)\*[\d]+-[\d]+-[\d]+-[\d]+$/i', $qrCode, $matches);
+            if (!empty($password)) {
+                $qrCode .= '-' . $password;
+            }
+        } else {
+            if (!empty($password)) {
+                $qrCode = str_replace($matches[3], $password, $qrCode);
+            }
         }
-      } else {
-        if (!empty($password)) {
-          $qrCode = str_replace($matches[3], $password, $qrCode);
 
+        if (!empty($value)) {
+            $voucher->setValue($value);
+            $oldValuePos = strpos($qrCode, $matches[2]);
+            $qrCode = substr_replace($qrCode, $value, $oldValuePos, strlen($matches[2]));
         }
-      }
+        if (!empty($currency)) {
+            $oldCurrencyPos = strpos($qrCode, $matches[1]);
+            $qrCode = substr_replace($qrCode, $currency, $oldCurrencyPos, strlen($matches[1]));
+        }
+        $voucher->setCode($qrCode);
 
-      if (!empty($value)) {
-        $voucher->setValue($value);
-        $oldValuePos = strpos($qrCode, $matches[2]);
-        $qrCode = substr_replace($qrCode, $value, $oldValuePos, strlen($matches[2]));
-      }
-      if (!empty($currency)) {
-        $oldCurrencyPos = strpos($qrCode, $matches[1]);
-        $qrCode = substr_replace($qrCode, $currency, $oldCurrencyPos, strlen($matches[1]));
-      }
-      $voucher->setCode($qrCode);
-
-      $this->em->merge($voucher);
-  }
+        $this->em->merge($voucher);
+    }
 
 
     /**
@@ -298,7 +294,8 @@ class BookletService
      * @param Booklet $booklet
      * @return string
      */
-    public function deactivate(Booklet $booklet) {
+    public function deactivate(Booklet $booklet)
+    {
         $booklet->setStatus(Booklet::DEACTIVATED);
 
         $this->em->merge($booklet);
@@ -315,15 +312,15 @@ class BookletService
      */
     public function deactivateMany(?array $bookletCodes = [])
     {
-      foreach ($bookletCodes as $bookletCode) {
-        $booklet = $this->em->getRepository(Booklet::class)->findOneByCode($bookletCode);
-        $booklet->setStatus(Booklet::DEACTIVATED);
-        $this->em->merge($booklet);
-      }
+        foreach ($bookletCodes as $bookletCode) {
+            $booklet = $this->em->getRepository(Booklet::class)->findOneByCode($bookletCode);
+            $booklet->setStatus(Booklet::DEACTIVATED);
+            $this->em->merge($booklet);
+        }
       
-      $this->em->flush();
+        $this->em->flush();
 
-      return "Booklets have been deactivated";
+        return "Booklets have been deactivated";
     }
 
 
@@ -336,15 +333,16 @@ class BookletService
      *
      * @return string
      */
-    public function updatePassword(Booklet $booklet, $password) {
-      if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED){
-        throw new \Exception("This booklet has already been used and is actually deactivated");
+    public function updatePassword(Booklet $booklet, $password)
+    {
+        if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED) {
+            throw new \Exception("This booklet has already been used and is actually deactivated");
         }
 
         $booklet->setPassword($password);
         $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
         foreach ($vouchers as $voucher) {
-          $this->updateVoucherCode($voucher, $password, null, null);
+            $this->updateVoucherCode($voucher, $password, null, null);
         }
         $this->em->merge($booklet);
         $this->em->flush();
@@ -377,62 +375,59 @@ class BookletService
         return "Booklet successfully assigned to the beneficiary";
     }
 
-  // =============== DELETE 1 BOOKLET AND ITS VOUCHERS FROM DATABASE ===============
-  /**
-   * Permanently delete the record from the database
-   *
-   * @param Booklet $booklet
-   * @param bool $removeBooklet
-   * @return bool
-   * @throws \Exception
-   */
-  public function deleteBookletFromDatabase(Booklet $booklet, bool $removeBooklet = true)
-  {
-    // === check if booklet has any vouchers ===
-    $bookletId = $booklet->getId();
-    $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $bookletId]);
-    if ($removeBooklet && !$vouchers) {
-      try {
-        // === if no vouchers then delete ===
-        $this->em->remove($booklet);
-        $this->em->flush();
-      } catch (\Exception $exception) {
-        throw new \Exception('Unable to delete Booklet');
-      }
-    } 
-    elseif ($removeBooklet && $vouchers) {
-      try {
-        // === if there are vouchers then delete those that are not used ===
-        $this->container->get('voucher.voucher_service')->deleteBatchVouchers($booklet);
-        $this->em->remove($booklet);
-        $this->em->flush();
-      } catch (\Exception $exception) {
-        throw new \Exception('This booklet still contains potentially used vouchers.');
-      }
-    } 
-    else {
-      return false;
-    }
-    return true;
-  }
-
-  public function printMany(array $bookletIds)
-  {
-    $booklets = [];
-    foreach ($bookletIds as $bookletId) {
-      $booklet = $this->em->getRepository(Booklet::class)->find($bookletId);
-      $booklets[] = $booklet;
+    // =============== DELETE 1 BOOKLET AND ITS VOUCHERS FROM DATABASE ===============
+    /**
+     * Permanently delete the record from the database
+     *
+     * @param Booklet $booklet
+     * @param bool $removeBooklet
+     * @return bool
+     * @throws \Exception
+     */
+    public function deleteBookletFromDatabase(Booklet $booklet, bool $removeBooklet = true)
+    {
+        // === check if booklet has any vouchers ===
+        $bookletId = $booklet->getId();
+        $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $bookletId]);
+        if ($removeBooklet && !$vouchers) {
+            try {
+                // === if no vouchers then delete ===
+                $this->em->remove($booklet);
+                $this->em->flush();
+            } catch (\Exception $exception) {
+                throw new \Exception('Unable to delete Booklet');
+            }
+        } elseif ($removeBooklet && $vouchers) {
+            try {
+                // === if there are vouchers then delete those that are not used ===
+                $this->container->get('voucher.voucher_service')->deleteBatchVouchers($booklet);
+                $this->em->remove($booklet);
+                $this->em->flush();
+            } catch (\Exception $exception) {
+                throw new \Exception('This booklet still contains potentially used vouchers.');
+            }
+        } else {
+            return false;
+        }
+        return true;
     }
 
-    try {
-      return $this->generatePdf($booklets);
+    public function printMany(array $bookletIds)
+    {
+        $booklets = [];
+        foreach ($bookletIds as $bookletId) {
+            $booklet = $this->em->getRepository(Booklet::class)->find($bookletId);
+            $booklets[] = $booklet;
+        }
 
-    } catch (\Exception $exception) {
-        return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        try {
+            return $this->generatePdf($booklets);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
     }
-  }
 
-  public function generatePdf(array $booklets)
+    public function generatePdf(array $booklets)
     {
         $pdfOptions = new Options();
         $pdfOptions->set('defaultFont', 'Arial');
@@ -443,7 +438,7 @@ class BookletService
             $voucherHtmlSeparation = '<p class="next-voucher"></p>';
             $html = $this->getPdfHtml($booklets[0], $voucherHtmlSeparation);
 
-            foreach($booklets as $booklet) {
+            foreach ($booklets as $booklet) {
                 if ($booklet !== $booklets[0]) {
                     $bookletHtml = $this->getPdfHtml($booklet, $voucherHtmlSeparation);
                     preg_match('/<main>([\s\S]*)<\/main>/', $bookletHtml, $matches);
@@ -466,7 +461,6 @@ class BookletService
             $response->deleteFileAfterSend(true);
 
             return $response;
-
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -488,7 +482,7 @@ class BookletService
         }
 
         $bookletHtml = $this->container->get('templating')->render(
-        '@Voucher/Pdf/booklet.html.twig',
+            '@Voucher/Pdf/booklet.html.twig',
             array(
                 'name'  => $name,
                 'value' => $totalValue,
@@ -500,12 +494,12 @@ class BookletService
 
         $pageBreak = true;
 
-        foreach($vouchers as $voucher) {
+        foreach ($vouchers as $voucher) {
             $voucherQrCode = $voucher->getCode();
             
             $voucherHtml = $this->container->get('templating')->render(
                 '@Voucher/Pdf/voucher.html.twig',
-                    array(
+                array(
                         'name'  => $name,
                         'value' => $voucher->getValue(),
                         'currency' => $currency,
@@ -527,17 +521,66 @@ class BookletService
 
         return $bookletHtml;
     }
-/**
-     * Export all booklets in a CSV file
+    /**
+         * Export all booklets in a CSV file
+         * @param string $type
+         * @return mixed
+         */
+    public function exportToCsv(string $type)
+    {
+        $exportableTable = $this->em->getRepository(Booklet::class)->findAll();
+
+        return $this->container->get('export_csv_service')->export($exportableTable, 'booklets', $type);
+    }
+    
+    /**
+     * @param DistributionData $distributionData
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(string $type) {
-
-      $exportableTable = $this->em->getRepository(Booklet::class)->findAll();
-
-      return $this->container->get('export_csv_service')->export($exportableTable,'booklets', $type);
-
-  }
-
+    public function exportVouchersDistributionToCsv(DistributionData $distributionData, string $type)
+    {
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
+        
+        $beneficiaries = array();
+        $exportableTable = array();
+        foreach ($distributionBeneficiaries as $distributionBeneficiary) {
+            $beneficiary = $distributionBeneficiary->getBeneficiary();
+            $booklets = $distributionBeneficiary->getBooklets();
+            $transactionBooklet = null;
+            if (count($booklets) > 0) {
+                foreach ($booklets as $booklet) {
+                    if ($booklet->getStatus() !== 3) {
+                        $transactionBooklet = $booklet;
+                    }
+                }
+                if ($transactionBooklet === null) {
+                    $transactionBooklet = $booklets[0];
+                }
+            }
+            $gender = '';
+            if ($beneficiary->getGender() == 0) {
+                $gender = 'Female';
+            } else {
+                $gender = 'Male';
+            }
+            array_push($exportableTable, array(
+                "Address street" => $beneficiary->getHousehold()->getAddressStreet(),
+                "Address number" => $beneficiary->getHousehold()->getAddressNumber(),
+                "Address postcode" => $beneficiary->getHousehold()->getAddressPostcode(),
+                "Livelihood" => $beneficiary->getHousehold()->getLivelihood(),
+                "Notes" => $beneficiary->getHousehold()->getNotes(),
+                "Latitude" => $beneficiary->getHousehold()->getLatitude(),
+                "Longitude" => $beneficiary->getHousehold()->getLongitude(),
+                "Given name" => $beneficiary->getGivenName(),
+                "Family name"=> $beneficiary->getFamilyName(),
+                "Gender" => $gender,
+                "Date of birth" => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
+                "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
+                "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
+                "Used at" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
+            ));
+        }
+    }
 }

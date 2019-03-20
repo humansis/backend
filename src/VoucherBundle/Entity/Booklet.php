@@ -323,11 +323,13 @@ class Booklet implements ExportableInterface
         $finalArray = [
             'Code' => $this->getCode(),
             'Quantity of vouchers' => $this->getNumberVouchers(),
-            'Currency' => $this->getCurrency(),
             'Status' => $status,
             'Password' => $password,
             'Beneficiary' => $beneficiary,
-            'Distribution' => $distribution
+            'Distribution' => $distribution,
+            'Total value' => $this->getTotalValue(),
+            'Currency' => $this->getCurrency(),
+            'Used at' => $this->getUsedAt()
         ];
 
         $vouchers = $this->getVouchers();
@@ -338,5 +340,31 @@ class Booklet implements ExportableInterface
         }
 
         return $finalArray;
+    }
+
+    function getTotalValue()
+    {
+        $vouchers = $this->getVouchers();
+        $value = 0;
+        foreach($vouchers as $voucher) {
+            $value += $voucher->getValue();
+        }
+        return $value;
+    }
+
+    function getUsedAt()
+    {
+        $date = null;
+        if ($this->getStatus() === 2 || $this->getStatus() === 3) {
+            $vouchers = $this->getVouchers();
+
+            foreach($vouchers as $voucher) {
+                if ($date === null || $date < $voucher->getUsedAt()) {
+                    $date = $voucher->getUsedAt();
+                }
+            }
+        }
+
+        return $date;
     }
 }
