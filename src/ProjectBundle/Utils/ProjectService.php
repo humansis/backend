@@ -12,6 +12,7 @@ use ProjectBundle\Entity\Sector;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserProject;
@@ -106,6 +107,7 @@ class ProjectService
     public function create($countryISO3, array $projectArray, User $user)
     {
         /** @var Project $project */
+
         $newProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
         $project = new Project();
         $project->setName($newProject->getName())
@@ -114,6 +116,11 @@ class ProjectService
                 ->setIso3($countryISO3)
                 ->setValue($newProject->getValue())
                 ->setNotes($newProject->getNotes());
+
+        $existingProject = $this->em->getRepository(Project::class)->findBy(['name' => $project->getName()]);
+        if (!empty($existingProject)) {
+           throw new HttpException(Response::HTTP_CONFLICT, 'Project with the name '.$project->getName().' already exists');
+        }
 
         $errors = $this->validator->validate($project);
         if (count($errors) > 0)
