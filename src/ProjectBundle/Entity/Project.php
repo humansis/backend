@@ -128,6 +128,7 @@ class Project implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionData", mappedBy="project")
+     * @Groups({"FullProject"})
      */
     private $distributions;
 
