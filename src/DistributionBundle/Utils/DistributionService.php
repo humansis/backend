@@ -111,7 +111,7 @@ class DistributionService
                 $modality = $commodity->getModalityType()->getModality();
                 if ($modality->getName() === 'In Kind' ||
                     $modality->getName() === 'Other' ||
-                    $commodity->getModalityType()->getName() === 'Cash') {
+                    $commodity->getModalityType()->getName() === 'Paper Voucher') {
                     $beneficiaries = $distributionData->getDistributionBeneficiaries();
                     foreach ($beneficiaries as $beneficiary) {
                         $generalRelief = new GeneralReliefItem();
