@@ -20,11 +20,13 @@ ssh -i $2 ubuntu@$ec2 \
     sudo docker-compose exec -T php bash -c 'composer install';"
 if [[ $1 == "master" ]]; then
     ssh -i $2 ubuntu@$ec2 \
-        "sudo docker-compose exec -T php bash -c 'php bin/console c:c'; \
+        "cd /var/www/html/bms_api; \
+        sudo docker-compose exec -T php bash -c 'php bin/console c:c'; \
         sudo docker-compose exec  -T php bash -c 'php bin/console d:m:m -n'"
 elif [[ $1 == "dev" ]] || [[ $1 == "voucher" ]]; then
     ssh -i $2 ubuntu@$ec2 \
-        "sudo docker-compose exec -T php bash -c 'clean'"
+        "cd /var/www/html/bms_api; \
+        sudo docker-compose exec -T php bash -c 'clean'"
 else
     echo "Unable to deploy"
     exit
