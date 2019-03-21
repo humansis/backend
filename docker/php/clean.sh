@@ -10,4 +10,9 @@ php bin/console jrk:levenshtein:install
 php bin/console reporting:code-indicator:add
 rm -rf var/cache/*
 php bin/console cache:clear
-printf 'symfony\n' | sudo -S cron
+status=$(printf 'symfony\n' | sudo -S service cron status)
+echo $status
+if [[ $status != 'cron is running.' ]]; then
+    echo 'not running'
+    sudo cron
+fi
