@@ -99,7 +99,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "family_name" => "NAME_TEST",
                 "gender" => 1,
                 "status" => 1,
-                "residency_status" => "idp",
+                "residency_status" => "IDP",
                 "date_of_birth" => "1976-10-06",
                 "profile" => [
                     "photo" => "PHOTO_TEST"
