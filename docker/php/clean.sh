@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-echo -e "** Dropping database **"
+echo "** Dropping database **"
 php bin/console d:d:d --force
 rm -rf var/cache/*
-echo -e "** Creating database **"
+echo "** Creating database **"
 php bin/console d:d:c
 php bin/console d:m:m -n
 php bin/console d:f:l -n
@@ -13,10 +13,8 @@ php bin/console reporting:code-indicator:add
 rm -rf var/cache/*
 php bin/console cache:clear
 
-echo -e "** Starting cron **"
+echo "** Starting cron **"
 status=$(printf 'symfony\n' | sudo -S service cron status)
-echo $status
 if [[ $status != 'cron is running.' ]]; then
-    echo 'not running'
-    sudo cron
+    printf 'symfony\n' | sudo -S cron
 fi
