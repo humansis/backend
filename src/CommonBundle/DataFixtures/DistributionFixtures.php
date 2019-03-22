@@ -27,7 +27,7 @@ class DistributionFixtures extends Fixture
                 'value' => '45'
             ]
         ],
-        'date_distribution' => '2018-09-13',
+        'date_distribution' => '2020-09-13',
         'location' => [
             'adm1' => 'Banteay Meanchey',
             'adm2' => 'Mongkol Borei',
@@ -36,7 +36,7 @@ class DistributionFixtures extends Fixture
             'country_iso3' => 'KHM'
         ],
         'location_name' => '',
-        'name' => 'Dev Project-Battambang-9/13/2018-',
+        'name' => 'Battambang-9/13/2018',
         'project' => [
             'donors' => [],
             'donors_name' => [],

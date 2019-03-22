@@ -155,3 +155,30 @@ distribution:
         vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
         countrySpecific: BeneficiaryBundle\Entity\CountrySpecific
         }
+
+services:
+    acme.aws_s3.client:
+        class: Aws\S3\S3Client
+        factory: [Aws\S3\S3Client, 'factory']
+        arguments:
+            -
+                version: latest
+                region: '%aws_s3_region%'
+                credentials:
+                    key: '%aws_access_key_id%'
+                    secret: '%aws_secret_access_key%'
+
+knp_gaufrette:
+    stream_wrapper: ~
+    adapters:
+        products:
+            aws_s3:
+                service_id: 'acme.aws_s3.client'
+                bucket_name: '%aws_s3_bucket_name%'
+                detect_content_type: true
+                options:
+                    directory: 'products'
+    filesystems:
+        products:
+            adapter:    products
+            alias:      products_filesystem

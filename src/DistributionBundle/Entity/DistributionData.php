@@ -40,7 +40,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=45)
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "FullBooklet"})
      */
     private $name;
 
@@ -130,7 +130,7 @@ class DistributionData implements ExportableInterface
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="distributionData")
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "FullProject"})
      */
     private $distributionBeneficiaries;
 

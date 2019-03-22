@@ -79,6 +79,13 @@ class User extends BaseUser implements ExportableInterface
      */
     private $transactions;
 
+    /**	
+     * @ORM\OneToOne(targetEntity="\VoucherBundle\Entity\Vendor", mappedBy="user", cascade={"persist", "remove"})	
+     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")	
+     * @Groups({"FullUser"})	
+     */	
+    private $vendor;
+
         /**
      * @var string
      * @ORM\Column(name="language", type="string", length=255, nullable=true)
@@ -244,5 +251,27 @@ class User extends BaseUser implements ExportableInterface
 
     function setLanguage($language) {
         $this->language = $language;
+    }
+
+     /**	
+     * Set vendor.	
+     *	
+     * @param \VoucherBundle\Entity\Vendor|null $vendor	
+     *	
+     * @return User	
+     */	
+    public function setVendor(\VoucherBundle\Entity\Vendor $vendor = null)	
+    {	
+        $this->vendor = $vendor;	
+         return $this;	
+    }	
+     /**	
+     * Get vendor.	
+     *	
+     * @return \VoucherBundle\Entity\Vendor|null	
+     */	
+    public function getVendor()	
+    {	
+        return $this->vendor;	
     }
 }

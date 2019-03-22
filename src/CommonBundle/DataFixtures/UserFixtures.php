@@ -50,7 +50,7 @@ class UserFixtures extends Fixture
     {
         foreach ($this->data as $index => $datum)
         {
-            if ($this->kernel->getEnvironment() === "test" || $index !== 1) {
+            if ($this->kernel->getEnvironment() === "test" || $this->kernel->getEnvironment() === "dev" || $index !== 1) {
                 $instance = $manager->getRepository(User::class)->findOneByUsername($datum[0]);
                 if (!$instance instanceof User)
                 {

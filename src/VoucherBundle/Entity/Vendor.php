@@ -59,11 +59,13 @@ class Vendor
 
     /**
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="vendor", orphanRemoval=true)
+     * @ORM\OrderBy({"usedAt" = "DESC"})
      */
     private $vouchers;
 
     /**
-     * @ORM\OneToOne(targetEntity="\UserBundle\Entity\User")
+     * @ORM\OneToOne(targetEntity="\UserBundle\Entity\User", inversedBy="vendor", cascade={"persist","remove"})
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @Groups({"FullVendor"})
      */
     private $user;
@@ -222,6 +224,7 @@ class Vendor
     public function setUser(\UserBundle\Entity\User $user = null)
     {
         $this->user = $user;
+        $user->setVendor($this);
 
         return $this;
     }

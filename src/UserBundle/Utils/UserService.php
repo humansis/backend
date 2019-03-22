@@ -496,4 +496,14 @@ class UserService
 
         return $user;
     }
+
+      /**	
+     * @param $offset	
+     * @param $limit	
+     * @return array	
+     */	
+    public function findWebUsers($limit, $offset)	
+    {	
+        return $this->em->getRepository(User::class)->findBy(['vendor' => null], [], $limit, $offset);	
+    }
 }

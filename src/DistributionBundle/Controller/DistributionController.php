@@ -345,6 +345,44 @@ class DistributionController extends Controller
     }
 
     /**
+     * Get beneficiaries of a distribution without booklets.
+     *
+     * @Rest\Get("/distributions/{id}/assignable-beneficiaries", name="get_assignable_beneficiaries_distribution", requirements={"id"="\d+"})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="beneficiaries for one distribution",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Beneficiary::class))
+     *     )
+     * )
+     *
+     * @param DistributionData $distributionData
+     * @return Response
+     */
+    public function getDistributionAssignableBeneficiariesAction(DistributionData $distributionData)
+    {
+        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionAssignableBeneficiaries($distributionData);
+        
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $distributionBeneficiaries,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                    "ValidatedDistribution",
+                ])
+            );
+
+        return new Response($json);
+    }
+
+    /**
      * Edit a distribution.
      *
      * @Rest\Post("/distributions/{id}", name="update_distribution")

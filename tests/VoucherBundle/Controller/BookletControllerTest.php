@@ -3,6 +3,9 @@ namespace VoucherBundle\Tests\Controller;
 
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
+use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\DistributionData;
 
 class BookletControllerTest extends BMSServiceTestCase
 {
@@ -27,7 +30,7 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $body = [
             "number_booklets" => 5,
-            "individual_value" => 10,
+            "individual_values" => [10, 3, 5],
             "currency" => 'USD',
             "number_vouchers" => 3
         ];
@@ -38,15 +41,16 @@ class BookletControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         // Second step
-        // Create the vendor with the email and the salted password. The user should be enable
         $crawler = $this->request('PUT', '/api/wsse/booklets', $body);
         $booklet = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        // $this->assertArrayHasKey('username', $booklet);
-        // $this->assertArrayHasKey('shop', $booklet);
-
+        $this->assertArrayHasKey('currency', $booklet);
+        $this->assertArrayHasKey('vouchers', $booklet);
+        $this->assertArrayHasKey('distribution_beneficiary', $booklet);
+        $this->assertArrayHasKey('number_vouchers', $booklet);
         //only returns the last booklet in batch
+
         return $booklet;
     }
 
@@ -75,6 +79,126 @@ class BookletControllerTest extends BMSServiceTestCase
         }
 
         return $booklets[0];
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testDeactivateBooklets()
+    {
+        $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets();
+
+        $body = ['bookletCodes' => [$booklets[0]->getCode()]];
+
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        $crawler = $this->request('POST', '/api/wsse/deactivate-booklets', $body);
+        $reponse = json_decode($this->client->getResponse()->getContent(), true);
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        return $reponse;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testDeactivateBooklet()
+    {
+        $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets();
+
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        $crawler = $this->request('DELETE', '/api/wsse/deactivate-booklets/'.$booklets[0]->getId());
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        return $response;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testGetDeactivatedBooklets()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->request('GET', '/api/wsse/deactivated-booklets');
+        $booklets = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (!empty($booklets)) {
+            $booklet = $booklets[0];
+
+            $this->assertArrayHasKey('currency', $booklet);
+            $this->assertArrayHasKey('vouchers', $booklet);
+            $this->assertArrayHasKey('distribution_beneficiary', $booklet);
+            $this->assertArrayHasKey('number_vouchers', $booklet);
+        } else {
+            $this->markTestIncomplete("You currently don't have any deactivated booklets in your database.");
+        }
+
+        return $booklets[0];
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testUpdatePassword()
+    {
+        $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['status' => 0]);
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $body = [
+            'password'  => 'secret-password',
+            'code'      => $booklet->getCode(),
+        ];
+
+        // Second step
+        $crawler = $this->request('POST', '/api/wsse/booklets/update/password', $body);
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        return $response;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testGetProtectedBooklets()
+    {
+        $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['password' => 'secret-password']);
+
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->request('GET', '/api/wsse/protected-booklets');
+        $booklets = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (!empty($booklets)) {
+            $this->assertEquals($booklets[0][$booklet->getCode()], 'secret-password');
+        } else {
+            $this->markTestIncomplete("You currently don't have any deactivated booklets in your database.");
+        }
+
+        return $booklets;
     }
 
     /**
@@ -112,7 +236,7 @@ class BookletControllerTest extends BMSServiceTestCase
     public function testEditBooklet($newBooklet)
     {
         $currency = 'GBP';
-        $body = ["currency" => $currency, "individual_value" => 5];
+        $body = ["currency" => $currency, "number_vouchers" => 4, "individual_values" => [5, 6, 2, 4]];
 
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -151,6 +275,33 @@ class BookletControllerTest extends BMSServiceTestCase
 
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAssignBooklet()
+    {
+        $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['status' => Booklet::UNASSIGNED]);
+        $distribution = $this->em->getRepository(DistributionData::class)->findOneBy([]);
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findAssignable($distribution)[0];
+        $beneficiary = $distributionBeneficiary->getBeneficiary();
+
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+        $body = [
+            'code' => $booklet->getCode(),
+        ];
+
+        // Second step
+        $crawler = $this->request('POST', '/api/wsse/booklets/assign/'.$beneficiary->getId().'/'.$distribution->getId(), $body);
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        return $response;
     }
 
 }

@@ -43,34 +43,21 @@ class VoucherService
   /**
    * Creates a new Voucher entity
    *
-   * @param array $voucherData
+   * @param array $vouchersData
    * @return mixed
    * @throws \Exception
    */
-  public function create(array $voucherData)
+  public function create(array $vouchersData)
   {
     try {
-      $allVoucher = $this->em->getRepository(Voucher::class)->findAll();
-      if ($allVoucher) {
-        end($allVoucher);
-        $id = (int)$allVoucher[key($allVoucher)]->getId();
-      } else {
-        $id = 0;
-      }
-    } catch (\Exception $e) {
-      throw new \Exception('Error finding last voucher id');
-    }
-
-    try {
-      for ($x = 0; $x < $voucherData['number_vouchers']; $x++) {
-        $id++;
-        $voucher = new Voucher();
-  
-        $code = $this->generateCode($voucherData, $id);
+      for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
+        $voucher = new Voucher(); 
+        $voucherData = $vouchersData;
+        $voucherData['value'] = $vouchersData['values'][$x];
         $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
-
+        
         $voucher->setUsedAt(null)
-          ->setCode($code)
+          ->setCode('')
           ->setBooklet($booklet)
           ->setVendor(null)
           ->setValue($voucherData['value']);
@@ -78,7 +65,11 @@ class VoucherService
         $this->em->persist($voucher);
         $this->em->flush();
 
-        $id = (int)$voucher->getId();
+        $code = $this->generateCode($voucherData, $voucher->getId());
+
+        $voucher->setCode($code);
+        $this->em->flush();
+
       }
     } catch (\Exception $e) {
       throw new \Exception('Error creating voucher');
@@ -97,13 +88,13 @@ class VoucherService
    */
   public function generateCode(array $voucherData, int $voucherId)
   {
-    // CREATE VOUCHER CODE #BookletBatchNumber-lastBatchNumber-BookletId-VoucherId
-    $parts = explode("#", $voucherData['bookletCode']);
-    $currentVoucher = sprintf("%03d", $voucherId);
+    // CREATE VOUCHER CODE CurrencyValue*BookletBatchNumber-lastBatchNumber-BookletId-VoucherId
     $value = $voucherData['value'];
     $currency = $voucherData['currency'];
-
-    $fullCode = $currency . $value . '#' . $parts[1] . '-' . $currentVoucher;
+    $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
+  
+    $fullCode = $currency . $value . '*' . $voucherData['bookletCode'] . '-' . $voucherId;
+    $fullCode = $booklet->password ? $fullCode . '-' . $booklet->password : $fullCode;
     return $fullCode;
   }
 
@@ -129,12 +120,27 @@ class VoucherService
     try {
       $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
       $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendorId']);
+      if (!$voucher || $voucher->getUsedAt() !== null) {
+        return $voucher;
+      }
       $voucher->setVendor($vendor)
         ->setUsedAt(new \DateTime($voucherData['used_at']));
 
       foreach ($voucherData['productIds'] as $productId) {
         $product = $this->em->getRepository(Product::class)->find($productId);
         $voucher = $voucher->addProduct($product);
+      }
+
+      $booklet = $voucher->getBooklet();
+      $vouchers = $booklet->getVouchers();
+      $allVouchersUsed = true;
+      foreach ($vouchers as $voucher) {
+        if ($voucher->getusedAt() === null) {
+          $allVouchersUsed = false;
+        }
+      }
+      if ($allVouchersUsed === true) {
+        $booklet->setStatus(Booklet::USED);
       }
   
       $this->em->merge($voucher);

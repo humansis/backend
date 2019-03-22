@@ -307,4 +307,32 @@ class VendorController extends Controller
         $vendorJson = $serializer->serialize($vendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
         return new Response($vendorJson);
     }
+
+    /**
+     * To print a vendor's invoice
+     *
+     * @Rest\Get("/invoice-print/{id}", name="print_invoice")
+     * @SWG\Tag(name="Vendors")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Vendor $vendor
+     * @return Response
+     */
+    public function printInvoiceAction(Vendor $vendor)
+    {
+        try {
+            return $this->get('voucher.vendor_service')->printInvoice($vendor);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
 }

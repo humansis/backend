@@ -34,7 +34,7 @@ class VendorFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {      
-        if ($this->kernel->getEnvironment() === "test") {
+        if ($this->kernel->getEnvironment() === "test" || $this->kernel->getEnvironment() === "dev") {
             foreach ($this->data as $datum)
             {
                 $user = $manager->getRepository(User::class)->findOneByUsername($datum[4]);

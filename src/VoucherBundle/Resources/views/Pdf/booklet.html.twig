@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>{{ source('@Voucher/Pdf/main.css') }}</style>
+        <style>
+            .beneficiary-name, .voucher-value {
+              color : #DC3D49
+            }
+
+            .address p {
+                font-style: italic;
+                margin-left: 30px;
+            }
+
+            .vendor-info, .beneficiary-info {
+              margin-left: 30px;
+            }
+
+            .name, .value {
+              font-weight:bold
+            }
+
+            h3 {
+                color: #4AA896;
+                margin-left: 5px;
+            }
+
+            .qr-code {
+                height: 215px;
+                position: relative;
+                z-index: -1;
+            }
+
+            .qr-code img {
+                margin-top: 120px;
+                margin-left: 50%;
+                position: relative;
+                z-index: -1;
+                transform: translate(-50%, -50%);
+            }
+
+            .explanation {
+                background: white;
+                z-index: 1;
+                position: relative;
+            }
+
+            hr.separation {
+                border: 1px dashed black;
+                margin-top: -8px;
+            }
+            img.scissors {
+                background: white;
+                height: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        {{ include('@Voucher/Pdf/header.html.twig') }}
+
+        <main>
+            <h3>Beneficiary's information</h3>
+            <div class="beneficiary-info">
+              <p class="name">
+                <span>Beneficiary :</span>
+                <span class="beneficiary-name"> Mr/Mrs {{ name }}</span>
+              </p>
+              <p class="value">
+                <span>Total value of the booklet : </span>
+                <span class="voucher-value">{{ value }}{{ currency }}</span>
+              </p>
+              <p class="explanation"> This booklet contains {{ numberVouchers }} vouchers. You can use them separately to buy products in a shop. <br>
+                  Be aware though, that you cannot use the total amount of this booklet by scanning this code. It is an identification code, not a payment code.</p>
+              <div class="qr-code">
+                <img src="{{ qrCodeLink }}" />
+              </div>
+            </div>
+            <h3>Vendor's information</h3>
+            <div class="vendor-info">
+            </div>
+            <p class="next-voucher"></p>
+        </main>
+    </body>
+</html>
