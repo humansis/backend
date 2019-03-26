@@ -38,12 +38,9 @@ class DuplicateTreatment extends AbstractTreatment
         foreach ($householdsArray as $householdData)
         {
             $newHousehold = $householdData['new_household'];
-            foreach ($householdData['data'] as $beneficiaryData)
-            {
-                if (array_key_exists('new', $beneficiaryData))
-                {
-                    if (intval($beneficiaryData['state']) === 0)
-                    {
+            foreach ($householdData['data'] as $beneficiaryData) {
+                if (array_key_exists('new', $beneficiaryData)) {
+                    if (intval($beneficiaryData['state']) === 0) {
                         $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryData['id_old']);
                         if (!$beneficiary instanceof Beneficiary)
                             throw new \Exception("Beneficiary not found.");
@@ -62,9 +59,7 @@ class DuplicateTreatment extends AbstractTreatment
 
                     //UPDATE THE NEW HH IN THE CACHE
                     $this->updateInCache($householdData["id_tmp_cache"], $newHousehold, $email);
-                }
-                else
-                {
+                } else {
                     $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryData['id_old']);
                     // we delete the beneficiary in the household which must be saved
                     foreach ($newHousehold['beneficiaries'] as $index => $newBeneficiary)

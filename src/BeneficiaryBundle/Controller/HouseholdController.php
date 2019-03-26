@@ -273,7 +273,7 @@ class HouseholdController extends Controller
     public function importAction(Request $request, Project $project)
     {
         if (!$request->query->has('step'))
-            return new Response('You must specify the current level.');
+            return new Response('You must specify the current step.');
         $step = $request->query->get('step');
         if ($request->query->has('token'))
             $token = $request->query->get('token');
@@ -291,7 +291,7 @@ class HouseholdController extends Controller
         if (1 === intval($step))
         {
             if (!$request->files->has('file'))
-                return new Response("You must upload a file.", 500);
+                return new Response("You must upload a file.", Response::HTTP_BAD_REQUEST);
             try
             {
                 $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $step, $token, $email);

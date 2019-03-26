@@ -32,31 +32,32 @@ class DuplicateVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
-        $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria(null, $countryISO3, []);
         // GET THE SIMILAR HOUSEHOLD FROM THE DB, IF ISSET
-        $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache'], $email);
+        if (array_key_exists('old', $householdArray)) {
+            $similarOldHousehold = $householdArray['old'];
+        } else {
+            $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache'], $email);
+        }
 
         $listDuplicateBeneficiaries = [];
+        
         $newHouseholdEmpty = $householdArray['new'];
         $newHouseholdEmpty['beneficiaries'] = [];
+        
         foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary)
         {
-            $stringOldHousehold = strtolower(trim($newBeneficiary['given_name']) . "//" . trim($newBeneficiary['family_name']));
-            /** @var Beneficiary $oldBeneficiary */
-            foreach ($oldBeneficiaries as $oldBeneficiary)
-            {
-                if (
-                    $oldBeneficiary->getHousehold()->getId() !== $similarOldHousehold['id']
-                    &&
-                    strtolower(trim($oldBeneficiary->getGivenName()) . "//" . trim($oldBeneficiary->getFamilyName()))
-                    ===
-                    $stringOldHousehold
-                )
-                {
+            $existingBeneficaries = $this->em->getRepository(Beneficiary::class)->findBy(
+                [
+                    'givenName' => trim($newBeneficiary['given_name']),
+                    'familyName' => trim($newBeneficiary['family_name'])
+                ]
+            );
+            foreach ($existingBeneficaries as $existingBeneficary) {
+                if ($existingBeneficary->getHousehold()->getId() !== $similarOldHousehold['id']) {
                     $newHouseholdEmpty['beneficiaries'][] = $newBeneficiary;
                     
-                    $clonedHH = clone $oldBeneficiary->getHousehold();
-                    $old = $clonedHH->resetBeneficiaries()->addBeneficiary($oldBeneficiary);
+                    $clonedHH = clone $existingBeneficary->getHousehold();
+                    $old = $clonedHH->resetBeneficiaries()->addBeneficiary($existingBeneficary);
                     
                     $arrayTmp = [
                         "new" => $newHouseholdEmpty,
@@ -72,11 +73,9 @@ class DuplicateVerifier extends AbstractVerifier
             $newHouseholdEmpty['beneficiaries'] = [];
         }
 
-        if (!empty($listDuplicateBeneficiaries))
-        {
+        if (!empty($listDuplicateBeneficiaries)) {
             return $listDuplicateBeneficiaries;
         }
-
         return null;
     }
 
