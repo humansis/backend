@@ -29,7 +29,7 @@ class Booklet implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullBooklet"})
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
     private $id;
 
@@ -37,7 +37,7 @@ class Booklet implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
-     * @Groups({"FullBooklet"})
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
     private $code;
 
@@ -53,7 +53,7 @@ class Booklet implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="currency", type="string", length=255)
-     * @Groups({"FullBooklet"})
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
     private $currency;
 
@@ -61,7 +61,7 @@ class Booklet implements ExportableInterface
      * @var int|null
      *
      * @ORM\Column(name="status", type="integer", nullable=true)
-     * @Groups({"FullBooklet"})
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
     private $status;
 
@@ -80,7 +80,7 @@ class Booklet implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", orphanRemoval=true)
-     * @Groups({"FullBooklet"})
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
     private $vouchers;
 
@@ -323,11 +323,13 @@ class Booklet implements ExportableInterface
         $finalArray = [
             'Code' => $this->getCode(),
             'Quantity of vouchers' => $this->getNumberVouchers(),
-            'Currency' => $this->getCurrency(),
             'Status' => $status,
             'Password' => $password,
             'Beneficiary' => $beneficiary,
-            'Distribution' => $distribution
+            'Distribution' => $distribution,
+            'Total value' => $this->getTotalValue(),
+            'Currency' => $this->getCurrency(),
+            'Used at' => $this->getUsedAt()
         ];
 
         $vouchers = $this->getVouchers();
@@ -338,5 +340,31 @@ class Booklet implements ExportableInterface
         }
 
         return $finalArray;
+    }
+
+    function getTotalValue()
+    {
+        $vouchers = $this->getVouchers();
+        $value = 0;
+        foreach($vouchers as $voucher) {
+            $value += $voucher->getValue();
+        }
+        return $value;
+    }
+
+    function getUsedAt()
+    {
+        $date = null;
+        if ($this->getStatus() === 2 || $this->getStatus() === 3) {
+            $vouchers = $this->getVouchers();
+
+            foreach($vouchers as $voucher) {
+                if ($date === null || $date < $voucher->getUsedAt()) {
+                    $date = $voucher->getUsedAt();
+                }
+            }
+        }
+
+        return $date;
     }
 }

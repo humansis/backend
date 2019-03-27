@@ -50,28 +50,14 @@ class VoucherService
   public function create(array $vouchersData)
   {
     try {
-      $allVoucher = $this->em->getRepository(Voucher::class)->findAll();
-      if ($allVoucher) {
-        end($allVoucher);
-        $id = (int)$allVoucher[key($allVoucher)]->getId();
-      } else {
-        $id = 0;
-      }
-    } catch (\Exception $e) {
-      throw new \Exception('Error finding last voucher id');
-    }
-
-    try {
       for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
-        $id++;
         $voucher = new Voucher(); 
         $voucherData = $vouchersData;
         $voucherData['value'] = $vouchersData['values'][$x];
-        $code = $this->generateCode($voucherData, $id);
         $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
         
         $voucher->setUsedAt(null)
-          ->setCode($code)
+          ->setCode('')
           ->setBooklet($booklet)
           ->setVendor(null)
           ->setValue($voucherData['value']);
@@ -79,7 +65,11 @@ class VoucherService
         $this->em->persist($voucher);
         $this->em->flush();
 
-        $id = (int)$voucher->getId();
+        $code = $this->generateCode($voucherData, $voucher->getId());
+
+        $voucher->setCode($code);
+        $this->em->flush();
+
       }
     } catch (\Exception $e) {
       throw new \Exception('Error creating voucher');
@@ -130,7 +120,7 @@ class VoucherService
     try {
       $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
       $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendorId']);
-      if ($voucher->getUsedAt() !== null) {
+      if (!$voucher || $voucher->getUsedAt() !== null) {
         return $voucher;
       }
       $voucher->setVendor($vendor)

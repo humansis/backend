@@ -66,7 +66,7 @@ class BeneficiaryFixtures extends Fixture
                   "family_name" => "Tester",
                   "gender" => "1",
                   "status" => "0",
-                  "residency_status" => "idp",
+                  "residency_status" => "IDP",
                   "date_of_birth" => "1996/10/11",
                   "vulnerability_criteria" => [
                       [

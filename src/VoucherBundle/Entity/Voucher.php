@@ -33,7 +33,7 @@ class Voucher
      * @var \DateTime
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
-     * @Groups({"FullVoucher"})
+     * @Groups({"FullVoucher", "ValidatedDistribution"})
      */
     private $usedAt;
 
@@ -55,7 +55,7 @@ class Voucher
      * @var int
      *
      * @ORM\Column(name="value", type="integer")
-     * @Groups({"FullVoucher", "FullBooklet"})
+     * @Groups({"FullVoucher", "FullBooklet", "ValidatedDistribution"})
      */
     private $value;
 

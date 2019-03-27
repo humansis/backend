@@ -102,6 +102,7 @@ Class ExportService {
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     public function export($exportableTable, string $name, string $type) {
+
         $rows = [];
 
         // step 1 : Convert the mapping as data
@@ -148,8 +149,6 @@ Class ExportService {
             $index = $newKey.chr(ord('A')+ $key).$rowIndex;
             $worksheet->setCellValue($index, $value);
         }
-
-
 
         $rowIndex++;
         foreach ($rows as $key => $value) {

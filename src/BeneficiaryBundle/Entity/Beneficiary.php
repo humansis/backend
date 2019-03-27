@@ -24,7 +24,7 @@ class Beneficiary implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject"})
      */
     private $id;
 
@@ -69,7 +69,7 @@ class Beneficiary implements ExportableInterface
      *
      * @ORM\Column(name="residency_status", type="string", length=20)
      * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold"})
-     * @Assert\Regex("/^(refugee|idp|resident)$/i")
+     * @Assert\Regex("/^(refugee|IDP|resident)$/i")
      */
     private $residencyStatus;
 

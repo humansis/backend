@@ -73,6 +73,18 @@ class DistributionBeneficiaryService
         return $distributionBeneficiaries;
     }
 
+    /**
+     * Get distribution beneficiaries without booklets
+     *
+     * @param DistributionData $distributionData
+     * @return array
+     */
+    public function getDistributionAssignableBeneficiaries(DistributionData $distributionData)
+    {
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findAssignable($distributionData);
+        return $distributionBeneficiaries;
+    }
+
 
     /**
      * Get random beneficiaries from a distribution

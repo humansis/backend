@@ -4,6 +4,8 @@ namespace VoucherBundle\Tests\Controller;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
 use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\DistributionData;
 
 class BookletControllerTest extends BMSServiceTestCase
 {
@@ -281,7 +283,10 @@ class BookletControllerTest extends BMSServiceTestCase
     public function testAssignBooklet()
     {
         $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['status' => Booklet::UNASSIGNED]);
-        $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
+        $distribution = $this->em->getRepository(DistributionData::class)->findOneBy([]);
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findAssignable($distribution)[0];
+        $beneficiary = $distributionBeneficiary->getBeneficiary();
+
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -291,7 +296,7 @@ class BookletControllerTest extends BMSServiceTestCase
         ];
 
         // Second step
-        $crawler = $this->request('POST', '/api/wsse/booklets/assign/'.$beneficiary->getId(), $body);
+        $crawler = $this->request('POST', '/api/wsse/booklets/assign/'.$beneficiary->getId().'/'.$distribution->getId(), $body);
         $response = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());

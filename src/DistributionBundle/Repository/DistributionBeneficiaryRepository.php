@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Repository;
 use DistributionBundle\Entity\GeneralReliefItem;
+use DistributionBundle\Entity\DistributionData;
 
 /**
  * DistributionBeneficiaryRepository
@@ -45,5 +46,17 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
                     ->setParameter('gri', $gri->getId());
         
         return $q->getQuery()->getOneOrNullResult();
+    }
+
+    public function findAssignable(DistributionData $distributionData) {
+        $qb = $this->createQueryBuilder("db");
+        $q = $qb->where("db.distributionData = :dd")
+                ->setParameter("dd", $distributionData)
+                ->leftJoin("db.booklets", "b")
+                ->andWhere('b IS NULL')
+                ->orWhere("b.status = :s")
+                ->setParameter(':s', 3);
+        
+        return $q->getQuery()->getResult();
     }
 }

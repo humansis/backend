@@ -117,9 +117,9 @@ class CSVToArrayMapper extends AbstractMapper
                     }
 
                     // Check that residencyStatus has one of the authorized values
-                    $authorizedResidencyStatus = ['refugee', 'idp', 'resident'];
-                    if (!in_array(strtolower($residencyStatus), $authorizedResidencyStatus)) {
-                        throw new \Exception('Your residency status must be either refugee, idp or resident');
+                    $authorizedResidencyStatus = ['refugee', 'IDP', 'resident'];
+                    if (!in_array($residencyStatus, $authorizedResidencyStatus)) {
+                        throw new \Exception('Your residency status must be either refugee, IDP or resident');
                     }
 
                     // Check that the year of birth is between 1900 and today

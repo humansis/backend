@@ -111,7 +111,7 @@ class DistributionService
                 $modality = $commodity->getModalityType()->getModality();
                 if ($modality->getName() === 'In Kind' ||
                     $modality->getName() === 'Other' ||
-                    $commodity->getModalityType()->getName() === 'Cash') {
+                    $commodity->getModalityType()->getName() === 'Paper Voucher') {
                     $beneficiaries = $distributionData->getDistributionBeneficiaries();
                     foreach ($beneficiaries as $beneficiary) {
                         $generalRelief = new GeneralReliefItem();
@@ -472,12 +472,12 @@ class DistributionService
      * @param string $type
      * @return mixed
      */
-    public function exportGeneralReliefToCsv(DistributionData $distributionData, string $type) {
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
+    public function exportGeneralReliefDistributionToCsv(DistributionData $distributionData, string $type) {
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
 
         $generalreliefs = array();
         $exportableTable = array();
-        foreach ($distributionBeneficiary as $db) {
+        foreach ($distributionBeneficiaries as $db) {
             $generalrelief = $this->em->getRepository(GeneralReliefItem::class)->findOneByDistributionBeneficiary($db);
 
             if ($generalrelief) {
