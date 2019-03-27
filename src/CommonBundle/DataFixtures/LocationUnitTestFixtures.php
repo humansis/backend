@@ -3,7 +3,6 @@
 
 namespace CommonBundle\DataFixtures;
 
-
 use CommonBundle\Entity\Location;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
@@ -15,7 +14,6 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class LocationUnitTestFixtures extends Fixture
 {
-
     private $data = [
         ['KHM', 'Rhone-Alpes', 'Savoie', 'Chambery', 'Sainte Hélène sur Isère'],
         ['KHM', 'Banteay Meanchey', 'Mongkol Borei', 'Banteay Neang', 'Trang']
@@ -40,8 +38,7 @@ class LocationUnitTestFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         if ($this->kernel->getEnvironment() === "test") {
-            foreach ($this->data as $datum)
-            {
+            foreach ($this->data as $datum) {
                 $adm1 = new Adm1();
                 $adm1->setCountryISO3($datum[0])
                 ->setName($datum[1]);

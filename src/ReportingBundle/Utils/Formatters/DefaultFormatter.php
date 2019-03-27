@@ -2,7 +2,6 @@
 
 namespace ReportingBundle\Utils\Formatters;
 
-
 /**
  * Class DefaultFormatter
  * @package ReportingBundle\Utils\Formatters
@@ -16,26 +15,27 @@ class DefaultFormatter
      * @param array $dataComputed
      * @return array
      */
-    public function formatWithSeries($dataComputed) {
+    public function formatWithSeries($dataComputed)
+    {
         $data = [];
         $names = [];
-        foreach($dataComputed as $indicator) {
+        foreach ($dataComputed as $indicator) {
             array_push($names, $indicator['name']);
         }
 
-        foreach(array_unique($names) as $name) {
+        foreach (array_unique($names) as $name) {
             $format = [
                 'name' => $name,
                 'series' => [
                 ]
             ];
-            foreach($dataComputed as $indicator) {
+            foreach ($dataComputed as $indicator) {
                 $value = [
                     'name' => $indicator['unity'],
                     'value' => intval($indicator['value']),
                     'unity' => $indicator['unity']
                 ];
-                if($format['name'] === $indicator['name']) {
+                if ($format['name'] === $indicator['name']) {
                     array_push($format['series'], (object) $value);
                 }
             }
@@ -51,7 +51,8 @@ class DefaultFormatter
      * @param array $dataComputed
      * @return array
      */
-    public function formatWithoutSeries($dataComputed) {
+    public function formatWithoutSeries($dataComputed)
+    {
         return $dataComputed;
     }
 
@@ -63,26 +64,27 @@ class DefaultFormatter
      * @param array $dataComputed
      * @return array
      */
-    public function formatWithDateSeries($dataComputed) {
+    public function formatWithDateSeries($dataComputed)
+    {
         $data = [];
         $names = [];
-        foreach($dataComputed as $indicator) {
+        foreach ($dataComputed as $indicator) {
             array_push($names, $indicator['name']);
         }
 
-        foreach(array_unique($names) as $name) {
+        foreach (array_unique($names) as $name) {
             $format = [
                 'name' => $name,
                 'series' => [
                 ]
             ];
-            foreach($dataComputed as $indicator) {
+            foreach ($dataComputed as $indicator) {
                 $value = [
                     'name' => $indicator['date'],
                     'value' => intval($indicator['value']),
                     'unity' => $indicator['unity']
                 ];
-                if($format['name'] === $indicator['name']) {
+                if ($format['name'] === $indicator['name']) {
                     array_push($format['series'], (object) $value);
                 }
             }
@@ -91,5 +93,4 @@ class DefaultFormatter
 
         return $data;
     }
-
 }

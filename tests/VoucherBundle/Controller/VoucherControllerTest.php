@@ -43,7 +43,7 @@ class VoucherControllerTest extends BMSServiceTestCase
             'number_vouchers' => 3,
             'bookletCode' => $this->booklet->getCode(),
             'currency' => 'USD',
-            'bookletID' => NULL,
+            'bookletID' => null,
             'values' => [1, 2, 3],
         ];
 
@@ -211,6 +211,4 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->em->remove($this->booklet);
         $this->em->flush();
     }
-
-
 }

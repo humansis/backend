@@ -296,19 +296,19 @@ class Booklet implements ExportableInterface
         return $this;
     }
 
-      /**
+    /**
      * Returns an array representation of this class in order to prepare the export
      * @return array
      */
-    function getMappedValueForExport(): array
+    public function getMappedValueForExport(): array
     {
         if ($this->getStatus() === 0) {
             $status = 'Unassigned';
-        } else if ($this->getStatus() === 1) {
+        } elseif ($this->getStatus() === 1) {
             $status = 'Distributed';
-        } else if ($this->getStatus() === 2) {
+        } elseif ($this->getStatus() === 2) {
             $status = 'Used';
-        } else if ($this->getStatus() === 3) {
+        } elseif ($this->getStatus() === 3) {
             $status = 'Deactivated';
         }
 
@@ -342,23 +342,23 @@ class Booklet implements ExportableInterface
         return $finalArray;
     }
 
-    function getTotalValue()
+    public function getTotalValue()
     {
         $vouchers = $this->getVouchers();
         $value = 0;
-        foreach($vouchers as $voucher) {
+        foreach ($vouchers as $voucher) {
             $value += $voucher->getValue();
         }
         return $value;
     }
 
-    function getUsedAt()
+    public function getUsedAt()
     {
         $date = null;
         if ($this->getStatus() === 2 || $this->getStatus() === 3) {
             $vouchers = $this->getVouchers();
 
-            foreach($vouchers as $voucher) {
+            foreach ($vouchers as $voucher) {
                 if ($date === null || $date < $voucher->getUsedAt()) {
                     $date = $voucher->getUsedAt();
                 }

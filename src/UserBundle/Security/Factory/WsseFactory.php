@@ -12,7 +12,7 @@ use UserBundle\Security\Firewall\WsseListener;
 
 class WsseFactory implements SecurityFactoryInterface
 {
-	public function create(ContainerBuilder $container, $id, $config, $userProvider, $defaultEntryPoint)
+    public function create(ContainerBuilder $container, $id, $config, $userProvider, $defaultEntryPoint)
     {
         $providerId = 'security.authentication.provider.wsse.'.$id;
         $container

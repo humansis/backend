@@ -31,8 +31,7 @@ class APIImportService
     public function __construct(
         EntityManagerInterface $entityManager,
         ContainerInterface $container
-    )
-    {
+    ) {
         $this->em = $entityManager;
         $this->container= $container;
     }
@@ -78,12 +77,12 @@ class APIImportService
      * @param string $countryISO3
      * @return array
      */
-    public function getAllAPI(string $countryISO3) {
+    public function getAllAPI(string $countryISO3)
+    {
         $countryISO3 = strtoupper($countryISO3);
 
         $listAPI = array();
-        foreach(glob('../src/BeneficiaryBundle/Utils/ImportProvider/'.$countryISO3.'/*.*') as $file) {
-
+        foreach (glob('../src/BeneficiaryBundle/Utils/ImportProvider/'.$countryISO3.'/*.*') as $file) {
             $beginFile = explode('API', $file);
             $providerKey = explode($countryISO3, $beginFile[0]);
 

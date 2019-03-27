@@ -19,8 +19,6 @@ class BookletControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
         // Get a Client instance for simulate a browser
         $this->client = $this->container->get('test.client');
-
-
     }
 
     /**
@@ -303,5 +301,4 @@ class BookletControllerTest extends BMSServiceTestCase
 
         return $response;
     }
-
 }

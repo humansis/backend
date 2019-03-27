@@ -8,11 +8,10 @@ use Symfony\Component\Validator\Constraints\Collection;
 use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\Constraints\Type;
 
-
 class HouseholdConstraints extends RequestValidatorConstraints
 {
-
-    protected function configure() : array {
+    protected function configure() : array
+    {
         $numeric = new Type('numeric');
         $string = new Type('string');
         $array = new Type('array');

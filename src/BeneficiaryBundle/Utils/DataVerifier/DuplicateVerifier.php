@@ -3,14 +3,12 @@
 
 namespace BeneficiaryBundle\Utils\DataVerifier;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Container;
 
 class DuplicateVerifier extends AbstractVerifier
 {
-
     private $token;
 
     private $container;
@@ -44,8 +42,7 @@ class DuplicateVerifier extends AbstractVerifier
         $newHouseholdEmpty = $householdArray['new'];
         $newHouseholdEmpty['beneficiaries'] = [];
         
-        foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary)
-        {
+        foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary) {
             $existingBeneficaries = $this->em->getRepository(Beneficiary::class)->findBy(
                 [
                     'givenName' => trim($newBeneficiary['given_name']),
@@ -87,21 +84,25 @@ class DuplicateVerifier extends AbstractVerifier
      */
     private function getOldHouseholdFromCache($id_tmp_cache, string $email)
     {
-        if (null === $this->token)
+        if (null === $this->token) {
             return null;
+        }
 
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_var))
+        if (!is_dir($dir_var)) {
             mkdir($dir_var);
+        }
         $dir_mapping = $dir_var . '/' . $email . '-mapping_new_old';
-        if (!is_file($dir_mapping))
+        if (!is_file($dir_mapping)) {
             return null;
+        }
 
         $fileContent = file_get_contents($dir_var . '/' . $email . '-mapping_new_old');
         $householdsCached = json_decode($fileContent, true);
-        if (array_key_exists($id_tmp_cache, $householdsCached))
+        if (array_key_exists($id_tmp_cache, $householdsCached)) {
             return $householdsCached[$id_tmp_cache]['old'];
+        }
 
         return null;
     }

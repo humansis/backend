@@ -3,14 +3,12 @@
 
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
-
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Cache\Simple\FilesystemCache;
-
 
 abstract class AbstractTreatment implements InterfaceTreatment
 {
@@ -36,8 +34,7 @@ abstract class AbstractTreatment implements InterfaceTreatment
         BeneficiaryService $beneficiaryService,
         Container $container,
         $token
-    )
-    {
+    ) {
         $this->em = $entityManager;
         $this->householdService = $householdService;
         $this->beneficiaryService = $beneficiaryService;
@@ -53,20 +50,22 @@ abstract class AbstractTreatment implements InterfaceTreatment
      */
     protected function getFromCache($step, array &$listHouseholdsArray, string $email)
     {
-        if (null === $this->token)
+        if (null === $this->token) {
             return;
+        }
 
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_var))
+        if (!is_dir($dir_var)) {
             mkdir($dir_var);
+        }
         $dir_file = $dir_var . '/' . $email . '-' . $step;
-        if (!is_file($dir_file))
+        if (!is_file($dir_file)) {
             return;
+        }
         $fileContent = file_get_contents($dir_file);
         $householdsCached = json_decode($fileContent, true);
-        foreach ($householdsCached as $householdCached)
-        {
+        foreach ($householdsCached as $householdCached) {
             $listHouseholdsArray[] = $householdCached;
         }
     }
@@ -76,7 +75,8 @@ abstract class AbstractTreatment implements InterfaceTreatment
      * @param $householdsToSave
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function saveHouseholds(string $cacheName, $householdsToSave) {
+    public function saveHouseholds(string $cacheName, $householdsToSave)
+    {
         if (gettype($householdsToSave) == 'array') {
             $householdsToSave = $this->em->getRepository(Household::class)->findOneBy(
                 [
@@ -102,8 +102,9 @@ abstract class AbstractTreatment implements InterfaceTreatment
 
                 $householdsArray = $householdFromCache;
                 array_push($householdsArray, $householdsToSave);
-            } else
+            } else {
                 array_push($householdsArray, $householdsToSave);
+            }
 
             $cache->set($cacheName, $householdsArray);
         }
@@ -112,10 +113,12 @@ abstract class AbstractTreatment implements InterfaceTreatment
     /**
      * @param string $cacheName
      */
-    public function clearCache(string $cacheName) {
+    public function clearCache(string $cacheName)
+    {
         $cache = new FilesystemCache();
 
-        if ($cache->has($cacheName))
+        if ($cache->has($cacheName)) {
             $cache->delete($cacheName);
+        }
     }
 }

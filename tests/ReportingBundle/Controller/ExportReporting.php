@@ -8,13 +8,11 @@ use ReportingBundle\Utils\Formatters\Formatter;
 use Tests\BMSServiceTestCase;
 use ReportingBundle\Utils\Computers\Computer;
 
-
-class ExportReporting extends BMSServiceTestCase {
-
+class ExportReporting extends BMSServiceTestCase
+{
     public function setUp()
     {
         parent::setUpFunctionnal();
-
     }
 
     /**
@@ -22,9 +20,8 @@ class ExportReporting extends BMSServiceTestCase {
      * TODO add file to compare the actual and the expected in order to run the test
      * @throws \Exception
      */
-    public function ExportReports() {
-
-
+    public function ExportReports()
+    {
         $filters = [
             "filters" => [
                 "__country" => ["TH"],
@@ -40,7 +37,7 @@ class ExportReporting extends BMSServiceTestCase {
             ["Graph type", 'line'],
         ];
 
-        $exportservice = new ExportService($this->em,$this->container);
+        $exportservice = new ExportService($this->em, $this->container);
 
         $indicator = $this->em->getRepository(ReportingIndicator::class)->find(1);
 
@@ -48,13 +45,11 @@ class ExportReporting extends BMSServiceTestCase {
 
         $format = new Formatter();
 
-        $datacomputed = $computer->compute($indicator,$filters);
-        $dataFormatted = $format->format(Formatter::CsvFormat,$datacomputed,'line');
+        $datacomputed = $computer->compute($indicator, $filters);
+        $dataFormatted = $format->format(Formatter::CsvFormat, $datacomputed, 'line');
 
-        $csv = $exportservice->setHeaders($header)->export($dataFormatted,'actual');
+        $csv = $exportservice->setHeaders($header)->export($dataFormatted, 'actual');
 
         $this->assertEquals(file_get_contents('expectedReporting.csv'), $csv['content']);
-
     }
-
 }

@@ -2,7 +2,6 @@
 
 namespace CommonBundle\DataFixtures;
 
-
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use FOS\UserBundle\Doctrine\UserManager;
@@ -36,11 +35,9 @@ class FinancialProviderFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        foreach ($this->data as $datum)
-        {
+        foreach ($this->data as $datum) {
             $instance = $manager->getRepository(FinancialProvider::class)->findOneByUsername($datum[0]);
-            if (!$instance instanceof FinancialProvider)
-            {
+            if (!$instance instanceof FinancialProvider) {
                 $instance = new FinancialProvider();
                 $instance->setUsername($datum[0])
                     ->setCountry('KHM');
@@ -52,5 +49,4 @@ class FinancialProviderFixtures extends Fixture
             }
         }
     }
-
 }

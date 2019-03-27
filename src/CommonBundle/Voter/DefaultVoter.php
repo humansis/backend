@@ -3,7 +3,6 @@
 
 namespace CommonBundle\Voter;
 
-
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -67,24 +66,22 @@ class DefaultVoter extends BMSVoter
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
         $user = $token->getUser();
-        if (!$user instanceof User)
-        {
+        if (!$user instanceof User) {
             return false;
         }
         /**
          * @var User $user
          */
-        if (!$this->hasRole($user->getRoles(), $attribute)){
+        if (!$this->hasRole($user->getRoles(), $attribute)) {
             return false;
-
         }
 
-        if (!$this->requestStack->getCurrentRequest()->request->has('__country')){
+        if (!$this->requestStack->getCurrentRequest()->request->has('__country')) {
             return false;
         }
 
         $countryISO3 = $this->requestStack->getCurrentRequest()->request->get('__country');
-        if (!$this->hasCountry($user, $countryISO3)){
+        if (!$this->hasCountry($user, $countryISO3)) {
             return false;
         }
 
@@ -99,22 +96,25 @@ class DefaultVoter extends BMSVoter
      */
     protected function hasCountry(User $user, $countryISO3)
     {
-        if($this->hasRole($user->getRoles(), "ROLE_ADMIN"))
+        if ($this->hasRole($user->getRoles(), "ROLE_ADMIN")) {
             return true;
+        }
 
         $userCountry = $this->em->getRepository(UserCountry::class)
             ->findOneBy([
                 "user" => $user,
                 "iso3" => $countryISO3
             ]);
-        if ($userCountry instanceof UserCountry)
+        if ($userCountry instanceof UserCountry) {
             return true;
+        }
 
         $userProject = $this->em->getRepository(UserProject::class)
             ->findBy(["user" => $user]);
         foreach ($userProject as $up) {
-            if ($up->getProject()->getIso3() === $countryISO3)
+            if ($up->getProject()->getIso3() === $countryISO3) {
                 return true;
+            }
         }
 
         return false;

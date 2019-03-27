@@ -73,17 +73,14 @@ class UserController extends Controller
         $clientIp = $request->headers->get('x-real-ip');
         if ($clientIp) {
             $originRequest = json_decode(file_get_contents('http://www.geoplugin.net/json.gp?ip=' . $clientIp))->geoplugin_countryCode;
-            $originISO3 = json_decode(file_get_contents('https://restcountries.eu/rest/v2/alpha/' . $originRequest))->alpha3Code;    
+            $originISO3 = json_decode(file_get_contents('https://restcountries.eu/rest/v2/alpha/' . $originRequest))->alpha3Code;
         } else {
             $originISO3 = null;
         }
         
-        try
-        {
+        try {
             $user = $this->container->get('user.user_service')->login($username, $saltedPassword, $originISO3);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
 
@@ -139,12 +136,9 @@ class UserController extends Controller
      */
     public function getSaltAction($username)
     {
-        try
-        {
+        try {
             $salt = $this->get('user.user_service')->getSalt($username);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
 
@@ -192,12 +186,9 @@ class UserController extends Controller
      */
     public function initializeAction($username)
     {
-        try
-        {
+        try {
             $salt = $this->get('user.user_service')->initialize($username);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
 
@@ -241,13 +232,13 @@ class UserController extends Controller
         $user = $request->request->all();
         $userData = $user;
 
-        try
-        {
+        try {
             $user = $serializer->deserialize(json_encode($request->request->all()), User::class, 'json');
             $return = $this->get('user.user_service')->create($user, $userData);
 
-            if (!$user instanceof User)
+            if (!$user instanceof User) {
                 return new JsonResponse($user);
+            }
 
             $userJson = $serializer->serialize(
                 $return,
@@ -255,9 +246,7 @@ class UserController extends Controller
                 SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true)
             );
             return new Response($userJson);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             if ($user instanceof User) {
                 $this->get('user.user_service')->deleteByUsername($user->getUsername());
             } else {
@@ -289,8 +278,7 @@ class UserController extends Controller
     public function checkAction()
     {
         $user = $this->getUser();
-        if ($user instanceof User)
-        {
+        if ($user instanceof User) {
             $user = $this->get('jms_serializer')->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
             return new Response($user, Response::HTTP_OK);
         }
@@ -333,38 +321,38 @@ class UserController extends Controller
         return new Response($json, Response::HTTP_OK);
     }
 
-    /**	
-     * Get web users	
-     *	
-     * @Rest\Get("/web-users", name="get_web_users")	
-     * @Security("is_granted('ROLE_USER_MANAGEMENT_READ')")	
-     *	
-     * @SWG\Tag(name="Users")	
-     *	
-     * @SWG\Response(	
-     *     response=200,	
-     *     description="Users fetched",	
-     *     @SWG\Schema(	
-     *         type="array",	
-     *         @SWG\Items(ref=@Model(type=User::class, groups={"FullUser"}))	
-     *     )	
-     * )	
-     *	
-     * @SWG\Response(	
-     *     response=400,	
-     *     description="BAD_REQUEST"	
-     * )	
-     *	
-     * @param Request $request	
-     * @return Response	
-     */	
-    public function getWebUsersAction(Request $request)	
-    {	
-        $limit = ($request->query->has('limit'))? $request->query->get('limit') : null;	
-        $offset = ($request->query->has('offset'))? $request->query->get('offset') : null;	
-         $users = $this->get('user.user_service')->findWebUsers($limit, $offset);	
-        $json = $this->get('jms_serializer')->serialize($users, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));	
-         return new Response($json, Response::HTTP_OK);	
+    /**
+     * Get web users
+     *
+     * @Rest\Get("/web-users", name="get_web_users")
+     * @Security("is_granted('ROLE_USER_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Users fetched",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"FullUser"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getWebUsersAction(Request $request)
+    {
+        $limit = ($request->query->has('limit'))? $request->query->get('limit') : null;
+        $offset = ($request->query->has('offset'))? $request->query->get('offset') : null;
+        $users = $this->get('user.user_service')->findWebUsers($limit, $offset);
+        $json = $this->get('jms_serializer')->serialize($users, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        return new Response($json, Response::HTTP_OK);
     }
 
     /**
@@ -517,12 +505,9 @@ class UserController extends Controller
     {
         $oldPassword = $request->request->get('oldPassword');
         $newPassword = $request->request->get('newPassword');
-        try
-        {
+        try {
             $user = $this->get('user.user_service')->updatePassword($user, $oldPassword, $newPassword);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_UNAUTHORIZED);
         }
 
@@ -581,5 +566,4 @@ class UserController extends Controller
 
         return new JsonResponse($attach);
     }
-
 }

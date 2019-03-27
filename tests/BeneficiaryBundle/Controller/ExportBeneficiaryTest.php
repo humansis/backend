@@ -6,25 +6,20 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Utils\ExportService;
 use Tests\BMSServiceTestCase;
 
-
-
-class ExportBeneficiaryTest extends BMSServiceTestCase {
-
-
-
+class ExportBeneficiaryTest extends BMSServiceTestCase
+{
     public function setUp()
     {
         parent::setUpFunctionnal();
-
     }
 
     /**
      * @dataProvider
      * @throws \Exception
      */
-    public function testExport() {
-
-        $exportservice = new ExportService($this->em,$this->container);
+    public function testExport()
+    {
+        $exportservice = new ExportService($this->em, $this->container);
         $exportableTable = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
 
         $array[0] = $exportableTable;

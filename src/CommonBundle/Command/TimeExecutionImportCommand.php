@@ -3,7 +3,6 @@
 
 namespace CommonBundle\Command;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
@@ -584,8 +583,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
         $this->removeAll();
 
         $projects = $this->em->getRepository(Project::class)->findAll();
-        if (empty($projects))
-        {
+        if (empty($projects)) {
             print_r("\nThere is no project in your database.\n\n");
             return;
         }
@@ -594,8 +592,7 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
         $questionNumber = new Question('How many import : ');
         $number = $helper->ask($input, $output, $questionNumber);
 
-        for ($i = 1; $i <= intval($number); $i++)
-        {
+        for ($i = 1; $i <= intval($number); $i++) {
             $this->calcExecTime($input, $projects, $i);
         }
 
@@ -638,59 +635,59 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), $this->SHEET_ARRAY, 1, null);
         $executionTime = microtime(true);
-        if ($input->hasOption('verbose'))
-        {
+        if ($input->hasOption('verbose')) {
             print_r($this->color->getColoredString("\nstep 1 - Execution time : ", "yellow"));
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        if (1 !== $step)
+        if (1 !== $step) {
             $this->sumStep1 += ($executionTime - $executionStartTime);
+        }
         $token = $return["token"];
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 2, $token);
         $executionTime = microtime(true);
-        if ($input->hasOption('verbose'))
-        {
+        if ($input->hasOption('verbose')) {
             print_r($this->color->getColoredString("\nstep 2 - Execution time : ", "yellow"));
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        if (1 !== $step)
+        if (1 !== $step) {
             $this->sumStep2 += ($executionTime - $executionStartTime);
+        }
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 3, $token);
         $executionTime = microtime(true);
-        if ($input->hasOption('verbose'))
-        {
+        if ($input->hasOption('verbose')) {
             print_r($this->color->getColoredString("\nstep 3 - Execution time : ", "yellow"));
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        if (1 !== $step)
+        if (1 !== $step) {
             $this->sumStep3 += ($executionTime - $executionStartTime);
+        }
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 4, $token);
         $executionTime = microtime(true);
-        if ($input->hasOption('verbose'))
-        {
+        if ($input->hasOption('verbose')) {
             print_r($this->color->getColoredString("\nstep 4 - Execution time : ", "yellow"));
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        if (1 !== $step)
+        if (1 !== $step) {
             $this->sumStep4 += ($executionTime - $executionStartTime);
+        }
         $executionStartTime = microtime(true);
         $return = $this->hhCSVService->transformAndAnalyze($this->iso3, current($projects), [], 5, $token);
         $executionTime = microtime(true);
-        if ($input->hasOption('verbose'))
-        {
+        if ($input->hasOption('verbose')) {
             print_r($this->color->getColoredString("\nstep 5 - Execution time : ", "yellow"));
             print_r($this->color->getColoredString(number_format($executionTime - $executionStartTime, 3) . " s"));
         }
         $totalTime += ($executionTime - $executionStartTime);
-        if (1 !== $step)
+        if (1 !== $step) {
             $this->sumStep5 += ($executionTime - $executionStartTime);
+        }
         print_r($this->color->getColoredString("\nExecution time : ", "light_red"));
         print_r($this->color->getColoredString(number_format($totalTime, 3) . " s\n"));
         print_r($this->color->getColoredString("\n---------------------------------------"));
@@ -731,22 +728,17 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
         $this->em->clear();
         /** @var Household $household */
         $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($addressStreet);
-        if ($household instanceof Household)
-        {
+        if ($household instanceof Household) {
             $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
-            if (!empty($beneficiaries))
-            {
+            if (!empty($beneficiaries)) {
                 /** @var Beneficiary $beneficiary */
-                foreach ($beneficiaries as $beneficiary)
-                {
+                foreach ($beneficiaries as $beneficiary) {
                     $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
                     $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
-                    foreach ($phones as $phone)
-                    {
+                    foreach ($phones as $phone) {
                         $this->em->remove($phone);
                     }
-                    foreach ($nationalIds as $nationalId)
-                    {
+                    foreach ($nationalIds as $nationalId) {
                         $this->em->remove($nationalId);
                     }
                     $this->em->remove($beneficiary->getProfile());
@@ -756,21 +748,16 @@ class TimeExecutionImportCommand extends ContainerAwareCommand
 
             $countrySpecificAnswers = $this->em->getRepository(CountrySpecificAnswer::class)
                 ->findByHousehold($household);
-            foreach ($countrySpecificAnswers as $countrySpecificAnswer)
-            {
+            foreach ($countrySpecificAnswers as $countrySpecificAnswer) {
                 $this->em->remove($countrySpecificAnswer);
             }
 
             $this->em->remove($household);
             $location = $household->getLocation();
             $this->em->remove($location);
-            try
-            {
+            try {
                 $this->em->flush();
-            }
-            catch (\Exception $exception)
-            {
-
+            } catch (\Exception $exception) {
             }
         }
     }

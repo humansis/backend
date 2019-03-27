@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class BeneficiaryFixtures extends Fixture
 {
-
     private $householdArray = [
         [
           "address_street" => "azerrt",
@@ -247,7 +246,7 @@ class BeneficiaryFixtures extends Fixture
     {
         if ($this->kernel->getEnvironment() !== "prod") {
             $projects = $manager->getRepository(Project::class)->findAll();
-            foreach($this->householdArray as $household){
+            foreach ($this->householdArray as $household) {
                 $this->householdService->createOrEdit($household, $projects);
             }
         }

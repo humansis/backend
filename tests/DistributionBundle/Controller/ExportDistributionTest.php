@@ -6,16 +6,11 @@ use CommonBundle\Utils\ExportService;
 use DistributionBundle\Entity\DistributionData;
 use Tests\BMSServiceTestCase;
 
-
-
-class ExportDistributionTest extends BMSServiceTestCase {
-
-
-
+class ExportDistributionTest extends BMSServiceTestCase
+{
     public function setUp()
     {
         parent::setUpFunctionnal();
-
     }
 
     /**
@@ -23,9 +18,9 @@ class ExportDistributionTest extends BMSServiceTestCase {
      * expectedDistribution.csv is a file to test the export distribution service
      * @throws \Exception
      */
-    public function testExportDistribution () {
-
-        $exportservice = new ExportService($this->em,$this->container);
+    public function testExportDistribution()
+    {
+        $exportservice = new ExportService($this->em, $this->container);
         $exportableTable = $this->em->getRepository(DistributionData::class)->findAll();
 
         $filename = $exportservice->export($exportableTable, 'actual', 'csv');
@@ -37,9 +32,4 @@ class ExportDistributionTest extends BMSServiceTestCase {
 
         unlink($path);
     }
-
-
-
-
-
 }

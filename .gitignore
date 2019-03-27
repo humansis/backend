@@ -24,6 +24,7 @@
 
 # PHP CS
 .phpcs-cache
+.php_cs.cache
 phpcs.xml
 
 

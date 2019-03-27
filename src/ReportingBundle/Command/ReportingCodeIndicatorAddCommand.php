@@ -43,6 +43,4 @@ class ReportingCodeIndicatorAddCommand extends ContainerAwareCommand
             'Data loaded',
         ]);
     }
-    
-
 }

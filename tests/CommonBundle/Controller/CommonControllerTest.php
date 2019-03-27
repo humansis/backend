@@ -3,7 +3,6 @@
 
 namespace Tests\CommonBundle\Controller;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
@@ -51,13 +50,10 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('GET', '/api/wsse/summary');
         $summary = json_decode($this->client->getResponse()->getContent(), true);
-        if (!empty($summary))
-        {
+        if (!empty($summary)) {
             $this->assertContainsOnly('int', $summary);
             $this->assertCount(4, $summary);
-        }
-        else
-        {
+        } else {
             $this->markTestIncomplete("The database is incomplete.");
         }
         return true;

@@ -67,11 +67,9 @@ class DonorService
         $donor->setDateAdded(new \DateTime());
 
         $errors = $this->validator->validate($donor);
-        if (count($errors) > 0)
-        {
+        if (count($errors) > 0) {
             $errorsArray = [];
-            foreach ($errors as $error)
-            {
+            foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
@@ -97,11 +95,9 @@ class DonorService
         $editedDonor->setId($donor->getId());
 
         $errors = $this->validator->validate($editedDonor);
-        if (count($errors) > 0)
-        {
+        if (count($errors) > 0) {
             $errorsArray = [];
-            foreach ($errors as $error)
-            {
+            foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
@@ -119,13 +115,10 @@ class DonorService
      */
     public function delete(Donor $donor)
     {
-        try
-        {
+        try {
             $this->em->remove($donor);
             $this->em->flush();
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return false;
         }
 
@@ -137,11 +130,10 @@ class DonorService
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(string $type) {
-
+    public function exportToCsv(string $type)
+    {
         $exportableTable = $this->em->getRepository(Donor::class)->findAll();
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'donors', $type);
-
     }
 }

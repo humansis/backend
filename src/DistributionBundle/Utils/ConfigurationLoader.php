@@ -3,7 +3,6 @@
 
 namespace DistributionBundle\Utils;
 
-
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -51,21 +50,16 @@ class ConfigurationLoader
     public function load(array $filters)
     {
         $criteriaFormatted = [];
-        foreach ($this->criteria as $criterion => $type)
-        {
-            if($criterion !== 'countrySpecific') {
-                if($criterion !== 'vulnerabilityCriteria') {
+        foreach ($this->criteria as $criterion => $type) {
+            if ($criterion !== 'countrySpecific') {
+                if ($criterion !== 'vulnerabilityCriteria') {
                     $criteriaFormatted[] = $this->formatCriteria($filters, 'Beneficiary', $criterion, $type);
-                }
-                else {
+                } else {
                     $criteriaFormatted = array_merge($criteriaFormatted, $this->formatCriteria($filters, 'Beneficiary', $criterion, $type));
                 }
-            }
-            else {
+            } else {
                 $criteriaFormatted = array_merge($criteriaFormatted, $this->formatCriteria($filters, 'Household', $criterion, $type));
-
             }
-            
         }
         return $criteriaFormatted;
     }
@@ -77,16 +71,13 @@ class ConfigurationLoader
      * @param $type
      * @return array
      */
-    private function formatCriteria(array $filters, string $distributionType, $criterion, $type) {
-        if (in_array($type, $this->MAPPING_TYPE_DEFAULT))
-        {
-           return ["field_string" => $criterion, "type" => $type, "distribution_type" => $distributionType];
-        }
-        else
-        {
+    private function formatCriteria(array $filters, string $distributionType, $criterion, $type)
+    {
+        if (in_array($type, $this->MAPPING_TYPE_DEFAULT)) {
+            return ["field_string" => $criterion, "type" => $type, "distribution_type" => $distributionType];
+        } else {
             $instances = $this->em->getRepository($type)->findForCriteria($filters);
-            foreach ($instances as &$instance)
-            {
+            foreach ($instances as &$instance) {
                 $instance->setTableString($criterion);
                 $instance->setDistributionType($distributionType);
             }

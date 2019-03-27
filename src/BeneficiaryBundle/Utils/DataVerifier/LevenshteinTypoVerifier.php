@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Utils\DataVerifier;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
@@ -58,8 +57,9 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             }
         }
 
-        if (null === $newHead)
+        if (null === $newHead) {
             return null;
+        }
 
         $similarHouseholds = $householdRepository->foundSimilarLevenshtein(
             $countryISO3,
@@ -68,12 +68,12 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             $householdArray["address_postcode"] .
             $newHead["given_name"] .
             $newHead["family_name"],
-            $this->maximumDistanceLevenshtein);
+            $this->maximumDistanceLevenshtein
+        );
 
         if (empty($similarHouseholds)) {
             $this->saveInCache('no_typo', $cacheId, $householdArray, $email, null);
             return null;
-
         } else {
             if (0 == intval(current($similarHouseholds)["levenshtein"])) {
                 // SAVE 100% SIMILAR IN 1_typo
@@ -105,7 +105,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
      */
     private function saveInCache(string $step, int $cacheId, array $dataToSave, string $email, Household $household = null)
     {
-        if (null !== $household)
+        if (null !== $household) {
             $arrayOldHousehold = json_decode(
                 $this->container->get('jms_serializer')
                     ->serialize(
@@ -113,23 +113,28 @@ class LevenshteinTypoVerifier extends AbstractVerifier
                         'json',
                         SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
                     ),
-                true);
-        else
+                true
+            );
+        } else {
             $arrayOldHousehold = json_encode([]);
+        }
 
         $sizeToken = 50;
-        if (null === $this->token)
+        if (null === $this->token) {
             $this->token = bin2hex(random_bytes($sizeToken));
+        }
 
         $dir_root = $this->container->get('kernel')->getRootDir();
 
         $dir_var = $dir_root . '/../var/data';
-        if (!is_dir($dir_var))
+        if (!is_dir($dir_var)) {
             mkdir($dir_var);
+        }
 
         $dir_var_token = $dir_var . '/' . $this->token;
-        if (!is_dir($dir_var_token))
+        if (!is_dir($dir_var_token)) {
             mkdir($dir_var_token);
+        }
 
         if (is_file($dir_var_token . '/' . $email . '-' . $step)) {
             $listHH = json_decode(file_get_contents($dir_var_token . '/' . $email . '-' . $step), true);

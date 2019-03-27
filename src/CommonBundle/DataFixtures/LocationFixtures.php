@@ -3,7 +3,6 @@
 
 namespace CommonBundle\DataFixtures;
 
-
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
@@ -54,16 +53,17 @@ class LocationFixtures extends Fixture
         
         $dir_root = $this->kernel->getRootDir();
         $dir_files = $dir_root . '/../src/CommonBundle/DataFixtures/LocationFiles';
-        if (!is_dir($dir_files))
+        if (!is_dir($dir_files)) {
             return true;
+        }
 
         $files = scandir($dir_files);
         $nbFilesLoaded = 0;
 
-        foreach ($files as $file)
-        {
-            if ("." == $file || ".." == $file)
+        foreach ($files as $file) {
+            if ("." == $file || ".." == $file) {
                 continue;
+            }
 
             print_r("\n\nFILE : $file \n");
             $reader = new Xls();
@@ -78,11 +78,9 @@ class LocationFixtures extends Fixture
             $nbLines = $sheet->getHighestRow();
             $progressBar = new ProgressBar(new ConsoleOutput(), $nbLines);
             $progressBar->start();
-            while (!empty($rowIterator->current()->getCellIterator()->current()->getValue()))
-            {
+            while (!empty($rowIterator->current()->getCellIterator()->current()->getValue())) {
                 $rowIndex = $rowIterator->current()->getRowIndex();
-                if (!array_key_exists($sheet->getCell('C' . $rowIndex)->getValue(), $adm1List))
-                {
+                if (!array_key_exists($sheet->getCell('C' . $rowIndex)->getValue(), $adm1List)) {
                     $adm1 = new Adm1();
                     $adm1->setCountryISO3($iso3)
                         ->setName($sheet->getCell('C' . $rowIndex)->getValue())
@@ -94,14 +92,12 @@ class LocationFixtures extends Fixture
 
 
 
-                if ($sheet->getCell('E' . $rowIndex)->getValue() == null)
-                {
+                if ($sheet->getCell('E' . $rowIndex)->getValue() == null) {
                     $progressBar->advance();
                     $rowIterator->next();
                     continue;
                 }
-                if (!array_key_exists($sheet->getCell('E' . $rowIndex)->getValue(), $adm2List))
-                {
+                if (!array_key_exists($sheet->getCell('E' . $rowIndex)->getValue(), $adm2List)) {
                     $adm2 = new Adm2();
                     $adm2->setName($sheet->getCell('E' . $rowIndex)->getValue())
                         ->setAdm1($adm1)
@@ -112,14 +108,12 @@ class LocationFixtures extends Fixture
                 $adm2 = $adm2List[$sheet->getCell('E' . $rowIndex)->getValue()];
 
 
-                if ($sheet->getCell('G' . $rowIndex)->getValue() == null)
-                {
+                if ($sheet->getCell('G' . $rowIndex)->getValue() == null) {
                     $progressBar->advance();
                     $rowIterator->next();
                     continue;
                 }
-                if (!array_key_exists($sheet->getCell('G' . $rowIndex)->getValue(), $adm3List))
-                {
+                if (!array_key_exists($sheet->getCell('G' . $rowIndex)->getValue(), $adm3List)) {
                     $adm3 = new Adm3();
                     $adm3->setName($sheet->getCell('G' . $rowIndex)->getValue())
                         ->setAdm2($adm2)
@@ -130,8 +124,7 @@ class LocationFixtures extends Fixture
                 $adm3 = $adm3List[$sheet->getCell('G' . $rowIndex)->getValue()];
 
 
-                if ($sheet->getCell('I' . $rowIndex)->getValue() == null)
-                {
+                if ($sheet->getCell('I' . $rowIndex)->getValue() == null) {
                     $progressBar->advance();
                     $rowIterator->next();
                     continue;
@@ -144,8 +137,8 @@ class LocationFixtures extends Fixture
 
                 $rowIterator->next();
                 
-                if ($rowIndex % 25 == 0) { 
-                    $manager->flush(); 
+                if ($rowIndex % 25 == 0) {
+                    $manager->flush();
                 }
                 
                 $progressBar->advance();

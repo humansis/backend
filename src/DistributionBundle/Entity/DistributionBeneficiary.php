@@ -55,7 +55,7 @@ class DistributionBeneficiary
 
     /**
      * @var Booklet
-     * 
+     *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary")
      * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
      */
@@ -133,8 +133,8 @@ class DistributionBeneficiary
     }
  
     /**
-     * Get the value of Transaction 
-     * 
+     * Get the value of Transaction
+     *
      * @return Transaction
      */
     public function getTransactions()
@@ -142,11 +142,11 @@ class DistributionBeneficiary
         return $this->transactions;
     }
  
-    /** 
-     * Add a Transaction 
-     * 
+    /**
+     * Add a Transaction
+     *
      * @param Transaction transaction
-     * 
+     *
      * @return self
      */
     public function addTransaction(Transaction $transaction)
@@ -159,7 +159,7 @@ class DistributionBeneficiary
     /**
      * Remove a Transaction
      * @param  Transaction $transaction
-     * @return self                  
+     * @return self
      */
     public function removeTransaction(Transaction $transaction)
     {
@@ -213,8 +213,8 @@ class DistributionBeneficiary
     }
     
     /**
-     * Get the value of Transaction 
-     * 
+     * Get the value of Transaction
+     *
      * @return GeneralReliefItem
      */
     public function getGeneralReliefs()
@@ -222,11 +222,11 @@ class DistributionBeneficiary
         return $this->generalReliefs;
     }
  
-    /** 
-     * Add a GeneralReliefItem 
-     * 
+    /**
+     * Add a GeneralReliefItem
+     *
      * @param GeneralReliefItem $generalRelief
-     * 
+     *
      * @return self
      */
     public function addGeneralRelief(GeneralReliefItem $generalRelief)
@@ -239,12 +239,11 @@ class DistributionBeneficiary
     /**
      * Remove a GeneralReliefItem
      * @param  GeneralReliefItem $generalRelief
-     * @return self                  
+     * @return self
      */
     public function removeGeneralRelief(GeneralReliefItem $generalRelief)
     {
         $this->generalReliefs->removeElement($generalRelief);
         return $this;
     }
- 
 }

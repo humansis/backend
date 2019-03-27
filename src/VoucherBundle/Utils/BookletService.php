@@ -360,13 +360,15 @@ class BookletService
      *
      * @return string
      */
-    public function assign(Booklet $booklet, Beneficiary $beneficiary, DistributionData $distributionData) {
-        if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED){
+    public function assign(Booklet $booklet, Beneficiary $beneficiary, DistributionData $distributionData)
+    {
+        if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED) {
             throw new \Exception("This booklet has already been used and is actually deactivated");
         }
 
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(
-          ['beneficiary' => $beneficiary, "distributionData" => $distributionData]);
+          ['beneficiary' => $beneficiary, "distributionData" => $distributionData]
+        );
         $booklet->setDistributionBeneficiary($distributionBeneficiary)
                 ->setStatus(Booklet::DISTRIBUTED);
         $this->em->merge($booklet);

@@ -3,7 +3,6 @@
 
 namespace CommonBundle\Utils;
 
-
 /**
  * Class Color
  * @package CommonBundle\Utils
@@ -22,7 +21,8 @@ class Color
     /**
      * Color constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         // Set up shell colors
         $this->foreground_colors['black'] = '0;30';
         $this->foreground_colors['dark_gray'] = '1;30';
@@ -59,7 +59,8 @@ class Color
      * @param null $background_color
      * @return string
      */
-    public function getColoredString($string, $foreground_color = null, $background_color = null) {
+    public function getColoredString($string, $foreground_color = null, $background_color = null)
+    {
         $colored_string = "";
 
         // Check if given foreground color found
@@ -82,7 +83,8 @@ class Color
     /**
      * @return array
      */
-    public function getForegroundColors() {
+    public function getForegroundColors()
+    {
         return array_keys($this->foreground_colors);
     }
 
@@ -91,7 +93,8 @@ class Color
     /**
      * @return array
      */
-    public function getBackgroundColors() {
+    public function getBackgroundColors()
+    {
         return array_keys($this->background_colors);
     }
 }

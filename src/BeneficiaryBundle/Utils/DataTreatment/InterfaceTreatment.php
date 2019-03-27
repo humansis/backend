@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
-
 use ProjectBundle\Entity\Project;
 
 interface InterfaceTreatment

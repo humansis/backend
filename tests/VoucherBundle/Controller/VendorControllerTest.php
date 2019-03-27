@@ -26,9 +26,9 @@ class VendorControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
-   /**
-     * @throws \Exception
-     */
+    /**
+      * @throws \Exception
+      */
     public function testGetSalt()
     {
         $crawler = $this->request('GET', '/api/wsse/initialize/' . $this->username);

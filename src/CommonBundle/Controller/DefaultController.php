@@ -28,7 +28,7 @@ class DefaultController extends Controller
      */
     public function getVersion()
     {
-        $rootDir = $this->container->get( 'kernel' )->getRootDir();
+        $rootDir = $this->container->get('kernel')->getRootDir();
 
         $composerJsonLocation = sprintf('%s/../composer.json', $rootDir);
 
@@ -38,5 +38,4 @@ class DefaultController extends Controller
 
         return new Response($composer['version']);
     }
-
 }

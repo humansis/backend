@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Utils\DataVerifier;
 
-
 use Doctrine\ORM\EntityManagerInterface;
 
 abstract class AbstractVerifier implements InterfaceVerifier

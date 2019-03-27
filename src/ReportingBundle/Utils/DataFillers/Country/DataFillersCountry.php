@@ -38,7 +38,7 @@ class DataFillersCountry extends DataFillers
      */
     public function __construct(EntityManager $em)
     {
-        $this->em = $em;   
+        $this->em = $em;
     }
 
     /**
@@ -48,7 +48,8 @@ class DataFillersCountry extends DataFillers
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getReferenceId(string $code) {
+    public function getReferenceId(string $code)
+    {
         $this->repository = $this->em->getRepository(ReportingIndicator::class);
         $qb = $this->repository->createQueryBuilder('ri')
                                ->Where('ri.code = :code')
@@ -59,7 +60,8 @@ class DataFillersCountry extends DataFillers
     /**
      * Fill in ReportingValue and ReportingCountry with total households
      */
-    public function BMS_Country_TH() {
+    public function BMS_Country_TH()
+    {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(Household::class);
@@ -69,8 +71,7 @@ class DataFillersCountry extends DataFillers
                 ->groupBy('CountryAdm1', 'CountryAdm2', 'CountryAdm3', 'CountryAdm4');
             $results = $this->sortByCountry($qb->getQuery()->getArrayResult());
             $reference = $this->getReferenceId("BMS_Country_TH");
-            foreach ($results as $result) 
-            {
+            foreach ($results as $result) {
                 $new_value = new ReportingValue();
                 $new_value->setValue($result['value']);
                 $new_value->setUnity('household');
@@ -85,10 +86,10 @@ class DataFillersCountry extends DataFillers
                 $new_reportingCountry->setcountry($result['country']);
 
                 $this->em->persist($new_reportingCountry);
-                $this->em->flush();   
+                $this->em->flush();
             }
             $this->em->getConnection()->commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
@@ -97,7 +98,8 @@ class DataFillersCountry extends DataFillers
     /**
      * Fill in ReportingValue and ReportingCountry with active projects
      */
-    public function BMS_Country_AP() {
+    public function BMS_Country_AP()
+    {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(Project::class);
@@ -108,8 +110,7 @@ class DataFillersCountry extends DataFillers
             $results = $qb->getQuery()->getArrayResult();
 
             $reference = $this->getReferenceId("BMS_Country_AP");
-            foreach ($results as $result) 
-            {
+            foreach ($results as $result) {
                 $new_value = new ReportingValue();
                 $new_value->setValue($result['value']);
                 $new_value->setUnity('active project');
@@ -124,19 +125,20 @@ class DataFillersCountry extends DataFillers
                 $new_reportingCountry->setcountry($result['country']);
 
                 $this->em->persist($new_reportingCountry);
-                $this->em->flush();   
+                $this->em->flush();
             }
             $this->em->getConnection()->commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
     }
 
-     /**
-     * Fill in ReportingValue and ReportingCountry with total funding
-     */
-    public function BMS_Country_TF() {
+    /**
+    * Fill in ReportingValue and ReportingCountry with total funding
+    */
+    public function BMS_Country_TF()
+    {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(Project::class);
@@ -146,8 +148,7 @@ class DataFillersCountry extends DataFillers
             $results = $qb->getQuery()->getArrayResult();
 
             $reference = $this->getReferenceId("BMS_Country_TF");
-            foreach ($results as $result) 
-            {
+            foreach ($results as $result) {
                 $new_value = new ReportingValue();
                 $new_value->setValue($result['value']);
                 $new_value->setUnity('dollar');
@@ -162,10 +163,10 @@ class DataFillersCountry extends DataFillers
                 $new_reportingCountry->setcountry($result['country']);
 
                 $this->em->persist($new_reportingCountry);
-                $this->em->flush();   
+                $this->em->flush();
             }
             $this->em->getConnection()->commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
@@ -174,7 +175,8 @@ class DataFillersCountry extends DataFillers
     /**
      * Fill in ReportingValue and ReportingCountry with enrolled beneficiaries
      */
-    public function BMS_Country_EB() {
+    public function BMS_Country_EB()
+    {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(Beneficiary::class);
@@ -185,8 +187,7 @@ class DataFillersCountry extends DataFillers
                 ->groupBy('CountryAdm1', 'CountryAdm2', 'CountryAdm3', 'CountryAdm4');
             $results = $this->sortByCountry($qb->getQuery()->getArrayResult());
             $reference = $this->getReferenceId("BMS_Country_EB");
-            foreach ($results as $result) 
-            {
+            foreach ($results as $result) {
                 $new_value = new ReportingValue();
                 $new_value->setValue($result['value']);
                 $new_value->setUnity('enrolled beneficiary');
@@ -201,19 +202,20 @@ class DataFillersCountry extends DataFillers
                 $new_reportingCountry->setcountry($result['country']);
 
                 $this->em->persist($new_reportingCountry);
-                $this->em->flush();   
+                $this->em->flush();
             }
             $this->em->getConnection()->commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
     }
 
-     /**
-     * Fill in ReportingValue and ReportingCountry with total number of distributions
-     */
-    public function BMS_Country_TND() {
+    /**
+    * Fill in ReportingValue and ReportingCountry with total number of distributions
+    */
+    public function BMS_Country_TND()
+    {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(DistributionData::class);
@@ -223,8 +225,7 @@ class DataFillersCountry extends DataFillers
                 ->groupBy('CountryAdm1', 'CountryAdm2', 'CountryAdm3', 'CountryAdm4');
             $results = $this->sortByCountry($qb->getQuery()->getArrayResult());
             $reference = $this->getReferenceId("BMS_Country_TND");
-            foreach ($results as $result) 
-            {
+            foreach ($results as $result) {
                 $new_value = new ReportingValue();
                 $new_value->setValue($result['value']);
                 $new_value->setUnity('distributions');
@@ -239,10 +240,10 @@ class DataFillersCountry extends DataFillers
                 $new_reportingCountry->setcountry($result['country']);
 
                 $this->em->persist($new_reportingCountry);
-                $this->em->flush();   
+                $this->em->flush();
             }
             $this->em->getConnection()->commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
@@ -252,17 +253,17 @@ class DataFillersCountry extends DataFillers
      * TODO: Add group by country
      * Fill in ReportingValue and ReportingCountry with the total of completed transactions
      */
-    public function BMS_Country_TTC() {
+    public function BMS_Country_TTC()
+    {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(Transaction::class);
             $qb = $this->repository->createQueryBuilder('t')
-                                   ->where ('t.transactionStatus = 1')
+                                   ->where('t.transactionStatus = 1')
                                    ->select('count(t.id) AS value');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMS_Country_TTC");
-            foreach ($results as $result) 
-            {
+            foreach ($results as $result) {
                 $new_value = new ReportingValue();
                 $new_value->setValue($result['value']);
                 $new_value->setUnity('transactions completed');
@@ -277,10 +278,10 @@ class DataFillersCountry extends DataFillers
                 $new_reportingCountry->setcountry('KHM');
 
                 $this->em->persist($new_reportingCountry);
-                $this->em->flush();   
+                $this->em->flush();
             }
             $this->em->getConnection()->commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
@@ -311,7 +312,7 @@ class DataFillersCountry extends DataFillers
 
             ->leftJoin("l.adm2", "adm2")
             ->leftJoin("adm2.adm1", "adm1d");
-            return $qb;
+        return $qb;
     }
 
     /**
@@ -319,26 +320,25 @@ class DataFillersCountry extends DataFillers
      * @param array $byCountry
      * @return array
      */
-    public function sortByCountry(Array $byCountry) {
+    public function sortByCountry(array $byCountry)
+    {
         $results = [];
         $withoutNull = $this->deleteNullAdm($byCountry);
-        foreach($withoutNull as $data) {
+        foreach ($withoutNull as $data) {
             if (empty($results)) {
                 array_push($results, $data);
-            }
-            else {
+            } else {
                 $valueFound = false;
-                foreach($results as &$result){
+                foreach ($results as &$result) {
                     if ($result['country'] === $data['country']) {
                         $valueFound = true;
                         $result['value'] = $result['value'] + $data['value'];
                     }
                 }
-                if (!$valueFound){
+                if (!$valueFound) {
                     array_push($results, $data);
                 }
             }
-           
         }
         return $results;
     }
@@ -348,39 +348,36 @@ class DataFillersCountry extends DataFillers
      * @param $byCountry
      * @return array
      */
-    public function deleteNullAdm($byCountry) {
+    public function deleteNullAdm($byCountry)
+    {
         $results = [];
-        foreach($byCountry as $data) {
-            if(!empty($data['CountryAdm1'])) {
+        foreach ($byCountry as $data) {
+            if (!empty($data['CountryAdm1'])) {
                 $result = [
                     'value' => $data['value'],
                     'country' => $data['CountryAdm1'],
-                ]; 
+                ];
                 array_push($results, $result);
-            } 
-            else if(!empty($data['CountryAdm2'])) {
+            } elseif (!empty($data['CountryAdm2'])) {
                 $result = [
                     'value' => $data['value'],
                     'country' => $data['CountryAdm2'],
-                ]; 
+                ];
                 array_push($results, $result);
-            } 
-            else if(!empty($data['CountryAdm3'])) {
+            } elseif (!empty($data['CountryAdm3'])) {
                 $result = [
                     'value' => $data['value'],
                     'country' => $data['CountryAdm3'],
-                ]; 
+                ];
                 array_push($results, $result);
-            } 
-            else if(!empty($data['CountryAdm4'])) {
+            } elseif (!empty($data['CountryAdm4'])) {
                 $result = [
                     'value' => $data['value'],
                     'country' => $data['CountryAdm4'],
-                ]; 
+                ];
                 array_push($results, $result);
-            } 
+            }
         }
         return $results;
-        
     }
 }

@@ -64,7 +64,7 @@ class UserService
 
         $allProjects = array();
 
-        foreach ($projects as $project){
+        foreach ($projects as $project) {
             array_push($allProjects, $project->getProject()->getName());
         }
 
@@ -95,7 +95,7 @@ class UserService
             foreach ($userData['projects'] as $project) {
                 $project = $this->em->getRepository(Project::class)->find($project);
 
-                if($project instanceof Project) {
+                if ($project instanceof Project) {
                     $userProject = new UserProject();
                     $userProject->setRights($role)
                         ->setUser($user)
@@ -112,7 +112,7 @@ class UserService
                     ->setIso3($country)
                     ->setRights($role);
                 $this->em->merge($userCountry);
-            }    
+            }
         }
 
         $this->em->flush();
@@ -160,12 +160,10 @@ class UserService
             new NotBlank(),
         ));
 
-        if (0 !== count($violations))
-        {
+        if (0 !== count($violations)) {
             $errors = [];
             // there are errors, now you can show them
-            foreach ($violations as $violation)
-            {
+            foreach ($violations as $violation) {
                 $errors[] = $violation->getMessage();
             }
             throw new \Exception(json_encode($errors), Response::HTTP_BAD_REQUEST);
@@ -173,8 +171,7 @@ class UserService
 
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
 
-        if (!$user instanceof User)
-        {
+        if (!$user instanceof User) {
             throw new \Exception("Bad credentials", Response::HTTP_BAD_REQUEST);
         }
 
@@ -198,13 +195,13 @@ class UserService
             'enabled' => 1
         ]);
 
-        if ($user instanceOf User) {
+        if ($user instanceof User) {
             $countries = array();
             
             $countryRepo = $this->em->getRepository('UserBundle:UserCountry');
             $userCountries = $countryRepo->findBy(["user" => $user]);
             if ($userCountries) {
-                foreach($userCountries as $userCountry) {
+                foreach ($userCountries as $userCountry) {
                     array_push($countries, $userCountry->getIso3());
                 }
             }
@@ -212,7 +209,7 @@ class UserService
             $projectRepo = $this->em->getRepository('UserBundle:UserProject');
             $userProjects = $projectRepo->findBy(["user" => $user]);
             if ($userProjects) {
-                foreach($userProjects as $userProject) {
+                foreach ($userProjects as $userProject) {
                     array_push($countries, $userProject->getProject()->getIso3());
                 }
             }
@@ -225,7 +222,6 @@ class UserService
         }
 
         return $user;
-
     }
 
     /**
@@ -243,11 +239,12 @@ class UserService
         }
 
         $userSaved = $this->em->getRepository(User::class)->findOneByUsername($user->getUsername());
-        if (!$userSaved instanceof User)
+        if (!$userSaved instanceof User) {
             throw new \Exception("The user with username " . $user->getUsername() . " has been not preconfigured. You need to ask 
             the salt for this username beforehand.");
-        elseif ($userSaved->isEnabled())
+        } elseif ($userSaved->isEnabled()) {
             throw new \Exception("The user with username " . $user->getUsername() . " has already been added");
+        }
 
         $user->setId($userSaved->getId())
             ->setSalt($userData['salt'])
@@ -266,7 +263,7 @@ class UserService
             foreach ($userData['projects'] as $project) {
                 $project = $this->em->getRepository(Project::class)->find($project);
 
-                if($project instanceof Project) {
+                if ($project instanceof Project) {
                     $userProject = new UserProject();
                     $userProject->setRights($role)
                         ->setUser($user)
@@ -283,15 +280,13 @@ class UserService
                     ->setIso3($country)
                     ->setRights($role);
                 $this->em->merge($userCountry);
-            }    
+            }
         }
 
         $errors = $this->validator->validate($user);
-        if (count($errors) > 0)
-        {
+        if (count($errors) > 0) {
             $errorsArray = [];
-            foreach ($errors as $error)
-            {
+            foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
             return $errorsArray;
@@ -310,8 +305,9 @@ class UserService
      */
     public function updatePassword(User $user, $oldPassword, $newPassword)
     {
-        if ($user->getPassword() !== $oldPassword)
+        if ($user->getPassword() !== $oldPassword) {
             throw new \Exception("The old password doesn't match.");
+        }
 
         $user->setPassword($newPassword);
         $this->em->merge($user);
@@ -330,23 +326,19 @@ class UserService
     public function delete(User $user, bool $removeUser = true)
     {
         $userCountries = $this->em->getRepository(UserCountry::class)->findByUser($user);
-        if (!empty($userCountries))
-        {
-            foreach ($userCountries as $userCountry)
-            {
+        if (!empty($userCountries)) {
+            foreach ($userCountries as $userCountry) {
                 $this->em->remove($userCountry);
             }
         }
         $userProjects = $this->em->getRepository(UserProject::class)->findByUser($user);
-        if (!empty($userProjects))
-        {
-            foreach ($userProjects as $userProject)
-            {
+        if (!empty($userProjects)) {
+            foreach ($userProjects as $userProject) {
                 $this->em->remove($userProject);
             }
         }
 
-        if($removeUser) {
+        if ($removeUser) {
             try {
                 $this->em->remove($user);
                 $this->em->flush();
@@ -369,18 +361,14 @@ class UserService
         $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
 
         $userCountries = $this->em->getRepository(UserCountry::class)->findByUser($user);
-        if (!empty($userCountries))
-        {
-            foreach ($userCountries as $userCountry)
-            {
+        if (!empty($userCountries)) {
+            foreach ($userCountries as $userCountry) {
                 $this->em->remove($userCountry);
             }
         }
         $userProjects = $this->em->getRepository(UserProject::class)->findByUser($user);
-        if (!empty($userProjects))
-        {
-            foreach ($userProjects as $userProject)
-            {
+        if (!empty($userProjects)) {
+            foreach ($userProjects as $userProject) {
                 $this->em->remove($userProject);
             }
         }
@@ -400,16 +388,15 @@ class UserService
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(string $type) {
-
+    public function exportToCsv(string $type)
+    {
         $exportableTable = $this->em->getRepository(User::class)->findAll();
 
-        return $this->container->get('export_csv_service')->export($exportableTable,'users', $type);
-
+        return $this->container->get('export_csv_service')->export($exportableTable, 'users', $type);
     }
 
-    public function getLog(User $user, User $emailConnected) {
-
+    public function getLog(User $user, User $emailConnected)
+    {
         $logs = $this->em->getRepository(Logs::class)->findBy(['idUser' => $user->getId()]);
 
         foreach ($logs as $log) {
@@ -420,7 +407,9 @@ class UserService
 
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data';
-        if (! is_dir($dir_var)) mkdir($dir_var);
+        if (! is_dir($dir_var)) {
+            mkdir($dir_var);
+        }
         $file_record = $dir_var . '/record_log-' . $user->getId() . '.csv';
 
 
@@ -439,8 +428,7 @@ class UserService
                     'text/html'
                 );
             $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_log-' . $user->getId() . '.csv')->setFilename('logs-'. $user->getEmail() .'.csv'));
-        }
-        else {
+        } else {
             $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
                 ->setFrom('admin@bmstaging.info')
                 ->setTo($emailConnected->getEmail())
@@ -462,8 +450,9 @@ class UserService
         $spool = $transport->getSpool();
         $spool->flushQueue($this->container->get('swiftmailer.transport.real'));
 
-        if (is_file($file_record) && file_get_contents($file_record))
+        if (is_file($file_record) && file_get_contents($file_record)) {
             unlink($file_record);
+        }
     }
 
     /**
@@ -476,19 +465,23 @@ class UserService
     {
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data';
-        if (! is_dir($dir_var)) mkdir($dir_var);
+        if (! is_dir($dir_var)) {
+            mkdir($dir_var);
+        }
         $file_record = $dir_var . '/record_log-' . $idUser . '.csv';
 
         $fp = fopen($file_record, 'a');
-        if (!file_get_contents($file_record))
-            fputcsv($fp, array('URL', 'ID user', 'Email user', 'Method', 'Date', 'HTTP Status', 'Controller called', 'Request parameters') ,";");
+        if (!file_get_contents($file_record)) {
+            fputcsv($fp, array('URL', 'ID user', 'Email user', 'Method', 'Date', 'HTTP Status', 'Controller called', 'Request parameters'), ";");
+        }
 
         fputcsv($fp, $data, ";");
 
         fclose($fp);
     }
 
-    public function updateLanguage(User $user, string $language) {
+    public function updateLanguage(User $user, string $language)
+    {
         $user->setLanguage($language);
 
         $this->em->merge($user);
@@ -497,13 +490,13 @@ class UserService
         return $user;
     }
 
-      /**	
-     * @param $offset	
-     * @param $limit	
-     * @return array	
-     */	
-    public function findWebUsers($limit, $offset)	
-    {	
-        return $this->em->getRepository(User::class)->findBy(['vendor' => null], [], $limit, $offset);	
+    /**
+     * @param $offset
+     * @param $limit
+     * @return array
+     */
+    public function findWebUsers($limit, $offset)
+    {
+        return $this->em->getRepository(User::class)->findBy(['vendor' => null], [], $limit, $offset);
     }
 }

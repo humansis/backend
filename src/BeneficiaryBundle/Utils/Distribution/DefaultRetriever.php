@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Utils\Distribution;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
@@ -21,7 +20,6 @@ class DefaultRetriever extends AbstractRetriever
 
     public function __construct(EntityManagerInterface $entityManager)
     {
-
         $this->beneficiaryRepository = $entityManager->getRepository(Beneficiary::class);
         $this->householdRepository = $entityManager->getRepository(Household::class);
     }
@@ -33,15 +31,11 @@ class DefaultRetriever extends AbstractRetriever
      */
     protected function preFinder(string $distributionType, array &$criteria)
     {
-        if ($distributionType === 'household' || $distributionType === 'beneficiary')
-        {
-            foreach ($criteria as $index => $criterion)
-            {
+        if ($distributionType === 'household' || $distributionType === 'beneficiary') {
+            foreach ($criteria as $index => $criterion) {
                 $criteria[$index]["kind_beneficiary"] = $this->getStatusBeneficiaryCriterion($criterion["kind_beneficiary"]);
             }
-        }
-        else
-        {
+        } else {
             throw new \Exception("The distribution type '$distributionType' is unknown.");
         }
     }
@@ -53,8 +47,7 @@ class DefaultRetriever extends AbstractRetriever
      */
     protected function guessRepository(string $distributionType)
     {
-        switch (strtolower($distributionType))
-        {
+        switch (strtolower($distributionType)) {
             case 'household':
                 return $this->householdRepository;
             case 'beneficiary':
@@ -73,8 +66,7 @@ class DefaultRetriever extends AbstractRetriever
     protected function getStatusBeneficiaryCriterion($kindBeneficiary)
     {
         $kindBeneficiary = trim(strtolower(strval($kindBeneficiary)));
-        switch ($kindBeneficiary)
-        {
+        switch ($kindBeneficiary) {
             case 'beneficiary':
                 return 1;
             case 'household':

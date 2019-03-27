@@ -3,7 +3,6 @@
 
 namespace Tests\ProjectBundle\Controller;
 
-
 use ProjectBundle\Entity\Sector;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
@@ -45,15 +44,12 @@ class SectorControllerTest extends BMSServiceTestCase
         $crawler = $this->request('GET', '/api/wsse/sectors');
         $sectors = json_decode($this->client->getResponse()->getContent(), true);
 
-        if (!empty($sectors))
-        {
+        if (!empty($sectors)) {
             $sector = $sectors[0];
 
             $this->assertArrayHasKey('id', $sector);
             $this->assertArrayHasKey('name', $sector);
-        }
-        else
-        {
+        } else {
             $this->markTestIncomplete("You currently don't have any sector in your database.");
         }
         return true;

@@ -15,7 +15,6 @@ use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
 
-
 class UserFixtures extends Fixture
 {
 
@@ -48,12 +47,10 @@ class UserFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        foreach ($this->data as $index => $datum)
-        {
+        foreach ($this->data as $index => $datum) {
             if ($this->kernel->getEnvironment() === "test" || $this->kernel->getEnvironment() === "dev" || $index !== 1) {
                 $instance = $manager->getRepository(User::class)->findOneByUsername($datum[0]);
-                if (!$instance instanceof User)
-                {
+                if (!$instance instanceof User) {
                     $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
                     
                     $instance = $this->manager->createUser();

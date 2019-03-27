@@ -3,7 +3,6 @@
 
 namespace DistributionBundle\Utils;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
@@ -37,8 +36,7 @@ class CriteriaDistributionService
     public function __construct(
         EntityManagerInterface $entityManager,
         ConfigurationLoader $configurationLoader
-    )
-    {
+    ) {
         $this->em = $entityManager;
         $this->configurationLoader = $configurationLoader;
     }
@@ -58,21 +56,17 @@ class CriteriaDistributionService
 
         $distributionType = $filters['distribution_type'];
 
-        if($distributionType == "household" || $distributionType == "Household"){
+        if ($distributionType == "household" || $distributionType == "Household") {
             $finalArray = $this->loadHousehold($filters['criteria'], $threshold, $countryISO3, $project);
-        }
-        elseif ($distributionType == "individual" || $distributionType == "Individual"){
+        } elseif ($distributionType == "individual" || $distributionType == "Individual") {
             $finalArray = $this->loadBeneficiary($filters['criteria'], $threshold, $countryISO3, $project);
-        }
-        else
-        {
+        } else {
             throw new \Exception("A problem was found. Distribution type is unknown");
         }
 
-        if($isCount){
+        if ($isCount) {
             return ['number' => count($finalArray)];
-        }
-        else{
+        } else {
             return ['finalArray' => $finalArray];
         }
     }
@@ -85,28 +79,28 @@ class CriteriaDistributionService
      * @return array
      * @throws \Exception
      */
-    public function loadHousehold(array $criteria, int $threshold, string $countryISO3, Project $project){
+    public function loadHousehold(array $criteria, int $threshold, string $countryISO3, Project $project)
+    {
         $households = $project->getHouseholds();
         $finalArray = array();
 
-        foreach ($households as $household){
+        foreach ($households as $household) {
             $count = 0;
 
-            foreach ($criteria as $criterion){
-                if($criterion['kind_beneficiary'] == "Household"){
+            foreach ($criteria as $criterion) {
+                if ($criterion['kind_beneficiary'] == "Household") {
                     $count += $this->countHousehold($criterion, $countryISO3, $household);
-                }
-                elseif ($criterion['kind_beneficiary'] == "Beneficiary"){
+                } elseif ($criterion['kind_beneficiary'] == "Beneficiary") {
                     $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
-                    foreach ($beneficiaries as $beneficiary)
+                    foreach ($beneficiaries as $beneficiary) {
                         $count += $this->countBeneficiary($criterion, $beneficiary);
-                }
-                else{
+                    }
+                } else {
                     throw new \Exception("A problem was found. Kind of beneficiary is unknown");
                 }
             }
 
-            if ($count >= $threshold){
+            if ($count >= $threshold) {
                 array_push($finalArray, $household);
             }
         }
@@ -122,8 +116,8 @@ class CriteriaDistributionService
      * @return array
      * @throws \Exception
      */
-    public function loadBeneficiary(array $criteria, int $threshold, string $countryISO3, Project $project){
-
+    public function loadBeneficiary(array $criteria, int $threshold, string $countryISO3, Project $project)
+    {
         $households = $project->getHouseholds();
         $finalArray = array();
 
@@ -156,13 +150,13 @@ class CriteriaDistributionService
      * @param Household $household
      * @return int
      */
-    public function countHousehold(array $criterion, string $countryISO3, Household $household){
-
+    public function countHousehold(array $criterion, string $countryISO3, Household $household)
+    {
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findBy(['fieldString' => $criterion['field_string'], 'countryIso3' => $countryISO3]);
         $hasCountry = $this->em->getRepository(CountrySpecificAnswer::class)->hasValue($countrySpecific[0]->getId(), $criterion['value_string'], $criterion['condition_string'], $household);
 
         $count = 0;
-        if($hasCountry){
+        if ($hasCountry) {
             $count = $criterion['weight'];
         }
 
@@ -174,26 +168,26 @@ class CriteriaDistributionService
      * @param $beneficiary
      * @return int
      */
-    public function countBeneficiary(array $criterion, Beneficiary $beneficiary){
-
+    public function countBeneficiary(array $criterion, Beneficiary $beneficiary)
+    {
         $vulnerabilityCriteria = $this->em->getRepository(VulnerabilityCriterion::class)->findBy(['fieldString' => $criterion['field_string']]);
 
-        if (!key_exists('table_string', $criterion)){
-            if($criterion['type'] == 'boolean'){
-                if($criterion['value_string'] == "Woman")
+        if (!key_exists('table_string', $criterion)) {
+            if ($criterion['type'] == 'boolean') {
+                if ($criterion['value_string'] == "Woman") {
                     $criterion['value_string'] = 0;
-                else
+                } else {
                     $criterion['value_string'] = 1;
+                }
 
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasGender($criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
 
                 $count = 0;
-                if($hasVC){
+                if ($hasVC) {
                     $count = $criterion['weight'];
                 }
                 return $count;
-            }
-            else {
+            } else {
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasDateOfBirth($criterion['value_string'], $criterion['condition_string'], $beneficiary->getId());
 
                 $count = 0;
@@ -203,18 +197,16 @@ class CriteriaDistributionService
 
                 return $count;
             }
-        }
-        else {
+        } else {
             $hasVC = $this->em->getRepository(Beneficiary::class)->hasVulnerabilityCriterion($vulnerabilityCriteria[0]->getId(), $criterion['condition_string'], $beneficiary->getId());
 
             $count = 0;
-            if($hasVC){
-                if($criterion['condition_string'] == "false"){
+            if ($hasVC) {
+                if ($criterion['condition_string'] == "false") {
                     $count = $criterion['weight'];
-                }
-                else{
-                    foreach ($beneficiary->getVulnerabilityCriteria()->getValues() as $value){
-                        if ($value->getFieldString() == $criterion['field_string']){
+                } else {
+                    foreach ($beneficiary->getVulnerabilityCriteria()->getValues() as $value) {
+                        if ($value->getFieldString() == $criterion['field_string']) {
                             $count = $count + $criterion['weight'];
                         }
                     }
@@ -235,8 +227,9 @@ class CriteriaDistributionService
     {
         $selectionCriteria->setDistributionData($distributionData);
         $this->em->persist($selectionCriteria);
-        if ($flush)
+        if ($flush) {
             $this->em->flush();
+        }
         return $selectionCriteria;
     }
 
