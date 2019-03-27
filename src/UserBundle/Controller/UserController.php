@@ -69,15 +69,20 @@ class UserController extends Controller
     {
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('salted_password');
-        
         $clientIp = $request->headers->get('x-real-ip');
+
         if ($clientIp) {
             $originRequest = json_decode(file_get_contents('http://www.geoplugin.net/json.gp?ip=' . $clientIp))->geoplugin_countryCode;
-            $originISO3 = json_decode(file_get_contents('https://restcountries.eu/rest/v2/alpha/' . $originRequest))->alpha3Code;    
+            $originISO3 = json_decode(file_get_contents('https://restcountries.eu/rest/v2/alpha/' . $originRequest))->alpha3Code;
+
         } else {
             $originISO3 = null;
         }
-        
+        // Users from Syria will most likely have a turkish IP address
+        if ($originISO3 === "TUR") {
+            $originISO3 = "SYR";
+        }
+
         try
         {
             $user = $this->container->get('user.user_service')->login($username, $saltedPassword, $originISO3);
