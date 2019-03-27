@@ -108,11 +108,18 @@ class ProjectService
     {
         /** @var Project $project */
 
+<<<<<<< Updated upstream
         $newProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
         $project = new Project();
         $project->setName($newProject->getName())
                 ->setStartDate($newProject->getStartDate())
                 ->setEndDate($newProject->getEndDate())
+=======
+        $project = new Project();
+        $project->setName($projectArray["name"])
+                ->setStartDate(new DateTime($projectArray["start_date"]))
+                ->setEndDate(new DateTime($projectArray["end_date"]))
+>>>>>>> Stashed changes
                 ->setIso3($countryISO3)
                 ->setValue($newProject->getValue())
                 ->setNotes($newProject->getNotes());
@@ -176,40 +183,36 @@ class ProjectService
     public function edit(Project $project, array $projectArray)
     {
         /** @var Project $editedProject */
-        $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
         $oldProject = $this->em->getRepository(Project::class)->find($project->getId());
         if($oldProject->getArchived() == 0){
-            $project->setName($editedProject->getName())
-                ->setStartDate($editedProject->getStartDate())
-                ->setEndDate($editedProject->getEndDate())
-                ->setValue($editedProject->getValue());
+            $project->setName($projectArray['name'])
+                ->setStartDate(new DateTime($projectArray['start_date']))
+                ->setEndDate(new DateTime($projectArray['end_date']))
+                ->setValue($projectArray['value']);
 
-            $sectors = $editedProject->getSectors();
+            $sectors = $projectArray['sectors'];
             if (null !== $sectors)
             {
-                $sectors = clone $editedProject->getSectors();
                 $project->removeSectors();
-                /** @var Sector $sector */
                 foreach ($sectors as $sector)
                 {
-                    $sectorTmp = $this->em->getRepository(Sector::class)->find($sector);
-                    if ($sectorTmp instanceof Sector)
-                        $project->addSector($sectorTmp);
+                    $newSector = $this->em->getRepository(Sector::class)->find($sector);
+                    if ($newSector instanceof Sector)
+                        $project->addSector($newSector);
                 }
             }
 
-            $donors = $editedProject->getDonors();
+            $donors = $projectArray['donors'];
 
             if (null !== $donors)
             {
-                $donors = clone $editedProject->getDonors();
                 $project->removeDonors();
                 /** @var Donor $donor */
                 foreach ($donors as $donor)
                 {
-                    $donorTmp = $this->em->getRepository(Donor::class)->find($donor);
-                    if ($donorTmp instanceof Donor)
-                        $project->addDonor($donorTmp);
+                    $newDonor = $this->em->getRepository(Donor::class)->find($donor);
+                    if ($newDonor instanceof Donor)
+                        $project->addDonor($newDonor);
                 }
             }
 
