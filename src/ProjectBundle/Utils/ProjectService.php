@@ -108,18 +108,10 @@ class ProjectService
     {
         /** @var Project $project */
 
-<<<<<<< Updated upstream
-        $newProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
-        $project = new Project();
-        $project->setName($newProject->getName())
-                ->setStartDate($newProject->getStartDate())
-                ->setEndDate($newProject->getEndDate())
-=======
         $project = new Project();
         $project->setName($projectArray["name"])
                 ->setStartDate(new DateTime($projectArray["start_date"]))
                 ->setEndDate(new DateTime($projectArray["end_date"]))
->>>>>>> Stashed changes
                 ->setIso3($countryISO3)
                 ->setValue($newProject->getValue())
                 ->setNotes($newProject->getNotes());
