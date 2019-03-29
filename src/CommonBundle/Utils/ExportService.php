@@ -14,13 +14,12 @@ use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use Symfony\Component\HttpFoundation\Response;
 
-
 /**
  * Class ExportService
  * @package CommonBundle\Utils
  */
-Class ExportService {
-
+class ExportService
+{
     const FORMAT_CSV = 'csv';
     const FORMAT_XLS = 'xls';
     const FORMAT_ODS = 'ods';
@@ -52,7 +51,8 @@ Class ExportService {
      * @param array $headers This array should follow the csv format
      * @return ExportService
      */
-    public function setHeaders(array $headers) {
+    public function setHeaders(array $headers)
+    {
         $this->headers = $headers;
 
         return $this;
@@ -70,22 +70,19 @@ Class ExportService {
     public function generateFile(Spreadsheet $spreadsheet, string $name, string $type)
     {
         // step 3 : scanning sheet into csv or excel
-        if($type == self::FORMAT_CSV){
+        if ($type == self::FORMAT_CSV) {
             $writer = IOFactory::createWriter($spreadsheet, 'Csv');
             $writer->setEnclosure('');
             $writer->setDelimiter(';');
             $writer->setUseBOM(true);
             $filename = $name.'.csv';
-        }
-        elseif($type == self::FORMAT_XLS){
+        } elseif ($type == self::FORMAT_XLS) {
             $writer = IOFactory::createWriter($spreadsheet, 'Xls');
             $filename = $name.'.xls';
-        }
-        elseif($type == self::FORMAT_ODS){
+        } elseif ($type == self::FORMAT_ODS) {
             $writer = IOFactory::createWriter($spreadsheet, 'Ods');
             $filename = $name.'.ods';
-        }
-        else{
+        } else {
             return "An error occured with the type file";
         }
         
@@ -101,17 +98,17 @@ Class ExportService {
      * @return string $filename
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    public function export($exportableTable, string $name, string $type) {
-
+    public function export($exportableTable, string $name, string $type)
+    {
         $rows = [];
 
         // step 1 : Convert the mapping as data
         foreach ($exportableTable as $value) {
-            if(is_object($value)) {
-                if( $value instanceof ExportableInterface) {
+            if (is_object($value)) {
+                if ($value instanceof ExportableInterface) {
                     array_push($rows, $value->getMappedValueForExport());
                 }
-            } else if(is_array($value)) {
+            } elseif (is_array($value)) {
                 array_push($rows, $value);
             } else {
                 throw new \Exception("The table to export contains a not allowed content ($value). Allowed content: array, ".ExportableInterface::class."");
@@ -124,7 +121,7 @@ Class ExportService {
         $spreadsheet->setActiveSheetIndex(0);
         $worksheet = $spreadsheet->getActiveSheet();
 
-        if(count($rows) === 0) {
+        if (count($rows) === 0) {
             throw new \Exception("No data to export", Response::HTTP_NO_CONTENT);
         }
 
@@ -155,22 +152,22 @@ Class ExportService {
             $addKey = false;
             $newKey = '';
 
-           foreach ($tableHeaders as $colIndex => $header) {
-               if ($colIndex == 26) {
-                   $addKey = true;
-               }
+            foreach ($tableHeaders as $colIndex => $header) {
+                if ($colIndex == 26) {
+                    $addKey = true;
+                }
 
-               if ($addKey) {
-                   $newKey = 'A';
-                   $colIndex = $colIndex - 26;
-               }
+                if ($addKey) {
+                    $newKey = 'A';
+                    $colIndex = $colIndex - 26;
+                }
 
-               $index = $newKey.chr(ord('A') + $colIndex) . $rowIndex;
-               if (!empty($value[$header])) {
-                   $worksheet->setCellValue($index, $value[$header]);
-               }
-           }
-           $rowIndex++;
+                $index = $newKey.chr(ord('A') + $colIndex) . $rowIndex;
+                if (!empty($value[$header])) {
+                    $worksheet->setCellValue($index, $value[$header]);
+                }
+            }
+            $rowIndex++;
         }
 
         try {
@@ -181,6 +178,4 @@ Class ExportService {
 
         return $filename;
     }
-
-
 }

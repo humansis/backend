@@ -3,7 +3,6 @@
 
 namespace CommonBundle\Command;
 
-
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -36,8 +35,7 @@ class ClearCacheImportCommand extends ContainerAwareCommand
 
         $dir_root = $this->getContainer()->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data';
-        if (is_dir($dir_var))
-        {
+        if (is_dir($dir_var)) {
             $this->rrmdir($dir_var);
         }
         $output->writeln([
@@ -51,17 +49,12 @@ class ClearCacheImportCommand extends ContainerAwareCommand
     private function rrmdir($src)
     {
         $dir = opendir($src);
-        while (false !== ($file = readdir($dir)))
-        {
-            if (($file != '.') && ($file != '..'))
-            {
+        while (false !== ($file = readdir($dir))) {
+            if (($file != '.') && ($file != '..')) {
                 $full = $src . '/' . $file;
-                if (is_dir($full))
-                {
+                if (is_dir($full)) {
                     $this->rrmdir($full);
-                }
-                else
-                {
+                } else {
                     unlink($full);
                 }
             }

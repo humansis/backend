@@ -211,7 +211,7 @@ class ProductController extends Controller
 
     /**
      * @Rest\Post("/products/upload/image", name="upload_image")
-     * 
+     *
      * @SWG\Tag(name="UploadImage")
      *
      * @SWG\Parameter(
@@ -230,7 +230,8 @@ class ProductController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function uploadImage(Request $request) {
+    public function uploadImage(Request $request)
+    {
         $content = $request->getContent();
         $file = $request->files->get('file');
 

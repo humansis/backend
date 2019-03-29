@@ -3,14 +3,12 @@
 
 namespace BeneficiaryBundle\Utils\DataVerifier;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Container;
 
 class DuplicateVerifier extends AbstractVerifier
 {
-
     private $token;
 
     private $container;
@@ -32,31 +30,31 @@ class DuplicateVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
-        $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByCriteria(null, $countryISO3, []);
         // GET THE SIMILAR HOUSEHOLD FROM THE DB, IF ISSET
-        $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache'], $email);
+        if (array_key_exists('old', $householdArray)) {
+            $similarOldHousehold = $householdArray['old'];
+        } else {
+            $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache'], $email);
+        }
 
         $listDuplicateBeneficiaries = [];
+        
         $newHouseholdEmpty = $householdArray['new'];
         $newHouseholdEmpty['beneficiaries'] = [];
-        foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary)
-        {
-            $stringOldHousehold = strtolower(trim($newBeneficiary['given_name']) . "//" . trim($newBeneficiary['family_name']));
-            /** @var Beneficiary $oldBeneficiary */
-            foreach ($oldBeneficiaries as $oldBeneficiary)
-            {
-                if (
-                    $oldBeneficiary->getHousehold()->getId() !== $similarOldHousehold['id']
-                    &&
-                    strtolower(trim($oldBeneficiary->getGivenName()) . "//" . trim($oldBeneficiary->getFamilyName()))
-                    ===
-                    $stringOldHousehold
-                )
-                {
+        
+        foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary) {
+            $existingBeneficaries = $this->em->getRepository(Beneficiary::class)->findBy(
+                [
+                    'givenName' => trim($newBeneficiary['given_name']),
+                    'familyName' => trim($newBeneficiary['family_name'])
+                ]
+            );
+            foreach ($existingBeneficaries as $existingBeneficary) {
+                if ($existingBeneficary->getHousehold()->getId() !== $similarOldHousehold['id']) {
                     $newHouseholdEmpty['beneficiaries'][] = $newBeneficiary;
                     
-                    $clonedHH = clone $oldBeneficiary->getHousehold();
-                    $old = $clonedHH->resetBeneficiaries()->addBeneficiary($oldBeneficiary);
+                    $clonedHH = clone $existingBeneficary->getHousehold();
+                    $old = $clonedHH->resetBeneficiaries()->addBeneficiary($existingBeneficary);
                     
                     $arrayTmp = [
                         "new" => $newHouseholdEmpty,
@@ -72,11 +70,9 @@ class DuplicateVerifier extends AbstractVerifier
             $newHouseholdEmpty['beneficiaries'] = [];
         }
 
-        if (!empty($listDuplicateBeneficiaries))
-        {
+        if (!empty($listDuplicateBeneficiaries)) {
             return $listDuplicateBeneficiaries;
         }
-
         return null;
     }
 
@@ -88,21 +84,25 @@ class DuplicateVerifier extends AbstractVerifier
      */
     private function getOldHouseholdFromCache($id_tmp_cache, string $email)
     {
-        if (null === $this->token)
+        if (null === $this->token) {
             return null;
+        }
 
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_var))
+        if (!is_dir($dir_var)) {
             mkdir($dir_var);
+        }
         $dir_mapping = $dir_var . '/' . $email . '-mapping_new_old';
-        if (!is_file($dir_mapping))
+        if (!is_file($dir_mapping)) {
             return null;
+        }
 
         $fileContent = file_get_contents($dir_var . '/' . $email . '-mapping_new_old');
         $householdsCached = json_decode($fileContent, true);
-        if (array_key_exists($id_tmp_cache, $householdsCached))
+        if (array_key_exists($id_tmp_cache, $householdsCached)) {
             return $householdsCached[$id_tmp_cache]['old'];
+        }
 
         return null;
     }

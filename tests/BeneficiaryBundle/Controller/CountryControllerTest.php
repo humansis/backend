@@ -6,10 +6,8 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use CommonBundle\Utils\ExportService;
 use Tests\BMSServiceTestCase;
 
-
-
-class CountryControllerTest extends BMSServiceTestCase {
-
+class CountryControllerTest extends BMSServiceTestCase
+{
     public function setUp()
     {
         // Configuration of BMSServiceTest
@@ -25,7 +23,8 @@ class CountryControllerTest extends BMSServiceTestCase {
      *
      * @return void
      */
-    public function testCreateAction() {
+    public function testCreateAction()
+    {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
@@ -48,7 +47,8 @@ class CountryControllerTest extends BMSServiceTestCase {
         return $listCountry;
     }
 
-    public function testGetCountrySpecificsAction() {
+    public function testGetCountrySpecificsAction()
+    {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
@@ -70,7 +70,8 @@ class CountryControllerTest extends BMSServiceTestCase {
      * @param $objectCountry
      * @return void
      */
-    public function testUpdateAction($objectCountry) {
+    public function testUpdateAction($objectCountry)
+    {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
@@ -98,17 +99,17 @@ class CountryControllerTest extends BMSServiceTestCase {
      * @param $objectCountry
      * @return void
      */
-    public function testDeleteAction($objectCountry) {
+    public function testDeleteAction($objectCountry)
+    {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
         
-        $countryResponse = $this->request("DELETE", 'api/wsse/country_specifics/' . $objectCountry['id']); 
+        $countryResponse = $this->request("DELETE", 'api/wsse/country_specifics/' . $objectCountry['id']);
         $listCountry = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         return true;
     }
-
 }

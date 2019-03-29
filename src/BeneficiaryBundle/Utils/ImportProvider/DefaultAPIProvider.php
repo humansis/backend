@@ -8,7 +8,8 @@ use Doctrine\ORM\EntityManagerInterface;
  * Class DefaultApiProvider
  * @package BeneficiaryBundle\Utils\ImportProvider
  */
-abstract class DefaultAPIProvider {
+abstract class DefaultAPIProvider
+{
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -34,7 +35,8 @@ abstract class DefaultAPIProvider {
      * @return mixed  response
      * @throws \Exception
      */
-    public function sendRequest(string $type, string $route) {
+    public function sendRequest(string $type, string $route)
+    {
         throw new \Exception("You need to define the financial provider for the country.");
     }
 }

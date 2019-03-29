@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Utils\DataVerifier;
 
-
 use BeneficiaryBundle\Entity\Household;
 
 class LessVerifier extends AbstractVerifier
@@ -20,11 +19,12 @@ class LessVerifier extends AbstractVerifier
     {
         /** @var Household $oldHousehold */
         $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['old']['id']);
-        if (count($householdArray['new']['beneficiaries']) < count($oldHousehold->getBeneficiaries()))
+        if (count($householdArray['new']['beneficiaries']) < count($oldHousehold->getBeneficiaries())) {
             return [
                 'new' => $householdArray['new'],
                 'old' => $oldHousehold
             ];
+        }
 
         return null;
     }

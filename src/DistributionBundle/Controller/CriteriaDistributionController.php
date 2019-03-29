@@ -3,7 +3,6 @@
 
 namespace DistributionBundle\Controller;
 
-
 use DistributionBundle\Utils\CriteriaDistributionService;
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
@@ -15,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
 
 /**
  * Class CriteriaDistributionController
@@ -123,12 +121,9 @@ class CriteriaDistributionController extends Controller
 
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        try
-        {
+        try {
             $receivers = $criteriaDistributionService->load($filters, $project, $threshold, true);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), 500);
         }
 

@@ -3,14 +3,11 @@
 
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Cache\Simple\FilesystemCache;
-
-
 
 class DuplicateTreatment extends AbstractTreatment
 {
@@ -35,21 +32,19 @@ class DuplicateTreatment extends AbstractTreatment
         $this->getFromCache('mapping_new_old', $listHouseholdsFromTypo, $email);
         $this->getFromCache('no_typo', $listHouseholdsFromNotTypo, $email);
         $this->clearCache('households.duplicate');
-        foreach ($householdsArray as $householdData)
-        {
+        foreach ($householdsArray as $householdData) {
             $newHousehold = $householdData['new_household'];
-            foreach ($householdData['data'] as $beneficiaryData)
-            {
-                if (array_key_exists('new', $beneficiaryData))
-                {
-                    if (intval($beneficiaryData['state']) === 0)
-                    {
+            foreach ($householdData['data'] as $beneficiaryData) {
+                if (array_key_exists('new', $beneficiaryData)) {
+                    if (intval($beneficiaryData['state']) === 0) {
                         $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryData['id_old']);
-                        if (!$beneficiary instanceof Beneficiary)
+                        if (!$beneficiary instanceof Beneficiary) {
                             throw new \Exception("Beneficiary not found.");
+                        }
                         $deleted = $this->beneficiaryService->remove($beneficiary);
-                        if (!$deleted)
+                        if (!$deleted) {
                             throw new \Exception("This beneficiary is head of household. You can't delete her/him");
+                        }
                     }
 
                     $household = $this->householdService->createOrEdit($newHousehold, array($project), null);
@@ -62,16 +57,12 @@ class DuplicateTreatment extends AbstractTreatment
 
                     //UPDATE THE NEW HH IN THE CACHE
                     $this->updateInCache($householdData["id_tmp_cache"], $newHousehold, $email);
-                }
-                else
-                {
+                } else {
                     $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryData['id_old']);
                     // we delete the beneficiary in the household which must be saved
-                    foreach ($newHousehold['beneficiaries'] as $index => $newBeneficiary)
-                    {
+                    foreach ($newHousehold['beneficiaries'] as $index => $newBeneficiary) {
                         if ($newBeneficiary['given_name'] === $beneficiary->getGivenName()
-                            && $newBeneficiary['family_name'] === $beneficiary->getFamilyName())
-                        {
+                            && $newBeneficiary['family_name'] === $beneficiary->getFamilyName()) {
                             unset($newHousehold['beneficiaries'][$index]);
                             break;
                         }
@@ -94,20 +85,20 @@ class DuplicateTreatment extends AbstractTreatment
      */
     private function updateInCache($idCache, array $newHouseholdArray, string $email)
     {
-        if (null === $this->token)
+        if (null === $this->token) {
             return;
+        }
 
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_var))
+        if (!is_dir($dir_var)) {
             mkdir($dir_var);
+        }
 
         $dir_file_mapping = $dir_var . '/' . $email . '-mapping_new_old';
-        if (is_file($dir_file_mapping))
-        {
+        if (is_file($dir_file_mapping)) {
             $listHH = json_decode(file_get_contents($dir_file_mapping), true);
-            if (array_key_exists($idCache, $listHH))
-            {
+            if (array_key_exists($idCache, $listHH)) {
                 $listHH[$idCache]["new"] = $newHouseholdArray;
                 file_put_contents($dir_file_mapping, json_encode($listHH));
                 return;
@@ -115,11 +106,9 @@ class DuplicateTreatment extends AbstractTreatment
         }
 
         $dir_file_not_typo = $dir_var . '/' . $email . '-no_typo';
-        if (is_file($dir_file_not_typo))
-        {
+        if (is_file($dir_file_not_typo)) {
             $listHH = json_decode(file_get_contents($dir_file_not_typo), true);
-            if (array_key_exists($idCache, $listHH))
-            {
+            if (array_key_exists($idCache, $listHH)) {
                 $listHH[$idCache]["new"] = $newHouseholdArray;
                 file_put_contents($dir_file_not_typo, json_encode($listHH));
                 return;

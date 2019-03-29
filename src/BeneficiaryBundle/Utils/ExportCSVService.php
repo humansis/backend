@@ -3,14 +3,12 @@
 
 namespace BeneficiaryBundle\Utils;
 
-
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 
 class ExportCSVService
 {
@@ -119,16 +117,12 @@ class ExportCSVService
 
         $i = 0;
         $worksheet->setCellValue('A' . 1, "Household");
-        foreach ($this->MAPPING_CSV_EXPORT as $CSVIndex => $name)
-        {
-            if (!$columnsCountrySpecificsAdded && $CSVIndex >= Household::firstColumnNonStatic)
-            {
-                if (!empty($countrySpecifics))
-                {
+        foreach ($this->MAPPING_CSV_EXPORT as $CSVIndex => $name) {
+            if (!$columnsCountrySpecificsAdded && $CSVIndex >= Household::firstColumnNonStatic) {
+                if (!empty($countrySpecifics)) {
                     $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 1, "Country Specifics");
                     /** @var CountrySpecific $countrySpecific */
-                    foreach ($countrySpecifics as $countrySpecific)
-                    {
+                    foreach ($countrySpecifics as $countrySpecific) {
                         $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 2, $countrySpecific->getFieldString());
                         $i++;
                     }
@@ -136,15 +130,10 @@ class ExportCSVService
                 $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 1, "Beneficiary");
                 $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 2, $name);
                 $columnsCountrySpecificsAdded = true;
-            }
-            else
-            {
-                if ($CSVIndex >= Household::firstColumnNonStatic)
-                {
+            } else {
+                if ($CSVIndex >= Household::firstColumnNonStatic) {
                     $worksheet->setCellValue(($this->SUMOfLetter($CSVIndex, $i)) . 2, $name);
-                }
-                else
-                {
+                } else {
                     $worksheet->setCellValue($CSVIndex . 2, $name);
                 }
             }
@@ -174,12 +163,10 @@ class ExportCSVService
     {
         $ascii = ord($letter1) + $number;
         $prefix = '';
-        if ($ascii > 90)
-        {
+        if ($ascii > 90) {
             $prefix = 'A';
             $ascii -= 26;
-            while ($ascii > 90)
-            {
+            while ($ascii > 90) {
                 $prefix++;
                 $ascii -= 90;
             }
@@ -193,7 +180,8 @@ class ExportCSVService
      * @param string $countryISO3
      * @return mixed
      */
-    public function exportToCsv(string $type, string $countryISO3) {
+    public function exportToCsv(string $type, string $countryISO3)
+    {
         $tempHxl = [
             "Given name" => '#beneficiary+givenName',
             "Family name" => '#beneficiary+familyName',
@@ -288,7 +276,7 @@ class ExportCSVService
 
         $MAPPING_CSV_EXPORT = array();
         $countrySpecifics = $this->getCountrySpecifics($countryISO3);
-        foreach ($countrySpecifics as $countrySpecific){
+        foreach ($countrySpecifics as $countrySpecific) {
             $randomNum = rand(0, 100);
             $this->MAPPING_HXL[$countrySpecific->getFieldString()] = '';
             $this->MAPPING_CSV_EXPORT[$countrySpecific->getFieldString()] = $randomNum;
@@ -296,14 +284,18 @@ class ExportCSVService
             $this->MAPPING_DETAILS[$countrySpecific->getFieldString()] = $countrySpecific->getType();
         }
 
-        foreach ($tempHxl as $key => $value)
+        foreach ($tempHxl as $key => $value) {
             $this->MAPPING_HXL[$key] = $value;
-        foreach ($tempBenef as $key => $value)
+        }
+        foreach ($tempBenef as $key => $value) {
             $this->MAPPING_CSV_EXPORT[$key] = $value;
-        foreach ($dependent as $key => $value)
+        }
+        foreach ($dependent as $key => $value) {
             $this->MAPPING_DEPENDENTS[$key] = $value;
-        foreach($details as $key => $detail)
+        }
+        foreach ($details as $key => $detail) {
             $this->MAPPING_DETAILS[$key] = $detail;
+        }
 
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_HXL);
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_CSV_EXPORT);

@@ -21,7 +21,6 @@ use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
 use DistributionBundle\Entity\DistributionData;
 
-
 class BeneficiaryService
 {
     /** @var EntityManagerInterface $em */
@@ -53,9 +52,7 @@ class BeneficiaryService
         ValidatorInterface $validator,
         ContainerInterface $container,
         DistributionBeneficiaryService $distributionBeneficiary
-    )
-
-    {
+    ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->requestValidator = $requestValidator;
@@ -85,11 +82,11 @@ class BeneficiaryService
      */
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
-
-        if ($beneficiaryArray["gender"] === 'Male')
+        if ($beneficiaryArray["gender"] === 'Male') {
             $beneficiaryArray["gender"] = 1;
-        elseif ($beneficiaryArray["gender"] === 'Female')
+        } elseif ($beneficiaryArray["gender"] === 'Female') {
             $beneficiaryArray["gender"] = 0;
+        }
 
         if (array_key_exists('phone1_type', $beneficiaryArray)) {
             unset($beneficiaryArray['phone1_type']);
@@ -118,32 +115,30 @@ class BeneficiaryService
             'any'
         );
 
-        if (array_key_exists("id", $beneficiaryArray))
-        {
+        if (array_key_exists("id", $beneficiaryArray)) {
             $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
-            if (!$beneficiary instanceof Beneficiary)
+            if (!$beneficiary instanceof Beneficiary) {
                 throw new \Exception("Beneficiary was not found.");
-            if ($beneficiary->getHousehold() !== $household)
+            }
+            if ($beneficiary->getHousehold() !== $household) {
                 throw new \Exception("You are trying to update a beneficiary in the wrong household.");
+            }
             
             // Clear vulnerability criteria, phones and national id
             $beneficiary->setVulnerabilityCriteria(null);
             $items = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
-            foreach ($items as $item)
-            {
+            foreach ($items as $item) {
                 $this->em->remove($item);
             }
             $items = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
-            foreach ($items as $item)
-            {
+            foreach ($items as $item) {
                 $this->em->remove($item);
             }
 
-            if ($flush)
+            if ($flush) {
                 $this->em->flush();
-        }
-        else
-        {
+            }
+        } else {
             $beneficiary = new Beneficiary();
             $beneficiary->setHousehold($household);
         }
@@ -160,30 +155,27 @@ class BeneficiaryService
         if (count($errors) > 0) {
             $errorsMessage = "";
             /** @var ConstraintViolation $error */
-            foreach ($errors as $error)
-            {
-                if ("" !== $errorsMessage)
+            foreach ($errors as $error) {
+                if ("" !== $errorsMessage) {
                     $errorsMessage .= " ";
+                }
                 $errorsMessage .= $error->getMessage();
             }
             throw new \Exception($errorsMessage);
         }
 
 
-        foreach ($beneficiaryArray["vulnerability_criteria"] as $vulnerability_criterion)
-        {
+        foreach ($beneficiaryArray["vulnerability_criteria"] as $vulnerability_criterion) {
             $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion["id"]));
         }
-        foreach ($beneficiaryArray["phones"] as $phoneArray)
-        {
+        foreach ($beneficiaryArray["phones"] as $phoneArray) {
             if (!empty($phoneArray["type"]) && !empty($phoneArray["proxy"]) && !empty($phoneArray["prefix"]) && !empty($phoneArray["number"])) {
                 $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
                 $beneficiary->addPhone($phone);
             }
         }
 
-        foreach ($beneficiaryArray["national_ids"] as $nationalIdArray)
-        {
+        foreach ($beneficiaryArray["national_ids"] as $nationalIdArray) {
             if (!empty($nationalIdArray["id_type"]) && !empty($nationalIdArray["id_number"])) {
                 $nationalId = $this->getOrSaveNationalId($beneficiary, $nationalIdArray, false);
                 $beneficiary->addNationalId($nationalId);
@@ -193,8 +185,9 @@ class BeneficiaryService
         $this->getOrSaveProfile($beneficiary, $beneficiaryArray["profile"], false);
 
         $this->em->persist($beneficiary);
-        if ($flush)
+        if ($flush) {
             $this->em->flush();
+        }
 
         return $beneficiary;
     }
@@ -209,8 +202,9 @@ class BeneficiaryService
         /** @var VulnerabilityCriterion $vulnerabilityCriterion */
         $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->find($vulnerabilityCriterionId);
 
-        if (!$vulnerabilityCriterion instanceof VulnerabilityCriterion)
+        if (!$vulnerabilityCriterion instanceof VulnerabilityCriterion) {
             throw new \Exception("This vulnerability doesn't exist.");
+        }
         return $vulnerabilityCriterion;
     }
 
@@ -223,13 +217,15 @@ class BeneficiaryService
      */
     public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
-        if ($phoneArray['proxy'] && $phoneArray['proxy'] === 'N')
+        if ($phoneArray['proxy'] && $phoneArray['proxy'] === 'N') {
             $phoneArray['proxy'] = false;
-        elseif ($phoneArray['proxy'] && $phoneArray['proxy'] === 'Y')
+        } elseif ($phoneArray['proxy'] && $phoneArray['proxy'] === 'Y') {
             $phoneArray['proxy'] = true;
+        }
             
-        if (preg_match('/^0/', $phoneArray['number']))
+        if (preg_match('/^0/', $phoneArray['number'])) {
             $phoneArray['number'] = substr($phoneArray['number'], 1);
+        }
 
         $this->requestValidator->validate(
             "phone",
@@ -247,8 +243,9 @@ class BeneficiaryService
             ->setProxy(array_key_exists("proxy", $phoneArray) ? $phoneArray["proxy"] : false);
 
         $this->em->persist($phone);
-        if ($flush)
+        if ($flush) {
             $this->em->flush();
+        }
 
         return $phone;
     }
@@ -274,8 +271,9 @@ class BeneficiaryService
             ->setIdNumber($nationalIdArray["id_number"]);
 
         $this->em->persist($nationalId);
-        if ($flush)
+        if ($flush) {
             $this->em->flush();
+        }
 
         return $nationalId;
     }
@@ -297,12 +295,9 @@ class BeneficiaryService
         );
 
         $profile = $beneficiary->getProfile();
-        if (null === $profile)
-        {
+        if (null === $profile) {
             $profile = new Profile();
-        }
-        else
-        {
+        } else {
             $profile = $this->em->getRepository(Profile::class)->find($profile);
         }
 
@@ -313,8 +308,9 @@ class BeneficiaryService
         $beneficiary->setProfile($profile);
         $this->em->persist($beneficiary);
 
-        if ($flush)
+        if ($flush) {
             $this->em->flush();
+        }
 
         return $profile;
     }
@@ -325,19 +321,18 @@ class BeneficiaryService
      */
     public function remove(Beneficiary $beneficiary)
     {
-        if ($beneficiary->getStatus() === 1)
+        if ($beneficiary->getStatus() === 1) {
             return false;
+        }
 
         $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
         $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
-        foreach ($nationalIds as $nationalId)
-        {
+        foreach ($nationalIds as $nationalId) {
             $this->em->remove($nationalId);
         }
 
         $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
-        foreach ($phones as $phone)
-        {
+        foreach ($phones as $phone) {
             $this->em->remove($phone);
         }
         $this->em->remove($beneficiary);
@@ -361,22 +356,19 @@ class BeneficiaryService
      * @param string $type
      * @return mixed
      */
-    public function exportToCsvBeneficiariesInDistribution(DistributionData $distributionData, string $type) {
-
+    public function exportToCsvBeneficiariesInDistribution(DistributionData $distributionData, string $type)
+    {
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
-        return $this->container->get('export_csv_service')->export($beneficiaries,'beneficiaryInDistribution', $type);
-
+        return $this->container->get('export_csv_service')->export($beneficiaries, 'beneficiaryInDistribution', $type);
     }
 
     /**
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(string $type) {
-
+    public function exportToCsv(string $type)
+    {
         $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
-        return $this->container->get('export_csv_service')->export($exportableTable,'beneficiaryhousehoulds', $type);
-
+        return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
     }
-
 }

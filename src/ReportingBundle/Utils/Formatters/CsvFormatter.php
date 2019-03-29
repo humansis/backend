@@ -2,7 +2,6 @@
 
 namespace ReportingBundle\Utils\Formatters;
 
-
 /**
  * Class CsvFormatter
  * @package ReportingBundle\Utils\Formatters
@@ -16,8 +15,8 @@ class CsvFormatter
      * @return void
      * @throws \Exception
      */
-    public function formatWithSeries() {
-
+    public function formatWithSeries()
+    {
         throw new \Exception('Not implemented');
     }
 
@@ -27,7 +26,8 @@ class CsvFormatter
      * @param array $dataComputed
      * @return array
      */
-    public function formatWithoutSeries($dataComputed) {
+    public function formatWithoutSeries($dataComputed)
+    {
         return $dataComputed;
     }
 
@@ -39,8 +39,9 @@ class CsvFormatter
      * @param array $dataComputed
      * @return array
      */
-    public function formatWithDateSeries($dataComputed) {
-        if(count($dataComputed) === 0) {
+    public function formatWithDateSeries($dataComputed)
+    {
+        if (count($dataComputed) === 0) {
             return $dataComputed;
         }
 
@@ -54,7 +55,7 @@ class CsvFormatter
          * "unity" => "s"
          * "date" => "2018"
          */
-        foreach($dataComputed as $row) {
+        foreach ($dataComputed as $row) {
             array_push($data, [
                 'name' => $row['date'],
                 'value' => intval($row['value']),
@@ -64,5 +65,4 @@ class CsvFormatter
 
         return $data;
     }
-
 }

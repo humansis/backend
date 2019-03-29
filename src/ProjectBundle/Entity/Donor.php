@@ -238,7 +238,7 @@ class Donor implements ExportableInterface
      * Returns an array representation of this class in order to prepare the export
      * @return array
      */
-    function getMappedValueForExport(): array
+    public function getMappedValueForExport(): array
     {
         // Recover projects of the donor
         $project = [];

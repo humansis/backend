@@ -3,7 +3,6 @@
 
 namespace DistributionBundle\Repository;
 
-
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use ProjectBundle\Entity\Project;
@@ -29,29 +28,23 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
         array $configurationCriteria = [],
         bool $onlyCount = false,
         string $groupGlobal = null
-    )
-    {
+    ) {
         $qb = $this->configurationQueryBuilder($onlyCount, $countryISO3, $project);
 
         $i = 1;
-        foreach ($criteria as $criterion)
-        {
+        foreach ($criteria as $criterion) {
             $configType = null;
-            if (!array_key_exists("table_string", $criterion) || "default" === strtolower($criterion["table_string"]))
-            {
+            if (!array_key_exists("table_string", $criterion) || "default" === strtolower($criterion["table_string"])) {
                 $configType = strtolower($criterion["table_string"]);
                 $this->whereDefault($qb, $i, $countryISO3, $criterion);
-            }
-            else
-            {
-                foreach ($configurationCriteria as $configurationCriterion)
-                {
-                    if (is_array($configurationCriterion))
+            } else {
+                foreach ($configurationCriteria as $configurationCriterion) {
+                    if (is_array($configurationCriterion)) {
                         continue;
+                    }
 
                     if ($configurationCriterion->getTableString() == $criterion["table_string"]
-                        && $configurationCriterion->getId() == $criterion["id_field"])
-                    {
+                        && $configurationCriterion->getId() == $criterion["id_field"]) {
                         $configType = get_class($configurationCriterion);
                         break;
                     }
@@ -59,12 +52,14 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
 
                 $class = (new \ReflectionClass($configType));
                 $method = null;
-                if (!is_callable([$this, 'where' . $class->getShortName()],null, $method))
+                if (!is_callable([$this, 'where' . $class->getShortName()], null, $method)) {
                     throw new \Exception("You must implement a method called 'where{$class->getShortName()}'.'");
+                }
                 call_user_func_array([$this, $method], [&$qb, $i, $countryISO3, $criterion]);
             }
-            if (null === $configType)
+            if (null === $configType) {
                 throw new \Exception("The field '{$criterion['field_string']}' is not implement yet");
+            }
             $i++;
         }
         return $qb->getQuery()->getResult();

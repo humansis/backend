@@ -3,7 +3,6 @@
 
 namespace Tests\BeneficiaryBundle\Controller;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\CountrySpecific;
@@ -38,8 +37,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
     public function testCreateHousehold()
     {
         $household = $this->createHousehold();
-        try
-        {
+        try {
             $this->assertArrayHasKey('id', $household);
             $this->assertArrayHasKey('address_street', $household);
             $this->assertArrayHasKey('address_number', $household);
@@ -59,9 +57,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $country_specific_answer = current($household["country_specific_answers"]);
             $this->assertArrayHasKey('answer', $country_specific_answer);
             $this->assertArrayHasKey('country_specific', $country_specific_answer);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             $this->removeHousehold($this->namefullnameHousehold);
             $this->fail("\nThe mapping of fields of Household entity is not correct (1).\n");
             return false;
@@ -76,8 +72,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testGetAllHouseholds($isSuccess = true)
     {
-        if (!$isSuccess)
-        {
+        if (!$isSuccess) {
             print_r("\nThe creation of household failed. We can't test the get all.\n");
             $this->markTestIncomplete("The creation of household failed. We can't test the get all.");
         }
@@ -124,11 +119,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/households/get/all', $body);
         $householdsArray = json_decode($this->client->getResponse()->getContent(), true);
         $households = $householdsArray[1];
-        if (!empty($households))
-        {
+        if (!empty($households)) {
             $household = current($households);
-            try
-            {
+            try {
                 $this->assertArrayHasKey('id', $household);
                 $this->assertArrayHasKey('location', $household);
                 $this->assertArrayHasKey('beneficiaries', $household);
@@ -144,16 +137,12 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
                 $this->assertArrayHasKey('id', $vulnerability_criterion);
                 $this->assertArrayHasKey('field_string', $vulnerability_criterion);
-            }
-            catch (\Exception $exception)
-            {
+            } catch (\Exception $exception) {
                 $this->removeHousehold($this->namefullnameHousehold . '(u)');
                 $this->fail("\nThe mapping of fields of Household entity is not correct (3).\n");
                 return false;
             }
-        }
-        else
-        {
+        } else {
             $this->removeHousehold($this->namefullnameHousehold);
             $this->markTestIncomplete("You currently don't have any household in your database.");
         }
@@ -167,7 +156,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
      * @param $hh
      * @return void
      */
-    public function testAddHousehold($hh) {
+    public function testAddHousehold($hh)
+    {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
@@ -200,7 +190,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
      * @param $hh
      * @return void
      */
-    public function testEditHousehold($hh) {
+    public function testEditHousehold($hh)
+    {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);

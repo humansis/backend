@@ -74,8 +74,7 @@ class DistributionService
         CriteriaDistributionService $criteriaDistributionService,
         string $classRetrieverString,
         ContainerInterface $container
-    )
-    {
+    ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -84,14 +83,10 @@ class DistributionService
         $this->configurationLoader = $configurationLoader;
         $this->criteriaDistributionService = $criteriaDistributionService;
         $this->container = $container;
-        try
-
-        {
+        try {
             $class = new \ReflectionClass($classRetrieverString);
             $this->retriever = $class->newInstanceArgs([$this->em]);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             throw new \Exception("Your class Retriever is undefined or malformed.");
         }
     }
@@ -111,7 +106,7 @@ class DistributionService
                 $modality = $commodity->getModalityType()->getModality();
                 if ($modality->getName() === 'In Kind' ||
                     $modality->getName() === 'Other' ||
-                    $commodity->getModalityType()->getName() === 'Cash') {
+                    $commodity->getModalityType()->getName() === 'Paper Voucher') {
                     $beneficiaries = $distributionData->getDistributionBeneficiaries();
                     foreach ($beneficiaries as $beneficiary) {
                         $generalRelief = new GeneralReliefItem();
@@ -123,7 +118,6 @@ class DistributionService
 
             $this->em->flush();
             return $distributionData;
-
         } catch (\Exception $e) {
             throw $e;
         }
@@ -146,17 +140,15 @@ class DistributionService
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
         $distribution->setUpdatedOn(new \DateTime());
         $errors = $this->validator->validate($distribution);
-        if (count($errors) > 0)
-        {
+        if (count($errors) > 0) {
             $errorsArray = [];
-            foreach ($errors as $error)
-            {
+            foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        if($distributionArray['type'] === "Beneficiary") {
+        if ($distributionArray['type'] === "Beneficiary") {
             $distribution->settype(1);
         } else {
             $distribution->settype(0);
@@ -167,24 +159,23 @@ class DistributionService
 
         $project = $distribution->getProject();
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
-        if ($projectTmp instanceof Project)
+        if ($projectTmp instanceof Project) {
             $distribution->setProject($projectTmp);
+        }
 
 
-        foreach ($distribution->getCommodities() as $item)
-        {
+        foreach ($distribution->getCommodities() as $item) {
             $distribution->removeCommodity($item);
         }
-        foreach ($distributionArray['commodities'] as $item)
-        {
+        foreach ($distributionArray['commodities'] as $item) {
             $this->commodityService->create($distribution, $item, false);
         }
         $criteria = [];
-        foreach ($distribution->getSelectionCriteria() as $item)
-        {
+        foreach ($distribution->getSelectionCriteria() as $item) {
             $distribution->removeSelectionCriterion($item);
-            if($item->getTableString() == null)
+            if ($item->getTableString() == null) {
                 $item->setTableString("Beneficiary");
+            }
 
             $criteria[] = $this->criteriaDistributionService->save($distribution, $item, false);
         }
@@ -209,12 +200,10 @@ class DistributionService
         $selectionsCriteria = $this->em->getRepository(SelectionCriteria::class)
             ->findByDistributionData($distribution);
 
-        foreach ($distributionBeneficiary as $item)
-        {
+        foreach ($distributionBeneficiary as $item) {
             $distribution->addDistributionBeneficiary($item);
         }
-        foreach ($selectionsCriteria as $item)
-        {
+        foreach ($selectionsCriteria as $item) {
             $distribution->addSelectionCriterion($item);
         }
 
@@ -245,23 +234,17 @@ class DistributionService
      */
     public function saveReceivers(DistributionData $distributionData, array $listReceivers)
     {
-        foreach ($listReceivers['finalArray'] as $receiver)
-        {
-            if ($receiver instanceof Household)
-            {
+        foreach ($listReceivers['finalArray'] as $receiver) {
+            if ($receiver instanceof Household) {
                 $head = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($receiver);
                 $distributionBeneficiary = new DistributionBeneficiary();
                 $distributionBeneficiary->setDistributionData($distributionData)
                     ->setBeneficiary($head);
-            }
-            elseif ($receiver instanceof Beneficiary)
-            {
+            } elseif ($receiver instanceof Beneficiary) {
                 $distributionBeneficiary = new DistributionBeneficiary();
                 $distributionBeneficiary->setDistributionData($distributionData)
                     ->setBeneficiary($receiver);
-            }
-            else
-            {
+            } else {
                 throw new \Exception("A problem was found. The distribution has no beneficiary");
             }
             $this->em->persist($distributionBeneficiary);
@@ -278,9 +261,9 @@ class DistributionService
         $distributions = [];
         $projects = $this->em->getRepository(Project::class)->findAll();
         
-        foreach($projects as $proj) {
-            if($proj->getIso3() == $country) {
-                foreach($proj->getDistributions() as $distrib) {
+        foreach ($projects as $proj) {
+            if ($proj->getIso3() == $country) {
+                foreach ($proj->getDistributions() as $distrib) {
                     array_push($distributions, $distrib);
                 }
             }
@@ -307,8 +290,9 @@ class DistributionService
      */
     public function archived(DistributionData $distributionData)
     {
-        if (!empty($distributionData))
+        if (!empty($distributionData)) {
             $distributionData->setArchived(1);
+        }
 
         $this->em->persist($distributionData);
         $this->em->flush();
@@ -331,11 +315,9 @@ class DistributionService
         $editedDistribution->setId($distributionData->getId());
 
         $errors = $this->validator->validate($editedDistribution);
-        if (count($errors) > 0)
-        {
+        if (count($errors) > 0) {
             $errorsArray = [];
-            foreach ($errors as $error)
-            {
+            foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
@@ -353,9 +335,10 @@ class DistributionService
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(int $projectId, string $type) {
+    public function exportToCsv(int $projectId, string $type)
+    {
         $exportableTable = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId]);
-        return $this->container->get('export_csv_service')->export($exportableTable,'distributions', $type);
+        return $this->container->get('export_csv_service')->export($exportableTable, 'distributions', $type);
     }
 
     /**
@@ -407,7 +390,7 @@ class DistributionService
     /**
      * Initialise GRI for a distribution
      * @param  DistributionData $distributionData
-     * @return void                           
+     * @return void
      */
     public function createGeneralReliefItems(DistributionData $distributionData)
     {
@@ -472,7 +455,8 @@ class DistributionService
      * @param string $type
      * @return mixed
      */
-    public function exportGeneralReliefDistributionToCsv(DistributionData $distributionData, string $type) {
+    public function exportGeneralReliefDistributionToCsv(DistributionData $distributionData, string $type)
+    {
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
 
         $generalreliefs = array();
@@ -489,10 +473,11 @@ class DistributionService
             $beneficiary = $generalrelief->getDistributionBeneficiary()->getBeneficiary();
             $gender = '';
 
-            if ($beneficiary->getGender() == 0)
+            if ($beneficiary->getGender() == 0) {
                 $gender = 'Female';
-            else
+            } else {
                 $gender = 'Male';
+            }
                 
             $commodity = $distributionData->getCommodities()[0];
 
@@ -515,6 +500,6 @@ class DistributionService
             ));
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable,'generalrelief', $type);
+        return $this->container->get('export_csv_service')->export($exportableTable, 'generalrelief', $type);
     }
 }

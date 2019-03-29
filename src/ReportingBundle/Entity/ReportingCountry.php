@@ -59,9 +59,9 @@ class ReportingCountry
      */
     public function setIndicator(\ReportingBundle\Entity\ReportingIndicator $indicator)
     {
-      $this->indicator = $indicator;
+        $this->indicator = $indicator;
 
-      return $this;
+        return $this;
     }
 
     /**
@@ -71,7 +71,7 @@ class ReportingCountry
      */
     public function getIndicator()
     {
-      return $this->indicator;
+        return $this->indicator;
     }
 
     /**
@@ -82,9 +82,9 @@ class ReportingCountry
      */
     public function setValue(\ReportingBundle\Entity\ReportingValue $value)
     {
-      $this->value = $value;
+        $this->value = $value;
 
-      return $this;
+        return $this;
     }
 
     /**
@@ -94,7 +94,7 @@ class ReportingCountry
      */
     public function getValue()
     {
-      return $this->value;
+        return $this->value;
     }
 
     /**
@@ -119,5 +119,4 @@ class ReportingCountry
     {
         return $this->country;
     }
-
 }

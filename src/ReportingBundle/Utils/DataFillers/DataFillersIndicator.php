@@ -23,7 +23,7 @@ class DataFillersIndicator
      */
     public function __construct(EntityManager $em)
     {
-        $this->em = $em;   
+        $this->em = $em;
     }
 
     /**
@@ -32,7 +32,7 @@ class DataFillersIndicator
      * @return array
      */
     public function getCsv(string $csvFile)
-    {  
+    {
         //get the content of csv
         $file = file_get_contents($csvFile);
         //format content in array and return it
@@ -41,15 +41,14 @@ class DataFillersIndicator
 
 
     /**
-     * Call function to parse CSV 
+     * Call function to parse CSV
      * And add data in the database
      */
-    public function fillIndicator() 
+    public function fillIndicator()
     {
         $filename = "src/ReportingBundle/Resources/data/CSV/reportingReference.csv";
         $contentFile = $this->getCsv($filename);
-        foreach($contentFile as $data) 
-        {
+        foreach ($contentFile as $data) {
             $new = new ReportingIndicator();
             $filter = [];
             $new->setreference($data[0]);
@@ -57,19 +56,14 @@ class DataFillersIndicator
             $new->setCode($data[1]);
             array_push($filter, $data[2]);
             
-            if(is_array($filter))
-            { 
-                if(!empty($filter))
-                {
+            if (is_array($filter)) {
+                if (!empty($filter)) {
                     $new->setFilters($filter);
                 }
             }
 
             $this->em->persist($new);
             $this->em->flush();
-           
-            
         }
-        
     }
 }

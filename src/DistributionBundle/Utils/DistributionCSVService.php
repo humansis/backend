@@ -111,14 +111,14 @@ class DistributionCSVService
         $headers = array_shift($sheetArray);
         $arrayWithKeys = array();
         foreach ($sheetArray as $beneficiaryArray) {
-
             $beneficiaryWithKey = array();
             foreach ($headers as $index => $key) {
                 if ($key == "gender") {
-                    if ($beneficiaryArray[$index] == 'Male')
+                    if ($beneficiaryArray[$index] == 'Male') {
                         $beneficiaryArray[$index] = 1;
-                    else
+                    } else {
                         $beneficiaryArray[$index] = 0;
+                    }
                 }
 
                 $beneficiaryWithKey[$key] = $beneficiaryArray[$index];
@@ -130,9 +130,9 @@ class DistributionCSVService
         $updateArray = array();
         // Beneficiaries that are in the distribution but not in the file
         $deleteArray = array();
-        foreach($beneficiaries as $beneficiary) {
+        foreach ($beneficiaries as $beneficiary) {
             $inFile = false;
-            foreach($arrayWithKeys as $arrayBeneficiary) {
+            foreach ($arrayWithKeys as $arrayBeneficiary) {
                 if (($beneficiary->getGivenName() === $arrayBeneficiary['givenName']
                         || $beneficiary->getGivenName() === "")
                     && ($beneficiary->getFamilyName() === $arrayBeneficiary['familyName']
@@ -166,8 +166,9 @@ class DistributionCSVService
                 }
             }
 
-            if (!$inDistribution)
+            if (!$inDistribution) {
                 array_push($newAndAddArray, $arrayWithKey);
+            }
         }
 
         // Beneficiaries that will be created as a household of 1
@@ -219,9 +220,9 @@ class DistributionCSVService
         
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
-
-            if($beneficiaryToCreate['status'] != 1)
+            if ($beneficiaryToCreate['status'] != 1) {
                 throw new \Exception("You must insert only a head of the household in the file to import.");
+            }
 
             // Define location array
             $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(["name" => $beneficiaryToCreate['adm1']]);
@@ -250,7 +251,7 @@ class DistributionCSVService
                 "adm1" => $adm1Name,
                 "adm2" => $adm2Name,
                 "adm3" => $adm3Name,
-                "adm4" => $adm4Name       
+                "adm4" => $adm4Name
             );
             
             $householdToCreate = array(
@@ -295,10 +296,11 @@ class DistributionCSVService
         
         // Add
         foreach ($data['added'] as $beneficiaryToAdd) {
-            if ($beneficiaryToAdd instanceof Beneficiary)
+            if ($beneficiaryToAdd instanceof Beneficiary) {
                 $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd->getId());
-            else
+            } else {
                 $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd['id']);
+            }
 
             $household = $beneficiaryToAdd->getHousehold();
             if (! $household->getProjects()->contains($distributionProject)) {
@@ -343,7 +345,7 @@ class DistributionCSVService
                 $vulnerabilityCriteria = [$beneficiaryToUpdate['vulnerabilityCriteria']];
             }
 
-            foreach($vulnerabilityCriteria as $criterion) {
+            foreach ($vulnerabilityCriteria as $criterion) {
                 if ($criterion) {
                     $toUpdate->addVulnerabilityCriterion(
                         $this->getVulnerabilityCriterion($criterion)
@@ -361,7 +363,7 @@ class DistributionCSVService
             } else {
                 $phones = [$beneficiaryToUpdate['phones']];
             }
-            foreach($phones as $phone) {
+            foreach ($phones as $phone) {
                 if ($phone) {
                     $newPhone = new Phone();
                     $newPhone->setNumber($phone);
@@ -375,8 +377,7 @@ class DistributionCSVService
             }
 
             $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($toUpdate);
-            foreach ($nationalIds as $nationalId)
-            {
+            foreach ($nationalIds as $nationalId) {
                 $this->em->remove($nationalId);
             }
             $toUpdate->setNationalIds(null);
@@ -385,7 +386,7 @@ class DistributionCSVService
             } else {
                 $nationalIds = [$beneficiaryToUpdate['nationalIds']];
             }
-            foreach($nationalIds as $nationalId) {
+            foreach ($nationalIds as $nationalId) {
                 if ($nationalId) {
                     $newNationalId = new NationalId();
                     $newNationalId->setIdNumber($nationalId);
@@ -417,8 +418,9 @@ class DistributionCSVService
         /** @var VulnerabilityCriterion $vulnerabilityCriterion */
         $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findBy(['fieldString' => $vulnerabilityCriterionString]);
 
-        if (!$vulnerabilityCriterion[0] instanceof VulnerabilityCriterion)
+        if (!$vulnerabilityCriterion[0] instanceof VulnerabilityCriterion) {
             throw new \Exception("This vulnerability doesn't exist.");
+        }
         return $vulnerabilityCriterion[0];
     }
 }

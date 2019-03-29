@@ -3,7 +3,6 @@
 
 namespace Tests\ProjectBundle\Controller;
 
-
 use BeneficiaryBundle\Entity\Household;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
@@ -51,8 +50,7 @@ class ProjectControllerTest extends BMSServiceTestCase
 
         $project = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        try
-        {
+        try {
             $this->assertArrayHasKey('id', $project);
             $this->assertArrayHasKey('iso3', $project);
             $this->assertArrayHasKey('name', $project);
@@ -62,9 +60,7 @@ class ProjectControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('start_date', $project);
             $this->assertArrayHasKey('number_of_households', $project);
             $this->assertSame($project['name'], $this->name);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             print_r("\nThe mapping of fields of Project entity is not correct.\n");
             $this->remove($this->name);
             return false;
@@ -97,8 +93,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         $this->em->clear();
-        try
-        {
+        try {
             $this->assertArrayHasKey('id', $newproject);
             $this->assertArrayHasKey('iso3', $newproject);
             $this->assertArrayHasKey('name', $newproject);
@@ -108,9 +103,7 @@ class ProjectControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('start_date', $newproject);
             $this->assertArrayHasKey('number_of_households', $newproject);
             $this->assertSame($newproject['name'], $this->name . "(u)");
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             print_r("\n{$exception->getMessage()}\n");
             $this->remove($this->name);
             return false;
@@ -133,8 +126,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $crawler = $this->request('GET', '/api/wsse/projects');
         $projects = json_decode($this->client->getResponse()->getContent(), true);
 
-        if (!empty($projects))
-        {
+        if (!empty($projects)) {
             $project = $projects[0];
 
             $this->assertArrayHasKey('id', $project);
@@ -147,9 +139,7 @@ class ProjectControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('start_date', $project);
             $this->assertArrayHasKey('number_of_households', $project);
             $this->assertArrayHasKey('sectors', $project);
-        }
-        else
-        {
+        } else {
             $this->markTestIncomplete("You currently don't have any project in your database.");
         }
     }
@@ -189,7 +179,8 @@ class ProjectControllerTest extends BMSServiceTestCase
      * @return void
      * @throws \Exception
      */
-    public function testArchiveProject($project) {
+    public function testArchiveProject($project)
+    {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -215,8 +206,7 @@ class ProjectControllerTest extends BMSServiceTestCase
     {
         $this->em->clear();
         $project = $this->em->getRepository(Project::class)->findOneByName($projectName);
-        if ($project instanceof Project)
-        {
+        if ($project instanceof Project) {
             $userProject = $this->em->getRepository(UserProject::class)->findOneByProject($project);
             $this->em->remove($userProject);
             $this->em->flush();
@@ -224,5 +214,4 @@ class ProjectControllerTest extends BMSServiceTestCase
             $this->em->flush();
         }
     }
-
 }

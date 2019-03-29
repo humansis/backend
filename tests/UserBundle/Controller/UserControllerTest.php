@@ -3,7 +3,6 @@
 
 namespace Tests\UserBundle\Controller;
 
-
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
@@ -131,17 +130,14 @@ class UserControllerTest extends BMSServiceTestCase
         $crawler = $this->request('GET', '/api/wsse/check');
         $users = json_decode($this->client->getResponse()->getContent(), true);
 
-        if (!empty($users))
-        {
+        if (!empty($users)) {
             $this->assertArrayHasKey('id', $users);
             $this->assertArrayHasKey('username', $users);
             $this->assertArrayHasKey('email', $users);
             $this->assertArrayHasKey('roles', $users);
             $this->assertArrayHasKey('countries', $users);
             $this->assertArrayHasKey('user_projects', $users);
-        }
-        else
-        {
+        } else {
             $this->markTestIncomplete("You currently don't have any user in your database.");
         }
     }
@@ -159,8 +155,7 @@ class UserControllerTest extends BMSServiceTestCase
         $crawler = $this->request('GET', '/api/wsse/users');
         $users = json_decode($this->client->getResponse()->getContent(), true);
 
-        if (!empty($users))
-        {
+        if (!empty($users)) {
             $user = $users[0];
 
             $this->assertArrayHasKey('id', $user);
@@ -169,9 +164,7 @@ class UserControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('roles', $user);
             $this->assertArrayHasKey('countries', $user);
             $this->assertArrayHasKey('user_projects', $user);
-        }
-        else
-        {
+        } else {
             $this->markTestIncomplete("You currently don't have any user in your database.");
         }
     }

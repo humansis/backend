@@ -17,7 +17,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Class TransactionService
  * @package TransactionBundle\Utils
  */
-class TransactionService {
+class TransactionService
+{
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -49,7 +50,7 @@ class TransactionService {
      */
     public function sendMoney(string $countryISO3, DistributionData $distributionData, User $user)
     {
-        try {            
+        try {
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
         } catch (\Exception $e) {
             throw $e;
@@ -64,7 +65,7 @@ class TransactionService {
         
         $from = $user->getId();
         
-        try {            
+        try {
             return $this->financialProvider->sendMoneyToAll($distributionData, $amountToSend, $currencyToSend, $from);
         } catch (\Exception $e) {
             throw $e;
@@ -136,10 +137,13 @@ class TransactionService {
      * @param User $user
      * @param DistributionData $distributionData
      */
-    public function sendLogsEmail(User $user, DistributionData $distributionData) {
+    public function sendLogsEmail(User $user, DistributionData $distributionData)
+    {
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data';
-        if (! is_dir($dir_var)) mkdir($dir_var);
+        if (! is_dir($dir_var)) {
+            mkdir($dir_var);
+        }
         $file_record = $dir_var . '/record_' . $distributionData->getId() . '.csv';
 
         if (is_file($file_record) && file_get_contents($file_record)) {
@@ -157,8 +161,7 @@ class TransactionService {
                     'text/html'
                 );
             $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_' . $distributionData->getId() . '.csv')->setFilename('logsTransaction.csv'));
-        }
-        else {
+        } else {
             $message = (new \Swift_Message('Transaction logs for ' . $distributionData->getName()))
                 ->setFrom('admin@bmstaging.info')
                 ->setTo($user->getEmail())
@@ -191,8 +194,9 @@ class TransactionService {
 
         $checkedAgainst = '';
         $id = $user->getId();
-        if ($cache->has($distributionData->getId() . '-' . $id . '-code_transaction_confirmation'))
+        if ($cache->has($distributionData->getId() . '-' . $id . '-code_transaction_confirmation')) {
             $checkedAgainst = $cache->get($distributionData->getId() . '-' . $id . '-code_transaction_confirmation');
+        }
 
         $result = ($code === intval($checkedAgainst));
 
@@ -256,18 +260,19 @@ class TransactionService {
     public function checkProgression(User $user, DistributionData $distributionData)
     {
         $cache = new FilesystemCache();
-        if ($cache->has($user->getEmail() . '-progression-' . $distributionData->getId()))
+        if ($cache->has($user->getEmail() . '-progression-' . $distributionData->getId())) {
             return $cache->get($user->getEmail() . '-progression-' . $distributionData->getId());
-        else
+        } else {
             return 0;
-
+        }
     }
 
     /**
      * @param string $country
      * @return mixed
      */
-    public function getFinancialCredential(string $country) {
+    public function getFinancialCredential(string $country)
+    {
         $FP = $this->em->getRepository(FinancialProvider::class)->findByCountry($country);
 
         return $FP;
@@ -277,7 +282,8 @@ class TransactionService {
      * @param array $data
      * @return FinancialProvider
      */
-    public function updateFinancialCredential(array $data) {
+    public function updateFinancialCredential(array $data)
+    {
         $FP = $this->em->getRepository(FinancialProvider::class)->findOneByCountry($data['__country']);
 
         if ($FP) {
@@ -297,7 +303,8 @@ class TransactionService {
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(DistributionData $distributionData, string $type) {
+    public function exportToCsv(DistributionData $distributionData, string $type)
+    {
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
 
         $transactions = array();
@@ -311,24 +318,22 @@ class TransactionService {
         }
 
         foreach ($transactions as $transaction) {
-
             if ($transaction->getTransactionStatus() == 0) {
                 $status = "Success";
-            }
-            else if ($transaction->getTransactionStatus() == 1) {
+            } elseif ($transaction->getTransactionStatus() == 1) {
                 $status = "Error";
-            }
-            else {
+            } else {
                 $status = "No Phone";
             }
 
             $beneficiary = $transaction->getDistributionBeneficiary()->getBeneficiary();
             $gender = '';
 
-            if ($beneficiary->getGender() == 0)
+            if ($beneficiary->getGender() == 0) {
                 $gender = 'Female';
-            else
+            } else {
                 $gender = 'Male';
+            }
 
             array_push($exportableTable, array(
                 "addressStreet" => $beneficiary->getHousehold()->getAddressStreet(),
@@ -351,6 +356,6 @@ class TransactionService {
             ));
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable,'transaction', $type);
+        return $this->container->get('export_csv_service')->export($exportableTable, 'transaction', $type);
     }
 }

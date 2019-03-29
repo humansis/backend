@@ -3,7 +3,6 @@
 
 namespace CommonBundle\Utils;
 
-
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Utils\HouseholdService;
@@ -97,24 +96,15 @@ class LocationService
     public function getAdm1(Household $household)
     {
         $location = $household->getLocation();
-        if (null !== $location->getAdm1())
-        {
+        if (null !== $location->getAdm1()) {
             return $location->getAdm1()->getName();
-        }
-        elseif (null !== $location->getAdm2())
-        {
+        } elseif (null !== $location->getAdm2()) {
             return $location->getAdm2()->getAdm1()->getName();
-        }
-        elseif (null !== $location->getAdm3())
-        {
+        } elseif (null !== $location->getAdm3()) {
             return $location->getAdm3()->getAdm2()->getAdm1()->getName();
-        }
-        elseif (null !== $location->getAdm4())
-        {
+        } elseif (null !== $location->getAdm4()) {
             return $location->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getName();
-        }
-        else
-        {
+        } else {
             return "";
         }
     }
@@ -127,20 +117,13 @@ class LocationService
     public function getAdm2(Household $household)
     {
         $location = $household->getLocation();
-        if (null !== $location->getAdm2())
-        {
+        if (null !== $location->getAdm2()) {
             return $location->getAdm2()->getName();
-        }
-        elseif (null !== $location->getAdm3())
-        {
+        } elseif (null !== $location->getAdm3()) {
             return $location->getAdm3()->getAdm2()->getName();
-        }
-        elseif (null !== $location->getAdm4())
-        {
+        } elseif (null !== $location->getAdm4()) {
             return $location->getAdm4()->getAdm3()->getAdm2()->getName();
-        }
-        else
-        {
+        } else {
             return "";
         }
     }
@@ -153,16 +136,11 @@ class LocationService
     public function getAdm3(Household $household)
     {
         $location = $household->getLocation();
-        if (null !== $location->getAdm3())
-        {
+        if (null !== $location->getAdm3()) {
             return $location->getAdm3()->getName();
-        }
-        elseif (null !== $location->getAdm4())
-        {
+        } elseif (null !== $location->getAdm4()) {
             return $location->getAdm4()->getAdm3()->getName();
-        }
-        else
-        {
+        } else {
             return "";
         }
     }
@@ -175,12 +153,9 @@ class LocationService
     public function getAdm4(Household $household)
     {
         $location = $household->getLocation();
-        if (null !== $location->getAdm4())
-        {
+        if (null !== $location->getAdm4()) {
             return $location->getAdm4()->getName();
-        }
-        else
-        {
+        } else {
             return "";
         }
     }
@@ -190,7 +165,8 @@ class LocationService
      * @param string $countryIso3
      * @return object[]
      */
-    public function getAllAdm1(string $countryIso3) {
+    public function getAllAdm1(string $countryIso3)
+    {
         $adm1 = $this->em->getRepository(Adm1::class)->findBy(["countryISO3" => $countryIso3]);
         return $adm1;
     }
@@ -200,7 +176,8 @@ class LocationService
      * @param string $IDadm1
      * @return object[]
      */
-    public function getAllAdm2(string $IDadm1) {
+    public function getAllAdm2(string $IDadm1)
+    {
         $adm1 = $this->em->getRepository(Adm1::class)->findBy(["id" => $IDadm1]);
         $adm2 = $this->em->getRepository(Adm2::class)->findBy(["adm1" => $adm1]);
         return $adm2;
@@ -211,7 +188,8 @@ class LocationService
      * @param string $IDadm2
      * @return object[]
      */
-    public function getAllAdm3(string $IDadm2) {
+    public function getAllAdm3(string $IDadm2)
+    {
         $adm2 = $this->em->getRepository(Adm2::class)->findBy(["id" => $IDadm2]);
         $adm3 = $this->em->getRepository(Adm3::class)->findBy(["adm2" => $adm2]);
         return $adm3;
@@ -222,7 +200,8 @@ class LocationService
      * @param string $IDadm3
      * @return object[]
      */
-    public function getAllAdm4(string $IDadm3) {
+    public function getAllAdm4(string $IDadm3)
+    {
         $adm3 = $this->em->getRepository(Adm3::class)->findBy(["id" => $IDadm3]);
         $adm4 = $this->em->getRepository(Adm4::class)->findBy(["adm3" => $adm3]);
         return $adm4;
@@ -233,44 +212,38 @@ class LocationService
      * @param string $countryIso3
      * @return array
      */
-    public function getCodeOfUpcomingDistribution(string $countryIso3) {
+    public function getCodeOfUpcomingDistribution(string $countryIso3)
+    {
 
         /** @var DistributionData[] $distributions */
         $distributions = $this->em->getRepository(DistributionData::class)->getCodeOfUpcomingDistribution($countryIso3);
         $response = [];
 
-        foreach($distributions as $distribution) {
+        foreach ($distributions as $distribution) {
             $upcomingDistributionFind = false;
 
             /** @var Location $location */
             $location = $distribution->getLocation();
 
-            if(!empty($location->getAdm1()))
-            {
+            if (!empty($location->getAdm1())) {
                 $adm = "adm1";
                 $location_name = $location->getAdm1()->getName();
                 $code = $location->getAdm1()->getCode();
-            }
-            elseif (!empty($location->getAdm2()))
-            {
+            } elseif (!empty($location->getAdm2())) {
                 $adm = "adm2";
                 $location_name = $location->getAdm2()->getName();
                 $code = $location->getAdm2()->getCode();
-            }
-            elseif (!empty($location->getAdm3()))
-            {
+            } elseif (!empty($location->getAdm3())) {
                 $adm = "adm3";
                 $location_name = $location->getAdm3()->getName();
                 $code = $location->getAdm3()->getCode();
-            }
-            elseif (!empty($location->getAdm4()))
-            {
+            } elseif (!empty($location->getAdm4())) {
                 $adm = "adm4";
                 $location_name = $location->getAdm4()->getName();
                 $code = $location->getAdm4()->getCode();
             }
 
-            if(sizeof($response) === 0) {
+            if (sizeof($response) === 0) {
                 $data = [
                     "code_location" => $code,
                     "adm_level" => $adm,
@@ -285,8 +258,8 @@ class LocationService
                 array_push($data['distribution'], $upcomingDistribution);
                 array_push($response, $data);
             } else {
-                foreach($response as &$data) {
-                    if($data["code_location"] == $code) {
+                foreach ($response as &$data) {
+                    if ($data["code_location"] == $code) {
                         $upcomingDistribution = [
                             "name" => $distribution->getName(),
                             "date" => $distribution->getDateDistribution(),
@@ -297,7 +270,7 @@ class LocationService
                         array_push($data['distribution'], $upcomingDistribution);
                     }
                 }
-                if(!$upcomingDistributionFind) {
+                if (!$upcomingDistributionFind) {
                     $data = [
                         "code_location" => $code,
                         "adm_level" => $adm,
@@ -314,7 +287,6 @@ class LocationService
                     array_push($response, $data);
                 }
             }
-                
         }
 
         return $response;

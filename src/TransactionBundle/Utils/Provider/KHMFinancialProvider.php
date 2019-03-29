@@ -15,13 +15,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Class KHMFinancialProvider
  * @package TransactionBundle\Utils\Provider
  */
-class KHMFinancialProvider extends DefaultFinancialProvider {
+class KHMFinancialProvider extends DefaultFinancialProvider
+{
 
     /**
      * @var string
      */
-     protected $url = "https://stageonline.wingmoney.com:8443/RestEngine";
-     protected $url_prod = "https://hir.wingmoney.com:8443/RestServer";
+    protected $url = "https://stageonline.wingmoney.com:8443/RestEngine";
+    protected $url_prod = "https://hir.wingmoney.com:8443/RestServer";
     /**
      * @var string
      */
@@ -66,7 +67,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         } catch (Exception $e) {
             throw $e;
         }
-        
     }
     
     /**
@@ -75,15 +75,15 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      * @param  DistributionBeneficiary $distributionBeneficiary
      * @param  float                   $amount
      * @param  string                  $currency
-     * @return Transaction       
+     * @return Transaction
      * @throws \Exception
      */
     public function sendMoneyToOne(
-        string $phoneNumber, 
+        string $phoneNumber,
         DistributionBeneficiary $distributionBeneficiary,
         float $amount,
-        string $currency)
-    {
+        string $currency
+    ) {
         $distributionData = $distributionBeneficiary->getDistributionData();
         $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
@@ -98,12 +98,13 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             $sent = $this->sendRequest($distributionData, "POST", $route, $body);
             if (property_exists($sent, 'error_code')) {
                 $transaction = $this->createTransaction(
-                    $distributionBeneficiary, 
+                    $distributionBeneficiary,
                     '',
                     new \DateTime(),
                     $currency . ' ' . $amount,
                     0,
-                    $sent->message ?: '');
+                    $sent->message ?: ''
+                );
                 
                 return $transaction;
             }
@@ -118,12 +119,13 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         }
         
         $transaction = $this->createTransaction(
-            $distributionBeneficiary, 
+            $distributionBeneficiary,
             $response->transaction_id,
             new \DateTime(),
             $response->amount,
             1,
-            property_exists($response, 'message') ? $response->message : $sent->passcode);
+            property_exists($response, 'message') ? $response->message : $sent->passcode
+        );
         
         return $transaction;
     }
@@ -171,7 +173,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             $sent = $this->sendRequest($distributionData, "POST", $route, $body);
         } catch (Exception $e) {
             throw $e;
-        }    
+        }
         return $sent;
     }
 
@@ -184,13 +186,14 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
      * @return mixed  response
      * @throws \Exception
      */
-    public function sendRequest(DistributionData $distributionData, string $type, string $route, array $body = array()) {
+    public function sendRequest(DistributionData $distributionData, string $type, string $route, array $body = array())
+    {
         $curl = curl_init();
 
         $headers = array();
         
         // Not authentication request
-        if(!preg_match('/\/oauth\/token/', $route)) {
+        if (!preg_match('/\/oauth\/token/', $route)) {
             if (!$this->lastTokenDate ||
             (new \DateTime())->getTimestamp() - $this->lastTokenDate->getTimestamp() > $this->token->expires_in) {
                 $this->getToken($distributionData);
@@ -229,10 +232,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
         // Record request
         if (is_array($body)) {
             foreach ($body as $item) {
-                if ($bodyString == '')
-                $bodyString .= $item;
-                else
-                $bodyString .= ', ' . $item;
+                if ($bodyString == '') {
+                    $bodyString .= $item;
+                } else {
+                    $bodyString .= ', ' . $item;
+                }
             }
         } else {
             $bodyString = $body;
@@ -248,5 +252,4 @@ class KHMFinancialProvider extends DefaultFinancialProvider {
             return $result;
         }
     }
-
 }

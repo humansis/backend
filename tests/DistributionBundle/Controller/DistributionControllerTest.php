@@ -3,7 +3,6 @@
 
 namespace Tests\DistributionBundle\Controller;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
@@ -138,7 +137,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetRandomBeneficiaries($distribution) {
+    public function testGetRandomBeneficiaries($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -160,7 +160,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testValidate($distribution) {
+    public function testValidate($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -193,13 +194,14 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testAddBeneficiary($distribution) {
+    public function testAddBeneficiary($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $body = array (
+        $body = array(
             array(
                 'data_of_birth' => '1976-10-06',
                 'family_name' => 'NAME_TEST',
@@ -235,7 +237,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testRemoveOneBeneficiary($distribution) {
+    public function testRemoveOneBeneficiary($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -254,7 +257,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetAll() {
+    public function testGetAll()
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -287,7 +291,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetOne($distribution) {
+    public function testGetOne($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -320,7 +325,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetDistributionBeneficiaries($distribution) {
+    public function testGetDistributionBeneficiaries($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -344,7 +350,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testUpdate($distribution) {
+    public function testUpdate($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -390,7 +397,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testArchived($distribution) {
+    public function testArchived($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -411,7 +419,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetDistributions($distribution) {
+    public function testGetDistributions($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -485,7 +494,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetBeneficiariesInProject($distribution) {
+    public function testGetBeneficiariesInProject($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -522,7 +532,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testPostTransaction($distribution) {
+    public function testPostTransaction($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -553,7 +564,8 @@ class DistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testUpdateTransactionStatus($distribution) {
+    public function testUpdateTransactionStatus($distribution)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -577,32 +589,24 @@ class DistributionControllerTest extends BMSServiceTestCase
      */
     public function removeDistribution($distribution)
     {
-
         $commodity = $this->em->getRepository(Commodity::class)->findOneByUnit("PHPUNIT TEST");
-        if ($commodity instanceof Commodity)
-        {
+        if ($commodity instanceof Commodity) {
             $this->em->remove($commodity);
         }
 
         $distribution = $this->em->getRepository(DistributionData::class)->find($distribution['id']);
-        if ($distribution instanceof DistributionData)
-        {
-
+        if ($distribution instanceof DistributionData) {
             $distributionBeneficiaries = $this->em
                 ->getRepository(DistributionBeneficiary::class)->findByDistributionData($distribution);
-            foreach ($distributionBeneficiaries as $distributionBeneficiary)
-            {
+            foreach ($distributionBeneficiaries as $distributionBeneficiary) {
                 $transaction = $this->em->getRepository(Transaction::class)->findOneByDistributionBeneficiary($distributionBeneficiary);
                 $this->em->remove($transaction);
                 $this->em->remove($distributionBeneficiary);
-
             }
 
             $selectionCriteria = $this->em->getRepository(SelectionCriteria::class)->findByDistributionData($distribution);
-            foreach ($selectionCriteria as $selectionCriterion)
-            {
+            foreach ($selectionCriteria as $selectionCriterion) {
                 $this->em->remove($selectionCriterion);
-
             }
             $this->em->remove($distribution);
         }

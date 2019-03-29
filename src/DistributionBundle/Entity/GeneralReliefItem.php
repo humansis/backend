@@ -109,11 +109,11 @@ class GeneralReliefItem
         return $this->notes;
     }
 
-    /** 
-     * Set the value of Id 
-     * 
+    /**
+     * Set the value of Id
+     *
      * @param int id
-     * 
+     *
      * @return self
      */
     public function setId($id)
@@ -124,8 +124,8 @@ class GeneralReliefItem
     }
  
     /**
-     * Get the value of Distribution Beneficiary 
-     * 
+     * Get the value of Distribution Beneficiary
+     *
      * @return DistributionBeneficiary
      */
     public function getDistributionBeneficiary()
@@ -133,11 +133,11 @@ class GeneralReliefItem
         return $this->distributionBeneficiary;
     }
  
-    /** 
-     * Set the value of Distribution Beneficiary 
-     * 
+    /**
+     * Set the value of Distribution Beneficiary
+     *
      * @param DistributionBeneficiary distributionBeneficiary
-     * 
+     *
      * @return self
      */
     public function setDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
@@ -146,5 +146,4 @@ class GeneralReliefItem
  
         return $this;
     }
- 
 }

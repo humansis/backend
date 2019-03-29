@@ -9,7 +9,8 @@ use JMS\Serializer\SerializationContext;
  * Class Formatter
  * @package ReportingBundle\Utils\Formatters
  */
-class Formatter implements FormatterInterface {
+class Formatter implements FormatterInterface
+{
 
     /** @var int  */
     const DefaultFormat = 0;
@@ -21,7 +22,8 @@ class Formatter implements FormatterInterface {
      * Formatter constructor.
      */
     public function __construct()
-    { }
+    {
+    }
 
     /**
      * Use to know which format is mandatory for the graph then return data in the good format
@@ -58,7 +60,7 @@ class Formatter implements FormatterInterface {
     {
         $result = [];
 
-        switch($typeGraph) {
+        switch ($typeGraph) {
             case "stackbar":
                 $result = DefaultFormatter::formatWithSeries($dataComputed);
                 break;
@@ -86,7 +88,7 @@ class Formatter implements FormatterInterface {
     {
         $result = [];
 
-        switch($typeGraph) {
+        switch ($typeGraph) {
             case "stackbar":
                 $result = CsvFormatter::formatWithSeries();
                 break;
@@ -103,5 +105,4 @@ class Formatter implements FormatterInterface {
 
         return $result;
     }
-
 }

@@ -29,13 +29,12 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     public function getAllOfProject(int $project, string $target)
     {
         $qb = $this->createQueryBuilder('b');
-        if ($target == 'Household'){
+        if ($target == 'Household') {
             $q = $qb->leftJoin('b.household', 'hh')
                 ->where(':project MEMBER OF hh.projects')
                 ->andWhere('b.status = 1')
                 ->setParameter('project', $project);
-        }
-        else {
+        } else {
             $q = $qb->leftJoin('b.household', 'hh')
                 ->where(':project MEMBER OF hh.projects')
                 ->setParameter('project', $project);
@@ -50,8 +49,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      * @param int $beneficiaryId
      * @return mixed
      */
-    public function hasDateOfBirth(string $value, string $conditionString, int $beneficiaryId){
-
+    public function hasDateOfBirth(string $value, string $conditionString, int $beneficiaryId)
+    {
         $qb = $this->createQueryBuilder('b');
 
         $q  = $qb->where('b.dateOfBirth ' . $conditionString . ' :value')
@@ -68,17 +67,17 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      * @param int $beneficiaryId
      * @return mixed
      */
-    public function hasVulnerabilityCriterion(int $vulnerabilityId, string $conditionString, int $beneficiaryId){
+    public function hasVulnerabilityCriterion(int $vulnerabilityId, string $conditionString, int $beneficiaryId)
+    {
         $qb = $this->createQueryBuilder('b');
 
-        if($conditionString == "true"){
+        if ($conditionString == "true") {
             $q = $qb->leftJoin('b.vulnerabilityCriteria', 'vc')
                 ->where(':vulnerabilityId = vc.id')
                 ->setParameter('vulnerabilityId', $vulnerabilityId)
                 ->andWhere(':beneficiaryId = b.id')
                 ->setParameter(':beneficiaryId', $beneficiaryId);
-        }
-        else{
+        } else {
             $q = $qb->leftJoin('b.vulnerabilityCriteria', 'vc')
                 ->where(':vulnerabilityId <> vc.id')
                 ->setParameter('vulnerabilityId', $vulnerabilityId)
@@ -95,16 +94,16 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      * @param int $beneficiaryId
      * @return mixed
      */
-    public function hasGender(string $conditionString, string $valueString, int $beneficiaryId){
+    public function hasGender(string $conditionString, string $valueString, int $beneficiaryId)
+    {
         $qb = $this->createQueryBuilder('b');
 
-        if($conditionString == '='){
+        if ($conditionString == '=') {
             $q = $qb->where(':gender = b.gender')
                 ->setParameter('gender', $valueString)
                 ->andWhere(':beneficiaryId = b.id')
                 ->setParameter(':beneficiaryId', $beneficiaryId);
-        }
-        else{
+        } else {
             $q = $qb->where(':gender <> b.gender')
                 ->setParameter('gender', $valueString)
                 ->andWhere(':beneficiaryId = b.id')

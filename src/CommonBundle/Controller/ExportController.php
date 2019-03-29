@@ -47,46 +47,35 @@ class ExportController extends Controller
             if ($request->query->get('distributions')) {
                 $idProject = $request->query->get('distributions');
                 $filename = $this->get('distribution.distribution_service')->exportToCsv($idProject, $type);
-            } 
-            elseif ($request->query->get('beneficiaries')) {
+            } elseif ($request->query->get('beneficiaries')) {
                 $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv($type);
-            } 
-            elseif ($request->query->get('beneficiariesInDistribution')) {
+            } elseif ($request->query->get('beneficiariesInDistribution')) {
                 $idDistribution = $request->query->get('beneficiariesInDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('beneficiary.beneficiary_service')->exportToCsvBeneficiariesInDistribution($distribution, $type);
-            } 
-            elseif ($request->query->get('users')) {
+            } elseif ($request->query->get('users')) {
                 $filename = $this->get('user.user_service')->exportToCsv($type);
-            } 
-            elseif ($request->query->get('countries')) {
+            } elseif ($request->query->get('countries')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->get('beneficiary.country_specific_service')->exportToCsv($type, $countryIso3);
-            } 
-            elseif ($request->query->get('donors')) {
+            } elseif ($request->query->get('donors')) {
                 $filename = $this->get('project.donor_service')->exportToCsv($type);
-            } 
-            elseif ($request->query->get('projects')) {
+            } elseif ($request->query->get('projects')) {
                 $country = $request->query->get('projects');
                 $filename = $this->get('project.project_service')->exportToCsv($country, $type);
-            } 
-            elseif ($request->query->get('distributionSample')) {
+            } elseif ($request->query->get('distributionSample')) {
                 $arrayObjectBeneficiary = $request->request->get('sample');
                 $filename = $this->get('distribution.distribution_beneficiary_service')->exportToCsv($arrayObjectBeneficiary, $type);
-            }
-            elseif ($request->query->get('householdsTemplate')) {
+            } elseif ($request->query->get('householdsTemplate')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
-            }
-            elseif ($request->query->get('transactionDistribution')) {
+            } elseif ($request->query->get('transactionDistribution')) {
                 $idDistribution = $request->query->get('transactionDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, $type);
-            }
-            elseif ($request->query->get('booklets')) {
+            } elseif ($request->query->get('booklets')) {
                 $filename = $this->get('voucher.booklet_service')->exportToCsv($type);
-            }
-            elseif ($request->query->get('reporting')) {
+            } elseif ($request->query->get('reporting')) {
                 $indicatorsId  = $request->request->get('indicators');
                 $frequency     = $request->request->get('frequency');
                 $projects      = $request->request->get('projects');
@@ -94,13 +83,11 @@ class ExportController extends Controller
                 $country       = $request->request->get('__country');
 
                 $filename = $this->get('reporting.reporting_service')->exportToCsv($indicatorsId, $frequency, $projects, $distributions, $country, $type);
-            }
-            elseif ($request->query->get('generalreliefDistribution')) {
+            } elseif ($request->query->get('generalreliefDistribution')) {
                 $idDistribution = $request->query->get('generalreliefDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('distribution.distribution_service')->exportGeneralReliefDistributionToCsv($distribution, $type);
-            }
-            elseif ($request->query->get('voucherDistribution')) {
+            } elseif ($request->query->get('voucherDistribution')) {
                 $idDistribution = $request->query->get('voucherDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->$this->get('voucher.booklet_service')->exportVouchersDistributionToCsv($distribution, $type);

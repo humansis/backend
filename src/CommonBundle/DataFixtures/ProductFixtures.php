@@ -3,15 +3,12 @@
 
 namespace CommonBundle\DataFixtures;
 
-
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use VoucherBundle\Entity\Product;
 
-
 class ProductFixtures extends Fixture
 {
-
     private $data = [
         ['soap', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a1505596a4.jpg', 0],
         ['toothbrush', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a15252e30e.jpg', 0],
@@ -33,8 +30,7 @@ class ProductFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        foreach ($this->data as $datum)
-        {
+        foreach ($this->data as $datum) {
             $product = new Product();
             $product->setName($datum[0])
                 ->setUnit($datum[1])

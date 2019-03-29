@@ -7,7 +7,7 @@ use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\UserProject;
 
-class ExportControllerTest extends  BMSServiceTestCase
+class ExportControllerTest extends BMSServiceTestCase
 {
     /**
      * @throws \Exception

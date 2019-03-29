@@ -40,8 +40,7 @@ class HouseholdToCSVMapper extends AbstractMapper
         $householdsArrayCSV = $arraySheet;
         $lastColumn = null;
         /** @var Household $receiver */
-        foreach ($receivers as $receiver)
-        {
+        foreach ($receivers as $receiver) {
             $householdArrayCSV = [];
 
             $householdArray = json_decode(
@@ -51,49 +50,34 @@ class HouseholdToCSVMapper extends AbstractMapper
                         'json',
                         SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
                     ),
-                true);
+                true
+            );
 
-            foreach ($mapping as $fieldName => $columnCsv)
-            {
-                if (is_array($columnCsv))
-                {
-                    foreach ($columnCsv as $fieldName2 => $columnCsv2)
-                    {
+            foreach ($mapping as $fieldName => $columnCsv) {
+                if (is_array($columnCsv)) {
+                    foreach ($columnCsv as $fieldName2 => $columnCsv2) {
                         if (
                             array_key_exists($fieldName, $householdArray)
                             || is_array($householdArray[$fieldName])
                             || !array_key_exists($fieldName2, $householdArray[$fieldName])
-                        )
-                        {
-                            if ("location" === $fieldName)
-                            {
+                        ) {
+                            if ("location" === $fieldName) {
                                 $householdArrayCSV[0][$columnCsv2] = $this->getLocationField($receiver, $fieldName2);
-                            }
-                            else
-                            {
+                            } else {
                                 $householdArrayCSV[0][$columnCsv2] = null;
                             }
-                        }
-                        else
-                        {
+                        } else {
                             $householdArrayCSV[0][$columnCsv2] = $householdArray[$fieldName][$fieldName2];
                         }
                         $lastColumn = $columnCsv2;
                     }
-                }
-                else
-                {
-                    if (substr($fieldName, 0, 20) === "tmp_country_specific")
-                    {
+                } else {
+                    if (substr($fieldName, 0, 20) === "tmp_country_specific") {
                         $householdArrayCSV[0][$columnCsv] = $this
                             ->getCountrySpecificAnswer($countryISO3, $receiver, $arraySheet, $columnCsv);
-                    }
-                    elseif (!array_key_exists($fieldName, $householdArray))
-                    {
+                    } elseif (!array_key_exists($fieldName, $householdArray)) {
                         $householdArrayCSV[0][$columnCsv] = null;
-                    }
-                    else
-                    {
+                    } else {
                         $householdArrayCSV[0][$columnCsv] = $householdArray[$fieldName];
                     }
                     $lastColumn = $columnCsv;
@@ -117,15 +101,11 @@ class HouseholdToCSVMapper extends AbstractMapper
      */
     private function fieldBeneficiary(array &$householdArrayCSV, array $householdArray, $mapping)
     {
-        foreach ($householdArray["beneficiaries"] as $index => $beneficiaryArray)
-        {
-            foreach ($mapping["beneficiaries"] as $fieldName => $columnCsv)
-            {
+        foreach ($householdArray["beneficiaries"] as $index => $beneficiaryArray) {
+            foreach ($mapping["beneficiaries"] as $fieldName => $columnCsv) {
                 $this->setBeneficiaryNullFields($householdArrayCSV, $index, $mapping);
-                if (array_key_exists($fieldName, $beneficiaryArray))
-                {
-                    switch ($fieldName)
-                    {
+                if (array_key_exists($fieldName, $beneficiaryArray)) {
+                    switch ($fieldName) {
                         case 'phones':
                             $this
                                 ->fieldPhones($householdArrayCSV, $index, $columnCsv, $beneficiaryArray[$fieldName]);
@@ -139,20 +119,20 @@ class HouseholdToCSVMapper extends AbstractMapper
                                 ->fieldVulnerabilityCriteria($householdArrayCSV, $index, $columnCsv, $beneficiaryArray[$fieldName]);
                             break;
                         default:
-                            if (false === $beneficiaryArray[$fieldName])
+                            if (false === $beneficiaryArray[$fieldName]) {
                                 $householdArrayCSV[$index][$columnCsv] = 0;
-                            elseif (true === $beneficiaryArray[$fieldName])
+                            } elseif (true === $beneficiaryArray[$fieldName]) {
                                 $householdArrayCSV[$index][$columnCsv] = 1;
-                            else
+                            } else {
                                 $householdArrayCSV[$index][$columnCsv] = $beneficiaryArray[$fieldName];
+                            }
                             break;
                     }
-                }
-                else
+                } else {
                     $householdArrayCSV[$index][$columnCsv] = null;
+                }
             }
         }
-
     }
 
     /**
@@ -162,24 +142,20 @@ class HouseholdToCSVMapper extends AbstractMapper
      */
     private function setBeneficiaryNullFields(array &$householdArrayCSV, $index, $mapping)
     {
-        if (0 === intval($index))
+        if (0 === intval($index)) {
             return;
+        }
 
-        foreach ($mapping as $fieldName => $columnCsv)
-        {
-            if (is_array($columnCsv))
-            {
-                if ("beneficiaries" === $fieldName)
+        foreach ($mapping as $fieldName => $columnCsv) {
+            if (is_array($columnCsv)) {
+                if ("beneficiaries" === $fieldName) {
                     continue;
-                foreach ($columnCsv as $fieldName2 => $columnCsv2)
-                {
+                }
+                foreach ($columnCsv as $fieldName2 => $columnCsv2) {
                     $householdArrayCSV[$index][$columnCsv2] = null;
                 }
-            }
-            else
-            {
+            } else {
                 $householdArrayCSV[$index][$columnCsv] = null;
-
             }
         }
     }
@@ -198,15 +174,17 @@ class HouseholdToCSVMapper extends AbstractMapper
                 "fieldString" => $arraySheet[Household::indexRowHeader][$columnCsv],
                 "countryIso3" => $countryISO3
             ]);
-        if (!$countrySpecific instanceof CountrySpecific)
+        if (!$countrySpecific instanceof CountrySpecific) {
             return null;
+        }
         $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
             ->findOneBy([
                 "countrySpecific" => $countrySpecific,
                 "household" => $receiver
             ]);
-        if (!$countrySpecificAnswer instanceof CountrySpecificAnswer)
+        if (!$countrySpecificAnswer instanceof CountrySpecificAnswer) {
             return null;
+        }
 
         return $countrySpecificAnswer->getAnswer();
     }
@@ -221,10 +199,10 @@ class HouseholdToCSVMapper extends AbstractMapper
     private function fieldVulnerabilityCriteria(&$householdArrayCSV, $index, $columnCsv, $vulnerabilitiesCriteriaArray)
     {
         $vulnerabilitiesCriteriaString = "";
-        foreach ($vulnerabilitiesCriteriaArray as $vulnerabilityCriteriaArray)
-        {
-            if ("" !== $vulnerabilitiesCriteriaString)
+        foreach ($vulnerabilitiesCriteriaArray as $vulnerabilityCriteriaArray) {
+            if ("" !== $vulnerabilitiesCriteriaString) {
                 $vulnerabilitiesCriteriaString .= " ; ";
+            }
             $vulnerabilitiesCriteriaString .= $vulnerabilityCriteriaArray["field_string"];
         }
         $householdArrayCSV[$index][$columnCsv] = $vulnerabilitiesCriteriaString;
@@ -240,10 +218,10 @@ class HouseholdToCSVMapper extends AbstractMapper
     private function fieldPhones(&$householdArrayCSV, $index, $columnCsv, $phonesArray)
     {
         $phonesString = "";
-        foreach ($phonesArray as $phoneArray)
-        {
-            if ("" !== $phonesString)
+        foreach ($phonesArray as $phoneArray) {
+            if ("" !== $phonesString) {
                 $phonesString .= " ; ";
+            }
             $phonesString .= $phoneArray["type"] . " - " . $phoneArray["number"];
         }
         $householdArrayCSV[$index][$columnCsv] = $phonesString;
@@ -259,10 +237,10 @@ class HouseholdToCSVMapper extends AbstractMapper
     private function fieldNationalIds(&$householdArrayCSV, $index, $columnCsv, $nationalIdsArray)
     {
         $nationalIdsString = "";
-        foreach ($nationalIdsArray as $nationalIdArray)
-        {
-            if ("" !== $nationalIdsString)
+        foreach ($nationalIdsArray as $nationalIdArray) {
+            if ("" !== $nationalIdsString) {
                 $nationalIdsString .= " ; ";
+            }
             $nationalIdsString .= $nationalIdArray["id_type"] . " - " . $nationalIdArray["id_number"];
         }
         $householdArrayCSV[$index][$columnCsv] = $nationalIdsString;
@@ -276,12 +254,10 @@ class HouseholdToCSVMapper extends AbstractMapper
     public function getLocationField(Household $receiver, $admField)
     {
         $admField = ucfirst($admField);
-        if (!is_callable([$this->locationService, "get" . $admField]))
-        {
+        if (!is_callable([$this->locationService, "get" . $admField])) {
             return null;
         }
         $admString = call_user_func([$this->locationService, "get" . $admField], $receiver);
         return $admString;
     }
-
 }

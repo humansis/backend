@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
-
 use BeneficiaryBundle\Entity\Household;
 use ProjectBundle\Entity\Project;
 
@@ -20,13 +19,12 @@ class MoreTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array $householdsArray, string $email)
     {
-        foreach ($householdsArray as $householdArray)
-        {
+        foreach ($householdsArray as $householdArray) {
             $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
-            if (!$oldHousehold instanceof Household)
+            if (!$oldHousehold instanceof Household) {
                 continue;
-            foreach ($householdArray['data'] as $newBeneficiary)
-            {
+            }
+            foreach ($householdArray['data'] as $newBeneficiary) {
                 $this->beneficiaryService->updateOrCreate($oldHousehold, $newBeneficiary, true);
             }
         }

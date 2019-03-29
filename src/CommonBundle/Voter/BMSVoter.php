@@ -3,7 +3,6 @@
 
 namespace CommonBundle\Voter;
 
-
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
@@ -32,10 +31,10 @@ abstract class BMSVoter extends Voter
     {
         $myArrayRoles = $this->getMyReachableRoles($myRoles);
 
-        foreach($myArrayRoles as $role)
-        {
-            if ($role->getRole() === strval($attribute))
+        foreach ($myArrayRoles as $role) {
+            if ($role->getRole() === strval($attribute)) {
                 return true;
+            }
         }
 
         return false;
@@ -48,8 +47,7 @@ abstract class BMSVoter extends Voter
     protected function getMyReachableRoles(array $my_roles)
     {
         $arrayRoles = [];
-        foreach ($my_roles as $role)
-        {
+        foreach ($my_roles as $role) {
             $arrayRoles[] = new Role($role);
         }
         return $this->roleHierarchy->getReachableRoles($arrayRoles);

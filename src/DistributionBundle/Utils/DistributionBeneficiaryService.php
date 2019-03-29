@@ -14,7 +14,6 @@ use DistributionBundle\Entity\DistributionData;
 use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
 
-
 /**
  * Class DistributionBeneficiaryService
  * @package DistributionBundle\Utils
@@ -97,14 +96,16 @@ class DistributionBeneficiaryService
     {
         $listReceivers = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
 
-        if (sizeof($listReceivers) < $numberRandomBeneficiary)
+        if (sizeof($listReceivers) < $numberRandomBeneficiary) {
             return $listReceivers;
+        }
 
 
         $randomIds = array_rand($listReceivers, $numberRandomBeneficiary);
 
-        if(gettype($randomIds) == 'integer')
+        if (gettype($randomIds) == 'integer') {
             return [$listReceivers[$randomIds]];
+        }
 
         $randomReceivers = array();
         foreach ($randomIds as $id) {
@@ -126,20 +127,19 @@ class DistributionBeneficiaryService
     {
         $beneficiary = null;
 
-        if($beneficiariesArray && sizeof($beneficiariesArray) > 0) {
-            foreach($beneficiariesArray as $beneficiaryArray) {
-
+        if ($beneficiariesArray && sizeof($beneficiariesArray) > 0) {
+            foreach ($beneficiariesArray as $beneficiaryArray) {
                 $distributionBeneficiary = new DistributionBeneficiary();
                 $distributionBeneficiary->setDistributionData($distributionData);
 
-                if($beneficiaryArray !== $beneficiariesArray["__country"]) {
-                    switch ($distributionData->getType())
-                    {
+                if ($beneficiaryArray !== $beneficiariesArray["__country"]) {
+                    switch ($distributionData->getType()) {
                         case 0:
                             $headHousehold = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
                             $household = $headHousehold->getHousehold();
-                            if (!$household instanceof Household)
+                            if (!$household instanceof Household) {
                                 throw new \Exception("This household was not found.");
+                            }
                             $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
                             break;
                         case 1:
@@ -147,14 +147,13 @@ class DistributionBeneficiaryService
                             break;
                         default:
                             throw new \Exception("The type of the distribution is undefined.");
-                    } 
+                    }
                     
-                    $distributionBeneficiary->setBeneficiary($beneficiary);   
+                    $distributionBeneficiary->setBeneficiary($beneficiary);
                     $this->em->persist($distributionBeneficiary);
                 }
             }
             $this->em->flush();
-
         } else {
             return null;
         }
@@ -182,16 +181,17 @@ class DistributionBeneficiaryService
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(array $objectBeneficiary, string $type) {
-
+    public function exportToCsv(array $objectBeneficiary, string $type)
+    {
         $beneficiaries = array();
-        foreach ($objectBeneficiary as $value){
+        foreach ($objectBeneficiary as $value) {
             $gender = '';
 
-            if ($value['gender'] == 0)
+            if ($value['gender'] == 0) {
                 $gender = 'Female';
-            else
+            } else {
                 $gender = 'Male';
+            }
 
             array_push($beneficiaries, [
                 "Given name" => $value['given_name'],
@@ -202,7 +202,7 @@ class DistributionBeneficiaryService
                 "Date of birth" => $value['date_of_birth']
             ]);
         }
-        return $this->container->get('export_csv_service')->export($beneficiaries,'distributions', $type);
+        return $this->container->get('export_csv_service')->export($beneficiaries, 'distributions', $type);
     }
 
     /**

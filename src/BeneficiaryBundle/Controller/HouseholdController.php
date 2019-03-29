@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Controller;
 
-
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
@@ -80,12 +79,9 @@ class HouseholdController extends Controller
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
 
-        try
-        {
+        try {
             $households = $householdService->getAll($filters['__country'], $filters);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         $json = $this->get('jms_serializer')
@@ -110,7 +106,7 @@ class HouseholdController extends Controller
      *     required=true,
      *     @Model(type=Household::class, groups={"FullHousehold"})
      * )
-     * 
+     *
      * @SWG\Parameter(
      *     name="projects",
      *     in="body",
@@ -144,16 +140,11 @@ class HouseholdController extends Controller
 
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
-        try
-        {
+        try {
             $household = $householdService->createOrEdit($householdArray, $projectsArray, null);
-        }
-        catch (ValidationException $exception)
-        {
+        } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -180,7 +171,7 @@ class HouseholdController extends Controller
      *     required=true,
      *     @Model(type=Household::class, groups={"FullHousehold"})
      * )
-     * 
+     *
      * @SWG\Parameter(
      *     name="projects",
      *     in="body",
@@ -215,16 +206,11 @@ class HouseholdController extends Controller
 
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
-        try
-        {
+        try {
             $household = $householdService->createOrEdit($householdArray, $projectsArray, $household);
-        }
-        catch (ValidationException $exception)
-        {
+        } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -272,13 +258,15 @@ class HouseholdController extends Controller
      */
     public function importAction(Request $request, Project $project)
     {
-        if (!$request->query->has('step'))
-            return new Response('You must specify the current level.');
+        if (!$request->query->has('step')) {
+            return new Response('You must specify the current step.');
+        }
         $step = $request->query->get('step');
-        if ($request->query->has('token'))
+        if ($request->query->has('token')) {
             $token = $request->query->get('token');
-        else
+        } else {
             $token = null;
+        }
 
         $contentJson = $request->request->all();
         $email = $request->query->get('email');
@@ -288,27 +276,19 @@ class HouseholdController extends Controller
         /** @var HouseholdCSVService $householdService */
         $householdService = $this->get('beneficiary.household_csv_service');
 
-        if (1 === intval($step))
-        {
-            if (!$request->files->has('file'))
-                return new Response("You must upload a file.", 500);
-            try
-            {
-                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $step, $token, $email);
+        if (1 === intval($step)) {
+            if (!$request->files->has('file')) {
+                return new Response("You must upload a file.", Response::HTTP_BAD_REQUEST);
             }
-            catch (\Exception $e)
-            {
+            try {
+                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $step, $token, $email);
+            } catch (\Exception $e) {
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
-        }
-        else
-        {
-            try
-            {
+        } else {
+            try {
                 $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $step, $token, $email);
-            }
-            catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         }
@@ -352,8 +332,7 @@ class HouseholdController extends Controller
         $type = $request->query->get('type') ?: 'csv';
         /** @var ExportCSVService $exportCSVService */
         $exportCSVService = $this->get('beneficiary.household_export_csv_service');
-        try
-        {
+        try {
             $filename = $exportCSVService->generate($countryIso3, $type);
 
             // Create binary file to send
@@ -369,8 +348,7 @@ class HouseholdController extends Controller
             $response->deleteFileAfterSend(true);
 
             return $response;
-        } catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
@@ -416,16 +394,11 @@ class HouseholdController extends Controller
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
 
-        try
-        {
+        try {
             $newHousehold = $householdService->update($household, $project, $arrayHousehold);
-        }
-        catch (ValidationException $exception)
-        {
+        } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -459,7 +432,8 @@ class HouseholdController extends Controller
         $householdService = $this->get("beneficiary.household_service");
         $household = $householdService->remove($household);
         $json = $this->get('jms_serializer')
-            ->serialize($household,
+            ->serialize(
+                $household,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
             );
@@ -594,12 +568,9 @@ class HouseholdController extends Controller
         $householdsArray = $request->request->all();
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
-        try
-        {
+        try {
             $households = $householdService->getAllImported($householdsArray);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         $json = $this->get('jms_serializer')
@@ -636,12 +607,9 @@ class HouseholdController extends Controller
 
         /** @var HouseholdService $householdService */
         $householdService = $this->get('beneficiary.household_service');
-        try
-        {
+        try {
             $households = $householdService->getAllCached($email);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         $json = $this->get('jms_serializer')

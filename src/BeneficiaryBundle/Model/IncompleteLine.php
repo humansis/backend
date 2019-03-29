@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Model;
 
-
 class IncompleteLine
 {
     /** @var int */
@@ -30,6 +29,4 @@ class IncompleteLine
     {
         $this->lineIncomplete = $lineIncomplete;
     }
-
-
 }

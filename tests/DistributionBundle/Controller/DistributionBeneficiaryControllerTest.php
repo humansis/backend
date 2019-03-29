@@ -3,7 +3,6 @@
 
 namespace Tests\DistributionBundle\Controller;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
@@ -46,14 +45,14 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
         $beneficiary = $this->em->getRepository(Beneficiary::class)->findAll();
 
         // If there is no user, we display an error :
-        if(!$beneficiary){
+        if (!$beneficiary) {
             print_r("\nThere is no beneficiary with the ID specified to execute the test.\n");
             $this->markTestIncomplete("There is no beneficiary with the ID specified to execute the test.");
         }
 
         $distributionData = $this->em->getRepository(DistributionData::class)->findAll();
 
-        if(!$distributionData){
+        if (!$distributionData) {
             print_r("\nThere is no distribution with the ID specified to execute the test.\n");
             $this->markTestIncomplete("There is no distribution with the ID specified to execute the test.");
         }
@@ -69,17 +68,14 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
 
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->find($distributionBeneficiary->getId());
 
-        if(!$distributionBeneficiary){
+        if (!$distributionBeneficiary) {
             print_r("\nThere was an error while creating the new distributionBeneficiary during the test.\n");
             $this->markTestIncomplete("There was an error while creating the new distributionBeneficiary during the test.");
         }
 
-        try
-        {
+        try {
             $this->assertTrue($distributionBeneficiary instanceof DistributionBeneficiary);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             $this->em->remove($distributionBeneficiary);
             $this->em->flush();
 
@@ -99,7 +95,6 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testRemoveDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
     {
-
         $beneficiaryId = $distributionBeneficiary->getBeneficiary()->getId();
         $distributionId = $distributionBeneficiary->getDistributionData()->getId();
 
@@ -115,6 +110,4 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
 
         return true;
     }
-
-
 }

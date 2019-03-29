@@ -18,7 +18,6 @@ use JMS\Serializer\Annotation\Groups;
  */
 class DistributionData implements ExportableInterface
 {
-
     const TYPE_BENEFICIARY = 0;
     const TYPE_HOUSEHOLD = 1;
 
@@ -346,8 +345,9 @@ class DistributionData implements ExportableInterface
      */
     public function addSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
     {
-        if (null === $this->selectionCriteria)
+        if (null === $this->selectionCriteria) {
             $this->selectionCriteria = new \Doctrine\Common\Collections\ArrayCollection();
+        }
         $this->selectionCriteria[] = $selectionCriterion;
 
         return $this;
@@ -456,8 +456,9 @@ class DistributionData implements ExportableInterface
      */
     public function addDistributionBeneficiary(\DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary)
     {
-        if (null === $this->distributionBeneficiaries)
+        if (null === $this->distributionBeneficiaries) {
             $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+        }
         $this->distributionBeneficiaries[] = $distributionBeneficiary;
 
         return $this;
@@ -510,16 +511,16 @@ class DistributionData implements ExportableInterface
     }
 
 
-    function getMappedValueForExport(): array
+    public function getMappedValueForExport(): array
     {
         // récuperer les criteria de selection  depuis l'objet selectioncriteria
 
         $valueselectioncriteria = [];
         foreach ($this->getSelectionCriteria() as $criterion) {
             $stringCriterion = $criterion->getFieldString() . " " . $criterion->getConditionString() . " " . $criterion->getValueString();
-            array_push( $valueselectioncriteria, $stringCriterion);
+            array_push($valueselectioncriteria, $stringCriterion);
         }
-        $valueselectioncriteria = join(', ',  $valueselectioncriteria);
+        $valueselectioncriteria = join(', ', $valueselectioncriteria);
 
         // récuperer les valeurs des commodities depuis l'objet commodities
 
@@ -545,10 +546,10 @@ class DistributionData implements ExportableInterface
 
         // récuperer les adm1 , adm2 , adm3 , adm 4 depuis l'objet localisation : faut vérifier d'abord s'ils sont null ou pas pour avoir le nom
 
-        $adm1 = ( ! empty($this->getLocation()->getAdm1()) ) ? $this->getLocation()->getAdm1()->getName() : '';
-        $adm2 = ( ! empty($this->getLocation()->getAdm2()) ) ? $this->getLocation()->getAdm2()->getName() : '';
-        $adm3 = ( ! empty($this->getLocation()->getAdm3()) ) ? $this->getLocation()->getAdm3()->getName() : '';
-        $adm4 = ( ! empty($this->getLocation()->getAdm4()) ) ? $this->getLocation()->getAdm4()->getName() : '';
+        $adm1 = (! empty($this->getLocation()->getAdm1())) ? $this->getLocation()->getAdm1()->getName() : '';
+        $adm2 = (! empty($this->getLocation()->getAdm2())) ? $this->getLocation()->getAdm2()->getName() : '';
+        $adm3 = (! empty($this->getLocation()->getAdm3())) ? $this->getLocation()->getAdm3()->getName() : '';
+        $adm4 = (! empty($this->getLocation()->getAdm4())) ? $this->getLocation()->getAdm4()->getName() : '';
 
         return [
             "projet" => $this->getProject()->getName(),

@@ -57,9 +57,9 @@ class ReportingDistribution
      */
     public function setIndicator(\ReportingBundle\Entity\ReportingIndicator $indicator)
     {
-      $this->indicator = $indicator;
+        $this->indicator = $indicator;
 
-      return $this;
+        return $this;
     }
 
     /**
@@ -69,7 +69,7 @@ class ReportingDistribution
      */
     public function getIndicator()
     {
-      return $this->indicator;
+        return $this->indicator;
     }
 
     /**
@@ -80,9 +80,9 @@ class ReportingDistribution
      */
     public function setValue(\ReportingBundle\Entity\ReportingValue $value)
     {
-      $this->value = $value;
+        $this->value = $value;
 
-      return $this;
+        return $this;
     }
 
     /**
@@ -92,7 +92,7 @@ class ReportingDistribution
      */
     public function getValue()
     {
-      return $this->value;
+        return $this->value;
     }
 
     /**
@@ -117,6 +117,4 @@ class ReportingDistribution
     {
         return $this->distribution;
     }
-
-
 }

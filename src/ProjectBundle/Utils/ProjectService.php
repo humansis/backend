@@ -45,13 +45,12 @@ class ProjectService
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator , ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container)
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->container = $container;
-
     }
 
     /**
@@ -67,17 +66,13 @@ class ProjectService
             !$user->hasRole("ROLE_COUNTRY_MANAGER")
             && !$user->hasRole("ROLE_REGIONAL_MANAGER")
             && !$user->hasRole("ROLE_ADMIN")
-        )
-        {
+        ) {
             $projects = $this->em->getRepository(Project::class)->getAllOfUser($user);
-        }
-        else
-        {
+        } else {
             $projects = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
-
         }
         $houseHoldsRepository = $this->em->getRepository(Household::class);
-        foreach($projects as $project){
+        foreach ($projects as $project) {
             $project->setNumberOfHouseholds($houseHoldsRepository->countByProject($project)[1]);
             $this->em->merge($project);
         }
@@ -119,43 +114,39 @@ class ProjectService
 
         $existingProject = $this->em->getRepository(Project::class)->findBy(['name' => $project->getName()]);
         if (!empty($existingProject)) {
-           throw new HttpException(Response::HTTP_CONFLICT, 'Project with the name '.$project->getName().' already exists');
+            throw new HttpException(Response::HTTP_CONFLICT, 'Project with the name '.$project->getName().' already exists');
         }
 
         $errors = $this->validator->validate($project);
-        if (count($errors) > 0)
-        {
+        if (count($errors) > 0) {
             $errorsArray = [];
-            foreach ($errors as $error)
-            {
+            foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
         $sectors = $newProject->getSectors();
-        if (null !== $sectors)
-        {
+        if (null !== $sectors) {
             $project->getSectors()->clear();
             /** @var Sector $sector */
-            foreach ($sectors as $sector)
-            {
+            foreach ($sectors as $sector) {
                 $sectorTmp = $this->em->getRepository(Sector::class)->find($sector);
-                if ($sectorTmp instanceof Sector)
+                if ($sectorTmp instanceof Sector) {
                     $project->addSector($sectorTmp);
+                }
             }
         }
 
         $donors = $newProject->getDonors();
-        if (null !== $donors)
-        {
+        if (null !== $donors) {
             $project->getDonors()->clear();
             /** @var Donor $donor */
-            foreach ($donors as $donor)
-            {
+            foreach ($donors as $donor) {
                 $donorTmp = $this->em->getRepository(Donor::class)->find($donor);
-                if ($donorTmp instanceof Donor)
+                if ($donorTmp instanceof Donor) {
                     $project->addDonor($donorTmp);
+                }
             }
         }
 
@@ -178,63 +169,57 @@ class ProjectService
         /** @var Project $editedProject */
         $editedProject = $this->serializer->deserialize(json_encode($projectArray), Project::class, 'json');
         $oldProject = $this->em->getRepository(Project::class)->find($project->getId());
-        if($oldProject->getArchived() == 0){
+        if ($oldProject->getArchived() == 0) {
             $project->setName($editedProject->getName())
                 ->setStartDate($editedProject->getStartDate())
                 ->setEndDate($editedProject->getEndDate())
                 ->setValue($editedProject->getValue());
 
             $sectors = $editedProject->getSectors();
-            if (null !== $sectors)
-            {
+            if (null !== $sectors) {
                 $sectors = clone $editedProject->getSectors();
                 $project->removeSectors();
                 /** @var Sector $sector */
-                foreach ($sectors as $sector)
-                {
+                foreach ($sectors as $sector) {
                     $sectorTmp = $this->em->getRepository(Sector::class)->find($sector);
-                    if ($sectorTmp instanceof Sector)
+                    if ($sectorTmp instanceof Sector) {
                         $project->addSector($sectorTmp);
+                    }
                 }
             }
 
             $donors = $editedProject->getDonors();
 
-            if (null !== $donors)
-            {
+            if (null !== $donors) {
                 $donors = clone $editedProject->getDonors();
                 $project->removeDonors();
                 /** @var Donor $donor */
-                foreach ($donors as $donor)
-                {
+                foreach ($donors as $donor) {
                     $donorTmp = $this->em->getRepository(Donor::class)->find($donor);
-                    if ($donorTmp instanceof Donor)
+                    if ($donorTmp instanceof Donor) {
                         $project->addDonor($donorTmp);
+                    }
                 }
             }
 
             $errors = $this->validator->validate($project);
-            if (count($errors) > 0)
-            {
+            if (count($errors) > 0) {
                 $errorsArray = [];
-                foreach ($errors as $error)
-                {
+                foreach ($errors as $error) {
                     $errorsArray[] = $error->getMessage();
                 }
                 throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
             }
 
             $this->em->merge($project);
-            try{
+            try {
                 $this->em->flush();
-
-            } catch (\Exception $e){
+            } catch (\Exception $e) {
                 return false;
             }
 
             return $project;
-        }
-        else{
+        } else {
             return ['error' => 'The project is archived'];
         }
     }
@@ -246,10 +231,12 @@ class ProjectService
      * @param $households
      * @return array
      */
-    public function addMultipleHouseholds(Project $project, $households) {
-        foreach($households as $hh) {
-            if (!$hh instanceof Household)
+    public function addMultipleHouseholds(Project $project, $households)
+    {
+        foreach ($households as $hh) {
+            if (!$hh instanceof Household) {
                 $hh = $this->em->getRepository(Household::class)->find($hh['id']);
+            }
 
             $projectHousehold = $hh->getProjects()->contains($project);
             if (!$projectHousehold) {
@@ -288,19 +275,15 @@ class ProjectService
     {
         $distributionData = $this->em->getRepository(DistributionData::class)->findByProject($project);
 
-        if( empty($distributionData)) {
-
+        if (empty($distributionData)) {
             try {
                 $this->em->remove($project);
             } catch (\Exception $error) {
                 throw new \Exception("Error deleting project");
             }
-
         } else {
-
-            if(! $this->checkIfAllDistributionClosed($distributionData)) {
+            if (! $this->checkIfAllDistributionClosed($distributionData)) {
                 throw new \Exception("You can't delete this project as it has an unfinished distribution");
-
             } else {
                 try {
                     foreach ($distributionData as $distributionDatum) {
@@ -311,14 +294,12 @@ class ProjectService
                     $this->em->persist($project);
 
                     $this->archive($project);
-
                 } catch (\Exception $error) {
                     throw new \Exception("Error archiving project");
                 }
             }
         }
         $this->em->flush();
-
     }
 
     /**
@@ -326,12 +307,12 @@ class ProjectService
      * @param DistributionData $distributionData
      * @return boolean
      */
-    private function checkIfAllDistributionClosed(array $distributionData) {
-        foreach( $distributionData as $distributionDatum ) {
+    private function checkIfAllDistributionClosed(array $distributionData)
+    {
+        foreach ($distributionData as $distributionDatum) {
             if (!$distributionDatum->getArchived() && $distributionDatum->getDateDistribution() > (new DateTime('now'))) {
                 return false;
             }
-
         }
         return true;
     }
@@ -342,7 +323,8 @@ class ProjectService
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv($countryIso3, string $type) {
+    public function exportToCsv($countryIso3, string $type)
+    {
         $exportableTable = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
         return $this->container->get('export_csv_service')->export($exportableTable, 'projects', $type);
     }

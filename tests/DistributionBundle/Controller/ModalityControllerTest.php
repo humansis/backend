@@ -3,7 +3,6 @@
 
 namespace Tests\DistributionBundle\Controller;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
@@ -42,7 +41,8 @@ class ModalityControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetAll() {
+    public function testGetAll()
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -66,7 +66,8 @@ class ModalityControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetAllModalityTypes($modality) {
+    public function testGetAllModalityTypes($modality)
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);

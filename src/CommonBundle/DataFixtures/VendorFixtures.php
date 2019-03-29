@@ -3,13 +3,11 @@
 
 namespace CommonBundle\DataFixtures;
 
-
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use VoucherBundle\Entity\Vendor;
 use UserBundle\Entity\User;
 use Symfony\Component\HttpKernel\Kernel;
-
 
 class VendorFixtures extends Fixture
 {
@@ -33,10 +31,9 @@ class VendorFixtures extends Fixture
      * @param ObjectManager $manager
      */
     public function load(ObjectManager $manager)
-    {      
+    {
         if ($this->kernel->getEnvironment() === "test" || $this->kernel->getEnvironment() === "dev") {
-            foreach ($this->data as $datum)
-            {
+            foreach ($this->data as $datum) {
                 $user = $manager->getRepository(User::class)->findOneByUsername($datum[4]);
                 $vendor = new Vendor();
                 $vendor->setName($datum[0])
@@ -47,6 +44,6 @@ class VendorFixtures extends Fixture
                 $manager->persist($vendor);
                 $manager->flush();
             }
-        }     
+        }
     }
 }

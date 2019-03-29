@@ -3,7 +3,6 @@
 
 namespace DistributionBundle\Utils;
 
-
 use DistributionBundle\Entity\Modality;
 use DistributionBundle\Entity\ModalityType;
 use Doctrine\ORM\EntityManagerInterface;

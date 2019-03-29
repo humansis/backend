@@ -45,7 +45,7 @@ class DistributionController extends Controller
      */
     public function getRandomBeneficiariesAction(Request $request, DistributionData $distributionData)
     {
-        if($request->query->get("size")){
+        if ($request->query->get("size")) {
             $numberToDisplay = $request->query->get("size");
 
             /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
@@ -60,8 +60,7 @@ class DistributionController extends Controller
                         'FullReceivers',
                     ])
                 );
-        }
-        else{
+        } else {
             $json = $this->get('jms_serializer')
                 ->serialize(
                     "The size to display is unset",
@@ -565,7 +564,7 @@ class DistributionController extends Controller
                 } catch (\Exception $e) {
                     return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
                 }
-            // Save changes
+                // Save changes
             } elseif ($step == 2) {
                 $data = $request->request->get('data');
                 if (!$data) {
@@ -616,8 +615,9 @@ class DistributionController extends Controller
     {
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        if(!$request->request->has('target'))
+        if (!$request->request->has('target')) {
             return new Response('You must defined a target', 500);
+        }
 
         $target = $request->request->get('target');
 
@@ -658,18 +658,15 @@ class DistributionController extends Controller
     {
         $generalReliefs = $request->request->get('generalReliefs');
         try {
-
-        foreach ($generalReliefs as $generalRelief) {
-
-            $this->get('distribution.distribution_service')
+            foreach ($generalReliefs as $generalRelief) {
+                $this->get('distribution.distribution_service')
                 ->editGeneralReliefItemNotes($generalRelief['id'], $generalRelief['notes']);
-        }
-
+            }
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return new Response(null,Response::HTTP_NO_CONTENT);
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -689,7 +686,7 @@ class DistributionController extends Controller
      *     response=400,
      *     description="BAD_REQUEST"
      * )
-     * 
+     *
      * @param  Request           $request
      * @return Response
      */

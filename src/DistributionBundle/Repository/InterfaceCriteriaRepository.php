@@ -3,7 +3,6 @@
 
 namespace DistributionBundle\Repository;
 
-
 use Doctrine\ORM\QueryBuilder;
 use ProjectBundle\Entity\Project;
 
@@ -21,5 +20,4 @@ interface InterfaceCriteriaRepository
     public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, array $filters);
 
     public function configurationQueryBuilder($onlyCount, $countryISO3, Project $project);
-
 }

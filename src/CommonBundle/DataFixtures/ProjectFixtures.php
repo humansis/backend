@@ -3,7 +3,6 @@
 
 namespace CommonBundle\DataFixtures;
 
-
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
@@ -32,11 +31,9 @@ class ProjectFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         if ($this->kernel->getEnvironment() !== "prod") {
-            foreach ($this->data as $datum)
-            {
+            foreach ($this->data as $datum) {
                 $project = $manager->getRepository(Project::class)->findOneByName($datum[0]);
-                if (!$project instanceof Project)
-                {
+                if (!$project instanceof Project) {
                     $project = new Project();
                     $project->setName($datum[0])
                     ->setStartDate(new \DateTime())

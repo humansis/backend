@@ -77,12 +77,9 @@ class DonorController extends Controller
     {
         $donorArray = $request->request->all();
 
-        try
-        {
+        try {
             $donor = $this->get('project.donor_service')->create($donorArray);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -124,12 +121,9 @@ class DonorController extends Controller
     {
         $donorArray = $request->request->all();
 
-        try
-        {
+        try {
             $donor = $this->get('project.donor_service')->edit($donor, $donorArray);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -161,18 +155,17 @@ class DonorController extends Controller
      */
     public function deleteAction(Donor $donor)
     {
-        try
-        {
+        try {
             $valid = $this->get('project.donor_service')->delete($donor);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        if ($valid)
+        if ($valid) {
             return new Response("", Response::HTTP_OK);
-        if (!$valid)
+        }
+        if (!$valid) {
             return new Response("", Response::HTTP_BAD_REQUEST);
+        }
     }
 }

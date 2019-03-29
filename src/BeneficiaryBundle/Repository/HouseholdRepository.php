@@ -17,7 +17,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
     /**
      * Find all households in country
      * @param  string $iso3
-     * @return QueryBuilder      
+     * @return QueryBuilder
      */
     public function findAllByCountry(string $iso3)
     {
@@ -124,7 +124,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     ->addGroupBy('hh.id');
             }
             //If the field is the first name, we sort it by the direction sent
-            else if ($value == 'firstName') {
+            elseif ($value == 'firstName') {
                 $q->leftJoin('hh.beneficiaries', 'b')
                     ->andWhere('hh.id = b.household')
                     ->addOrderBy('b.givenName', $direction)
@@ -132,7 +132,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     ->addGroupBy('hh.id');
             }
             //If the field is the family name, we sort it by the direction sent
-            else if ($value == 'familyName') {
+            elseif ($value == 'familyName') {
                 $q->leftJoin('hh.beneficiaries', 'b')
                     ->andWhere('hh.id = b.household')
                     ->addOrderBy('b.familyName', $direction)
@@ -140,7 +140,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     ->addGroupBy('hh.id');
             }
             //If the field is the number of dependents, we sort it by the direction sent
-            else if ($value == 'dependents') {
+            elseif ($value == 'dependents') {
                 $q->leftJoin("hh.beneficiaries", 'b')
                     ->andWhere('hh.id = b.household')
                     ->addSelect('COUNT(b.household) AS HIDDEN countBenef')
@@ -149,14 +149,14 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     ->addGroupBy('hh.id');
             }
             //If the field is the projects, we sort it by the direction sent
-            else if ($value == 'projects') {
+            elseif ($value == 'projects') {
                 $q->leftJoin('hh.projects', 'p')
                     ->addOrderBy('p.name', $direction)
                     ->addGroupBy("p.name")
                     ->addGroupBy('hh.id');
             }
             //If the field is the vulnerabilities, we sort it by the direction sent
-            else if ($value == 'vulnerabilities') {
+            elseif ($value == 'vulnerabilities') {
                 $q->leftJoin('hh.beneficiaries', 'b')
                     ->andWhere('hh.id = b.household')
                     ->leftJoin('b.vulnerabilityCriteria', 'vb')
@@ -210,8 +210,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                         ->addGroupBy('hh')
                                         ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
                                 }
-                            //We check if the category is the number of dependents
-                            } else if ($category == 'dependents') {
+                                //We check if the category is the number of dependents
+                            } elseif ($category == 'dependents') {
                                 //If this is the first time we get there
                                 if ($countDependents == 0) {
                                     //We do a AND WHERE clause to add the filter in our initial request
@@ -230,8 +230,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                         ->addGroupBy('b2.household')
                                         ->setParameter('filter' . $indexFilter . $index, $filter + 1);
                                 }
-                            //We check if the category is projects
-                            } else if ($category == 'projects') {
+                                //We check if the category is projects
+                            } elseif ($category == 'projects') {
                                 //If this is the first time we get there
                                 if ($countProjects == 0) {
                                     //We do a AND WHERE clause to add the filter in our initial request
@@ -248,8 +248,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                         ->addGroupBy('hh')
                                         ->setParameter('filter' . $indexFilter . $index, '%' . $filter . '%');
                                 }
-                            //We check if the category is vulnerabilities
-                            } else if ($category == 'vulnerabilities') {
+                                //We check if the category is vulnerabilities
+                            } elseif ($category == 'vulnerabilities') {
                                 //If this is the first time we get there
                                 if ($countVulnerabilities == 0) {
                                     //We do a AND WHERE clause to add the filter in our initial request
@@ -282,7 +282,6 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         ->orWhere("adm1.name LIKE :filter" . $indexFilter)
                         ->addGroupBy('hh')
                         ->setParameter('filter' . $indexFilter, '%' . $allFilter['filter'] . '%');
-
                 }
             }
         }
@@ -295,7 +294,6 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->setMaxResults($pageSize);
             return [count($allData), $q->getQuery()->getResult()];
         }
-
     }
 
     /**
@@ -339,11 +337,11 @@ class HouseholdRepository extends AbstractCriteriaRepository
     public function configurationQueryBuilder($onlyCount, $countryISO3, Project $project = null)
     {
         $qb = $this->createQueryBuilder("hh");
-        if ($onlyCount)
+        if ($onlyCount) {
             $qb->select("count(hh)");
+        }
 
-        if (null !== $project)
-        {
+        if (null !== $project) {
             $qb->where(":idProject MEMBER OF hh.projects")
                 ->setParameter("idProject", $project->getId());
         }
@@ -369,14 +367,16 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
             ->andWhere("b$i.{$filters["field_string"]} {$filters["condition_string"]} :val$i")
             ->setParameter("val$i", $filters["value_string"]);
-        if (null !== $filters["kind_beneficiary"])
+        if (null !== $filters["kind_beneficiary"]) {
             $qbSub->andWhere("b$i.status = :status$i")
                 ->setParameter("status$i", $filters["kind_beneficiary"]);
+        }
 
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
             ->setParameter("val$i", $filters["value_string"]);
-        if (null !== $filters["kind_beneficiary"])
+        if (null !== $filters["kind_beneficiary"]) {
             $qb->setParameter("status$i", $filters["kind_beneficiary"]);
+        }
     }
 
     /**
@@ -393,14 +393,11 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qbSub = $this->createQueryBuilder("hh$i");
         $this->setCountry($qbSub, $countryISO3, $i);
         $qbSub->leftJoin("hh$i.beneficiaries", "b$i");
-        if (boolval($filters["condition_string"]))
-        {
+        if (boolval($filters["condition_string"])) {
             $qbSub->leftJoin("b$i.vulnerabilityCriteria", "vc$i")
                 ->andWhere("vc$i.id = :idvc$i")
                 ->setParameter("idvc$i", $filters["id_field"]);
-        }
-        else
-        {
+        } else {
             $qbSubNotIn = $this->createQueryBuilder("hhb$i");
             $this->setCountry($qbSubNotIn, $countryISO3, "b$i");
             $qbSubNotIn->leftJoin("hhb$i.beneficiaries", "bb$i")
@@ -411,8 +408,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             $qbSub->andWhere($qbSub->expr()->notIn("hh$i", $qbSubNotIn->getDQL()));
         }
 
-        if (null !== $filters["kind_beneficiary"])
-        {
+        if (null !== $filters["kind_beneficiary"]) {
             $qbSub->andWhere("b$i.status = :status$i")
                 ->setParameter("status$i", $filters["kind_beneficiary"]);
         }

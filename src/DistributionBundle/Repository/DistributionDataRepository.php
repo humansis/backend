@@ -10,13 +10,15 @@ namespace DistributionBundle\Repository;
  */
 class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getLastId() {
+    public function getLastId()
+    {
         $qb = $this->createQueryBuilder('dd')
-                   ->select("MAX(dd.id)" );
+                   ->select("MAX(dd.id)");
         return $qb->getQuery()->getSingleScalarResult();
     }
     
-    public function getTotalValue(string $country) {
+    public function getTotalValue(string $country)
+    {
         $qb = $this->createQueryBuilder("dd");
 
         $qb
@@ -41,7 +43,8 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getCodeOfUpcomingDistribution(string $countryISO) {
+    public function getCodeOfUpcomingDistribution(string $countryISO)
+    {
         $qb = $this->createQueryBuilder('dd');
         $qb
             ->addSelect('p')

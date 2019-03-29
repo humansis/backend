@@ -291,13 +291,10 @@ class VendorController extends Controller
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('salted_password');
         
-        try
-        {
+        try {
             $user = $this->container->get('user.user_service')->login($username, $saltedPassword, null);
             $vendor = $this->container->get('voucher.vendor_service')->login($user);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
         

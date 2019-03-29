@@ -11,7 +11,8 @@ use Doctrine\ORM\EntityManager;
  * Class Finder
  * @package ReportingBundle\Utils\Finders
  */
-class Finder implements FinderInterface {
+class Finder implements FinderInterface
+{
 
     /**
      * @var EntityManager
@@ -29,22 +30,21 @@ class Finder implements FinderInterface {
      */
     public function __construct(EntityManager $em)
     {
-        $this->em = $em; 
+        $this->em = $em;
     }
 
     /**
      * Search an indicator with its code and return indicator with its id, its name and the type of its graph
-     * 
+     *
      * @return object
      */
-    public function findIndicator() 
+    public function findIndicator()
     {
         $data = [];
         $this->repository = $this->em->getRepository(ReportingIndicator::class);
-         $indicators = $this->repository->findAll();  
-         foreach($indicators as $indicator) {
-            if(preg_match("#^BMS_#", $indicator->getCode())) 
-            {
+        $indicators = $this->repository->findAll();
+        foreach ($indicators as $indicator) {
+            if (preg_match("#^BMS_#", $indicator->getCode())) {
                 $type = explode('_', $indicator->getCode());
                 $infoIndicator = [
                             'type_graph' => $indicator->getGraph(),
@@ -55,8 +55,7 @@ class Finder implements FinderInterface {
                         ];
                 array_push($data, (object) $infoIndicator);
             }
-         }
-        return $data; 
-           
+        }
+        return $data;
     }
 }

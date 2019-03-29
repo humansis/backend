@@ -3,7 +3,6 @@
 
 namespace CommonBundle\Listener;
 
-
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -30,8 +29,7 @@ class RequestListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
-        if ($event->getRequest()->headers->has('country'))
-        {
+        if ($event->getRequest()->headers->has('country')) {
             $countryISO3 = $event->getRequest()->headers->get('country');
             
             if ($this->getUser()) {
@@ -57,20 +55,17 @@ class RequestListener
 
                 if ($user->getRoles()[0] == "ROLE_ADMIN" || $hasCountry) {
                     $event->getRequest()->request->add(["__country" => $countryISO3]);
-                }
-                else {
+                } else {
                     $response = new Response("You are not allowed to acces data for this country", Response::HTTP_FORBIDDEN);
                     $event->setResponse($response);
                 }
-            }
-            else {
+            } else {
                 $event->getRequest()->request->add(["__country" => $countryISO3]);
             }
         }
         // return error response if api request (i.e. not profiler or doc) or login routes (for api tester)
         elseif (preg_match('/api/', $event->getRequest()->getPathInfo()) &&
-                !preg_match('/api\/(login || salt)/', $event->getRequest()->getPathInfo()))
-        {
+                !preg_match('/api\/(login || salt)/', $event->getRequest()->getPathInfo())) {
             $response = new Response("'country' header missing from request (iso3 code).", Response::HTTP_BAD_REQUEST);
             $event->setResponse($response);
         }

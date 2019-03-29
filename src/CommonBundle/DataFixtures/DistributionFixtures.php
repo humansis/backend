@@ -10,7 +10,6 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class DistributionFixtures extends Fixture
 {
-
     private $distributionArray = [
         'adm1' => '',
         'adm2' => '',

@@ -25,7 +25,8 @@ use Symfony\Component\Validator\ConstraintViolation;
  * Class KHMApiProvider
  * @package BeneficiaryBundle\Utils\ImportProvider
  */
-class KHMIDPoorAPIProvider extends DefaultAPIProvider {
+class KHMIDPoorAPIProvider extends DefaultAPIProvider
+{
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -53,8 +54,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
-        ContainerInterface $container)
-    {
+        ContainerInterface $container
+    ) {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container= $container;
@@ -69,16 +70,17 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @return array
      * @throws \Exception
      */
-    public function importData(string $countryIso3, array $params, Project $project) {
+    public function importData(string $countryIso3, array $params, Project $project)
+    {
         if (key_exists('locationCode (KHXXXXXX)', $params)) {
-                $householdsArray = $this->importByCountryCode($params);
+            $householdsArray = $this->importByCountryCode($params);
 
-                if($householdsArray == "errorLocationCode") {
-                    return ['error' => "You entered an incorrect locationCode"];
-                }
+            if ($householdsArray == "errorLocationCode") {
+                return ['error' => "You entered an incorrect locationCode"];
+            }
 
-                return $this->parseData($householdsArray, $countryIso3, $project);
-        } else if(!key_exists('locationCode (KHXXXXXX)', $params)) {
+            return $this->parseData($householdsArray, $countryIso3, $project);
+        } elseif (!key_exists('locationCode (KHXXXXXX)', $params)) {
             throw new \Exception("Missing locationCode in the request");
         } else {
             throw new \Exception("Error occured with the request");
@@ -99,7 +101,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
         try {
             $villages = $this->sendRequest("GET", $route);
-            if ($villages == "badRequestCurl") {                
+            if ($villages == "badRequestCurl") {
                 return 'errorLocationCode';
             }
             
@@ -128,7 +130,9 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
                     //Sex
                     $sex = ($householdMember['Sex'] == 'Man') ? 1 : 0;
 
-                    array_push($beneficiariesArray, array(
+                    array_push(
+                        $beneficiariesArray,
+                        array(
                             'equityCardNo' => $householdMember['EquityCardNo'],
                             'status' => $headOfHousehold,
                             'residencyStatus' => 'resident',
@@ -145,13 +149,12 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
 
             // Group beneficiaries by household
             $householdsArray = array();
-            foreach($beneficiariesArray as $beneficiary) {
+            foreach ($beneficiariesArray as $beneficiary) {
                 $householdsArray[$beneficiary['equityCardNo']][] = $beneficiary;
             }
 
             return $householdsArray;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -163,7 +166,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @return array
      * @throws \Exception
      */
-    public function parseData(array $householdsArray, string $countryIso3, Project $project) {
+    public function parseData(array $householdsArray, string $countryIso3, Project $project)
+    {
         $countNew = 0;
         $countUpdated = 0;
         $countBeneficiaries = 0;
@@ -175,11 +179,11 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
                 $household = $hhArray["household"];
                 if ($hhArray["status"] === "create") {
                     $countNew++;
-                } else if ($hhArray["status"] === "update") {
+                } elseif ($hhArray["status"] === "update") {
                     $countUpdated++;
                 }
             } catch (\Exception $e) {
-                throw $e;    
+                throw $e;
             }
             
             try {
@@ -192,10 +196,9 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
             array_push($householdsImported, $household->getId());
         }
 
-        if($countNew + $countUpdated > 0) {
+        if ($countNew + $countUpdated > 0) {
             return ['message' => $countNew . " households created and " . $countUpdated . " updated (" . $countBeneficiaries . " beneficiaries)", "households" => $householdsImported];
-        }
-        else {
+        } else {
             return ['exist' => 'All beneficiaries with this location code are already inserted for this project'];
         }
     }
@@ -205,7 +208,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @param Project $project
      * @return array
      */
-    private function createAndInitHousehold(array $beneficiary, Project $project) {
+    private function createAndInitHousehold(array $beneficiary, Project $project)
+    {
         // Check if household already exists by searching one of its beneficiaries
         $dateOfBirth = new DateTime($beneficiary['dateOfBirth']);
         $familyName = $beneficiary['familyName'];
@@ -215,10 +219,10 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
         
         $existingBeneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy(
             [
-                'givenName' => $givenName, 
-                'familyName' => $familyName, 
-                'gender' => $gender, 
-                'status' => $status, 
+                'givenName' => $givenName,
+                'familyName' => $familyName,
+                'gender' => $gender,
+                'status' => $status,
                 'dateOfBirth' => $dateOfBirth
             ]
         );
@@ -241,8 +245,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
         // Set household location and country specifics
         $household->setLocation($beneficiary['location']);
         $country_specific_answers = $this->setCountrySpecificAnswer("KHM", $household, $beneficiary);
-        foreach ($country_specific_answers as $country_specific_answer)
-        {
+        foreach ($country_specific_answers as $country_specific_answer) {
             $household->addCountrySpecificAnswer($country_specific_answer);
         }
         $this->em->persist($household);
@@ -256,7 +259,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @return int|void
      * @throws \Exception
      */
-    private function insertBeneficiaries(Household $household, array $beneficiariesInHousehold) {
+    private function insertBeneficiaries(Household $household, array $beneficiariesInHousehold)
+    {
         if (!empty($beneficiariesInHousehold)) {
             $hasHead = false;
             $beneficiariesPersisted = [];
@@ -285,7 +289,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @param array $beneficiary
      * @return array
      */
-    private function setCountrySpecificAnswer(string $countryISO3, Household $household, array $beneficiary) {
+    private function setCountrySpecificAnswer(string $countryISO3, Household $household, array $beneficiary)
+    {
         $cambodiaCountrySpecifics = ['IDPoor', 'equityCardNo'];
         $countrySpecificAnswers = array();
         
@@ -315,14 +320,15 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @param array $beneficiaryArray
      * @return Beneficiary
      */
-    private function createBeneficiary(Household $household, array $beneficiaryArray) {
+    private function createBeneficiary(Household $household, array $beneficiaryArray)
+    {
         // Check that beneficiary does not already exists
         $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy(
             [
-                'givenName' => $beneficiaryArray["givenName"], 
-                'familyName' => $beneficiaryArray["familyName"], 
-                'gender' => $beneficiaryArray["gender"], 
-                'status' => $beneficiaryArray["status"], 
+                'givenName' => $beneficiaryArray["givenName"],
+                'familyName' => $beneficiaryArray["familyName"],
+                'gender' => $beneficiaryArray["gender"],
+                'status' => $beneficiaryArray["status"],
                 'dateOfBirth' => new DateTime($beneficiaryArray['dateOfBirth'])
             ]
         );
@@ -353,14 +359,15 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @return \CommonBundle\Entity\Location|null
      * @throws \Exception
      */
-    private function saveAdm4(array $village, string $locationCode) {
+    private function saveAdm4(array $village, string $locationCode)
+    {
         $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $locationCode]);
-        if($adm3 == null) {
+        if ($adm3 == null) {
             throw new \Exception("Adm3 was not found.");
         }
         
         $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(['name' => $village['VillageName'], 'adm3' => $adm3]);
-        if(!$adm4){
+        if (!$adm4) {
             $adm4 = new Adm4();
             $adm4->setName($village['VillageName'])
                 ->setAdm3($adm3)
@@ -379,7 +386,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
      * @return mixed  response
      * @throws \Exception
      */
-    public function sendRequest(string $type, string $route) {
+    public function sendRequest(string $type, string $route)
+    {
         $curl = curl_init();
 
         $headers = array();
@@ -415,10 +423,11 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider {
     /**
      * @return array
      */
-    public function getParams(){
+    public function getParams()
+    {
         $params = array();
         array_push($params, (object) array(
-            'paramName' => 'locationCode (KHXXXXXX)', 
+            'paramName' => 'locationCode (KHXXXXXX)',
             'paramType' => 'string'
         ));
         return $params;

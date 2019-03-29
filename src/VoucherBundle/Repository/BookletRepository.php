@@ -10,7 +10,7 @@ namespace VoucherBundle\Repository;
  */
 class BookletRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getActiveBooklets() 
+    public function getActiveBooklets()
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->where('b.status != :status')
@@ -19,7 +19,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getResult();
     }
 
-    public function getProtectedBooklets() 
+    public function getProtectedBooklets()
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->where('b.password IS NOT NULL');

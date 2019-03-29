@@ -16,7 +16,6 @@ use VoucherBundle\Entity\Booklet;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\Common\Collections\Collection;
 
-
 /**
  * Class BookletController
  * @package VoucherBundle\Controller
@@ -178,7 +177,7 @@ class BookletController extends Controller
 
         $bookletPasswords = [];
         
-        foreach($booklets as $booklet) {
+        foreach ($booklets as $booklet) {
             $bookletPasswords[] = [
                 $booklet->getCode() => $booklet->getPassword()
             ];
@@ -278,7 +277,8 @@ class BookletController extends Controller
      *
      * @return Response
      */
-    public function deactivateBooklets(Request $request){
+    public function deactivateBooklets(Request $request)
+    {
         try {
             $data = $request->request->all();
             $bookletCodes = $data['bookletCodes'];
@@ -305,7 +305,8 @@ class BookletController extends Controller
      * @param Booklet $booklet
      * @return Response
      */
-    public function deactivateAction(Booklet $booklet) {
+    public function deactivateAction(Booklet $booklet)
+    {
         try {
             $this->get('voucher.booklet_service')->deactivate($booklet);
         } catch (\Exception $exception) {
@@ -461,7 +462,8 @@ class BookletController extends Controller
     public function printBookletAction(Booklet $booklet)
     {
         try {
-            return $this->get('voucher.booklet_service')->generatePdf([$booklet]);;
+            return $this->get('voucher.booklet_service')->generatePdf([$booklet]);
+            ;
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
