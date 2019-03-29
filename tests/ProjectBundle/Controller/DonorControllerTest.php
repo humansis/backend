@@ -3,7 +3,6 @@
 
 namespace Tests\ProjectBundle\Controller;
 
-
 use ProjectBundle\Entity\Donor;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
@@ -50,17 +49,14 @@ class DonorControllerTest extends BMSServiceTestCase
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
-        try
-        {
+        try {
             $this->assertArrayHasKey('id', $project);
             $this->assertArrayHasKey('fullname', $project);
             $this->assertArrayHasKey('shortname', $project);
             $this->assertArrayHasKey('date_added', $project);
             $this->assertArrayHasKey('notes', $project);
             $this->assertSame($project['fullname'], $this->namefullname);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             print_r("\nThe mapping of fields of Donor entity is not correct.\n");
             $this->remove($this->namefullname);
             return false;
@@ -75,8 +71,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testUpdate($isSuccess = true)
     {
-        if (!$isSuccess)
-        {
+        if (!$isSuccess) {
             print_r("\nThe creation of donor failed. We can't test the update.\n");
             $this->markTestIncomplete("The creation of donor failed. We can't test the update.");
         }
@@ -84,8 +79,9 @@ class DonorControllerTest extends BMSServiceTestCase
 
         $this->em->clear();
         $donor = $this->em->getRepository(Donor::class)->findOneByFullname($this->namefullname);
-        if (!$donor instanceof Donor)
+        if (!$donor instanceof Donor) {
             $this->fail("ISSUE : This test must be executed after the createTest");
+        }
 
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -101,17 +97,14 @@ class DonorControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         $this->em->clear();
-        try
-        {
+        try {
             $this->assertArrayHasKey('id', $donor);
             $this->assertArrayHasKey('fullname', $donor);
             $this->assertArrayHasKey('shortname', $donor);
             $this->assertArrayHasKey('date_added', $donor);
             $this->assertArrayHasKey('notes', $donor);
             $this->assertSame($donor['fullname'], $this->namefullname . '(u)');
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             $this->remove($this->namefullname);
             return false;
         }
@@ -125,8 +118,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testGetAll($isSuccess)
     {
-        if (!$isSuccess)
-        {
+        if (!$isSuccess) {
             print_r("\nThe edition of donor failed. We can't test the update.\n");
             $this->markTestIncomplete("The edition of donor failed. We can't test the update.");
         }
@@ -139,8 +131,7 @@ class DonorControllerTest extends BMSServiceTestCase
         $crawler = $this->request('GET', '/api/wsse/donors');
         $donors = json_decode($this->client->getResponse()->getContent(), true);
 
-        if (!empty($donors))
-        {
+        if (!empty($donors)) {
             $project = $donors[0];
 
             $this->assertArrayHasKey('id', $project);
@@ -148,9 +139,7 @@ class DonorControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('shortname', $project);
             $this->assertArrayHasKey('date_added', $project);
             $this->assertArrayHasKey('notes', $project);
-        }
-        else
-        {
+        } else {
             $this->markTestIncomplete("You currently don't have any donor in your database.");
         }
 
@@ -168,8 +157,7 @@ class DonorControllerTest extends BMSServiceTestCase
     {
         $this->em->clear();
         $donor = $this->em->getRepository(Donor::class)->findOneByFullname($name);
-        if ($donor instanceof Donor)
-        {
+        if ($donor instanceof Donor) {
             $this->em->remove($donor);
             $this->em->flush();
         }

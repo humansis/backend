@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\BeneficiaryService;
@@ -59,9 +58,10 @@ class TypoTreatment extends AbstractTreatment
                                 break;
                             }
                         }
-                        if (null !== $newHeadHH)
+                        if (null !== $newHeadHH) {
                             // Update the head
                             $this->beneficiaryService->updateOrCreate($oldHousehold, $newHeadHH, true);
+                        }
                     }
                 }
                 // ADD TO THE MAPPING FILE
@@ -69,8 +69,7 @@ class TypoTreatment extends AbstractTreatment
 
                 $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold, $email);
                 $householdArray['new']['id_tmp_cache'] = $id_tmp;
-            }
-            elseif (boolval($householdArray['state']) && array_key_exists("new", $householdArray) && $householdArray['new'] !== null) {
+            } elseif (boolval($householdArray['state']) && array_key_exists("new", $householdArray) && $householdArray['new'] !== null) {
                 $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
                 $projects = array();
                 array_push($projects, $project);
@@ -122,16 +121,19 @@ class TypoTreatment extends AbstractTreatment
                     'json',
                     SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
                 ),
-            true);
+            true
+        );
 
         $sizeToken = 50;
-        if (null === $this->token)
+        if (null === $this->token) {
             $this->token = bin2hex(random_bytes($sizeToken));
+        }
 
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_var))
+        if (!is_dir($dir_var)) {
             mkdir($dir_var);
+        }
 
         $dir_var_step = $dir_var . '/' . $email .'-' . $step;
 

@@ -15,7 +15,8 @@ use Symfony\Component\Cache\Simple\FilesystemCache;
  * Class DefaultFinancialProvider
  * @package TransactionBundle\Utils\Provider
  */
-abstract class DefaultFinancialProvider {
+abstract class DefaultFinancialProvider
+{
 
     /** @var EntityManagerInterface $em */
     protected $em;
@@ -33,11 +34,11 @@ abstract class DefaultFinancialProvider {
      * DefaultFinancialProvider constructor.
      * @param EntityManagerInterface $entityManager
      */
-     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
-     {
-         $this->em = $entityManager;
-         $this->container = $container;
-     }
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
+    {
+        $this->em = $entityManager;
+        $this->container = $container;
+    }
     
     /**
      * Send request to financial API
@@ -49,7 +50,8 @@ abstract class DefaultFinancialProvider {
      * @return mixed  response
      * @throws \Exception
      */
-    public function sendRequest(DistributionData $distributionData, string $type, string $route, array $body = array()) {
+    public function sendRequest(DistributionData $distributionData, string $type, string $route, array $body = array())
+    {
         throw new \Exception("You need to define the financial provider for the country.");
     }
 
@@ -66,8 +68,8 @@ abstract class DefaultFinancialProvider {
         string $phoneNumber,
         DistributionBeneficiary $distributionBeneficiary,
         float $amount,
-        string $currency)
-    {
+        string $currency
+    ) {
         throw new \Exception("You need to define the financial provider for the country.");
     }
 
@@ -109,7 +111,7 @@ abstract class DefaultFinancialProvider {
                 // if this beneficiary already has transactions
                 // filter out the one that is a success (if it exists)
                 $transactions = $transactions->filter(
-                    function($transaction) {
+                    function ($transaction) {
                         return $transaction->getTransactionStatus() === 1;
                     }
                 );
@@ -184,7 +186,7 @@ abstract class DefaultFinancialProvider {
             );
             if ($successfulTransaction) {
                 try {
-                    $this->updateStatusTransaction($successfulTransaction); 
+                    $this->updateStatusTransaction($successfulTransaction);
                     array_push($response, $distributionBeneficiary);
                 } catch (\Exception $e) {
                     throw $e;
@@ -209,8 +211,8 @@ abstract class DefaultFinancialProvider {
         \DateTime $dateSent,
         string $amountSent,
         int $transactionStatus,
-        string $message = null)
-    {
+        string $message = null
+    ) {
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         
         $transaction = new Transaction();
@@ -237,13 +239,15 @@ abstract class DefaultFinancialProvider {
      * Save transaction record in file
      * @param  DistributionData $distributionData
      * @param  array           $data
-     * @return void                           
+     * @return void
      */
     public function recordTransaction(DistributionData $distributionData, array $data)
     {
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data';
-        if (! is_dir($dir_var)) mkdir($dir_var);
+        if (! is_dir($dir_var)) {
+            mkdir($dir_var);
+        }
         $file_record = $dir_var . '/record_' . $distributionData->getId() . '.csv';
 
         $fp = fopen($file_record, 'a');
@@ -251,9 +255,8 @@ abstract class DefaultFinancialProvider {
             fputcsv($fp, array('FROM', 'DATE', 'URL', 'HTTP CODE', 'RESPONSE', 'ERROR', 'PARAMETERS'), ';');
         }
 
-        fputcsv($fp, $data , ";");
+        fputcsv($fp, $data, ";");
 
         fclose($fp);
     }
-
 }

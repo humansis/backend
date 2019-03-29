@@ -25,6 +25,7 @@ use function set_time_limit;
 use function strpos;
 use function str_replace;
 use function trim;
+
 class SyriaFileToTemplateMapper
 {
     /**
@@ -193,7 +194,7 @@ class SyriaFileToTemplateMapper
         $defaultMapping = $this->getMapping();
         $outputRows = [];
 
-        $addressStreet = trim(str_replace('LOCATION:','', $sheetArray[2]['A']));
+        $addressStreet = trim(str_replace('LOCATION:', '', $sheetArray[2]['A']));
 
         foreach ($sheetArray as $indexRow => $row) {
             if ($indexRow < 10) {
@@ -201,7 +202,7 @@ class SyriaFileToTemplateMapper
                 continue;
             }
 
-            if (empty($row['A'])){
+            if (empty($row['A'])) {
                 // we break at the first empty row
                 break;
             }
@@ -231,10 +232,11 @@ class SyriaFileToTemplateMapper
                 // Get the first name of the family's head and write it in column L
                 $mutualOutputRow['L'] = trim($beneficiaryFirstNames[0]);
                 // Get the first name of of the second beneficiary and write it in column L
-                $secondBeneficiaryValues['L'] = trim($beneficiaryFirstNames[1]);;
+                $secondBeneficiaryValues['L'] = trim($beneficiaryFirstNames[1]);
+                ;
             } else { // If only one name is found => second beneficiary doesn't exist
                 // If there is a space in the beneficiary's name
-                    $mutualOutputRow['L'] = trim($beneficiaryFirstNames);
+                $mutualOutputRow['L'] = trim($beneficiaryFirstNames);
             }
             $beneficiaryLastNames = $row['C'];
             // If there is a slash in the beneficiary name
@@ -246,10 +248,11 @@ class SyriaFileToTemplateMapper
                 // Get the last name of the family's head and write it in column M
                 $mutualOutputRow['M'] = trim($beneficiaryLastNames[0]);
                 // Get the last name of of the second beneficiary and write it in column M
-                $secondBeneficiaryValues['M'] = trim($beneficiaryLastNames[1]);;
+                $secondBeneficiaryValues['M'] = trim($beneficiaryLastNames[1]);
+                ;
             } else { // If only one name is found => second beneficiary doesn't exist
                 // If there is a space in the beneficiary's name
-                    $mutualOutputRow['M'] = trim($beneficiaryLastNames);
+                $mutualOutputRow['M'] = trim($beneficiaryLastNames);
             }
 
             // Get beneficiary's id
@@ -402,7 +405,7 @@ class SyriaFileToTemplateMapper
                     // sex
                     if (in_array($column, ['K', 'M', 'O', 'Q', 'S'])) {
                         $outputRow['N'] = self::FEMALE;
-                    } else if (in_array($column, ['J', 'L', 'N', 'P', 'R'])) {
+                    } elseif (in_array($column, ['J', 'L', 'N', 'P', 'R'])) {
                         $outputRow['N'] = self::MALE;
                     } else {
                         $outputRow['N'] = $genders[array_rand($genders)];

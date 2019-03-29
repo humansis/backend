@@ -14,12 +14,11 @@ use \DistributionBundle\Entity\DistributionData;
 use \DistributionBundle\Entity\Commodity;
 use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
 
-
 /**
  * Class DataFillersDistribution
  * @package ReportingBundle\Utils\DataFillers\Distribution
  */
-class DataFillersDistribution  extends DataFillers
+class DataFillersDistribution extends DataFillers
 {
 
     /**
@@ -38,7 +37,7 @@ class DataFillersDistribution  extends DataFillers
      */
     public function __construct(EntityManager $em)
     {
-        $this->em = $em;   
+        $this->em = $em;
     }
 
     /**
@@ -48,7 +47,8 @@ class DataFillersDistribution  extends DataFillers
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getReferenceId(string $code) {
+    public function getReferenceId(string $code)
+    {
         $this->repository = $this->em->getRepository(ReportingIndicator::class);
         $qb = $this->repository->createQueryBuilder('ri')
                                ->Where('ri.code = :code')
@@ -59,7 +59,8 @@ class DataFillersDistribution  extends DataFillers
     /**
      * Fill in ReportingValue and ReportingDistribution with total of enrolled beneficiaires
      */
-    public function BMS_Distribution_NEB() {
+    public function BMS_Distribution_NEB()
+    {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
@@ -69,8 +70,7 @@ class DataFillersDistribution  extends DataFillers
                                    ->groupBy('distribution');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMS_Distribution_NEB");
-            foreach ($results as $result) 
-            {
+            foreach ($results as $result) {
                 $new_value = new ReportingValue();
                 $new_value->setValue($result['value']);
                 $new_value->setUnity('enrolled beneficiaries');
@@ -80,7 +80,7 @@ class DataFillersDistribution  extends DataFillers
                 $this->em->flush();
 
                 $this->repository = $this->em->getRepository(DistributionData::class);
-                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]); 
+                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
                 $new_reportingDistribution = new ReportingDistribution();
                 $new_reportingDistribution->setIndicator($reference);
@@ -88,19 +88,20 @@ class DataFillersDistribution  extends DataFillers
                 $new_reportingDistribution->setDistribution($distribution);
 
                 $this->em->persist($new_reportingDistribution);
-                $this->em->flush();   
+                $this->em->flush();
             }
             $this->em->getConnection()->commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
     }
 
-     /**
-     * Fill in ReportingValue and ReportingDistribution with total value of distribution
-     */
-    public function BMS_Distribution_TDV() {
+    /**
+    * Fill in ReportingValue and ReportingDistribution with total value of distribution
+    */
+    public function BMS_Distribution_TDV()
+    {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(Commodity::class);
@@ -109,12 +110,12 @@ class DataFillersDistribution  extends DataFillers
                                    ->select('c.value AS value', 'c.id as id', 'c.unit as unity', 'dd.id as distribution');
             $commodityValues = $qb->getQuery()->getArrayResult();
             $results = [];
-            foreach($commodityValues as $commodityValue) {
+            foreach ($commodityValues as $commodityValue) {
                 $valueFind = false;
                 if (sizeof($results) === 0) {
                     array_push($results, $commodityValue);
-                }else {
-                    foreach($results as &$dataResult) {
+                } else {
+                    foreach ($results as &$dataResult) {
                         if ($commodityValue['distribution'] === $dataResult['distribution']) {
                             $dataResult['value'] = $dataResult['value'] + $commodityValue['value'];
                             $valueFind = true;
@@ -126,8 +127,7 @@ class DataFillersDistribution  extends DataFillers
                 }
             }
             $reference = $this->getReferenceId("BMS_Distribution_TDV");
-            foreach ($results as $result) 
-            {
+            foreach ($results as $result) {
                 $new_value = new ReportingValue();
                 $new_value->setValue($result['value']);
                 $new_value->setUnity($result['unity']);
@@ -137,7 +137,7 @@ class DataFillersDistribution  extends DataFillers
                 $this->em->flush();
 
                 $this->repository = $this->em->getRepository(DistributionData::class);
-                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]); 
+                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
                 $new_reportingDistribution = new ReportingDistribution();
                 $new_reportingDistribution->setIndicator($reference);
@@ -145,10 +145,10 @@ class DataFillersDistribution  extends DataFillers
                 $new_reportingDistribution->setDistribution($distribution);
 
                 $this->em->persist($new_reportingDistribution);
-                $this->em->flush();   
+                $this->em->flush();
             }
             $this->em->getConnection()->commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
@@ -157,7 +157,8 @@ class DataFillersDistribution  extends DataFillers
     /**
      * Fill in ReportingValue and ReportingDistribution with modality
      */
-    public function BMS_Distribution_M() {
+    public function BMS_Distribution_M()
+    {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(Commodity::class);
@@ -168,8 +169,7 @@ class DataFillersDistribution  extends DataFillers
                                    ->select("CONCAT(mt.name, '-', m.name) AS value", 'dd.id as distribution');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMS_Distribution_M");
-            foreach ($results as $result) 
-            {
+            foreach ($results as $result) {
                 $new_value = new ReportingValue();
                 $new_value->setValue($result['value']);
                 $new_value->setUnity('modality');
@@ -179,7 +179,7 @@ class DataFillersDistribution  extends DataFillers
                 $this->em->flush();
 
                 $this->repository = $this->em->getRepository(DistributionData::class);
-                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]); 
+                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
                 $new_reportingDistribution = new ReportingDistribution();
                 $new_reportingDistribution->setIndicator($reference);
@@ -187,10 +187,10 @@ class DataFillersDistribution  extends DataFillers
                 $new_reportingDistribution->setDistribution($distribution);
 
                 $this->em->persist($new_reportingDistribution);
-                $this->em->flush();   
+                $this->em->flush();
             }
             $this->em->getConnection()->commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
@@ -199,7 +199,8 @@ class DataFillersDistribution  extends DataFillers
     /**
      * Fill in ReportingValue and ReportingDistribution with age breakdown
      */
-    public function BMS_Distribution_AB() {
+    public function BMS_Distribution_AB()
+    {
         //Get all distribution beneficiary
         $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
         $beneficiaries = $this->repository->findAll();
@@ -209,10 +210,10 @@ class DataFillersDistribution  extends DataFillers
         $distributions = $this->repository->findAll();
 
         //Search the age of all beneficiary in all distribution and push the result of the query in a array
-        foreach($distributions as $distribution) {
+        foreach ($distributions as $distribution) {
             $results = [];
-            foreach($beneficiaries as $beneficiary) {
-                if( $distribution->getId() === $beneficiary->getDistributionData()->getId()) {
+            foreach ($beneficiaries as $beneficiary) {
+                if ($distribution->getId() === $beneficiary->getDistributionData()->getId()) {
                     $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
                     $qb = $this->repository->createQueryBuilder('db')
                                         ->leftjoin('db.beneficiary', 'b')
@@ -223,7 +224,7 @@ class DataFillersDistribution  extends DataFillers
                                             ->setParameter('distribution', $distribution->getId())
                                         ->select("TIMESTAMPDIFF(YEAR, b.dateOfBirth, CURRENT_DATE()) as value", 'dd.id as distribution');
                     $result = $qb->getQuery()->getArrayResult();
-                    if((sizeof($result)) > 0) {
+                    if ((sizeof($result)) > 0) {
                         array_push($results, $result);
                     }
                 }
@@ -231,8 +232,7 @@ class DataFillersDistribution  extends DataFillers
             //Call function to sort all age in different interval
             $byInterval = $this->sortByAge($results);
             
-            foreach ($byInterval as $ageBreakdown) 
-            {
+            foreach ($byInterval as $ageBreakdown) {
                 $this->em->getConnection()->beginTransaction();
                 try {
                     $reference = $this->getReferenceId("BMS_Distribution_AB");
@@ -245,7 +245,7 @@ class DataFillersDistribution  extends DataFillers
                     $this->em->flush();
 
                     $this->repository = $this->em->getRepository(DistributionData::class);
-                    $distribution = $this->repository->findOneBy(['id' => $results[0][0]['distribution']]); 
+                    $distribution = $this->repository->findOneBy(['id' => $results[0][0]['distribution']]);
 
                     $new_reportingDistribution = new ReportingDistribution();
                     $new_reportingDistribution->setIndicator($reference);
@@ -253,12 +253,11 @@ class DataFillersDistribution  extends DataFillers
                     $new_reportingDistribution->setDistribution($distribution);
 
                     $this->em->persist($new_reportingDistribution);
-                    $this->em->flush();   
-                 $this->em->getConnection()->commit();
-                
-                }catch (Exception $e) {
-                $this->em->getConnection()->rollback();
-                throw $e;
+                    $this->em->flush();
+                    $this->em->getConnection()->commit();
+                } catch (Exception $e) {
+                    $this->em->getConnection()->rollback();
+                    throw $e;
                 }
             }
         }
@@ -267,7 +266,8 @@ class DataFillersDistribution  extends DataFillers
     /**
      * Fill in ReportingValue and ReportingDistribution with number of men
      */
-    public function BMSU_Distribution_NM() {
+    public function BMSU_Distribution_NM()
+    {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
@@ -280,8 +280,7 @@ class DataFillersDistribution  extends DataFillers
                                    ->groupBy('distribution');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMSU_Distribution_NM");
-            foreach ($results as $result) 
-            {
+            foreach ($results as $result) {
                 $new_value = new ReportingValue();
                 $new_value->setValue($result['value']);
                 $new_value->setUnity('Men');
@@ -291,7 +290,7 @@ class DataFillersDistribution  extends DataFillers
                 $this->em->flush();
 
                 $this->repository = $this->em->getRepository(DistributionData::class);
-                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]); 
+                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
                 $new_reportingDistribution = new ReportingDistribution();
                 $new_reportingDistribution->setIndicator($reference);
@@ -299,19 +298,20 @@ class DataFillersDistribution  extends DataFillers
                 $new_reportingDistribution->setDistribution($distribution);
 
                 $this->em->persist($new_reportingDistribution);
-                $this->em->flush();   
+                $this->em->flush();
             }
             $this->em->getConnection()->commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
     }
 
-     /**
-     * Fill in ReportingValue and ReportingDistribution with number of women
-     */
-    public function BMSU_Distribution_NW() {
+    /**
+    * Fill in ReportingValue and ReportingDistribution with number of women
+    */
+    public function BMSU_Distribution_NW()
+    {
         $this->em->getConnection()->beginTransaction();
         try {
             $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
@@ -324,8 +324,7 @@ class DataFillersDistribution  extends DataFillers
                                    ->groupBy('distribution');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMSU_Distribution_NW");
-            foreach ($results as $result) 
-            {
+            foreach ($results as $result) {
                 $new_value = new ReportingValue();
                 $new_value->setValue($result['value']);
                 $new_value->setUnity('Women');
@@ -335,7 +334,7 @@ class DataFillersDistribution  extends DataFillers
                 $this->em->flush();
 
                 $this->repository = $this->em->getRepository(DistributionData::class);
-                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]); 
+                $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
                 $new_reportingDistribution = new ReportingDistribution();
                 $new_reportingDistribution->setIndicator($reference);
@@ -343,19 +342,20 @@ class DataFillersDistribution  extends DataFillers
                 $new_reportingDistribution->setDistribution($distribution);
 
                 $this->em->persist($new_reportingDistribution);
-                $this->em->flush();   
+                $this->em->flush();
             }
             $this->em->getConnection()->commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
     }
 
-     /**
-     * Fill in ReportingValue and ReportingDistribution with total of vulnerability served
-     */
-    public function BMSU_Distribution_TVS() {
+    /**
+    * Fill in ReportingValue and ReportingDistribution with total of vulnerability served
+    */
+    public function BMSU_Distribution_TVS()
+    {
         
         //Get all vulnerability criterion
         $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
@@ -373,9 +373,9 @@ class DataFillersDistribution  extends DataFillers
         $results = [];
 
         //Search all vulnerability criterion foreach beneficiary in a distribution and count the vulnerability served
-        foreach($distributions as $distribution) {
-            foreach($beneficiaries as $beneficiary) {
-                if( $distribution->getId() === $beneficiary->getDistributionData()->getId()) {
+        foreach ($distributions as $distribution) {
+            foreach ($beneficiaries as $beneficiary) {
+                if ($distribution->getId() === $beneficiary->getDistributionData()->getId()) {
                     $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
                     $qb = $this->repository->createQueryBuilder('db')
                                             ->leftjoin('db.beneficiary', 'b')
@@ -385,28 +385,27 @@ class DataFillersDistribution  extends DataFillers
                                                 ->setParameter('beneficiary', $beneficiary->getBeneficiary()->getId())
                                             ->andWhere('dd.id = :distribution')
                                                 ->setParameter('distribution', $distribution->getId());
-                    foreach($vulnerabilityCriterion as $vulnerabilityCriteria) { 
-                    $qb ->andWhere('vc.id = :criteria')
+                    foreach ($vulnerabilityCriterion as $vulnerabilityCriteria) {
+                        $qb ->andWhere('vc.id = :criteria')
                             ->setParameter('criteria', $vulnerabilityCriteria->getId())
                         ->select("count(b.id) as value", 'dd.id as distribution')
                         ->groupBy('distribution');
                         $result = $qb->getQuery()->getArrayResult();
                         //count the number of vulnerability served find in the distribution
-                        if((sizeof($result)) > 0) {
-                            if((sizeof($results)) == 0) {
+                        if ((sizeof($result)) > 0) {
+                            if ((sizeof($results)) == 0) {
                                 $results = $result;
                             } else {
                                 (int)$results[0]['value'] += (int)$result[0]['value'];
-                            }   
-                        }      
+                            }
+                        }
                     }
                 }
             }
             $this->em->getConnection()->beginTransaction();
             try {
                 $reference = $this->getReferenceId("BMSU_Distribution_TVS");
-                foreach ($results as $result) 
-                {
+                foreach ($results as $result) {
                     $new_value = new ReportingValue();
                     $new_value->setValue($result['value']);
                     $new_value->setUnity('vulnerability served');
@@ -416,7 +415,7 @@ class DataFillersDistribution  extends DataFillers
                     $this->em->flush();
     
                     $this->repository = $this->em->getRepository(DistributionData::class);
-                    $distribution = $this->repository->findOneBy(['id' => $result['distribution']]); 
+                    $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
     
                     $new_reportingDistribution = new ReportingDistribution();
                     $new_reportingDistribution->setIndicator($reference);
@@ -424,11 +423,10 @@ class DataFillersDistribution  extends DataFillers
                     $new_reportingDistribution->setDistribution($distribution);
     
                     $this->em->persist($new_reportingDistribution);
-                    $this->em->flush();   
+                    $this->em->flush();
                 }
                 $this->em->getConnection()->commit();
-                
-            }catch (Exception $e) {
+            } catch (Exception $e) {
                 $this->em->getConnection()->rollback();
                 throw $e;
             }
@@ -439,7 +437,8 @@ class DataFillersDistribution  extends DataFillers
     /**
      * Fill in ReportingValue and ReportingDistribution with total of vulnerability served by vulnerability
      */
-    public function BMSU_Distribution_TVSV() {
+    public function BMSU_Distribution_TVSV()
+    {
         
         //Get all vulnerability Criterion
         $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
@@ -456,10 +455,10 @@ class DataFillersDistribution  extends DataFillers
         $results = [];
 
         //Search all vulnerability criterion foreach beneficiary in a distribution and put the result in a array
-        foreach($distributions as $distribution) {
+        foreach ($distributions as $distribution) {
             $byDistribution = [];
-            foreach($beneficiaries as $beneficiary) {
-                if( $distribution->getId() === $beneficiary->getDistributionData()->getId()) {
+            foreach ($beneficiaries as $beneficiary) {
+                if ($distribution->getId() === $beneficiary->getDistributionData()->getId()) {
                     $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
                     $qb = $this->repository->createQueryBuilder('db')
                                         ->leftjoin('db.beneficiary', 'b')
@@ -469,24 +468,24 @@ class DataFillersDistribution  extends DataFillers
                                             ->setParameter('beneficiary', $beneficiary->getBeneficiary()->getId())
                                         ->andWhere('dd.id = :distribution')
                                             ->setParameter('distribution', $distribution->getId());
-                    foreach($vulnerabilityCriterion as $vulnerabilityCriteria) { 
-                    $qb ->andWhere('vc.id = :criteria')
+                    foreach ($vulnerabilityCriterion as $vulnerabilityCriteria) {
+                        $qb ->andWhere('vc.id = :criteria')
                             ->setParameter('criteria', $vulnerabilityCriteria->getId())
-                        ->select("count(db.id) as value",'vc.fieldString as unity', 'dd.id as distribution')
+                        ->select("count(db.id) as value", 'vc.fieldString as unity', 'dd.id as distribution')
                         ->groupBy('unity, distribution');
                         $result = $qb->getQuery()->getArrayResult();
-                        if((sizeof($result)) > 0) {
+                        if ((sizeof($result)) > 0) {
                             array_push($results, $result);
-                        }      
+                        }
                     }
                 }
             }
             //Sort the vulnerability criterion and count the number of entry find foreach of them
             $found = false;
-            foreach($results as $result) {
-                foreach($result as $value) {
+            foreach ($results as $result) {
+                foreach ($result as $value) {
                     if ((sizeof($byDistribution)) == 0) {
-                        array_push($byDistribution, $value );
+                        array_push($byDistribution, $value);
                     } else {
                         for ($i=0; $i<(sizeof($byDistribution)); $i++) {
                             if ($byDistribution[$i]['unity'] == $value['unity']) {
@@ -505,8 +504,7 @@ class DataFillersDistribution  extends DataFillers
             $this->em->getConnection()->beginTransaction();
             try {
                 $reference = $this->getReferenceId("BMSU_Distribution_TVSV");
-                foreach ($byDistribution as $result) 
-                {
+                foreach ($byDistribution as $result) {
                     $new_value = new ReportingValue();
                     $new_value->setValue($result['value']);
                     $new_value->setUnity($result['unity']);
@@ -516,7 +514,7 @@ class DataFillersDistribution  extends DataFillers
                     $this->em->flush();
     
                     $this->repository = $this->em->getRepository(DistributionData::class);
-                    $distribution = $this->repository->findOneBy(['id' => $result['distribution']]); 
+                    $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
     
                     $new_reportingDistribution = new ReportingDistribution();
                     $new_reportingDistribution->setIndicator($reference);
@@ -524,16 +522,14 @@ class DataFillersDistribution  extends DataFillers
                     $new_reportingDistribution->setDistribution($distribution);
     
                     $this->em->persist($new_reportingDistribution);
-                    $this->em->flush();   
+                    $this->em->flush();
                 }
                 $this->em->getConnection()->commit();
-                
-            }catch (Exception $e) {
+            } catch (Exception $e) {
                 $this->em->getConnection()->rollback();
                 throw $e;
             }
             $results = [];
-
         }
     }
 
@@ -543,12 +539,13 @@ class DataFillersDistribution  extends DataFillers
      * @param $ages
      * @return array
      */
-    public function sortByAge($ages) {
-        $byInterval= []; 
-        foreach($ages as $age) {
-            foreach($age as $value) {
-                if ((int)$value['value'] > 0 && (int)$value['value'] <= 10 ) {
-                    if(!array_key_exists('zeroTen', $byInterval)) {
+    public function sortByAge($ages)
+    {
+        $byInterval= [];
+        foreach ($ages as $age) {
+            foreach ($age as $value) {
+                if ((int)$value['value'] > 0 && (int)$value['value'] <= 10) {
+                    if (!array_key_exists('zeroTen', $byInterval)) {
                         $byInterval['zeroTen'] = [];
                         $byInterval['zeroTen']['unity'] = '[0-10]';
                         $byInterval['zeroTen']['value'] = 1;
@@ -556,8 +553,8 @@ class DataFillersDistribution  extends DataFillers
                         $byInterval['zeroTen']['value'] += 1;
                     }
                     break 1;
-                } else if ((int)$value['value'] > 10 && (int)$value['value'] <= 18 ) {
-                    if(!array_key_exists('TenEighteen', $byInterval)) {
+                } elseif ((int)$value['value'] > 10 && (int)$value['value'] <= 18) {
+                    if (!array_key_exists('TenEighteen', $byInterval)) {
                         $byInterval['TenEighteen'] = [];
                         $byInterval['TenEighteen']['unity'] = '[11-18]';
                         $byInterval['TenEighteen']['value'] = 1;
@@ -565,8 +562,8 @@ class DataFillersDistribution  extends DataFillers
                         $byInterval['TenEighteen']['value'] += 1;
                     }
                     break 1;
-                } else if ((int)$value['value'] > 18 && (int)$value['value'] <= 30 ) {
-                    if(!array_key_exists('EighteenThirty', $byInterval)) {
+                } elseif ((int)$value['value'] > 18 && (int)$value['value'] <= 30) {
+                    if (!array_key_exists('EighteenThirty', $byInterval)) {
                         $byInterval['EighteenThirty'] = [];
                         $byInterval['EighteenThirty']['unity'] = '[19-30]';
                         $byInterval['EighteenThirty']['value'] = 1;
@@ -574,8 +571,8 @@ class DataFillersDistribution  extends DataFillers
                         $byInterval['EighteenThirty']['value'] += 1;
                     }
                     break 1;
-                } else if ((int)$value['value'] > 30 && (int)$value['value'] <= 50 ) {
-                    if(!array_key_exists('ThirtyFifty', $byInterval)) {
+                } elseif ((int)$value['value'] > 30 && (int)$value['value'] <= 50) {
+                    if (!array_key_exists('ThirtyFifty', $byInterval)) {
                         $byInterval['ThirtyFifty'] = [];
                         $byInterval['ThirtyFifty']['unity'] = '[31-50]';
                         $byInterval['ThirtyFifty']['value'] = 1;
@@ -583,8 +580,8 @@ class DataFillersDistribution  extends DataFillers
                         $byInterval['ThirtyFifty']['value'] += 1;
                     }
                     break 1;
-                } else if ((int)$value['value'] > 50 && (int)$value['value'] <= 70 ) {
-                    if(!array_key_exists('FiftySeventy', $byInterval)) {
+                } elseif ((int)$value['value'] > 50 && (int)$value['value'] <= 70) {
+                    if (!array_key_exists('FiftySeventy', $byInterval)) {
                         $byInterval['FiftySeventy'] = [];
                         $byInterval['FiftySeventy']['unity'] = '[51-70]';
                         $byInterval['FiftySeventy']['value'] = 1;
@@ -593,7 +590,7 @@ class DataFillersDistribution  extends DataFillers
                     }
                     break 1;
                 } else {
-                    if(!array_key_exists('MoreSeventy', $byInterval)) {
+                    if (!array_key_exists('MoreSeventy', $byInterval)) {
                         $byInterval['MoreSeventy'] = [];
                         $byInterval['MoreSeventy']['unity'] = '[70+]';
                         $byInterval['MoreSeventy']['value'] = 1;

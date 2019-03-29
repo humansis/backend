@@ -145,7 +145,7 @@ class Adm2
         return $this->location;
     }
 
-        /**
+    /**
      * Set code.
      *
      * @param string $code

@@ -26,7 +26,7 @@ class TransactionController extends Controller
      * Send money to distribution beneficiaries via country financial provider
      * @Rest\Post("/transaction/distribution/{id}/send", name="send_money_for_distribution")
      * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
-     * 
+     *
      * @SWG\Tag(name="Transaction")
      *
      * @SWG\Response(
@@ -43,7 +43,8 @@ class TransactionController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      */
-    public function postTransactionAction(Request $request, DistributionData $distributionData)  {
+    public function postTransactionAction(Request $request, DistributionData $distributionData)
+    {
         $countryISO3 = $request->request->get('__country');
         $code = $request->request->get('code');
         $user = $this->getUser();
@@ -64,26 +65,26 @@ class TransactionController extends Controller
         $json = $this->get('jms_serializer')
             ->serialize($response, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["ValidatedDistribution"]));
         return new Response($json);
-        
     }
     
     /**
      * Send a verification code via email to confirm the transaction
      * @Rest\Post("/transaction/distribution/{id}/email", name="send_transaction_email_verification")
      * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
-     * 
+     *
      * @SWG\Tag(name="Transaction")
      *
      * @SWG\Response(
      *     response=200,
      *     description="OK"
      * )
-     * 
+     *
      * @param  Request $request
-     * @param DistributionData $distributionData 
+     * @param DistributionData $distributionData
      * @return Response
      */
-    public function sendVerificationEmailAction(Request $request, DistributionData $distributionData) {
+    public function sendVerificationEmailAction(Request $request, DistributionData $distributionData)
+    {
         $user = $this->getUser();
         try {
             $this->get('transaction.transaction_service')->sendVerifyEmail($user, $distributionData);
@@ -97,19 +98,20 @@ class TransactionController extends Controller
      * Update the status of the transactions sent through external API
      * @Rest\Get("/transaction/distribution/{id}/pickup", name="update_transaction_status")
      * @Security("is_granted('ROLE_AUTHORISE_PAYMENT')")
-     * 
+     *
      * @SWG\Tag(name="Transaction")
      *
      * @SWG\Response(
      *     response=200,
      *     description="OK"
      * )
-     * 
+     *
      * @param  Request $request
-     * @param DistributionData $distributionData 
+     * @param DistributionData $distributionData
      * @return Response
      */
-    public function updateTransactionStatusAction(Request $request, DistributionData $distributionData) {
+    public function updateTransactionStatusAction(Request $request, DistributionData $distributionData)
+    {
         $countryISO3 = $request->request->get('__country');
         try {
             $beneficiaries = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $distributionData);
@@ -136,7 +138,8 @@ class TransactionController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      */
-    public function getLogsTransactionAction(DistributionData $distributionData) {
+    public function getLogsTransactionAction(DistributionData $distributionData)
+    {
         $user = $this->getUser();
         try {
             $this->get('transaction.transaction_service')->sendLogsEmail($user, $distributionData);
@@ -158,11 +161,12 @@ class TransactionController extends Controller
      *     description="OK"
      * )
      *
-     * @param Request $request 
-     * @param DistributionData $distributionData 
+     * @param Request $request
+     * @param DistributionData $distributionData
      * @return Response
      */
-    public function getTestTransactionAction(Request $request, DistributionData $distributionData) {
+    public function getTestTransactionAction(Request $request, DistributionData $distributionData)
+    {
         $countryISO3 = $request->request->get('__country');
 
         try {
@@ -188,7 +192,8 @@ class TransactionController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      */
-    public function checkProgressionTransactionAction(DistributionData $distributionData) {
+    public function checkProgressionTransactionAction(DistributionData $distributionData)
+    {
         $user = $this->getUser();
 
         try {
@@ -214,7 +219,8 @@ class TransactionController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getFPCredentialAction(Request $request) {
+    public function getFPCredentialAction(Request $request)
+    {
         $country = $request->request->all()['__country'];
 
         try {
@@ -244,7 +250,8 @@ class TransactionController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function updateFPAction(Request $request) {
+    public function updateFPAction(Request $request)
+    {
         $data = $request->request->all();
 
         try {
@@ -258,5 +265,4 @@ class TransactionController extends Controller
 
         return new Response($json);
     }
-
 }

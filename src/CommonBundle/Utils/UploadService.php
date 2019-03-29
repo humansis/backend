@@ -17,10 +17,8 @@ use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
 use Aws\Credentials\Credentials;
 
-
 class UploadService implements ContainerAwareInterface
 {
-
     private $container;
     private $s3;
  
@@ -67,22 +65,17 @@ class UploadService implements ContainerAwareInterface
      * @return mixed
      * @throws \Exception
      */
-    public function uploadImage(UploadedFile $file, AwsS3 $adapter) {
-
+    public function uploadImage(UploadedFile $file, AwsS3 $adapter)
+    {
         try {
-
             $filename = sprintf('%s.%s', uniqid(), $file->getClientOriginalExtension());
             $adapter->setMetadata('Content-Type', $file->getMimeType());
             $response = $adapter->write($filename, file_get_contents($file->getPathname()));
             return $filename;
-
-        }
-        catch(S3Exception $e) {
+        } catch (S3Exception $e) {
             throw $e;
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
-
 }

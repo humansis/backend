@@ -116,9 +116,9 @@ class Project implements ExportableInterface
      */
     private $usersProject;
 
-     /**
-     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingProject", mappedBy="project", cascade={"persist"})
-     **/
+    /**
+    * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingProject", mappedBy="project", cascade={"persist"})
+    **/
     private $reportingProject;
 
     /**
@@ -599,7 +599,7 @@ class Project implements ExportableInterface
      * Returns an array representation of this class in order to prepare the export
      * @return array
      */
-    function getMappedValueForExport(): array
+    public function getMappedValueForExport(): array
     {
         //  Recover all donors with the Donors object
         $donors = [];

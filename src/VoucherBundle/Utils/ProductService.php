@@ -20,26 +20,26 @@ class ProductService
 {
 
   /** @var EntityManagerInterface $em */
-  private $em;
+    private $em;
 
-  /** @var ValidatorInterface $validator */
-  private $validator;
+    /** @var ValidatorInterface $validator */
+    private $validator;
 
-  /** @var ContainerInterface $container */
-  private $container;
+    /** @var ContainerInterface $container */
+    private $container;
 
-  /**
-   * UserService constructor.
-   * @param EntityManagerInterface $entityManager
-   * @param ValidatorInterface $validator
-   * @param ContainerInterface $container
-   */
-  public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
-  {
-    $this->em = $entityManager;
-    $this->validator = $validator;
-    $this->container = $container;
-  }
+    /**
+     * UserService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param ValidatorInterface $validator
+     * @param ContainerInterface $container
+     */
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    {
+        $this->em = $entityManager;
+        $this->validator = $validator;
+        $this->container = $container;
+    }
 
 
     /**
@@ -51,7 +51,6 @@ class ProductService
      */
     public function create(array $productData)
     {
-
         try {
             $product = new Product();
 
@@ -62,8 +61,7 @@ class ProductService
 
             $this->em->persist($product);
             $this->em->flush();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw new \Exception('Error while creating a product' . $e->getMessage());
         }
 
@@ -75,7 +73,8 @@ class ProductService
      *
      * @return array
      */
-    public function findAll() {
+    public function findAll()
+    {
         return $this->em->getRepository(Product::class)->findBy(['archived' => false]);
     }
 
@@ -86,7 +85,8 @@ class ProductService
      * @param array $productData
      * @return Product
      */
-    public function update(Product $product, array $productData) {
+    public function update(Product $product, array $productData)
+    {
         $product->setUnit($productData['unit'])
             ->setImage($productData['image']);
 
@@ -102,7 +102,8 @@ class ProductService
      * @param Product $product
      * @return string
      */
-    public function archive(Product $product) {
+    public function archive(Product $product)
+    {
         $product->setArchived(true);
 
         $this->em->merge($product);

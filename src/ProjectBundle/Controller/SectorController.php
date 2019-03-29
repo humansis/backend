@@ -3,7 +3,6 @@
 
 namespace ProjectBundle\Controller;
 
-
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Sector;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

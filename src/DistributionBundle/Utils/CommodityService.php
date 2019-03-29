@@ -3,7 +3,6 @@
 
 namespace DistributionBundle\Utils;
 
-
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\ModalityType;
@@ -48,8 +47,9 @@ class CommodityService
 
         $this->em->persist($commodity);
 
-        if ($flush)
+        if ($flush) {
             $this->em->flush();
+        }
 
         return $commodity;
     }

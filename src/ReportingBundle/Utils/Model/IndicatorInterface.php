@@ -14,9 +14,9 @@ interface IndicatorInterface
     */
     public function getId();
 
-   /**
-     * get code
-    */
+    /**
+      * get code
+     */
     public function setReference($reference);
 
     /**
@@ -53,6 +53,4 @@ interface IndicatorInterface
      * get graph
     */
     public function getGraph();
-
-
 }

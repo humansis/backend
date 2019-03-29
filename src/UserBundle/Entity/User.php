@@ -79,14 +79,14 @@ class User extends BaseUser implements ExportableInterface
      */
     private $transactions;
 
-    /**	
-     * @ORM\OneToOne(targetEntity="\VoucherBundle\Entity\Vendor", mappedBy="user", cascade={"persist", "remove"})	
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")	
-     * @Groups({"FullUser"})	
-     */	
+    /**
+     * @ORM\OneToOne(targetEntity="\VoucherBundle\Entity\Vendor", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
+     * @Groups({"FullUser"})
+     */
     private $vendor;
 
-        /**
+    /**
      * @var string
      * @ORM\Column(name="language", type="string", length=255, nullable=true)
      * @Groups({"FullUser"})
@@ -184,8 +184,8 @@ class User extends BaseUser implements ExportableInterface
     }
     
     /**
-     * Get the value of Transaction 
-     * 
+     * Get the value of Transaction
+     *
      * @return Transaction
      */
     public function getTransactions()
@@ -193,11 +193,11 @@ class User extends BaseUser implements ExportableInterface
         return $this->transactions;
     }
  
-    /** 
-     * Add a Transaction 
-     * 
+    /**
+     * Add a Transaction
+     *
      * @param Transaction transaction
-     * 
+     *
      * @return self
      */
     public function addTransaction(Transaction $transaction)
@@ -236,7 +236,7 @@ class User extends BaseUser implements ExportableInterface
      * Returns an array representation of this class in order to prepare the export
      * @return array
      */
-    function getMappedValueForExport(): array
+    public function getMappedValueForExport(): array
     {
         return [
             'email' => $this->getEmail(),
@@ -244,34 +244,35 @@ class User extends BaseUser implements ExportableInterface
         ];
     }
 
-    function getLanguage()
+    public function getLanguage()
     {
         return $this->language;
-    } 
+    }
 
-    function setLanguage($language) {
+    public function setLanguage($language)
+    {
         $this->language = $language;
     }
 
-     /**	
-     * Set vendor.	
-     *	
-     * @param \VoucherBundle\Entity\Vendor|null $vendor	
-     *	
-     * @return User	
-     */	
-    public function setVendor(\VoucherBundle\Entity\Vendor $vendor = null)	
-    {	
-        $this->vendor = $vendor;	
-         return $this;	
-    }	
-     /**	
-     * Get vendor.	
-     *	
-     * @return \VoucherBundle\Entity\Vendor|null	
-     */	
-    public function getVendor()	
-    {	
-        return $this->vendor;	
+    /**
+    * Set vendor.
+    *
+    * @param \VoucherBundle\Entity\Vendor|null $vendor
+    *
+    * @return User
+    */
+    public function setVendor(\VoucherBundle\Entity\Vendor $vendor = null)
+    {
+        $this->vendor = $vendor;
+        return $this;
+    }
+    /**
+    * Get vendor.
+    *
+    * @return \VoucherBundle\Entity\Vendor|null
+    */
+    public function getVendor()
+    {
+        return $this->vendor;
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace UserBundle\Repository;
+
 use UserBundle\Entity\User;
 
 /**
@@ -11,17 +12,16 @@ use UserBundle\Entity\User;
  */
 class UserRepository extends \Doctrine\ORM\EntityRepository
 {
-
     public function edit(User $user, array $arrayData)
     {
-        if (empty($arrayData))
+        if (empty($arrayData)) {
             return $user;
+        }
 
         $qb = $this->_em->createQueryBuilder();
         $builder = $qb->update("UserBundle:User", 'u');
 
-        foreach ($arrayData as $column => $value)
-        {
+        foreach ($arrayData as $column => $value) {
             $builder->set("u.$column", $qb->expr()->literal($value));
         }
 

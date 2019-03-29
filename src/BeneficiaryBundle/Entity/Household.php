@@ -2,7 +2,6 @@
 
 namespace BeneficiaryBundle\Entity;
 
-
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
@@ -615,6 +614,4 @@ class Household
 
         return $this;
     }
-
-
 }

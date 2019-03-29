@@ -5,7 +5,6 @@ namespace DistributionBundle\Model;
 
 use JMS\Serializer\Annotation\Groups;
 
-
 class Criteria
 {
 
@@ -35,11 +34,11 @@ class Criteria
         return $this;
     }
 
-     /**
-     * @var string $distributionType
-     * @Groups({"Criteria"})
-     *
-     */
+    /**
+    * @var string $distributionType
+    * @Groups({"Criteria"})
+    *
+    */
     protected $distributionType;
 
     /**
@@ -60,6 +59,4 @@ class Criteria
 
         return $this;
     }
-
-
 }

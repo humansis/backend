@@ -3,12 +3,10 @@
 
 namespace Tests\UserBundle\Controller;
 
-
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
 use Tests\DistributionBundle\Controller\DistributionControllerTest;
-
 
 class TransactionController extends BMSServiceTestCase
 {

@@ -22,7 +22,7 @@ class CommonController extends Controller
 
     /**
      * @Rest\Get("/summary", name="get_summary")
-     * 
+     *
      * @SWG\Tag(name="Common")
      *
      * @SWG\Response(
@@ -37,27 +37,23 @@ class CommonController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getSummaryAction(Request $request)  {
+    public function getSummaryAction(Request $request)
+    {
         $country = $request->request->get('__country');
         
-        try
-        {
+        try {
             $total_beneficiaries = $this->get('beneficiary.beneficiary_service')->countAll($country);
             $active_projects = $this->get('project.project_service')->countAll($country);
             $enrolled_beneficiaries = $this->get('distribution.distribution_service')->countAllBeneficiaries($country);
             $total_value_transactions = $this->get('distribution.distribution_service')->getTotalValue($country);
             
             $result = array($total_beneficiaries, $active_projects, $enrolled_beneficiaries, $total_value_transactions);
-        }
-        catch (\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
         $json = $this->get('jms_serializer')->serialize($result, 'json', null);
         
         return new Response($json);
-        
     }
-
 }

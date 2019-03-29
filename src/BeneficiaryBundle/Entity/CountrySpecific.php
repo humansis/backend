@@ -189,7 +189,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
     }
 
 
-    function getMappedValueForExport(): array
+    public function getMappedValueForExport(): array
     {
         $countrySpecificAnswers = array();
 

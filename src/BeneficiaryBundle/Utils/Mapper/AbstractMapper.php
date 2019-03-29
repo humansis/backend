@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Utils\Mapper;
 
-
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,26 +33,21 @@ abstract class AbstractMapper
         $nbCountrySpecific = count($countrySpecifics);
         $mappingCSVCountry = [];
         $countrySpecificsAreLoaded = false;
-        foreach (Household::MAPPING_CSV as $indexFormatted => $indexCSV)
-        {
+        foreach (Household::MAPPING_CSV as $indexFormatted => $indexCSV) {
             // For recursive array (allowed only 1 level of recursivity)
-            if (is_array($indexCSV))
-            {
-                foreach ($indexCSV as $indexFormatted2 => $indexCSV2)
-                {
+            if (is_array($indexCSV)) {
+                foreach ($indexCSV as $indexFormatted2 => $indexCSV2) {
                     // If the column is before the non-static columns, change nothing
-                    if ($indexCSV2 < Household::firstColumnNonStatic && !$countrySpecificsAreLoaded)
+                    if ($indexCSV2 < Household::firstColumnNonStatic && !$countrySpecificsAreLoaded) {
                         $mappingCSVCountry[$indexFormatted][$indexFormatted2] = $indexCSV2;
+                    }
                     // Else we increment the column.
                     // Example : if $nbCountrySpecific = 1, we shift the column by 1 (if the column is X, it will became Y)
-                    else
-                    {
+                    else {
                         // If we have not added the country specific column in the mapping
-                        if (!$countrySpecificsAreLoaded)
-                        {
+                        if (!$countrySpecificsAreLoaded) {
                             // Add each country specific column in the mapping
-                            for ($i = 0; $i < $nbCountrySpecific; $i++)
-                            {
+                            for ($i = 0; $i < $nbCountrySpecific; $i++) {
                                 $mappingCSVCountry["tmp_country_specific" . $i] =
                                     $this->SUMOfLetter($indexCSV2, $i);
                             }
@@ -62,20 +56,15 @@ abstract class AbstractMapper
                         $mappingCSVCountry[$indexFormatted][$indexFormatted2] = $this->SUMOfLetter($indexCSV2, $nbCountrySpecific);
                     }
                 }
-            }
-            else
-            {
+            } else {
                 // Same process than in the if
-                if ($indexCSV < Household::firstColumnNonStatic)
+                if ($indexCSV < Household::firstColumnNonStatic) {
                     $mappingCSVCountry[$indexFormatted] = $indexCSV;
-                else
-                {
+                } else {
                     // If we have not added the country specific column in the mapping
-                    if (!$countrySpecificsAreLoaded)
-                    {
+                    if (!$countrySpecificsAreLoaded) {
                         // Add each country specific column in the mapping
-                        for ($i = 0; $i < $nbCountrySpecific; $i++)
-                        {
+                        for ($i = 0; $i < $nbCountrySpecific; $i++) {
                             $mappingCSVCountry["tmp_country_specific" . $i] =
                                 $this->SUMOfLetter($indexCSV, $i);
                         }
@@ -105,12 +94,10 @@ abstract class AbstractMapper
             $this->moreThanZ = true;
         }
 
-        if ($ascii > 90)
-        {
+        if ($ascii > 90) {
             $prefix = 'A';
             $ascii -= 26;
-            while ($ascii > 90)
-            {
+            while ($ascii > 90) {
                 $prefix++;
                 $ascii -= 90;
             }

@@ -6,8 +6,8 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Utils\ExportService;
 use Tests\BMSServiceTestCase;
 
-class BeneficiaryControllerTest extends BMSServiceTestCase {
-
+class BeneficiaryControllerTest extends BMSServiceTestCase
+{
     public function setUp()
     {
         // Configuration of BMSServiceTest
@@ -18,8 +18,8 @@ class BeneficiaryControllerTest extends BMSServiceTestCase {
         $this->client = $this->container->get('test.client');
     }
 
-    public function testGetAllBeneficiaryApi(){
-
+    public function testGetAllBeneficiaryApi()
+    {
         $this->assertTrue(true == true);
         /*// Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
@@ -44,8 +44,8 @@ class BeneficiaryControllerTest extends BMSServiceTestCase {
         return true;
     }
 
-    public function testGetAllVulnerabilityCriteria() {
-
+    public function testGetAllVulnerabilityCriteria()
+    {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);

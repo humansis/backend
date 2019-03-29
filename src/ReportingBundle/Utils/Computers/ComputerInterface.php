@@ -9,6 +9,6 @@ use ReportingBundle\Utils\Model\IndicatorInterface;
  * @package ReportingBundle\Utils\Computers
  */
 interface ComputerInterface
- {
-     public function compute(IndicatorInterface $indicator, array $filters = []);
- }
+{
+    public function compute(IndicatorInterface $indicator, array $filters = []);
+}

@@ -15,7 +15,8 @@ use Doctrine\ORM\EntityManager;
  * Class Computer
  * @package ReportingBundle\Utils\Computers
  */
-class Computer implements ComputerInterface {
+class Computer implements ComputerInterface
+{
 
     /**
      * @var EntityManager
@@ -34,7 +35,7 @@ class Computer implements ComputerInterface {
      */
     public function __construct(EntityManager $em, ProjectDataRetrievers $project)
     {
-        $this->em = $em; 
+        $this->em = $em;
         $this->project = $project;
     }
 
@@ -45,33 +46,26 @@ class Computer implements ComputerInterface {
      * @param array $filters
      * @return mixed
      */
-    public function compute(IndicatorInterface $indicator , array $filters = []) 
+    public function compute(IndicatorInterface $indicator, array $filters = [])
     {
         $filters['__'] = [
                     'functionName' => $indicator->getCode()
         ];
 
-        if(preg_match("#^BMS_C#", $indicator->getCode())) 
-        {
-            if(is_callable(array(new CountryDataRetrievers($this->em), $indicator->getCode())))
-            {
+        if (preg_match("#^BMS_C#", $indicator->getCode())) {
+            if (is_callable(array(new CountryDataRetrievers($this->em), $indicator->getCode()))) {
                 return call_user_func_array([new CountryDataRetrievers($this->em), $indicator->getCode()], [$filters]);
-        
             }
         }
 
-        if(preg_match("#^BMS_P#", $indicator->getCode())) 
-        {
-            if(is_callable(array(new ProjectDataRetrievers($this->em), $indicator->getCode())))
-            {
+        if (preg_match("#^BMS_P#", $indicator->getCode())) {
+            if (is_callable(array(new ProjectDataRetrievers($this->em), $indicator->getCode()))) {
                 return call_user_func_array([new ProjectDataRetrievers($this->em), $indicator->getCode()], [$filters]);
             }
         }
 
-        if(preg_match("#^BMS_D#", $indicator->getCode())) 
-        {
-            if(is_callable(array(new DistributionDataRetrievers($this->em, $this->project), $indicator->getCode())))
-            {
+        if (preg_match("#^BMS_D#", $indicator->getCode())) {
+            if (is_callable(array(new DistributionDataRetrievers($this->em, $this->project), $indicator->getCode()))) {
                 return call_user_func_array([new DistributionDataRetrievers($this->em, $this->project), $indicator->getCode()], [$filters]);
             }
         }

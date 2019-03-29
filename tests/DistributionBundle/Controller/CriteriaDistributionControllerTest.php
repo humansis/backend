@@ -3,7 +3,6 @@
 
 namespace Tests\DistributionBundle\Controller;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
@@ -42,7 +41,8 @@ class CriteriaDistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetCriteria() {
+    public function testGetCriteria()
+    {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -66,8 +66,8 @@ class CriteriaDistributionControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetBeneficiariesNumberAction(){
-
+    public function testGetBeneficiariesNumberAction()
+    {
         $criteria = array('criteria' => array([
 
             "kind_beneficiary" => "Beneficiary",
@@ -92,7 +92,7 @@ class CriteriaDistributionControllerTest extends BMSServiceTestCase
         );
 
         $project = $this->em->getRepository(Project::class)->findAll();
-        if(!$project){
+        if (!$project) {
             $this->fail("\nUnable to find a project\n");
             return false;
         }

@@ -3,7 +3,6 @@
 
 namespace CommonBundle\Voter;
 
-
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -36,8 +35,9 @@ class ProjectVoter extends BMSVoter
      */
     protected function supports($attribute, $subject)
     {
-        if ($subject instanceof Project)
+        if ($subject instanceof Project) {
             return true;
+        }
 
         return false;
     }
@@ -61,12 +61,14 @@ class ProjectVoter extends BMSVoter
             "user" => $user,
             "project" => $subject
         ]);
-        if ($userProject instanceof UserProject)
+        if ($userProject instanceof UserProject) {
             return true;
+        }
 
         $roles = $user->getRoles();
-        if ($this->hasRole($roles, "ROLE_COUNTRY_MANAGER") || $this->hasRole($roles, "ROLE_REGIONAL_MANAGER"))
+        if ($this->hasRole($roles, "ROLE_COUNTRY_MANAGER") || $this->hasRole($roles, "ROLE_REGIONAL_MANAGER")) {
             return true;
+        }
 
         return false;
     }

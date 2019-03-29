@@ -1,6 +1,7 @@
 <?php
 
 namespace DistributionBundle\Repository;
+
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\DistributionData;
 
@@ -17,7 +18,7 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder("db");
         $q = $qb->select("COUNT(DISTINCT db.beneficiary)")
                 ->leftJoin("db.beneficiary", "b")
-                ->leftJoin("b.household","hh")
+                ->leftJoin("b.household", "hh")
                 ->leftJoin("hh.location", "l")
                 ->leftJoin("l.adm1", "adm1")
                 ->leftJoin("l.adm2", "adm2")
@@ -48,7 +49,8 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getOneOrNullResult();
     }
 
-    public function findAssignable(DistributionData $distributionData) {
+    public function findAssignable(DistributionData $distributionData)
+    {
         $qb = $this->createQueryBuilder("db");
         $q = $qb->where("db.distributionData = :dd")
                 ->setParameter("dd", $distributionData)

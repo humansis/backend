@@ -10,7 +10,8 @@ namespace ReportingBundle\Repository;
  */
 class ReportingIndicatorRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getIndicatorsById($indicatorsId) {
+    public function getIndicatorsById($indicatorsId)
+    {
         $qb = $this->createQueryBuilder('ri');
 
         $qb

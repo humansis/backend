@@ -9,7 +9,6 @@ use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use CommonBundle\Utils\ExportableInterface;
 
-
 /**
  * Beneficiary
  *
@@ -522,7 +521,7 @@ class Beneficiary implements ExportableInterface
      * Returns an array representation of this class in order to prepare the export
      * @return array
      */
-    function getMappedValueForExport(): array
+    public function getMappedValueForExport(): array
     {
         // Recover the phones of the beneficiary
         $typephones = ["",""];
@@ -554,24 +553,25 @@ class Beneficiary implements ExportableInterface
             array_push($valuesnationalID, $value->getIdNumber());
         }
         $typenationalID = join(',', $typenationalID);
-        $valuesnationalID = join(',',$valuesnationalID);
+        $valuesnationalID = join(',', $valuesnationalID);
 
         //Recover country specifics for the household
         $valueCountrySpecific = [];
-        foreach ($this->getHousehold()->getCountrySpecificAnswers()->getValues() as $value){
+        foreach ($this->getHousehold()->getCountrySpecificAnswers()->getValues() as $value) {
             $valueCountrySpecific[$value->getCountrySpecific()->getFieldString()] = $value->getAnswer();
         }
 
-        if ($this->getGender() == 0)
+        if ($this->getGender() == 0) {
             $valueGender = "Female";
-        else
+        } else {
             $valueGender = "Male";
+        }
 
         // Recover adm1 , adm2 , adm3 , adm 4 from localisation object : we have to verify if they are null before to get the name
-        $adm1 = ( ! empty($this->getHousehold()->getLocation()->getAdm1()) ) ? $this->getHousehold()->getLocation()->getAdm1()->getName() : '';
-        $adm2 = ( ! empty($this->getHousehold()->getLocation()->getAdm2()) ) ? $this->getHousehold()->getLocation()->getAdm2()->getName() : '';
-        $adm3 = ( ! empty($this->getHousehold()->getLocation()->getAdm3()) ) ? $this->getHousehold()->getLocation()->getAdm3()->getName() : '';
-        $adm4 = ( ! empty($this->getHousehold()->getLocation()->getAdm4()) ) ? $this->getHousehold()->getLocation()->getAdm4()->getName() : '';
+        $adm1 = (! empty($this->getHousehold()->getLocation()->getAdm1())) ? $this->getHousehold()->getLocation()->getAdm1()->getName() : '';
+        $adm2 = (! empty($this->getHousehold()->getLocation()->getAdm2())) ? $this->getHousehold()->getLocation()->getAdm2()->getName() : '';
+        $adm3 = (! empty($this->getHousehold()->getLocation()->getAdm3())) ? $this->getHousehold()->getLocation()->getAdm3()->getName() : '';
+        $adm4 = (! empty($this->getHousehold()->getLocation()->getAdm4())) ? $this->getHousehold()->getLocation()->getAdm4()->getName() : '';
 
         if ($this->status === true) {
             $finalArray = [
@@ -622,11 +622,13 @@ class Beneficiary implements ExportableInterface
             "nationalIds" => $valuesnationalID
         ];
 
-        foreach ($valueCountrySpecific as $key => $value)
+        foreach ($valueCountrySpecific as $key => $value) {
             $finalArray[$key] = $value;
+        }
 
-        foreach ($tempBenef as $key => $value)
+        foreach ($tempBenef as $key => $value) {
             $finalArray[$key] = $value;
+        }
 
         return $finalArray;
     }

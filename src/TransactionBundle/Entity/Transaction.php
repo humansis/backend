@@ -17,12 +17,12 @@ use JMS\Serializer\Annotation\Groups;
 class Transaction
 {
     /**
-     * Transaction status 
+     * Transaction status
      * @var boolean
      */
-     const FAILURE = 0;
-     const SUCCESS = 1;
-     const NO_PHONE = 2;
+    const FAILURE = 0;
+    const SUCCESS = 1;
+    const NO_PHONE = 2;
     
     /**
      * @var int
@@ -32,7 +32,7 @@ class Transaction
      * @ORM\GeneratedValue(strategy="AUTO")
      *
      * @Groups({"ValidatedDistribution"})
-     * 
+     *
      */
     private $id;
     
@@ -111,7 +111,7 @@ class Transaction
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
-     * 
+     *
      * @Groups({"ValidatedDistribution"})
      */
     private $updatedOn;
@@ -132,8 +132,8 @@ class Transaction
     }
 
     /**
-     * Get the value of Id 
-     * 
+     * Get the value of Id
+     *
      * @return int
      */
     public function getId()
@@ -142,8 +142,8 @@ class Transaction
     }
  
     /**
-     * Get the value of Transaction Id 
-     * 
+     * Get the value of Transaction Id
+     *
      * @return string
      */
     public function getTransactionId()
@@ -151,11 +151,11 @@ class Transaction
         return $this->transactionId;
     }
  
-    /** 
-     * Set the value of Transaction Id 
-     * 
+    /**
+     * Set the value of Transaction Id
+     *
      * @param string transactionId
-     * 
+     *
      * @return self
      */
     public function setTransactionId($transactionId)
@@ -166,8 +166,8 @@ class Transaction
     }
  
     /**
-     * Get the value of Amount Sent 
-     * 
+     * Get the value of Amount Sent
+     *
      * @return string
      */
     public function getAmountSent()
@@ -175,11 +175,11 @@ class Transaction
         return $this->amountSent;
     }
  
-    /** 
-     * Set the value of Amount Sent 
-     * 
+    /**
+     * Set the value of Amount Sent
+     *
      * @param string amountSent
-     * 
+     *
      * @return self
      */
     public function setAmountSent($amountSent)
@@ -190,8 +190,8 @@ class Transaction
     }
  
     /**
-     * Get the value of Date Sent 
-     * 
+     * Get the value of Date Sent
+     *
      * @return \DateTime
      */
     public function getDateSent()
@@ -199,11 +199,11 @@ class Transaction
         return $this->dateSent;
     }
  
-    /** 
-     * Set the value of Date Sent 
-     * 
+    /**
+     * Set the value of Date Sent
+     *
      * @param \DateTime dateSent
-     * 
+     *
      * @return self
      */
     public function setDateSent(\DateTime $dateSent)
@@ -214,8 +214,8 @@ class Transaction
     }
  
     /**
-     * Get the value of Transaction Status 
-     * 
+     * Get the value of Transaction Status
+     *
      * @return int
      */
     public function getTransactionStatus()
@@ -223,11 +223,11 @@ class Transaction
         return $this->transactionStatus;
     }
  
-    /** 
-     * Set the value of Transaction Status 
-     * 
+    /**
+     * Set the value of Transaction Status
+     *
      * @param int transactionStatus
-     * 
+     *
      * @return self
      */
     public function setTransactionStatus($transactionStatus)
@@ -238,8 +238,8 @@ class Transaction
     }
  
     /**
-     * Get the value of Message 
-     * 
+     * Get the value of Message
+     *
      * @return string
      */
     public function getMessage()
@@ -247,11 +247,11 @@ class Transaction
         return $this->message;
     }
  
-    /** 
-     * Set the value of Message 
-     * 
+    /**
+     * Set the value of Message
+     *
      * @param string message
-     * 
+     *
      * @return self
      */
     public function setMessage($message)
@@ -262,8 +262,8 @@ class Transaction
     }
  
     /**
-     * Get the value of Money Received 
-     * 
+     * Get the value of Money Received
+     *
      * @return float
      */
     public function getMoneyReceived()
@@ -271,11 +271,11 @@ class Transaction
         return $this->moneyReceived;
     }
  
-    /** 
-     * Set the value of Money Received 
-     * 
+    /**
+     * Set the value of Money Received
+     *
      * @param float moneyReceived
-     * 
+     *
      * @return self
      */
     public function setMoneyReceived($moneyReceived)
@@ -286,8 +286,8 @@ class Transaction
     }
  
     /**
-     * Get the value of Pickup Date 
-     * 
+     * Get the value of Pickup Date
+     *
      * @return \DateTime
      */
     public function getPickupDate()
@@ -295,11 +295,11 @@ class Transaction
         return $this->pickupDate;
     }
  
-    /** 
-     * Set the value of Pickup Date 
-     * 
+    /**
+     * Set the value of Pickup Date
+     *
      * @param \DateTime pickupDate
-     * 
+     *
      * @return self
      */
     public function setPickupDate(\DateTime $pickupDate)
@@ -311,8 +311,8 @@ class Transaction
  
 
     /**
-     * Get the value of Distribution Beneficiary 
-     * 
+     * Get the value of Distribution Beneficiary
+     *
      * @return DistributionBeneficiary
      */
     public function getDistributionBeneficiary()
@@ -320,11 +320,11 @@ class Transaction
         return $this->distributionBeneficiary;
     }
  
-    /** 
-     * Set the value of Distribution Beneficiary 
-     * 
+    /**
+     * Set the value of Distribution Beneficiary
+     *
      * @param DistributionBeneficiary distributionBeneficiary
-     * 
+     *
      * @return self
      */
     public function setDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
@@ -335,8 +335,8 @@ class Transaction
     }
  
     /**
-    * Get the value of Sent By 
-    * 
+    * Get the value of Sent By
+    *
     * @return User
     */
     public function getSentBy()
@@ -344,11 +344,11 @@ class Transaction
         return $this->sentBy;
     }
     
-    /** 
-    * Set the value of Sent By 
-    * 
+    /**
+    * Set the value of Sent By
+    *
     * @param User sentBy
-    * 
+    *
     * @return self
     */
     public function setSentBy(User $sentBy)
@@ -359,8 +359,8 @@ class Transaction
     }
     
     /**
-     * Get the value of Updated On 
-     * 
+     * Get the value of Updated On
+     *
      * @return \DateTime|null
      */
     public function getUpdatedOn()
@@ -368,11 +368,11 @@ class Transaction
         return $this->updatedOn;
     }
  
-    /** 
-     * Set the value of Updated On 
-     * 
+    /**
+     * Set the value of Updated On
+     *
      * @param \DateTime|null updatedOn
-     * 
+     *
      * @return self
      */
     public function setUpdatedOn($updatedOn)

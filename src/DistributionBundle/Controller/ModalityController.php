@@ -3,7 +3,6 @@
 
 namespace DistributionBundle\Controller;
 
-
 use DistributionBundle\Entity\Modality;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Utils\ModalityService;

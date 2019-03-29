@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Utils;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
@@ -73,8 +72,7 @@ class HouseholdService
         LocationService $locationService,
         ValidatorInterface $validator,
         ContainerInterface $container
-    )
-    {
+    ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->beneficiaryService = $beneficiaryService;
@@ -148,14 +146,13 @@ class HouseholdService
             ->setAddressNumber($householdArray["address_number"]);
 
         $errors = $this->validator->validate($household);
-        if (count($errors) > 0)
-        {
+        if (count($errors) > 0) {
             $errorsMessage = "";
             /** @var ConstraintViolation $error */
-            foreach ($errors as $error)
-            {
-                if ("" !== $errorsMessage)
+            foreach ($errors as $error) {
+                if ("" !== $errorsMessage) {
                     $errorsMessage .= " ";
+                }
                 $errorsMessage .= $error->getMessage();
             }
 
@@ -164,37 +161,37 @@ class HouseholdService
 
         // Save or update location instance
         $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
-        if (null === $location)
+        if (null === $location) {
             throw new \Exception("Location was not found.");
+        }
         $household->setLocation($location);
 
-        if($actualAction === 'update') {
+        if ($actualAction === 'update') {
             $oldProjects = $household->getProjects()->getValues();
             $oldProjects = array_map(
-                function($project) {
+                function ($project) {
                     return $project->getId();
-                }, 
+                },
                 $household->getProjects()->getValues()
             );
             $newProjects = $projectsArray;
             $toRemove = array_diff($oldProjects, $newProjects);
-            foreach($toRemove as $removeProjectId) {
+            foreach ($toRemove as $removeProjectId) {
                 $removeProject = $this->em->getRepository(Project::class)->findOneBy(["id" => $removeProjectId]);
                 $household->removeProject($removeProject);
             }
             $toAdd = array_diff($newProjects, $oldProjects);
-            foreach($toAdd as $addProjectId) {
+            foreach ($toAdd as $addProjectId) {
                 $addProject = $this->em->getRepository(Project::class)->findOneBy(["id" => $addProjectId]);
                 $household->addProject($addProject);
             }
-        } 
-        else {
+        } else {
             //?
-            foreach($projectsArray as $newProjectID)  {
+            foreach ($projectsArray as $newProjectID) {
                 $newProject = $this->em->getRepository(Project::class)->find($newProjectID);
-                if (!$newProject instanceof Project)
+                if (!$newProject instanceof Project) {
                     throw new \Exception("The project " . $newProjectID . " was not found");
-                else {
+                } else {
                     $household->addProject($newProject);
                 }
             }
@@ -202,8 +199,7 @@ class HouseholdService
         
         $this->em->persist($household);
 
-        if (!empty($householdArray["beneficiaries"]))
-        {
+        if (!empty($householdArray["beneficiaries"])) {
             $hasHead = false;
             $beneficiariesPersisted = [];
             if ($actualAction === "update") {
@@ -211,14 +207,16 @@ class HouseholdService
             }
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 try {
-                    if ($beneficiaryToSave['gender'] == 'Male')
+                    if ($beneficiaryToSave['gender'] == 'Male') {
                         $beneficiaryToSave['gender'] = 1;
-                    elseif ($beneficiaryToSave['gender'] == 'Female')
+                    } elseif ($beneficiaryToSave['gender'] == 'Female') {
                         $beneficiaryToSave['gender'] = 0;
+                    }
 
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
-                    if(! array_key_exists("id", $beneficiaryToSave))
+                    if (! array_key_exists("id", $beneficiaryToSave)) {
                         $household->addBeneficiary($beneficiary);
+                    }
                     $beneficiariesPersisted[] = $beneficiary;
                 } catch (\Exception $exception) {
                     throw $exception;
@@ -234,11 +232,15 @@ class HouseholdService
             
             // Remove beneficiaries that are not in the household anymore
             if ($actualAction === 'update') {
-                $toRemove = array_udiff($oldBeneficiaries, $beneficiariesPersisted,
-                    function($oldB, $newB) {
-                        if ($oldB->getId() === $newB->getId())
+                $toRemove = array_udiff(
+                    $oldBeneficiaries,
+                    $beneficiariesPersisted,
+                    function ($oldB, $newB) {
+                        if ($oldB->getId() === $newB->getId()) {
                             return 0;
-                        else return -1;
+                        } else {
+                            return -1;
+                        }
                     }
                 );
                 foreach ($toRemove as $beneficiaryToRemove) {
@@ -248,22 +250,18 @@ class HouseholdService
             }
         }
         
-        if (!empty($householdArray["country_specific_answers"]))
-        {
-            foreach ($householdArray["country_specific_answers"] as $country_specific_answer)
-            {
+        if (!empty($householdArray["country_specific_answers"])) {
+            foreach ($householdArray["country_specific_answers"] as $country_specific_answer) {
                 $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
             }
         }
         
-        if ($flush)
-        {
+        if ($flush) {
             $this->em->flush();
             $household = $this->em->getRepository(Household::class)->find($household->getId());
             $country_specific_answers = $this->em->getRepository(CountrySpecificAnswer::class)->findByHousehold($household);
             $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
-            foreach ($country_specific_answers as $country_specific_answer)
-            {
+            foreach ($country_specific_answers as $country_specific_answer) {
                 $household->addCountrySpecificAnswer($country_specific_answer);
             }
         }
@@ -300,12 +298,14 @@ class HouseholdService
             ->setAddressNumber($householdArray["address_number"]);
 
         $project = $this->em->getRepository(Project::class)->find($project);
-        if (!$project instanceof Project)
+        if (!$project instanceof Project) {
             throw new \Exception("This project is not found");
+        }
 
 
-        if (!in_array($project, $household->getProjects()->toArray()))
+        if (!in_array($project, $household->getProjects()->toArray())) {
             $household->addProject($project);
+        }
 
         // Save or update location instance
         $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
@@ -313,17 +313,14 @@ class HouseholdService
 
         $this->em->persist($household);
 
-        if (!empty($householdArray["beneficiaries"]))
-        {
-            foreach ($householdArray["beneficiaries"] as $beneficiaryToSave)
-            {
-
-                if ($updateBeneficiary)
-                {
-                    if ($beneficiaryToSave['gender'] == 'Male')
+        if (!empty($householdArray["beneficiaries"])) {
+            foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
+                if ($updateBeneficiary) {
+                    if ($beneficiaryToSave['gender'] == 'Male') {
                         $beneficiaryToSave['gender'] = 1;
-                    elseif ($beneficiaryToSave['gender'] == 'Female')
+                    } elseif ($beneficiaryToSave['gender'] == 'Female') {
                         $beneficiaryToSave['gender'] = 0;
+                    }
 
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
                     $this->em->persist($beneficiary);
@@ -331,10 +328,8 @@ class HouseholdService
             }
         }
 
-        if (!empty($householdArray["country_specific_answers"]))
-        {
-            foreach ($householdArray["country_specific_answers"] as $country_specific_answer)
-            {
+        if (!empty($householdArray["country_specific_answers"])) {
+            foreach ($householdArray["country_specific_answers"] as $country_specific_answer) {
                 $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
             }
         }
@@ -350,8 +345,7 @@ class HouseholdService
      */
     public function addToProject(Household &$household, Project $project)
     {
-        if (!in_array($project, $household->getProjects()->toArray()))
-        {
+        if (!in_array($project, $household->getProjects()->toArray())) {
             $household->addProject($project);
             $this->em->persist($household);
             $this->em->flush();
@@ -374,16 +368,16 @@ class HouseholdService
         );
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)
             ->find($countrySpecificAnswerArray["country_specific"]["id"]);
-        if (!$countrySpecific instanceof CountrySpecific)
+        if (!$countrySpecific instanceof CountrySpecific) {
             throw new \Exception("This country specific is unknown");
+        }
 
         $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
             ->findOneBy([
                 "countrySpecific" => $countrySpecific,
                 "household" => $household
             ]);
-        if (!$countrySpecificAnswer instanceof CountrySpecificAnswer)
-        {
+        if (!$countrySpecificAnswer instanceof CountrySpecificAnswer) {
             $countrySpecificAnswer = new CountrySpecificAnswer();
             $countrySpecificAnswer->setCountrySpecific($countrySpecific)
                 ->setHousehold($household);
@@ -392,8 +386,9 @@ class HouseholdService
         $countrySpecificAnswer->setAnswer($countrySpecificAnswerArray["answer"]);
 
         $this->em->persist($countrySpecificAnswer);
-        if ($flush)
+        if ($flush) {
             $this->em->flush();
+        }
 
         return $countrySpecificAnswer;
     }
@@ -410,18 +405,18 @@ class HouseholdService
     /**
      * @return mixed
      */
-    public function exportToCsv() {
-
+    public function exportToCsv()
+    {
         $exportableTable = $this->em->getRepository(Household::class)->findAll();
         return  $this->container->get('export_csv_service')->export($exportableTable);
-
     }
 
     /**
      * @param array $householdsArray
      * @return array
      */
-    public function getAllImported(array $householdsArray) {
+    public function getAllImported(array $householdsArray)
+    {
         $householdsId = $householdsArray['households'];
 
         $households = array();
@@ -429,8 +424,9 @@ class HouseholdService
         foreach ($householdsId as $householdId) {
             $household = $this->em->getRepository(Household::class)->find($householdId);
 
-            if ($household instanceof Household)
+            if ($household instanceof Household) {
                 array_push($households, $household);
+            }
         }
 
         return $households;
@@ -441,7 +437,8 @@ class HouseholdService
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function getAllCached(string $email) {
+    public function getAllCached(string $email)
+    {
         $cache = new FilesystemCache();
 
         $householdsInTypo = array();
@@ -465,22 +462,25 @@ class HouseholdService
         foreach ($householdsInTypo as $typo) {
             $household = $this->em->getRepository(Household::class)->find($typo->getId());
 
-            if ($household instanceof Household)
+            if ($household instanceof Household) {
                 array_push($households, $household);
+            }
         }
 
-        foreach ($householdsInDuplicate as $duplicate){
+        foreach ($householdsInDuplicate as $duplicate) {
             $household = $this->em->getRepository(Household::class)->find($duplicate->getId());
 
-            if ($household instanceof Household)
+            if ($household instanceof Household) {
                 array_push($households, $household);
+            }
         }
 
-        foreach ($householdsInNew as $new){
+        foreach ($householdsInNew as $new) {
             $household = $this->em->getRepository(Household::class)->find($new->getId());
 
-            if ($household instanceof Household)
+            if ($household instanceof Household) {
                 array_push($households, $household);
+            }
         }
 
         return $households;

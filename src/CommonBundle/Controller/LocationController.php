@@ -25,7 +25,7 @@ class LocationController extends Controller
 
     /**
      * @Rest\Get("/location/adm1", name="all_adm1")
-     * 
+     *
      * @SWG\Tag(name="Location")
      *
      * @SWG\Response(
@@ -40,7 +40,8 @@ class LocationController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getAllAdm1(Request $request) {
+    public function getAllAdm1(Request $request)
+    {
         $filters = $request->request->all();
         $locationService = $this->get('location_service');
         $adm1 = $locationService->getAllAdm1($filters['__country']);
@@ -56,7 +57,7 @@ class LocationController extends Controller
 
     /**
      * @Rest\Post("/location/adm2", name="all_adm2")
-     * 
+     *
      * @SWG\Tag(name="Location")
      *
      * @SWG\Response(
@@ -71,7 +72,8 @@ class LocationController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getAllAdm2(Request $request) {
+    public function getAllAdm2(Request $request)
+    {
         $filters = $request->request->all();
         $locationService = $this->get('location_service');
         $adm2 = $locationService->getAllAdm2($filters['adm1']);
@@ -87,7 +89,7 @@ class LocationController extends Controller
 
     /**
      * @Rest\Post("/location/adm3", name="all_adm3")
-     * 
+     *
      * @SWG\Tag(name="Location")
      *
      * @SWG\Response(
@@ -102,7 +104,8 @@ class LocationController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getAllAdm3(Request $request) {
+    public function getAllAdm3(Request $request)
+    {
         $filters = $request->request->all();
         $locationService = $this->get('location_service');
         $adm3 = $locationService->getAllAdm3($filters['adm2']);
@@ -118,7 +121,7 @@ class LocationController extends Controller
 
     /**
      * @Rest\Post("/location/adm4", name="all_adm4")
-     * 
+     *
      * @SWG\Tag(name="Location")
      *
      * @SWG\Response(
@@ -133,7 +136,8 @@ class LocationController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getAllAdm4(Request $request) {
+    public function getAllAdm4(Request $request)
+    {
         $filters = $request->request->all();
         $locationService = $this->get('location_service');
         $adm4 = $locationService->getAllAdm4($filters['adm3']);
@@ -148,21 +152,21 @@ class LocationController extends Controller
     }
 
 
-     /**
-     * @Rest\Get("/location/upcoming_distribution", name="all_location")
-     * 
-     * @SWG\Tag(name="Location")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="All location",
-     * )
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function getCodeUpcomingDistribution(Request $request) {
-
+    /**
+    * @Rest\Get("/location/upcoming_distribution", name="all_location")
+    *
+    * @SWG\Tag(name="Location")
+    *
+    * @SWG\Response(
+    *     response=200,
+    *     description="All location",
+    * )
+    *
+    * @param Request $request
+    * @return Response
+    */
+    public function getCodeUpcomingDistribution(Request $request)
+    {
         $filters = $request->request->all();
 
         $locationService = $this->get('location_service');

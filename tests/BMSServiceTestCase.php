@@ -3,7 +3,6 @@
 
 namespace Tests;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
@@ -26,7 +25,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Security\Authentication\Token\WsseUserToken;
-
 
 class BMSServiceTestCase extends KernelTestCase
 {
@@ -183,7 +181,6 @@ class BMSServiceTestCase extends KernelTestCase
 
     public function setUpFunctionnal()
     {
-
         self::bootKernel();
 
         $this->container = static::$kernel->getContainer();
@@ -197,14 +194,13 @@ class BMSServiceTestCase extends KernelTestCase
         $this->serializer = $this->container
             ->get($this->defaultSerializerName);
 
-        //Symdfony Validator 
+        //Symdfony Validator
         $this->validator = $this->container
             ->get('validator');
 
         //setting the token_storage
         $this->tokenStorage = $this->container->get('security.token_storage');
         $this->householdService = $this->container->get('beneficiary.household_service');
-
     }
 
 
@@ -216,7 +212,6 @@ class BMSServiceTestCase extends KernelTestCase
         $this->mockSerializer();
         //Container mocking
         $this->mockContainer();
-
     }
 
     /**
@@ -225,8 +220,7 @@ class BMSServiceTestCase extends KernelTestCase
     protected function tearDown()
     {
         //parent::tearDown();
-        if (!empty($this->em))
-        {
+        if (!empty($this->em)) {
             //$this->em->close();
             unset($this->em);
             $this->em = null; // avoid memory leaks
@@ -294,8 +288,7 @@ class BMSServiceTestCase extends KernelTestCase
     {
         $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
 
-        if ($user instanceOf User)
-        {
+        if ($user instanceof User) {
             return $user;
         }
 
@@ -325,8 +318,7 @@ class BMSServiceTestCase extends KernelTestCase
 
 
         $projects = $this->em->getRepository(Project::class)->findAll();
-        if (empty($projects))
-        {
+        if (empty($projects)) {
             print_r("There is no project inside your database");
             return false;
         }
@@ -336,8 +328,7 @@ class BMSServiceTestCase extends KernelTestCase
         ]);
         $beneficiaries = $this->bodyHousehold["beneficiaries"];
         $vulnerabilityId = $vulnerabilityCriterion->getId();
-        foreach ($beneficiaries as $index => $b)
-        {
+        foreach ($beneficiaries as $index => $b) {
             $this->bodyHousehold["beneficiaries"][$index]["vulnerability_criteria"] = [["id" => $vulnerabilityId]];
         }
 
@@ -348,8 +339,7 @@ class BMSServiceTestCase extends KernelTestCase
         ]);
         $country_specific_answers = $this->bodyHousehold["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
-        foreach ($country_specific_answers as $index => $c)
-        {
+        foreach ($country_specific_answers as $index => $c) {
             $this->bodyHousehold["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
         }
 
@@ -382,25 +372,21 @@ class BMSServiceTestCase extends KernelTestCase
         $this->em->clear();
         /** @var Household $household */
         $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($addressStreet);
-        if ($household instanceof Household)
-        {
+        if ($household instanceof Household) {
             $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
-            if (!empty($beneficiaries))
-            {
+            if (!empty($beneficiaries)) {
                 /** @var Beneficiary $beneficiary */
-                foreach ($beneficiaries as $beneficiary)
-                {
+                foreach ($beneficiaries as $beneficiary) {
                     $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
                     $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
                     $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
-                    if ($profile instanceof Profile)
+                    if ($profile instanceof Profile) {
                         $this->em->remove($profile);
-                    foreach ($phones as $phone)
-                    {
+                    }
+                    foreach ($phones as $phone) {
                         $this->em->remove($phone);
                     }
-                    foreach ($nationalIds as $nationalId)
-                    {
+                    foreach ($nationalIds as $nationalId) {
                         $this->em->remove($nationalId);
                     }
                     $this->em->remove($beneficiary->getProfile());
@@ -410,8 +396,7 @@ class BMSServiceTestCase extends KernelTestCase
 
             $countrySpecificAnswers = $this->em->getRepository(CountrySpecificAnswer::class)
                 ->findByHousehold($household);
-            foreach ($countrySpecificAnswers as $countrySpecificAnswer)
-            {
+            foreach ($countrySpecificAnswers as $countrySpecificAnswer) {
                 $this->em->remove($countrySpecificAnswer);
             }
 

@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Controller;
 
-
 use BeneficiaryBundle\Entity\CountrySpecific;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -83,7 +82,7 @@ class CountryController extends Controller
      *
      * @param Request $request
      * @param CountrySpecific $countrySpecific
-     * @return Response 
+     * @return Response
      */
     public function updateAction(Request $request, CountrySpecific $countrySpecific)
     {
@@ -122,18 +121,17 @@ class CountryController extends Controller
      */
     public function deleteAction(CountrySpecific $countrySpecific)
     {
-        try
-        {
+        try {
             $valid = $this->get('beneficiary.country_specific_service')->delete($countrySpecific);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        if ($valid)
+        if ($valid) {
             return new Response("", Response::HTTP_OK);
-        if (!$valid)
+        }
+        if (!$valid) {
             return new Response("", Response::HTTP_BAD_REQUEST);
+        }
     }
 }

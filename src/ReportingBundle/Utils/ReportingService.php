@@ -20,8 +20,8 @@ class ReportingService
         $this->container = $container;
     }
 
-    public function exportToCsv($indicatorsId, $frequency, $projects, $distributions, $country, $type) {
-
+    public function exportToCsv($indicatorsId, $frequency, $projects, $distributions, $country, $type)
+    {
         $filters = [
             'frequency' => $frequency,
             'project' => $projects,
@@ -59,6 +59,6 @@ class ReportingService
             $res[] = $row;
         }
 
-        return $this->container->get('export_csv_service')->export($res,'reporting', $type);
+        return $this->container->get('export_csv_service')->export($res, 'reporting', $type);
     }
 }

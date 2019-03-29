@@ -40,12 +40,9 @@ class ReportingDataIndicatorAddCommand extends ContainerAwareCommand
 
         $indicators = $em->getRepository('ReportingBundle:ReportingIndicator')->findAll();
 
-        foreach ($indicators as $indicator)
-        {   
-            
+        foreach ($indicators as $indicator) {
             $this->getContainer()->get('reporting.data_fillers.default')->fill($indicator);
             $output->writeln($indicator->getCode());
-            
         }
 
         
@@ -54,5 +51,4 @@ class ReportingDataIndicatorAddCommand extends ContainerAwareCommand
             'Data loaded',
         ]);
     }
-
 }

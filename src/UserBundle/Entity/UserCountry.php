@@ -126,6 +126,4 @@ class UserCountry
     {
         return $this->user;
     }
-
-
 }
