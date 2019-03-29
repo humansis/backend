@@ -278,7 +278,7 @@ class HouseholdController extends Controller
 
         if (1 === intval($step)) {
             if (!$request->files->has('file')) {
-                return new Response("You must upload a file.", Response::HTTP_BAD_REQUEST);
+                return new Response('You must upload a file.', Response::HTTP_BAD_REQUEST);
             }
             try {
                 $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $step, $token, $email);
@@ -294,7 +294,7 @@ class HouseholdController extends Controller
         }
 
         $json = $this->get('jms_serializer')
-            ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
+            ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
         return new Response($json);
     }
 

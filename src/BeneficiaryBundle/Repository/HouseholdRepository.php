@@ -55,25 +55,20 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb = $this->findAllByCountry($iso3);
         $q = $qb->leftJoin("hh.beneficiaries", "b")
             ->select("hh as household")
-            ->addSelect("LEVENSHTEIN(
-                    CONCAT(COALESCE(hh.addressStreet, ''), COALESCE(hh.addressNumber, ''), COALESCE(hh.addressPostcode, ''), COALESCE(b.givenName, ''), COALESCE(b.familyName, '')),
+            ->addSelect(
+                "LEVENSHTEIN(
+                    CONCAT(
+                        COALESCE(hh.addressStreet, ''),
+                        COALESCE(hh.addressNumber, ''),
+                        COALESCE(hh.addressPostcode, ''),
+                        COALESCE(b.givenName, ''),
+                        COALESCE(b.familyName, '')
+                    ),
                     :stringToSearch
                 ) as levenshtein")
             ->andWhere("b.status = 1")
-            ->andWhere("
-                LEVENSHTEIN(
-                    CONCAT(COALESCE(hh.addressStreet, ''), COALESCE(hh.addressNumber, ''), COALESCE(hh.addressPostcode, ''), COALESCE(b.givenName, ''), COALESCE(b.familyName, '')),
-                    :stringToSearch
-                ) < 
-                CASE 
-                    WHEN (LEVENSHTEIN(
-                        CONCAT(COALESCE(hh.addressStreet, ''), COALESCE(hh.addressNumber, ''), COALESCE(hh.addressPostcode, ''), COALESCE(b.givenName, ''), COALESCE(b.familyName, '')),
-                        :stringToSearch) = 0) 
-                        THEN 1
-                    ELSE
-                        :minimumTolerance
-                    END
-            ")
+            ->groupBy("b")
+            ->having("levenshtein <= :minimumTolerance")
             ->setParameter("stringToSearch", $stringToSearch)
             ->setParameter("minimumTolerance", $minimumTolerance)
             ->orderBy("levenshtein", "ASC");

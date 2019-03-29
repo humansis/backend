@@ -30,80 +30,59 @@ class DuplicateVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
-        // GET THE SIMILAR HOUSEHOLD FROM THE DB, IF ISSET
-        if (array_key_exists('old', $householdArray)) {
+        // Get the old household the new one corresponds to if it exists
+        if (array_key_exists('old', $householdArray) && ! empty($householdArray['old'])) {
             $similarOldHousehold = $householdArray['old'];
         } else {
-            $similarOldHousehold = $this->getOldHouseholdFromCache($householdArray['id_tmp_cache'], $email);
+            $similarOldHousehold = null;
         }
 
+        // Initialize the list of potential duplicates
         $listDuplicateBeneficiaries = [];
         
-        $newHouseholdEmpty = $householdArray['new'];
-        $newHouseholdEmpty['beneficiaries'] = [];
+        // Duplicate the new household array
+        $newHouseholdSingleBeneficiary = $householdArray['new'];
         
         foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary) {
+            // reset the new households beneficiaries
+            $newHouseholdSingleBeneficiary['beneficiaries'] = [];
+            
+            // get beneficiaries with the same first name and last name
             $existingBeneficaries = $this->em->getRepository(Beneficiary::class)->findBy(
                 [
-                    'givenName' => trim($newBeneficiary['given_name']),
+                    'givenName'  => trim($newBeneficiary['given_name']),
                     'familyName' => trim($newBeneficiary['family_name'])
                 ]
             );
             foreach ($existingBeneficaries as $existingBeneficary) {
-                if ($existingBeneficary->getHousehold()->getId() !== $similarOldHousehold['id']) {
-                    $newHouseholdEmpty['beneficiaries'][] = $newBeneficiary;
+                // if there is one in a different household than the new househlold, it's a potential duplicate
+                if (! $similarOldHousehold || $existingBeneficary->getHousehold()->getId() !== $similarOldHousehold['id']) {
+                    $newHouseholdSingleBeneficiary['beneficiaries'][] = $newBeneficiary;
                     
-                    $clonedHH = clone $existingBeneficary->getHousehold();
-                    $old = $clonedHH->resetBeneficiaries()->addBeneficiary($existingBeneficary);
+                    // reset the existing household's beneficiaries to include only the duplicate
+                    $oldHousehold = json_decode(
+                        $this->container->get('jms_serializer')->serialize(
+                                $existingBeneficary->getHousehold(),
+                                'json',
+                                SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
+                            ),
+                        true
+                    );
+                    $oldHousehold['beneficiaries'] = [$existingBeneficary];
                     
                     $arrayTmp = [
-                        "new" => $newHouseholdEmpty,
-                        "old" => $old,
-                        "id_tmp_cache" => $householdArray["id_tmp_cache"],
-                        "new_household" => $householdArray["new"]
+                        'new'           => $newHouseholdSingleBeneficiary,
+                        'old'           => $oldHousehold,
+                        'id_tmp_cache'  => $householdArray['id_tmp_cache'],
+                        'new_household' => $householdArray['new']
                     ];
                     
                     $listDuplicateBeneficiaries[] = $arrayTmp;
                     break;
                 }
             }
-            $newHouseholdEmpty['beneficiaries'] = [];
         }
 
-        if (!empty($listDuplicateBeneficiaries)) {
-            return $listDuplicateBeneficiaries;
-        }
-        return null;
-    }
-
-    /**
-     * @param $id_tmp_cache
-     * @param string $email
-     * @return null
-     * @throws \Exception
-     */
-    private function getOldHouseholdFromCache($id_tmp_cache, string $email)
-    {
-        if (null === $this->token) {
-            return null;
-        }
-
-        $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_var)) {
-            mkdir($dir_var);
-        }
-        $dir_mapping = $dir_var . '/' . $email . '-mapping_new_old';
-        if (!is_file($dir_mapping)) {
-            return null;
-        }
-
-        $fileContent = file_get_contents($dir_var . '/' . $email . '-mapping_new_old');
-        $householdsCached = json_decode($fileContent, true);
-        if (array_key_exists($id_tmp_cache, $householdsCached)) {
-            return $householdsCached[$id_tmp_cache]['old'];
-        }
-
-        return null;
+        return $listDuplicateBeneficiaries;
     }
 }

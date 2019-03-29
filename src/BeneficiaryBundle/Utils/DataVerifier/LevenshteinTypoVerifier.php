@@ -63,34 +63,30 @@ class LevenshteinTypoVerifier extends AbstractVerifier
 
         $similarHouseholds = $householdRepository->foundSimilarLevenshtein(
             $countryISO3,
-            $householdArray["address_street"] .
-            $householdArray["address_number"] .
-            $householdArray["address_postcode"] .
-            $newHead["given_name"] .
-            $newHead["family_name"],
+            $householdArray['address_street'] .
+            $householdArray['address_number'] .
+            $householdArray['address_postcode'] .
+            $newHead['given_name'] .
+            $newHead['family_name'],
             $this->maximumDistanceLevenshtein
         );
 
         if (empty($similarHouseholds)) {
-            $this->saveInCache('no_typo', $cacheId, $householdArray, $email, null);
+            // new households that will be created
+            $this->saveInCache('to_create', $cacheId, $householdArray, $email, null);
             return null;
         } else {
-            if (0 == intval(current($similarHouseholds)["levenshtein"])) {
-                // SAVE 100% SIMILAR IN 1_typo
-                $this->saveInCache(
-                    'mapping_new_old',
-                    $cacheId,
-                    $householdArray,
-                    $email,
-                    $householdRepository->find(current($similarHouseholds)["household"])
-                );
-                return false;
+            $oldHousehold = $householdRepository->find(current($similarHouseholds)['household']);
+            if (intval(current($similarHouseholds)['levenshtein']) === 0) {
+                // pre existing households that will be updated
+                $this->saveInCache('to_update', $cacheId, $householdArray, $email, $oldHousehold);
+                return null;
             }
 
             return [
-                "old" => $householdRepository->find(current($similarHouseholds)["household"]),
-                "new" => $householdArray,
-                "id_tmp_cache" => $cacheId
+                'old'          => $oldHousehold,
+                'new'          => $householdArray,
+                'id_tmp_cache' => $cacheId
             ];
         }
     }
@@ -105,18 +101,17 @@ class LevenshteinTypoVerifier extends AbstractVerifier
      */
     private function saveInCache(string $step, int $cacheId, array $dataToSave, string $email, Household $household = null)
     {
-        if (null !== $household) {
+        if (! empty($household)) {
             $arrayOldHousehold = json_decode(
-                $this->container->get('jms_serializer')
-                    ->serialize(
+                $this->container->get('jms_serializer')->serialize(
                         $household,
                         'json',
-                        SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
+                        SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
                     ),
                 true
             );
         } else {
-            $arrayOldHousehold = json_encode([]);
+            $arrayOldHousehold = [];
         }
 
         $sizeToken = 50;
@@ -135,14 +130,15 @@ class LevenshteinTypoVerifier extends AbstractVerifier
         if (!is_dir($dir_var_token)) {
             mkdir($dir_var_token);
         }
-
-        if (is_file($dir_var_token . '/' . $email . '-' . $step)) {
-            $listHH = json_decode(file_get_contents($dir_var_token . '/' . $email . '-' . $step), true);
+        
+        $dir_var = $dir_var_token . '/' . $email . '-' . $step;
+        if (is_file($dir_var)) {
+            $listHH = json_decode(file_get_contents($dir_var), true);
         } else {
             $listHH = [];
         }
 
-        $listHH[$cacheId] = ["new" => $dataToSave, "old" => $arrayOldHousehold, "id_tmp_cache" => $cacheId];
-        file_put_contents($dir_var_token . '/' . $email . '-' . $step, json_encode($listHH));
+        $listHH[$cacheId] = ['new' => $dataToSave, 'old' => $arrayOldHousehold, 'id_tmp_cache' => $cacheId];
+        file_put_contents($dir_var, json_encode($listHH));
     }
 }

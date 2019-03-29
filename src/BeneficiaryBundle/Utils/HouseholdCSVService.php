@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Utils\DataTreatment\AbstractTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\DuplicateTreatment;
+use BeneficiaryBundle\Utils\DataTreatment\ValidateTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\LessTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\MoreTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\TypoTreatment;
@@ -127,53 +128,60 @@ class HouseholdCSVService
      */
     public function foundErrors($countryIso3, Project $project, array $treatReturned, int $step, $token, string $email)
     {
+        // Clean cache if timestamp is expired
         $this->clearData();
+        
+        // Check if cache and token is still there
         $this->token = $token;
         if (!$this->checkTokenAndStep($step)) {
-            throw new \Exception("Your session for this import has expired");
+            throw new \Exception('Your session for this import has expired');
         }
+        
         // If there is a treatment class for this step, call it
+        /** @var AbstractTreatment $verifier */
         $treatment = $this->guessTreatment($step);
-        if ($treatment !== null) {
+        
+        if ($treatment) {
             $treatReturned = $treatment->treat($project, $treatReturned, $email);
         }
-        if (array_key_exists("miss", $treatReturned)) {
-            throw new \Exception("A line is incomplete in the imported file");
+        if (array_key_exists('miss', $treatReturned)) {
+            throw new \Exception('A line is incomplete or not properly filled in the imported file');
         }
 
         /** @var AbstractVerifier $verifier */
         $verifier = $this->guessVerifier($step);
-        $return = [];
-        if (null === $verifier) {
+        
+        // if it is the last step
+        if (! $verifier) {
             $this->clearCacheToken($this->token);
             return $treatReturned;
         }
-        $cache_id = 1;
-        $householdsToSave = [];
+        
+        // Return array
+        $return = [];
+        
+        $cacheId = 1;
         foreach ($treatReturned as $index => $householdArray) {
-            $returnTmp = $verifier->verify($countryIso3, $householdArray, $cache_id, $email);
-            // IF there are errors
-            if (null !== $returnTmp && [] !== $returnTmp) {
-                if ($returnTmp !== false) {
-                    if ($verifier instanceof DuplicateVerifier) {
-                        $return = array_merge($return, $returnTmp);
-                    } else {
-                        $return[] = $returnTmp;
-                    }
+            // use the generated for the first step, and then use existing one
+            $correctId = $step === 1 ? $cacheId : $householdArray['id_tmp_cache'];
+            $returnTmp = $verifier->verify($countryIso3, $householdArray, $correctId, $email);
+            // If there are errors
+            if (! empty($returnTmp)) {
+                // Duplicate verifier returns already an array of duplicates
+                if ($verifier instanceof DuplicateVerifier) {
+                    // to preserve values with the same keys
+                    $return = array_unique(array_merge($return, $returnTmp));
+                } else {
+                    $return[] = $returnTmp;
                 }
             }
-            // If no error we saved the household with a cache id (used to map household between front and back)
-            else {
-                $householdsToSave[$cache_id] = $householdArray;
-            }
-            $cache_id++;
+            $cacheId++;
             unset($treatReturned[$index]);
         }
-
-        $this->saveInCache($step, json_encode($householdsToSave));
-        unset($householdsToSave);
+        
+        // set a new timestamp (10 minutes)
         $this->setTimeExpiry();
-        return ["data" => $return, "token" => $this->token];
+        return ['data' => $return, 'token' => $this->token];
     }
 
     /**
@@ -187,28 +195,31 @@ class HouseholdCSVService
         switch ($step) {
             // CASE FOUND TYPO ISSUES
             case 1:
-            // return new TypoVerifier($this->em, $this->container, $this->initOrGetToken());
                 return new LevenshteinTypoVerifier($this->em, $this->container, $this->initOrGetToken());
                 break;
-            // CASE FOUND DUPLICATED ISSUES
-            case 2:
-                return new DuplicateVerifier($this->em, $this->container, $this->initOrGetToken());
-                break;
             // CASE FOUND MORE ISSUES
-            case 3:
+            case 2:
                 return new MoreVerifier($this->em);
                 break;
             // CASE FOUND LESS ISSUES
-            case 4:
+            case 3:
                 return new LessVerifier($this->em);
                 break;
-            // CASE FOUND LESS ISSUES
+            // CASE FOUND DUPLICATED ISSUES
+            case 4:
+                return new DuplicateVerifier($this->em, $this->container, $this->initOrGetToken());
+                break;
+            // CASE LAST STEP
             case 5:
+                return null;
+                break;
+            // CASE VALIDATION
+            case 6:
                 return null;
                 break;
             // NOT FOUND CASE
             default:
-                throw new \Exception("Step '$step' unknown.");
+                throw new \Exception('Step ' . $step. ' unknown.');
         }
     }
 
@@ -229,21 +240,25 @@ class HouseholdCSVService
             case 2:
                 return new TypoTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
                 break;
-            // CASE FOUND DUPLICATED ISSUES
-            case 3:
-                return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-                break;
             // CASE FOUND MORE ISSUES
-            case 4:
+            case 3:
                 return new MoreTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
                 break;
             // CASE FOUND LESS ISSUES
-            case 5:
+            case 4:
                 return new LessTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND DUPLICATED ISSUES
+            case 5:
+                return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE VALIDATE
+            case 5:
+                return new ValidateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
                 break;
             // NOT FOUND CASE
             default:
-                throw new \Exception("Step '$step' unknown.");
+                throw new \Exception('Step ' . $step . ' unknown.');
         }
     }
 
@@ -286,27 +301,6 @@ class HouseholdCSVService
         }
 
         return $this->token;
-    }
-
-    /**
-     * @param int $step
-     * @param $dataToSave
-     * @param string $email
-     * @throws \Exception
-     */
-    private function saveInCache(int $step, $dataToSave)
-    {
-        $this->initOrGetToken();
-        $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data';
-        if (!is_dir($dir_var)) {
-            mkdir($dir_var);
-        }
-        $dir_var_token = $dir_var . '/' . $this->token;
-        if (!is_dir($dir_var_token)) {
-            mkdir($dir_var_token);
-        }
-        file_put_contents($dir_var_token . '/step_' . $step, $dataToSave);
     }
 
     /**
@@ -412,26 +406,5 @@ class HouseholdCSVService
         }
         closedir($dir);
         rmdir($src);
-    }
-
-    /**
-     * Check if a value is missing inside the array
-     *
-     * @param array $array
-     * @return bool
-     */
-    private function isIncomplete(array $array)
-    {
-        $isIncomplete = true;
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $isIncomplete = $this->isIncomplete($value);
-            }
-            if (!$isIncomplete || null === $value) {
-                return false;
-            }
-        }
-
-        return $isIncomplete;
     }
 }

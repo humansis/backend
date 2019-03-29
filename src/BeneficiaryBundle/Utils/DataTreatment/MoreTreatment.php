@@ -20,16 +20,10 @@ class MoreTreatment extends AbstractTreatment
     public function treat(Project $project, array $householdsArray, string $email)
     {
         foreach ($householdsArray as $householdArray) {
-            $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
-            if (!$oldHousehold instanceof Household) {
-                continue;
-            }
-            foreach ($householdArray['data'] as $newBeneficiary) {
-                $this->beneficiaryService->updateOrCreate($oldHousehold, $newBeneficiary, true);
-            }
+            // Save to update the new household with its removed beneficiary
+            $this->updateInCache($householdArray['id_tmp_cache'], $householdArray['new'], $email);
         }
-        $listHouseholds = [];
-        $this->getFromCache('mapping_new_old', $listHouseholds, $email);
-        return $listHouseholds;
+
+        return $this->getFromCache('to_update', $email);
     }
 }
