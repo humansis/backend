@@ -1,5 +1,6 @@
 /.web-server-pid
 /app/config/parameters.yml
+/docker-compose.yml
 /build/
 /phpunit.xml
 /var/*
