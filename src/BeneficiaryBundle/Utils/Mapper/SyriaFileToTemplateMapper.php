@@ -16,6 +16,8 @@ use PhpOffice\PhpSpreadsheet\Reader\Exception as PhpOfficeReaderException;
 use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpOfficeWriterException;
 use Symfony\Component\HttpFoundation\File\File;
 use Throwable;
+use BeneficiaryBundle\Entity\CountrySpecific;
+use Doctrine\ORM\EntityManagerInterface;
 use function explode;
 use function implode;
 use function in_array;
@@ -28,6 +30,10 @@ use function trim;
 
 class SyriaFileToTemplateMapper
 {
+
+    /** @var EntityManagerInterface $em */
+    private $em;
+    
     /**
      * Date of the day when the script is executed.
      * Used to compute birthdays.
@@ -68,8 +74,10 @@ class SyriaFileToTemplateMapper
     /** @var ExportService $defaultExportService */
     private $defaultExportService;
 
-    public function __construct(ExportService $defaultExportService)
+
+    public function __construct(EntityManagerInterface $entityManager, ExportService $defaultExportService)
     {
+        $this->em = $entityManager;
         $this->defaultExportService = $defaultExportService;
         self::$TODAY = new DateTime();
     }
@@ -435,7 +443,7 @@ class SyriaFileToTemplateMapper
      */
     private function prepareOutputHeaderRow() : array
     {
-        $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($countryISO3);
+        $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3('SYR');
         $this->numberCountrySpecifics = sizeof($countrySpecifics);
         
         $headerRow = [
@@ -472,7 +480,7 @@ class SyriaFileToTemplateMapper
             'AB' => 'Number national ID',
         ];
         
-        $column = $this->FIRST_LETTER_NON_STATIC;
+        $column = self::FIRST_LETTER_NON_STATIC;
         if (! empty($countrySpecifics)) {
             foreach ($countrySpecifics as $countrySpecific) {
                 $headerRow[$column] = $countrySpecific->getFieldString();
@@ -524,7 +532,7 @@ class SyriaFileToTemplateMapper
      */
     private function getColumnLetter(string $letter)
     {
-        if ($letter >= $this->FIRST_LETTER_NON_STATIC) {
+        if ($letter >= self::FIRST_LETTER_NON_STATIC) {
             $ascii = ord($letter) + $this->numberCountrySpecifics;
             $prefix = '';
             if ($ascii > 90) {
