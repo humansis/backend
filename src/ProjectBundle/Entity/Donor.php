@@ -57,7 +57,7 @@ class Donor implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="notes", type="string", length=255)
+     * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      *
      * @Groups({"FullDonor"})
      */
