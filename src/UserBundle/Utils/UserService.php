@@ -214,9 +214,9 @@ class UserService
                 }
             }
             
-            if ($origin && $user->getRoles()[0] !== "ROLE_ADMIN" && !in_array($origin, array_unique($countries))) {
-                throw new \Exception('Unable to log in from this country (' . $origin . ')', Response::HTTP_BAD_REQUEST);
-            }
+            // if ($origin && $user->getRoles()[0] !== "ROLE_ADMIN" && !in_array($origin, array_unique($countries))) {
+            //     throw new \Exception('Unable to log in from this country (' . $origin . ')', Response::HTTP_BAD_REQUEST);
+            // }
         } else {
             throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
         }
