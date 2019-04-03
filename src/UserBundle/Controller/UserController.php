@@ -78,9 +78,9 @@ class UserController extends Controller
             $originISO3 = null;
         }
         // Users from Syria will most likely have a turkish IP address
-        if ($originISO3 === "TUR") {
-            $originISO3 = "SYR";
-        }
+        // if ($originISO3 === "TUR") {
+        //     $originISO3 = "SYR";
+        // }
 
         try {
             $user = $this->container->get('user.user_service')->login($username, $saltedPassword, $originISO3);
