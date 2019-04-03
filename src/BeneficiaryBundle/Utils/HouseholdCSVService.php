@@ -87,7 +87,6 @@ class HouseholdCSVService
     public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, int $step, $token, string $email)
     {
         // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
-        // LOADING CSV
         $reader = IOFactory::createReaderForFile($uploadedFile->getRealPath());
 
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
@@ -108,7 +107,7 @@ class HouseholdCSVService
     public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, int $step, $token, string $email)
     {
         // Get the list of households from csv with their beneficiaries
-        if (1 === $step) {
+        if ($step === 1) {
             $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $countryIso3);
             return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $step, $token, $email);
         } else {
@@ -140,10 +139,20 @@ class HouseholdCSVService
         // If there is a treatment class for this step, call it
         /** @var AbstractTreatment $verifier */
         $treatment = $this->guessTreatment($step);
-        
+
+
         if ($treatment) {
+            dump('bla');
+
             $treatReturned = $treatment->treat($project, $treatReturned, $email);
+            dump('bla');
+
+            if(! $treatReturned) {
+                $treatReturned = [];
+            }
         }
+        dump('bla');
+
         if (array_key_exists('miss', $treatReturned)) {
             throw new \Exception('A line is incomplete or not properly filled in the imported file');
         }
@@ -151,9 +160,11 @@ class HouseholdCSVService
         /** @var AbstractVerifier $verifier */
         $verifier = $this->guessVerifier($step);
         
-        // if it is the last step
+        // if no verification needed
         if (! $verifier) {
-            $this->clearCacheToken($this->token);
+            if ($step === 6) {
+                $this->clearCacheToken($this->token);
+            }
             return $treatReturned;
         }
         
@@ -170,7 +181,7 @@ class HouseholdCSVService
                 // Duplicate verifier returns already an array of duplicates
                 if ($verifier instanceof DuplicateVerifier) {
                     // to preserve values with the same keys
-                    $return = array_unique(array_merge($return, $returnTmp));
+                    $return = array_unique(array_merge($return, $returnTmp), SORT_REGULAR);
                 } else {
                     $return[] = $returnTmp;
                 }
@@ -187,11 +198,53 @@ class HouseholdCSVService
     /**
      * Depends on the step, guess which verifier used
      * @param int $step
+     * @return AbstractTreatment
+     * @throws \Exception
+     */
+    private function guessTreatment(int $step)
+    {
+        dump('treat '.$step);
+
+        switch ($step) {
+            case 1:
+                return new MissingTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+
+                break;
+            // CASE FOUND TYPO ISSUES
+            case 2:
+                return new TypoTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND MORE ISSUES
+            case 3:
+                return new MoreTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND LESS ISSUES
+            case 4:
+                return new LessTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND DUPLICATED ISSUES
+            case 5:
+                return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE VALIDATE
+            case 6:
+                return new ValidateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // NOT FOUND CASE
+            default:
+                throw new \Exception('Step ' . $step . ' unknown.');
+        }
+    }
+
+    /**
+     * Depends on the step, guess which verifier used
+     * @param int $step
      * @return AbstractVerifier
      * @throws \Exception
      */
     private function guessVerifier(int $step)
     {
+        dump('verify '.$step);
         switch ($step) {
             // CASE FOUND TYPO ISSUES
             case 1:
@@ -224,45 +277,6 @@ class HouseholdCSVService
     }
 
     /**
-     * Depends on the step, guess which verifier used
-     * @param int $step
-     * @return AbstractTreatment
-     * @throws \Exception
-     */
-    private function guessTreatment(int $step)
-    {
-        switch ($step) {
-            case 1:
-                return new MissingTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-
-                break;
-            // CASE FOUND TYPO ISSUES
-            case 2:
-                return new TypoTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-                break;
-            // CASE FOUND MORE ISSUES
-            case 3:
-                return new MoreTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-                break;
-            // CASE FOUND LESS ISSUES
-            case 4:
-                return new LessTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-                break;
-            // CASE FOUND DUPLICATED ISSUES
-            case 5:
-                return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-                break;
-            // CASE VALIDATE
-            case 5:
-                return new ValidateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-                break;
-            // NOT FOUND CASE
-            default:
-                throw new \Exception('Step ' . $step . ' unknown.');
-        }
-    }
-
-    /**
      * @param $step
      * @return bool
      * @throws \Exception
@@ -276,11 +290,6 @@ class HouseholdCSVService
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_token = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_token)) {
-            return false;
-        }
-
-        $dir_file_step = $dir_token . '/step_' . strval(intval($step) - 1);
-        if (!is_file($dir_file_step)) {
             return false;
         }
 

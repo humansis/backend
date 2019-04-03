@@ -22,15 +22,28 @@ class LessTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array $householdsArray, string $email)
     {
+        dump('treat');
         foreach ($householdsArray as $householdArray) {
             // Save to update the new household with its removed beneficiary
             $this->updateInCache($householdArray['id_tmp_cache'], $householdArray['new'], $email);
         }
         
         $to_update = $this->getFromCache('to_update', $email);
+        if (! $to_update) {
+            $to_update = [];
+        }
         $to_create = $this->getFromCache('to_create', $email);
+        if (! $to_create) {
+            $to_create = [];
+        }
+        dump($to_update);
+        dump($to_create);
+
+        dump(array_merge($to_update, $to_create));
+
+        dump(array_unique(array_merge($to_update, $to_create), SORT_REGULAR));
 
         // to preserve values with the same key
-        return array_unique(array_merge($to_update, $to_create));
+        return array_unique(array_merge($to_update, $to_create), SORT_REGULAR);
     }
 }

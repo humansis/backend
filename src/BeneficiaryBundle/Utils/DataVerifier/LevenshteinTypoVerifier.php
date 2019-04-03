@@ -16,7 +16,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
      * Maximum distance between two strings with the Levenshtein algorithm
      * @var int
      */
-    private $maximumDistanceLevenshtein = 2;
+    private $maximumDistanceLevenshtein = 1;
 
     /** @var Container $container */
     private $container;

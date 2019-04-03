@@ -276,7 +276,7 @@ class HouseholdController extends Controller
         /** @var HouseholdCSVService $householdService */
         $householdService = $this->get('beneficiary.household_csv_service');
 
-        if (1 === intval($step)) {
+        if (intval($step) === 1) {
             if (!$request->files->has('file')) {
                 return new Response('You must upload a file.', Response::HTTP_BAD_REQUEST);
             }
