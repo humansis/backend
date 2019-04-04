@@ -30,7 +30,6 @@ class DuplicateVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
-        dump('1');
         // Get the old household the new one corresponds to if it exists
         if (array_key_exists('old', $householdArray) && ! empty($householdArray['old'])) {
             $similarOldHousehold = $householdArray['old'];

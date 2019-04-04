@@ -258,12 +258,11 @@ class HouseholdController extends Controller
      */
     public function importAction(Request $request, Project $project)
     {
-        if (!$request->query->has('step')) {
-            return new Response('You must specify the current step.');
-        }
-        $step = $request->query->get('step');
         if ($request->query->has('token')) {
             $token = $request->query->get('token');
+            if (empty($token)) {
+                $token = null;
+            }
         } else {
             $token = null;
         }
@@ -276,18 +275,18 @@ class HouseholdController extends Controller
         /** @var HouseholdCSVService $householdService */
         $householdService = $this->get('beneficiary.household_csv_service');
 
-        if (intval($step) === 1) {
+        if ($token === null) {
             if (!$request->files->has('file')) {
                 return new Response('You must upload a file.', Response::HTTP_BAD_REQUEST);
             }
             try {
-                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $step, $token, $email);
+                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $token, $email);
             } catch (\Exception $e) {
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         } else {
             try {
-                $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $step, $token, $email);
+                $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $token, $email);
             } catch (\Exception $e) {
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }

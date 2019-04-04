@@ -17,7 +17,6 @@ class LessVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
-        dump('aaa');
         if (! empty($householdArray['new']) && ! empty($householdArray['old']) &&
             count($householdArray['new']['beneficiaries']) < count($householdArray['old']['beneficiaries'])) {
             return $householdArray;

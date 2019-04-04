@@ -36,8 +36,7 @@ class DuplicateTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array $householdsArray, string $email)
     {
-        dump('treat');
-        foreach ($householdsArray as $index => $householdArray) {            
+        foreach ($householdsArray as $index => $householdArray) {
             // If there is data in new save the new one from the file (already in cache)
             if (array_key_exists('new', $householdArray) && ! empty($householdArray['new'])) {
                 // if state is false remove the old beneficiary
@@ -91,8 +90,6 @@ class DuplicateTreatment extends AbstractTreatment
                 
             }
         }
-        dump('done');
-
         return 'Done';
     }
 }
