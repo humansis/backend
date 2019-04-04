@@ -72,7 +72,9 @@ class VendorService
             $vendor = new Vendor();
             $vendor->setName($vendorData['name'])
       ->setShop($vendorData['shop'])
-      ->setAddress($vendorData['address'])
+      ->setAddressStreet($vendorData['address_street'])
+      ->setAddressNumber($vendorData['address_number'])
+      ->setAddressPostcode($vendorData['address_postcode'])
       ->setArchived(false)
       ->setUser($user);
 
@@ -121,8 +123,12 @@ class VendorService
                     $vendor->setName($value);
                 } elseif ($key == 'shop') {
                     $vendor->setShop($value);
-                } elseif ($key == 'address') {
-                    $vendor->setAddress($value);
+                } elseif ($key == 'address_street') {
+                    $vendor->setAddressStreet($vendorData['address_street']);
+                } elseif ($key == 'address_number') {
+                    $vendor->setAddressNumber($vendorData['address_number']);
+                } elseif ($key == 'address_postcode') {
+                    $vendor->setAddressPostcode($vendorData['address_postcode']);
                 } elseif ($key == 'username') {
                     $user->setUsername($value);
                 } elseif ($key == 'password' && !empty($value)) {
@@ -218,7 +224,9 @@ class VendorService
                 array(
                     'name'  => $vendor->getName(),
                     'shop'  => $vendor->getShop(),
-                    'address'  => $vendor->getAddress(),
+                    'addressStreet'  => $vendor->getAddressStreet(),
+                    'addressPostcode'  => $vendor->getAddressPostcode(),
+                    'addressNumber'  => $vendor->getAddressNumber(),
                     'date'  => $now->format('Y-m-d'),
                     'vouchers' => $vouchers,
                     'totalValue' => $totalValue
