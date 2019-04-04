@@ -65,6 +65,15 @@ class Vendor
      */
     private $addressPostcode;
 
+     /**
+     * @var Location
+     *
+     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
+     *
+     * @Groups({"FullVendor"})
+     */
+    private $location;
+
     /**
      * @var bool
      *
@@ -221,6 +230,30 @@ class Vendor
     public function getAddressPostcode()
     {
         return $this->addressPostcode;
+    }
+
+    /**
+     * Set location.
+     *
+     * @param \CommonBundle\Entity\Location|null $location
+     *
+     * @return Vendor
+     */
+    public function setLocation(\CommonBundle\Entity\Location $location = null)
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Get location.
+     *
+     * @return \CommonBundle\Entity\Location|null
+     */
+    public function getLocation()
+    {
+        return $this->location;
     }
 
     /**

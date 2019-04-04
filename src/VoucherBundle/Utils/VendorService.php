@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use DateTime;
+use CommonBundle\Utils\LocationService;
 
 class VendorService
 {
@@ -32,17 +33,26 @@ class VendorService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var LocationService $locationService */
+    private $locationService;
+
     /**
      * UserService constructor.
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
+     * @param LocationService $locationService
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ValidatorInterface $validator,
+        LocationService $locationService,
+        ContainerInterface $container
+    ) {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
+        $this->locationService = $locationService;
     }
 
     /**
@@ -52,7 +62,7 @@ class VendorService
      * @return mixed
      * @throws \Exception
      */
-    public function create(array $vendorData)
+    public function create($countryISO3, array $vendorData)
     {
         $username = $vendorData['username'];
         $userSaved = $this->em->getRepository(User::class)->findOneByUsername($username);
@@ -69,14 +79,19 @@ class VendorService
         ]
       );
 
+      $location = $vendorData['location'];
+      $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
+
+
             $vendor = new Vendor();
             $vendor->setName($vendorData['name'])
-      ->setShop($vendorData['shop'])
-      ->setAddressStreet($vendorData['address_street'])
-      ->setAddressNumber($vendorData['address_number'])
-      ->setAddressPostcode($vendorData['address_postcode'])
-      ->setArchived(false)
-      ->setUser($user);
+                    ->setShop($vendorData['shop'])
+                    ->setAddressStreet($vendorData['address_street'])
+                    ->setAddressNumber($vendorData['address_number'])
+                    ->setAddressPostcode($vendorData['address_postcode'])
+                    ->setLocation($location)
+                    ->setArchived(false)
+                    ->setUser($user);
 
             $this->em->persist($vendor);
             $this->em->flush();
@@ -95,14 +110,7 @@ class VendorService
      */
     public function findAll()
     {
-        $vendors = $this->em->getRepository(Vendor::class)->findAll();
-
-        foreach ($vendors as $index => $vendor) {
-            if ($vendor->getArchived() === true) {
-                array_splice($vendors, $index, 1);
-            }
-        }
-
+        $vendors = $this->em->getRepository(Vendor::class)->findByArchived(false);
         return $vendors;
     }
 
@@ -114,7 +122,7 @@ class VendorService
      * @param array $vendorData
      * @return Vendor
      */
-    public function update(Vendor $vendor, array $vendorData)
+    public function update($countryISO3, Vendor $vendor, array $vendorData)
     {
         try {
             $user = $vendor->getUser();
@@ -133,12 +141,19 @@ class VendorService
                     $user->setUsername($value);
                 } elseif ($key == 'password' && !empty($value)) {
                     $user->setPassword($value);
+                } elseif ($key == 'location' && !empty($value)) {
+                    $location = $value;
+                    if (array_key_exists('id', $location)) {
+                        unset($location['id']); // This is the old id
+                    }
+                    $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
+                    $vendor->setLocation($location);
                 }
             }
             $this->em->merge($vendor);
             $this->em->flush();
         } catch (\Exception $e) {
-            throw new $e('Error updating Vendor');
+            throw new \Exception('Error updating Vendor');
         }
 
         return $vendor;

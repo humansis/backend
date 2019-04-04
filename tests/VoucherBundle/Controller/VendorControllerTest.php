@@ -60,7 +60,14 @@ class VendorControllerTest extends BMSServiceTestCase
             "shop" => 'Fruit and Veg',
             "address_number" => '12',
             "address_street" => 'Agusto Figuroa',
-            "address_postcode" => '28000'
+            "address_postcode" => '28000',
+            "location" => [
+                "adm1"=> "Banteay Meanchey",
+                "adm2"=> "Mongkol Borei",
+                "adm3"=> "Chamnaom",
+                "adm4"=> "Chamnaom",
+                "country_iso3"=> "KHM"
+            ],
         ];
 
         // Fake connection with a token for the user tester (ADMIN)
@@ -77,6 +84,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $vendor);
         $this->assertArrayHasKey('shop', $vendor);
         $this->assertArrayHasKey('user', $vendor);
+        $this->assertArrayHasKey('location', $vendor);
         $this->assertArrayHasKey('username', $vendor['user']);
         $this->assertSame($vendor['user']['username'], $this->username);
 
@@ -185,10 +193,19 @@ class VendorControllerTest extends BMSServiceTestCase
         $addressNumber = '32';
         $addressPostcode = '28500';
         $password = 'PSWUNITTEST';
-        $body = ['address_number' => $addressNumber,
-        'address_street' => $addressStreet,
-        'address_postcode' => $addressPostcode,
-        'password' => $password];
+        $body = [
+            'address_number' => $addressNumber,
+            'address_street' => $addressStreet,
+            'address_postcode' => $addressPostcode,
+            'password' => $password,
+            "location" => [
+                "adm1" => " Battambang",
+                "adm2" => "Banan",
+                "adm3" => "Kantueu Muoy",
+                "adm4" => "Kampong Ampil",
+                "country_iso3" => "KHM",
+            ],
+        ];
 
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
