@@ -116,7 +116,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
                 true
             );
         } else {
-            $arrayOldHousehold = json_encode([]);
+            $arrayOldHousehold = array();
         }
 
         $sizeToken = 50;
