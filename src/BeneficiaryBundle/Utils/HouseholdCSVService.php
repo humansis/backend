@@ -47,6 +47,9 @@ class HouseholdCSVService
     /** @var string $token */
     private $token;
 
+    /** @var int $step */
+    private $step;
+
 
     /**
      * HouseholdCSVService constructor.
@@ -77,42 +80,39 @@ class HouseholdCSVService
      * @param $countryIso3
      * @param Project $project
      * @param UploadedFile $uploadedFile
-     * @param int $step
      * @param $token
      * @param string $email
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, int $step, $token, string $email)
+    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, $token, string $email)
     {
         // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
-        // LOADING CSV
         $reader = IOFactory::createReaderForFile($uploadedFile->getRealPath());
 
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
         $sheetArray = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $worksheet->getHighestRow(), null, true, true, true);
-        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $step, $token, $email);
+        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $token, $email);
     }
 
     /**
      * @param $countryIso3
      * @param Project $project
      * @param array $sheetArray
-     * @param int $step
      * @param $token
      * @param string $email
      * @return array|bool
      * @throws \Exception
      */
-    public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, int $step, $token, string $email)
+    public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, $token, string $email)
     {
         // Get the list of households from csv with their beneficiaries
-        if (1 === $step) {
+        if ($token === null) {
             $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $countryIso3);
-            return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $step, $token, $email);
+            return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $token, $email);
         } else {
-            return $this->foundErrors($countryIso3, $project, $sheetArray, $step, $token, $email);
+            return $this->foundErrors($countryIso3, $project, $sheetArray, $token, $email);
         }
     }
 
@@ -120,68 +120,121 @@ class HouseholdCSVService
      * @param $countryIso3
      * @param Project $project
      * @param array $treatReturned
-     * @param int $step
      * @param $token
      * @param string $email
      * @return array|bool
      * @throws \Exception
      */
-    public function foundErrors($countryIso3, Project $project, array $treatReturned, int $step, $token, string $email)
+    public function foundErrors($countryIso3, Project $project, array $treatReturned, $token, string $email)
     {
         // Clean cache if timestamp is expired
-        $this->clearData();
-        
-        // Check if cache and token is still there
-        $this->token = $token;
-        if (!$this->checkTokenAndStep($step)) {
-            throw new \Exception('Your session for this import has expired');
-        }
-        
-        // If there is a treatment class for this step, call it
-        /** @var AbstractTreatment $verifier */
-        $treatment = $this->guessTreatment($step);
-        
-        if ($treatment) {
-            $treatReturned = $treatment->treat($project, $treatReturned, $email);
-        }
-        if (array_key_exists('miss', $treatReturned)) {
-            throw new \Exception('A line is incomplete or not properly filled in the imported file');
-        }
+        $this->clearExpiredSessions();
 
-        /** @var AbstractVerifier $verifier */
-        $verifier = $this->guessVerifier($step);
-        
-        // if it is the last step
-        if (! $verifier) {
-            $this->clearCacheToken($this->token);
-            return $treatReturned;
-        }
-        
-        // Return array
-        $return = [];
-        
-        $cacheId = 1;
-        foreach ($treatReturned as $index => $householdArray) {
-            // use the generated for the first step, and then use existing one
-            $correctId = $step === 1 ? $cacheId : $householdArray['id_tmp_cache'];
-            $returnTmp = $verifier->verify($countryIso3, $householdArray, $correctId, $email);
-            // If there are errors
-            if (! empty($returnTmp)) {
-                // Duplicate verifier returns already an array of duplicates
-                if ($verifier instanceof DuplicateVerifier) {
-                    // to preserve values with the same keys
-                    $return = array_unique(array_merge($return, $returnTmp));
-                } else {
-                    $return[] = $returnTmp;
+        do {
+            // get step
+            $this->step = $this->getStepFromCache();
+
+            // Check if cache and token is still there
+            $this->token = $token;
+            if (!$this->checkTokenAndStep($this->step)) {
+                throw new \Exception('Your session for this import has expired');
+            }
+
+            // If there is a treatment class for this step, call it
+            /** @var AbstractTreatment $verifier */
+            $treatment = $this->guessTreatment($this->step);
+
+
+            if ($treatment) {
+                $treatReturned = $treatment->treat($project, $treatReturned, $email);
+
+                if(! $treatReturned) {
+                    $treatReturned = [];
                 }
             }
-            $cacheId++;
-            unset($treatReturned[$index]);
+
+            if (is_array($treatReturned) && array_key_exists('miss', $treatReturned)) {
+                throw new \Exception('A line is incomplete or not properly filled in the imported file');
+            }
+
+            /** @var AbstractVerifier $verifier */
+            $verifier = $this->guessVerifier($this->step);
+
+            // if no verification needed
+            if (! $verifier) {
+                if ($this->step === 6) {
+                    $this->clearCacheToken($this->token);
+                }
+                return $treatReturned;
+            }
+
+            // Return array
+            $return = [];
+
+            $cacheId = 1;
+            foreach ($treatReturned as $index => $householdArray) {
+                // use the generated for the first step, and then use existing one
+                $correctId = $this->step === 1 ? $cacheId : $householdArray['id_tmp_cache'];
+                $returnTmp = $verifier->verify($countryIso3, $householdArray, $correctId, $email);
+                // If there are errors
+                if (! empty($returnTmp)) {
+                    // Duplicate verifier returns already an array of duplicates
+                    if ($verifier instanceof DuplicateVerifier) {
+                        // to preserve values with the same keys
+                        $return = array_unique(array_merge($return, $returnTmp), SORT_REGULAR);
+                    } else {
+                        $return[] = $returnTmp;
+                    }
+                }
+                $cacheId++;
+                unset($treatReturned[$index]);
+            }
+
+            // update timestamp (10 minutes) and step
+            $this->updateTokenState();
+        } while (empty($return));
+
+        return ['data' => $return, 'token' => $this->token, 'step' => $this->step];
+    }
+
+    /**
+     * Depends on the step, guess which verifier used
+     * @param int $step
+     * @return AbstractTreatment
+     * @throws \Exception
+     */
+    private function guessTreatment(int $step)
+    {
+
+        switch ($step) {
+            case 1:
+                return new MissingTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+
+                break;
+            // CASE FOUND TYPO ISSUES
+            case 2:
+                return new TypoTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND MORE ISSUES
+            case 3:
+                return new MoreTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND LESS ISSUES
+            case 4:
+                return new LessTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE FOUND DUPLICATED ISSUES
+            case 5:
+                return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // CASE VALIDATE
+            case 6:
+                return new ValidateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
+                break;
+            // NOT FOUND CASE
+            default:
+                throw new \Exception('Step ' . $step . ' unknown.');
         }
-        
-        // set a new timestamp (10 minutes)
-        $this->setTimeExpiry();
-        return ['data' => $return, 'token' => $this->token];
     }
 
     /**
@@ -224,45 +277,6 @@ class HouseholdCSVService
     }
 
     /**
-     * Depends on the step, guess which verifier used
-     * @param int $step
-     * @return AbstractTreatment
-     * @throws \Exception
-     */
-    private function guessTreatment(int $step)
-    {
-        switch ($step) {
-            case 1:
-                return new MissingTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-
-                break;
-            // CASE FOUND TYPO ISSUES
-            case 2:
-                return new TypoTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-                break;
-            // CASE FOUND MORE ISSUES
-            case 3:
-                return new MoreTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-                break;
-            // CASE FOUND LESS ISSUES
-            case 4:
-                return new LessTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-                break;
-            // CASE FOUND DUPLICATED ISSUES
-            case 5:
-                return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-                break;
-            // CASE VALIDATE
-            case 5:
-                return new ValidateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
-                break;
-            // NOT FOUND CASE
-            default:
-                throw new \Exception('Step ' . $step . ' unknown.');
-        }
-    }
-
-    /**
      * @param $step
      * @return bool
      * @throws \Exception
@@ -276,11 +290,6 @@ class HouseholdCSVService
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_token = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_token)) {
-            return false;
-        }
-
-        $dir_file_step = $dir_token . '/step_' . strval(intval($step) - 1);
-        if (!is_file($dir_file_step)) {
             return false;
         }
 
@@ -306,57 +315,60 @@ class HouseholdCSVService
     /**
      * @throws \Exception
      */
-    private function setTimeExpiry()
+    private function updateTokenState()
     {
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data';
         if (!is_dir($dir_var)) {
             mkdir($dir_var);
         }
-        $dir_file = $dir_var . '/timestamp_token';
+        $dir_file = $dir_var . '/token_state';
         if (is_file($dir_file)) {
-            $timestampByToken = json_decode(file_get_contents($dir_file), true);
+            $tokensState = json_decode(file_get_contents($dir_file), true);
         } else {
-            $timestampByToken = [];
+            $tokensState = [];
         }
 
-        $index = null;
-        $timestamp = null;
+        // Update step
+        $this->step++;
+
         $dateExpiry = new \DateTime();
         $dateExpiry->add(new \DateInterval('PT10M'));
-        $timestampByToken[$this->token] = [
-            'timestamp' => $dateExpiry->getTimestamp()
+        $tokensState[$this->token] = [
+            'timestamp' => $dateExpiry->getTimestamp(),
+            'step' => $this->step
         ];
 
-        file_put_contents($dir_var . '/timestamp_token', json_encode($timestampByToken));
+
+        file_put_contents($dir_var . '/token_state', json_encode($tokensState));
     }
 
     /**
      * @throws \Exception
      */
-    private function clearData()
+    private function clearExpiredSessions()
     {
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data';
         if (!is_dir($dir_var)) {
             mkdir($dir_var);
         }
-        $dir_file = $dir_var . '/timestamp_token';
+        $dir_file = $dir_var . '/token_state';
         if (is_file($dir_file)) {
-            $timestampByToken = json_decode(file_get_contents($dir_file), true);
+            $tokensState = json_decode(file_get_contents($dir_file), true);
         } else {
             $this->rrmdir($dir_var);
             return;
         }
 
-        foreach ($timestampByToken as $token => $item) {
+        foreach ($tokensState as $token => $item) {
             if ((new \DateTime())->getTimestamp() > $item['timestamp']) {
                 $this->rrmdir($dir_var . '/' . $token);
-                unset($timestampByToken[$token]);
+                unset($tokensState[$token]);
             }
         }
 
-        file_put_contents($dir_var . '/timestamp_token', json_encode($timestampByToken));
+        file_put_contents($dir_var . '/token_state', json_encode($tokensState));
     }
 
     /**
@@ -370,9 +382,9 @@ class HouseholdCSVService
         if (!is_dir($dir_var)) {
             mkdir($dir_var);
         }
-        $dir_file = $dir_var . '/timestamp_token';
+        $dir_file = $dir_var . '/token_state';
         if (is_file($dir_file)) {
-            $timestampByToken = json_decode(file_get_contents($dir_file), true);
+            $tokensState = json_decode(file_get_contents($dir_file), true);
         } else {
             $this->rrmdir($dir_var);
             return;
@@ -381,11 +393,31 @@ class HouseholdCSVService
         if (is_dir($dir_var . '/' . $token)) {
             $this->rrmdir($dir_var . '/' . $token);
         }
-        if (array_key_exists($token, $timestampByToken)) {
-            unset($timestampByToken[$token]);
+        if (array_key_exists($token, $tokensState)) {
+            unset($tokensState[$token]);
         }
 
-        file_put_contents($dir_var . '/timestamp_token', json_encode($timestampByToken));
+        file_put_contents($dir_var . '/token_state', json_encode($tokensState));
+    }
+
+    private function getStepFromCache()
+    {
+        $step = 1;
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data';
+        if (!is_dir($dir_var)) {
+            mkdir($dir_var);
+        }
+        $dir_file = $dir_var . '/token_state';
+        if (is_file($dir_file)) {
+            $tokensState = json_decode(file_get_contents($dir_file), true);
+            if ($this->token && array_key_exists($this->token, $tokensState) && array_key_exists('step', $tokensState[$this->token])) {
+                $step = $tokensState[$this->token]['step'];
+            }
+        }
+
+        return $step;
     }
 
     /**

@@ -57,11 +57,6 @@ abstract class AbstractTreatment implements InterfaceTreatment
 
         $dir_root = $this->container->get('kernel')->getRootDir();
         
-        $dir_var = $dir_root . '/../var/data';
-        if (!is_dir($dir_var)) {
-            mkdir($dir_var);
-        }
-        
         $dir_var_token = $dir_root . '/../var/data/' . $this->token;
         if (!is_dir($dir_var_token)) {
             mkdir($dir_var_token);
@@ -181,7 +176,7 @@ abstract class AbstractTreatment implements InterfaceTreatment
             return;
         }
         
-        $dir_file = $dir_var . '/' . $email . '-' . $step;
+        $dir_file = $dir_var_token . '/' . $email . '-' . $step;
         if (!is_file($dir_file)) {
             return;
         }

@@ -44,8 +44,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
     /**
      * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
-     * TODO : FOUND SOLUTION TO RETURN ONLY THE SIMILAR IF DISTANCE = 0 OR THE LIST OF HOUSEHOLDS WITH A DISTANCE
-     * TODO : UNDER MINIMUMTOLERANCE, IF NO ONE HAS A DISTANCE = 0
+     * @param string $iso3
      * @param string $stringToSearch
      * @param int $minimumTolerance
      * @return mixed

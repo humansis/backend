@@ -16,7 +16,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
      * Maximum distance between two strings with the Levenshtein algorithm
      * @var int
      */
-    private $maximumDistanceLevenshtein = 2;
+    private $maximumDistanceLevenshtein = 1;
 
     /** @var Container $container */
     private $container;
@@ -130,7 +130,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
         if (!is_dir($dir_var_token)) {
             mkdir($dir_var_token);
         }
-        
+
         $dir_var = $dir_var_token . '/' . $email . '-' . $step;
         if (is_file($dir_var)) {
             $listHH = json_decode(file_get_contents($dir_var), true);

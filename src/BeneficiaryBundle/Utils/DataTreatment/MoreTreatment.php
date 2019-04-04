@@ -14,7 +14,6 @@ class MoreTreatment extends AbstractTreatment
      * @param array $householdsArray
      * @param string $email
      * @return array
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      * @throws \Exception
      */
     public function treat(Project $project, array $householdsArray, string $email)

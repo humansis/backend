@@ -48,27 +48,27 @@ class DuplicateVerifier extends AbstractVerifier
             $newHouseholdSingleBeneficiary['beneficiaries'] = [];
             
             // get beneficiaries with the same first name and last name
-            $existingBeneficaries = $this->em->getRepository(Beneficiary::class)->findBy(
+            $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(
                 [
                     'givenName'  => trim($newBeneficiary['given_name']),
                     'familyName' => trim($newBeneficiary['family_name'])
                 ]
             );
-            foreach ($existingBeneficaries as $existingBeneficary) {
-                // if there is one in a different household than the new househlold, it's a potential duplicate
-                if (! $similarOldHousehold || $existingBeneficary->getHousehold()->getId() !== $similarOldHousehold['id']) {
+            foreach ($existingBeneficiaries as $existingBeneficiary) {
+                // if there is one in a different household than the new household, it's a potential duplicate
+                if (! $similarOldHousehold || $existingBeneficiary->getHousehold()->getId() !== $similarOldHousehold['id']) {
                     $newHouseholdSingleBeneficiary['beneficiaries'][] = $newBeneficiary;
                     
                     // reset the existing household's beneficiaries to include only the duplicate
                     $oldHousehold = json_decode(
                         $this->container->get('jms_serializer')->serialize(
-                                $existingBeneficary->getHousehold(),
+                                $existingBeneficiary->getHousehold(),
                                 'json',
                                 SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
                             ),
                         true
                     );
-                    $oldHousehold['beneficiaries'] = [$existingBeneficary];
+                    $oldHousehold['beneficiaries'] = [$existingBeneficiary];
                     
                     $arrayTmp = [
                         'new'           => $newHouseholdSingleBeneficiary,
