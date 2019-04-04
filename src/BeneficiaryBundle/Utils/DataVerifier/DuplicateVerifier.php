@@ -50,7 +50,7 @@ class DuplicateVerifier extends AbstractVerifier
                 ]
             );
             foreach ($existingBeneficaries as $existingBeneficary) {
-                if (!empty($similarOldHousehold) && $existingBeneficary->getHousehold()->getId() !== $similarOldHousehold['id']) {
+                if (array_key_exists('id', $similarOldHousehold) && $existingBeneficary->getHousehold()->getId() !== $similarOldHousehold['id']) {
                     $newHouseholdEmpty['beneficiaries'][] = $newBeneficiary;
                     
                     $clonedHH = clone $existingBeneficary->getHousehold();
