@@ -234,6 +234,35 @@ class VendorService
                 $totalValue += $voucher->getValue();
             }
 
+            $location = $vendor->getLocation();
+
+            if ($location && $location->getAdm4()) {
+                $village = $location->getAdm4();
+                $commune = $village->getAdm3();
+                $district = $commune->getAdm2();
+                $province = $district->getAdm1();
+            } else if ($location && $location->getAdm3()) {
+                $commune = $location->getAdm3();
+                $district = $commune->getAdm2();
+                $province = $district->getAdm1();
+                $village = null;
+            } else if ($location && $location->getAdm2()) {
+                $district = $location->getAdm2();
+                $province = $district->getAdm1();
+                $village = null;
+                $commune = null;
+            } else if ($location && $location->getAdm1()) {
+                $province = $location->getAdm1();
+                $village = null;
+                $commune = null;
+                $district = null;
+            } else {
+                $village = null;
+                $commune = null;
+                $district = null;
+                $province = null;
+            }
+
             $html = $this->container->get('templating')->render(
             '@Voucher/Pdf/invoice.html.twig',
                 array(
@@ -242,6 +271,11 @@ class VendorService
                     'addressStreet'  => $vendor->getAddressStreet(),
                     'addressPostcode'  => $vendor->getAddressPostcode(),
                     'addressNumber'  => $vendor->getAddressNumber(),
+                    'addressVillage' => $village ? $village->getName() : null,
+                    'addressCommune' => $commune ? $commune->getName() : null,
+                    'addressDistrict' => $district ? $district->getName() : null,
+                    'addressProvince' => $province ? $province->getName() : null,
+                    'addressCountry' => $province ? $province->getCountryISO3() : null,
                     'date'  => $now->format('Y-m-d'),
                     'vouchers' => $vouchers,
                     'totalValue' => $totalValue
