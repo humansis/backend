@@ -382,7 +382,9 @@ class HouseholdCSVService
 
         foreach ($tokensState as $token => $item) {
             if ((new \DateTime())->getTimestamp() > $item['timestamp']) {
-                $this->rrmdir($dir_var . '/' . $token);
+                if (is_dir($dir_var . '/' . $token)) {
+                    $this->rrmdir($dir_var . '/' . $token);
+                }
                 unset($tokensState[$token]);
             }
         }
