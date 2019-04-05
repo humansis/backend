@@ -26,14 +26,18 @@ class ValidateTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array $householdsArray, string $email)
     {
-        $to_create = $this->getFromCache('to_create', $email);
-        $to_update = $this->getFromCache('to_update', $email);
-        
+        $to_create = $this->getFromCache('to_create', $email) ?: [];
+        $to_update = $this->getFromCache('to_update', $email) ?: [];
+
+        dump('treat');
+
         foreach ($to_create as $i => $household) {
+            dump($to_create);
             $this->householdService->createOrEdit($household['new'], array($project), null);
         }
         
         foreach ($to_update as $i => $household) {
+            dump($to_update);
             $oldHousehold = $this->em->getRepository(Household::class)->find($household['old']['id']);
             if (! empty($household['new'])) {
                 $this->householdService->createOrEdit($household['new'], array($project), $oldHousehold);

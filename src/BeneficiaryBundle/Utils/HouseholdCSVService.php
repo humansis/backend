@@ -129,13 +129,14 @@ class HouseholdCSVService
     {
         // Clean cache if timestamp is expired
         $this->clearExpiredSessions();
+        $this->token = $token;
 
         do {
             // get step
             $this->step = $this->getStepFromCache();
+            dump($this->step);
 
             // Check if cache and token is still there
-            $this->token = $token;
             if (!$this->checkTokenAndStep($this->step)) {
                 throw new \Exception('Your session for this import has expired');
             }
@@ -144,11 +145,13 @@ class HouseholdCSVService
             /** @var AbstractTreatment $verifier */
             $treatment = $this->guessTreatment($this->step);
 
+            dump('Treatement '.$this->step);
+
 
             if ($treatment) {
                 $treatReturned = $treatment->treat($project, $treatReturned, $email);
-
-                if(! $treatReturned) {
+                dump($treatReturned);
+                if (! $treatReturned) {
                     $treatReturned = [];
                 }
             }
@@ -160,16 +163,23 @@ class HouseholdCSVService
             /** @var AbstractVerifier $verifier */
             $verifier = $this->guessVerifier($this->step);
 
-            // if no verification needed
-            if (! $verifier) {
-                if ($this->step === 6) {
-                    $this->clearCacheToken($this->token);
-                }
-                return $treatReturned;
-            }
+            dump('Verif '.$this->step);
 
             // Return array
             $return = [];
+
+            // if no verification needed
+            if (! $verifier) {
+                dump('no verif');
+                if ($this->step === 6) {
+                    $this->clearCacheToken($this->token);
+                    return $treatReturned;
+                } else if ($this->step === 5) {
+                    // update timestamp (10 minutes) and step
+                    $this->updateTokenState();
+                    break;
+                }
+            }
 
             $cacheId = 1;
             foreach ($treatReturned as $index => $householdArray) {
@@ -190,9 +200,12 @@ class HouseholdCSVService
                 unset($treatReturned[$index]);
             }
 
+            dump($return);
+
             // update timestamp (10 minutes) and step
             $this->updateTokenState();
         } while (empty($return));
+
 
         return ['data' => $return, 'token' => $this->token, 'step' => $this->step];
     }
@@ -304,11 +317,14 @@ class HouseholdCSVService
      */
     public function initOrGetToken()
     {
+        dump($this->token);
+
         $sizeToken = 50;
         if (null === $this->token) {
             $this->token = bin2hex(random_bytes($sizeToken));
         }
 
+        dump($this->token);
         return $this->token;
     }
 
@@ -331,6 +347,7 @@ class HouseholdCSVService
 
         // Update step
         $this->step++;
+        dump($this->step);
 
         $dateExpiry = new \DateTime();
         $dateExpiry->add(new \DateInterval('PT10M'));
@@ -338,6 +355,8 @@ class HouseholdCSVService
             'timestamp' => $dateExpiry->getTimestamp(),
             'step' => $this->step
         ];
+
+        dump($tokensState);
 
 
         file_put_contents($dir_var . '/token_state', json_encode($tokensState));

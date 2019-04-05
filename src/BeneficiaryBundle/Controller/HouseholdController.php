@@ -292,6 +292,8 @@ class HouseholdController extends Controller
             }
         }
 
+        dump($return);
+
         $json = $this->get('jms_serializer')
             ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
         return new Response($json);

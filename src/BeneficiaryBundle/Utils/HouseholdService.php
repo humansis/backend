@@ -124,6 +124,7 @@ class HouseholdService
      */
     public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
     {
+        dump ($householdArray, $projectsArray, $household, $flush);
         $actualAction = 'update';
         $this->requestValidator->validate(
             "household",
@@ -265,6 +266,8 @@ class HouseholdService
                 $household->addCountrySpecificAnswer($country_specific_answer);
             }
         }
+
+        dump ($household);
 
         return $household;
     }
