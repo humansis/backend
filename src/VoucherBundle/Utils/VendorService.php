@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use DateTime;
+use CommonBundle\Utils\LocationService;
 
 class VendorService
 {
@@ -32,17 +33,26 @@ class VendorService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var LocationService $locationService */
+    private $locationService;
+
     /**
      * UserService constructor.
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
+     * @param LocationService $locationService
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ValidatorInterface $validator,
+        LocationService $locationService,
+        ContainerInterface $container
+    ) {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
+        $this->locationService = $locationService;
     }
 
     /**
@@ -52,7 +62,7 @@ class VendorService
      * @return mixed
      * @throws \Exception
      */
-    public function create(array $vendorData)
+    public function create($countryISO3, array $vendorData)
     {
         $username = $vendorData['username'];
         $userSaved = $this->em->getRepository(User::class)->findOneByUsername($username);
@@ -69,12 +79,19 @@ class VendorService
         ]
       );
 
+      $location = $vendorData['location'];
+      $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
+
+
             $vendor = new Vendor();
             $vendor->setName($vendorData['name'])
-      ->setShop($vendorData['shop'])
-      ->setAddress($vendorData['address'])
-      ->setArchived(false)
-      ->setUser($user);
+                    ->setShop($vendorData['shop'])
+                    ->setAddressStreet($vendorData['address_street'])
+                    ->setAddressNumber($vendorData['address_number'])
+                    ->setAddressPostcode($vendorData['address_postcode'])
+                    ->setLocation($location)
+                    ->setArchived(false)
+                    ->setUser($user);
 
             $this->em->persist($vendor);
             $this->em->flush();
@@ -93,14 +110,7 @@ class VendorService
      */
     public function findAll()
     {
-        $vendors = $this->em->getRepository(Vendor::class)->findAll();
-
-        foreach ($vendors as $index => $vendor) {
-            if ($vendor->getArchived() === true) {
-                array_splice($vendors, $index, 1);
-            }
-        }
-
+        $vendors = $this->em->getRepository(Vendor::class)->findByArchived(false);
         return $vendors;
     }
 
@@ -112,7 +122,7 @@ class VendorService
      * @param array $vendorData
      * @return Vendor
      */
-    public function update(Vendor $vendor, array $vendorData)
+    public function update($countryISO3, Vendor $vendor, array $vendorData)
     {
         try {
             $user = $vendor->getUser();
@@ -121,18 +131,29 @@ class VendorService
                     $vendor->setName($value);
                 } elseif ($key == 'shop') {
                     $vendor->setShop($value);
-                } elseif ($key == 'address') {
-                    $vendor->setAddress($value);
+                } elseif ($key == 'address_street') {
+                    $vendor->setAddressStreet($vendorData['address_street']);
+                } elseif ($key == 'address_number') {
+                    $vendor->setAddressNumber($vendorData['address_number']);
+                } elseif ($key == 'address_postcode') {
+                    $vendor->setAddressPostcode($vendorData['address_postcode']);
                 } elseif ($key == 'username') {
                     $user->setUsername($value);
                 } elseif ($key == 'password' && !empty($value)) {
                     $user->setPassword($value);
+                } elseif ($key == 'location' && !empty($value)) {
+                    $location = $value;
+                    if (array_key_exists('id', $location)) {
+                        unset($location['id']); // This is the old id
+                    }
+                    $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
+                    $vendor->setLocation($location);
                 }
             }
             $this->em->merge($vendor);
             $this->em->flush();
         } catch (\Exception $e) {
-            throw new $e('Error updating Vendor');
+            throw new \Exception('Error updating Vendor');
         }
 
         return $vendor;
@@ -213,12 +234,48 @@ class VendorService
                 $totalValue += $voucher->getValue();
             }
 
+            $location = $vendor->getLocation();
+
+            if ($location && $location->getAdm4()) {
+                $village = $location->getAdm4();
+                $commune = $village->getAdm3();
+                $district = $commune->getAdm2();
+                $province = $district->getAdm1();
+            } else if ($location && $location->getAdm3()) {
+                $commune = $location->getAdm3();
+                $district = $commune->getAdm2();
+                $province = $district->getAdm1();
+                $village = null;
+            } else if ($location && $location->getAdm2()) {
+                $district = $location->getAdm2();
+                $province = $district->getAdm1();
+                $village = null;
+                $commune = null;
+            } else if ($location && $location->getAdm1()) {
+                $province = $location->getAdm1();
+                $village = null;
+                $commune = null;
+                $district = null;
+            } else {
+                $village = null;
+                $commune = null;
+                $district = null;
+                $province = null;
+            }
+
             $html = $this->container->get('templating')->render(
             '@Voucher/Pdf/invoice.html.twig',
                 array(
                     'name'  => $vendor->getName(),
                     'shop'  => $vendor->getShop(),
-                    'address'  => $vendor->getAddress(),
+                    'addressStreet'  => $vendor->getAddressStreet(),
+                    'addressPostcode'  => $vendor->getAddressPostcode(),
+                    'addressNumber'  => $vendor->getAddressNumber(),
+                    'addressVillage' => $village ? $village->getName() : null,
+                    'addressCommune' => $commune ? $commune->getName() : null,
+                    'addressDistrict' => $district ? $district->getName() : null,
+                    'addressProvince' => $province ? $province->getName() : null,
+                    'addressCountry' => $province ? $province->getCountryISO3() : null,
                     'date'  => $now->format('Y-m-d'),
                     'vouchers' => $vouchers,
                     'totalValue' => $totalValue
