@@ -67,6 +67,14 @@ class Product
      */
     private $vouchers;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="countryISO3", type="string", length=3)
+     * @Groups({"FullProduct"})
+     */
+    private $countryISO3;
+
     public function __construct()
     {
         $this->booklets = new ArrayCollection();
@@ -235,4 +243,29 @@ class Product
 
         return $this;
     }
+
+    /**
+     * Set countryISO3.
+     *
+     * @param string $countryISO3
+     *
+     * @return Product
+     */
+    public function setCountryISO3($countryISO3)
+    {
+        $this->countryISO3 = $countryISO3;
+
+        return $this;
+    }
+
+    /**
+     * Get countryISO3.
+     *
+     * @return string
+     */
+    public function getCountryISO3()
+    {
+        return $this->countryISO3;
+    }
+
 }

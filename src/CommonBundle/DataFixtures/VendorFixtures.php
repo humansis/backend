@@ -16,7 +16,7 @@ class VendorFixtures extends Fixture
     private $kernel;
 
     private $data = [
-        ['vendor', 'shop', 'address', 0, 'vendor']
+        ['vendor', 'shop', '1', 'rue de la Paix', '75000', 0, 'vendor']
     ];
 
 
@@ -34,12 +34,14 @@ class VendorFixtures extends Fixture
     {
         if ($this->kernel->getEnvironment() === "test" || $this->kernel->getEnvironment() === "dev") {
             foreach ($this->data as $datum) {
-                $user = $manager->getRepository(User::class)->findOneByUsername($datum[4]);
+                $user = $manager->getRepository(User::class)->findOneByUsername($datum[6]);
                 $vendor = new Vendor();
                 $vendor->setName($datum[0])
                 ->setShop($datum[1])
-                ->setAddress($datum[2])
-                ->setArchived($datum[3])
+                ->setAddressNumber($datum[2])
+                ->setAddressStreet($datum[3])
+                ->setAddressPostcode($datum[4])
+                ->setArchived($datum[5])
                 ->setUser($user);
                 $manager->persist($vendor);
                 $manager->flush();
