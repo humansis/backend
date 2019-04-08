@@ -112,7 +112,13 @@ class ProjectService
                 ->setValue($newProject->getValue())
                 ->setNotes($newProject->getNotes());
 
-        $existingProject = $this->em->getRepository(Project::class)->findBy(['name' => $project->getName()]);
+        $existingProject = $this->em->getRepository(Project::class)->findBy(
+            [
+                'name' => $project->getName(),
+                'iso3' => $project->getIso3(),
+            ]
+        );
+        dump($existingProject);
         if (!empty($existingProject)) {
             throw new HttpException(Response::HTTP_CONFLICT, 'Project with the name '.$project->getName().' already exists');
         }
