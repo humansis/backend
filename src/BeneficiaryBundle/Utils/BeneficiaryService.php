@@ -115,7 +115,7 @@ class BeneficiaryService
             'any'
         );
 
-        if (array_key_exists("id", $beneficiaryArray)) {
+        if (array_key_exists("id", $beneficiaryArray) && $beneficiaryArray['id'] !== null) {
             $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
             if (!$beneficiary instanceof Beneficiary) {
                 throw new \Exception("Beneficiary was not found.");
