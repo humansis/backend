@@ -169,7 +169,7 @@ class BeneficiaryService
             $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion["id"]));
         }
         foreach ($beneficiaryArray["phones"] as $phoneArray) {
-            if (!empty($phoneArray["type"]) && !empty($phoneArray["proxy"]) && !empty($phoneArray["prefix"]) && !empty($phoneArray["number"])) {
+            if (!empty($phoneArray["type"]) && !empty($phoneArray["prefix"]) && !empty($phoneArray["number"])) {
                 $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
                 $beneficiary->addPhone($phone);
             }
@@ -217,7 +217,7 @@ class BeneficiaryService
      */
     public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
-        if ($phoneArray['proxy'] && $phoneArray['proxy'] === 'N') {
+        if (!$phoneArray['proxy'] || ($phoneArray['proxy'] && $phoneArray['proxy'] === 'N')) {
             $phoneArray['proxy'] = false;
         } elseif ($phoneArray['proxy'] && $phoneArray['proxy'] === 'Y') {
             $phoneArray['proxy'] = true;
