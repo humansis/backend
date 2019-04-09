@@ -97,7 +97,7 @@ class CSVToArrayMapper extends AbstractMapper
                     // Verify that there are no missing information in each beneficiary
                     if ($givenName == null
                         || $familyName == null
-                        || (explode('.', $gender)[0] != 'Female' && explode('.', $gender)[0] != 'Male')
+                        || (trim($gender) != 'Female' && trim($gender) != 'Male')
                         || (explode('.', $status)[0] != '0' && explode('.', $status)[0] != '1')
                         || $dateOfBirth == null
                         || $residencyStatus == null) {
@@ -105,7 +105,7 @@ class CSVToArrayMapper extends AbstractMapper
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['given_name'].' at the line '.$lineNumber);
                         } elseif ($familyName == null) {
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['family_name'].' at the line '.$lineNumber);
-                        } elseif (explode('.', $gender)[0] != 'Female' && explode('.', $gender)[0] != 'Male') {
+                        } elseif (trim($gender) != 'Female' && trim($gender) != 'Male') {
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['gender'].' at the line '.$lineNumber);
                         } elseif ((explode('.', $status)[0] != '0' && explode('.', $status)[0] != '1')) {
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['status'].' at the line '.$lineNumber);
@@ -118,12 +118,12 @@ class CSVToArrayMapper extends AbstractMapper
 
                     // Check that residencyStatus has one of the authorized values
                     $authorizedResidencyStatus = ['refugee', 'IDP', 'resident'];
-                    if (!in_array($residencyStatus, $authorizedResidencyStatus)) {
+                    if (!in_array(strtolower($residencyStatus), $authorizedResidencyStatus)) {
                         throw new \Exception('Your residency status must be either refugee, IDP or resident');
                     }
 
                     // Check that the year of birth is between 1900 and today
-                    $yearOfBirth = intval(explode('-', $dateOfBirth)[0]);
+                    $yearOfBirth = intval(explode('-', $dateOfBirth)[2]);
                     if ($yearOfBirth < 1900 || $yearOfBirth > intval(date('Y'))) {
                         throw new \Exception('Your year of birth can not be before 1900 or after the current year');
                     }
