@@ -106,7 +106,11 @@ class BeneficiaryService
             unset($beneficiaryArray['national_id_type']);
             unset($beneficiaryArray['national_id_number']);
         }
-
+        
+        if (strrpos($beneficiaryArray['date_of_birth'], '/') !== false) {
+            str_replace('/', '-', $beneficiaryArray['date_of_birth']);
+        }
+ 
 
         $this->requestValidator->validate(
             "beneficiary",
