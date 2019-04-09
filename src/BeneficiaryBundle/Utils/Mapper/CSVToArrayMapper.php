@@ -123,7 +123,13 @@ class CSVToArrayMapper extends AbstractMapper
                     }
 
                     // Check that the year of birth is between 1900 and today
-                    $yearOfBirth = intval(explode('-', $dateOfBirth)[2]);
+                    if (strrpos($dateOfBirth, '-') !== false) {
+                        $yearOfBirth = intval(explode('-', $dateOfBirth)[2]);
+                    } elseif (strrpos($dateOfBirth, '/') !== false) {
+                        $yearOfBirth = intval(explode('/', $dateOfBirth)[2]);
+                    } else {
+                        throw new \Exception('The date is not properly formatted in dd-mm-YYYY format');
+                    }
                     if ($yearOfBirth < 1900 || $yearOfBirth > intval(date('Y'))) {
                         throw new \Exception('Your year of birth can not be before 1900 or after the current year');
                     }
