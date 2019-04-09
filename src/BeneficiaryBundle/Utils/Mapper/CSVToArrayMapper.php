@@ -155,6 +155,7 @@ class CSVToArrayMapper extends AbstractMapper
             $this->fieldCountrySpecifics($mappingCSV, $formattedHouseholdArray, $rowHeader);
             $this->fieldVulnerabilityCriteria($formattedHouseholdArray);
             $this->fieldPhones($formattedHouseholdArray);
+            $this->fieldGender($formattedHouseholdArray);
             $this->fieldNationalIds($formattedHouseholdArray);
             $this->fieldBeneficiary($formattedHouseholdArray);
         } catch (\Exception $exception) {
@@ -237,6 +238,22 @@ class CSVToArrayMapper extends AbstractMapper
             $phone2_number_string = str_replace("'", '', $phone2_number_string);
 
             array_push($formattedHouseholdArray['beneficiaries']['phones'], ['type' => $phone2_type_string, 'prefix' => $phone2_prefix_string, 'number' => $phone2_number_string, 'proxy' => $phone2_proxy_string]);
+        }
+    }
+    
+    /**
+     * Reformat the field gender
+     *
+     * @param $formattedHouseholdArray
+     */
+    private function fieldGender(&$formattedHouseholdArray)
+    {
+        $gender_string = trim($formattedHouseholdArray['beneficiaries']['gender']);
+
+        if ($gender_string == "Male") {
+            $formattedHouseholdArray['beneficiaries']['gender'] = 1;
+        } else if ($gender_string == "Female") {
+            $formattedHouseholdArray['beneficiaries']['gender'] = 0;
         }
     }
 
