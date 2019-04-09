@@ -54,6 +54,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb = $this->findAllByCountry($iso3);
         $q = $qb->leftJoin("hh.beneficiaries", "b")
             ->select("hh as household")
+            ->andWhere("hh.archived = 0")
             ->addSelect(
                 "LEVENSHTEIN(
                     CONCAT(

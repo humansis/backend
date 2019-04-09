@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils\DataVerifier;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use Symfony\Component\DependencyInjection\Container;
 
 class DuplicateVerifier extends AbstractVerifier
@@ -30,6 +31,7 @@ class DuplicateVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
+        dump($householdArray);
         // Get the old household the new one corresponds to if it exists
         if (array_key_exists('old', $householdArray) && ! empty($householdArray['old'])) {
             $similarOldHousehold = $householdArray['old'];
@@ -48,12 +50,13 @@ class DuplicateVerifier extends AbstractVerifier
             $newHouseholdSingleBeneficiary['beneficiaries'] = [];
             
             // get beneficiaries with the same first name and last name
-            $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(
+            $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByUnarchived(
                 [
                     'givenName'  => trim($newBeneficiary['given_name']),
                     'familyName' => trim($newBeneficiary['family_name'])
                 ]
             );
+            dump($existingBeneficiaries);
             foreach ($existingBeneficiaries as $existingBeneficiary) {
                 // if there is one in a different household than the new household, it's a potential duplicate
                 if (! $similarOldHousehold || $existingBeneficiary->getHousehold()->getId() !== $similarOldHousehold['id']) {

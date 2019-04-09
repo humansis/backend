@@ -22,11 +22,10 @@ class TypoTreatment extends AbstractTreatment
      * The frontend returns:
      * [
      *     {
-     *         id_old: '',
-     *         index: '', (not used in back)
-     *         id_tmp_cache: '',
-     *         state: '',
-     *         new: []
+     *         old: [],
+     *         new: [],
+     *         id_tmp_cache: int,
+     *         state: int
      *     }
      * ]
      * @param Project $project
@@ -39,32 +38,40 @@ class TypoTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array $householdsArray, string $email)
     {
+        dump($householdsArray);
+
         foreach ($householdsArray as $index => $householdArray) {
             // Get old household
-            $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
-            $oldHousehold = json_decode(
-                $this->container->get('jms_serializer')->serialize(
-                        $oldHousehold,
-                        'json',
-                        SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
-                    ),
-                true
-            );
+//            $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
+//            $oldHousehold = json_decode(
+//                $this->container->get('jms_serializer')->serialize(
+//                        $oldHousehold,
+//                        'json',
+//                        SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
+//                    ),
+//                true
+//            );
+
+            dump($householdsArray);
+            dump($householdArray);
+            dump($householdArray['old']);
+            dump($householdArray['state']);
+
             
-            // If state is true and there is no new we keep the old household
-            if (boolval($householdArray['state']) && (!array_key_exists('new', $householdArray) || empty($householdArray['new']))) {
+            // If state is equal to 0, keep the old household
+            if ($householdArray['state'] === 0) {
                 // save in update cache new as empty array and old as the existing household
-                $this->saveInCache('to_update', $householdArray['id_tmp_cache'], [], $email, $oldHousehold);
+                $this->saveInCache('to_update', $householdArray['id_tmp_cache'], [], $email, $householdArray['old']);
             }
-            
-            // If state is false and new contains a household array we update the old with the data from the new (the one in the file)
-            elseif (!boolval($householdArray['state']) && array_key_exists('new', $householdArray) && !empty($householdArray['new'])) {
-                // save in update cache new houshold and old as the previous existing one
-                $this->saveInCache('to_update', $householdArray['id_tmp_cache'], $householdArray['new'], $email, $oldHousehold);
+
+            // If state is equal to 1, keep the new household
+            elseif ($householdArray['state'] === 1) {
+                // save in update cache new household and old as the previous existing one
+                $this->saveInCache('to_update', $householdArray['id_tmp_cache'], $householdArray['new'], $email, $householdArray['old']);
                 
-            } 
-            // If state is true and new contains a household array we don't change the old and create a new household
-            elseif (boolval($householdArray['state']) && array_key_exists('new', $householdArray) && $householdArray['new'] !== null) {
+            }
+            // If state is equal to 0, keep both households
+            elseif ($householdArray['state'] === 2) {
                 // save in create cache new as new household array and old as empty
                 $this->saveInCache('to_create', $householdArray['id_tmp_cache'], $householdArray['new'], $email, []);
             }

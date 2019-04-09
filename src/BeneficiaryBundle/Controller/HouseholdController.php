@@ -267,11 +267,11 @@ class HouseholdController extends Controller
             $token = null;
         }
 
-        $contentJson = $request->request->all();
-        $email = $request->query->get('email');
+        $contentJson = $request->request->get('errors');
 
-        $countryIso3 = $contentJson['__country'];
-        unset($contentJson['__country']);
+        $email = $request->query->get('email');
+        $countryIso3 = $request->request->get('__country');
+
         /** @var HouseholdCSVService $householdService */
         $householdService = $this->get('beneficiary.household_csv_service');
 
@@ -286,6 +286,9 @@ class HouseholdController extends Controller
             }
         } else {
             try {
+                if(! $contentJson) {
+                    $contentJson = [];
+                }
                 $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $token, $email);
             } catch (\Exception $e) {
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);

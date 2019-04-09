@@ -301,8 +301,13 @@ class HouseholdCSVService
         }
 
         $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_token = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_token)) {
+        $dir_token = $dir_root . '/../var/data/token_state';
+        if (is_file($dir_token)) {
+            $tokensState = json_decode(file_get_contents($dir_token), true);
+            if (! array_key_exists($this->token, $tokensState)) {
+                return false;
+            }
+        } else {
             return false;
         }
 
@@ -319,7 +324,7 @@ class HouseholdCSVService
     {
         dump($this->token);
 
-        $sizeToken = 50;
+        $sizeToken = 25;
         if (null === $this->token) {
             $this->token = bin2hex(random_bytes($sizeToken));
         }

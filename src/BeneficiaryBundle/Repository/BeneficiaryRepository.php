@@ -43,6 +43,19 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
+    public function findByUnarchived(array $byArray)
+    {
+        $qb = $this->createQueryBuilder('b');
+        $q = $qb->leftJoin('b.household', 'hh')
+                ->where('hh.archived = 0');
+        foreach ($byArray as $key => $value) {
+            $q = $q->andWhere('b.' . $key . ' = :value' . $key)
+                    ->setParameter('value' . $key, $value);
+        }
+
+        return $q->getQuery()->getResult();
+    }
+
     /**
      * @param string $value
      * @param string $conditionString
