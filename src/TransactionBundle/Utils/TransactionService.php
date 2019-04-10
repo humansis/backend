@@ -56,7 +56,7 @@ class TransactionService
             throw $e;
         }
         
-        if ($distributionData->getCommodities()[0]->getModalityType()->getModality()->getName() === "CTP") {
+        if ($distributionData->getCommodities()[0]->getModalityType()->getName() === "Mobile Money") {
             $amountToSend = $distributionData->getCommodities()[0]->getValue();
             $currencyToSend = $distributionData->getCommodities()[0]->getUnit();
         } else {
