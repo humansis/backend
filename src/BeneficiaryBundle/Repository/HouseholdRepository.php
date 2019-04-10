@@ -41,6 +41,29 @@ class HouseholdRepository extends AbstractCriteriaRepository
         
         return $q;
     }
+    
+    public function getUnarchivedByProject(Project $project)
+    {
+        $qb = $this->createQueryBuilder("hh");
+        $q = $qb->leftJoin("hh.projects", "p")
+                ->where("p = :project")
+                ->setParameter("project", $project)
+                ->andWhere("hh.archived = 0");
+                
+        return $q->getQuery()->getResult();
+    }
+    
+    public function countUnarchivedByProject(Project $project)
+    {
+        $qb = $this->createQueryBuilder("hh");
+        $q = $qb->select("COUNT(hh)")
+                ->leftJoin("hh.projects", "p")
+                ->where("p = :project")
+                ->setParameter("project", $project)
+                ->andWhere("hh.archived = 0");
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 
     /**
      * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
@@ -440,22 +463,5 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
             ->setParameter("value$i", $filters["value_string"])
             ->setParameter("countrySpecific$i", $filters["id_field"]);
-    }
-
-    /**
-     * count the number of housholds linked to a project
-     *
-     * @param Project $project
-     * @return
-     */
-    public function countByProject(Project $project)
-    {
-        $qb = $this->createQueryBuilder("hh");
-        $qb->select("count(hh)")
-            ->leftJoin("hh.projects", "p")
-            ->andWhere("p = :project")
-            ->setParameter("project", $project);
-
-        return $qb->getQuery()->getResult()[0];
     }
 }
