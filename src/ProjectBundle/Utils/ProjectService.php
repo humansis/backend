@@ -71,12 +71,6 @@ class ProjectService
         } else {
             $projects = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
         }
-        $houseHoldsRepository = $this->em->getRepository(Household::class);
-        foreach ($projects as $project) {
-            $project->setNumberOfHouseholds($houseHoldsRepository->countByProject($project)[1]);
-            $this->em->merge($project);
-        }
-        $this->em->flush();
         return $projects;
     }
 
