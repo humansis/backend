@@ -108,8 +108,8 @@ class ProjectService
                 ->setStartDate(new DateTime($projectArray["start_date"]))
                 ->setEndDate(new DateTime($projectArray["end_date"]))
                 ->setIso3($countryISO3)
-                ->setValue($newProject->getValue())
-                ->setNotes($newProject->getNotes());
+                ->setValue($projectArray["value"])
+                ->setNotes($projectArray["notes"]);
 
         $existingProject = $this->em->getRepository(Project::class)->findBy(['name' => $project->getName()]);
         if (!empty($existingProject)) {
@@ -125,24 +125,24 @@ class ProjectService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        $sectors = $newProject->getSectors();
-        if (null !== $sectors) {
+        $sectorsId = $projectArray["sectors"];
+        if (null !== $sectorsId) {
             $project->getSectors()->clear();
             /** @var Sector $sector */
-            foreach ($sectors as $sector) {
-                $sectorTmp = $this->em->getRepository(Sector::class)->find($sector);
+            foreach ($sectorsId as $sectorId) {
+                $sectorTmp = $this->em->getRepository(Sector::class)->find($sectorId);
                 if ($sectorTmp instanceof Sector) {
                     $project->addSector($sectorTmp);
                 }
             }
         }
 
-        $donors = $newProject->getDonors();
-        if (null !== $donors) {
+        $donorsId = $projectArray["donors"];
+        if (null !== $donorsId) {
             $project->getDonors()->clear();
             /** @var Donor $donor */
-            foreach ($donors as $donor) {
-                $donorTmp = $this->em->getRepository(Donor::class)->find($donor);
+            foreach ($donorsId as $donorId) {
+                $donorTmp = $this->em->getRepository(Donor::class)->find($donorId);
                 if ($donorTmp instanceof Donor) {
                     $project->addDonor($donorTmp);
                 }
@@ -171,7 +171,8 @@ class ProjectService
             $project->setName($projectArray['name'])
                 ->setStartDate(new DateTime($projectArray['start_date']))
                 ->setEndDate(new DateTime($projectArray['end_date']))
-                ->setValue($projectArray['value']);
+                ->setValue($projectArray['value'])
+                ->setNotes($projectArray["notes"]);
 
             $sectors = $projectArray['sectors'];
             if (null !== $sectors)

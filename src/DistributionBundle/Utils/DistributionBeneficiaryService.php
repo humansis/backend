@@ -129,8 +129,6 @@ class DistributionBeneficiaryService
 
         if ($beneficiariesArray && sizeof($beneficiariesArray) > 0) {
             foreach ($beneficiariesArray as $beneficiaryArray) {
-                $distributionBeneficiary = new DistributionBeneficiary();
-                $distributionBeneficiary->setDistributionData($distributionData);
 
                 if ($beneficiaryArray !== $beneficiariesArray["__country"]) {
                     switch ($distributionData->getType()) {
@@ -149,8 +147,18 @@ class DistributionBeneficiaryService
                             throw new \Exception("The type of the distribution is undefined.");
                     }
                     
-                    $distributionBeneficiary->setBeneficiary($beneficiary);
-                    $this->em->persist($distributionBeneficiary);
+                    $distributionBeneficiary = new DistributionBeneficiary();
+                    $sameDistributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
+                        ->findOneBy(['beneficiary' => $beneficiary, 'distributionData' => $distributionData]);
+
+                    // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
+                    if ($sameDistributionBeneficiary && sizeof($beneficiariesArray) <= 2) {
+                        throw new \Exception('This beneficiary/household is already part of the distribution', Response::HTTP_BAD_REQUEST);
+                    } else if (!$sameDistributionBeneficiary) {
+                        $distributionBeneficiary->setDistributionData($distributionData);
+                        $distributionBeneficiary->setBeneficiary($beneficiary);
+                        $this->em->persist($distributionBeneficiary);
+                    }
                 }
             }
             $this->em->flush();
