@@ -106,7 +106,11 @@ class BeneficiaryService
             unset($beneficiaryArray['national_id_type']);
             unset($beneficiaryArray['national_id_number']);
         }
-
+        
+        if (strrpos($beneficiaryArray['date_of_birth'], '/') !== false) {
+            str_replace('/', '-', $beneficiaryArray['date_of_birth']);
+        }
+ 
 
         $this->requestValidator->validate(
             "beneficiary",
@@ -115,7 +119,7 @@ class BeneficiaryService
             'any'
         );
 
-        if (array_key_exists("id", $beneficiaryArray)) {
+        if (array_key_exists("id", $beneficiaryArray) && $beneficiaryArray['id'] !== null) {
             $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
             if (!$beneficiary instanceof Beneficiary) {
                 throw new \Exception("Beneficiary was not found.");
@@ -169,7 +173,7 @@ class BeneficiaryService
             $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion["id"]));
         }
         foreach ($beneficiaryArray["phones"] as $phoneArray) {
-            if (!empty($phoneArray["type"]) && !empty($phoneArray["proxy"]) && !empty($phoneArray["prefix"]) && !empty($phoneArray["number"])) {
+            if (!empty($phoneArray["type"]) && !empty($phoneArray["prefix"]) && !empty($phoneArray["number"])) {
                 $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
                 $beneficiary->addPhone($phone);
             }
@@ -217,7 +221,7 @@ class BeneficiaryService
      */
     public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
-        if ($phoneArray['proxy'] && $phoneArray['proxy'] === 'N') {
+        if (!$phoneArray['proxy'] || ($phoneArray['proxy'] && $phoneArray['proxy'] === 'N')) {
             $phoneArray['proxy'] = false;
         } elseif ($phoneArray['proxy'] && $phoneArray['proxy'] === 'Y') {
             $phoneArray['proxy'] = true;

@@ -564,16 +564,16 @@ class SyriaFileToTemplateMapper
     private function initializeBirthdays() : void
     {
         $this->birthdays = [
-            'J' => (clone self::$TODAY)->sub(new DateInterval('P1Y'))->format('Y-m-d'),
-            'K' => (clone self::$TODAY)->sub(new DateInterval('P1Y'))->format('Y-m-d'),
-            'L' => (clone self::$TODAY)->sub(new DateInterval('P3Y'))->format('Y-m-d'),
-            'M' => (clone self::$TODAY)->sub(new DateInterval('P3Y'))->format('Y-m-d'),
-            'N' => (clone self::$TODAY)->sub(new DateInterval('P11Y'))->format('Y-m-d'),
-            'O' => (clone self::$TODAY)->sub(new DateInterval('P11Y'))->format('Y-m-d'),
-            'P' => (clone self::$TODAY)->sub(new DateInterval('P39Y'))->format('Y-m-d'),
-            'Q' => (clone self::$TODAY)->sub(new DateInterval('P39Y'))->format('Y-m-d'),
-            'R' => (clone self::$TODAY)->sub(new DateInterval('P61Y'))->format('Y-m-d'),
-            'S' => (clone self::$TODAY)->sub(new DateInterval('P61Y'))->format('Y-m-d'),
+            'J' => (clone self::$TODAY)->sub(new DateInterval('P1Y'))->format('d-m-Y'),
+            'K' => (clone self::$TODAY)->sub(new DateInterval('P1Y'))->format('d-m-Y'),
+            'L' => (clone self::$TODAY)->sub(new DateInterval('P3Y'))->format('d-m-Y'),
+            'M' => (clone self::$TODAY)->sub(new DateInterval('P3Y'))->format('d-m-Y'),
+            'N' => (clone self::$TODAY)->sub(new DateInterval('P11Y'))->format('d-m-Y'),
+            'O' => (clone self::$TODAY)->sub(new DateInterval('P11Y'))->format('d-m-Y'),
+            'P' => (clone self::$TODAY)->sub(new DateInterval('P39Y'))->format('d-m-Y'),
+            'Q' => (clone self::$TODAY)->sub(new DateInterval('P39Y'))->format('d-m-Y'),
+            'R' => (clone self::$TODAY)->sub(new DateInterval('P61Y'))->format('d-m-Y'),
+            'S' => (clone self::$TODAY)->sub(new DateInterval('P61Y'))->format('d-m-Y'),
         ];
     }
 }

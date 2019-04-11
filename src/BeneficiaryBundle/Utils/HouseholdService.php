@@ -208,9 +208,9 @@ class HouseholdService
             }
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 try {
-                    if ($beneficiaryToSave['gender'] == 'Male') {
+                    if ($beneficiaryToSave['gender'] === 'Male') {
                         $beneficiaryToSave['gender'] = 1;
-                    } elseif ($beneficiaryToSave['gender'] == 'Female') {
+                    } elseif ($beneficiaryToSave['gender'] === 'Female') {
                         $beneficiaryToSave['gender'] = 0;
                     }
 

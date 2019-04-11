@@ -84,7 +84,7 @@ class LocationFixtures extends Fixture
                     $adm1 = new Adm1();
                     $adm1->setCountryISO3($iso3)
                         ->setName(trim($sheet->getCell('C' . $rowIndex)->getValue()))
-                        ->setCode(trim($sheet->getCell('D' . $rowIndex)->getValue()));
+                        ->setCode($sheet->getCell('D' . $rowIndex)->getValue());
                     $manager->persist($adm1);
                     $adm1List[$sheet->getCell('C' . $rowIndex)->getValue()] = $adm1;
                 }
@@ -101,7 +101,7 @@ class LocationFixtures extends Fixture
                     $adm2 = new Adm2();
                     $adm2->setName(trim($sheet->getCell('E' . $rowIndex)->getValue()))
                         ->setAdm1($adm1)
-                        ->setCode(trim($sheet->getCell('F' . $rowIndex)->getValue()));
+                        ->setCode($sheet->getCell('F' . $rowIndex)->getValue());
                     $manager->persist($adm2);
                     $adm2List[$sheet->getCell('E' . $rowIndex)->getValue()] = $adm2;
                 }
@@ -117,7 +117,7 @@ class LocationFixtures extends Fixture
                     $adm3 = new Adm3();
                     $adm3->setName(trim($sheet->getCell('G' . $rowIndex)->getValue()))
                         ->setAdm2($adm2)
-                        ->setCode(trim($sheet->getCell('H' . $rowIndex)->getValue()));
+                        ->setCode($sheet->getCell('H' . $rowIndex)->getValue());
                     $manager->persist($adm3);
                     $adm3List[$sheet->getCell('G' . $rowIndex)->getValue()] = $adm3;
                 }
@@ -131,7 +131,7 @@ class LocationFixtures extends Fixture
                 }
                 $adm4 = new Adm4();
                 $adm4->setName(trim($sheet->getCell('I' . $rowIndex)->getValue()))
-                    ->setCode(trim($sheet->getCell('J' . $rowIndex)->getValue()))
+                    ->setCode($sheet->getCell('J' . $rowIndex)->getValue())
                     ->setAdm3($adm3);
                 $manager->persist($adm4);
 

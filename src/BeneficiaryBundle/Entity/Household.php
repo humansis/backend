@@ -510,7 +510,6 @@ class Household
     public function getCountrySpecificAnswers()
     {
         return $this->countrySpecificAnswers;
-        // $project->setNumberOfHouseholds($project->getNumberOfHouseholds() + 1);
     }
 
     /**
@@ -569,7 +568,6 @@ class Household
     public function addProject(\ProjectBundle\Entity\Project $project)
     {
         $this->projects[] = $project;
-        $project->setNumberOfHouseholds($project->getNumberOfHouseholds() + 1);
         return $this;
     }
 
@@ -582,7 +580,6 @@ class Household
      */
     public function removeProject(\ProjectBundle\Entity\Project $project)
     {
-        $project->setNumberOfHouseholds($project->getNumberOfHouseholds() - 1);
         return $this->projects->removeElement($project);
     }
 

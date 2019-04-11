@@ -81,7 +81,7 @@ class CriteriaDistributionService
      */
     public function loadHousehold(array $criteria, int $threshold, string $countryISO3, Project $project)
     {
-        $households = $project->getHouseholds();
+        $households = $this->em->getRepository(Household::class)->getUnarchivedByProject($project);
         $finalArray = array();
 
         foreach ($households as $household) {
