@@ -97,7 +97,7 @@ class CSVToArrayMapper extends AbstractMapper
                     // Verify that there are no missing information in each beneficiary
                     if ($givenName == null
                         || $familyName == null
-                        || (explode('.', $gender)[0] != 'Female' && explode('.', $gender)[0] != 'Male')
+                        || (trim($gender) != 'Female' && trim($gender) != 'Male')
                         || (explode('.', $status)[0] != '0' && explode('.', $status)[0] != '1')
                         || $dateOfBirth == null
                         || $residencyStatus == null) {
@@ -105,7 +105,7 @@ class CSVToArrayMapper extends AbstractMapper
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['given_name'].' at the line '.$lineNumber);
                         } elseif ($familyName == null) {
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['family_name'].' at the line '.$lineNumber);
-                        } elseif (explode('.', $gender)[0] != 'Female' && explode('.', $gender)[0] != 'Male') {
+                        } elseif (trim($gender) != 'Female' && trim($gender) != 'Male') {
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['gender'].' at the line '.$lineNumber);
                         } elseif ((explode('.', $status)[0] != '0' && explode('.', $status)[0] != '1')) {
                             throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['status'].' at the line '.$lineNumber);
@@ -118,12 +118,18 @@ class CSVToArrayMapper extends AbstractMapper
 
                     // Check that residencyStatus has one of the authorized values
                     $authorizedResidencyStatus = ['refugee', 'IDP', 'resident'];
-                    if (!in_array($residencyStatus, $authorizedResidencyStatus)) {
+                    if (!in_array(strtolower($residencyStatus), $authorizedResidencyStatus)) {
                         throw new \Exception('Your residency status must be either refugee, IDP or resident');
                     }
 
                     // Check that the year of birth is between 1900 and today
-                    $yearOfBirth = intval(explode('-', $dateOfBirth)[0]);
+                    if (strrpos($dateOfBirth, '-') !== false) {
+                        $yearOfBirth = intval(explode('-', $dateOfBirth)[2]);
+                    } elseif (strrpos($dateOfBirth, '/') !== false) {
+                        $yearOfBirth = intval(explode('/', $dateOfBirth)[2]);
+                    } else {
+                        throw new \Exception('The date is not properly formatted in dd-mm-YYYY format');
+                    }
                     if ($yearOfBirth < 1900 || $yearOfBirth > intval(date('Y'))) {
                         throw new \Exception('Your year of birth can not be before 1900 or after the current year');
                     }
@@ -149,6 +155,7 @@ class CSVToArrayMapper extends AbstractMapper
             $this->fieldCountrySpecifics($mappingCSV, $formattedHouseholdArray, $rowHeader);
             $this->fieldVulnerabilityCriteria($formattedHouseholdArray);
             $this->fieldPhones($formattedHouseholdArray);
+            $this->fieldGender($formattedHouseholdArray);
             $this->fieldNationalIds($formattedHouseholdArray);
             $this->fieldBeneficiary($formattedHouseholdArray);
         } catch (\Exception $exception) {
@@ -231,6 +238,22 @@ class CSVToArrayMapper extends AbstractMapper
             $phone2_number_string = str_replace("'", '', $phone2_number_string);
 
             array_push($formattedHouseholdArray['beneficiaries']['phones'], ['type' => $phone2_type_string, 'prefix' => $phone2_prefix_string, 'number' => $phone2_number_string, 'proxy' => $phone2_proxy_string]);
+        }
+    }
+    
+    /**
+     * Reformat the field gender
+     *
+     * @param $formattedHouseholdArray
+     */
+    private function fieldGender(&$formattedHouseholdArray)
+    {
+        $gender_string = trim($formattedHouseholdArray['beneficiaries']['gender']);
+
+        if ($gender_string == "Male") {
+            $formattedHouseholdArray['beneficiaries']['gender'] = 1;
+        } else if ($gender_string == "Female") {
+            $formattedHouseholdArray['beneficiaries']['gender'] = 0;
         }
     }
 
