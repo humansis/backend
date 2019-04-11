@@ -185,8 +185,12 @@ class DistributionController extends Controller
     {
         $data = $request->request->all();
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiary($distributionData, $data);
+        try {
+            $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+            $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiary($distributionData, $data);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
 
         $json = $this->get('jms_serializer')
             ->serialize(
