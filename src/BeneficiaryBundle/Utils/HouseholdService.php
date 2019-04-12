@@ -124,7 +124,6 @@ class HouseholdService
      */
     public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
     {
-        dump ($householdArray, $projectsArray, $household, $flush);
         if(!empty($projectsArray) && gettype($projectsArray[0]) === 'string') {
             $projectsArray = $this->em->getRepository(Project::class)->findBy(["id" => $projectsArray]);
         }
@@ -164,6 +163,7 @@ class HouseholdService
         }
 
         // Save or update location instance
+        dump($householdArray["location"] === null);
         $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
         if (null === $location) {
             throw new \Exception("Location was not found.");

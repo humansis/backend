@@ -48,12 +48,14 @@ class LocationService
      */
     public function getOrSaveLocation($countryISO3, array $locationArray)
     {
+        dump($locationArray);
         $this->requestValidator->validate(
             "location",
             HouseholdConstraints::class,
             $locationArray,
             'any'
         );
+        dump('here');
 
 
         // Define location array
@@ -61,6 +63,8 @@ class LocationService
         $adm2 = null;
         $adm3 = null;
         $adm4 = null;
+
+        dump($adm1);
 
 
         if (array_key_exists("adm2", $locationArray)) {
