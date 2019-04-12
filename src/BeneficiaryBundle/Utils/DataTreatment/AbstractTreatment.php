@@ -120,21 +120,17 @@ abstract class AbstractTreatment implements InterfaceTreatment
      */
     protected function getItemFromCache(string $step, $idCache, string $email)
     {
-        dump($step, $idCache, $email);
         $dir_var_token = $this->getDirectory(true);
-        dump($dir_var_token);
         if (empty($dir_var_token)) {
             return;
         }
 
         $dir_file = $dir_var_token . '/' . $email . '-' . $step;
-        dump($dir_file);
         if (is_file($dir_file)) {
             $listHH = json_decode(file_get_contents($dir_file), true);
         } else {
             $listHH = [];
         }
-        dump($listHH);
         if (array_key_exists($idCache, $listHH)) {
             return $listHH[$idCache];
         } else {

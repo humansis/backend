@@ -26,7 +26,6 @@ class MissingTreatment extends AbstractTreatment
     public function treat(Project $project, array $householdsArray, string $email)
     {
         foreach ($householdsArray as $value) {
-            dump($value);
             if (!$value['address_street'] || !$value['address_number'] || !$value['address_postcode'] || !$value['location'] || !$value['beneficiaries']) {
                 return ['miss' => 'Incomplete line'];
             }

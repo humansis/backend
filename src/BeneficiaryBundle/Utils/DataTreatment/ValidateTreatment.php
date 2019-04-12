@@ -33,7 +33,6 @@ class ValidateTreatment extends AbstractTreatment
 
 
         foreach ($to_create as $i => $household) {
-            dump($to_create);
             $household = $this->householdService->createOrEdit($household['new'], array($project), null);
             $householdsAdded[] = $household;
         }

@@ -55,15 +55,13 @@ class LocationService
             'any'
         );
 
-        dump($locationArray);
-        
+
         // Define location array
         $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(["name" => $locationArray['adm1']]);
         $adm2 = null;
         $adm3 = null;
         $adm4 = null;
 
-        dump($adm1);
 
         if (array_key_exists("adm2", $locationArray)) {
             $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(["name" => $locationArray['adm2']]);

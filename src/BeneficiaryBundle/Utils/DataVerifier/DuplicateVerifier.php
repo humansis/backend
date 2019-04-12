@@ -43,7 +43,6 @@ class DuplicateVerifier extends AbstractVerifier
         
         // Duplicate the new household array
         $newHouseholdSingleBeneficiary = $householdArray['new'];
-        dump($householdArray);
         if(!empty($householdArray['new'])) {
 
             foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary) {
@@ -57,7 +56,6 @@ class DuplicateVerifier extends AbstractVerifier
                         'familyName' => trim($newBeneficiary['family_name'])
                     ]
                 );
-                dump($existingBeneficiaries);
                 foreach ($existingBeneficiaries as $existingBeneficiary) {
                     // if there is one in a different household than the new household, it's a potential duplicate
                     if (! $similarOldHousehold || $existingBeneficiary->getHousehold()->getId() !== $similarOldHousehold['id']) {
