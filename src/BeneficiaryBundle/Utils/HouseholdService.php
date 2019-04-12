@@ -163,7 +163,6 @@ class HouseholdService
         }
 
         // Save or update location instance
-        dump($householdArray["location"] === null);
         $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
         if (null === $location) {
             throw new \Exception("Location was not found.");
@@ -249,7 +248,6 @@ class HouseholdService
             }
         }
 
-        dump ($household);
 
         return $household;
     }
