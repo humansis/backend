@@ -22,7 +22,6 @@ class LessTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array $householdsArray, string $email)
     {
-        dump($householdsArray);
         foreach ($householdsArray as $householdArray) {
             // Save to update the new household with its removed beneficiary
             $this->updateInCache($householdArray['id_tmp_cache'], $householdArray['new'], $email);

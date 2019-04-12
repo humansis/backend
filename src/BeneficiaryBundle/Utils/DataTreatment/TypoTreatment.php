@@ -38,7 +38,6 @@ class TypoTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array $householdsArray, string $email)
     {
-        dump($householdsArray);
 
         foreach ($householdsArray as $index => $householdArray) {
             // Get old household
@@ -52,12 +51,6 @@ class TypoTreatment extends AbstractTreatment
 //                true
 //            );
 
-            dump($householdsArray);
-            dump($householdArray);
-            dump($householdArray['old']);
-            dump($householdArray['state']);
-
-            
             // If state is equal to 0, keep the old household
             if ($householdArray['state'] === 0) {
                 // save in update cache new as empty array and old as the existing household

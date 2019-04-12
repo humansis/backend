@@ -29,24 +29,29 @@ class ValidateTreatment extends AbstractTreatment
         $to_create = $this->getFromCache('to_create', $email) ?: [];
         $to_update = $this->getFromCache('to_update', $email) ?: [];
 
-        dump('treat');
+        $householdsAdded = [];
+
 
         foreach ($to_create as $i => $household) {
             dump($to_create);
-            $this->householdService->createOrEdit($household['new'], array($project), null);
-        }
-        
-        foreach ($to_update as $i => $household) {
-            dump($to_update);
-            $oldHousehold = $this->em->getRepository(Household::class)->find($household['old']['id']);
-            if (! empty($household['new'])) {
-                $this->householdService->createOrEdit($household['new'], array($project), $oldHousehold);
-            } else {
-                $this->householdService->addToProject($oldHousehold, $project);
-            }
+            $household = $this->householdService->createOrEdit($household['new'], array($project), null);
+            $householdsAdded[] = $household;
         }
 
-        // to preserve values with the same key
-        return array_unique(array_merge($to_update, $to_create));
+        foreach ($to_update as $i => $household) {
+            $oldHousehold = $this->em->getRepository(Household::class)->find($household['old']['id']);
+            if (! empty($household['new']) && ! array_key_exists('id', $household['new'])) {
+                $household = $this->householdService->createOrEdit($household['new'], array($project), $oldHousehold);
+            // If household was not previously managed and was fetched from database for duplication
+            } elseif (! empty($household['new']) && array_key_exists('id', $household['new'])) {
+                $household = $this->householdService->removeBeneficiaries($household['new']);
+            } else {
+                $this->householdService->addToProject($oldHousehold, $project);
+                $household = $oldHousehold;
+            }
+            $householdsAdded[] = $household;
+        }
+
+        return $householdsAdded;
     }
 }

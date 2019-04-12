@@ -26,11 +26,12 @@ class MissingTreatment extends AbstractTreatment
     public function treat(Project $project, array $householdsArray, string $email)
     {
         foreach ($householdsArray as $value) {
+            dump($value);
             if (!$value['address_street'] || !$value['address_number'] || !$value['address_postcode'] || !$value['location'] || !$value['beneficiaries']) {
                 return ['miss' => 'Incomplete line'];
             }
             foreach ($value['beneficiaries'] as $beneficiary) {
-                if (!$beneficiary['given_name'] || !$beneficiary['family_name'] || !$beneficiary['gender'] || ($beneficiary['status'] != '0' && $beneficiary['status'] != '1') || !$beneficiary['residency_status'] || !$beneficiary['date_of_birth']) {
+                if (!$beneficiary['given_name'] || !$beneficiary['family_name'] || ($beneficiary['gender'] !== 0 && $beneficiary['gender'] !== 1) || ($beneficiary['status'] != '0' && $beneficiary['status'] != '1') || !$beneficiary['residency_status'] || !$beneficiary['date_of_birth']) {
                     return ['miss' => 'Incomplete line'];
                 }
             }

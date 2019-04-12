@@ -134,7 +134,6 @@ class HouseholdCSVService
         do {
             // get step
             $this->step = $this->getStepFromCache();
-            dump($this->step);
 
             // Check if cache and token is still there
             if (!$this->checkTokenAndStep($this->step)) {
@@ -145,12 +144,10 @@ class HouseholdCSVService
             /** @var AbstractTreatment $verifier */
             $treatment = $this->guessTreatment($this->step);
 
-            dump('Treatement '.$this->step);
 
 
             if ($treatment) {
                 $treatReturned = $treatment->treat($project, $treatReturned, $email);
-                dump($treatReturned);
                 if (! $treatReturned) {
                     $treatReturned = [];
                 }
@@ -163,14 +160,12 @@ class HouseholdCSVService
             /** @var AbstractVerifier $verifier */
             $verifier = $this->guessVerifier($this->step);
 
-            dump('Verif '.$this->step);
 
             // Return array
             $return = [];
 
             // if no verification needed
             if (! $verifier) {
-                dump('no verif');
                 if ($this->step === 6) {
                     $this->clearCacheToken($this->token);
                     return $treatReturned;
@@ -200,7 +195,6 @@ class HouseholdCSVService
                 unset($treatReturned[$index]);
             }
 
-            dump($return);
 
             // update timestamp (10 minutes) and step
             $this->updateTokenState();
@@ -322,14 +316,12 @@ class HouseholdCSVService
      */
     public function initOrGetToken()
     {
-        dump($this->token);
 
         $sizeToken = 25;
         if (null === $this->token) {
             $this->token = bin2hex(random_bytes($sizeToken));
         }
 
-        dump($this->token);
         return $this->token;
     }
 
@@ -352,7 +344,6 @@ class HouseholdCSVService
 
         // Update step
         $this->step++;
-        dump($this->step);
 
         $dateExpiry = new \DateTime();
         $dateExpiry->add(new \DateInterval('PT10M'));
@@ -361,7 +352,6 @@ class HouseholdCSVService
             'step' => $this->step
         ];
 
-        dump($tokensState);
 
 
         file_put_contents($dir_var . '/token_state', json_encode($tokensState));
