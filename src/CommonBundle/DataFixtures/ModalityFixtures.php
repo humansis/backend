@@ -23,7 +23,7 @@ class ModalityFixtures extends Fixture
             'Voucher',
             [
                 // 'E-Voucher',
-                // 'QR Code Voucher',
+                'QR Code Voucher',
                 'Paper Voucher'
             ]
         ],
