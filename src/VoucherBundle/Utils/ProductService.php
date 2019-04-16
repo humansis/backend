@@ -57,7 +57,8 @@ class ProductService
             $product->setImage($productData['image'])
               ->setName($productData['name'])
               ->setUnit($productData['unit'])
-              ->setArchived(false);
+              ->setArchived(false)
+              ->setCountryISO3($productData['__country']);
 
             $this->em->persist($product);
             $this->em->flush();
@@ -73,9 +74,10 @@ class ProductService
      *
      * @return array
      */
-    public function findAll()
+    public function findAll($countryIso3)
     {
-        return $this->em->getRepository(Product::class)->findBy(['archived' => false]);
+        $products =  $this->em->getRepository(Product::class)->findBy(['archived' => false, 'countryISO3' => $countryIso3]);
+        return $this->em->getRepository(Product::class)->findBy(['archived' => false, 'countryISO3' => $countryIso3]);
     }
 
     /**

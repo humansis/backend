@@ -3,15 +3,18 @@
 namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
 use CommonBundle\Utils\ExportableInterface;
+use BeneficiaryBundle\Entity\Household;
 
 /**
  * Project
  *
  * @ORM\Table(name="project")
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\ProjectRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Project implements ExportableInterface
 {
@@ -627,5 +630,14 @@ class Project implements ExportableInterface
             "Sectors" => $sectors,
             "is archived" => $this->getArchived(),
         ];
+    }
+    
+    /** @ORM\PostLoad */
+    public function updateNumberOfHouseholds(LifecycleEventArgs $args)
+    {
+        $em = $args->getEntityManager();
+        $entity = $args->getObject();
+        
+        $this->setNumberOfHouseholds(intval($em->getRepository(Household::class)->countUnarchivedByProject($entity)));
     }
 }

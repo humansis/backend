@@ -71,12 +71,6 @@ class ProjectService
         } else {
             $projects = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
         }
-        $houseHoldsRepository = $this->em->getRepository(Household::class);
-        foreach ($projects as $project) {
-            $project->setNumberOfHouseholds($houseHoldsRepository->countByProject($project)[1]);
-            $this->em->merge($project);
-        }
-        $this->em->flush();
         return $projects;
     }
 
@@ -111,7 +105,13 @@ class ProjectService
                 ->setValue($projectArray["value"])
                 ->setNotes($projectArray["notes"]);
 
-        $existingProject = $this->em->getRepository(Project::class)->findBy(['name' => $project->getName()]);
+        $existingProject = $this->em->getRepository(Project::class)->findBy(
+            [
+                'name' => $project->getName(),
+                'iso3' => $project->getIso3(),
+            ]
+        );
+        dump($existingProject);
         if (!empty($existingProject)) {
             throw new HttpException(Response::HTTP_CONFLICT, 'Project with the name '.$project->getName().' already exists');
         }

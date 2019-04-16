@@ -56,7 +56,7 @@ class VendorController extends Controller
         $vendorData = $request->request->all();
 
         try {
-            $return = $this->get('voucher.vendor_service')->create($vendorData);
+            $return = $this->get('voucher.vendor_service')->create($vendorData['__country'], $vendorData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -173,7 +173,7 @@ class VendorController extends Controller
         $vendorData = $request->request->all();
 
         try {
-            $newVendor = $this->get('voucher.vendor_service')->update($vendor, $vendorData);
+            $newVendor = $this->get('voucher.vendor_service')->update($vendorData['__country'], $vendor, $vendorData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

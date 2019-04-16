@@ -83,7 +83,7 @@ class LocationFixtures extends Fixture
                 if (!array_key_exists($sheet->getCell('C' . $rowIndex)->getValue(), $adm1List)) {
                     $adm1 = new Adm1();
                     $adm1->setCountryISO3($iso3)
-                        ->setName($sheet->getCell('C' . $rowIndex)->getValue())
+                        ->setName(trim($sheet->getCell('C' . $rowIndex)->getValue()))
                         ->setCode($sheet->getCell('D' . $rowIndex)->getValue());
                     $manager->persist($adm1);
                     $adm1List[$sheet->getCell('C' . $rowIndex)->getValue()] = $adm1;
@@ -99,7 +99,7 @@ class LocationFixtures extends Fixture
                 }
                 if (!array_key_exists($sheet->getCell('E' . $rowIndex)->getValue(), $adm2List)) {
                     $adm2 = new Adm2();
-                    $adm2->setName($sheet->getCell('E' . $rowIndex)->getValue())
+                    $adm2->setName(trim($sheet->getCell('E' . $rowIndex)->getValue()))
                         ->setAdm1($adm1)
                         ->setCode($sheet->getCell('F' . $rowIndex)->getValue());
                     $manager->persist($adm2);
@@ -115,7 +115,7 @@ class LocationFixtures extends Fixture
                 }
                 if (!array_key_exists($sheet->getCell('G' . $rowIndex)->getValue(), $adm3List)) {
                     $adm3 = new Adm3();
-                    $adm3->setName($sheet->getCell('G' . $rowIndex)->getValue())
+                    $adm3->setName(trim($sheet->getCell('G' . $rowIndex)->getValue()))
                         ->setAdm2($adm2)
                         ->setCode($sheet->getCell('H' . $rowIndex)->getValue());
                     $manager->persist($adm3);
@@ -130,7 +130,7 @@ class LocationFixtures extends Fixture
                     continue;
                 }
                 $adm4 = new Adm4();
-                $adm4->setName($sheet->getCell('I' . $rowIndex)->getValue())
+                $adm4->setName(trim($sheet->getCell('I' . $rowIndex)->getValue()))
                     ->setCode($sheet->getCell('J' . $rowIndex)->getValue())
                     ->setAdm3($adm3);
                 $manager->persist($adm4);
