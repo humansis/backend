@@ -169,8 +169,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/households', $body);
         $householdsArray = json_decode($this->client->getResponse()->getContent(), true);
 
-        dump($householdsArray);
-
         $this->assertArrayHasKey('id', $householdsArray);
         $this->assertArrayHasKey('address_postcode', $householdsArray);
         $this->assertArrayHasKey('address_street', $householdsArray);
