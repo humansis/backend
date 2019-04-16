@@ -124,7 +124,7 @@ class HouseholdService
      */
     public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
     {
-        if(!empty($projectsArray) && gettype($projectsArray[0]) === 'string') {
+        if(!empty($projectsArray) && (gettype($projectsArray[0]) === 'string' || gettype($projectsArray[0]) === 'integer')) {
             $projectsArray = $this->em->getRepository(Project::class)->findBy(["id" => $projectsArray]);
         }
         $actualAction = 'update';
