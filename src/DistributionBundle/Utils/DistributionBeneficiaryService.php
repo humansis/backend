@@ -195,7 +195,7 @@ class DistributionBeneficiaryService
         foreach ($objectBeneficiary as $value) {
             $gender = '';
 
-            if ($value['gender'] == 0) {
+            if ($value['gender'] === '0') {
                 $gender = 'Female';
             } else {
                 $gender = 'Male';

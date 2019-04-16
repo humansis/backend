@@ -256,7 +256,7 @@ class BookletService
         return $booklet;
     }
 
-    public function updateVoucherCode(Voucher $voucher, ?string $password, ?string $value, ?string $currency)
+    public function updateVoucherCode(Voucher $voucher, ?string $password='', ?string $value='', ?string $currency='')
     {
         $qrCode = $voucher->getCode();
         // To know if we need to add a new password or replace an existant one

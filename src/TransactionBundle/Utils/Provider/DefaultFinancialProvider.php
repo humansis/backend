@@ -193,6 +193,7 @@ abstract class DefaultFinancialProvider
                 }
             }
         }
+        return $response;
     }
 
     /**
