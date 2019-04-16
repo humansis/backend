@@ -20,14 +20,17 @@ class TypoTreatment extends AbstractTreatment
     /**
      * Treat the typo issues
      * The frontend returns:
-     * [
-     *     {
-     *         old: [],
-     *         new: [],
-     *         id_tmp_cache: int,
-     *         state: int
-     *     }
-     * ]
+     * {
+     *  errors:
+     *     [
+     *         {
+     *             old: [],
+     *             new: [],
+     *             id_tmp_cache: int,
+     *             state: int
+     *         }
+     *     ]
+     * }
      * @param Project $project
      * @param array $householdsArray
      * @param string $email

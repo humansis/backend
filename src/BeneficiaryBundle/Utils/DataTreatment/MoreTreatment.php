@@ -10,6 +10,18 @@ class MoreTreatment extends AbstractTreatment
 {
 
     /**
+     * Treat the typo issues
+     * The frontend returns:
+     * {
+     *  errors:
+     *     [
+     *         {
+     *             old: [],
+     *             new: [],
+     *             id_tmp_cache: int,
+     *         }
+     *     ]
+     * }
      * @param Project $project
      * @param array $householdsArray
      * @param string $email

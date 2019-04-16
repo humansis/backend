@@ -15,19 +15,20 @@ class DuplicateTreatment extends AbstractTreatment
 {
 
     /**
-     * Treat the duplicate issues
+     * Treat the typo issues
      * The frontend returns:
-     * [
-     *     {
-     *         id_old: '',
-     *         id_duplicate: '', (not used in back)
-     *         to_delete: '', (not used in back)
-     *         id_tmp_cache: '',
-     *         state: '', (1 = keep the old beneficiary, 0 = delete it)
-     *         new: []
-     *     }
-     * ]
-     *
+     * {
+     *  errors:
+     *     [
+     *         {
+     *             old: {},
+     *             new: {},
+     *             new_household: {}
+     *             id_tmp_cache: int,
+     *             state: int
+     *         }
+     *     ]
+     * }
      * @param Project $project
      * @param array $householdsArray
      * @param string $email
