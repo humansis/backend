@@ -18,7 +18,19 @@ class TypoTreatment extends AbstractTreatment
 {
 
     /**
-     * ET RETURN ONLY IF WE ADD THE NEW
+     * Treat the typo issues
+     * The frontend returns:
+     * {
+     *  errors:
+     *     [
+     *         {
+     *             old: [],
+     *             new: [],
+     *             id_tmp_cache: int,
+     *             state: int
+     *         }
+     *     ]
+     * }
      * @param Project $project
      * @param array $householdsArray
      * @param string $email
@@ -29,123 +41,39 @@ class TypoTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array $householdsArray, string $email)
     {
-        $listHouseholds = [];
-        // Get the list of household which are already saved in database (100% similar in typoVerifier)
-        $households100Percent = [];
-        $this->getFromCache('mapping_new_old', $households100Percent, $email);
-        $this->clearCache('households.typo');
+
         foreach ($householdsArray as $index => $householdArray) {
-            // CASE STATE IS TRUE AND NEW IS MISSING => WE KEEP ONLY THE OLD HOUSEHOLD, AND WE ADD IT TO THE CURRENT PROJECT
-            if (boolval($householdArray['state']) && (!array_key_exists("new", $householdArray) || $householdArray['new'] === null)) {
-                $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
-                $this->householdService->addToProject($oldHousehold, $project);
-                unset($householdsArray[$index]);
-                continue;
-            } // IF STATE IS FALSE AND NEW CONTAINS A ARRAY OF HOUSEHOLD => WE UPDATE THE OLD WITH DATA FROM THE NEW
-            elseif (!boolval($householdArray['state']) && array_key_exists("new", $householdArray) && $householdArray['new'] !== null) {
-                $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
-                if ($oldHousehold instanceof Household) {
-                    // Update only the object Household
-                    $this->householdService->update($oldHousehold, $project, $householdArray['new'], false);
-                    // Found data in order to update the head of this household
-                    $oldHeadHH = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($oldHousehold);
-                    if ($oldHeadHH instanceof Beneficiary) {
-                        $newHeadHH = null;
-                        foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary) {
-                            if (boolval($newBeneficiary['status'])) {
-                                $newHeadHH = $newBeneficiary;
-                                $newHeadHH['id'] = $oldHeadHH->getId();
-                                break;
-                            }
-                        }
-                        if (null !== $newHeadHH) {
-                            // Update the head
-                            $this->beneficiaryService->updateOrCreate($oldHousehold, $newHeadHH, true);
-                        }
-                    }
-                }
-                // ADD TO THE MAPPING FILE
-                $this->saveHouseholds($email . '-households.typo', $householdArray['new']);
+            // Get old household
+//            $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
+//            $oldHousehold = json_decode(
+//                $this->container->get('jms_serializer')->serialize(
+//                        $oldHousehold,
+//                        'json',
+//                        SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
+//                    ),
+//                true
+//            );
 
-                $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold, $email);
-                $householdArray['new']['id_tmp_cache'] = $id_tmp;
-            } elseif (boolval($householdArray['state']) && array_key_exists("new", $householdArray) && $householdArray['new'] !== null) {
-                $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
-                $projects = array();
-                array_push($projects, $project);
-                $this->householdService->createOrEdit($householdArray['new'], $projects);
-
-                $this->saveHouseholds($email . '-households.typo', $householdArray['new']);
-                $id_tmp = $this->saveInCache('mapping_new_old', $householdArray['id_tmp_cache'], $householdArray['new'], $oldHousehold, $email);
-                $householdArray['new']['id_tmp_cache'] = $id_tmp;
+            // If state is equal to 0, keep the old household
+            if ($householdArray['state'] === 0) {
+                // save in update cache new as empty array and old as the existing household
+                $this->saveInCache('to_update', $householdArray['id_tmp_cache'], [], $email, $householdArray['old']);
             }
 
-
-            // WE SAVE EVERY HOUSEHOLD WHICH HAVE BEEN TREATED BY THIS FUNCTION BECAUSE IN NEXT STEP WE HAVE TO KNOW WHICH
-            // HOUSEHOLDS HAD TYPO ERRORS
-            $listHouseholds[] = $householdArray;
+            // If state is equal to 1, keep the new household
+            elseif ($householdArray['state'] === 1) {
+                // save in update cache new household and old as the previous existing one
+                $this->saveInCache('to_update', $householdArray['id_tmp_cache'], $householdArray['new'], $email, $householdArray['old']);
+                
+            }
+            // If state is equal to 0, keep both households
+            elseif ($householdArray['state'] === 2) {
+                // save in create cache new as new household array and old as empty
+                $this->saveInCache('to_create', $householdArray['id_tmp_cache'], $householdArray['new'], $email, []);
+            }
+            unset($householdsArray[$index]);
         }
-        $this->getFromCache('no_typo', $listHouseholds, $email);
-
-        return $this->mergeListHHSimilarAndNoTypo($listHouseholds, $households100Percent);
-    }
-
-    /**
-     * @param $listHouseholds
-     * @param $households100Percent
-     * @return array
-     */
-    public function mergeListHHSimilarAndNoTypo($listHouseholds, $households100Percent)
-    {
-        foreach ($households100Percent as $household100Percent) {
-            $listHouseholds[] = $household100Percent;
-        }
-        return $listHouseholds;
-    }
-
-    /**
-     * @param string $step
-     * @param int $idCache
-     * @param array $dataToSave
-     * @param Household $household
-     * @param string $email
-     * @return int
-     * @throws \Exception
-     */
-    private function saveInCache(string $step, int $idCache, array $dataToSave, Household $household, string $email)
-    {
-        $arrayNewHousehold = json_decode(
-            $this->container->get('jms_serializer')
-                ->serialize(
-                    $household,
-                    'json',
-                    SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
-                ),
-            true
-        );
-
-        $sizeToken = 50;
-        if (null === $this->token) {
-            $this->token = bin2hex(random_bytes($sizeToken));
-        }
-
-        $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data/' . $this->token;
-        if (!is_dir($dir_var)) {
-            mkdir($dir_var);
-        }
-
-        $dir_var_step = $dir_var . '/' . $email .'-' . $step;
-
-        if (is_file($dir_var_step)) {
-            $listHH = json_decode(file_get_contents($dir_var_step), true);
-        } else {
-            $listHH = [];
-        }
-
-        $listHH[$idCache] = ["new" => $dataToSave, "old" => $arrayNewHousehold, "id_tmp_cache" => $idCache];
-        file_put_contents($dir_var_step, json_encode($listHH));
-
-        return $idCache;
+        
+        return $this->getFromCache('to_update', $email);
     }
 }
