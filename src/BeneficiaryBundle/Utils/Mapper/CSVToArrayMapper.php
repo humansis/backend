@@ -117,6 +117,8 @@ class CSVToArrayMapper extends AbstractMapper
                     }
 
                     // Check that residencyStatus has one of the authorized values
+                    $authorizedResidencyStatus = ['refugee', 'IDP', 'resident'];
+                    // Add case insensitivity
                     $statusIsAuthorized = false;
                     foreach ($authorizedResidencyStatus as $status) {
                         if (strcasecmp($status, $residencyStatus)) {
@@ -124,6 +126,7 @@ class CSVToArrayMapper extends AbstractMapper
                             $statusIsAuthorized = true;
                         }
                     }
+
                     if (!$statusIsAuthorized) {
                         throw new \Exception('Your residency status must be either refugee, IDP or resident');
                     }
