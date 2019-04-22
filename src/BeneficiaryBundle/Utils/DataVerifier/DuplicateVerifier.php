@@ -41,14 +41,9 @@ class DuplicateVerifier extends AbstractVerifier
         // Initialize the list of potential duplicates
         $listDuplicateBeneficiaries = [];
         
-        // Duplicate the new household array
-        $newHouseholdSingleBeneficiary = $householdArray['new'];
         if(!empty($householdArray['new'])) {
 
             foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary) {
-                // reset the new households beneficiaries
-                $newHouseholdSingleBeneficiary['beneficiaries'] = [];
-
                 // get beneficiaries with the same first name and last name
                 $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByUnarchived(
                     [
@@ -73,10 +68,11 @@ class DuplicateVerifier extends AbstractVerifier
                         $oldHousehold['beneficiaries'] = [$existingBeneficiary];
 
                         $arrayTmp = [
-                            'new'           => $newHouseholdSingleBeneficiary,
-                            'old'           => $oldHousehold,
+                            'new'           => $newBeneficiary,
+                            'old'           => $existingBeneficiary,
                             'id_tmp_cache'  => $householdArray['id_tmp_cache'],
-                            'new_household' => $householdArray['new']
+                            'new_household' => $householdArray['new'],
+                            'old_household' => $oldHousehold
                         ];
 
                         $listDuplicateBeneficiaries[] = $arrayTmp;
