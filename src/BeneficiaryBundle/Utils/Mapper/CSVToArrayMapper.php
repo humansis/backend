@@ -117,8 +117,14 @@ class CSVToArrayMapper extends AbstractMapper
                     }
 
                     // Check that residencyStatus has one of the authorized values
-                    $authorizedResidencyStatus = ['refugee', 'IDP', 'resident'];
-                    if (!in_array(strtolower($residencyStatus), $authorizedResidencyStatus)) {
+                    $statusIsAuthorized = false;
+                    foreach ($authorizedResidencyStatus as $status) {
+                        if (strcasecmp($status, $residencyStatus)) {
+                            $residencyStatus = $status;
+                            $statusIsAuthorized = true;
+                        }
+                    }
+                    if (!$statusIsAuthorized) {
                         throw new \Exception('Your residency status must be either refugee, IDP or resident');
                     }
 
