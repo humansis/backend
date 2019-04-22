@@ -65,7 +65,6 @@ class DuplicateVerifier extends AbstractVerifier
                                 ),
                             true
                         );
-                        $oldHousehold['beneficiaries'] = [$existingBeneficiary];
 
                         $arrayTmp = [
                             'new'           => $newBeneficiary,
