@@ -52,6 +52,7 @@ class SyriaFileToTemplateMapper
     private const INPUT_COLUMN_END   = 'Y';
 
     private const SPACE_SEPARATOR   = ' ';
+    private const BACKSLASH_SEPARATOR = '/';
     
     private const FIRST_LETTER_NON_STATIC = 'L';
     
@@ -238,12 +239,13 @@ class SyriaFileToTemplateMapper
              * L => Given name
              */
             $beneficiaryFirstNames = $row['B'];
+            
             // If there is a slash in the beneficiary name
-            if (strpos($beneficiaryFirstNames, DIRECTORY_SEPARATOR) !== false) {
+            if (strpos($beneficiaryFirstNames, self::BACKSLASH_SEPARATOR) !== false) {
                 // A second beneficiary exists
                 $secondBeneficiaryExists = true;
                 // We store these names in an array
-                $beneficiaryFirstNames = explode(DIRECTORY_SEPARATOR, $beneficiaryFirstNames);
+                $beneficiaryFirstNames = explode(self::BACKSLASH_SEPARATOR, $beneficiaryFirstNames);
                 // Get the first name of the family's head and write it in column L
                 $mutualOutputRow[$this->getColumnLetter('L')] = trim($beneficiaryFirstNames[0]);
                 // Get the first name of of the second beneficiary and write it in column L
@@ -255,11 +257,11 @@ class SyriaFileToTemplateMapper
             }
             $beneficiaryLastNames = $row['C'];
             // If there is a slash in the beneficiary name
-            if (strpos($beneficiaryLastNames, DIRECTORY_SEPARATOR) !== false) {
+            if (strpos($beneficiaryLastNames, self::BACKSLASH_SEPARATOR) !== false) {
                 // A second beneficiary exists
                 $secondBeneficiaryExists = true;
                 // We store these names in an array
-                $beneficiaryLastNames = explode(DIRECTORY_SEPARATOR, $beneficiaryLastNames);
+                $beneficiaryLastNames = explode(self::BACKSLASH_SEPARATOR, $beneficiaryLastNames);
                 // Get the last name of the family's head and write it in column M
                 $mutualOutputRow[$this->getColumnLetter('M')] = trim($beneficiaryLastNames[0]);
                 // Get the last name of of the second beneficiary and write it in column M
@@ -276,8 +278,8 @@ class SyriaFileToTemplateMapper
                 // Writes 'ID Card' in the column Z
                 $mutualOutputRow[$this->getColumnLetter('AA')] = 'ID Card';
                 // If there is a slash in the id => two ids
-                if (strpos($beneficiaryId, DIRECTORY_SEPARATOR) !== false) {
-                    $beneficiariesId = explode(DIRECTORY_SEPARATOR, $beneficiaryId);
+                if (strpos($beneficiaryId, self::BACKSLASH_SEPARATOR) !== false) {
+                    $beneficiariesId = explode(self::BACKSLASH_SEPARATOR, $beneficiaryId);
                     $mutualOutputRow[$this->getColumnLetter($defaultMapping['C'])] = trim($beneficiariesId[0]);
 
                     if ($secondBeneficiaryExists) {

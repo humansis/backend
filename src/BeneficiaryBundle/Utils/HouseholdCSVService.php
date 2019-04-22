@@ -154,7 +154,7 @@ class HouseholdCSVService
             }
 
             if (is_array($treatReturned) && array_key_exists('miss', $treatReturned)) {
-                throw new \Exception('A line is incomplete or not properly filled in the imported file');
+                throw new \Exception('A line is incomplete or not properly filled in the imported file: ' . $treatReturned['miss']);
             }
 
             /** @var AbstractVerifier $verifier */
