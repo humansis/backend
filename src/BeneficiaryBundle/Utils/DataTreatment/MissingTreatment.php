@@ -31,7 +31,7 @@ class MissingTreatment extends AbstractTreatment
                 return ['miss' => 'line ' . $index];
             }
             foreach ($value['beneficiaries'] as $beneficiary) {
-                if (!$beneficiary['given_name'] || !$beneficiary['family_name'] || !$beneficiary['gender'] || ($beneficiary['status'] != '0' && $beneficiary['status'] != '1') || !$beneficiary['residency_status'] || !$beneficiary['date_of_birth']) {
+                if (!$beneficiary['given_name'] || !$beneficiary['family_name'] || ($beneficiary['gender'] != 0 && $beneficiary['gender'] != 1) || ($beneficiary['status'] != '0' && $beneficiary['status'] != '1') || !$beneficiary['residency_status'] || !$beneficiary['date_of_birth']) {
                     return ['miss' => 'line ' . $index . ' (beneficiaries)'];
                 }
             }
