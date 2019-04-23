@@ -47,253 +47,255 @@ In column with multiple information (like phones, you can have multiple phone nu
 
 ### Concept
 
-![Import CSV file : steps](./import_household.png)
+While there are no errors, the process will continue on the server-side.
+\
+A **step** variable is used to keep track of the current validation state.
+When an error occurs, only the new and old beneficiaries causing this discrepancy are sent back to the client.
+The user will compare and select which households and beneficiaries to save in the database.
+
+The database will not be updated until the end of the process.
+Temporary selected beneficiaries are stored in cache files before import.
+
+At the beginning of the import process, a unique token is generated to keep track of the import's session.
+A timestamp is generated at its start and refreshed at every step.
+A duration of ten minutes per step is allowed to prevent cache overflow.
+
+During this process, two files may be generated: *to_create* and *to_update*.
+
+* *to_create*: contains new beneficiaries, when no error are encountered 
+as well as well as on the **typo**, and **duplicates** treatments.
+
+* *to_update*: contains updated beneficiaries, on the **typo**, **more** and **less** treatments.
+
+At the end of the import process, these files are used to update the database.
+
+### Flow Chart
+
+![Import CSV file : steps](./Resources/doc/imports.svg)
 
 
 ### Typo treatment
 
+This step will look for any typo made in the head of beneficiaries.
+
+If an imported head's first name, last name or address matches any existing head with a one character difference 
+it will be interpreted as a typo.
+The user will have to choose whether to keep the **existing**, **imported** or **both** persons in the database.
+
+####Server response 
+
 ```json
 {
-  "new" : "either empty or household object",
-  "id_old": 1,
-  "state": "true or false"
+  "data": [
+      {
+          "new": "Imported household containing the head with a typo",
+          "old": "Existing household containing the head with a typo", 
+          "id_tmp_cache": "Cache id corresponding to this household"
+      },
+      {
+      ...
+      }
+  ],
+  "step": 2,
+  "token": "Current data validation token"
 }
 ```
 
-- **state** = true & **new** = empty : ignore new, new is the same than the old
-- **state** = true & **new** = Household object : ignore old, new is not the same than the old
-- **state** = false & **new** = Household object : update old with data from the new (update only the Household and the beneficiary head of household)
+####Client response
+```json
+{
+    "errors": [
+      {
+        "new": "Imported household containing the head with a typo",
+        "old": "Existing household containing the head with a typo", 
+        "id_tmp_cache": "Cache id corresponding to this household",
+        "state": "0 to only keep old, 1 to only keep new, 2 to keep both"
+      },
+      {
+      ...
+      }
+    ]
+}
+```
+
+### More treatment
+
+This step will look for new beneficiaries in existing households.
+
+If an imported household matching an entry in the database contains one or more new beneficiaries 
+(birth, new member arriving in the household's home, ...), the user will be prompted to confirm the addition for this household.
+He will **select** which beneficiaries to effectively import in the database.
+
+####Server response 
+
+
+```json
+{
+  "data": [
+      {
+          "new": "Imported household",
+          "old": "Existing household", 
+          "id_tmp_cache": "Cache id corresponding to this household"
+      },
+      {
+      ...
+      }
+  ],
+  "step": 3,
+  "token": "Current data validation token"
+}
+```
+
+####Client response
+```json
+{
+    "errors": [
+      {
+        "new": "Imported updated household",
+        "old": "Existing household", 
+        "id_tmp_cache": "Cache id corresponding to this household",
+      },
+      {
+      ...
+      }
+    ]
+}
+```
+
+### Less treatment
+
+####Server response 
+
+This step will look for any missing beneficiaries from the existing households.
+
+If an imported household matching an entry in the database does not contains all the existing beneficiaries
+(passing of a family member, departure of a member from the household's home, ...), the user will be prompted 
+to confirm the addition for this household.
+He will **select** which beneficiaries to effectively remove from the database.
+
+
+```json
+{
+  "data": [
+      {
+          "new": "Imported household",
+          "old": "Existing household", 
+          "id_tmp_cache": "Cache id corresponding to this household"
+      },
+      {
+      ...
+      }
+  ],
+  "step": 4,
+  "token": "Current data validation token"
+}
+```
+
+####Client response
+```json
+{
+    "errors": [
+      {
+        "new": "Imported household",
+        "old": "Existing updated household", 
+        "id_tmp_cache": "Cache id corresponding to this household",
+      },
+      {
+      ...
+      }
+    ]
+}
+```
 
 
 ### Duplicate treatment
 
+This step will look for any existing beneficiary imported under a different household.
+
+If an imported beneficiary's first name and last name match an database entry already part of another household,
+he will be interpreted as a duplicate.
+The user will have to choose whether to keep the **existing**, **imported** or **both** persons in the database.
+
+
+####Server response 
+
+
 ```json
 {
-	"new_household": "either empty or household object",
-	"data": [
-		{
-			"id_old": "id du beneficiary",
-			"state": "true or false",
-			"to_delete": {
-				"given_name": "givenName",
-				"family_name": "familyName"
-			}
-		}
-	]
+  "data": [
+      {
+          "new": "Duplicated beneficiary found in the imported household",
+          "new_household": "Imported household containing the duplicated beneficiary",
+          "old": "Duplicated beneficiary found in the existing household",
+          "old_household": "Existing household containing the duplicated beneficiary",  
+          "id_tmp_cache": "Cache id corresponding to this household"
+      },
+      {
+      ...
+      }
+  ],
+  "step": 5,
+  "token": "Current data validation token"
 }
 ```
 
-OR 
-
+####Client response
 ```json
 {
-	"new_household": "either empty or household object",
-	"data": [
-		{
-			"id_old": "id du beneficiary",
-			"state": "true or false",
-			"new": "Household object"
-		}
-	]
+    "errors": [
+      {
+        "new": "Duplicated beneficiary found in the imported household",
+        "new_household": "Updated imported household containing the duplicated beneficiary",
+        "old": "Duplicated beneficiary found in the existing household",
+        "old_household": "Updated existing household containing the duplicated beneficiary",  
+        "id_tmp_cache": "Cache id corresponding to this household"
+      },
+      {
+      ...
+      }
+    ]
 }
 ```
 
-- **to_delete** isset : delete the beneficiary in the new household
-- **state** = true & **new** = Household object : keep the new and the old beneficiary
-- **state** = false & **new** = Household object : keep the new beneficiary and remove the old beneficiary (if it's not a head of household)
+### Validate treatment
 
+This step will prompt the user to validate the changes he made to the beneficiary before modifying the database.
+The server's response does not contain any data, neither does the client's.
 
-### More treatment
+This is the last step the user can leave the import without impacting the database.
+If he chooses to confirm, the to_update and to_create cache files will be applied to the database.
+####Server response 
+
 
 ```json
 {
-  "id_old": 1,
-  "data": "ARRAY OF BENEFICIARIES OBJECT"
+  "data": [],
+  "step": 6,
+  "token": "Current data validation token"
 }
 ```
 
-- Add every beneficiaries inside data array to the household (in database) with the id "id_old"
-
-
-### Less treatment
-
+####Client response
 ```json
-{
-  "id_old": 1,
-  "data": "ARRAY OF ID BENEFICIARY TO REMOVE"
-}
+{}
 ```
 
-- Remove every beneficiaries inside data array in the household (in database) with the id "id_old"
+### Import summary
 
-This step may return array with list of errors (or empty array if everything gone well).
-The model of the return :
-```json
-{
-  "household": "OBJECT HOUSEHOLD",
-  "error": "a small text to explain the error"
-}
-``` 
+After a successful import the imported households will be sent back to the client to display a summary of the imported households.
 
-## ROUTES
+The response does not contain any token nor step as the import is completed.
+####Server response 
 
-
-PUT ("/households/project/{id}")
 
 ```json
 {
-	"address_street": "addr",
-	"address_number": "12",
-	"address_postcode": "73460",
-	"livelihood": 10,
-	"notes": "this is just some notes",
-	"latitude": "1.1544",
-	"longitude": "120.12",
-	"location": {
-		"country_iso3": "FRA",
-		"adm1": "Auvergne Rhone-Alpes",
-		"adm2": "Savoie",
-		"adm3": "Chambery",
-		"adm4": "Ste Hélène sur Isère"
-	},
-	"country_specific_answers": [
-		{
-			"answer": "my answer",
-			"country_specific": {
-				"id": 1
-			}
-		}
-	],
-	"beneficiaries": [
-		{
-			"given_name": "name",
-			"family_name": "family",
-			"gender": 1,
-			"status": 0,
-			"residency_status": "resident",
-			"date_of_birth": "1976-10-06",
-			"updated_on": "2018-06-13 12:12:12",
-			"profile": {
-				"photo": "photo1"
-			},
-			"vulnerability_criteria": [
-				{
-					"id": 1
-				}
-			],
-			"phones": [
-				{
-					"number": "0202514512",
-					"type": "type1"
-				}
-			],
-			"national_ids": [
-				{
-					"id_number": "1212",
-					"id_type": "type1"
-				}
-			]
-		},
-		{
-			"given_name": "name222",
-			"family_name": "family2222",
-			"gender": 0,
-			"status": 0,
-			"residency_status": "resident",
-			"date_of_birth": "1976-10-06",
-			"updated_on": "2018-06-13 12:12:12",
-			"profile": {
-				"photo": "photo2"
-			},
-			"vulnerability_criteria": [
-				{
-					"id": 1
-				}
-			],
-			"phones": [
-				{
-					"number": "5545544584",
-					"type": "type2"
-				}
-			],
-			"national_ids": [
-				{
-					"id_number": "2323",
-					"id_type": "type2"
-				}
-			]
-		}
-	]
-}
-```
-
-POST ("/households/{id_household}/project/{id_project}")
-```json
-{
-	"address_street": "add$*r2",
-	"address_number": "12",
-	"address_postcode": "73460",
-	"livelihood": 10,
-	"notes": "this is just some notes",
-	"latitude": "1.1544",
-	"longitude": "120.12",
-	"location": {
-		"country_iso3": "FRA",
-		"adm1": "Auvergne Rhone-Alpes",
-		"adm2": "Savoie",
-		"adm3": "Chambery",
-		"adm4": "Ste Hélène sur Isère"
-	},
-	"country_specific_answers": [
-		{
-			"answer": "my answer",
-			"country_specific": {
-				"id": 1
-			}
-		}
-	],
-	"beneficiaries": [
-		{
-			"id": 1,
-			"given_name": "nameee2",
-			"family_name": "family",
-			"gender": 1,
-			"status": 0,
-			"residency_status": "resident",
-			"date_of_birth": "1976-10-06",
-			"updated_on": "2018-06-13 12:12:12",
-			"profile": {
-				"photo": "gkjghjk2"
-			},
-			"vulnerability_criteria": [
-				{
-					"id": 1
-				}
-			],
-			"phones": [
-				{
-					"id": 1,
-					"number": "020254512",
-					"type": "type12"
-				}
-			],
-			"national_ids": [
-				{
-					"id": 1,
-					"id_number": "020254512",
-					"id_type": "type12"
-				}
-			]
-		}
-	]
-}
-```
-
-
-PUT ("/country_specifics")
-```json
-{
-    "field": "field",
-    "type": "type"
+  "data": [
+  {
+    "address_number": "",
+    "address_postcode": "",
+    "...": "..."
+  }
+  ]
 }
 ```
