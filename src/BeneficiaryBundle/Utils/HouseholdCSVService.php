@@ -352,8 +352,6 @@ class HouseholdCSVService
             'step' => $this->step
         ];
 
-
-
         file_put_contents($dir_var . '/token_state', json_encode($tokensState));
     }
 
