@@ -82,7 +82,7 @@ If an imported head's first name, last name or address matches any existing head
 it will be interpreted as a typo.
 The user will have to choose whether to keep the **existing**, **imported** or **both** persons in the database.
 
-####Server response 
+#### Server response 
 
 ```json
 {
@@ -98,7 +98,7 @@ The user will have to choose whether to keep the **existing**, **imported** or *
 }
 ```
 
-####Client response
+#### Client response
 ```json
 {
     "errors": [
@@ -120,7 +120,7 @@ If an imported household matching an entry in the database contains one or more 
 (birth, new member arriving in the household's home, ...), the user will be prompted to confirm the addition for this household.
 He will **select** which beneficiaries to effectively import in the database.
 
-####Server response 
+#### Server response 
 
 
 ```json
@@ -137,7 +137,7 @@ He will **select** which beneficiaries to effectively import in the database.
 }
 ```
 
-####Client response
+#### Client response
 ```json
 {
     "errors": [
@@ -152,7 +152,7 @@ He will **select** which beneficiaries to effectively import in the database.
 
 ### Less treatment
 
-####Server response 
+#### Server response 
 
 This step will look for any missing beneficiaries from the existing households.
 
@@ -176,7 +176,7 @@ He will **select** which beneficiaries to effectively remove from the database.
 }
 ```
 
-####Client response
+#### Client response
 ```json
 {
     "errors": [
@@ -199,7 +199,7 @@ he will be interpreted as a duplicate.
 The user will have to choose whether to keep the **existing**, **imported** or **both** persons in the database.
 
 
-####Server response 
+#### Server response 
 
 
 ```json
@@ -218,7 +218,7 @@ The user will have to choose whether to keep the **existing**, **imported** or *
 }
 ```
 
-####Client response
+#### Client response
 ```json
 {
     "errors": [
@@ -240,7 +240,7 @@ The server's response does not contain any data, neither does the client's.
 
 This is the last step the user can leave the import without impacting the database.
 If he chooses to confirm, the to_update and to_create cache files will be applied to the database.
-####Server response 
+#### Server response 
 
 
 ```json
@@ -251,7 +251,7 @@ If he chooses to confirm, the to_update and to_create cache files will be applie
 }
 ```
 
-####Client response
+#### Client response
 ```json
 {}
 ```
@@ -261,7 +261,7 @@ If he chooses to confirm, the to_update and to_create cache files will be applie
 After a successful import the imported households will be sent back to the client to display a summary of the imported households.
 
 The response does not contain any token nor step as the import is completed.
-####Server response 
+#### Server response 
 
 
 ```json
