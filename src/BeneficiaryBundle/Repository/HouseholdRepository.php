@@ -67,8 +67,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
     /**
      * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
-     * TODO : FOUND SOLUTION TO RETURN ONLY THE SIMILAR IF DISTANCE = 0 OR THE LIST OF HOUSEHOLDS WITH A DISTANCE
-     * TODO : UNDER MINIMUMTOLERANCE, IF NO ONE HAS A DISTANCE = 0
+     * @param string $iso3
      * @param string $stringToSearch
      * @param int $minimumTolerance
      * @return mixed
@@ -78,25 +77,21 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb = $this->findAllByCountry($iso3);
         $q = $qb->leftJoin("hh.beneficiaries", "b")
             ->select("hh as household")
-            ->addSelect("LEVENSHTEIN(
-                    CONCAT(COALESCE(hh.addressStreet, ''), COALESCE(hh.addressNumber, ''), COALESCE(hh.addressPostcode, ''), COALESCE(b.givenName, ''), COALESCE(b.familyName, '')),
+            ->andWhere("hh.archived = 0")
+            ->addSelect(
+                "LEVENSHTEIN(
+                    CONCAT(
+                        COALESCE(hh.addressStreet, ''),
+                        COALESCE(hh.addressNumber, ''),
+                        COALESCE(hh.addressPostcode, ''),
+                        COALESCE(b.givenName, ''),
+                        COALESCE(b.familyName, '')
+                    ),
                     :stringToSearch
                 ) as levenshtein")
             ->andWhere("b.status = 1")
-            ->andWhere("
-                LEVENSHTEIN(
-                    CONCAT(COALESCE(hh.addressStreet, ''), COALESCE(hh.addressNumber, ''), COALESCE(hh.addressPostcode, ''), COALESCE(b.givenName, ''), COALESCE(b.familyName, '')),
-                    :stringToSearch
-                ) < 
-                CASE 
-                    WHEN (LEVENSHTEIN(
-                        CONCAT(COALESCE(hh.addressStreet, ''), COALESCE(hh.addressNumber, ''), COALESCE(hh.addressPostcode, ''), COALESCE(b.givenName, ''), COALESCE(b.familyName, '')),
-                        :stringToSearch) = 0) 
-                        THEN 1
-                    ELSE
-                        :minimumTolerance
-                    END
-            ")
+            ->groupBy("b")
+            ->having("levenshtein <= :minimumTolerance")
             ->setParameter("stringToSearch", $stringToSearch)
             ->setParameter("minimumTolerance", $minimumTolerance)
             ->orderBy("levenshtein", "ASC");

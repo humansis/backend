@@ -10,26 +10,31 @@ class MoreTreatment extends AbstractTreatment
 {
 
     /**
+     * Treat the typo issues
+     * The frontend returns:
+     * {
+     *  errors:
+     *     [
+     *         {
+     *             old: [],
+     *             new: [],
+     *             id_tmp_cache: int,
+     *         }
+     *     ]
+     * }
      * @param Project $project
      * @param array $householdsArray
      * @param string $email
      * @return array
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      * @throws \Exception
      */
     public function treat(Project $project, array $householdsArray, string $email)
     {
         foreach ($householdsArray as $householdArray) {
-            $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
-            if (!$oldHousehold instanceof Household) {
-                continue;
-            }
-            foreach ($householdArray['data'] as $newBeneficiary) {
-                $this->beneficiaryService->updateOrCreate($oldHousehold, $newBeneficiary, true);
-            }
+            // Save to update the new household with its removed beneficiary
+            $this->updateInCache($householdArray['id_tmp_cache'], $householdArray['new'], $email);
         }
-        $listHouseholds = [];
-        $this->getFromCache('mapping_new_old', $listHouseholds, $email);
-        return $listHouseholds;
+
+        return $this->getFromCache('to_update', $email);
     }
 }

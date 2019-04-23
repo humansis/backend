@@ -111,7 +111,6 @@ class ProjectService
                 'iso3' => $project->getIso3(),
             ]
         );
-        dump($existingProject);
         if (!empty($existingProject)) {
             throw new HttpException(Response::HTTP_CONFLICT, 'Project with the name '.$project->getName().' already exists');
         }
