@@ -212,7 +212,7 @@ class ProductController extends Controller
     /**
      * @Rest\Post("/products/upload/image", name="upload_image")
      *
-     * @SWG\Tag(name="UploadImage")
+     * @SWG\Tag(name="Product")
      *
      * @SWG\Parameter(
      *     name="file",
@@ -222,6 +222,7 @@ class ProductController extends Controller
      * )
      * @SWG\Response(
      *     response=200,
+     *     description="Image uploaded",
      *     @SWG\Schema(
      *          type="string"
      *     )
@@ -230,7 +231,7 @@ class ProductController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function uploadImage(Request $request)
+    public function uploadImageAction(Request $request)
     {
         $content = $request->getContent();
         $file = $request->files->get('file');
