@@ -68,7 +68,7 @@ class UserController extends Controller
     public function loginAction(Request $request)
     {
         $username = $request->request->get('username');
-        $saltedPassword = $request->request->get('salted_password');
+        $saltedPassword = $request->request->get('password');
         $clientIp = $request->headers->get('x-real-ip');
 
         if ($clientIp) {
