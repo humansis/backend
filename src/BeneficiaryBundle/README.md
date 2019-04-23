@@ -91,9 +91,6 @@ The user will have to choose whether to keep the **existing**, **imported** or *
           "new": "Imported household containing the head with a typo",
           "old": "Existing household containing the head with a typo", 
           "id_tmp_cache": "Cache id corresponding to this household"
-      },
-      {
-      ...
       }
   ],
   "step": 2,
@@ -110,9 +107,6 @@ The user will have to choose whether to keep the **existing**, **imported** or *
         "old": "Existing household containing the head with a typo", 
         "id_tmp_cache": "Cache id corresponding to this household",
         "state": "0 to only keep old, 1 to only keep new, 2 to keep both"
-      },
-      {
-      ...
       }
     ]
 }
@@ -136,9 +130,6 @@ He will **select** which beneficiaries to effectively import in the database.
           "new": "Imported household",
           "old": "Existing household", 
           "id_tmp_cache": "Cache id corresponding to this household"
-      },
-      {
-      ...
       }
   ],
   "step": 3,
@@ -153,10 +144,7 @@ He will **select** which beneficiaries to effectively import in the database.
       {
         "new": "Imported updated household",
         "old": "Existing household", 
-        "id_tmp_cache": "Cache id corresponding to this household",
-      },
-      {
-      ...
+        "id_tmp_cache": "Cache id corresponding to this household"
       }
     ]
 }
@@ -181,9 +169,6 @@ He will **select** which beneficiaries to effectively remove from the database.
           "new": "Imported household",
           "old": "Existing household", 
           "id_tmp_cache": "Cache id corresponding to this household"
-      },
-      {
-      ...
       }
   ],
   "step": 4,
@@ -198,10 +183,7 @@ He will **select** which beneficiaries to effectively remove from the database.
       {
         "new": "Imported household",
         "old": "Existing updated household", 
-        "id_tmp_cache": "Cache id corresponding to this household",
-      },
-      {
-      ...
+        "id_tmp_cache": "Cache id corresponding to this household"
       }
     ]
 }
@@ -229,9 +211,6 @@ The user will have to choose whether to keep the **existing**, **imported** or *
           "old": "Duplicated beneficiary found in the existing household",
           "old_household": "Existing household containing the duplicated beneficiary",  
           "id_tmp_cache": "Cache id corresponding to this household"
-      },
-      {
-      ...
       }
   ],
   "step": 5,
@@ -249,9 +228,6 @@ The user will have to choose whether to keep the **existing**, **imported** or *
         "old": "Duplicated beneficiary found in the existing household",
         "old_household": "Updated existing household containing the duplicated beneficiary",  
         "id_tmp_cache": "Cache id corresponding to this household"
-      },
-      {
-      ...
       }
     ]
 }
@@ -291,11 +267,11 @@ The response does not contain any token nor step as the import is completed.
 ```json
 {
   "data": [
-  {
-    "address_number": "",
-    "address_postcode": "",
-    "...": "..."
-  }
+      {
+        "address_number": "",
+        "address_postcode": "",
+        "...": "..."
+      }
   ]
 }
 ```
