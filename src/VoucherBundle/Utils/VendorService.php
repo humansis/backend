@@ -73,7 +73,7 @@ class VendorService
             $user = $this->container->get('user.user_service')->create(
         $userSaved,
         [
-          'rights' => 'ROLE_VENDOR',
+          'roles' => ['ROLE_VENDOR'],
           'salt' => $vendorData['salt'],
           'password' => $vendorData['password']
         ]
