@@ -311,7 +311,6 @@ class DistributionService
     public function edit(DistributionData $distributionData, array $distributionArray)
     {
         $distributionData->setDateDistribution(new \DateTime($distributionArray['date_distribution']));
-
         $this->em->flush();
         return $distributionData;
     }
