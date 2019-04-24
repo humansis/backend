@@ -226,7 +226,7 @@ class VendorService
             $now = new DateTime();
             $vouchers = $vendor->getVouchers();
             if (!count($vouchers)) {
-                throw new \Exception('This vendor has no voucher. Try syncing with the server.', Response::HTTP_BAD_REQUEST);
+                throw new \Exception('This vendor has no voucher. Try syncing with the server.');
             }
             $totalValue = 0;
             foreach ($vouchers as $voucher) {
@@ -296,7 +296,7 @@ class VendorService
 
             return $response;
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            throw $e;
         }
 
         return new Response('');
