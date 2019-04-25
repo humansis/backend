@@ -48,7 +48,7 @@ class BeneficiaryFixtures extends Fixture
                   "gender" => "0",
                   "status" => "1",
                   "residency_status" => "resident",
-                  "date_of_birth" => "10/10/1996",
+                  "date_of_birth" => "10-10-1996",
                   "vulnerability_criteria" => [
                       [
                           "id" => 3
@@ -66,7 +66,7 @@ class BeneficiaryFixtures extends Fixture
                   "gender" => "1",
                   "status" => "0",
                   "residency_status" => "IDP",
-                  "date_of_birth" => "10/11/1996",
+                  "date_of_birth" => "10-11-1996",
                   "vulnerability_criteria" => [
                       [
                           "id" => 1
@@ -84,7 +84,7 @@ class BeneficiaryFixtures extends Fixture
                   "gender" => "1",
                   "status" => "0",
                   "residency_status" => "refugee",
-                  "date_of_birth" => "10/12/1995",
+                  "date_of_birth" => "10-12-1995",
                   "vulnerability_criteria" => [
                       [
                           "id" => 1
@@ -102,7 +102,7 @@ class BeneficiaryFixtures extends Fixture
                   "gender" => "1",
                   "status" => "0",
                   "residency_status" => "resident",
-                  "date_of_birth" => "14/10/2000",
+                  "date_of_birth" => "14-10-2000",
                   "vulnerability_criteria" => [
                       [
                           "id" => 3
@@ -154,7 +154,7 @@ class BeneficiaryFixtures extends Fixture
                     "gender" => "1",
                     "status" => "1",
                     "residency_status" => "resident",
-                    "date_of_birth" => "14/10/1995",
+                    "date_of_birth" => "14-10-1995",
                     "vulnerability_criteria" => [
                         [
                             "id" => 1
@@ -172,7 +172,7 @@ class BeneficiaryFixtures extends Fixture
                     "gender" => "1",
                     "status" => "0",
                     "residency_status" => "resident",
-                    "date_of_birth" => "15/10/1989",
+                    "date_of_birth" => "15-10-1989",
                     "vulnerability_criteria" => [
                         [
                             "id" => 3
@@ -190,7 +190,7 @@ class BeneficiaryFixtures extends Fixture
                     "gender" => "1",
                     "status" => "0",
                     "residency_status" => "resident",
-                    "date_of_birth" => "15/10/1990",
+                    "date_of_birth" => "15-10-1990",
                     "vulnerability_criteria" => [
                         [
                             "id" => 1
@@ -208,7 +208,7 @@ class BeneficiaryFixtures extends Fixture
                     "gender" => "1",
                     "status" => "0",
                     "residency_status" => "resident",
-                    "date_of_birth" => "15/08/1989",
+                    "date_of_birth" => "15-08-1989",
                     "vulnerability_criteria" => [
                         [
                             "id" => 1
