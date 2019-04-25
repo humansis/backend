@@ -30,8 +30,8 @@ class DistributionFixtures extends Fixture
         'location' => [
             'adm1' => 1,
             'adm2' => 1,
-            'adm3' => '',
-            'adm4' => '',
+            'adm3' => null,
+            'adm4' => null,
             'country_iso3' => 'KHM'
         ],
         'location_name' => '',
