@@ -66,7 +66,7 @@ class DistributionControllerTest extends BMSServiceTestCase
                     "value" => "150"
                 ]
             ],
-            "date_distribution" => "2018-09-13",
+            "date_distribution" => "13/09/2000",
             "location" => [
                 "adm1"=> "Banteay Meanchey",
                 "adm2"=> "Mongkol Borei",
