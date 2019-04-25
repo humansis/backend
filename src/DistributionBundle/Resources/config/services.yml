@@ -66,7 +66,6 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@beneficiary.household_export_csv_service'
             - '@service_container'
-            - '@beneficiary.household_to_csv_mapper'
             - '@beneficiary.household_service'
             - '@jms_serializer'
             - '@validator'

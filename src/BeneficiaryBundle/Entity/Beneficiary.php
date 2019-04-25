@@ -567,11 +567,10 @@ class Beneficiary implements ExportableInterface
             $valueGender = "Male";
         }
 
-        // Recover adm1 , adm2 , adm3 , adm 4 from localisation object : we have to verify if they are null before to get the name
-        $adm1 = (! empty($this->getHousehold()->getLocation()->getAdm1())) ? $this->getHousehold()->getLocation()->getAdm1()->getName() : '';
-        $adm2 = (! empty($this->getHousehold()->getLocation()->getAdm2())) ? $this->getHousehold()->getLocation()->getAdm2()->getName() : '';
-        $adm3 = (! empty($this->getHousehold()->getLocation()->getAdm3())) ? $this->getHousehold()->getLocation()->getAdm3()->getName() : '';
-        $adm4 = (! empty($this->getHousehold()->getLocation()->getAdm4())) ? $this->getHousehold()->getLocation()->getAdm4()->getName() : '';
+        $adm1 = $this->getHousehold()->getLocation()->getAdm1Name();
+        $adm2 = $this->getHousehold()->getLocation()->getAdm2Name();
+        $adm3 = $this->getHousehold()->getLocation()->getAdm3Name();
+        $adm4 = $this->getHousehold()->getLocation()->getAdm4Name();
 
         if ($this->status === true) {
             $finalArray = [

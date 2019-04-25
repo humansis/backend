@@ -46,7 +46,7 @@ class LocationService
      * @return Location|null|object
      * @throws ValidationException
      */
-    public function getOrSaveLocation($countryISO3, array $locationArray)
+    public function getLocation($countryISO3, array $locationArray)
     {
         $this->requestValidator->validate(
             "location",
@@ -55,23 +55,20 @@ class LocationService
             'any'
         );
 
-
         // Define location array
-        $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(["name" => $locationArray['adm1']]);
+        $adm1 = $this->em->getRepository(Adm1::class)->find($locationArray['adm1']);
         $adm2 = null;
         $adm3 = null;
         $adm4 = null;
 
-
-
         if (array_key_exists("adm2", $locationArray)) {
-            $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(["name" => $locationArray['adm2']]);
+            $adm2 = $this->em->getRepository(Adm2::class)->find($locationArray['adm2']);
         }
         if (array_key_exists("adm3", $locationArray)) {
-            $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(["name" => $locationArray['adm3']]);
+            $adm3 = $this->em->getRepository(Adm3::class)->find($locationArray['adm3']);
         }
         if (array_key_exists("adm4", $locationArray)) {
-            $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(["name" => $locationArray['adm4']]);
+            $adm4 = $this->em->getRepository(Adm4::class)->find($locationArray['adm4']);
         }
 
         if ($adm4 instanceof Adm4) {
@@ -88,78 +85,6 @@ class LocationService
         }
 
         return null;
-    }
-
-    /**
-     * @param Household $household
-     * @return string
-     * @throws \Exception
-     */
-    public function getAdm1(Household $household)
-    {
-        $location = $household->getLocation();
-        if (null !== $location->getAdm1()) {
-            return $location->getAdm1()->getName();
-        } elseif (null !== $location->getAdm2()) {
-            return $location->getAdm2()->getAdm1()->getName();
-        } elseif (null !== $location->getAdm3()) {
-            return $location->getAdm3()->getAdm2()->getAdm1()->getName();
-        } elseif (null !== $location->getAdm4()) {
-            return $location->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getName();
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * @param Household $household
-     * @return string
-     * @throws \Exception
-     */
-    public function getAdm2(Household $household)
-    {
-        $location = $household->getLocation();
-        if (null !== $location->getAdm2()) {
-            return $location->getAdm2()->getName();
-        } elseif (null !== $location->getAdm3()) {
-            return $location->getAdm3()->getAdm2()->getName();
-        } elseif (null !== $location->getAdm4()) {
-            return $location->getAdm4()->getAdm3()->getAdm2()->getName();
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * @param Household $household
-     * @return string
-     * @throws \Exception
-     */
-    public function getAdm3(Household $household)
-    {
-        $location = $household->getLocation();
-        if (null !== $location->getAdm3()) {
-            return $location->getAdm3()->getName();
-        } elseif (null !== $location->getAdm4()) {
-            return $location->getAdm4()->getAdm3()->getName();
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * @param Household $household
-     * @return string
-     * @throws \Exception
-     */
-    public function getAdm4(Household $household)
-    {
-        $location = $household->getLocation();
-        if (null !== $location->getAdm4()) {
-            return $location->getAdm4()->getName();
-        } else {
-            return "";
-        }
     }
 
     /**

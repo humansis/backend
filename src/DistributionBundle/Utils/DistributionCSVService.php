@@ -10,7 +10,6 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
-use BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
 use CommonBundle\Entity\Adm1;
@@ -45,8 +44,7 @@ class DistributionCSVService
     /** @var ContainerInterface $container */
     private $container;
     
-    /** @var HouseholdToCSVMapper $householdToCSVMapper */
-    private $householdToCSVMapper;
+    
     
     /** @var HouseholdService $locationService */
     private $householdService;
@@ -65,7 +63,6 @@ class DistributionCSVService
      * @param EntityManagerInterface $entityManager
      * @param ExportCSVService $exportCSVService
      * @param ContainerInterface $container
-     * @param HouseholdToCSVMapper $householdToCSVMapper
      * @param HouseholdService $householdService
      * @param Serializer $serializer
      * @param ValidatorInterface $validator
@@ -75,7 +72,6 @@ class DistributionCSVService
         EntityManagerInterface $entityManager,
         ExportCSVService $exportCSVService,
         ContainerInterface $container,
-        HouseholdToCSVMapper $householdToCSVMapper,
         HouseholdService $householdService,
         Serializer $serializer,
         ValidatorInterface $validator,
@@ -84,7 +80,6 @@ class DistributionCSVService
         $this->em = $entityManager;
         $this->exportCSVService = $exportCSVService;
         $this->container = $container;
-        $this->householdToCSVMapper = $householdToCSVMapper;
         $this->householdService = $householdService;
         $this->serializer = $serializer;
         $this->validator = $validator;

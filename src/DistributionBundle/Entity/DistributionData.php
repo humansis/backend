@@ -546,10 +546,10 @@ class DistributionData implements ExportableInterface
 
         // récuperer les adm1 , adm2 , adm3 , adm 4 depuis l'objet localisation : faut vérifier d'abord s'ils sont null ou pas pour avoir le nom
 
-        $adm1 = (! empty($this->getLocation()->getAdm1())) ? $this->getLocation()->getAdm1()->getName() : '';
-        $adm2 = (! empty($this->getLocation()->getAdm2())) ? $this->getLocation()->getAdm2()->getName() : '';
-        $adm3 = (! empty($this->getLocation()->getAdm3())) ? $this->getLocation()->getAdm3()->getName() : '';
-        $adm4 = (! empty($this->getLocation()->getAdm4())) ? $this->getLocation()->getAdm4()->getName() : '';
+        $adm1 = $this->getLocation()->getAdm1Name();
+        $adm2 = $this->getLocation()->getAdm2Name();
+        $adm3 = $this->getLocation()->getAdm3Name();
+        $adm4 = $this->getLocation()->getAdm4Name();
 
         return [
             "projet" => $this->getProject()->getName(),

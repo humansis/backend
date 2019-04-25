@@ -163,7 +163,7 @@ class HouseholdService
         }
 
         // Save or update location instance
-        $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
+        $location = $this->locationService->getLocation($householdArray['__country'], $householdArray["location"]);
         if (null === $location) {
             throw new \Exception("Location was not found.");
         }
@@ -291,7 +291,7 @@ class HouseholdService
         }
 
         // Save or update location instance
-        $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
+        $location = $this->locationService->getLocation($householdArray['__country'], $householdArray["location"]);
         $household->setLocation($location);
 
         $this->em->persist($household);

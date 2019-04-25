@@ -80,7 +80,7 @@ class VendorService
       );
 
       $location = $vendorData['location'];
-      $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
+      $location = $this->locationService->getLocation($countryISO3, $location);
 
 
             $vendor = new Vendor();
@@ -146,7 +146,7 @@ class VendorService
                     if (array_key_exists('id', $location)) {
                         unset($location['id']); // This is the old id
                     }
-                    $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
+                    $location = $this->locationService->getLocation($countryISO3, $location);
                     $vendor->setLocation($location);
                 }
             }

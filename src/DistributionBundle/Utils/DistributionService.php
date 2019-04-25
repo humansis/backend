@@ -154,7 +154,7 @@ class DistributionService
             $distribution->settype(0);
         }
 
-        $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
+        $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
 
         $project = $distribution->getProject();
