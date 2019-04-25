@@ -543,9 +543,6 @@ class DistributionData implements ExportableInterface
 
         $typeString = $this->getType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
 
-
-        // récuperer les adm1 , adm2 , adm3 , adm 4 depuis l'objet localisation : faut vérifier d'abord s'ils sont null ou pas pour avoir le nom
-
         $adm1 = $this->getLocation()->getAdm1Name();
         $adm2 = $this->getLocation()->getAdm2Name();
         $adm3 = $this->getLocation()->getAdm3Name();

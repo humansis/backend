@@ -301,4 +301,16 @@ class VendorService
 
         return new Response('');
     }
+
+    /**
+     * Export all vendors in a CSV file
+     * @param string $type
+     * @return mixed
+     */
+    public function exportToCsv(string $type)
+    {
+        $exportableTable = $this->em->getRepository(Vendor::class)->findAll();
+
+        return $this->container->get('export_csv_service')->export($exportableTable, 'vendors', $type);
+    }
 }

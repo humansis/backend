@@ -113,4 +113,16 @@ class ProductService
 
         return "Product suppressed";
     }
+
+    /**
+     * Export all products in a CSV file
+     * @param string $type
+     * @return mixed
+     */
+    public function exportToCsv(string $type)
+    {
+        $exportableTable = $this->em->getRepository(Product::class)->findAll();
+
+        return $this->container->get('export_csv_service')->export($exportableTable, 'products', $type);
+    }
 }

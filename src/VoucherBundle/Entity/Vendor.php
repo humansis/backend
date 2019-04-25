@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use CommonBundle\Utils\ExportableInterface;
 
 /**
  * Vendor
@@ -13,7 +14,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="vendor")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VendorRepository")
  */
-class Vendor
+class Vendor implements ExportableInterface
 {
     /**
      * @var int
@@ -334,5 +335,27 @@ class Vendor
     public function getUser()
     {
         return $this->user;
+    }
+
+    public function getMappedValueForExport(): array
+    {
+
+        $adm1 = $this->getLocation() ? $this->getLocation()->getAdm1Name() : null;
+        $adm2 = $this->getLocation() ? $this->getLocation()->getAdm2Name() : null;
+        $adm3 = $this->getLocation() ? $this->getLocation()->getAdm3Name() : null;
+        $adm4 = $this->getLocation() ? $this->getLocation()->getAdm4Name() : null;
+
+        return [
+            "Vendor's name" => $this->getUser()->getUsername(),
+            "Shop's name" => $this->getName(),
+            "Shop's type" => $this->getShop(),
+            "Address number" => $this->getAddressNumber(),
+            "Address street" => $this->getAddressStreet(),
+            "Address postcode" => $this->getAddressPostcode(),
+            "adm1" => $adm1,
+            "adm2" =>$adm2,
+            "adm3" =>$adm3,
+            "adm4" =>$adm4,
+        ];
     }
 }
