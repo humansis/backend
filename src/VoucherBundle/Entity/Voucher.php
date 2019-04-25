@@ -10,6 +10,7 @@ use \VoucherBundle\Entity\Product;
 use \VoucherBundle\Entity\Booklet;
 use \VoucherBundle\Entity\Vendor;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * Voucher
@@ -33,6 +34,7 @@ class Voucher
      * @var \DateTime
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
+     * @JMS_Type("DateTime<'d-m-Y'>")
      * @Groups({"FullVoucher", "ValidatedDistribution"})
      */
     private $usedAt;
