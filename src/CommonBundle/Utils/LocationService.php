@@ -61,13 +61,13 @@ class LocationService
         $adm3 = null;
         $adm4 = null;
 
-        if (array_key_exists("adm2", $locationArray)) {
+        if (array_key_exists("adm2", $locationArray) && $locationArray["adm2"]) {
             $adm2 = $this->em->getRepository(Adm2::class)->find($locationArray['adm2']);
         }
-        if (array_key_exists("adm3", $locationArray)) {
+        if (array_key_exists("adm3", $locationArray) && $locationArray["adm3"]) {
             $adm3 = $this->em->getRepository(Adm3::class)->find($locationArray['adm3']);
         }
-        if (array_key_exists("adm4", $locationArray)) {
+        if (array_key_exists("adm4", $locationArray) && $locationArray["adm4"]) {
             $adm4 = $this->em->getRepository(Adm4::class)->find($locationArray['adm4']);
         }
 

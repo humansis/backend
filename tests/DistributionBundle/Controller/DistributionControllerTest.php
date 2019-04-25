@@ -203,7 +203,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $body = array(
             array(
-                'data_of_birth' => '1976-10-06',
+                'date_of_birth' => '10-06-1989',
                 'family_name' => 'NAME_TEST',
                 'gender' => 1,
                 'given_name' => 'FIRSTNAME_TEST',
@@ -359,14 +359,14 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $body = array(
             'archived' => false,
-            'date_distribution' => '2018-09-13',
+            'date_distribution' => '09-12-2019',
             'id' => $distribution['id'],
             "location" => $distribution['location'],
             'name' => 'TEST_DISTRIBUTION_NAME_PHPUNIT',
             "project"=> $distribution['project'],
             "selection_criteria"=> $distribution['selection_criteria'],
             'type' => 0,
-            'updated_on' => '2018-11-28 11:11:11',
+            'updated_on' => '28-11-2018 11:11:11',
             'validated' => false,
         );
         // Second step

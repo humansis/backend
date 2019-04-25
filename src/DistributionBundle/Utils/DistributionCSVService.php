@@ -142,7 +142,7 @@ class DistributionCSVService
                     'id' => $beneficiary->getId(),
                     'givenName' => $beneficiary->getGivenName(),
                     'familyName' => $beneficiary->getFamilyName(),
-                    'dateOfBirth' => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                    'dateOfBirth' => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                     'gender' => $beneficiary->getGender()
                 );
                 array_push($deleteArray, $beneficiaryToDelete);
@@ -331,7 +331,7 @@ class DistributionCSVService
             $toUpdate->setGender($beneficiaryToUpdate['gender']);
             $toUpdate->setStatus(($beneficiaryToUpdate['status']) ? $beneficiaryToUpdate['status'] : 0);
             $toUpdate->setResidencyStatus($beneficiaryToUpdate['residencyStatus']);
-            $toUpdate->setDateOfBirth(new \DateTime($beneficiaryToUpdate['dateOfBirth']));
+            $toUpdate->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryToUpdate['dateOfBirth']));
             
             $toUpdate->setVulnerabilityCriteria(null);
             if (strpos($beneficiaryToUpdate['vulnerabilityCriteria'], ",")) {

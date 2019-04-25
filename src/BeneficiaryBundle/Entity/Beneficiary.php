@@ -76,7 +76,7 @@ class Beneficiary implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="dateOfBirth", type="date")
-     * @JMS_Type("DateTime<'Y-m-d'>")
+     * @JMS_Type("DateTime<'d-m-Y'>")
      * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      * @Assert\NotBlank(message="The date of birth is required.")
      */
@@ -86,7 +86,7 @@ class Beneficiary implements ExportableInterface
      * @var \DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
+     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
      * @Groups({"FullHousehold"})
      */
     private $updatedOn;
@@ -605,9 +605,9 @@ class Beneficiary implements ExportableInterface
         $tempBenef = [ "givenName" => $this->getGivenName(),
             "familyName"=> $this->getFamilyName(),
             "gender" => $valueGender,
-            "status" => $this->getStatus(),
+            "head" => $this->getStatus() === 1 ? "true" : "false",
             "residencyStatus" => $this->getResidencyStatus(),
-            "dateOfBirth" => $this->getDateOfBirth()->format('Y-m-d'),
+            "dateOfBirth" => $this->getDateOfBirth()->format('d-m-Y'),
             "vulnerabilityCriteria" => $valuescriteria,
             "type phone 1" => $typephones[0],
             "prefix phone 1" => $prefixphones[0],

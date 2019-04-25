@@ -310,7 +310,7 @@ class DistributionService
      */
     public function edit(DistributionData $distributionData, array $distributionArray)
     {
-        $distributionData->setDateDistribution(new \DateTime($distributionArray['date_distribution']));
+        $distributionData->setDateDistribution(\DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']));
         $this->em->flush();
         return $distributionData;
     }
@@ -478,7 +478,7 @@ class DistributionService
                 "givenName" => $beneficiary->getGivenName(),
                 "familyName"=> $beneficiary->getFamilyName(),
                 "gender" => $gender,
-                "dateOfBirth" => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                "dateOfBirth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                 "commodity" => $commodity->getModalityType()->getName(),
                 "value" => $commodity->getValue() . ' ' . $commodity->getUnit(),
                 "distributedAt" => $generalrelief->getDistributedAt(),

@@ -123,7 +123,7 @@ class VoucherService
                 return $voucher;
             }
             $voucher->setVendor($vendor)
-        ->setUsedAt(new \DateTime($voucherData['used_at']));
+        ->setUsedAt(new \DateTime($voucherData['used_at'])); // TODO : check format
 
             foreach ($voucherData['productIds'] as $productId) {
                 $product = $this->em->getRepository(Product::class)->find($productId);

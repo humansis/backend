@@ -577,7 +577,7 @@ class BookletService
                 "Given name" => $beneficiary->getGivenName(),
                 "Family name"=> $beneficiary->getFamilyName(),
                 "Gender" => $gender,
-                "Date of birth" => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                "Date of birth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                 "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
                 "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
                 "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,

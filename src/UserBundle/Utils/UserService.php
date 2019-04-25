@@ -400,7 +400,7 @@ class UserService
         $logs = $this->em->getRepository(Logs::class)->findBy(['idUser' => $user->getId()]);
 
         foreach ($logs as $log) {
-            $date = $log->getDate()->format('Y-m-d H:i:s');
+            $date = $log->getDate()->format('d-m-Y H:i:s');
             $data = [$log->getUrl(), $log->getIdUser(), $log->getMailUser(), $log->getMethod(), $date, $log->getHttpStatus(), $log->getController(), $log->getRequest()];
             $this->recordLog($user->getId(), $data);
         }

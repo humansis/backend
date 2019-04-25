@@ -230,7 +230,7 @@ class VendorService
             }
             $totalValue = 0;
             foreach ($vouchers as $voucher) {
-                $voucher->setusedAt($voucher->getusedAt()->format('Y-m-d'));
+                $voucher->setusedAt($voucher->getusedAt()->format('d-m-Y'));
                 $totalValue += $voucher->getValue();
             }
 
@@ -276,7 +276,7 @@ class VendorService
                     'addressDistrict' => $district ? $district->getName() : null,
                     'addressProvince' => $province ? $province->getName() : null,
                     'addressCountry' => $province ? $province->getCountryISO3() : null,
-                    'date'  => $now->format('Y-m-d'),
+                    'date'  => $now->format('d-m-Y'),
                     'vouchers' => $vouchers,
                     'totalValue' => $totalValue
                 )
