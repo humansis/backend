@@ -49,7 +49,6 @@ class CSVToArrayMapper extends AbstractMapper
             // Load the household array for the current row
             try {
                 $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $indexRow, $row, $rowHeader);
-                dump($formattedHouseholdArray);
             } catch (\Exception $exception) {
                 throw $exception;
             }
@@ -59,7 +58,6 @@ class CSVToArrayMapper extends AbstractMapper
                 // If there is already a previous household, add it to the list of households and create a new one
                 if (null !== $householdArray) {
                     $listHouseholdArray[] = $householdArray;
-                    dump($householdArray);
                 }
                 $householdArray = $formattedHouseholdArray;
                 $householdArray['beneficiaries'] = [$formattedHouseholdArray['beneficiaries']];

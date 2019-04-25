@@ -199,7 +199,6 @@ class HouseholdController extends Controller
     public function editAction(Request $request, Household $household)
     {
 
-        dump($household);
         $requestArray = $request->request->all();
         $projectsArray = $requestArray['projects'];
 

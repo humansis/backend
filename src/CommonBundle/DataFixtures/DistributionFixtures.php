@@ -26,7 +26,7 @@ class DistributionFixtures extends Fixture
                 'value' => '45'
             ]
         ],
-        'date_distribution' => '2020-09-13',
+        'date_distribution' => '13-09-2020',
         'location' => [
             'adm1' => 'Banteay Meanchey',
             'adm2' => 'Mongkol Borei',

@@ -147,8 +147,6 @@ class BeneficiaryService
             $beneficiary->setHousehold($household);
         }
 
-        dump($beneficiaryArray["date_of_birth"]);
-
         $beneficiary->setGender($beneficiaryArray["gender"])
             ->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryArray["date_of_birth"]))
             ->setFamilyName($beneficiaryArray["family_name"])
