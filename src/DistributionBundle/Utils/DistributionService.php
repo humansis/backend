@@ -311,6 +311,10 @@ class DistributionService
     public function edit(DistributionData $distributionData, array $distributionArray)
     {
         $distributionData->setDateDistribution(\DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']));
+        $distributionNameWithoutDate = explode('-', $distributionData->getName())[0];
+        $newDistributionName = $distributionNameWithoutDate . '-' . $distributionArray['date_distribution'];
+        $distributionData->setName($newDistributionName);
+
         $this->em->flush();
         return $distributionData;
     }
