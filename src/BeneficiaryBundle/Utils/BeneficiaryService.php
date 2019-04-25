@@ -149,7 +149,6 @@ class BeneficiaryService
 
         $beneficiary->setGender($beneficiaryArray["gender"])
             ->setDateOfBirth(\DateTime::createFromFormat('d/m/Y', $beneficiaryArray["date_of_birth"]))
-            // ->setDateOfBirth(new \DateTime($beneficiaryArray["date_of_birth"]))
             ->setFamilyName($beneficiaryArray["family_name"])
             ->setGivenName($beneficiaryArray["given_name"])
             ->setStatus($beneficiaryArray["status"])
