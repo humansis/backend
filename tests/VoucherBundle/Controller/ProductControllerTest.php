@@ -103,8 +103,6 @@ class ProductControllerTest extends BMSServiceTestCase
 
 
     /**
-     * @depends testDeleteProduct
-     *
      * @param $productToDelete
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
