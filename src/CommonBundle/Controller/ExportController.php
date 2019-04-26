@@ -76,6 +76,9 @@ class ExportController extends Controller
             } elseif ($request->query->get('booklets')) {
                 $filename = $this->get('voucher.booklet_service')->exportToCsv($type);
             } elseif ($request->query->get('bookletCodes')) {
+                if ($type === 'pdf') {
+                    return $this->get('voucher.voucher_service')->exportToPdf($type);
+                }
                 $filename = $this->get('voucher.voucher_service')->exportToCsv($type);
             } elseif ($request->query->get('reporting')) {
                 $indicatorsId  = $request->request->get('indicators');
