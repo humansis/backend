@@ -226,18 +226,18 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                 // If this is the first time we get there
                                 if ($countProjects == 0) {
                                     // We do a AND WHERE clause to add the filter in our initial request
-                                    $q->andWhere('p2.name LIKE :filter' . $indexFilter . $indexValue)
+                                    $q->andWhere('p2.id = :filter' . $indexFilter . $indexValue)
                                         ->addGroupBy('hh')
-                                        ->setParameter('filter' . $indexFilter . $indexValue, '%' . $filterValue . '%');
+                                        ->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
                                     // And we increment the count to don't come back in this condition if there is iteration
                                     $countProjects++;
                                 }
                                 // If this isn't the first time we get there
                                 else {
                                     // We do a OR WHERE clause to add the Xth filter in our initial request and don't erase the AND WHERE when count's value is 0
-                                    $q->orWhere('p2.name LIKE :filter' . $indexFilter . $indexValue)
+                                    $q->orWhere('p2.id = :filter' . $indexFilter . $indexValue)
                                         ->addGroupBy('hh')
-                                        ->setParameter('filter' . $indexFilter . $indexValue, '%' . $filterValue . '%');
+                                        ->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
                                 }
                                 // We check if the category is vulnerabilities
                             } elseif ($category == 'vulnerabilities') {
@@ -246,9 +246,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                     // We do a AND WHERE clause to add the filter in our initial request
                                     $q->andWhere('hh.id = b2.household')
                                         ->leftJoin('b2.vulnerabilityCriteria', 'vb2')
-                                        ->andWhere('vb2.fieldString LIKE :filter' . $indexFilter . $indexValue)
+                                        ->andWhere('vb2.id = :filter' . $indexFilter . $indexValue)
                                         ->addGroupBy('hh')
-                                        ->setParameter('filter' . $indexFilter . $indexValue, '%' . $filterValue . '%');
+                                        ->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
                                     // And we increment the count to don't come back in this condition if there is iteration
                                     $countVulnerabilities++;
                                 }
@@ -256,9 +256,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                 else {
                                     // We do a OR WHERE clause to add the Xth filter in our initial request and don't erase the AND WHERE when count's value is 0
                                     $q->andWhere('hh.id = b2.household')
-                                        ->orWhere('vb2.fieldString LIKE :filter' . $indexFilter . $indexValue)
+                                        ->orWhere('vb2.id = :filter' . $indexFilter . $indexValue)
                                         ->addGroupBy('hh')
-                                        ->setParameter('filter' . $indexFilter . $indexValue, '%' . $filterValue . '%');
+                                        ->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
                                 }
                             }
                         }
