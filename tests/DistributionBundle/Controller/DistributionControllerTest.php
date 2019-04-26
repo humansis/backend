@@ -233,27 +233,27 @@ class DistributionControllerTest extends BMSServiceTestCase
     }
 
 
-    // /**
-    //  * @depends testCreateDistribution
-    //  * @param $distribution
-    //  * @throws \Doctrine\ORM\ORMException
-    //  * @throws \Doctrine\ORM\OptimisticLockException
-    //  */
-    // public function testRemoveOneBeneficiary($distribution)
-    // {
-    //     // Fake connection with a token for the user tester (ADMIN)
-    //     $user = $this->getTestUser(self::USER_TESTER);
-    //     $token = $this->getUserToken($user);
-    //     $this->tokenStorage->setToken($token);
+    /**
+     * @depends testCreateDistribution
+     * @param $distribution
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testRemoveOneBeneficiary($distribution)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
 
-    //     // Second step
-    //     // Create the user with the email and the salted password. The user should be enable
-    //     $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/11?distribution=' . $distribution['id']);
-    //     $remove = json_decode($this->client->getResponse()->getContent(), true);
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/11?distribution=' . $distribution['id']);
+        $remove = json_decode($this->client->getResponse()->getContent(), true);
 
-    //     // Check if the second step succeed
-    //     $this->assertTrue($remove);
-    // }
+        // Check if the second step succeed
+        $this->assertTrue($remove);
+    }
 
     /**
      * @throws \Doctrine\ORM\ORMException
