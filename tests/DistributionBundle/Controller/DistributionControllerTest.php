@@ -68,10 +68,10 @@ class DistributionControllerTest extends BMSServiceTestCase
             ],
             "date_distribution" => "13-09-2018",
             "location" => [
-                "adm1"=> "1",
-                "adm2"=> "1",
-                "adm3"=> "1",
-                "adm4"=> "1",
+                "adm1"=> 1,
+                "adm2"=> 1,
+                "adm3"=> 1,
+                "adm4"=> 1,
                 "country_iso3"=> "KHM"
             ],
             "country_specific_answers" => [
@@ -364,10 +364,10 @@ class DistributionControllerTest extends BMSServiceTestCase
             'date_distribution' => '09-12-2019',
             'id' => $distribution['id'],
             "location" => [
-                "adm1"=> "2",
-                "adm2"=> "2",
-                "adm3"=> "2",
-                "adm4"=> "2",
+                "adm1"=> 2,
+                "adm2"=> 2,
+                "adm3"=> 2,
+                "adm4"=> 2,
                 "country_iso3"=> "KHM"
             ],
             'name' => 'TEST_DISTRIBUTION_NAME_PHPUNIT',

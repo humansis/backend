@@ -166,8 +166,6 @@ class DistributionBeneficiaryService
             return null;
         }
 
-        dump($distributionBeneficiary);
-
         return $distributionBeneficiary;
     }
 

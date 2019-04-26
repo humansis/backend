@@ -61,10 +61,10 @@ class VendorControllerTest extends BMSServiceTestCase
             "address_street" => 'Agusto Figuroa',
             "address_postcode" => '28000',
             "location" => [
-                "adm1"=> "1",
-                "adm2"=> "1",
-                "adm3"=> "1",
-                "adm4"=> "1",
+                "adm1"=> 1,
+                "adm2"=> 1,
+                "adm3"=> 1,
+                "adm4"=> 1,
                 "country_iso3"=> "KHM"
             ],
         ];
@@ -198,10 +198,10 @@ class VendorControllerTest extends BMSServiceTestCase
             'address_postcode' => $addressPostcode,
             'password' => $password,
             "location" => [
-                "adm1" => "1",
-                "adm2" => "2",
-                "adm3" => "3",
-                "adm4" => "4",
+                "adm1" => 1,
+                "adm2" => 2,
+                "adm3" => 3,
+                "adm4" => 4,
                 "country_iso3" => "KHM",
             ],
         ];
