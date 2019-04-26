@@ -191,73 +191,69 @@ class DistributionControllerTest extends BMSServiceTestCase
     // Now we have a verification 'This beneficiary is already in the distribution' which makes this test fail
     // TODO : Create a new household and beneficiary, get his body, send it
 
-    // /**
-    //  * @depends testCreateDistribution
-    //  * @param $distribution
-    //  * @throws \Doctrine\ORM\ORMException
-    //  * @throws \Doctrine\ORM\OptimisticLockException
-    //  */
-    // public function testAddBeneficiary($distribution)
-    // {
-    //     // Fake connection with a token for the user tester (ADMIN)
-    //     $user = $this->getTestUser(self::USER_TESTER);
-    //     $token = $this->getUserToken($user);
-    //     $this->tokenStorage->setToken($token);
-
-    //     $body = array(
-    //         array(
-    //             'date_of_birth' => '10-06-1989',
-    //             'family_name' => 'NAME_TEST',
-    //             'gender' => "1",
-    //             'given_name' => 'FIRSTNAME_TEST',
-    //             'id' => 11,
-    //             'national_ids' => [],
-    //             'phones' => [],
-    //             'status' => '1',
-    //             'residency_status' => 'refugee',
-    //             'vulnerability_criteria' => [
-    //                 [
-    //                     "id" => 1,
-    //                     "field_string" => "disabled"
-    //                 ]                
-    //             ]
-    //         )
-    //     );
-
-    //     // Second step
-    //     // Create the user with the email and the salted password. The user should be enable
-    //     $crawler = $this->request('PUT', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiary', $body);
-    //     $add = json_decode($this->client->getResponse()->getContent(), true);
-
-    //     // Check if the second step succeed
-    //     $this->assertArrayHasKey('id', $add);
-    //     $this->assertArrayHasKey('distribution_data', $add);
-    //     $this->assertArrayHasKey('beneficiary', $add);
-    //     $this->assertArrayHasKey('transactions', $add);
-    // }
-
-
     /**
      * @depends testCreateDistribution
      * @param $distribution
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testRemoveOneBeneficiary($distribution)
+    public function testAddBeneficiary($distribution)
     {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        $body = array(
+            array(
+                'date_of_birth' => '10-06-1989',
+                'family_name' => 'NAME_TEST',
+                'gender' => "1",
+                'given_name' => 'FIRSTNAME_TEST',
+                'id' => 11,
+                'national_ids' => [],
+                'phones' => [],
+                'status' => '1',
+                'residency_status' => 'refugee',
+                'vulnerability_criteria' => [
+                    [
+                        "id" => 1,
+                        "field_string" => "disabled"
+                    ]                
+                ]
+            )
+        );
+
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/11?distribution=' . $distribution['id']);
-        $remove = json_decode($this->client->getResponse()->getContent(), true);
-
-        // Check if the second step succeed
-        $this->assertTrue($remove);
+        $crawler = $this->request('PUT', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiary', $body);
+        $error = $this->client->getResponse()->getContent();
+        $this->assertEquals($error, 'This beneficiary/household is already part of the distribution');
+        
     }
+
+
+    // /**
+    //  * @depends testCreateDistribution
+    //  * @param $distribution
+    //  * @throws \Doctrine\ORM\ORMException
+    //  * @throws \Doctrine\ORM\OptimisticLockException
+    //  */
+    // public function testRemoveOneBeneficiary($distribution)
+    // {
+    //     // Fake connection with a token for the user tester (ADMIN)
+    //     $user = $this->getTestUser(self::USER_TESTER);
+    //     $token = $this->getUserToken($user);
+    //     $this->tokenStorage->setToken($token);
+
+    //     // Second step
+    //     // Create the user with the email and the salted password. The user should be enable
+    //     $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/11?distribution=' . $distribution['id']);
+    //     $remove = json_decode($this->client->getResponse()->getContent(), true);
+
+    //     // Check if the second step succeed
+    //     $this->assertTrue($remove);
+    // }
 
     /**
      * @throws \Doctrine\ORM\ORMException
