@@ -584,5 +584,7 @@ class BookletService
                 "Used at" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
             ));
         }
+
+        return $this->container->get('export_csv_service')->export($exportableTable, 'qrVouchers', $type);
     }
 }

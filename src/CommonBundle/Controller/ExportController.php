@@ -90,7 +90,7 @@ class ExportController extends Controller
             } elseif ($request->query->get('voucherDistribution')) {
                 $idDistribution = $request->query->get('voucherDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
-                $filename = $this->$this->get('voucher.booklet_service')->exportVouchersDistributionToCsv($distribution, $type);
+                $filename = $this->get('voucher.booklet_service')->exportVouchersDistributionToCsv($distribution, $type);
             } elseif ($request->query->get('products')) {
                 $filename = $this->get('voucher.product_service')->exportToCsv($type);
             } elseif ($request->query->get('vendors')) {
