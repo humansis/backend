@@ -309,7 +309,7 @@ class CSVToArrayMapper extends AbstractMapper
      *
      * @param $formattedHouseholdArray
      */
-    private function mapLocation(&$formattedHouseholdArray)
+    public function mapLocation(&$formattedHouseholdArray)
     {
         $location = $formattedHouseholdArray['location'];
 

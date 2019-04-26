@@ -78,10 +78,10 @@ class BMSServiceTestCase extends KernelTestCase
         "latitude" => "1.1544",
         "longitude" => "120.12",
         "location" => [
-            "adm1" => "Rhone-Alpes",
-            "adm2" => "Savoie",
-            "adm3" => "Chambery",
-            "adm4" => "Sainte Hélène sur Isère"
+            "adm1" => "1",
+            "adm2" => "1",
+            "adm3" => "1",
+            "adm4" => "1"
         ],
         "country_specific_answers" => [
             [

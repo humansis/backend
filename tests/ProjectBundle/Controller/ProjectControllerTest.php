@@ -19,7 +19,9 @@ class ProjectControllerTest extends BMSServiceTestCase
         "start_date" => "01-02-2019",
         "end_date" => "01-05-2019",
         "value" => 5,
-        "notes" => "This is a note"
+        "notes" => "This is a note",
+        "sectors" => [],
+        "donors" => [],
     ];
 
 

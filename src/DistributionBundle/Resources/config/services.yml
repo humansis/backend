@@ -70,3 +70,4 @@ services:
             - '@jms_serializer'
             - '@validator'
             - "@request_validator"
+            - "@beneficiary.csv_to_array_mapper"

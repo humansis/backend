@@ -28,6 +28,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Ods as OdsReader;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
 
 /**
  * Class DistributionCSVService
@@ -58,6 +59,9 @@ class DistributionCSVService
     /** @var RequestValidator $requestValidator */
     private $requestValidator;
 
+    /** @var CSVToArrayMapper $CSVToArrayMapper */
+    private $CSVToArrayMapper;
+
     /**
      * DistributionCSVService constructor.
      * @param EntityManagerInterface $entityManager
@@ -67,6 +71,7 @@ class DistributionCSVService
      * @param Serializer $serializer
      * @param ValidatorInterface $validator
      * @param RequestValidator $requestValidator
+     * @param CSVToArrayMapper $CSVToArrayMapper
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -75,7 +80,8 @@ class DistributionCSVService
         HouseholdService $householdService,
         Serializer $serializer,
         ValidatorInterface $validator,
-        RequestValidator $requestValidator
+        RequestValidator $requestValidator,
+        CSVToArrayMapper $CSVToArrayMapper
     ) {
         $this->em = $entityManager;
         $this->exportCSVService = $exportCSVService;
@@ -84,6 +90,7 @@ class DistributionCSVService
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->requestValidator = $requestValidator;
+        $this->CSVToArrayMapper = $CSVToArrayMapper;
     }
 
     /**
@@ -219,34 +226,13 @@ class DistributionCSVService
                 throw new \Exception("You must insert only a head of the household in the file to import.");
             }
 
-            // Define location array
-            $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(["name" => $beneficiaryToCreate['adm1']]);
-            $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(["name" => $beneficiaryToCreate['adm2']]);
-            $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(["name" => $beneficiaryToCreate['adm3']]);
-            $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(["name" => $beneficiaryToCreate['adm4']]);
-            
-            $adm4Name = $beneficiaryToCreate['adm4'];
-            if ($adm4 instanceof Adm4) {
-                $adm3 = $adm4->getAdm3();
-            }
-            if ($adm3 instanceof Adm3) {
-                $adm3Name = $adm3->getName();
-                $adm2 = $adm3->getAdm2();
-            }
-            if ($adm2 instanceof Adm2) {
-                $adm2Name = $adm2->getName();
-                $adm1 = $adm2->getAdm1();
-            }
-            if ($adm1 instanceof Adm1) {
-                $country = $adm1->getCountryISO3();
-                $adm1Name = $adm1->getName();
-            }
+            // There the location is still filled with adm names and not id
             $locationArray = array(
-                "country_iso3" => $country,
-                "adm1" => $adm1Name,
-                "adm2" => $adm2Name,
-                "adm3" => $adm3Name,
-                "adm4" => $adm4Name
+                "country_iso3" => $countryIso3,
+                "adm1" => $beneficiaryToCreate['adm1'],
+                "adm2" => $beneficiaryToCreate['adm2'],
+                "adm3" => $beneficiaryToCreate['adm3'],
+                "adm4" => $beneficiaryToCreate['adm4']
             );
             
             $householdToCreate = array(
@@ -277,6 +263,8 @@ class DistributionCSVService
                     )
                 )
             );
+
+            $this->CSVToArrayMapper->mapLocation($householdToCreate);
             $this->householdService->createOrEdit($householdToCreate, array($distributionProject));
             $toCreate = $this->em->getRepository(Beneficiary::class)
                 ->findOneBy(["givenName" => $beneficiaryToCreate['givenName'], 'familyName' => $beneficiaryToCreate['familyName'], 'gender' => $beneficiaryToCreate['gender']]);
