@@ -342,22 +342,22 @@ class DistributionCSVService
             }
             $toUpdate->setPhones(null);
 
-            if ($beneficiaryToUpdate['phones 1'] && $beneficiaryToUpdate['type phone 1'] && $beneficiaryToUpdate['prefix phone 1']) {
+            if ($beneficiaryToUpdate['phone 1'] && $beneficiaryToUpdate['type phone 1'] && $beneficiaryToUpdate['prefix phone 1']) {
                 $phone1 = new Phone();
-                $phone1->setNumber($beneficiaryToUpdate['phones 1']);
+                $phone1->setNumber($beneficiaryToUpdate['phone 1']);
                 $phone1->setType($beneficiaryToUpdate['type phone 1']);
-                $phone1->setPrefix('+'.$beneficiaryToUpdate['prefix phone 1']);
+                $phone1->setPrefix($beneficiaryToUpdate['prefix phone 1']);
                 $phone1->setProxy($beneficiaryToUpdate['proxy phone 1'] === 1 ? true : false);
                 $phone1->setBeneficiary($toUpdate);
                 $toUpdate->addPhone($phone1);
             }
 
-            if ($beneficiaryToUpdate['phones 2'] && $beneficiaryToUpdate['type phone 2'] && $beneficiaryToUpdate['prefix phone 2']) {
+            if ($beneficiaryToUpdate['phone 2'] && $beneficiaryToUpdate['type phone 2'] && $beneficiaryToUpdate['prefix phone 2']) {
 
                 $phone2 = new Phone();
-                $phone2->setNumber($beneficiaryToUpdate['phones 2']);
+                $phone2->setNumber($beneficiaryToUpdate['phone 2']);
                 $phone2->setType($beneficiaryToUpdate['type phone 2']);
-                $phone2->setPrefix('+'.$beneficiaryToUpdate['prefix phone 2']);
+                $phone2->setPrefix($beneficiaryToUpdate['prefix phone 2']);
                 $phone2->setProxy($beneficiaryToUpdate['proxy phone 2'] === 1 ? true : false);
                 $phone2->setBeneficiary($toUpdate);
                 $toUpdate->addPhone($phone2);
@@ -368,21 +368,13 @@ class DistributionCSVService
                 $this->em->remove($nationalId);
             }
             $toUpdate->setNationalIds(null);
-            if (strpos($beneficiaryToUpdate['nationalIds'], ",")) {
-                $nationalIds = explode(",", $beneficiaryToUpdate['nationalIds']);
-            } else {
-                $nationalIds = [$beneficiaryToUpdate['nationalIds']];
-            }
-            foreach ($nationalIds as $nationalId) {
-                if ($nationalId) {
-                    $newNationalId = new NationalId();
-                    $newNationalId->setIdNumber($nationalId);
-                    $newNationalId->setIdType('card');
-                    $newNationalId->setBeneficiary($toUpdate);
-                    $toUpdate->addNationalId(
-                        $newNationalId
-                    );
-                }
+
+            if (!empty($beneficiaryToUpdate['nationalId']) && !empty($beneficiaryToUpdate['type national ID'])) {
+                $newNationalId = new NationalId();
+                $newNationalId->setIdNumber($beneficiaryToUpdate['nationalId']);
+                $newNationalId->setIdType($beneficiaryToUpdate['type national ID']);
+                $newNationalId->setBeneficiary($toUpdate);
+                $toUpdate->addNationalId($newNationalId);
             }
 
             $this->em->merge($toUpdate);

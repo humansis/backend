@@ -611,14 +611,14 @@ class Beneficiary implements ExportableInterface
             "vulnerabilityCriteria" => $valuescriteria,
             "type phone 1" => $typephones[0],
             "prefix phone 1" => $prefixphones[0],
-            "phones 1" => $valuesphones[0],
+            "phone 1" => $valuesphones[0],
             "proxy phone 1" => $proxyphones[0],
             "type phone 2" => $typephones[1],
             "prefix phone 2" => $prefixphones[1],
-            "phones 2" => $valuesphones[1],
+            "phone 2" => $valuesphones[1],
             "proxy phone 2" => $proxyphones[1],
             "type national ID" => $typenationalID,
-            "nationalIds" => $valuesnationalID
+            'nationalId' => $valuesnationalID
         ];
 
         foreach ($valueCountrySpecific as $key => $value) {
