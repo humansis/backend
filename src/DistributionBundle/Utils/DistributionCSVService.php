@@ -222,7 +222,7 @@ class DistributionCSVService
         
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
-            if ($beneficiaryToCreate['status'] != 1) {
+            if ($beneficiaryToCreate['head'] != 'true') {
                 throw new \Exception("You must insert only a head of the household in the file to import.");
             }
 
@@ -317,7 +317,7 @@ class DistributionCSVService
             $toUpdate->setGivenName($beneficiaryToUpdate['givenName']);
             $toUpdate->setFamilyName($beneficiaryToUpdate['familyName']);
             $toUpdate->setGender($beneficiaryToUpdate['gender']);
-            $toUpdate->setStatus(($beneficiaryToUpdate['status']) ? $beneficiaryToUpdate['status'] : 0);
+            $toUpdate->setStatus(($beneficiaryToUpdate['head']) === 'true' ? 1 : 0);
             $toUpdate->setResidencyStatus($beneficiaryToUpdate['residencyStatus']);
             $toUpdate->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryToUpdate['dateOfBirth']));
             
@@ -341,22 +341,26 @@ class DistributionCSVService
                 $this->em->remove($phone);
             }
             $toUpdate->setPhones(null);
-            if (strpos($beneficiaryToUpdate['phones'], ",")) {
-                $phones = explode(",", $beneficiaryToUpdate['phones']);
-            } else {
-                $phones = [$beneficiaryToUpdate['phones']];
+
+            if ($beneficiaryToUpdate['phones 1'] && $beneficiaryToUpdate['type phone 1'] && $beneficiaryToUpdate['prefix phone 1']) {
+                $phone1 = new Phone();
+                $phone1->setNumber($beneficiaryToUpdate['phones 1']);
+                $phone1->setType($beneficiaryToUpdate['type phone 1']);
+                $phone1->setPrefix('+'.$beneficiaryToUpdate['prefix phone 1']);
+                $phone1->setProxy($beneficiaryToUpdate['proxy phone 1'] === 1 ? true : false);
+                $phone1->setBeneficiary($toUpdate);
+                $toUpdate->addPhone($phone1);
             }
-            foreach ($phones as $phone) {
-                if ($phone) {
-                    $newPhone = new Phone();
-                    $newPhone->setNumber($phone);
-                    $newPhone->setType('mobile');
-                    $newPhone->setProxy(false);
-                    $newPhone->setBeneficiary($toUpdate);
-                    $toUpdate->addPhone(
-                        $newPhone
-                    );
-                }
+
+            if ($beneficiaryToUpdate['phones 2'] && $beneficiaryToUpdate['type phone 2'] && $beneficiaryToUpdate['prefix phone 2']) {
+
+                $phone2 = new Phone();
+                $phone2->setNumber($beneficiaryToUpdate['phones 2']);
+                $phone2->setType($beneficiaryToUpdate['type phone 2']);
+                $phone2->setPrefix('+'.$beneficiaryToUpdate['prefix phone 2']);
+                $phone2->setProxy($beneficiaryToUpdate['proxy phone 2'] === 1 ? true : false);
+                $phone2->setBeneficiary($toUpdate);
+                $toUpdate->addPhone($phone2);
             }
 
             $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($toUpdate);
