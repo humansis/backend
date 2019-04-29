@@ -22,6 +22,11 @@ use Psr\Container\ContainerInterface;
 class UserService
 {
 
+    private $countryList = [
+        "KHM",
+        "SYR",
+    ];
+
     /** @var EntityManagerInterface $em */
     private $em;
 
@@ -204,6 +209,8 @@ class UserService
                 foreach ($userCountries as $userCountry) {
                     array_push($countries, $userCountry->getIso3());
                 }
+            } else {
+                $countries = $this->countryList;
             }
             
             $projectRepo = $this->em->getRepository('UserBundle:UserProject');
@@ -220,7 +227,7 @@ class UserService
         } else {
             throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
         }
-
+        dump($user);
         return $user;
     }
 
