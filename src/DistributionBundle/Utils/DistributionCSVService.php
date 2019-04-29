@@ -116,7 +116,7 @@ class DistributionCSVService
             $beneficiaryWithKey = array();
             foreach ($headers as $index => $key) {
                 if ($key == "gender") {
-                    if (strcasecmp(trim($$beneficiaryArray[$index]), 'Male') == 0) {
+                    if (strcasecmp(trim($beneficiaryArray[$index]), 'Male') == 0) {
                         $beneficiaryArray[$index] = 1;
                     } else {
                         $beneficiaryArray[$index] = 0;
