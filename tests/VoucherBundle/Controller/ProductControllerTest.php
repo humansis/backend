@@ -102,28 +102,26 @@ class ProductControllerTest extends BMSServiceTestCase
     }
 
 
-    /**
-     * @depends testDeleteProduct
-     *
-     * @param $productToDelete
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function testDeleteFromDatabase($productToDelete)
-    {
-        // Fake connection with a token for the user tester (ADMIN)
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
+    // /**
+    //  * @param $productToDelete
+    //  * @throws \Doctrine\ORM\ORMException
+    //  * @throws \Doctrine\ORM\OptimisticLockException
+    //  */
+    // public function testDeleteFromDatabase($productToDelete)
+    // {
+    //     // Fake connection with a token for the user tester (ADMIN)
+    //     $user = $this->getTestUser(self::USER_TESTER);
+    //     $token = $this->getUserToken($user);
+    //     $this->tokenStorage->setToken($token);
 
-        // Second step
-        // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('DELETE', '/api/wsse/products/' . $productToDelete['id']);
-        $success = json_decode($this->client->getResponse()->getContent(), true);
+    //     // Second step
+    //     // Create the user with the email and the salted password. The user should be enable
+    //     $crawler = $this->request('DELETE', '/api/wsse/products/' . $productToDelete['id']);
+    //     $success = json_decode($this->client->getResponse()->getContent(), true);
 
-        // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+    //     // Check if the second step succeed
+    //     $this->assertTrue($this->client->getResponse()->isSuccessful());
 
-        return $success;
-    }
+    //     return $success;
+    // }
 }

@@ -73,14 +73,14 @@ class VendorService
             $user = $this->container->get('user.user_service')->create(
         $userSaved,
         [
-          'rights' => 'ROLE_VENDOR',
+          'roles' => ['ROLE_VENDOR'],
           'salt' => $vendorData['salt'],
           'password' => $vendorData['password']
         ]
       );
 
       $location = $vendorData['location'];
-      $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
+      $location = $this->locationService->getLocation($countryISO3, $location);
 
 
             $vendor = new Vendor();
@@ -146,7 +146,7 @@ class VendorService
                     if (array_key_exists('id', $location)) {
                         unset($location['id']); // This is the old id
                     }
-                    $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
+                    $location = $this->locationService->getLocation($countryISO3, $location);
                     $vendor->setLocation($location);
                 }
             }
@@ -226,11 +226,11 @@ class VendorService
             $now = new DateTime();
             $vouchers = $vendor->getVouchers();
             if (!count($vouchers)) {
-                throw new \Exception('This vendor has no voucher. Try syncing with the server.', Response::HTTP_BAD_REQUEST);
+                throw new \Exception('This vendor has no voucher. Try syncing with the server.');
             }
             $totalValue = 0;
             foreach ($vouchers as $voucher) {
-                $voucher->setusedAt($voucher->getusedAt()->format('Y-m-d'));
+                $voucher->setusedAt($voucher->getusedAt()->format('d-m-Y'));
                 $totalValue += $voucher->getValue();
             }
 
@@ -276,7 +276,7 @@ class VendorService
                     'addressDistrict' => $district ? $district->getName() : null,
                     'addressProvince' => $province ? $province->getName() : null,
                     'addressCountry' => $province ? $province->getCountryISO3() : null,
-                    'date'  => $now->format('Y-m-d'),
+                    'date'  => $now->format('d-m-Y'),
                     'vouchers' => $vouchers,
                     'totalValue' => $totalValue
                 )
@@ -296,9 +296,21 @@ class VendorService
 
             return $response;
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            throw $e;
         }
 
         return new Response('');
+    }
+
+    /**
+     * Export all vendors in a CSV file
+     * @param string $type
+     * @return mixed
+     */
+    public function exportToCsv(string $type)
+    {
+        $exportableTable = $this->em->getRepository(Vendor::class)->findAll();
+
+        return $this->container->get('export_csv_service')->export($exportableTable, 'vendors', $type);
     }
 }

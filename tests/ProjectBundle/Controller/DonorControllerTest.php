@@ -16,7 +16,7 @@ class DonorControllerTest extends BMSServiceTestCase
     private $body = [
         "fullname" => "TEST_DONOR_NAME_PHPUNIT",
         "shortname" => "TEST_DONOR_NAME",
-        "date_added" => "2018-04-01 11:20:13",
+        "date_added" => "01-04-2018 11:20:13",
         "notes" => "This is a note"
     ];
 

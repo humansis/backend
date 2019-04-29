@@ -33,7 +33,6 @@ class VendorControllerTest extends BMSServiceTestCase
     {
         $crawler = $this->request('GET', '/api/wsse/initialize/' . $this->username);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-
         $this->assertArrayHasKey('user_id', $data);
         $this->assertArrayHasKey('salt', $data);
     }
@@ -53,7 +52,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $vendor = [
             "username" => $this->username,
             "email" => $this->username,
-            "rights" => "ROLE_ADMIN",
+            "roles" => ["ROLE_ADMIN"],
             "password" => "PSWUNITTEST",
             'salt' => $return['salt'],
             "name" => 'Carrefour',
@@ -62,10 +61,10 @@ class VendorControllerTest extends BMSServiceTestCase
             "address_street" => 'Agusto Figuroa',
             "address_postcode" => '28000',
             "location" => [
-                "adm1"=> "Banteay Meanchey",
-                "adm2"=> "Mongkol Borei",
-                "adm3"=> "Chamnaom",
-                "adm4"=> "Chamnaom",
+                "adm1"=> 1,
+                "adm2"=> 1,
+                "adm3"=> 1,
+                "adm4"=> 1,
                 "country_iso3"=> "KHM"
             ],
         ];
@@ -199,10 +198,10 @@ class VendorControllerTest extends BMSServiceTestCase
             'address_postcode' => $addressPostcode,
             'password' => $password,
             "location" => [
-                "adm1" => " Battambang",
-                "adm2" => "Banan",
-                "adm3" => "Kantueu Muoy",
-                "adm4" => "Kampong Ampil",
+                "adm1" => 1,
+                "adm2" => 2,
+                "adm3" => 3,
+                "adm4" => 4,
                 "country_iso3" => "KHM",
             ],
         ];

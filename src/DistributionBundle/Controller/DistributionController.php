@@ -396,7 +396,7 @@ class DistributionController extends Controller
      * @SWG\Tag(name="Distributions")
      *
      * @SWG\Parameter(
-     *     name="DistributionData",
+     *     name="distributionData",
      *     in="body",
      *     required=true,
      *     @Model(type=DistributionData::class)
@@ -414,22 +414,23 @@ class DistributionController extends Controller
      * )
      *
      * @param Request          $request
-     * @param DistributionData $DistributionData
+     * @param DistributionData $distributionData
      *
      * @return Response
      */
-    public function updateAction(Request $request, DistributionData $DistributionData)
+    public function updateAction(Request $request, DistributionData $distributionData)
     {
         $distributionArray = $request->request->all();
         try {
-            $DistributionData = $this->get('distribution.distribution_service')
-                ->edit($DistributionData, $distributionArray);
+            $distributionData = $this->get('distribution.distribution_service')
+                ->edit($distributionData, $distributionArray);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('jms_serializer')
-            ->serialize($DistributionData, 'json', SerializationContext::create()->setSerializeNull(true));
 
+        $json = $this->get('jms_serializer')
+            ->serialize($distributionData, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
+            );
         return new Response($json, Response::HTTP_OK);
     }
 

@@ -76,7 +76,7 @@ class Beneficiary implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="dateOfBirth", type="date")
-     * @JMS_Type("DateTime<'Y-m-d'>")
+     * @JMS_Type("DateTime<'d-m-Y'>")
      * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      * @Assert\NotBlank(message="The date of birth is required.")
      */
@@ -86,7 +86,7 @@ class Beneficiary implements ExportableInterface
      * @var \DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
+     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
      * @Groups({"FullHousehold"})
      */
     private $updatedOn;
@@ -567,11 +567,10 @@ class Beneficiary implements ExportableInterface
             $valueGender = "Male";
         }
 
-        // Recover adm1 , adm2 , adm3 , adm 4 from localisation object : we have to verify if they are null before to get the name
-        $adm1 = (! empty($this->getHousehold()->getLocation()->getAdm1())) ? $this->getHousehold()->getLocation()->getAdm1()->getName() : '';
-        $adm2 = (! empty($this->getHousehold()->getLocation()->getAdm2())) ? $this->getHousehold()->getLocation()->getAdm2()->getName() : '';
-        $adm3 = (! empty($this->getHousehold()->getLocation()->getAdm3())) ? $this->getHousehold()->getLocation()->getAdm3()->getName() : '';
-        $adm4 = (! empty($this->getHousehold()->getLocation()->getAdm4())) ? $this->getHousehold()->getLocation()->getAdm4()->getName() : '';
+        $adm1 = $this->getHousehold()->getLocation()->getAdm1Name();
+        $adm2 = $this->getHousehold()->getLocation()->getAdm2Name();
+        $adm3 = $this->getHousehold()->getLocation()->getAdm3Name();
+        $adm4 = $this->getHousehold()->getLocation()->getAdm4Name();
 
         if ($this->status === true) {
             $finalArray = [
@@ -606,20 +605,20 @@ class Beneficiary implements ExportableInterface
         $tempBenef = [ "givenName" => $this->getGivenName(),
             "familyName"=> $this->getFamilyName(),
             "gender" => $valueGender,
-            "status" => $this->getStatus(),
+            "head" => $this->getStatus() === 1 ? "true" : "false",
             "residencyStatus" => $this->getResidencyStatus(),
-            "dateOfBirth" => $this->getDateOfBirth()->format('Y-m-d'),
+            "dateOfBirth" => $this->getDateOfBirth()->format('d-m-Y'),
             "vulnerabilityCriteria" => $valuescriteria,
             "type phone 1" => $typephones[0],
             "prefix phone 1" => $prefixphones[0],
-            "phones 1" => $valuesphones[0],
+            "phone 1" => $valuesphones[0],
             "proxy phone 1" => $proxyphones[0],
             "type phone 2" => $typephones[1],
             "prefix phone 2" => $prefixphones[1],
-            "phones 2" => $valuesphones[1],
+            "phone 2" => $valuesphones[1],
             "proxy phone 2" => $proxyphones[1],
             "type national ID" => $typenationalID,
-            "nationalIds" => $valuesnationalID
+            'nationalId' => $valuesnationalID
         ];
 
         foreach ($valueCountrySpecific as $key => $value) {

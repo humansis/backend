@@ -99,8 +99,8 @@ class ProjectService
 
         $project = new Project();
         $project->setName($projectArray["name"])
-                ->setStartDate(new DateTime($projectArray["start_date"]))
-                ->setEndDate(new DateTime($projectArray["end_date"]))
+                ->setStartDate(DateTime::createFromFormat('d-m-Y',$projectArray["start_date"]))
+                ->setEndDate(DateTime::createFromFormat('d-m-Y',$projectArray["end_date"]))
                 ->setIso3($countryISO3)
                 ->setValue($projectArray["value"])
                 ->setNotes($projectArray["notes"]);

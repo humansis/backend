@@ -48,7 +48,7 @@ class Donor implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="dateAdded", type="datetime")
-     * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
+     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
      *
      * @Groups({"FullDonor"})
      */
@@ -250,7 +250,7 @@ class Donor implements ExportableInterface
         return [
             "Full name" => $this->getFullName(),
             "Short name"=> $this->getShortname(),
-            "Date added" => $this->getDateAdded()->format('Y-m-d H:i:s'),
+            "Date added" => $this->getDateAdded()->format('d-m-Y H:i:s'),
             "Notes" => $this->getNotes(),
             "Project" => $project,
         ];

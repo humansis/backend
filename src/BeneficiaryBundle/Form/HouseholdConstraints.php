@@ -37,10 +37,10 @@ class HouseholdConstraints extends RequestValidatorConstraints
         ];
         $location = [
             "country_iso3" => $optionalString,
-            "adm1" => $string,
-            "adm2" => $optionalString,
-            "adm3" => $optionalString,
-            "adm4" => $optionalString
+            "adm1" => $numeric,
+            "adm2" => $optionalNumeric,
+            "adm3" => $optionalNumeric,
+            "adm4" => $optionalNumeric
         ];
         $countrySpecificAnswer = [
             "answer" => $string,
