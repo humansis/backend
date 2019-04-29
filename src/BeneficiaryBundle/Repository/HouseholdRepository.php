@@ -245,7 +245,6 @@ class HouseholdRepository extends AbstractCriteriaRepository
                                 if ($countVulnerabilities == 0) {
                                     // We do a AND WHERE clause to add the filter in our initial request
                                     $q->andWhere('hh.id = b2.household')
-                                        ->leftJoin('b2.vulnerabilityCriteria', 'vb2')
                                         ->andWhere('vb2.id = :filter' . $indexFilter . $indexValue)
                                         ->addGroupBy('hh')
                                         ->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
