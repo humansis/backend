@@ -351,6 +351,29 @@ class DistributionService
     }
 
     /**
+     * @param $distributions
+     * @return string
+     */
+    public function filterQrVoucherDistributions($distributions)
+    {
+        $distributionArray = $distributions->getValues();
+        $filteredArray = array();
+        foreach ($distributionArray as $distribution) {
+            $commodities = $distribution->getCommodities();
+            $isQrVoucher = false;
+            foreach ($commodities as $commodity) {
+                if ($commodity->getModalityType()->getId() === 2) {
+                    $isQrVoucher = true;
+                }
+            }
+            if ($isQrVoucher && !$distribution->getArchived()) {
+                $filteredArray[] = $distribution;
+            };
+        }
+        return $filteredArray;
+    }
+
+    /**
      * @param $country
      * @return string
      */

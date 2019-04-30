@@ -512,6 +512,47 @@ class DistributionController extends Controller
     }
 
     /**
+     * Get distributions with qr voucher commodity of one project.
+     *
+     * @Rest\Get("/distributions-qr-voucher/projects/{id}", name="get_distributions_qr_voucher_of_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Project $project
+     *
+     * @return Response
+     */
+    public function getQrVoucherDistributionsAction(Project $project)
+    {
+        try {
+            $distributions = $project->getDistributions();
+            $filtered = $this->get('distribution.distribution_service')->filterQrVoucherDistributions($distributions);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $filtered,
+                'json',
+                SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
+            );
+
+        return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
      * Import beneficiaries of one distribution.
      *
      * @Rest\Post("/import/beneficiaries/distribution/{id}", name="import_beneficiaries_distribution")
