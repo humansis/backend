@@ -227,7 +227,6 @@ class UserService
         } else {
             throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
         }
-        dump($user);
         return $user;
     }
 
