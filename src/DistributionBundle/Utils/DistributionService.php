@@ -154,7 +154,7 @@ class DistributionService
             $distribution->settype(0);
         }
 
-        $location = $this->locationService->getOrSaveLocation($countryISO3, $location);
+        $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
 
         $project = $distribution->getProject();
@@ -183,29 +183,12 @@ class DistributionService
         $this->em->persist($distribution);
         $this->em->flush();
 
-        $name = $distribution->getName();
-        $distribution->setName($name);
-
         $this->em->persist($distribution);
 
         $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['type'], $projectTmp, $threshold);
         $this->saveReceivers($distribution, $listReceivers);
 
         $this->em->flush();
-        /** @var DistributionData $distribution */
-        $distribution = $this->em->getRepository(DistributionData::class)
-            ->find($distribution);
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
-            ->findByDistributionData($distribution);
-        $selectionsCriteria = $this->em->getRepository(SelectionCriteria::class)
-            ->findByDistributionData($distribution);
-
-        foreach ($distributionBeneficiary as $item) {
-            $distribution->addDistributionBeneficiary($item);
-        }
-        foreach ($selectionsCriteria as $item) {
-            $distribution->addSelectionCriterion($item);
-        }
 
         return ["distribution" => $distribution, "data" => $listReceivers];
     }
@@ -310,23 +293,13 @@ class DistributionService
      */
     public function edit(DistributionData $distributionData, array $distributionArray)
     {
-        /** @var DistributionData $distribution */
-        $editedDistribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
-        $editedDistribution->setId($distributionData->getId());
+        $distributionData->setDateDistribution(\DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']));
+        $distributionNameWithoutDate = explode('-', $distributionData->getName())[0];
+        $newDistributionName = $distributionNameWithoutDate . '-' . $distributionArray['date_distribution'];
+        $distributionData->setName($newDistributionName);
 
-        $errors = $this->validator->validate($editedDistribution);
-        if (count($errors) > 0) {
-            $errorsArray = [];
-            foreach ($errors as $error) {
-                $errorsArray[] = $error->getMessage();
-            }
-            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
-        }
-
-        $this->em->merge($editedDistribution);
         $this->em->flush();
-
-        return $editedDistribution;
+        return $distributionData;
     }
 
 
@@ -372,6 +345,29 @@ class DistributionService
         foreach ($distributionArray as $key) {
             if (!$key->getArchived()) {
                 $filteredArray[] = $key;
+            };
+        }
+        return $filteredArray;
+    }
+
+    /**
+     * @param $distributions
+     * @return string
+     */
+    public function filterQrVoucherDistributions($distributions)
+    {
+        $distributionArray = $distributions->getValues();
+        $filteredArray = array();
+        foreach ($distributionArray as $distribution) {
+            $commodities = $distribution->getCommodities();
+            $isQrVoucher = false;
+            foreach ($commodities as $commodity) {
+                if ($commodity->getModalityType()->getId() === 2) {
+                    $isQrVoucher = true;
+                }
+            }
+            if ($isQrVoucher && !$distribution->getArchived()) {
+                $filteredArray[] = $distribution;
             };
         }
         return $filteredArray;
@@ -492,7 +488,7 @@ class DistributionService
                 "givenName" => $beneficiary->getGivenName(),
                 "familyName"=> $beneficiary->getFamilyName(),
                 "gender" => $gender,
-                "dateOfBirth" => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                "dateOfBirth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                 "commodity" => $commodity->getModalityType()->getName(),
                 "value" => $commodity->getValue() . ' ' . $commodity->getUnit(),
                 "distributedAt" => $generalrelief->getDistributedAt(),

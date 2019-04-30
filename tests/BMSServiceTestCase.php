@@ -78,10 +78,10 @@ class BMSServiceTestCase extends KernelTestCase
         "latitude" => "1.1544",
         "longitude" => "120.12",
         "location" => [
-            "adm1" => "Rhone-Alpes",
-            "adm2" => "Savoie",
-            "adm3" => "Chambery",
-            "adm4" => "Sainte Hélène sur Isère"
+            "adm1" => 1,
+            "adm2" => 1,
+            "adm3" => 1,
+            "adm4" => 1
         ],
         "country_specific_answers" => [
             [
@@ -96,9 +96,9 @@ class BMSServiceTestCase extends KernelTestCase
                 "given_name" => "FIRSTNAME_TEST",
                 "family_name" => "NAME_TEST",
                 "gender" => 1,
-                "status" => 1,
+                "status" => "1",
                 "residency_status" => "IDP",
-                "date_of_birth" => "10/06/1999",
+                "date_of_birth" => "10-06-1999",
                 "profile" => [
                     "photo" => "PHOTO_TEST"
                 ],
@@ -128,7 +128,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "gender" => 1,
                 "status" => 0,
                 "residency_status" => "resident",
-                "date_of_birth" => "10/06/1976",
+                "date_of_birth" => "10-06-1976",
                 "profile" => [
                     "photo" => "PHOTO_TEST"
                 ],

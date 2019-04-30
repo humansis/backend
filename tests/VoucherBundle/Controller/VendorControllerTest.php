@@ -33,7 +33,6 @@ class VendorControllerTest extends BMSServiceTestCase
     {
         $crawler = $this->request('GET', '/api/wsse/initialize/' . $this->username);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-
         $this->assertArrayHasKey('user_id', $data);
         $this->assertArrayHasKey('salt', $data);
     }
@@ -53,12 +52,21 @@ class VendorControllerTest extends BMSServiceTestCase
         $vendor = [
             "username" => $this->username,
             "email" => $this->username,
-            "rights" => "ROLE_ADMIN",
+            "roles" => ["ROLE_ADMIN"],
             "password" => "PSWUNITTEST",
             'salt' => $return['salt'],
             "name" => 'Carrefour',
             "shop" => 'Fruit and Veg',
-            "address" => 'Agusto Figuroa'
+            "address_number" => '12',
+            "address_street" => 'Agusto Figuroa',
+            "address_postcode" => '28000',
+            "location" => [
+                "adm1"=> 1,
+                "adm2"=> 1,
+                "adm3"=> 1,
+                "adm4"=> 1,
+                "country_iso3"=> "KHM"
+            ],
         ];
 
         // Fake connection with a token for the user tester (ADMIN)
@@ -75,6 +83,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $vendor);
         $this->assertArrayHasKey('shop', $vendor);
         $this->assertArrayHasKey('user', $vendor);
+        $this->assertArrayHasKey('location', $vendor);
         $this->assertArrayHasKey('username', $vendor['user']);
         $this->assertSame($vendor['user']['username'], $this->username);
 
@@ -133,7 +142,9 @@ class VendorControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('username', $vendor['user']);
             $this->assertArrayHasKey('shop', $vendor);
             $this->assertArrayHasKey('name', $vendor);
-            $this->assertArrayHasKey('address', $vendor);
+            $this->assertArrayHasKey('address_street', $vendor);
+            $this->assertArrayHasKey('address_number', $vendor);
+            $this->assertArrayHasKey('address_postcode', $vendor);
         } else {
             $this->markTestIncomplete("You currently don't have any vendors in your database.");
         }
@@ -161,7 +172,9 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $vendor);
         $this->assertArrayHasKey('shop', $vendor);
         $this->assertArrayHasKey('name', $vendor);
-        $this->assertArrayHasKey('address', $vendor);
+        $this->assertArrayHasKey('address_street', $vendor);
+        $this->assertArrayHasKey('address_number', $vendor);
+        $this->assertArrayHasKey('address_postcode', $vendor);
     }
 
 
@@ -174,9 +187,24 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testEditVendor($newVendor)
     {
-        $address = 'Barbieri 32';
+
+        $addressStreet = 'Rosario Romero';
+        $addressNumber = '32';
+        $addressPostcode = '28500';
         $password = 'PSWUNITTEST';
-        $body = ["address" => $address, 'password' => $password];
+        $body = [
+            'address_number' => $addressNumber,
+            'address_street' => $addressStreet,
+            'address_postcode' => $addressPostcode,
+            'password' => $password,
+            "location" => [
+                "adm1" => 1,
+                "adm2" => 2,
+                "adm3" => 3,
+                "adm4" => 4,
+                "country_iso3" => "KHM",
+            ],
+        ];
 
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -189,7 +217,9 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         $vendorSearch = $this->em->getRepository(Vendor::class)->find($newVendorReceived['id']);
-        $this->assertEquals($vendorSearch->getAddress(), $address);
+        $this->assertEquals($vendorSearch->getAddressStreet(), $addressStreet);
+        $this->assertEquals($vendorSearch->getAddressNumber(), $addressNumber);
+        $this->assertEquals($vendorSearch->getAddressPostcode(), $addressPostcode);
         $this->assertEquals($vendorSearch->getUser()->getPassword(), $password);
 
         return $newVendorReceived;

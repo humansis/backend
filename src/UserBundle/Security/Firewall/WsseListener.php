@@ -51,7 +51,7 @@ class WsseListener implements ListenerInterface
             // }
 
             // By default deny authorization
-            $response = new Response();
+            $response = new Response('You are not authenticated');
             $response->setStatusCode(Response::HTTP_FORBIDDEN);
             $event->setResponse($response);
         }

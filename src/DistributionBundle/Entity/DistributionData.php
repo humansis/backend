@@ -47,7 +47,7 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="UpdatedOn", type="datetime")
-     * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
+     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
      *
      * @Groups({"FullDistribution"})
      */
@@ -57,7 +57,7 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_distribution", type="date")
-     * @JMS_Type("DateTime<'Y-m-d'>")
+     * @JMS_Type("DateTime<'d-m-Y'>")
      *
      * @Groups({"FullDistribution"})
      */
@@ -543,13 +543,10 @@ class DistributionData implements ExportableInterface
 
         $typeString = $this->getType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
 
-
-        // récuperer les adm1 , adm2 , adm3 , adm 4 depuis l'objet localisation : faut vérifier d'abord s'ils sont null ou pas pour avoir le nom
-
-        $adm1 = (! empty($this->getLocation()->getAdm1())) ? $this->getLocation()->getAdm1()->getName() : '';
-        $adm2 = (! empty($this->getLocation()->getAdm2())) ? $this->getLocation()->getAdm2()->getName() : '';
-        $adm3 = (! empty($this->getLocation()->getAdm3())) ? $this->getLocation()->getAdm3()->getName() : '';
-        $adm4 = (! empty($this->getLocation()->getAdm4())) ? $this->getLocation()->getAdm4()->getName() : '';
+        $adm1 = $this->getLocation()->getAdm1Name();
+        $adm2 = $this->getLocation()->getAdm2Name();
+        $adm3 = $this->getLocation()->getAdm3Name();
+        $adm4 = $this->getLocation()->getAdm4Name();
 
         return [
             "projet" => $this->getProject()->getName(),

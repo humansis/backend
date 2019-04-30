@@ -101,13 +101,16 @@ class ProductController extends Controller
      *
      * @return Response
      */
-    public function getProductAction()
+    public function getProductAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
 
+        $body = $request->request->all();
+        $countryIso3 = $body['__country'];
+
         try {
-            $return = $this->get('voucher.product_service')->findAll();
+            $return = $this->get('voucher.product_service')->findAll($countryIso3);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

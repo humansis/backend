@@ -256,7 +256,7 @@ class BookletService
         return $booklet;
     }
 
-    public function updateVoucherCode(Voucher $voucher, ?string $password, ?string $value, ?string $currency)
+    public function updateVoucherCode(Voucher $voucher, ?string $password='', ?string $value='', ?string $currency='')
     {
         $qrCode = $voucher->getCode();
         // To know if we need to add a new password or replace an existant one
@@ -577,12 +577,14 @@ class BookletService
                 "Given name" => $beneficiary->getGivenName(),
                 "Family name"=> $beneficiary->getFamilyName(),
                 "Gender" => $gender,
-                "Date of birth" => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                "Date of birth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                 "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
                 "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
                 "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
                 "Used at" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
             ));
         }
+
+        return $this->container->get('export_csv_service')->export($exportableTable, 'qrVouchers', $type);
     }
 }

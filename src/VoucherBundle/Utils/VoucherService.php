@@ -14,6 +14,11 @@ use Psr\Container\ContainerInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Product;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class VoucherService
 {
@@ -123,7 +128,7 @@ class VoucherService
                 return $voucher;
             }
             $voucher->setVendor($vendor)
-        ->setUsedAt(new \DateTime($voucherData['used_at']));
+        ->setUsedAt(new \DateTime($voucherData['used_at'])); // TODO : check format
 
             foreach ($voucherData['productIds'] as $productId) {
                 $product = $this->em->getRepository(Product::class)->find($productId);
@@ -186,4 +191,56 @@ class VoucherService
         };
         return true;
     }
+
+    /**
+         * Export all vouchers in a CSV file
+         * @param string $type
+         * @return mixed
+         */
+        public function exportToCsv(string $type)
+        {
+            $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
+
+            return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
+        }
+
+        /**
+         * Export all vouchers in a pdf
+         * @param string $type
+         * @return mixed
+         */
+        public function exportToPdf(string $type)
+        {
+            $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
+            
+            $pdfOptions = new Options();
+            $pdfOptions->set('defaultFont', 'Arial');
+            $pdfOptions->set('isRemoteEnabled', true);
+            $dompdf = new Dompdf($pdfOptions);
+
+            try {
+                $html =  $this->container->get('templating')->render(
+                    '@Voucher/Pdf/codes.html.twig',
+                    ['vouchers' => $exportableTable]
+                );
+
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4', 'portrait');
+                $dompdf->render();
+                $output = $dompdf->output();
+                $pdfFilepath =  getcwd() . '/pdf.pdf';
+                file_put_contents($pdfFilepath, $output);
+
+                $response = new BinaryFileResponse($pdfFilepath);
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'mypdf.pdf');
+                $response->headers->set('Content-Type', 'application/pdf');
+                $response->deleteFileAfterSend(true);
+
+                return $response;
+            } catch (\Exception $e) {
+                throw new \Exception($e);
+            }
+    
+            return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
+        }
 }

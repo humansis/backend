@@ -63,7 +63,12 @@ class DonorService
      */
     public function create(array $donorArray)
     {
-        $donor = $this->serializer->deserialize(json_encode($donorArray), Donor::class, 'json');
+        $donor = new Donor();
+
+        $donor->setFullname($donorArray["fullname"])
+            ->setShortname($donorArray["shortname"])
+            ->setNotes($donorArray["notes"]);
+
         $donor->setDateAdded(new \DateTime());
 
         $errors = $this->validator->validate($donor);
@@ -90,12 +95,14 @@ class DonorService
     public function edit(Donor $donor, array $donorArray)
     {
         /** @var Donor $editedDonor */
-        $editedDonor = $this->serializer->deserialize(json_encode($donorArray), Donor::class, 'json');
+    $donor->setFullname($donorArray["fullname"])
+        ->setShortname($donorArray["shortname"])
+        ->setNotes($donorArray["notes"]);
 
-        $editedDonor->setId($donor->getId());
 
-        $errors = $this->validator->validate($editedDonor);
-        if (count($errors) > 0) {
+        $errors = $this->validator->validate($donor);
+        if (count($errors) > 0)
+        {
             $errorsArray = [];
             foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
@@ -103,10 +110,10 @@ class DonorService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        $this->em->merge($editedDonor);
+        $this->em->merge($donor);
         $this->em->flush();
 
-        return $editedDonor;
+        return $donor;
     }
 
     /**

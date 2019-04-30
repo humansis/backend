@@ -7,7 +7,7 @@ services:
 
     voucher.vendor_service:
         class: VoucherBundle\Utils\VendorService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container']
         public: true
 
     voucher.booklet_service:
