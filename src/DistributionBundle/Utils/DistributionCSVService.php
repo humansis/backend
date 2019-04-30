@@ -10,7 +10,6 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
-use BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
 use CommonBundle\Entity\Adm1;
@@ -29,6 +28,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Ods as OdsReader;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
 
 /**
  * Class DistributionCSVService
@@ -45,8 +45,7 @@ class DistributionCSVService
     /** @var ContainerInterface $container */
     private $container;
     
-    /** @var HouseholdToCSVMapper $householdToCSVMapper */
-    private $householdToCSVMapper;
+    
     
     /** @var HouseholdService $locationService */
     private $householdService;
@@ -60,35 +59,38 @@ class DistributionCSVService
     /** @var RequestValidator $requestValidator */
     private $requestValidator;
 
+    /** @var CSVToArrayMapper $CSVToArrayMapper */
+    private $CSVToArrayMapper;
+
     /**
      * DistributionCSVService constructor.
      * @param EntityManagerInterface $entityManager
      * @param ExportCSVService $exportCSVService
      * @param ContainerInterface $container
-     * @param HouseholdToCSVMapper $householdToCSVMapper
      * @param HouseholdService $householdService
      * @param Serializer $serializer
      * @param ValidatorInterface $validator
      * @param RequestValidator $requestValidator
+     * @param CSVToArrayMapper $CSVToArrayMapper
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ExportCSVService $exportCSVService,
         ContainerInterface $container,
-        HouseholdToCSVMapper $householdToCSVMapper,
         HouseholdService $householdService,
         Serializer $serializer,
         ValidatorInterface $validator,
-        RequestValidator $requestValidator
+        RequestValidator $requestValidator,
+        CSVToArrayMapper $CSVToArrayMapper
     ) {
         $this->em = $entityManager;
         $this->exportCSVService = $exportCSVService;
         $this->container = $container;
-        $this->householdToCSVMapper = $householdToCSVMapper;
         $this->householdService = $householdService;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->requestValidator = $requestValidator;
+        $this->CSVToArrayMapper = $CSVToArrayMapper;
     }
 
     /**
@@ -114,7 +116,7 @@ class DistributionCSVService
             $beneficiaryWithKey = array();
             foreach ($headers as $index => $key) {
                 if ($key == "gender") {
-                    if ($beneficiaryArray[$index] == 'Male') {
+                    if (strcasecmp(trim($beneficiaryArray[$index]), 'Male') == 0) {
                         $beneficiaryArray[$index] = 1;
                     } else {
                         $beneficiaryArray[$index] = 0;
@@ -147,7 +149,7 @@ class DistributionCSVService
                     'id' => $beneficiary->getId(),
                     'givenName' => $beneficiary->getGivenName(),
                     'familyName' => $beneficiary->getFamilyName(),
-                    'dateOfBirth' => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                    'dateOfBirth' => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                     'gender' => $beneficiary->getGender()
                 );
                 array_push($deleteArray, $beneficiaryToDelete);
@@ -220,38 +222,17 @@ class DistributionCSVService
         
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
-            if ($beneficiaryToCreate['status'] != 1) {
+            if ($beneficiaryToCreate['head'] != 'true') {
                 throw new \Exception("You must insert only a head of the household in the file to import.");
             }
 
-            // Define location array
-            $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(["name" => $beneficiaryToCreate['adm1']]);
-            $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(["name" => $beneficiaryToCreate['adm2']]);
-            $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(["name" => $beneficiaryToCreate['adm3']]);
-            $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(["name" => $beneficiaryToCreate['adm4']]);
-            
-            $adm4Name = $beneficiaryToCreate['adm4'];
-            if ($adm4 instanceof Adm4) {
-                $adm3 = $adm4->getAdm3();
-            }
-            if ($adm3 instanceof Adm3) {
-                $adm3Name = $adm3->getName();
-                $adm2 = $adm3->getAdm2();
-            }
-            if ($adm2 instanceof Adm2) {
-                $adm2Name = $adm2->getName();
-                $adm1 = $adm2->getAdm1();
-            }
-            if ($adm1 instanceof Adm1) {
-                $country = $adm1->getCountryISO3();
-                $adm1Name = $adm1->getName();
-            }
+            // There the location is still filled with adm names and not id
             $locationArray = array(
-                "country_iso3" => $country,
-                "adm1" => $adm1Name,
-                "adm2" => $adm2Name,
-                "adm3" => $adm3Name,
-                "adm4" => $adm4Name
+                "country_iso3" => $countryIso3,
+                "adm1" => $beneficiaryToCreate['adm1'],
+                "adm2" => $beneficiaryToCreate['adm2'],
+                "adm3" => $beneficiaryToCreate['adm3'],
+                "adm4" => $beneficiaryToCreate['adm4']
             );
             
             $householdToCreate = array(
@@ -282,6 +263,8 @@ class DistributionCSVService
                     )
                 )
             );
+
+            $this->CSVToArrayMapper->mapLocation($householdToCreate);
             $this->householdService->createOrEdit($householdToCreate, array($distributionProject));
             $toCreate = $this->em->getRepository(Beneficiary::class)
                 ->findOneBy(["givenName" => $beneficiaryToCreate['givenName'], 'familyName' => $beneficiaryToCreate['familyName'], 'gender' => $beneficiaryToCreate['gender']]);
@@ -334,9 +317,9 @@ class DistributionCSVService
             $toUpdate->setGivenName($beneficiaryToUpdate['givenName']);
             $toUpdate->setFamilyName($beneficiaryToUpdate['familyName']);
             $toUpdate->setGender($beneficiaryToUpdate['gender']);
-            $toUpdate->setStatus(($beneficiaryToUpdate['status']) ? $beneficiaryToUpdate['status'] : 0);
+            $toUpdate->setStatus(($beneficiaryToUpdate['head']) === 'true' ? 1 : 0);
             $toUpdate->setResidencyStatus($beneficiaryToUpdate['residencyStatus']);
-            $toUpdate->setDateOfBirth(new \DateTime($beneficiaryToUpdate['dateOfBirth']));
+            $toUpdate->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryToUpdate['dateOfBirth']));
             
             $toUpdate->setVulnerabilityCriteria(null);
             if (strpos($beneficiaryToUpdate['vulnerabilityCriteria'], ",")) {
@@ -358,21 +341,16 @@ class DistributionCSVService
                 $this->em->remove($phone);
             }
             $toUpdate->setPhones(null);
-            if (strpos($beneficiaryToUpdate['phones'], ",")) {
-                $phones = explode(",", $beneficiaryToUpdate['phones']);
-            } else {
-                $phones = [$beneficiaryToUpdate['phones']];
-            }
-            foreach ($phones as $phone) {
-                if ($phone) {
-                    $newPhone = new Phone();
-                    $newPhone->setNumber($phone);
-                    $newPhone->setType('mobile');
-                    $newPhone->setProxy(false);
-                    $newPhone->setBeneficiary($toUpdate);
-                    $toUpdate->addPhone(
-                        $newPhone
-                    );
+
+            foreach (['1', '2'] as $phoneIndex) {
+                if ($beneficiaryToUpdate['phone ' . $phoneIndex] && $beneficiaryToUpdate['type phone ' . $phoneIndex] && $beneficiaryToUpdate['prefix phone ' . $phoneIndex]) {
+                    $phone = new Phone();
+                    $phone->setNumber($beneficiaryToUpdate['phone ' . $phoneIndex]);
+                    $phone->setType($beneficiaryToUpdate['type phone ' . $phoneIndex]);
+                    $phone->setPrefix($beneficiaryToUpdate['prefix phone ' . $phoneIndex]);
+                    $phone->setProxy($beneficiaryToUpdate['proxy phone ' . $phoneIndex] === 1 ? true : false);
+                    $phone->setBeneficiary($toUpdate);
+                    $toUpdate->addPhone($phone);
                 }
             }
 
@@ -381,21 +359,13 @@ class DistributionCSVService
                 $this->em->remove($nationalId);
             }
             $toUpdate->setNationalIds(null);
-            if (strpos($beneficiaryToUpdate['nationalIds'], ",")) {
-                $nationalIds = explode(",", $beneficiaryToUpdate['nationalIds']);
-            } else {
-                $nationalIds = [$beneficiaryToUpdate['nationalIds']];
-            }
-            foreach ($nationalIds as $nationalId) {
-                if ($nationalId) {
-                    $newNationalId = new NationalId();
-                    $newNationalId->setIdNumber($nationalId);
-                    $newNationalId->setIdType('card');
-                    $newNationalId->setBeneficiary($toUpdate);
-                    $toUpdate->addNationalId(
-                        $newNationalId
-                    );
-                }
+
+            if (!empty($beneficiaryToUpdate['nationalId']) && !empty($beneficiaryToUpdate['type national ID'])) {
+                $newNationalId = new NationalId();
+                $newNationalId->setIdNumber($beneficiaryToUpdate['nationalId']);
+                $newNationalId->setIdType($beneficiaryToUpdate['type national ID']);
+                $newNationalId->setBeneficiary($toUpdate);
+                $toUpdate->addNationalId($newNationalId);
             }
 
             $this->em->merge($toUpdate);

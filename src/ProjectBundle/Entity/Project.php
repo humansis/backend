@@ -42,7 +42,7 @@ class Project implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="startDate", type="date")
-     * @JMS_Type("DateTime<'Y-m-d'>")
+     * @JMS_Type("DateTime<'d-m-Y'>")
      *
      * @Groups({"FullProject"})
      */
@@ -52,7 +52,7 @@ class Project implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="endDate", type="date")
-     * @JMS_Type("DateTime<'Y-m-d'>")
+     * @JMS_Type("DateTime<'d-m-Y'>")
      *
      * @Groups({"FullProject"})
      */
@@ -620,8 +620,8 @@ class Project implements ExportableInterface
 
         return [
             "Project name" => $this->getName(),
-            "Start date"=> $this->getStartDate()->format('Y-m-d'),
-            "End date" => $this->getEndDate()->format('Y-m-d'),
+            "Start date"=> $this->getStartDate()->format('d-m-Y'),
+            "End date" => $this->getEndDate()->format('d-m-Y'),
             "Number of households" => $this->getNumberOfHouseholds(),
             "Value" => $this->getValue(),
             "Notes" => $this->getNotes(),

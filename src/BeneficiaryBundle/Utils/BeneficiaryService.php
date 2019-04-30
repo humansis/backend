@@ -108,7 +108,7 @@ class BeneficiaryService
         }
         
         if (strrpos($beneficiaryArray['date_of_birth'], '/') !== false) {
-            str_replace('/', '-', $beneficiaryArray['date_of_birth']);
+            $beneficiaryArray['date_of_birth'] = str_replace('/', '-', $beneficiaryArray['date_of_birth']);
         }
  
 

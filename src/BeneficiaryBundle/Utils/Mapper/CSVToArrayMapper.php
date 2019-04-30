@@ -5,6 +5,10 @@ namespace BeneficiaryBundle\Utils\Mapper;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Adm3;
+use CommonBundle\Entity\Adm4;
 
 class CSVToArrayMapper extends AbstractMapper
 {
@@ -28,15 +32,16 @@ class CSVToArrayMapper extends AbstractMapper
         $formattedHouseholdArray = null;
 
         foreach ($sheetArray as $indexRow => $row) {
+            // Check if no column has been deleted
             if (!$row['A'] && !$row['B'] && !$row['C'] && !$row['D'] && !$row['E'] && !$row['F'] && !$row['G'] && !$row['H'] && !$row['I'] && !$row['J'] && !$row['K'] && !$row['L'] && !$row['M'] && !$row['N'] && !$row['O'] && !$row['P'] && !$row['Q'] && !$row['R'] && !$row['S'] && !$row['T'] && !$row['U'] && !$row['V'] && !$row['W'] && !$row['X'] && !$row['Y'] && !$row['Z'] && !$row['AA']) {
                 continue;
             }
 
-            //Index == 2
+            // Index == 1
             if (Household::indexRowHeader === $indexRow) {
                 $rowHeader = $row;
             }
-            //Index < 4
+            // Index < first row of data
             if ($indexRow < Household::firstRow) {
                 continue;
             }
@@ -45,19 +50,23 @@ class CSVToArrayMapper extends AbstractMapper
             try {
                 $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $indexRow, $row, $rowHeader);
             } catch (\Exception $exception) {
-                throw new \Exception($exception->getMessage());
+                throw $exception;
             }
-            // Check if it's a new household or just a new beneficiary in the current row
+            // Check if it's a new household or just a new beneficiary in the current household
+            // If address_street exists it's a new household
             if ($formattedHouseholdArray['address_street'] !== null) {
+                // If there is already a previous household, add it to the list of households and create a new one
                 if (null !== $householdArray) {
                     $listHouseholdArray[] = $householdArray;
                 }
                 $householdArray = $formattedHouseholdArray;
+                $householdArray['beneficiaries'] = [$formattedHouseholdArray['beneficiaries']];
             } else {
-                $householdArray['beneficiaries'][] = current($formattedHouseholdArray['beneficiaries']);
+                // Add beneficiary to existing household
+                $householdArray['beneficiaries'][] = $formattedHouseholdArray['beneficiaries'];
             }
         }
-
+        // Add the last household to the list
         if (null !== $formattedHouseholdArray) {
             $listHouseholdArray[] = $householdArray;
         }
@@ -95,25 +104,18 @@ class CSVToArrayMapper extends AbstractMapper
                     $residencyStatus = $row[$mappingCSV['beneficiaries']['residency_status']];
 
                     // Verify that there are no missing information in each beneficiary
-                    if ($givenName == null
-                        || $familyName == null
-                        || (trim($gender) != 'Female' && trim($gender) != 'Male')
-                        || (explode('.', $status)[0] != '0' && explode('.', $status)[0] != '1')
-                        || $dateOfBirth == null
-                        || $residencyStatus == null) {
-                        if ($givenName == null) {
-                            throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['given_name'].' at the line '.$lineNumber);
-                        } elseif ($familyName == null) {
-                            throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['family_name'].' at the line '.$lineNumber);
-                        } elseif (trim($gender) != 'Female' && trim($gender) != 'Male') {
-                            throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['gender'].' at the line '.$lineNumber);
-                        } elseif ((explode('.', $status)[0] != '0' && explode('.', $status)[0] != '1')) {
-                            throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['status'].' at the line '.$lineNumber);
-                        } elseif ($dateOfBirth == null) {
-                            throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['date_of_birth'].' at the line '.$lineNumber);
-                        } elseif ($residencyStatus == null) {
-                            throw new \Exception('There is missing information at the column '.$mappingCSV['beneficiaries']['residency_status'].' at the line '.$lineNumber);
-                        }
+                    if ($givenName == null) {
+                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['given_name'].' at the line '.$lineNumber);
+                    } elseif ($familyName == null) {
+                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['family_name'].' at the line '.$lineNumber);
+                    } elseif (strcasecmp(trim($gender), 'Female') !== 0 && strcasecmp(trim($gender), 'Male') !== 0) {
+                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['gender'].' at the line '.$lineNumber);
+                    } elseif (($status !== 'true' && $status !== 'false')) {
+                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['status'].' at the line '.$lineNumber);
+                    } elseif ($dateOfBirth == null) {
+                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['date_of_birth'].' at the line '.$lineNumber);
+                    } elseif ($residencyStatus == null) {
+                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['residency_status'].' at the line '.$lineNumber);
                     }
 
                     // Check that residencyStatus has one of the authorized values
@@ -126,7 +128,6 @@ class CSVToArrayMapper extends AbstractMapper
                             $statusIsAuthorized = true;
                         }
                     }
-
                     if (!$statusIsAuthorized) {
                         throw new \Exception('Your residency status must be either refugee, IDP or resident');
                     }
@@ -161,14 +162,16 @@ class CSVToArrayMapper extends AbstractMapper
 
         // Treatment on field with multiple value or foreign key inside (switch name to id for example)
         try {
-            $this->fieldCountrySpecifics($mappingCSV, $formattedHouseholdArray, $rowHeader);
-            $this->fieldVulnerabilityCriteria($formattedHouseholdArray);
-            $this->fieldPhones($formattedHouseholdArray);
-            $this->fieldGender($formattedHouseholdArray);
-            $this->fieldNationalIds($formattedHouseholdArray);
-            $this->fieldBeneficiary($formattedHouseholdArray);
+            $this->mapCountrySpecifics($mappingCSV, $formattedHouseholdArray, $rowHeader);
+            $this->mapVulnerabilityCriteria($formattedHouseholdArray);
+            $this->mapPhones($formattedHouseholdArray);
+            $this->mapGender($formattedHouseholdArray);
+            $this->mapNationalIds($formattedHouseholdArray);
+            $this->mapProfile($formattedHouseholdArray);
+            $this->mapStatus($formattedHouseholdArray);
+            $this->mapLocation($formattedHouseholdArray);
         } catch (\Exception $exception) {
-            throw new \Exception("Your file is not correctly formatted for this country ($countryIso3)");
+            throw $exception;
         }
         // ADD THE FIELD COUNTRY ONLY FOR THE CHECKING BY THE REQUEST VALIDATOR
         $formattedHouseholdArray['__country'] = $countryIso3;
@@ -183,7 +186,7 @@ class CSVToArrayMapper extends AbstractMapper
      * @param $formattedHouseholdArray
      * @param array $rowHeader
      */
-    private function fieldCountrySpecifics(array $mappingCSV, &$formattedHouseholdArray, array $rowHeader)
+    private function mapCountrySpecifics(array $mappingCSV, &$formattedHouseholdArray, array $rowHeader)
     {
         $formattedHouseholdArray['country_specific_answers'] = [];
         foreach ($formattedHouseholdArray as $indexFormatted => $value) {
@@ -205,7 +208,7 @@ class CSVToArrayMapper extends AbstractMapper
      *
      * @param $formattedHouseholdArray
      */
-    private function fieldVulnerabilityCriteria(&$formattedHouseholdArray)
+    private function mapVulnerabilityCriteria(&$formattedHouseholdArray)
     {
         $vulnerability_criteria_string = $formattedHouseholdArray['beneficiaries']['vulnerability_criteria'];
         $vulnerability_criteria_array = array_map('trim', explode(';', $vulnerability_criteria_string));
@@ -224,7 +227,7 @@ class CSVToArrayMapper extends AbstractMapper
      *
      * @param $formattedHouseholdArray
      */
-    private function fieldPhones(&$formattedHouseholdArray)
+    private function mapPhones(&$formattedHouseholdArray)
     {
         $types1_string = $formattedHouseholdArray['beneficiaries']['phone1_type'];
         $phone1_prefix_string = $formattedHouseholdArray['beneficiaries']['phone1_prefix'];
@@ -255,13 +258,13 @@ class CSVToArrayMapper extends AbstractMapper
      *
      * @param $formattedHouseholdArray
      */
-    private function fieldGender(&$formattedHouseholdArray)
+    private function mapGender(&$formattedHouseholdArray)
     {
         $gender_string = trim($formattedHouseholdArray['beneficiaries']['gender']);
 
-        if ($gender_string == "Male") {
+        if (strcasecmp(trim($gender_string), 'Male') === 0) {
             $formattedHouseholdArray['beneficiaries']['gender'] = 1;
-        } else if ($gender_string == "Female") {
+        } else if (strcasecmp(trim($gender_string), 'Female') === 0) {
             $formattedHouseholdArray['beneficiaries']['gender'] = 0;
         }
     }
@@ -271,7 +274,7 @@ class CSVToArrayMapper extends AbstractMapper
      *
      * @param $formattedHouseholdArray
      */
-    private function fieldNationalIds(&$formattedHouseholdArray)
+    private function mapNationalIds(&$formattedHouseholdArray)
     {
         $type_national_id = $formattedHouseholdArray['beneficiaries']['national_id_type'];
         $national_id_string = $formattedHouseholdArray['beneficiaries']['national_id_number'];
@@ -282,15 +285,112 @@ class CSVToArrayMapper extends AbstractMapper
     }
 
     /**
-     * Reformat the field beneficiary.
+     * Reformat the field profile.
      *
      * @param $formattedHouseholdArray
      */
-    private function fieldBeneficiary(&$formattedHouseholdArray)
+    private function mapProfile(&$formattedHouseholdArray)
     {
-        $beneficiary = $formattedHouseholdArray['beneficiaries'];
-        $beneficiary['profile'] = ['photo' => ''];
-        unset($formattedHouseholdArray['beneficiaries']);
-        $formattedHouseholdArray['beneficiaries'][] = $beneficiary;
+        $formattedHouseholdArray['beneficiaries']['profile'] = ['photo' => ''];
+    }
+
+    /**
+     * Reformat the field status.
+     *
+     * @param $formattedHouseholdArray
+     */
+    private function mapStatus(&$formattedHouseholdArray)
+    {
+        $formattedHouseholdArray['beneficiaries']['status'] =  $formattedHouseholdArray['beneficiaries']['status'] === 'false' ? 0 : 1;
+    }
+
+    /**
+     * Reformat the field location.
+     *
+     * @param $formattedHouseholdArray
+     */
+    public function mapLocation(&$formattedHouseholdArray)
+    {
+        $location = $formattedHouseholdArray['location'];
+
+        if ($location['adm1'] === null && $location['adm2'] === null && $location['adm3'] === null && $location['adm4'] === null) {
+            if ($formattedHouseholdArray['address_street']) {
+                throw new \Exception('A location is required');
+            } else {
+                return;
+            }
+        }
+
+        if (! $location['adm1']) {
+            throw new \Exception('An Adm1 is required');
+        }
+
+        // Map adm1
+        $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(
+            [
+                'name' => $location['adm1'],
+                'countryISO3' => $location['country_iso3']
+            ]
+        );
+        
+        if (! $adm1 instanceof Adm1) {
+            throw new \Exception('The Adm1 ' . $location['adm1'] . ' was not found in ' . $location['country_iso3']);
+        } else {
+            $formattedHouseholdArray['location']['adm1'] = $adm1->getId();
+        }
+
+        if (! $location['adm2']) {
+            return;
+        }
+
+        // Map adm2
+        $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(
+            [
+                'name' => $location['adm2'],
+                'adm1' => $adm1
+            ]
+        );
+        
+        if (! $adm2 instanceof Adm2) {
+            throw new \Exception('The Adm2 ' . $location['adm2'] . ' was not found in ' . $adm1->getName());
+        } else {
+            $formattedHouseholdArray['location']['adm2'] = $adm2->getId();
+        }
+
+        if (! $location['adm3']) {
+            return;
+        }
+
+        // Map adm3
+        $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(
+            [
+                'name' => $location['adm3'],
+                'adm2' => $adm2
+            ]
+        );
+        
+        if (! $adm3 instanceof Adm3) {
+            throw new \Exception('The Adm3 ' . $location['adm3'] . ' was not found in ' . $adm2->getName());
+        } else {
+            $formattedHouseholdArray['location']['adm3'] = $adm3->getId();
+        }
+
+        if (! $location['adm4']) {
+            return;
+        }
+
+        // Map adm4
+        $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(
+            [
+                'name' => $location['adm4'],
+                'adm3' => $adm3
+            ]
+        );
+        
+        if (! $adm4 instanceof Adm4) {
+            throw new \Exception('The Adm4 ' . $location['adm4'] . ' was not found in ' . $adm3->getName());
+        } else {
+            $formattedHouseholdArray['location']['adm4'] = $adm4->getId();
+        }
     }
 }

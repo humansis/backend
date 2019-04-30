@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            td, th {
+               padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Vouchers codes</h1>
+        <table>
+            <tr>
+                <th>Booklet's code</th>
+                <th>Voucher's code</th>
+            </tr>
+            {% for voucher in vouchers %}
+                <tr>
+                    <td>{{ voucher.booklet.code }}</td>
+                    <td>{{ voucher.code }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

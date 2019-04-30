@@ -185,8 +185,14 @@ class DistributionController extends Controller
     {
         $data = $request->request->all();
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiary($distributionData, $data);
+
+        try {
+            $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+            $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiary($distributionData, $data);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        
 
         $json = $this->get('jms_serializer')
             ->serialize(
@@ -390,7 +396,7 @@ class DistributionController extends Controller
      * @SWG\Tag(name="Distributions")
      *
      * @SWG\Parameter(
-     *     name="DistributionData",
+     *     name="distributionData",
      *     in="body",
      *     required=true,
      *     @Model(type=DistributionData::class)
@@ -408,22 +414,23 @@ class DistributionController extends Controller
      * )
      *
      * @param Request          $request
-     * @param DistributionData $DistributionData
+     * @param DistributionData $distributionData
      *
      * @return Response
      */
-    public function updateAction(Request $request, DistributionData $DistributionData)
+    public function updateAction(Request $request, DistributionData $distributionData)
     {
         $distributionArray = $request->request->all();
         try {
-            $DistributionData = $this->get('distribution.distribution_service')
-                ->edit($DistributionData, $distributionArray);
+            $distributionData = $this->get('distribution.distribution_service')
+                ->edit($distributionData, $distributionArray);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('jms_serializer')
-            ->serialize($DistributionData, 'json', SerializationContext::create()->setSerializeNull(true));
 
+        $json = $this->get('jms_serializer')
+            ->serialize($distributionData, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
+            );
         return new Response($json, Response::HTTP_OK);
     }
 
@@ -490,6 +497,47 @@ class DistributionController extends Controller
         try {
             $distributions = $project->getDistributions();
             $filtered = $this->get('distribution.distribution_service')->filterDistributions($distributions);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $filtered,
+                'json',
+                SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
+            );
+
+        return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
+     * Get distributions with qr voucher commodity of one project.
+     *
+     * @Rest\Get("/distributions-qr-voucher/projects/{id}", name="get_distributions_qr_voucher_of_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Project $project
+     *
+     * @return Response
+     */
+    public function getQrVoucherDistributionsAction(Project $project)
+    {
+        try {
+            $distributions = $project->getDistributions();
+            $filtered = $this->get('distribution.distribution_service')->filterQrVoucherDistributions($distributions);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

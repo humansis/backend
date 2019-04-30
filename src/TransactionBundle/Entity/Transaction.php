@@ -110,7 +110,7 @@ class Transaction
      * @var \DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
+     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
      *
      * @Groups({"ValidatedDistribution"})
      */

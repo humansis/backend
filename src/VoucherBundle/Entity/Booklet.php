@@ -69,6 +69,7 @@ class Booklet implements ExportableInterface
      * @var string|null
      *
      * @ORM\Column(name="password", type="string", length=255, nullable=true)
+     * @Groups({"FullBooklet"})
      */
     public $password;
 

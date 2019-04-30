@@ -346,7 +346,7 @@ class TransactionService
                 "givenName" => $beneficiary->getGivenName(),
                 "familyName"=> $beneficiary->getFamilyName(),
                 "gender" => $gender,
-                "dateOfBirth" => $beneficiary->getDateOfBirth()->format('Y-m-d'),
+                "dateOfBirth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                 "amount_sent" => $transaction->getAmountSent(),
                 "date_sent" => $transaction->getDateSent(),
                 "transaction_status" => $status,
