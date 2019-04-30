@@ -148,20 +148,6 @@ class HouseholdService
             ->setAddressPostcode($householdArray["address_postcode"])
             ->setAddressNumber($householdArray["address_number"]);
 
-        $errors = $this->validator->validate($household);
-        if (count($errors) > 0) {
-            $errorsMessage = "";
-            /** @var ConstraintViolation $error */
-            foreach ($errors as $error) {
-                if ("" !== $errorsMessage) {
-                    $errorsMessage .= " ";
-                }
-                $errorsMessage .= $error->getMessage();
-            }
-
-            throw new \Exception($errorsMessage);
-        }
-
         // Save or update location instance
         $location = $this->locationService->getLocation($householdArray['__country'], $householdArray["location"]);
         if (null === $location) {
