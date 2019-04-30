@@ -342,25 +342,16 @@ class DistributionCSVService
             }
             $toUpdate->setPhones(null);
 
-            if ($beneficiaryToUpdate['phone 1'] && $beneficiaryToUpdate['type phone 1'] && $beneficiaryToUpdate['prefix phone 1']) {
-                $phone1 = new Phone();
-                $phone1->setNumber($beneficiaryToUpdate['phone 1']);
-                $phone1->setType($beneficiaryToUpdate['type phone 1']);
-                $phone1->setPrefix($beneficiaryToUpdate['prefix phone 1']);
-                $phone1->setProxy($beneficiaryToUpdate['proxy phone 1'] === 1 ? true : false);
-                $phone1->setBeneficiary($toUpdate);
-                $toUpdate->addPhone($phone1);
-            }
-
-            if ($beneficiaryToUpdate['phone 2'] && $beneficiaryToUpdate['type phone 2'] && $beneficiaryToUpdate['prefix phone 2']) {
-
-                $phone2 = new Phone();
-                $phone2->setNumber($beneficiaryToUpdate['phone 2']);
-                $phone2->setType($beneficiaryToUpdate['type phone 2']);
-                $phone2->setPrefix($beneficiaryToUpdate['prefix phone 2']);
-                $phone2->setProxy($beneficiaryToUpdate['proxy phone 2'] === 1 ? true : false);
-                $phone2->setBeneficiary($toUpdate);
-                $toUpdate->addPhone($phone2);
+            foreach (['1', '2'] as $phoneIndex) {
+                if ($beneficiaryToUpdate['phone ' . $phoneIndex] && $beneficiaryToUpdate['type phone ' . $phoneIndex] && $beneficiaryToUpdate['prefix phone ' . $phoneIndex]) {
+                    $phone = new Phone();
+                    $phone->setNumber($beneficiaryToUpdate['phone ' . $phoneIndex]);
+                    $phone->setType($beneficiaryToUpdate['type phone ' . $phoneIndex]);
+                    $phone->setPrefix($beneficiaryToUpdate['prefix phone ' . $phoneIndex]);
+                    $phone->setProxy($beneficiaryToUpdate['proxy phone ' . $phoneIndex] === 1 ? true : false);
+                    $phone->setBeneficiary($toUpdate);
+                    $toUpdate->addPhone($phone);
+                }
             }
 
             $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($toUpdate);
