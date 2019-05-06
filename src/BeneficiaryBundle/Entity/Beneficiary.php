@@ -574,6 +574,7 @@ class Beneficiary implements ExportableInterface
 
         if ($this->status === true) {
             $finalArray = [
+                "household's id" => $this->getHousehold()->getId(),
                 "addressStreet" => $this->getHousehold()->getAddressStreet(),
                 "addressNumber" => $this->getHousehold()->getAddressNumber(),
                 "addressPostcode" => $this->getHousehold()->getAddressPostcode(),
@@ -588,6 +589,7 @@ class Beneficiary implements ExportableInterface
             ];
         } else {
             $finalArray = [
+                "household's id" => "",
                 "addressStreet" => "",
                 "addressNumber" => "",
                 "addressPostcode" => "",
@@ -603,11 +605,11 @@ class Beneficiary implements ExportableInterface
         }
 
         $tempBenef = [
-            "ID" => $this->getId(),
+            "beneficiary's id" => $this->getId(),
             "givenName" => $this->getGivenName(),
             "familyName"=> $this->getFamilyName(),
             "gender" => $valueGender,
-            "head" => $this->getStatus() === 1 ? "true" : "false",
+            "head" => $this->getStatus() === true ? "true" : "false",
             "residencyStatus" => $this->getResidencyStatus(),
             "dateOfBirth" => $this->getDateOfBirth()->format('d-m-Y'),
             "vulnerabilityCriteria" => $valuescriteria,
