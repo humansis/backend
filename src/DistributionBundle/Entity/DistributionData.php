@@ -549,7 +549,8 @@ class DistributionData implements ExportableInterface
         $adm4 = $this->getLocation()->getAdm4Name();
 
         return [
-            "projet" => $this->getProject()->getName(),
+            "ID" => $this->getId(),
+            "project" => $this->getProject()->getName(),
             "type" => $typeString,
             // "Archived"=> $this->getArchived(),
             "adm1" => $adm1,
