@@ -108,7 +108,8 @@ class CSVToArrayMapper extends AbstractMapper
                         throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['given_name'].' at the line '.$lineNumber);
                     } elseif ($familyName == null) {
                         throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['family_name'].' at the line '.$lineNumber);
-                    } elseif (strcasecmp(trim($gender), 'Female') !== 0 && strcasecmp(trim($gender), 'Male') !== 0) {
+                    } elseif (strcasecmp(trim($gender), 'Female') !== 0 && strcasecmp(trim($gender), 'Male') !== 0 &&
+                        strcasecmp(trim($gender), 'F') !== 0 && strcasecmp(trim($gender), 'M') !== 0) {
                         throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['gender'].' at the line '.$lineNumber);
                     } elseif (($status !== 'true' && $status !== 'false')) {
                         throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['status'].' at the line '.$lineNumber);
@@ -262,9 +263,9 @@ class CSVToArrayMapper extends AbstractMapper
     {
         $gender_string = trim($formattedHouseholdArray['beneficiaries']['gender']);
 
-        if (strcasecmp(trim($gender_string), 'Male') === 0) {
+        if (strcasecmp(trim($gender_string), 'Male') === 0 || strcasecmp(trim($gender_string), 'M') === 0) {
             $formattedHouseholdArray['beneficiaries']['gender'] = 1;
-        } else if (strcasecmp(trim($gender_string), 'Female') === 0) {
+        } else if (strcasecmp(trim($gender_string), 'Female') === 0 || strcasecmp(trim($gender_string), 'F') === 0) {
             $formattedHouseholdArray['beneficiaries']['gender'] = 0;
         }
     }
