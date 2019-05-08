@@ -216,8 +216,8 @@ class Voucher implements ExportableInterface
     public function getMappedValueForExport(): array
     {
         return [
-            'Booklet\'s Code' => $this->getBooklet()->getCode(),
-            'Voucher\'s Code' => $this->getCode(),
+            'Booklet Number' => $this->getBooklet()->getCode(),
+            'Voucher Codes' => $this->getCode(),
         ];
     }
 }
