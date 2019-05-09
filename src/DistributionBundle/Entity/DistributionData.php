@@ -542,15 +542,14 @@ class DistributionData implements ExportableInterface
         // $valuesdistributionbeneficiaries = join(',',$valuesdistributionbeneficiaries);
 
         $percentage = '';
-        
-            foreach ($this->getCommodities() as $index => $commodity) {
-                $percentage .= $index !== 0 ? ', ' : '';
-                if ($this->getValidated()) {
-                    $percentage .= $this->getPercentageValue($commodity) . '% ' . $commodity->getModalityType()->getName();
-                } else {
-                    $percentage .= '0% ' . $commodity->getModalityType()->getName();
-                }
-            } 
+        foreach ($this->getCommodities() as $index => $commodity) {
+            $percentage .= $index !== 0 ? ', ' : '';
+            if ($this->getValidated()) {
+                $percentage .= $this->getPercentageValue($commodity) . '% ' . $commodity->getModalityType()->getName();
+            } else {
+                $percentage .= '0% ' . $commodity->getModalityType()->getName();
+            }
+        } 
        
         
         $typeString = $this->getType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
