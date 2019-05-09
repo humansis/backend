@@ -370,9 +370,9 @@ class BeneficiaryService
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(string $type)
+    public function exportToCsv(string $type, string $countryIso3)
     {
-        $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
+        $exportableTable = $this->em->getRepository(Beneficiary::class)->getAllInCountry($countryIso3);
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
     }
 }
