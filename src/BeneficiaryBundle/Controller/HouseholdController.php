@@ -259,6 +259,8 @@ class HouseholdController extends Controller
      */
     public function importAction(Request $request, Project $project)
     {
+
+        set_time_limit(0); // 0 = no limits
         if ($request->query->has('token')) {
             $token = $request->query->get('token');
             if (empty($token)) {
