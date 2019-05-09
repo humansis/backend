@@ -82,9 +82,9 @@ class BeneficiaryService
      */
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
-        if ($beneficiaryArray["gender"] === 'Male') {
+        if ($beneficiaryArray["gender"] === 'Male' || $beneficiaryArray["gender"] === 'M') {
             $beneficiaryArray["gender"] = 1;
-        } elseif ($beneficiaryArray["gender"] === 'Female') {
+        } elseif ($beneficiaryArray["gender"] === 'Female' || $beneficiaryArray["gender"] === 'F') {
             $beneficiaryArray["gender"] = 0;
         }
 
