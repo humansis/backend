@@ -5,7 +5,6 @@ namespace BeneficiaryBundle\Repository;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr\Join;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use ProjectBundle\Entity\Project;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm2;
@@ -251,9 +250,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $q->setFirstResult($begin)
             ->setMaxResults($pageSize);
 
-        $paginator = new Paginator($q, $fetchJoinCollection = true);
+        $data = $q->getQuery()->getResult();
 
-        return [count($paginator), $paginator->getQuery()->getResult()];
+        return [count($data), $data];
     }
 
     /**
