@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Repository;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use ProjectBundle\Entity\Project;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm2;
@@ -118,6 +119,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
     {
         // Recover global information for the page
         $qb = $this->createQueryBuilder("hh");
+
         // Join all location tables (not just the one in the location)
         $q = $qb->innerJoin("hh.location", "l")
                 ->leftJoin("l.adm4", "adm4")
@@ -127,59 +129,47 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 ->leftJoin(Adm3::class, "adm3", Join::WITH, "adm3.id = COALESCE(IDENTITY(adm4.adm3, 'id'), locAdm3.id)")
                 ->leftJoin(Adm2::class, "adm2", Join::WITH, "adm2.id = COALESCE(IDENTITY(adm3.adm2, 'id'), locAdm2.id)")
                 ->leftJoin(Adm1::class, "adm1", Join::WITH, "adm1.id = COALESCE(IDENTITY(adm2.adm1, 'id'), locAdm1.id)")
-                ->where("adm1.countryISO3 = :iso3 AND hh.archived = 0")
-                ->setParameter("iso3", $iso3);
+                ->where("adm1.countryISO3 = :iso3")
+                ->setParameter("iso3", $iso3)
+                ->andWhere("hh.archived = 0");
 
         // We join information that is needed for the filters
-        $q->leftJoin('hh.beneficiaries', 'b')
-            ->andWhere('hh.id = b.household')
-            ->leftJoin('b.vulnerabilityCriteria', 'vb')
-            ->leftJoin('hh.projects', 'p');
+        $q->leftJoin("hh.beneficiaries", "b")
+            ->andWhere("hh.id = b.household")
+            ->leftJoin("b.vulnerabilityCriteria", "vb")
+            ->leftJoin("hh.projects", "p");
             
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
-        if (array_key_exists('sort', $sort) && array_key_exists('direction', $sort)) {
-            $value = $sort['sort'];
-            $direction = $sort['direction'];
+        if (array_key_exists("sort", $sort) && array_key_exists("direction", $sort)) {
+            $value = $sort["sort"];
+            $direction = $sort["direction"];
 
             // If the field is the location, we sort it by the direction sent
-            if ($value == 'location') {
-                $q->addSelect("(COALESCE(adm4.name, adm3.name, adm2.name, adm1.name)) AS HIDDEN order_adm");
-                $q->addOrderBy("order_adm", $direction)
-                    ->addGroupBy("order_adm")
-                    ->addGroupBy('hh.id');
+            if ($value == "location") {
+                $q->addGroupBy("adm1")->addOrderBy("adm1.name", $direction);
             }
             // If the field is the first name, we sort it by the direction sent
-            elseif ($value == 'firstName') {
-                $q->addOrderBy('b.givenName', $direction)
-                    ->addGroupBy("b.givenName")
-                    ->addGroupBy('hh.id');
+            elseif ($value == "firstName") {
+                $q->addGroupBy("b")->addOrderBy("b.givenName", $direction);
             }
             // If the field is the family name, we sort it by the direction sent
-            elseif ($value == 'familyName') {
-                $q->addOrderBy('b.familyName', $direction)
-                    ->addGroupBy("b.familyName")
-                    ->addGroupBy('hh.id');
+            elseif ($value == "familyName") {
+                $q->addGroupBy("b")->addOrderBy("b.familyName", $direction);
             }
             // If the field is the number of dependents, we sort it by the direction sent
-            elseif ($value == 'dependents') {
-                $q->addSelect('COUNT(b.household) AS HIDDEN countBenef')
-                    ->addGroupBy('b.household')
-                    ->addOrderBy('countBenef', $direction)
-                    ->addGroupBy('hh.id');
+            elseif ($value == "dependents") {
+                $q->addGroupBy("b.household")->addOrderBy("COUNT(b.household)", $direction);
             }
             // If the field is the projects, we sort it by the direction sent
-            elseif ($value == 'projects') {
-                $q->addOrderBy('p.name', $direction)
-                    ->addGroupBy("p.name")
-                    ->addGroupBy('hh.id');
+            elseif ($value == "projects") {
+                $q->addGroupBy("p")->addOrderBy("p.name", $direction);
             }
             // If the field is the vulnerabilities, we sort it by the direction sent
-            elseif ($value == 'vulnerabilities') {
-                $q->leftJoin('b.vulnerabilityCriteria', 'vb')
-                    ->addOrderBy('vb.fieldString', $direction)
-                    ->addGroupBy("vb.fieldString")
-                    ->addGroupBy('hh.id');
+            elseif ($value == "vulnerabilities") {
+                $q->addGroupBy("vb")->addOrderBy("vb.fieldString", $direction);
             }
+
+            $q->addGroupBy("hh.id");
         }
 
         // If there is a filter array in the request
@@ -187,10 +177,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
             // For each filter in our array, we recover an index (to avoid parameters' repetitions in the WHERE clause) and the filters
             foreach ($filters as $indexFilter => $filter) {
                 // We recover the category of the filter chosen and the value of the filter
-                $category = $filter['category'];
-                $filterValues = $filter['filter'];
+                $category = $filter["category"];
+                $filterValues = $filter["filter"];
 
-                if ($category === 'any' && count($filterValues) > 0) {
+                if ($category === "any" && count($filterValues) > 0) {
                     foreach ($filterValues as $filterValue) {
                         $q->andWhere("CONCAT(
                             COALESCE(b.familyName, ''),
@@ -204,62 +194,66 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         ) LIKE '%" . $filterValue . "%'");
                     }
                 }
-                elseif ($category === 'gender') {
+                elseif ($category === "gender") {
                     // If the category is the gender only one option can be selected and filterValues is a string instead of an array
-                    $q->andWhere('b.gender = :filterValue')
-                        ->setParameter('filterValue', $filterValues);
+                    $q->andWhere("b.gender = :filterValue")
+                        ->setParameter("filterValue", $filterValues);
                 }
-                elseif ($category === 'projects' && count($filterValues) > 0) {
+                elseif ($category === "projects" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq('p.id', ':filter' . $indexFilter . $indexValue));
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("p.id", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
                 }
-                elseif ($category === 'vulnerabilities' && count($filterValues) > 0) {
+                elseif ($category === "vulnerabilities" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq('vb.id', ':filter' . $indexFilter . $indexValue));
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("vb.id", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
                 }
-                elseif ($category === 'residency' && count($filterValues) > 0) {
+                elseif ($category === "residency" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq('b.residencyStatus', ':filter' . $indexFilter . $indexValue));
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("b.residencyStatus", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
                 }
-                elseif ($category === 'livelihood' && count($filterValues) > 0) {
+                elseif ($category === "livelihood" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq('hh.livelihood', ':filter' . $indexFilter . $indexValue));
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("hh.livelihood", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
                 }
-                elseif ($category === 'locations') {
+                elseif ($category === "locations") {
                     // If the category is the location, filterValues is an array of adm ids
                     foreach($filterValues as $adm => $id) {
                         $q->andWhere($adm . " = :id" . $indexFilter)
-                            ->setParameter('id' . $indexFilter, $id);
+                            ->setParameter("id" . $indexFilter, $id);
                     }
                 }
             }
         }
 
-        $allData = $q->getQuery()->getResult();
-
-        if (is_null($begin) && is_null($pageSize)) {
-            return $allData;
-        } else {
-            $q->setFirstResult($begin)
-            ->setMaxResults($pageSize);
-            return [count($allData), $q->getQuery()->getResult()];
+        if (is_null($begin)) {
+            $begin = 0;
         }
+        if (is_null($pageSize)) {
+            $pageSize = 0;
+        }
+
+        $q->setFirstResult($begin)
+            ->setMaxResults($pageSize);
+
+        $paginator = new Paginator($q, $fetchJoinCollection = true);
+
+        return [count($paginator), $paginator->getQuery()->getResult()];
     }
 
     /**
