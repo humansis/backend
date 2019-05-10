@@ -227,6 +227,7 @@ class UserService
         } else {
             throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
         }
+
         return $user;
     }
 
@@ -266,7 +267,7 @@ class UserService
         $this->em->merge($user);
 
         if (key_exists('projects', $userData)) {
-            foreach ($userData['projects'] as $index => $project) {
+            foreach ($userData['projects'] as $project) {
                 $project = $this->em->getRepository(Project::class)->find($project);
 
                 if ($project instanceof Project) {
@@ -275,14 +276,6 @@ class UserService
                         ->setUser($user)
                         ->setProject($project);
                     $this->em->merge($userProject);
-
-                    if ($index === 0) {
-                        $userCountry = new UserCountry();
-                        $userCountry->setUser($user)
-                            ->setIso3($project->getIso3())
-                            ->setRights($roles[0]);
-                        $this->em->merge($userCountry);
-                    }
                 }
             }
         }
