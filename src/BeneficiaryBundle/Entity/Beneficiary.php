@@ -30,20 +30,36 @@ class Beneficiary implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="givenName", type="string", length=255, nullable=true)
+     * @ORM\Column(name="enGivenName", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet"})
-     * @Assert\NotBlank(message="The given name is required.")
      */
-    private $givenName;
+    private $enGivenName;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="familyName", type="string", length=255, nullable=true)
+     * @ORM\Column(name="enFamilyName", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
-     * @Assert\NotBlank(message="The family name is required.")
      */
-    private $familyName;
+    private $enFamilyName;
+
+     /**
+     * @var string
+     *
+     * @ORM\Column(name="localGivenName", type="string", length=255, nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet"})
+     * @Assert\NotBlank(message="The local given name is required.")
+     */
+    private $localGivenName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="localFamilyName", type="string", length=255, nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Assert\NotBlank(message="The local family name is required.")
+     */
+    private $localFamilyName;
 
     /**
      * @var int
@@ -158,51 +174,99 @@ class Beneficiary implements ExportableInterface
     }
 
     /**
-     * Set givenName.
+     * Set enGivenName.
      *
-     * @param string $givenName
+     * @param string $enGivenName
      *
      * @return Beneficiary
      */
-    public function setGivenName($givenName)
+    public function setEnGivenName($enGivenName)
     {
-        $this->givenName = $givenName;
+        $this->enGivenName = $enGivenName;
 
         return $this;
     }
 
     /**
-     * Get givenName.
+     * Get enGivenName.
      *
      * @return string
      */
-    public function getGivenName()
+    public function getEnGivenName()
     {
-        return $this->givenName;
+        return $this->enGivenName;
     }
 
     /**
-     * Set familyName.
+     * Set enFamilyName.
      *
-     * @param string $familyName
+     * @param string $enFamilyName
      *
      * @return Beneficiary
      */
-    public function setFamilyName($familyName)
+    public function setEnFamilyName($enFamilyName)
     {
-        $this->familyName = $familyName;
+        $this->enFamilyName = $enFamilyName;
 
         return $this;
     }
 
     /**
-     * Get familyName.
+     * Get enFamilyName.
      *
      * @return string
      */
-    public function getFamilyName()
+    public function getEnFamilyName()
     {
-        return $this->familyName;
+        return $this->enFamilyName;
+    }
+
+     /**
+     * Set localGivenName.
+     *
+     * @param string $localGivenName
+     *
+     * @return Beneficiary
+     */
+    public function setLocalGivenName($localGivenName)
+    {
+        $this->localGivenName = $localGivenName;
+
+        return $this;
+    }
+
+    /**
+     * Get localGivenName.
+     *
+     * @return string
+     */
+    public function getLocalGivenName()
+    {
+        return $this->localGivenName;
+    }
+
+    /**
+     * Set localFamilyName.
+     *
+     * @param string $localFamilyName
+     *
+     * @return Beneficiary
+     */
+    public function setLocalFamilyName($localFamilyName)
+    {
+        $this->localFamilyName = $localFamilyName;
+
+        return $this;
+    }
+
+    /**
+     * Get localFamilyName.
+     *
+     * @return string
+     */
+    public function getLocalFamilyName()
+    {
+        return $this->localFamilyName;
     }
 
     /**
@@ -606,8 +670,8 @@ class Beneficiary implements ExportableInterface
 
         $tempBenef = [
             "beneficiary ID" => $this->getId(),
-            "givenName" => $this->getGivenName(),
-            "familyName"=> $this->getFamilyName(),
+            "enGivenName" => $this->getEnGivenName(),
+            "enFamilyName"=> $this->getEnFamilyName(),
             "gender" => $valueGender,
             "head" => $this->getStatus() === true ? "true" : "false",
             "residencyStatus" => $this->getResidencyStatus(),

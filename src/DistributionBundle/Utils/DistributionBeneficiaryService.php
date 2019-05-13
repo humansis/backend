@@ -202,8 +202,10 @@ class DistributionBeneficiaryService
             }
 
             array_push($beneficiaries, [
-                "Given name" => $value['given_name'],
-                "Family name"=> $value['family_name'],
+                "English given name" => $value['en_given_name'],
+                "English family name"=> $value['en_family_name'],
+                "Local given name" => $value['local_given_name'],
+                "Local family name"=> $value['local_family_name'],
                 "Gender" => $gender,
                 "Status" => $value['status'],
                 "Residency status" => $value['residency_status'],

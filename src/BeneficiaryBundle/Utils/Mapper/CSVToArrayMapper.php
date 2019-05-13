@@ -96,18 +96,20 @@ class CSVToArrayMapper extends AbstractMapper
                 foreach ($csvIndex as $formattedIndex2 => $csvIndex2) {
 
                     // Retrieve the beneficiary's information from the array
-                    $givenName = $row[$mappingCSV['beneficiaries']['given_name']];
-                    $familyName = $row[$mappingCSV['beneficiaries']['family_name']];
+                    $enGivenName = $row[$mappingCSV['beneficiaries']['en_given_name']];
+                    $enFamilyName = $row[$mappingCSV['beneficiaries']['en_family_name']];
+                    $localGivenName = $row[$mappingCSV['beneficiaries']['local_given_name']];
+                    $localFamilyName = $row[$mappingCSV['beneficiaries']['local_family_name']];
                     $gender = $row[$mappingCSV['beneficiaries']['gender']];
                     $dateOfBirth = $row[$mappingCSV['beneficiaries']['date_of_birth']];
                     $status = $row[$mappingCSV['beneficiaries']['status']];
                     $residencyStatus = $row[$mappingCSV['beneficiaries']['residency_status']];
 
                     // Verify that there are no missing information in each beneficiary
-                    if ($givenName == null) {
-                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['given_name'].' at the line '.$lineNumber);
-                    } elseif ($familyName == null) {
-                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['family_name'].' at the line '.$lineNumber);
+                    if ($localGivenName == null) {
+                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['local_given_name'].' at the line '.$lineNumber);
+                    } elseif ($localFamilyName == null) {
+                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['local_family_name'].' at the line '.$lineNumber);
                     } elseif (strcasecmp(trim($gender), 'Female') !== 0 && strcasecmp(trim($gender), 'Male') !== 0 &&
                         strcasecmp(trim($gender), 'F') !== 0 && strcasecmp(trim($gender), 'M') !== 0) {
                         throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['gender'].' at the line '.$lineNumber);

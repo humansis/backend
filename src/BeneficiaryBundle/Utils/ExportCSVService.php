@@ -183,8 +183,10 @@ class ExportCSVService
     public function exportToCsv(string $type, string $countryISO3)
     {
         $tempHxl = [
-            "Given name" => '#beneficiary+givenName',
-            "Family name" => '#beneficiary+familyName',
+            "English given name" => '#beneficiary+enGivenName',
+            "English family name" => '#beneficiary+enFamilyName',
+            "Local given name" => '#beneficiary+localGivenName',
+            "Local family name" => '#beneficiary+localFamilyName',
             "Gender" => '',
             "Head" => '',
             "Residency status" => '',

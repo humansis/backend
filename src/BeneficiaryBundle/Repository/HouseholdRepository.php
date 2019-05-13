@@ -88,8 +88,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         COALESCE(hh.addressStreet, ''),
                         COALESCE(hh.addressNumber, ''),
                         COALESCE(hh.addressPostcode, ''),
-                        COALESCE(b.givenName, ''),
-                        COALESCE(b.familyName, '')
+                        COALESCE(b.localGivenName, ''),
+                        COALESCE(b.localFamilyName, '')
                     ),
                     :stringToSearch
                 ) as levenshtein")
@@ -147,13 +147,21 @@ class HouseholdRepository extends AbstractCriteriaRepository
             if ($value == "location") {
                 $q->addGroupBy("adm1")->addOrderBy("adm1.name", $direction);
             }
-            // If the field is the first name, we sort it by the direction sent
-            elseif ($value == "firstName") {
-                $q->addGroupBy("b")->addOrderBy("b.givenName", $direction);
+            // If the field is the english first name, we sort it by the direction sent
+            elseif ($value == "enFirstName") {
+                $q->addGroupBy("b")->addOrderBy("b.enGivenName", $direction);
             }
-            // If the field is the family name, we sort it by the direction sent
-            elseif ($value == "familyName") {
-                $q->addGroupBy("b")->addOrderBy("b.familyName", $direction);
+            // If the field is the english family name, we sort it by the direction sent
+            elseif ($value == "enFamilyName") {
+                $q->addGroupBy("b")->addOrderBy("b.enFamilyName", $direction);
+            }
+            // If the field is the local first name, we sort it by the direction sent
+            elseif ($value == "localFirstName") {
+                $q->addGroupBy("b")->addOrderBy("b.localGivenName", $direction);
+            }
+            // If the field is the local family name, we sort it by the direction sent
+            elseif ($value == "localFamilyName") {
+                $q->addGroupBy("b")->addOrderBy("b.localFamilyName", $direction);
             }
             // If the field is the number of dependents, we sort it by the direction sent
             elseif ($value == "dependents") {
@@ -182,8 +190,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 if ($category === "any" && count($filterValues) > 0) {
                     foreach ($filterValues as $filterValue) {
                         $q->andWhere("CONCAT(
-                            COALESCE(b.familyName, ''),
-                            COALESCE(b.givenName, ''),
+                            COALESCE(b.enFamilyName, ''),
+                            COALESCE(b.enGivenName, ''),
+                            COALESCE(b.localFamilyName, ''),
+                            COALESCE(b.localGivenName, ''),
                             COALESCE(p.name, ''),
                             COALESCE(adm1.name, ''),
                             COALESCE(adm2.name, ''),
