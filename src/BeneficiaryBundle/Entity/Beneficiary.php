@@ -672,6 +672,8 @@ class Beneficiary implements ExportableInterface
             "beneficiary ID" => $this->getId(),
             "enGivenName" => $this->getEnGivenName(),
             "enFamilyName"=> $this->getEnFamilyName(),
+            "localGivenName" => $this->getLocalGivenName(),
+            "localFamilyName"=> $this->getLocalFamilyName(),
             "gender" => $valueGender,
             "head" => $this->getStatus() === true ? "true" : "false",
             "residencyStatus" => $this->getResidencyStatus(),
