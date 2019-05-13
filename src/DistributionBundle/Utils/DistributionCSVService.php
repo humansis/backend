@@ -225,7 +225,7 @@ class DistributionCSVService
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
             if ($beneficiaryToCreate['head'] != 'true') {
-                throw new \Exception("You must insert only a head of the household in the file to import.");
+                throw new \Exception("You can only insert a head of the household in the file to import.");
             }
 
             // There the location is still filled with adm names and not id
