@@ -148,6 +148,7 @@ class DistributionService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
+        // TO DO : make the front send 0 or 1 instead of Individual (Beneficiary comes from the import)
         if ($distributionArray['type'] === "Beneficiary" || $distributionArray['type'] === "Individual") {
             $distribution->settype(1);
         } else {
