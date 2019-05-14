@@ -148,7 +148,7 @@ class DistributionService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        if ($distributionArray['type'] === "Beneficiary") {
+        if ($distributionArray['type'] === "Beneficiary" || $distributionArray['type'] === "Individual") {
             $distribution->settype(1);
         } else {
             $distribution->settype(0);
