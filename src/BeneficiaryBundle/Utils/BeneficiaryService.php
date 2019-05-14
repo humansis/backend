@@ -370,13 +370,23 @@ class BeneficiaryService
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(string $type, string $countryIso3, $filters)
+    public function exportToCsv(string $type, string $countryIso3, $filters, $ids)
     {
-        $households = $this->container->get('beneficiary.household_service')->getAll($countryIso3, $filters)[1];
-        $exportableTable = [];
-        foreach ($households as $household) {
-            foreach ($household->getBeneficiaries() as $beneficiary) {
-                array_push($exportableTable, $beneficiary);
+        $households = null;
+        if ($ids) {
+            $households = $this->em->getRepository(Household::class)->getAllByIds($countryIso3, $ids);
+        } else if ($filters) {
+            $households = $this->container->get('beneficiary.household_service')->getAll($countryIso3, $filters)[1];
+        } else {
+            $exportableTable = $this->em->getRepository(Beneficiary::class)->getAllInCountry($countryIso3);	
+        }
+        
+        if ($households) {
+            $exportableTable = [];
+            foreach ($households as $household) {
+                foreach ($household->getBeneficiaries() as $beneficiary) {
+                    array_push($exportableTable, $beneficiary);
+                }
             }
         }
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
