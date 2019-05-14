@@ -447,6 +447,33 @@ class HouseholdController extends Controller
     }
 
     /**
+     * @Rest\Post("/delete-households")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @return Response
+     */
+    public function removeManyAction(Request $request)
+    {
+        try {
+            /** @var HouseholdService $householdService */
+            $householdService = $this->get("beneficiary.household_service");
+            $ids = $request->request->get('ids');
+            $response = $householdService->removeMany($ids);
+        }  catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        return new Response(json_encode($response));
+
+    }
+
+    /**
      * @Rest\Post("/import/api/households/project/{id}", name="get_all_beneficiaries_via_api")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Beneficiary")
