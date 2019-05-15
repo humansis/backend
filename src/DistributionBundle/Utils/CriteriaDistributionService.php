@@ -172,8 +172,12 @@ class CriteriaDistributionService
     {
         $vulnerabilityCriteria = $this->em->getRepository(VulnerabilityCriterion::class)->findBy(['fieldString' => $criterion['field_string']]);
 
-        if (!key_exists('table_string', $criterion)) {
-            if ($criterion['type'] == 'boolean') {
+        $listOfCriteria = $this->configurationLoader->criteria;
+
+        // If it is not a vulnerabilityCriteria nor a countrySpecific
+        if (key_exists('table_string', $criterion) && $criterion['table_string'] === 'Beneficiary') {
+            $type = $listOfCriteria[$criterion['field_string']];
+            if ($type == 'boolean') {
                 if ($criterion['value_string'] == "Woman") {
                     $criterion['value_string'] = 0;
                 } else {
