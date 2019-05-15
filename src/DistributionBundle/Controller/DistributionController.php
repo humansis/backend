@@ -470,6 +470,43 @@ class DistributionController extends Controller
         return new Response($json, Response::HTTP_OK);
     }
 
+     /**
+     * Complete a distribution.
+     *
+     * @Rest\Post("/distributions/complete/{id}", name="completed_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param DistributionData $distribution
+     *
+     * @return Response
+     */
+    public function completedAction(DistributionData $distribution)
+    {
+        try {
+            $completedDistribution = $this->get('distribution.distribution_service')
+                ->complete($distribution);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        $json = $this->get('jms_serializer')
+            ->serialize($completedDistribution, 'json', SerializationContext::create()->setSerializeNull(true));
+
+        return new Response($json, Response::HTTP_OK);
+    }
+
+
     /**
      * Get distributions of one project.
      *

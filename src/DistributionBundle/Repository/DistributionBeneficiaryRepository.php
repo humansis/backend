@@ -61,4 +61,16 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         
         return $q->getQuery()->getResult();
     }
+
+    public function countWithoutBooklet(DistributionData $distributionData)
+    {
+        $qb = $this->createQueryBuilder("db");
+        $q = $qb->select("COUNT(db)")
+                ->where("db.distributionData = :dd")
+                ->setParameter("dd", $distributionData)
+                ->leftJoin("db.booklets", "b")
+                ->andWhere('b IS NULL');
+        
+        return $q->getQuery()->getSingleScalarResult();
+    }
 }

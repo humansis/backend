@@ -285,6 +285,22 @@ class DistributionService
     }
 
     /**
+     * @param DistributionData $distributionData
+     * @return null|object|string
+     */
+    public function complete(DistributionData $distributionData)
+    {
+        if (!empty($distributionData)) {
+            $distributionData->setCompleted(1);
+        }
+
+        $this->em->persist($distributionData);
+        $this->em->flush();
+
+        return "Completed";
+    }
+
+    /**
      * Edit a distribution
      *
      * @param DistributionData $distributionData
