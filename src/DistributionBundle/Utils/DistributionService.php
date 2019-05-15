@@ -149,7 +149,7 @@ class DistributionService
         }
 
         // TODO : make the front send 0 or 1 instead of Individual (Beneficiary comes from the import)
-        if ($distributionArray['type'] === "Beneficiary" || $distributionArray['type'] === "Individual") {
+        if ($distributionArray['type'] === "Beneficiary" || $distributionArray['type'] === "Individual" || $distributionArray['type'] === "1") {
             $distribution->settype(1);
         } else {
             $distribution->settype(0);
