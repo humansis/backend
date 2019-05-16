@@ -188,9 +188,6 @@ class DistributionControllerTest extends BMSServiceTestCase
     }
 
 
-    // Now we have a verification 'This beneficiary is already in the distribution' which makes this test fail
-    // TODO : Create a new household and beneficiary, get his body, send it
-
     /**
      * @depends testCreateDistribution
      * @param $distribution
@@ -206,15 +203,15 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $body = array(
             array(
-                'date_of_birth' => '10-06-1989',
-                'family_name' => 'NAME_TEST',
+                'date_of_birth' => '10-06-1976',
+                'family_name' => 'FAMILYNAME_TEST',
                 'gender' => "1",
-                'given_name' => 'FIRSTNAME_TEST',
-                'id' => 11,
+                'given_name' => 'GIVENNAME_TEST',
+                'id' => 12,
                 'national_ids' => [],
                 'phones' => [],
-                'status' => '1',
-                'residency_status' => 'refugee',
+                'status' => '0',
+                'residency_status' => 'resident',
                 'vulnerability_criteria' => [
                     [
                         "id" => 1,
