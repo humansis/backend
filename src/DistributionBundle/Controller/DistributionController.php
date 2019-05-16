@@ -209,7 +209,7 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Delete("/beneficiaries/{id}", name="remove_one_beneficiary_in_distribution")
+     * @Rest\Post("/delete-beneficiaries/{id}", name="remove_one_beneficiary_in_distribution")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
@@ -228,11 +228,12 @@ class DistributionController extends Controller
     {
         if ($request->query->get('distribution')) {
             $distributionId = $request->query->get('distribution');
+            $deletionData = $request->request->all();
 
             /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
             $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
 
-            $return = $distributionBeneficiaryService->removeBeneficiaryInDistribution($distributionId, $beneficiary);
+            $return = $distributionBeneficiaryService->removeBeneficiaryInDistribution($distributionId, $beneficiary, $deletionData);
 
             return new Response(json_encode($return));
         } else {

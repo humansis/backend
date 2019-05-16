@@ -175,12 +175,14 @@ class DistributionBeneficiaryService
      * @param Beneficiary $beneficiary
      * @return bool
      */
-    public function removeBeneficiaryInDistribution(Int $distributionId, Beneficiary $beneficiary)
+    public function removeBeneficiaryInDistribution(Int $distributionId, Beneficiary $beneficiary, $deletionData)
     {
         $distributionData = $this->em->getRepository(DistributionData::class)->find($distributionId);
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'distributionData' => $distributionData->getId()]);
         
-        $this->em->remove($distributionBeneficiary);
+        $distributionBeneficiary->setRemoved(1)
+            ->setJustification($deletionData['justification']);
+        $this->em->persist($distributionBeneficiary);
         $this->em->flush();
         return true;
     }
