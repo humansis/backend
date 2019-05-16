@@ -351,6 +351,16 @@ class DistributionService
         return $value;
     }
 
+     /**
+     * @param string $country
+     * @return string
+     */
+    public function countCompleted(string $country)
+    {
+        $value = (int) $this->em->getRepository(DistributionData::class)->countCompleted($country);
+        return $value;
+    }
+
     /**
      * @param $distributions
      * @return string
