@@ -48,7 +48,7 @@ class DistributionBeneficiary
     /**
      * @var Transaction
      *
-     * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary")
+     * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
      * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
      */
     private $transactions;
@@ -56,7 +56,7 @@ class DistributionBeneficiary
     /**
      * @var Booklet
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary")
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
      * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
      */
     private $booklets;
@@ -64,7 +64,7 @@ class DistributionBeneficiary
     /**
      * @var GeneralReliefItem
      *
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="distributionBeneficiary")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
      * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
      */
     private $generalReliefs;
