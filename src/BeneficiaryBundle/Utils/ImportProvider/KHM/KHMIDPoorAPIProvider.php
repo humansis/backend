@@ -337,7 +337,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
             $beneficiary = new Beneficiary();
             $beneficiary->setHousehold($household);
             $beneficiary->setGender($beneficiaryArray["gender"])
-                        ->setDateOfBirth(new \DateTime($beneficiaryArray["dateOfBirth"]))
+                        ->setDateOfBirth(new \DateTime($beneficiaryArray["dateOfBirth"])) // From API so no formatting
                         ->setFamilyName($beneficiaryArray["familyName"])
                         ->setGivenName($beneficiaryArray["givenName"])
                         ->setStatus($beneficiaryArray["status"])

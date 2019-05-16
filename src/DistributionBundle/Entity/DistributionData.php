@@ -47,7 +47,7 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="UpdatedOn", type="datetime")
-     * @JMS_Type("DateTime<'Y-m-d H:m:i'>")
+     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
      *
      * @Groups({"FullDistribution"})
      */
@@ -57,7 +57,7 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_distribution", type="date")
-     * @JMS_Type("DateTime<'Y-m-d'>")
+     * @JMS_Type("DateTime<'d-m-Y'>")
      *
      * @Groups({"FullDistribution"})
      */
@@ -541,18 +541,27 @@ class DistributionData implements ExportableInterface
         // }
         // $valuesdistributionbeneficiaries = join(',',$valuesdistributionbeneficiaries);
 
+        $percentage = '';
+        foreach ($this->getCommodities() as $index => $commodity) {
+            $percentage .= $index !== 0 ? ', ' : '';
+            if ($this->getValidated()) {
+                $percentage .= $this->getPercentageValue($commodity) . '% ' . $commodity->getModalityType()->getName();
+            } else {
+                $percentage .= '0% ' . $commodity->getModalityType()->getName();
+            }
+        } 
+       
+        
         $typeString = $this->getType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
 
-
-        // récuperer les adm1 , adm2 , adm3 , adm 4 depuis l'objet localisation : faut vérifier d'abord s'ils sont null ou pas pour avoir le nom
-
-        $adm1 = (! empty($this->getLocation()->getAdm1())) ? $this->getLocation()->getAdm1()->getName() : '';
-        $adm2 = (! empty($this->getLocation()->getAdm2())) ? $this->getLocation()->getAdm2()->getName() : '';
-        $adm3 = (! empty($this->getLocation()->getAdm3())) ? $this->getLocation()->getAdm3()->getName() : '';
-        $adm4 = (! empty($this->getLocation()->getAdm4())) ? $this->getLocation()->getAdm4()->getName() : '';
+        $adm1 = $this->getLocation()->getAdm1Name();
+        $adm2 = $this->getLocation()->getAdm2Name();
+        $adm3 = $this->getLocation()->getAdm3Name();
+        $adm4 = $this->getLocation()->getAdm4Name();
 
         return [
-            "projet" => $this->getProject()->getName(),
+            "ID" => $this->getId(),
+            "project" => $this->getProject()->getName(),
             "type" => $typeString,
             // "Archived"=> $this->getArchived(),
             "adm1" => $adm1,
@@ -564,7 +573,52 @@ class DistributionData implements ExportableInterface
             "Update on " => $this->getUpdatedOn(),
             "Selection criteria" =>  $valueselectioncriteria,
             "Commodities " => $valuescommodities,
+            "Number of beneficiaries" => count($this->getDistributionBeneficiaries()),
+            "Percentage distributed" => $percentage,
             // "Distribution beneficiaries" =>$valuesdistributionbeneficiaries,
         ];
     }
+
+    public function getPercentageValue($commodity) {
+        $totalCommodityValue = count($this->getDistributionBeneficiaries()) * $commodity->getValue();
+        $amountSent = 0;
+        foreach ($this->getDistributionBeneficiaries() as $distributionBeneficiary) {
+            $amountSent += $this->getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary);
+        }
+        $percentage = $amountSent / $totalCommodityValue * 100;
+        return round($percentage * 100) / 100;
+    }
+
+
+    public function getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary) {
+        $modalityType = $this->getCommodities()[0]->getModalityType()->getName();
+        if ($modalityType === 'Mobile Money') {
+            $numberOfTransactions = count($distributionBeneficiary->getTransactions());
+            if (count($distributionBeneficiary->getTransactions()) > 0) {
+                $transaction = $distributionBeneficiary->getTransactions()[$numberOfTransactions - 1];
+                return ($transaction->getTransactionStatus() === 1 ? $commodity->getValue() : 0);
+            } else {
+                return 0;
+            }
+        } else if ($modalityType === 'QR Code Voucher') {
+            $booklets =  $distributionBeneficiary->getBooklets();
+            foreach ($booklets as $booklet) {
+                if ($booklet->getStatus() === 1 || $booklet->getStatus() === 2) {
+                    return $booklet->getTotalValue();
+                }
+            }
+        } else {
+            foreach ($this->getCommodities() as $index => $commodityInList) {
+                if ($commodityInList->getId() === $commodity->getId()) {
+                    $commodityIndex = $index;
+                }
+            }
+            if (!$distributionBeneficiary->getGeneralReliefs()) {
+                return 0;
+            }
+            $correspondingGeneralRelief = $distributionBeneficiary->getGeneralReliefs()[$commodityIndex];
+            return ($correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0 );
+        }
+    }
+
 }

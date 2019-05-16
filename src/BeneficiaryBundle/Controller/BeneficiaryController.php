@@ -17,7 +17,6 @@ class BeneficiaryController extends Controller
 {
     /**
      * @Rest\Get("/vulnerability_criteria", name="get_all_vulnerability_criteria")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Beneficiary")
      * @SWG\Response(
      *     response=200,

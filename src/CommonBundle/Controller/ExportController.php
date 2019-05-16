@@ -48,7 +48,8 @@ class ExportController extends Controller
                 $idProject = $request->query->get('distributions');
                 $filename = $this->get('distribution.distribution_service')->exportToCsv($idProject, $type);
             } elseif ($request->query->get('beneficiaries')) {
-                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv($type);
+                $countryIso3 = $request->request->get("__country");
+                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('beneficiariesInDistribution')) {
                 $idDistribution = $request->query->get('beneficiariesInDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
@@ -75,6 +76,11 @@ class ExportController extends Controller
                 $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, $type);
             } elseif ($request->query->get('booklets')) {
                 $filename = $this->get('voucher.booklet_service')->exportToCsv($type);
+            } elseif ($request->query->get('bookletCodes')) {
+                if ($type === 'pdf') {
+                    return $this->get('voucher.voucher_service')->exportToPdf($type);
+                }
+                $filename = $this->get('voucher.voucher_service')->exportToCsv($type);
             } elseif ($request->query->get('reporting')) {
                 $indicatorsId  = $request->request->get('indicators');
                 $frequency     = $request->request->get('frequency');
@@ -90,7 +96,11 @@ class ExportController extends Controller
             } elseif ($request->query->get('voucherDistribution')) {
                 $idDistribution = $request->query->get('voucherDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
-                $filename = $this->$this->get('voucher.booklet_service')->exportVouchersDistributionToCsv($distribution, $type);
+                $filename = $this->get('voucher.booklet_service')->exportVouchersDistributionToCsv($distribution, $type);
+            } elseif ($request->query->get('products')) {
+                $filename = $this->get('voucher.product_service')->exportToCsv($type);
+            } elseif ($request->query->get('vendors')) {
+                $filename = $this->get('voucher.vendor_service')->exportToCsv($type);
             }
 
             // Create binary file to send

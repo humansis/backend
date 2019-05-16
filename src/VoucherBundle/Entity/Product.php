@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use CommonBundle\Utils\ExportableInterface;
 
 /**
  * Product
@@ -13,7 +14,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="product")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\ProductRepository")
  */
-class Product
+class Product implements ExportableInterface
 {
     /**
      * @var int
@@ -66,6 +67,14 @@ class Product
      * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="product")
      */
     private $vouchers;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="countryISO3", type="string", length=3)
+     * @Groups({"FullProduct"})
+     */
+    private $countryISO3;
 
     public function __construct()
     {
@@ -235,4 +244,44 @@ class Product
 
         return $this;
     }
+
+    /**
+     * Set countryISO3.
+     *
+     * @param string $countryISO3
+     *
+     * @return Product
+     */
+    public function setCountryISO3($countryISO3)
+    {
+        $this->countryISO3 = $countryISO3;
+
+        return $this;
+    }
+
+    /**
+     * Get countryISO3.
+     *
+     * @return string
+     */
+    public function getCountryISO3()
+    {
+        return $this->countryISO3;
+    }
+
+    /**
+     * Returns an array representation of this class in order to prepare the export
+     * @return array
+     */
+    public function getMappedValueForExport(): array
+    {
+
+        $finalArray = [
+            'Name' => $this->getName(),
+            'Unit' => $this->getUnit(),
+        ];
+
+        return $finalArray;
+    }
+
 }

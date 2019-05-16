@@ -82,9 +82,9 @@ class BeneficiaryService
      */
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
-        if ($beneficiaryArray["gender"] === 'Male') {
+        if ($beneficiaryArray["gender"] === 'Male' || $beneficiaryArray["gender"] === 'M') {
             $beneficiaryArray["gender"] = 1;
-        } elseif ($beneficiaryArray["gender"] === 'Female') {
+        } elseif ($beneficiaryArray["gender"] === 'Female' || $beneficiaryArray["gender"] === 'F') {
             $beneficiaryArray["gender"] = 0;
         }
 
@@ -108,7 +108,7 @@ class BeneficiaryService
         }
         
         if (strrpos($beneficiaryArray['date_of_birth'], '/') !== false) {
-            str_replace('/', '-', $beneficiaryArray['date_of_birth']);
+            $beneficiaryArray['date_of_birth'] = str_replace('/', '-', $beneficiaryArray['date_of_birth']);
         }
  
 
@@ -148,7 +148,7 @@ class BeneficiaryService
         }
 
         $beneficiary->setGender($beneficiaryArray["gender"])
-            ->setDateOfBirth(new \DateTime($beneficiaryArray["date_of_birth"]))
+            ->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryArray["date_of_birth"]))
             ->setFamilyName($beneficiaryArray["family_name"])
             ->setGivenName($beneficiaryArray["given_name"])
             ->setStatus($beneficiaryArray["status"])
@@ -370,9 +370,9 @@ class BeneficiaryService
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(string $type)
+    public function exportToCsv(string $type, string $countryIso3)
     {
-        $exportableTable = $this->em->getRepository(Beneficiary::class)->findAll();
+        $exportableTable = $this->em->getRepository(Beneficiary::class)->getAllInCountry($countryIso3);
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
     }
 }

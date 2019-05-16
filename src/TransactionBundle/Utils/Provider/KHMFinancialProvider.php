@@ -244,7 +244,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             $bodyString = $body;
         }
 
-        $data = [$this->from, (new \DateTime())->format('Y-m-d h:i:s'), $info['url'], $info['http_code'], $response, $err, $bodyString];
+        $data = [$this->from, (new \DateTime())->format('d-m-Y h:i:s'), $info['url'], $info['http_code'], $response, $err, $bodyString];
         $this->recordTransaction($distributionData, $data);
     
         if ($err) {

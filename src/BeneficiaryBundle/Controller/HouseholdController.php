@@ -198,6 +198,7 @@ class HouseholdController extends Controller
      */
     public function editAction(Request $request, Household $household)
     {
+
         $requestArray = $request->request->all();
         $projectsArray = $requestArray['projects'];
 
@@ -258,43 +259,48 @@ class HouseholdController extends Controller
      */
     public function importAction(Request $request, Project $project)
     {
-        if (!$request->query->has('step')) {
-            return new Response('You must specify the current step.');
-        }
-        $step = $request->query->get('step');
+
+        set_time_limit(0); // 0 = no limits
         if ($request->query->has('token')) {
             $token = $request->query->get('token');
+            if (empty($token)) {
+                $token = null;
+            }
         } else {
             $token = null;
         }
 
-        $contentJson = $request->request->all();
-        $email = $request->query->get('email');
+        $contentJson = $request->request->get('errors');
 
-        $countryIso3 = $contentJson['__country'];
-        unset($contentJson['__country']);
+        $email = $request->query->get('email');
+        $countryIso3 = $request->request->get('__country');
+
         /** @var HouseholdCSVService $householdService */
         $householdService = $this->get('beneficiary.household_csv_service');
 
-        if (1 === intval($step)) {
+        if ($token === null) {
             if (!$request->files->has('file')) {
-                return new Response("You must upload a file.", Response::HTTP_BAD_REQUEST);
+                return new Response('You must upload a file.', Response::HTTP_BAD_REQUEST);
             }
             try {
-                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $step, $token, $email);
+                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $token, $email);
             } catch (\Exception $e) {
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         } else {
             try {
-                $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $step, $token, $email);
+                if(! $contentJson) {
+                    $contentJson = [];
+                }
+                $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $token, $email);
             } catch (\Exception $e) {
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         }
 
+
         $json = $this->get('jms_serializer')
-            ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"]));
+            ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
         return new Response($json);
     }
 
@@ -582,42 +588,4 @@ class HouseholdController extends Controller
         return new Response($json);
     }
 
-    /**
-     * @Rest\Get("/households/get/cached", name="get_all_households_cached")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
-     *
-     * @SWG\Tag(name="Households")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Get all households cached by the import with file",
-     *     @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref=@Model(type=Household::class))
-     *     )
-     * )
-     *
-     * @param Request $request
-     * @return Response
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
-    public function getCachedAction(Request $request)
-    {
-        $email = $request->query->get('email');
-
-        /** @var HouseholdService $householdService */
-        $householdService = $this->get('beneficiary.household_service');
-        try {
-            $households = $householdService->getAllCached($email);
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $households,
-                'json',
-                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
-            );
-        return new Response($json);
-    }
 }

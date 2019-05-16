@@ -17,13 +17,9 @@ class LessVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
     {
-        /** @var Household $oldHousehold */
-        $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['old']['id']);
-        if (count($householdArray['new']['beneficiaries']) < count($oldHousehold->getBeneficiaries())) {
-            return [
-                'new' => $householdArray['new'],
-                'old' => $oldHousehold
-            ];
+        if (! empty($householdArray['new']) && ! empty($householdArray['old']) &&
+            count($householdArray['new']['beneficiaries']) < count($householdArray['old']['beneficiaries'])) {
+            return $householdArray;
         }
 
         return null;

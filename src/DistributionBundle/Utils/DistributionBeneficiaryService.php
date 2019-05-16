@@ -146,6 +146,7 @@ class DistributionBeneficiaryService
                     }
                     
                     $distributionBeneficiary = new DistributionBeneficiary();
+
                     $sameDistributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
                         ->findOneBy(['beneficiary' => $beneficiary, 'distributionData' => $distributionData]);
                     // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
@@ -191,7 +192,7 @@ class DistributionBeneficiaryService
         foreach ($objectBeneficiary as $value) {
             $gender = '';
 
-            if ($value['gender'] == 0) {
+            if ($value['gender'] === '0') {
                 $gender = 'Female';
             } else {
                 $gender = 'Male';

@@ -135,6 +135,7 @@ class VoucherControllerTest extends BMSServiceTestCase
     {
         $vendor = $this->em->getRepository(Vendor::class)->findOneByName('vendor');
         $vendorId = $vendor->getId();
+        // TODO: Check date format
         $body = [
             [
                 "id" => $newVoucher['id'],

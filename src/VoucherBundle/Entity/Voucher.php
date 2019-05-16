@@ -10,6 +10,8 @@ use \VoucherBundle\Entity\Product;
 use \VoucherBundle\Entity\Booklet;
 use \VoucherBundle\Entity\Vendor;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type as JMS_Type;
+use CommonBundle\Utils\ExportableInterface;
 
 /**
  * Voucher
@@ -17,7 +19,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="voucher")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherRepository")
  */
-class Voucher
+class Voucher implements ExportableInterface
 {
     /**
      * @var int
@@ -33,6 +35,7 @@ class Voucher
      * @var \DateTime
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
+     * @JMS_Type("DateTime<'d-m-Y'>")
      * @Groups({"FullVoucher", "ValidatedDistribution"})
      */
     private $usedAt;
@@ -204,5 +207,17 @@ class Voucher
         $this->vendor = $vendor;
 
         return $this;
+    }
+
+     /**
+     * Returns an array representation of this class in order to prepare the export
+     * @return array
+     */
+    public function getMappedValueForExport(): array
+    {
+        return [
+            'Booklet Number' => $this->getBooklet()->getCode(),
+            'Voucher Codes' => $this->getCode(),
+        ];
     }
 }

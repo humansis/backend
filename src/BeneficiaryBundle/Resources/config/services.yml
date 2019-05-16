@@ -89,14 +89,6 @@ services:
             - "@doctrine.orm.entity_manager"
         public: true
 
-    beneficiary.household_to_csv_mapper:
-        class: BeneficiaryBundle\Utils\Mapper\HouseholdToCSVMapper
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@jms_serializer"
-            - "@location_service"
-        public: true
-
     beneficiary.syria_file_to_template_mapper:
         class: BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper
         autowire: true

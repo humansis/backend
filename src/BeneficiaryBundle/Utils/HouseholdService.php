@@ -124,6 +124,9 @@ class HouseholdService
      */
     public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
     {
+        if(!empty($projectsArray) && (gettype($projectsArray[0]) === 'string' || gettype($projectsArray[0]) === 'integer')) {
+            $projectsArray = $this->em->getRepository(Project::class)->findBy(["id" => $projectsArray]);
+        }
         $actualAction = 'update';
         $this->requestValidator->validate(
             "household",
@@ -145,55 +148,20 @@ class HouseholdService
             ->setAddressPostcode($householdArray["address_postcode"])
             ->setAddressNumber($householdArray["address_number"]);
 
-        $errors = $this->validator->validate($household);
-        if (count($errors) > 0) {
-            $errorsMessage = "";
-            /** @var ConstraintViolation $error */
-            foreach ($errors as $error) {
-                if ("" !== $errorsMessage) {
-                    $errorsMessage .= " ";
-                }
-                $errorsMessage .= $error->getMessage();
-            }
-
-            throw new \Exception($errorsMessage);
-        }
-
         // Save or update location instance
-        $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
+        $location = $this->locationService->getLocation($householdArray['__country'], $householdArray["location"]);
         if (null === $location) {
             throw new \Exception("Location was not found.");
         }
         $household->setLocation($location);
 
-        if ($actualAction === 'update') {
-            $oldProjects = $household->getProjects()->getValues();
-            $oldProjects = array_map(
-                function ($project) {
-                    return $project->getId();
-                },
-                $household->getProjects()->getValues()
-            );
-            $newProjects = $projectsArray;
-            $toRemove = array_diff($oldProjects, $newProjects);
-            foreach ($toRemove as $removeProjectId) {
-                $removeProject = $this->em->getRepository(Project::class)->findOneBy(["id" => $removeProjectId]);
-                $household->removeProject($removeProject);
+        // Add projects
+        foreach ($projectsArray as $project) {
+            if (! $project instanceof Project) {
+                throw new \Exception("The project could not be found.");
             }
-            $toAdd = array_diff($newProjects, $oldProjects);
-            foreach ($toAdd as $addProjectId) {
-                $addProject = $this->em->getRepository(Project::class)->findOneBy(["id" => $addProjectId]);
-                $household->addProject($addProject);
-            }
-        } else {
-            //?
-            foreach ($projectsArray as $newProjectID) {
-                $newProject = $this->em->getRepository(Project::class)->find($newProjectID);
-                if (!$newProject instanceof Project) {
-                    throw new \Exception("The project " . $newProjectID . " was not found");
-                } else {
-                    $household->addProject($newProject);
-                }
+            if ($actualAction !== 'update' || ! $household->getProjects()->contains($project)) {
+                $household->addProject($project);
             }
         }
         
@@ -266,6 +234,7 @@ class HouseholdService
             }
         }
 
+
         return $household;
     }
 
@@ -308,7 +277,7 @@ class HouseholdService
         }
 
         // Save or update location instance
-        $location = $this->locationService->getOrSaveLocation($householdArray['__country'], $householdArray["location"]);
+        $location = $this->locationService->getLocation($householdArray['__country'], $householdArray["location"]);
         $household->setLocation($location);
 
         $this->em->persist($household);
@@ -316,9 +285,9 @@ class HouseholdService
         if (!empty($householdArray["beneficiaries"])) {
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 if ($updateBeneficiary) {
-                    if ($beneficiaryToSave['gender'] == 'Male') {
+                    if ($beneficiaryToSave['gender'] === 'Male' || $beneficiaryToSave['gender'] === 'M') {
                         $beneficiaryToSave['gender'] = 1;
-                    } elseif ($beneficiaryToSave['gender'] == 'Female') {
+                    } elseif ($beneficiaryToSave['gender'] === 'Female' || $beneficiaryToSave['gender'] === 'F') {
                         $beneficiaryToSave['gender'] = 0;
                     }
 
@@ -340,12 +309,34 @@ class HouseholdService
     }
 
     /**
+     * @param array $householdArray
+     * @return array
+     */
+    public function removeBeneficiaries(array $householdArray)
+    {
+        $household = $this->em->getRepository(Household::class)->find($householdArray['id']);
+        $beneficiaryIds = array_map(function($beneficiary) {
+            return $beneficiary['id'];
+        }, $householdArray['beneficiaries']);
+
+        // Remove beneficiaries that are not in the array
+        foreach ($household->getBeneficiaries() as $beneficiary) {
+            if (! in_array($beneficiary->getId(), $beneficiaryIds)) {
+                $this->em->remove($beneficiary);
+            }
+        }
+        $this->em->flush();
+
+        return $householdArray;
+    }
+
+    /**
      * @param Household $household
      * @param Project $project
      */
     public function addToProject(Household &$household, Project $project)
     {
-        if (!in_array($project, $household->getProjects()->toArray())) {
+        if (! $household->getProjects()->contains($project)) {
             $household->addProject($project);
             $this->em->persist($household);
             $this->em->flush();
@@ -423,60 +414,6 @@ class HouseholdService
 
         foreach ($householdsId as $householdId) {
             $household = $this->em->getRepository(Household::class)->find($householdId);
-
-            if ($household instanceof Household) {
-                array_push($households, $household);
-            }
-        }
-
-        return $households;
-    }
-
-    /**
-     * @param string $email
-     * @return array
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
-    public function getAllCached(string $email)
-    {
-        $cache = new FilesystemCache();
-
-        $householdsInTypo = array();
-        $householdsInDuplicate = array();
-        $householdsInNew = array();
-
-        $households = array();
-
-        if ($cache->has($email . '-households.typo')) {
-            $householdsInTypo = $cache->get($email . '-households.typo');
-            $cache->delete($email . '-households.typo');
-        }
-        if ($cache->has($email . '-households.duplicate')) {
-            $householdsInDuplicate = $cache->get($email . '-households.duplicate');
-            $cache->delete($email . '-households.duplicate');
-        }
-        if ($cache->has($email . '-households.new')) {
-            $householdsInNew = $cache->get($email . '-households.new');
-            $cache->delete($email . '-households.new');
-        }
-        foreach ($householdsInTypo as $typo) {
-            $household = $this->em->getRepository(Household::class)->find($typo->getId());
-
-            if ($household instanceof Household) {
-                array_push($households, $household);
-            }
-        }
-
-        foreach ($householdsInDuplicate as $duplicate) {
-            $household = $this->em->getRepository(Household::class)->find($duplicate->getId());
-
-            if ($household instanceof Household) {
-                array_push($households, $household);
-            }
-        }
-
-        foreach ($householdsInNew as $new) {
-            $household = $this->em->getRepository(Household::class)->find($new->getId());
 
             if ($household instanceof Household) {
                 array_push($households, $household);

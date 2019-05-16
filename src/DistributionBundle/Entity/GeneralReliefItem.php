@@ -5,6 +5,7 @@ namespace DistributionBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * GeneralReliefItem
@@ -29,7 +30,7 @@ class GeneralReliefItem
      * @var \DateTime|null
      *
      * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
-     *
+     * @JMS_Type("DateTime<'d-m-Y H:m'>")
      * @Groups({"ValidatedDistribution"})
      */
     private $distributedAt;

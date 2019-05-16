@@ -22,6 +22,11 @@ use Psr\Container\ContainerInterface;
 class UserService
 {
 
+    private $countryList = [
+        "KHM",
+        "SYR",
+    ];
+
     /** @var EntityManagerInterface $em */
     private $em;
 
@@ -78,9 +83,9 @@ class UserService
      */
     public function update(User $user, array $userData)
     {
-        $role = $userData['rights'];
-        if (!empty($role)) {
-            $user->setRoles([$role]);
+        $roles = $userData['roles'];
+        if (!empty($roles)) {
+            $user->setRoles($roles);
         }
 
         if (!empty($userData['password'])) {
@@ -97,7 +102,7 @@ class UserService
 
                 if ($project instanceof Project) {
                     $userProject = new UserProject();
-                    $userProject->setRights($role)
+                    $userProject->setRights($roles[0])
                         ->setUser($user)
                         ->setProject($project);
                     $this->em->merge($userProject);
@@ -110,7 +115,7 @@ class UserService
                 $userCountry = new UserCountry();
                 $userCountry->setUser($user)
                     ->setIso3($country)
-                    ->setRights($role);
+                    ->setRights($roles[0]);
                 $this->em->merge($userCountry);
             }
         }
@@ -204,6 +209,8 @@ class UserService
                 foreach ($userCountries as $userCountry) {
                     array_push($countries, $userCountry->getIso3());
                 }
+            } else {
+                $countries = $this->countryList;
             }
             
             $projectRepo = $this->em->getRepository('UserBundle:UserProject');
@@ -232,9 +239,9 @@ class UserService
      */
     public function create(User $user, array $userData)
     {
-        $role = $userData['rights'];
+        $roles = $userData['roles'];
 
-        if (!isset($role) || empty($role)) {
+        if (!isset($roles) || empty($roles)) {
             throw new \Exception("Rights can not be empty");
         }
 
@@ -253,7 +260,7 @@ class UserService
             ->setEnabled(1)
             ->setUsername($user->getUsername())
             ->setUsernameCanonical($user->getUsername())
-            ->setRoles([$role]);
+            ->setRoles($roles);
 
         $user->setPassword($userData['password']);
 
@@ -265,7 +272,7 @@ class UserService
 
                 if ($project instanceof Project) {
                     $userProject = new UserProject();
-                    $userProject->setRights($role)
+                    $userProject->setRights($roles[0])
                         ->setUser($user)
                         ->setProject($project);
                     $this->em->merge($userProject);
@@ -278,7 +285,7 @@ class UserService
                 $userCountry = new UserCountry();
                 $userCountry->setUser($user)
                     ->setIso3($country)
-                    ->setRights($role);
+                    ->setRights($roles[0]);
                 $this->em->merge($userCountry);
             }
         }
@@ -400,7 +407,7 @@ class UserService
         $logs = $this->em->getRepository(Logs::class)->findBy(['idUser' => $user->getId()]);
 
         foreach ($logs as $log) {
-            $date = $log->getDate()->format('Y-m-d H:i:s');
+            $date = $log->getDate()->format('d-m-Y H:i:s');
             $data = [$log->getUrl(), $log->getIdUser(), $log->getMailUser(), $log->getMethod(), $date, $log->getHttpStatus(), $log->getController(), $log->getRequest()];
             $this->recordLog($user->getId(), $data);
         }

@@ -19,7 +19,7 @@ class Location
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "FullVendor"})
      */
     private $id;
 
@@ -27,7 +27,7 @@ class Location
      * @var Adm1
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm1", mappedBy="location")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "FullVendor"})
      */
     private $adm1;
 
@@ -35,7 +35,7 @@ class Location
      * @var Adm2
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm2", mappedBy="location")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "FullVendor"})
      */
     private $adm2;
 
@@ -43,7 +43,7 @@ class Location
      * @var Adm3
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm3", mappedBy="location")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "FullVendor"})
      */
     private $adm3;
 
@@ -51,7 +51,7 @@ class Location
      * @var Adm4
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm4", mappedBy="location")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "FullVendor"})
      */
     private $adm4;
 
@@ -159,5 +159,54 @@ class Location
     public function getAdm4()
     {
         return $this->adm4;
+    }
+
+    
+    public function getAdm1Name()
+    {
+        if (null !== $this->getAdm1()) {
+            return $this->getAdm1()->getName();
+        } elseif (null !== $this->getAdm2()) {
+            return $this->getAdm2()->getAdm1()->getName();
+        } elseif (null !== $this->getAdm3()) {
+            return $this->getAdm3()->getAdm2()->getAdm1()->getName();
+        } elseif (null !== $this->getAdm4()) {
+            return $this->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getName();
+        } else {
+            return "";
+        }
+    }
+
+    public function getAdm2Name()
+    {
+        if (null !== $this->getAdm2()) {
+            return $this->getAdm2()->getName();
+        } elseif (null !== $this->getAdm3()) {
+            return $this->getAdm3()->getAdm2()->getName();
+        } elseif (null !== $this->getAdm4()) {
+            return $this->getAdm4()->getAdm3()->getAdm2()->getName();
+        } else {
+            return "";
+        }
+    }
+
+    public function getAdm3Name()
+    {
+        if (null !== $this->getAdm3()) {
+            return $this->getAdm3()->getName();
+        } elseif (null !== $this->getAdm4()) {
+            return $this->getAdm4()->getAdm3()->getName();
+        } else {
+            return "";
+        }
+    }
+
+    public function getAdm4Name()
+    {
+        if (null !== $this->getAdm4()) {
+            return $this->getAdm4()->getName();
+        } else {
+            return "";
+        }
     }
 }
