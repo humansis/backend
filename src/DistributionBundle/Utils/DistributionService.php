@@ -223,11 +223,13 @@ class DistributionService
                 $head = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($receiver);
                 $distributionBeneficiary = new DistributionBeneficiary();
                 $distributionBeneficiary->setDistributionData($distributionData)
-                    ->setBeneficiary($head);
+                    ->setBeneficiary($head)
+                    ->setRemoved(0);
             } elseif ($receiver instanceof Beneficiary) {
                 $distributionBeneficiary = new DistributionBeneficiary();
                 $distributionBeneficiary->setDistributionData($distributionData)
-                    ->setBeneficiary($receiver);
+                    ->setBeneficiary($receiver)
+                    ->setRemoved(0);
             } else {
                 throw new \Exception("A problem was found. The distribution has no beneficiary");
             }

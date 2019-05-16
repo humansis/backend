@@ -155,8 +155,9 @@ class DistributionBeneficiaryService
                     if ($sameDistributionBeneficiary && sizeof($beneficiariesArray) <= 2) {
                         throw new \Exception('This beneficiary/household is already part of the distribution', Response::HTTP_BAD_REQUEST);
                     } else if (!$sameDistributionBeneficiary) {
-                        $distributionBeneficiary->setDistributionData($distributionData);
-                        $distributionBeneficiary->setBeneficiary($beneficiary);
+                        $distributionBeneficiary->setDistributionData($distributionData)
+                            ->setBeneficiary($beneficiary)
+                            ->setRemoved(0);
                         $this->em->persist($distributionBeneficiary);
                     }
                 }

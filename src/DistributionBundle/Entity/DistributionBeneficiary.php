@@ -74,6 +74,24 @@ class DistributionBeneficiary
         $this->booklets = new ArrayCollection();
     }
 
+     /**
+     * @var string
+     *
+     * @ORM\Column(name="justification", type="string", length=511, nullable=true)
+     *
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
+     */
+    private $justification;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="removed", type="boolean", options={"default" : 0})
+     *
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
+     */
+    private $removed;
+
     /**
      * Get id.
      *
@@ -245,5 +263,53 @@ class DistributionBeneficiary
     {
         $this->generalReliefs->removeElement($generalRelief);
         return $this;
+    }
+
+    /**
+     * Set justification.
+     *
+     * @param string $justification
+     *
+     * @return self
+     */
+    public function setJustification($justification)
+    {
+        $this->justification = $justification;
+
+        return $this;
+    }
+
+    /**
+     * Get justification.
+     *
+     * @return string
+     */
+    public function getJustification()
+    {
+        return $this->justification;
+    }
+
+    /**
+     * Set removed.
+     *
+     * @param boolean $removed
+     *
+     * @return self
+     */
+    public function setRemoved($removed)
+    {
+        $this->removed = $removed;
+
+        return $this;
+    }
+
+    /**
+     * Get removed.
+     *
+     * @return boolean
+     */
+    public function getRemoved()
+    {
+        return $this->removed;
     }
 }
