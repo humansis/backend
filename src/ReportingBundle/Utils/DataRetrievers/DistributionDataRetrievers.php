@@ -68,8 +68,9 @@ class DistributionDataRetrievers
     {
         if (array_key_exists('distribution', $filters)) {
             $qb->andWhere('d.id IN (:distributions)')
-                    ->setParameter('distributions', $filters['distribution']);
+                ->setParameter('distributions', $filters['distribution']);
         }
+        dump($qb);
         return $qb;
     }
 
@@ -94,8 +95,12 @@ class DistributionDataRetrievers
                                           ->select('rd.id', 'd.name as Name', 'rv.value as Value', "DATE_FORMAT(rv.creationDate, '%Y-%m-%d') AS date");
 
         $qb = $this->ifInProject($qb, $filters);
+        dump($qb);
         return $qb;
     }
+
+
+
 
     /**
      * Get the data with the more recent values

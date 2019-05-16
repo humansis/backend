@@ -36,6 +36,9 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
                 ->orWhere("adm1d.countryISO3 = :iso3 AND hh.archived = 0")
                 ->setParameter("iso3", $iso3);
 
+        //$q = $q->leftJoin("db.distributionData", "d")
+
+
         return $q->getQuery()->getSingleScalarResult();
     }
     

@@ -75,6 +75,26 @@ class ReportingController extends Controller
         return new JsonResponse($dataFormatted, Response::HTTP_OK);
     }
 
+    /**
+     * Send formatted data
+     * @Rest\Get("/indicators/filtered")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getFilteredDataAction(Request $request)
+    {
+        $filters = $request->query->all();
+        dump($filters);
+
+        try {
+            $filteredGraphs = $this->get('reporting.reporting_service')->getFilteredData($filters);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), $e->getCode() > 200 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+        return new JsonResponse($filteredGraphs);
+    }
+
 
     /**
      * Send list of all indicators to display in front
@@ -96,8 +116,8 @@ class ReportingController extends Controller
      */
     public function getAction()
     {
-        $indicatorFinded = $this->get('reporting.finder')->findIndicator();
-        $json = json_encode($indicatorFinded);
+        $indicatorFound = $this->get('reporting.finder')->generateIndicatorsData();
+        $json = json_encode($indicatorFound);
         return new Response($json, Response::HTTP_OK);
     }
 }

@@ -53,7 +53,10 @@ class Computer implements ComputerInterface
         ];
 
         if (preg_match("#^BMS_C#", $indicator->getCode())) {
+            dump('country');
             if (is_callable(array(new CountryDataRetrievers($this->em), $indicator->getCode()))) {
+                dump(call_user_func_array([new CountryDataRetrievers($this->em), $indicator->getCode()], [$filters]));
+
                 return call_user_func_array([new CountryDataRetrievers($this->em), $indicator->getCode()], [$filters]);
             }
         }

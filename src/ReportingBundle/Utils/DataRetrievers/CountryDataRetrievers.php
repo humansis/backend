@@ -40,13 +40,17 @@ class CountryDataRetrievers
      */
     public function getReportingValue(string $code, array $filters)
     {
+        dump($filters);
+
         $qb = $this->reportingCountry->createQueryBuilder('rc')
-                                   ->leftjoin('rc.value', 'rv')
-                                   ->leftjoin('rc.indicator', 'ri')
-                                   ->where('ri.code = :code')
-                                      ->setParameter('code', $code)
-                                   ->andWhere('rc.country = :country')
-                                      ->setParameter('country', $filters['country']);
+                                    ->leftjoin('rc.value', 'rv')
+                                    ->leftjoin('rc.indicator', 'ri')
+                                    ->where('ri.code = :code')
+                                    ->setParameter('code', $code)
+                                    ->andWhere('rc.country = :country')
+                                    ->setParameter('country', $filters['country']);
+
+        dump($qb);
         return $qb;
     }
 

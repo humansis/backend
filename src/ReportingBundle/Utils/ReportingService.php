@@ -3,21 +3,58 @@
 namespace ReportingBundle\Utils;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Container\ContainerInterface;
 use ReportingBundle\Entity\ReportingIndicator;
+use ReportingBundle\Utils\Model\IndicatorInterface;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class ReportingService
 {
-    /** @var EntityManager $em */
+    /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var Container $container */
+    /** @var ContainerInterface $container */
     private $container;
 
-    public function __construct(EntityManager $em, Container $container)
+    public function __construct(EntityManagerInterface $em, ContainerInterface $container)
     {
         $this->em = $em;
         $this->container = $container;
+    }
+
+
+    public function getFilteredData(Array $filters) {
+
+
+        switch ($filters['report']) {
+            case 'countries':
+                $reportType = 'Country';
+                break;
+            case 'projects':
+                $reportType = 'Project';
+                break;
+            case 'distributions':
+                $reportType = 'Distribution';
+                break;
+            default:
+                $reportType = null;
+        }
+
+        $allIndicators = $this->container->get('reporting.finder')->getIndicatorsByType($reportType);
+
+        $filteredGraphs = [];
+
+        foreach ($allIndicators as $indicator) {
+            $values = $this->container->get('reporting.computer')->compute($indicator, $filters);
+            array_push($filteredGraphs, [
+                "graphType" => $indicator->getGraph(),
+                "values" => $values,
+                "name" => $indicator->getReference()
+            ]);
+        }
+        return $filteredGraphs;
     }
 
     public function exportToCsv($indicatorsId, $frequency, $projects, $distributions, $country, $type)

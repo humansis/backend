@@ -1,7 +1,7 @@
 Total Households,BMS_Country_TH,frequency,line
 Active Projects,BMS_Country_AP,frequency,line
 Total Funding,BMS_Country_TF,frequency,line
-Total Transations Completed,BMS_Country_TTC,frequency,line
+Total Transactions Completed,BMS_Country_TTC,frequency,line
 Enrolled Beneficiaries ,BMS_Country_EB,frequency,line
 Total Number of Distributions,BMS_Country_TND,frequency,line
 Donors,BMS_Project_D,frequency,number
