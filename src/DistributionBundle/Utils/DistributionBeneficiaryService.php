@@ -123,14 +123,16 @@ class DistributionBeneficiaryService
      * @return DistributionBeneficiary
      * @throws \Exception
      */
-    public function addBeneficiary(DistributionData $distributionData, array $beneficiariesArray)
+    public function addBeneficiary(DistributionData $distributionData, array $beneficiariesData)
     {
         $beneficiary = null;
+
+        $beneficiariesArray = $beneficiariesData['beneficiaries'];
 
         if ($beneficiariesArray && sizeof($beneficiariesArray) > 0) {
             foreach ($beneficiariesArray as $beneficiaryArray) {
 
-                if ($beneficiaryArray !== $beneficiariesArray["__country"]) {
+                if ($beneficiaryArray !== $beneficiariesData["__country"]) {
                     switch ($distributionData->getType()) {
                         case 0:
                             $headHousehold = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
@@ -157,7 +159,8 @@ class DistributionBeneficiaryService
                     } else if (!$sameDistributionBeneficiary) {
                         $distributionBeneficiary->setDistributionData($distributionData)
                             ->setBeneficiary($beneficiary)
-                            ->setRemoved(0);
+                            ->setRemoved(0)
+                            ->setJustification($beneficiariesData['justification']);
                         $this->em->persist($distributionBeneficiary);
                     }
                 }
