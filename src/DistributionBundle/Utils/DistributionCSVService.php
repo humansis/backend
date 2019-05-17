@@ -222,7 +222,7 @@ class DistributionCSVService
         
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
-            if ($beneficiaryToCreate['head'] != 'true') {
+            if ($beneficiaryToCreate['head'] !== 'true') {
                 throw new \Exception("You must insert only a head of the household in the file to import.");
             }
 
@@ -272,8 +272,9 @@ class DistributionCSVService
             
             // Add created beneficiary to distribution
             $newDistributionBeneficiary = new DistributionBeneficiary();
-            $newDistributionBeneficiary->setBeneficiary($toCreate);
-            $newDistributionBeneficiary->setDistributionData($distributionData);
+            $newDistributionBeneficiary->setBeneficiary($toCreate)
+                ->setDistributionData($distributionData)
+                ->setRemoved(0);
             $this->em->persist($newDistributionBeneficiary);
         }
         
@@ -291,8 +292,9 @@ class DistributionCSVService
                 $this->em->persist($household);
             }
             $distributionBeneficiary = new DistributionBeneficiary();
-            $distributionBeneficiary->setBeneficiary($beneficiaryToAdd);
-            $distributionBeneficiary->setDistributionData($distributionData);
+            $distributionBeneficiary->setBeneficiary($beneficiaryToAdd)
+                ->setDistributionData($distributionData)
+                ->setRemoved(0);
             $this->em->persist($distributionBeneficiary);
         }
 
