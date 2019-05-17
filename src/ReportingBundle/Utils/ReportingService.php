@@ -43,10 +43,11 @@ class ReportingService
         }
 
         $allIndicators = $this->container->get('reporting.finder')->getIndicatorsByType($reportType);
-
+        dump($allIndicators);
         $filteredGraphs = [];
 
         foreach ($allIndicators as $indicator) {
+            dump($indicator);
             $values = $this->container->get('reporting.computer')->compute($indicator, $filters);
             array_push($filteredGraphs, [
                 "graphType" => $indicator->getGraph(),

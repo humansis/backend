@@ -29,52 +29,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 class ReportingController extends Controller
 {
 
-     /**
-     * Send data formatted corresponding to code to display it in front
-     * @Rest\Post("/indicators/serve/{id}")
-     *
-     * @SWG\Tag(name="Reporting")
-     *
-     * @SWG\Parameter(
-     *     name="Project",
-     *     in="body",
-     *     required=true,
-     *     @Model(type=ReportingIndicator::class)
-     * )
-     *
-     * @SWG\Response(
-     *      response=200,
-     *          description="Get data reporting",
-     *          @SWG\Schema(
-     *              type="array",
-     *              @SWG\Items(ref=@Model(type=ReportingIndicator::class))
-     *          )
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param ReportingIndicator $indicator
-     * @param Request $request
-     * @return Response
-     */
-    public function serveAction(Request $request, ReportingIndicator $indicator)
-    {
-        $filters = $request->request->get('filters');
-        $contentJson = $request->request->all();
-        $filters['country'] = $contentJson['__country'];
-
-        try {
-            $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
-            $dataFormatted = $this->get('reporting.formatter')->format(Formatter::DefaultFormat, $dataComputed, $indicator->getGraph());
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), $e->getCode() > 200 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
-        }
-        return new JsonResponse($dataFormatted, Response::HTTP_OK);
-    }
-
     /**
      * Send formatted data
      * @Rest\Get("/indicators/filtered")
@@ -85,6 +39,7 @@ class ReportingController extends Controller
     public function getFilteredDataAction(Request $request)
     {
         $filters = $request->query->all();
+        $filters['period'] = $filters['period'] === '' ? [] : explode(',', $filters['period']);
         dump($filters);
 
         try {

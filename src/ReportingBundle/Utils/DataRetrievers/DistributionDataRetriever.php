@@ -1,0 +1,262 @@
+<?php
+
+namespace ReportingBundle\Utils\DataRetrievers;
+
+use Doctrine\ORM\EntityManager;
+
+use ReportingBundle\Entity\ReportingDistribution;
+use \ProjectBundle\Entity\Project;
+use \DistributionBundle\Entity\DistributionData;
+
+/**
+ * Class DistributionDataRetrievers
+ * @package ReportingBundle\Utils\DataRetrievers
+ */
+class DistributionDataRetriever extends AbstractDataRetriever
+{
+    /**
+     * @var EntityManager
+     */
+    private $em;
+
+    /**
+     * @var ProjectDataRetriever
+     */
+    private $project;
+
+    /**
+     * DistributionDataRetrievers constructor.
+     * @param EntityManager $em
+     * @param ProjectDataRetriever $project
+     */
+    public function __construct(EntityManager $em, ProjectDataRetriever $project)
+    {
+        $this->em = $em;
+        $this->project = $project;
+    }
+
+    /**
+     * Use to make join and where in DQL
+     * Use in all distribution data retrievers
+     * @param string $code
+     * @param array $filters
+     * @return \Doctrine\ORM\QueryBuilder|mixed
+     */
+    public function getReportingValue(string $code, array $filters)
+    {
+        $qb = $this->em->createQueryBuilder()
+                        ->from(ReportingDistribution::class, 'rd')
+                        ->leftjoin('rd.value', 'rv')
+                        ->leftjoin('rd.indicator', 'ri')
+                        ->leftjoin('rd.distribution', 'd')
+                        ->leftjoin('d.project', 'p')
+                        ->where('ri.code = :code')
+                        ->setParameter('code', $code)
+                        ->andWhere('p.iso3 = :country')
+                        ->setParameter('country', $filters['country']);
+
+        $qb = $this->filterByPeriod($qb, $filters['period']);
+
+        $qb = $this->filterByProjects($qb, $filters['projects']);
+        $qb = $this->filterByDistributions($qb, $filters['distributions']);
+
+        return $qb;
+    }
+
+    /**
+     * switch case to use the right select
+     * each case is the name of the function to execute
+     *
+     * Indicator with the same 'select' statement is grouped in the same case
+     * @param $qb
+     * @param $nameFunction
+     * @return mixed
+     */
+    public function conditionSelect($qb, $nameFunction)
+    {
+        switch ($nameFunction) {
+            case 'BMS_Distribution_NEB':
+                $qb ->select('d.name AS name')
+                    ->groupBy('name');
+                break;
+            case 'BMS_Distribution_TDV':
+                $qb ->select('DISTINCT(d.name) AS name', 'd.id AS id')
+                    ->groupBy('name', 'id');
+                break;
+            case 'BMSU_Distribution_NM':
+            case 'BMSU_Distribution_NW':
+                $qb ->select("CONCAT(rv.unity, '/', d.name) AS name")
+                    ->groupBy('name');
+                break;
+            case 'BMS_Distribution_M':
+                $qb ->select('DISTINCT(d.name) AS name')
+                    ->groupBy('name');
+                break;
+        }
+
+        return $qb;
+    }
+
+    /**
+     * Get the number of enrolled beneficiaries in a distribution
+     * @param array $filters
+     * @return array
+     */
+    public function BMS_Distribution_NEB(array $filters)
+    {
+        $qb = $this->getReportingValue('BMS_Distribution_NEB', $filters);
+        $qb = $this->conditionSelect($qb, 'BMS_Distribution_NEB');
+        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        return $result;
+    }
+
+    /**
+     * Get the total distribution value in a distribution
+     * @param array $filters
+     * @return array
+     */
+    public function BMS_Distribution_TDV(array $filters)
+    {
+        $qb = $this->getReportingValue('BMS_Distribution_TDV', $filters);
+        $qb = $this->conditionSelect($qb, 'BMS_Distribution_TDV');
+        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        return $result;
+
+    }
+
+    /**
+     * Get the modality(and it type) for a distribution
+     * @param array $filters
+     * @return array
+     */
+    public function BMS_Distribution_M(array $filters)
+    {
+        $qb = $this->getReportingValue('BMS_Distribution_M', $filters);
+        $qb = $this->conditionSelect($qb, 'BMS_Distribution_M');
+        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        return $result;
+    }
+
+    /**
+     * Get the age breakdown in a distribution
+     * @param array $filters
+     * @return array
+     */
+    public function BMS_Distribution_AB(array $filters)
+    {
+        $qb = $this->getReportingValue('BMS_Distribution_AB', $filters);
+        $qb = $this->conditionSelect($qb, 'BMS_Distribution_AB');
+        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        return $result;
+    }
+
+    /**
+     * Get the number of men and women in a project
+     * @param array $filters
+     * @return array
+     */
+    public function BMS_Distribution_NMW(array $filters)
+    {
+        $men = $this->BMSU_Distribution_NM($filters);
+        $women = $this->BMSU_Distribution_NW($filters);
+
+        return array_merge($men, $women);
+    }
+
+    /**
+     * Get the percentage of vulnerabilities served
+     * @param array $filters
+     * @return array
+     */
+    public function BMS_Distribution_PVS(array $filters)
+    {
+        $totalVulnerabilitiesServed = $this->BMSU_Distribution_TVS($filters);
+        $vulnerabilitiesServedPerVulnerability = $this->BMSU_Distribution_TVSV($filters);
+
+        // Map total number of vulnerabilities served to the date
+        foreach ($totalVulnerabilitiesServed as $key => $total) {
+            $totalVulnerabilitiesServed[$total['date']] = $total;
+            unset($totalVulnerabilitiesServed[$key]);
+        }
+
+        foreach ($vulnerabilitiesServedPerVulnerability as $key => $vulnerability) {
+            $percentageValue = (int)$vulnerability['value'] / (int)$totalVulnerabilitiesServed[$vulnerability['date']]['value'] * 100;
+            $vulnerabilitiesServedPerVulnerability[$key]['value'] = $percentageValue;
+        }
+
+        return $vulnerabilitiesServedPerVulnerability;
+    }
+
+    /**
+     * Get the percent of value used in the project by the distribution
+     * @param array $filters
+     * @return array
+     */
+    public function BMS_Distribution_PPV(array $filters)
+    {
+        $repositoryProject = $this->em->getRepository(Project::class);
+
+        $projectValue = $this->project->BMSU_Project_PV($filters);
+        $distributionValue = $this->BMS_Distribution_TDV($filters);
+
+        // TODO: Change this in accordance to the new project value (expected beneficiaries)
+    }
+
+
+    /**
+     * Utils indicators
+     */
+
+
+    /**
+     * Get the number of men in a distribution
+     * @param array $filters
+     * @return mixed
+     */
+    public function BMSU_Distribution_NM(array $filters)
+    {
+        $qb = $this->getReportingValue('BMSU_Distribution_NM', $filters);
+        $qb = $this->conditionSelect($qb, 'BMSU_Distribution_NM');
+        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        return $result;
+    }
+
+    /**
+     * Get the number of women in a distribution
+     * @param array $filters
+     * @return mixed
+     */
+    public function BMSU_Distribution_NW(array $filters)
+    {
+        $qb = $this->getReportingValue('BMSU_Distribution_NW', $filters);
+        $qb = $this->conditionSelect($qb, 'BMSU_Distribution_NW');
+        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        return $result;
+    }
+
+    /**
+     * Get the total of vulnerabilities served
+     * @param array $filters
+     * @return mixed
+     */
+    public function BMSU_Distribution_TVS(array $filters)
+    {
+        $qb = $this->getReportingValue('BMSU_Distribution_TVS', $filters);
+        $qb = $this->conditionSelect($qb, 'BMSU_Distribution_TVS');
+        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        return $result;
+    }
+
+    /**
+     * Get the total of vulnerabilities served by vulnerabilities
+     * @param array $filters
+     * @return mixed
+     */
+    public function BMSU_Distribution_TVSV(array $filters)
+    {
+        $qb = $this->getReportingValue('BMSU_Distribution_TVSV', $filters);
+        $qb = $this->conditionSelect($qb, 'BMSU_Distribution_TVSV');
+        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        return $result;
+    }
+}
