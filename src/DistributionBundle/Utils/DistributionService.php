@@ -101,26 +101,36 @@ class DistributionService
     {
         try {
             $distributionData->setValidated(true);
-            $commodities = $distributionData->getCommodities();
-            foreach ($commodities as $commodity) {
-                $modality = $commodity->getModalityType()->getModality();
-                if ($modality->getName() === 'In Kind' ||
-                    $modality->getName() === 'Other' ||
-                    $commodity->getModalityType()->getName() === 'Paper Voucher') {
-                    $beneficiaries = $distributionData->getDistributionBeneficiaries();
-                    foreach ($beneficiaries as $beneficiary) {
-                        $generalRelief = new GeneralReliefItem();
-                        $generalRelief->setDistributionBeneficiary($beneficiary);
-                        $this->em->persist($generalRelief);
-                    }
-                }
-            }
-
-            $this->em->flush();
-            return $distributionData;
+            $beneficiaries = $distributionData->getDistributionBeneficiaries();
+            return $this->setCommoditiesToNewBeneficiaries($distributionData, $beneficiaries);
         } catch (\Exception $e) {
             throw $e;
         }
+    }
+
+    /**
+     * @param DistributionData $distributionData
+     * @param $beneficiaries
+     * @return DistributionData
+     * @throws \Exception
+     */
+    public function setCommoditiesToNewBeneficiaries(DistributionData $distributionData, $beneficiaries) {
+        $commodities = $distributionData->getCommodities();
+        foreach ($commodities as $commodity) {
+            $modality = $commodity->getModalityType()->getModality();
+            if ($modality->getName() === 'In Kind' ||
+                $modality->getName() === 'Other' ||
+                $commodity->getModalityType()->getName() === 'Paper Voucher') {
+                foreach ($beneficiaries as $beneficiary) {
+                    $generalRelief = new GeneralReliefItem();
+                    $generalRelief->setDistributionBeneficiary($beneficiary);
+                    $this->em->persist($generalRelief);
+                }
+            }
+        }
+        $this->em->flush();
+
+        return $distributionData;
     }
 
     /**

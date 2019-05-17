@@ -129,6 +129,8 @@ class DistributionBeneficiaryService
 
         $beneficiariesArray = $beneficiariesData['beneficiaries'];
 
+        $distributionBeneficiaries = [];
+
         if ($beneficiariesArray && sizeof($beneficiariesArray) > 0) {
             foreach ($beneficiariesArray as $beneficiaryArray) {
 
@@ -162,9 +164,14 @@ class DistributionBeneficiaryService
                             ->setRemoved(0)
                             ->setJustification($beneficiariesData['justification']);
                         $this->em->persist($distributionBeneficiary);
+                        array_push($distributionBeneficiaries, $distributionBeneficiary);
                     }
                 }
             }
+            if ($distributionData->getValidated()) {
+                $distributionData = $this->container->get('distribution.distribution_service')->setCommoditiesToNewBeneficiaries($distributionData, $distributionBeneficiaries);
+            }
+
             $this->em->flush();
         } else {
             return null;
