@@ -96,14 +96,6 @@ class Vendor implements ExportableInterface
      */
     private $user;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="country_iso3", type="string", length=45)
-     * @Groups({"FullVendor"})
-     */
-    private $countryIso3;
-
 
     public function __construct()
     {
@@ -366,29 +358,5 @@ class Vendor implements ExportableInterface
             "adm3" =>$adm3,
             "adm4" =>$adm4,
         ];
-    }
-
-    /**
-     * Set countryIso3.
-     *
-     * @param string $countryIso3
-     *
-     * @return Vendor
-     */
-    public function setCountryIso3($countryIso3)
-    {
-        $this->countryIso3 = $countryIso3;
-
-        return $this;
-    }
-
-    /**
-     * Get countryIso3.
-     *
-     * @return string
-     */
-    public function getCountryIso3()
-    {
-        return $this->countryIso3;
     }
 }

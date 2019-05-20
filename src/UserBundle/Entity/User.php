@@ -48,7 +48,7 @@ class User extends BaseUser implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserCountry", mappedBy="user", cascade={"persist","remove"})
-     * @Groups({"FullUser"})
+     * @Groups({"FullUser", "FullVendor"})
      */
     private $countries;
 

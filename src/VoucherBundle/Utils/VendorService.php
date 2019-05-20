@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use DateTime;
 use CommonBundle\Utils\LocationService;
-use UserBundle\Entity\UserCountry;
 
 
 class VendorService
@@ -94,8 +93,7 @@ class VendorService
                     ->setAddressPostcode($vendorData['address_postcode'])
                     ->setLocation($location)
                     ->setArchived(false)
-                    ->setUser($user)
-                    ->setCountryIso3($countryISO3);
+                    ->setUser($user);
 
             $this->em->persist($vendor);
             $this->em->flush();
