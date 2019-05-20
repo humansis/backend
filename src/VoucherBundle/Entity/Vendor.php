@@ -96,7 +96,6 @@ class Vendor implements ExportableInterface
      */
     private $user;
 
-
     public function __construct()
     {
         $this->vouchers = new ArrayCollection();

@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use DateTime;
 use CommonBundle\Utils\LocationService;
 
-
 class VendorService
 {
 
