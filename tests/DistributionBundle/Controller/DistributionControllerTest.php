@@ -188,9 +188,6 @@ class DistributionControllerTest extends BMSServiceTestCase
     }
 
 
-    // Now we have a verification 'This beneficiary is already in the distribution' which makes this test fail
-    // TODO : Create a new household and beneficiary, get his body, send it
-
     /**
      * @depends testCreateDistribution
      * @param $distribution
@@ -205,28 +202,28 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $body = array(
-            array(
-                'date_of_birth' => '10-06-1989',
-                'family_name' => 'NAME_TEST',
-                'gender' => "1",
-                'given_name' => 'FIRSTNAME_TEST',
-                'id' => 11,
-                'national_ids' => [],
-                'phones' => [],
-                'status' => '1',
-                'residency_status' => 'refugee',
-                'vulnerability_criteria' => [
-                    [
-                        "id" => 1,
-                        "field_string" => "disabled"
-                    ]                
-                ]
+            'beneficiaries' => array(
+                array(
+                    'date_of_birth' => '10-06-1976',
+                    'family_name' => 'FAMILYNAME_TEST',
+                    'gender' => "1",
+                    'given_name' => 'GIVENNAME_TEST',
+                    'id' => 12,
+                    'national_ids' => [],
+                    'phones' => [],
+                    'status' => '0',
+                    'residency_status' => 'resident',
+                    'vulnerability_criteria' => [
+                        [
+                            "id" => 1,
+                            "field_string" => "disabled"
+                        ]                
+                    ]
+                )
             ),
             'justification' => 'Justification for addition'
         );
 
-        // Second step
-        // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('PUT', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiary', $body);
         $error = $this->client->getResponse()->getContent();
         $this->assertEquals($error, 'This beneficiary/household is already part of the distribution');
@@ -495,9 +492,12 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $justifiedTypes = ['added', 'created', 'deleted'];
         foreach ($justifiedTypes as $justifiedType) {
+            $justifiedBeneficiaries = [];
             foreach ($import[$justifiedType] as $beneficiary) {
-                $beneficiary['justification'] = 'Justification' . $justifiedType;
+                $beneficiary['justification'] = 'Justification ' . $justifiedType;
+                array_push($justifiedBeneficiaries, $beneficiary);
             }
+            $import[$justifiedType] = $justifiedBeneficiaries;
         }
 
         $save = $distributionCSVService->saveCSV($countryIso3, $distributionData, $import);

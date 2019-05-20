@@ -196,7 +196,7 @@ class DistributionCSVService
             if ($beneficiary instanceof Beneficiary) {
                 // Check if the beneficiary is associate to the project of the distribution
                 if (in_array($distributionData->getProject(), $beneficiary->getHousehold()->getProjects()->getValues())) {
-                    array_push($addArray, $beneficiary);
+                    array_push($addArray, $beneficiaryArray);
                 }
             } else {
                 array_push($createArray, $beneficiaryArray);
@@ -290,11 +290,12 @@ class DistributionCSVService
         // Add
         foreach ($data['added'] as $beneficiaryToAdd) {
             $justification = $beneficiaryToAdd['justification'];
-            if ($beneficiaryToAdd instanceof Beneficiary) {
-                $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd->getId());
-            } else {
-                $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd['id']);
-            }
+            $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->findOneBy(
+                [
+                    "givenName" => $beneficiaryToAdd['givenName'],
+                    "familyName" => $beneficiaryToAdd['familyName']
+                ]
+            );
 
             $household = $beneficiaryToAdd->getHousehold();
             if (! $household->getProjects()->contains($distributionProject)) {

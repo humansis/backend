@@ -183,7 +183,6 @@ class DistributionBeneficiaryService
         } else {
             return null;
         }
-
         return $distributionBeneficiary;
     }
 
