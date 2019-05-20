@@ -103,6 +103,13 @@ services:
             - "@distribution.distribution_service"
         tags:
             - { name: doctrine.fixture.orm }
+    
+    CommonBundle\DataFixtures\OrganizationFixtures:
+        arguments:
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+
 
     CommonBundle\DataFixtures\ProductFixtures:
         arguments:
