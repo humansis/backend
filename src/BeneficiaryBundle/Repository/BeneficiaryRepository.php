@@ -184,6 +184,17 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
+    public function getNotRemovedofDistribution(DistributionData $distributionData)
+    {
+        $qb = $this->createQueryBuilder('b');
+        $q = $qb->leftJoin('b.distributionBeneficiary', 'db')
+            ->where('db.distributionData = :distributionData')
+            ->andWhere('db.removed = 0')
+            ->setParameter('distributionData', $distributionData);
+
+        return $q->getQuery()->getResult();
+    }
+
     /**
      * Get the head of household.
      *

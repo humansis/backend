@@ -94,7 +94,7 @@ class DistributionBeneficiaryService
      */
     public function getRandomBeneficiaries(DistributionData $distributionData, Int $numberRandomBeneficiary)
     {
-        $listReceivers = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
+        $listReceivers = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($distributionData);
 
         if (sizeof($listReceivers) < $numberRandomBeneficiary) {
             return $listReceivers;
@@ -156,8 +156,12 @@ class DistributionBeneficiaryService
                     $sameDistributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
                         ->findOneBy(['beneficiary' => $beneficiary, 'distributionData' => $distributionData]);
                     // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
-                    if ($sameDistributionBeneficiary && sizeof($beneficiariesArray) <= 2) {
+                    if ($sameDistributionBeneficiary && sizeof($beneficiariesArray) <= 2 && !$sameDistributionBeneficiary->getRemoved()) {
                         throw new \Exception('This beneficiary/household is already part of the distribution', Response::HTTP_BAD_REQUEST);
+                    } else if ($sameDistributionBeneficiary && sizeof($beneficiariesArray) <= 2 && $sameDistributionBeneficiary->getRemoved()) {
+                        $sameDistributionBeneficiary->setRemoved(0)
+                            ->setJustification($beneficiariesData['justification']);
+                        $this->em->persist($sameDistributionBeneficiary);
                     } else if (!$sameDistributionBeneficiary) {
                         $distributionBeneficiary->setDistributionData($distributionData)
                             ->setBeneficiary($beneficiary)
@@ -171,6 +175,9 @@ class DistributionBeneficiaryService
             if ($distributionData->getValidated()) {
                 $distributionData = $this->container->get('distribution.distribution_service')->setCommoditiesToNewBeneficiaries($distributionData, $distributionBeneficiaries);
             }
+
+            $distributionData->setUpdatedOn(new \DateTime());
+            $this->em->persist($distributionData);
 
             $this->em->flush();
         } else {

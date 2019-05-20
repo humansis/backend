@@ -362,7 +362,7 @@ class BeneficiaryService
      */
     public function exportToCsvBeneficiariesInDistribution(DistributionData $distributionData, string $type)
     {
-        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
+        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($distributionData);
         return $this->container->get('export_csv_service')->export($beneficiaries, 'beneficiaryInDistribution', $type);
     }
 

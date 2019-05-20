@@ -144,7 +144,15 @@ class DistributionCSVService
                     $inFile = true;
                 }
             }
-            if (! $inFile) {
+
+            $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
+            ->findOneBy(
+                [
+                    'beneficiary' => $beneficiary,
+                    'distributionData' => $distributionData
+                ]
+            );
+            if (! $inFile && !$distributionBeneficiary->getRemoved()) {
                 $beneficiaryToDelete = array(
                     'id' => $beneficiary->getId(),
                     'givenName' => $beneficiary->getGivenName(),
@@ -274,12 +282,14 @@ class DistributionCSVService
             $newDistributionBeneficiary = new DistributionBeneficiary();
             $newDistributionBeneficiary->setBeneficiary($toCreate)
                 ->setDistributionData($distributionData)
-                ->setRemoved(0);
+                ->setRemoved(0)
+                ->setJustification($beneficiaryToCreate['justification']);
             $this->em->persist($newDistributionBeneficiary);
         }
         
         // Add
         foreach ($data['added'] as $beneficiaryToAdd) {
+            $justification = $beneficiaryToAdd['justification'];
             if ($beneficiaryToAdd instanceof Beneficiary) {
                 $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd->getId());
             } else {
@@ -294,7 +304,8 @@ class DistributionCSVService
             $distributionBeneficiary = new DistributionBeneficiary();
             $distributionBeneficiary->setBeneficiary($beneficiaryToAdd)
                 ->setDistributionData($distributionData)
-                ->setRemoved(0);
+                ->setRemoved(0)
+                ->setJustification($justification);
             $this->em->persist($distributionBeneficiary);
         }
 
@@ -308,14 +319,30 @@ class DistributionCSVService
                         'distributionData' => $distributionData
                     ]
                 );
-            $this->em->remove($toRemove);
+            $toRemove->setRemoved(1)
+                ->setJustification($beneficiaryToRemove['justification']);
+            $this->em->persist($toRemove);
         }
 
         // Update
         foreach ($data['updated'] as $beneficiaryToUpdate) {
             $toUpdate = $this->em->getRepository(Beneficiary::class)
                 ->find($beneficiaryToUpdate['id']);
+
+            $distributionBeneficiaryToUpdate = $this->em->getRepository(DistributionBeneficiary::class)
+                ->findOneBy(
+                    [
+                        'beneficiary' => $toUpdate,
+                        'distributionData' => $distributionData
+                    ]
+                );
             
+            if ($distributionBeneficiaryToUpdate->getRemoved()) {
+                $distributionBeneficiaryToUpdate->setRemoved(0)
+                    ->setJustification('');
+                $this->em->merge($distributionBeneficiaryToUpdate);
+            }
+                        
             $toUpdate->setGivenName($beneficiaryToUpdate['givenName']);
             $toUpdate->setFamilyName($beneficiaryToUpdate['familyName']);
             $toUpdate->setGender($beneficiaryToUpdate['gender']);
@@ -323,6 +350,7 @@ class DistributionCSVService
             $toUpdate->setResidencyStatus($beneficiaryToUpdate['residencyStatus']);
             $toUpdate->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryToUpdate['dateOfBirth']));
             
+
             $toUpdate->setVulnerabilityCriteria(null);
             if (strpos($beneficiaryToUpdate['vulnerabilityCriteria'], ",")) {
                 $vulnerabilityCriteria = explode(",", $beneficiaryToUpdate['vulnerabilityCriteria']);
@@ -371,7 +399,10 @@ class DistributionCSVService
             }
 
             $this->em->merge($toUpdate);
+
         }
+
+        $distributionData->setUpdatedOn(new \DateTime());
 
         $this->em->flush();
         

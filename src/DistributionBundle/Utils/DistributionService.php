@@ -100,7 +100,8 @@ class DistributionService
     public function validateDistribution(DistributionData $distributionData)
     {
         try {
-            $distributionData->setValidated(true);
+            $distributionData->setValidated(true)
+                ->setUpdatedOn(new \DateTime());
             $beneficiaries = $distributionData->getDistributionBeneficiaries();
             return $this->setCommoditiesToNewBeneficiaries($distributionData, $beneficiaries);
         } catch (\Exception $e) {
@@ -306,7 +307,8 @@ class DistributionService
      */
     public function edit(DistributionData $distributionData, array $distributionArray)
     {
-        $distributionData->setDateDistribution(\DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']));
+        $distributionData->setDateDistribution(\DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']))
+            ->setUpdatedOn(new \DateTime());
         $distributionNameWithoutDate = explode('-', $distributionData->getName())[0];
         $newDistributionName = $distributionNameWithoutDate . '-' . $distributionArray['date_distribution'];
         $distributionData->setName($newDistributionName);
