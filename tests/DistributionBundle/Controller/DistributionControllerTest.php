@@ -221,7 +221,8 @@ class DistributionControllerTest extends BMSServiceTestCase
                         "field_string" => "disabled"
                     ]                
                 ]
-            )
+            ),
+            'justification' => 'Justification for addition'
         );
 
         // Second step
@@ -246,9 +247,13 @@ class DistributionControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        $body = array(
+            'justification' => 'Jusitification for deletion'
+        );
+
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/11?distribution=' . $distribution['id']);
+        $crawler = $this->request('POST', '/api/wsse/delete-beneficiaries/11?distribution=' . $distribution['id'], $body);
         $remove = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -487,6 +492,13 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('created', $import);
         $this->assertArrayHasKey('deleted', $import);
         $this->assertArrayHasKey('updated', $import);
+
+        $justifiedTypes = ['added', 'created', 'deleted'];
+        foreach ($justifiedTypes as $justifiedType) {
+            foreach ($import[$justifiedType] as $beneficiary) {
+                $beneficiary['justification'] = 'Justification' . $justifiedType;
+            }
+        }
 
         $save = $distributionCSVService->saveCSV($countryIso3, $distributionData, $import);
 

@@ -60,7 +60,8 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
         // If everything is ok, we create a new distributionBeneficiary
         $distributionBeneficiary = new DistributionBeneficiary();
         $distributionBeneficiary->setBeneficiary($beneficiary[0])
-            ->setDistributionData($distributionData[0]);
+            ->setDistributionData($distributionData[0])
+            ->setRemoved(0);
 
         $this->em->persist($distributionBeneficiary);
 
