@@ -42,7 +42,8 @@ class VendorFixtures extends Fixture
                 ->setAddressStreet($datum[3])
                 ->setAddressPostcode($datum[4])
                 ->setArchived($datum[5])
-                ->setUser($user);
+                ->setUser($user)
+                ->setCountryIso3('KHM');;
                 $manager->persist($vendor);
                 $manager->flush();
             }
