@@ -12,6 +12,12 @@ services:
             - '@doctrine.orm.entity_manager'
             - "@request_validator"
 
+    organization_service:
+        class: CommonBundle\Utils\OrganizationService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+
     export_csv_service:
         class: CommonBundle\Utils\ExportService
         arguments:
