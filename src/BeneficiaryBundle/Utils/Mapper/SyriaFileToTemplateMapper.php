@@ -186,25 +186,7 @@ class SyriaFileToTemplateMapper
      */
     private function doMap(array $sheetArray, $parameters = []) : array
     {
-        // O. Validation step
-        $admType  = '';
-        $location = '';
-
-        foreach ($parameters['location'] as $admIndex => $value) {
-            if (! empty($value)) {
-                $location = $value;
-                $admType  = 'adm' . $admIndex;
-                break;
-            }
-        }
-        if (empty($location)) {
-            throw new MapperException('A location is required with admX:value format');
-        }
-        if (empty($admType)) {
-            throw new MapperException('Adm type was not recognized');
-        }
-
-        // End 0.
+        $location = $parameters['location'];
 
         $this->initializeBirthdays();
         $defaultMapping = $this->getMapping();
@@ -315,7 +297,11 @@ class SyriaFileToTemplateMapper
             $headOfHouseholdRow[$this->getColumnLetter('A')] = $addressStreet;
             $headOfHouseholdRow[$this->getColumnLetter('B')] = $row['A'];
             $headOfHouseholdRow[$this->getColumnLetter('C')] = 'Unknown';
-            $headOfHouseholdRow[$this->getColumnLetter($defaultMapping[$admType])] = $location;
+            $headOfHouseholdRow[$this->getColumnLetter($defaultMapping['adm1'])] = $location[0];
+            $headOfHouseholdRow[$this->getColumnLetter($defaultMapping['adm2'])] = $location[1];
+            $headOfHouseholdRow[$this->getColumnLetter($defaultMapping['adm3'])] = $location[2];
+            $headOfHouseholdRow[$this->getColumnLetter($defaultMapping['adm4'])] = $location[3];
+
             // Head phone number
             if (!empty($row['E'])) {
                 $headOfHouseholdRow[$this->getColumnLetter('S')] = 'Mobile';
