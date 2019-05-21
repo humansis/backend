@@ -304,9 +304,9 @@ class SyriaFileToTemplateMapper
             $secondBeneficiaryValues[$this->getColumnLetter('P')] = $houseHoldResidencyStatus;
 
             // Set head of household status
-            $mutualOutputRow[$this->getColumnLetter('O')] = 1;
+            $mutualOutputRow[$this->getColumnLetter('O')] = 'true';
             if ($secondBeneficiaryExists) {
-                $secondBeneficiaryValues[$this->getColumnLetter('O')] = 0;
+                $secondBeneficiaryValues[$this->getColumnLetter('O')] = 'false';
             }
 
             // B. LET ADD HEAD OF HOUSEHOLD and its second
@@ -385,7 +385,7 @@ class SyriaFileToTemplateMapper
             // knowing that mainhead and subhead have been removed
 
             // remove head status for beneficiaries
-            $mutualOutputRow[$this->getColumnLetter('O')] = 0;
+            $mutualOutputRow[$this->getColumnLetter('O')] = 'false';
             // starting from here, we create a row per value of column
             $mutualOutputRowToArrayObject = new ArrayObject($mutualOutputRow);
             $letters = range('J', 'S');
@@ -466,7 +466,7 @@ class SyriaFileToTemplateMapper
             'L' => 'Given name',
             'M' => 'Family name',
             'N' => 'Gender',
-            'O' => 'Status',
+            'O' => 'Head',
             'P' => 'Residency Status',
             'Q' => 'Date of birth',
             'R' => 'Vulnerability criteria',
