@@ -9,7 +9,7 @@ use CommonBundle\Entity\Organization;
 class OrganizationFixtures extends Fixture
 {
     private $data = [
-        ['YourOrganization', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a170aba331.png', 'Arial', '#02617F', '#4AA896', 'What should be displayed in your pdf\'s footer']
+        ['YourOrganization', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/organization/5ce2d269dfd0a.png', 'Arial', '#02617F', '#4AA896', 'What should be displayed in your pdf\'s footer']
     ];
 
     /**
