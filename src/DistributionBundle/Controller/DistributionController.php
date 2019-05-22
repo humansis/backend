@@ -76,7 +76,7 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Get("/distributions/{id}/validate")
+     * @Rest\Post("/distributions/{id}/validate")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
@@ -184,15 +184,14 @@ class DistributionController extends Controller
     public function addBeneficiaryAction(Request $request, DistributionData $distributionData)
     {
         $data = $request->request->all();
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
 
         try {
+            /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
             $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
             $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiary($distributionData, $data);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        
 
         $json = $this->get('jms_serializer')
             ->serialize(
