@@ -15,7 +15,6 @@ final class Version20190513080242 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE donor CHANGE notes notes VARCHAR(255) DEFAULT NULL');
         $this->addSql('ALTER TABLE beneficiary ADD enGivenName VARCHAR(255) DEFAULT NULL, ADD enFamilyName VARCHAR(255) DEFAULT NULL, ADD localGivenName VARCHAR(255) DEFAULT NULL, ADD localFamilyName VARCHAR(255) DEFAULT NULL, DROP givenName, DROP familyName');
     }
 
@@ -25,6 +24,5 @@ final class Version20190513080242 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE beneficiary ADD givenName VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci, ADD familyName VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci, DROP enGivenName, DROP enFamilyName, DROP localGivenName, DROP localFamilyName');
-        $this->addSql('ALTER TABLE donor CHANGE notes notes VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci');
     }
 }
