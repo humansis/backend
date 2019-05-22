@@ -169,7 +169,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/validate');
+        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] .'/validate', array());
         $validate = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -187,9 +187,6 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('distribution_beneficiaries', $validate);
     }
 
-
-    // Now we have a verification 'This beneficiary is already in the distribution' which makes this test fail
-    // TODO : Create a new household and beneficiary, get his body, send it
 
     /**
      * @depends testCreateDistribution
@@ -215,8 +212,8 @@ class DistributionControllerTest extends BMSServiceTestCase
                 'id' => 11,
                 'national_ids' => [],
                 'phones' => [],
-                'status' => '1',
-                'residency_status' => 'refugee',
+                'status' => '0',
+                'residency_status' => 'resident',
                 'vulnerability_criteria' => [
                     [
                         "id" => 1,
