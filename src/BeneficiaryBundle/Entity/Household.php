@@ -16,6 +16,36 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Household
 {
 
+    /**
+     * Mapping of possible household livelihood
+     */
+    const LIVELIHOOD = [
+        0 => 'Agriculture - Livestock',
+        1 => 'Agriculture - Crops',
+        2 => 'Agriculture – Fishing',
+        3 => 'Agriculture – Other',
+        4 => 'Mining',
+        5 => 'Construction',
+        6 => 'Manufacturing',
+        7 => 'Retail',
+        8 => 'Transportation',
+        9 => 'Education',
+        10 => 'Health Care',
+        11 => 'Hospitality and Tourism',
+        12 => 'Legal Services',
+        13 => 'Home Duties',
+        14 => 'Religious Service',
+        15 => 'IT and Telecommunications',
+        16 => 'Finance and Insurance',
+        17 => 'Manual Labour',
+        18 => 'NGO and Non Profit',
+        19 => 'Military or Police',
+        20 => 'Government and Public Enterprise',
+        21 => 'Garment Industry',
+        22 => 'Security Industry',
+        23 => 'Service Industry and Other Professionals',
+        24 => 'Other'
+    ];
 
     /**
      * First value with a column in the csv which can move, depends on the number of country specifics

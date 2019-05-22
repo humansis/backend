@@ -112,7 +112,7 @@ class DistributionCSVService
         $sheetArray = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $worksheet->getHighestRow(), null, true, true, true);
         $headers = array_shift($sheetArray);
         $arrayWithKeys = array();
-        foreach ($sheetArray as $beneficiaryArray) {
+        foreach ($sheetArray as $beneficiaryIndex => $beneficiaryArray) {
             $beneficiaryWithKey = array();
             foreach ($headers as $index => $key) {
                 if ($key == "gender") {
@@ -120,6 +120,19 @@ class DistributionCSVService
                         $beneficiaryArray[$index] = 1;
                     } else {
                         $beneficiaryArray[$index] = 0;
+                    }
+                } else if ($key == "livelihood" && $beneficiaryArray[$index]) {
+                    $beneficiaryArray[$index] = strtolower($beneficiaryArray[$index]);
+                    $livelihood = null;
+                    foreach (Household::LIVELIHOOD as $livelihoodId => $value) {
+                        if (strtolower($value) === $beneficiaryArray[$index]) {
+                            $livelihood = $livelihoodId;
+                        }
+                    }
+                    if ($livelihood !== null) {
+                        $beneficiaryArray[$index] = $livelihood;
+                    } else {
+                        throw new \Exception("Invalid livelihood at line " . ($beneficiaryIndex + 2));
                     }
                 }
 

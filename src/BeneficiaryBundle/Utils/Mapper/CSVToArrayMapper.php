@@ -91,6 +91,22 @@ class CSVToArrayMapper extends AbstractMapper
     private function mappingCSV(array $mappingCSV, $countryIso3, int $lineNumber, array $row, array $rowHeader)
     {
         $formattedHouseholdArray = [];
+
+        if ($row[$mappingCSV['livelihood']]) {
+            $row[$mappingCSV['livelihood']] = strtolower($row[$mappingCSV['livelihood']]);
+            $livelihood = null;
+            foreach (Household::LIVELIHOOD as $livelihoodId => $value) {
+                if (strtolower($value) === $row[$mappingCSV['livelihood']]) {
+                    $livelihood = $livelihoodId;
+                }
+            }
+            if ($livelihood !== null) {
+                $row[$mappingCSV['livelihood']] = $livelihood;
+            } else {
+                throw new \Exception("Invalid livelihood at line " .$lineNumber);
+            }
+        }
+
         foreach ($mappingCSV as $formattedIndex => $csvIndex) {
             if (is_array($csvIndex)) {
                 foreach ($csvIndex as $formattedIndex2 => $csvIndex2) {
