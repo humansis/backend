@@ -500,14 +500,11 @@ class HouseholdController extends Controller
         if (! $request->files->has('file')) {
             return new JsonResponse("You must upload a file.", Response::HTTP_BAD_REQUEST);
         }
-        if (! $request->query->has('adm')) {
-            return new JsonResponse("A location is required.", Response::HTTP_BAD_REQUEST);
-        }
-        if (! $request->query->has('name')) {
+        if (! $request->query->has('adm1')) {
             return new JsonResponse("A location is required.", Response::HTTP_BAD_REQUEST);
         }
 
-        $location = array($request->query->get('adm') => $request->query->get('name'));
+        $location = [$request->query->get('adm1'), $request->query->get('adm2'), $request->query->get('adm3'), $request->query->get('adm4')];
 
         try {
             // get mapper and map
