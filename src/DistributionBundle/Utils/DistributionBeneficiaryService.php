@@ -126,10 +126,8 @@ class DistributionBeneficiaryService
     public function addBeneficiary(DistributionData $distributionData, array $beneficiariesArray)
     {
         $beneficiary = null;
-
         if ($beneficiariesArray && sizeof($beneficiariesArray) > 0) {
             foreach ($beneficiariesArray as $beneficiaryArray) {
-
                 if ($beneficiaryArray !== $beneficiariesArray["__country"]) {
                     switch ($distributionData->getType()) {
                         case 0:
@@ -165,7 +163,6 @@ class DistributionBeneficiaryService
         } else {
             return null;
         }
-
         return $distributionBeneficiary;
     }
 
