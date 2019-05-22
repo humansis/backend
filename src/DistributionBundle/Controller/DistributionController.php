@@ -76,7 +76,7 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Get("/distributions/{id}/validate")
+     * @Rest\Post("/distributions/{id}/validate")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
