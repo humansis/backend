@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>{{ source('@Common/Pdf/main.css') }}</style>
+        <style>
+            body {
+                font-family: {{ font }};
+            }
+            .container {
+                height: 25%;
+            }
+            h1 {
+                font-weight: normal;
+                color:  {{ secondaryColor }}
+            }
+            h2 {
+                font-weight: normal;
+                margin-top: 100px;
+                text-align: center;
+            }
+            header, footer, header h1 {
+                color: {{ primaryColor }}
+            }
+            .template {
+                position: absolute;
+                font-size: 150px;
+                transform: rotate(45deg);
+                top: 250px;
+                color: darkred;
+                opacity: 0.3;
+            }
+        </style>
+        <link href="https://fonts.googleapis.com/css?family=Lato:300|Roboto:300" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Kodchasan:400,700|Lora:400,700|Merriweather:400,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Muli:400,700|Noto+Sans:400,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700|Open+Sans:400,700|Oswald:400,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700|PT+Serif:400,700|Playfair+Display:400,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Poppins:400,700|Raleway:400,700|Roboto+Condensed:400,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto+Slab:400,700|Slabo+27px|Source+Sans+Pro:400,700&display=swap" rel="stylesheet">
+    </head>
+    <body>
+    {% set vars = {'name': name, 'logo': logo, 'footer': footer, 'primaryColor': primaryColor} %}
+    {% include('@Common/Pdf/header.html.twig') with vars %}
+        <main>
+            <div class="template">
+                TEMPLATE
+            </div>
+            <div class="container">
+                <h1>Title 1</h1>
+                <h2> Content 1 </h2>
+            </div>
+            <div class="container">
+                <h1>Title 2</h1>
+                <h2> Content 2 </h2>
+            </div>
+            <div class="container">
+                <h1>Title 3</h1>
+                <h2> Content 3 </h2>
+            </div>
+        </main>
+    </body>
+</html>

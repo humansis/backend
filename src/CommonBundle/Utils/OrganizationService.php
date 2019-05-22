@@ -3,23 +3,25 @@
 namespace CommonBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Container\ContainerInterface;
 use CommonBundle\Entity\Organization;
 
 class OrganizationService
 {
-    private $container;
-
-
    /** @var EntityManagerInterface $em */
    private $em;
+
+   /** @var ContainerInterface $container */
+   private $container;
 
    /**
     * OrganizationService constructor.
     * @param EntityManagerInterface $entityManager
     */
-   public function __construct(EntityManagerInterface $entityManager)
+   public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
    {
        $this->em = $entityManager;
+       $this->container = $container;
    }
 
    /**
@@ -52,6 +54,32 @@ class OrganizationService
       $this->em->flush();
 
       return $organization;
+    }
+
+    public function printTemplate()
+    {
+        $organization = $this->em->getRepository(Organization::class)->findOneBy([]);
+        try {
+            $html = $this->container->get('templating')->render(
+            '@Common/Pdf/template.html.twig',
+                array(
+                  'name' => $organization->getName(),
+                  'logo' => $organization->getLogo(),
+                  'footer' => $organization->getFooterContent(),
+                  'primaryColor' => $organization->getPrimaryColor(),
+                  'secondaryColor' => $organization->getSecondaryColor(),
+                  'font' => $organization->getFont(),
+                )
+            );
+
+            $response = $this->container->get('pdf_service')->printPdf($html, 'organizationTemplate');
+
+            return $response;
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return new Response('');
     }
 
 }

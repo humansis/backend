@@ -136,4 +136,31 @@ class OrganizationController extends Controller
         $return = 'https://s3.'.$region.'.amazonaws.com/'.$bucketName.'/organization/'.$filename;
         return new Response(json_encode($return));
     }
+
+    /**
+     * To print a template of the organization pdf
+     *
+     * @Rest\Get("/organization-print-template", name="print_template")
+     * @SWG\Tag(name="Organization")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @return Response
+     */
+    public function printTemplateAction()
+    {
+        try {
+            return $this->get('organization_service')->printTemplate();
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
 }
