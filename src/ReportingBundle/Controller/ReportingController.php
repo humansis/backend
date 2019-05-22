@@ -39,7 +39,11 @@ class ReportingController extends Controller
     public function getFilteredDataAction(Request $request)
     {
         $filters = $request->query->all();
+
+        // Format string list into array
         $filters['period'] = $filters['period'] === '' ? [] : explode(',', $filters['period']);
+        $filters['projects'] = $filters['projects'] === '' ? [] : explode(',', $filters['projects']);
+        $filters['distributions'] = $filters['distributions'] === '' ? [] : explode(',', $filters['distributions']);
         dump($filters);
 
         try {

@@ -72,7 +72,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
             case 'BMSU_Project_NM':
             case 'BMSU_Project_NW':
                 $qb->select("CONCAT(rv.unity, '/', p.name) AS name, p.name AS project")
-                        ->groupBy('name', 'project');
+                    ->groupBy('name', 'project');
                 break;
             case 'BMSU_Project_PV':
                 $qb->select('p.name AS name', 'p.id AS id')
@@ -94,7 +94,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMS_Project_D', $filters);
         $qb->select('p.name AS name', 'rv.value AS value')
-            ->groupBy('value');
+            ->groupBy('name', 'value');
         return $qb->getQuery()->getArrayResult();
     }
 

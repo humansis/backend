@@ -19,10 +19,10 @@ abstract class AbstractDataRetriever
      * Use to verify if a key project exist in filter
      * If this key exists, it means a project was selected in selector
      * @param $qb
-     * @param string $projects
+     * @param array $projects
      * @return mixed
      */
-    public function filterByProjects($qb, string $projects)
+    public function filterByProjects($qb, array $projects)
     {
         if ($projects !== '') {
             $qb->andWhere('p.id IN (:projects)')
@@ -36,10 +36,10 @@ abstract class AbstractDataRetriever
      * Use to verify if a key distribution exist in filter
      * If this key exists, it means a distribution was selected in selector
      * @param $qb
-     * @param string $distributions
+     * @param array $distributions
      * @return mixed
      */
-    public function filterByDistributions($qb, string $distributions)
+    public function filterByDistributions($qb, array $distributions)
     {
         if ($distributions !== '') {
             $qb->andWhere('d.id IN (:distributions)')
@@ -67,15 +67,15 @@ abstract class AbstractDataRetriever
 
         if ($frequency === "Month") {
             $qb ->addSelect('AVG(rv.value) AS value', 'rv.unity AS unity', "MONTH(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
-                ->groupBy('unity', 'date');
+                ->addGroupBy('unity', 'date');
             $result = $qb->getQuery()->getArrayResult();
         } elseif ($frequency === "Year") {
             $qb ->addSelect('AVG(rv.value) AS value', 'rv.unity AS unity', "YEAR(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
-                ->groupBy('unity', 'date');
+                ->addGroupBy('unity', 'date');
             $result = $qb->getQuery()->getArrayResult();
         } elseif ($frequency === "Quarter") {
             $qb ->addSelect('AVG(rv.value) AS value', 'rv.unity AS unity', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
-                ->groupBy('unity', 'date');
+                ->addGroupBy('unity', 'date');
             $result = $this->getNameQuarter($qb->getQuery()->getArrayResult());
         }
 
