@@ -1,8 +1,21 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <style>{{ source('@Voucher/Pdf/main.css') }}</style>
+        <style>{{ source('@Common/Pdf/main.css') }}</style>
         <style>
+
+            body {
+                font-family: {{ font }};
+            }
+
+            header, footer, header h1 {
+                color: {{ primaryColor }}
+            }
+
+            h1 {
+                font-weight: normal;
+            }
+
            .column-left {
                 float: left;
             }
@@ -44,7 +57,8 @@
         </style>
     </head>
     <body>
-        {{ include('@Voucher/Pdf/header.html.twig') }}
+        {% set vars = {'name': organizationName, 'logo': organizationLogo, 'footer': footer, 'primaryColor': primaryColor} %}
+        {% include('@Common/Pdf/header.html.twig') with vars %}
         <main>
             <div class="row">
                     <div class="column-left">
