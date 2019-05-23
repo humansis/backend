@@ -4,17 +4,30 @@ namespace Application\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
-
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20190523070732 extends AbstractMigration
+final class Version20190523070732 extends AbstractMigration implements ContainerAwareInterface
 {
+    /** @var ContainerInterface */
+    private $container;
+    /**
+     * @param ContainerInterface|null $container
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
     public function up(Schema $schema) : void
     {
+        $databaseUser = $this->container->getParameter('database_user');
+
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('CREATE DEFINER=`bms_user`@`%` FUNCTION `LEVENSHTEIN`(`s1` VARCHAR(255), `s2` VARCHAR(255)) RETURNS INT(11) NOT DETERMINISTIC CONTAINS SQL SQL SECURITY DEFINER BEGIN
+        $this->addSql('CREATE DEFINER='.$databaseUser.'@`%` FUNCTION `LEVENSHTEIN`(`s1` VARCHAR(255), `s2` VARCHAR(255)) RETURNS INT(11) NOT DETERMINISTIC CONTAINS SQL SQL SECURITY DEFINER BEGIN
             DECLARE s1_len, s2_len, i, j, c, c_temp, cost INT;
             DECLARE s1_char CHAR;
             DECLARE cv0, cv1 VARBINARY(256);
