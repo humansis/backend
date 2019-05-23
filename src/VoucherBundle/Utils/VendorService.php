@@ -280,7 +280,7 @@ class VendorService
                 )
             );
 
-            $response = $this->container->get('pdf_service')->printPdf($html, 'invoice');
+            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'invoice');
             return $response;
         } catch (\Exception $e) {
             throw $e;

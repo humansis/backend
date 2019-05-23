@@ -26,7 +26,7 @@ class PdfService
         $this->em = $entityManager;
     }
 
-    public function printPdf($html, string $name)
+    public function printPdf($html, string $orientation, string $name)
     {
         $pdfOptions = new Options();
         $pdfOptions->set('defaultFont', 'Arial');
@@ -35,7 +35,7 @@ class PdfService
 
         try {
             $dompdf->loadHtml($html);
-            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->setPaper('A4', $orientation);
             $dompdf->render();
             $output = $dompdf->output();
             $pdfFilepath =  getcwd() . '/'.$name.'.pdf';

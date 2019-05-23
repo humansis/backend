@@ -499,4 +499,33 @@ class DistributionService
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'generalrelief', $type);
     }
+
+
+        /**
+         * Export all distributions in a pdf
+         * @param int $projectId
+         * @return mixed
+         */
+        public function exportToPdf(int $projectId)
+        {
+            $exportableTable = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId, 'archived' => false]);
+            $project = $this->em->getRepository(Project::class)->find($projectId);
+
+            try {
+                $html =  $this->container->get('templating')->render(
+                    '@Distribution/Pdf/distributions.html.twig',
+                    array_merge(
+                        ['project' => $project,
+                        'distributions' => $exportableTable],
+                        $this->container->get('pdf_service')->getInformationStyle()
+                    )
+
+                );
+
+                $response = $this->container->get('pdf_service')->printPdf($html, 'landscape', 'bookletCodes');
+                return $response;
+            } catch (\Exception $e) {
+                throw new \Exception($e);
+            }
+        }
 }

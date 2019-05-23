@@ -445,7 +445,7 @@ class BookletService
                 }
             }
 
-            $response = $this->container->get('pdf_service')->printPdf($html, 'booklets');
+            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'booklets');
 
             return $response;
         } catch (\Exception $e) {

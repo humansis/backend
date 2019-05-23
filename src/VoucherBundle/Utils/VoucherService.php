@@ -206,10 +206,9 @@ class VoucherService
 
         /**
          * Export all vouchers in a pdf
-         * @param string $type
          * @return mixed
          */
-        public function exportToPdf(string $type)
+        public function exportToPdf()
         {
             $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
 
@@ -223,12 +222,10 @@ class VoucherService
 
                 );
 
-                $response = $this->container->get('pdf_service')->printPdf($html, 'bookletCodes');
+                $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'bookletCodes');
                 return $response;
             } catch (\Exception $e) {
                 throw new \Exception($e);
             }
-    
-            return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
         }
 }

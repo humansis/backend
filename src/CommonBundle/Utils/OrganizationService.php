@@ -65,7 +65,7 @@ class OrganizationService
               $this->container->get('pdf_service')->getInformationStyle()
             );
 
-            $response = $this->container->get('pdf_service')->printPdf($html, 'organizationTemplate');
+            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'organizationTemplate');
 
             return $response;
         } catch (\Exception $e) {

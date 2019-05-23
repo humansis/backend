@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>{{ source('@Common/Pdf/main.css') }}</style>
+        <style>
+            td, th {
+               padding: 10px;
+            }
+            body {
+                font-family: {{ font }};
+            }
+
+            header, footer, header h1 {
+                color: {{ primaryColor }}
+            }
+
+            h1 {
+                font-weight: normal;
+                color:  {{ secondaryColor }};
+                text-align: center;
+                margin-top: -20px;
+            }
+
+            h1 img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .donors {
+                color: {{ primaryColor }};
+                font-size: 20px;
+                margin-bottom: 30px;
+            }
+
+            .donors img {
+                width: 20px;
+                height: 20px;
+                margin-right: 10px;
+            }
+        </style>
+
+    </head>
+    <body>
+        {% set vars = {'name': organizationName, 'logo': organizationLogo, 'footer': footer, 'primaryColor': primaryColor} %}
+        {% include('@Common/Pdf/header.html.twig') with vars %}
+        <main>
+            <h1>
+                <img src="https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/donors/5ce677efba680.png" />
+                Project n° {{ project.id }} : {{ project.name }}
+            </h1>
+
+            <div class="donors">
+                <span> Donors : <span>
+                {% for donor in project.donors %}
+                    <img src="{{ donor.logo }}" />
+                    <span>{{ donor.shortname }} </span>
+                {% endfor %}
+            </div>
+            <table>
+                <tr>
+                    <th>Distribution ID</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Items Distributed</th>
+                    <th>Quantity</th>
+                    <th>Amount distributed</th>
+                </tr>
+                {% for distribution in distributions %}
+                    <tr>
+                        <td>{{ distribution.id }}</td>
+                        <td>{{ distribution.dateDistribution | date("m/d/Y") }}</td>
+                        <td>
+                            {% if distribution.location.adm4 %}
+                                {{ distribution.location.adm4.name }}
+                            {% elseif distribution.location.adm3 %}
+                                {{ distribution.location.adm3.name }}
+                            {% elseif distribution.location.adm2 %}
+                                {{ distribution.location.adm2.name }}
+                            {% else %}
+                                {{ distribution.location.adm1.name }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <p>
+                                {% for commodity in distribution.commodities %}
+                                    {{ commodity.modalityType.name }} <br>
+                                {% endfor %}
+                            </p>
+                        </td>
+                        <td>
+                            <p>
+                                {% for commodity in distribution.commodities %}
+                                    {{ commodity.value }} {{ commodity.unit }} /pers <br>
+                                {% endfor %}
+                            </p>
+                        </td>
+                        <td>
+                            <p>
+                                {% for commodity in distribution.commodities %}
+                                    {{ distribution.getPercentageValue(commodity) }} % <br>
+                                {% endfor %}
+                            </p>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </main>
+    </body>
+</html>
