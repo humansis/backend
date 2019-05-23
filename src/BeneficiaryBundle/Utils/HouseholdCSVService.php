@@ -130,7 +130,7 @@ class HouseholdCSVService
         // Clean cache if timestamp is expired
         $this->clearExpiredSessions();
         $this->token = $token;
-
+        
         do {
             // get step
             $this->step = $this->getStepFromCache();
@@ -176,11 +176,16 @@ class HouseholdCSVService
                 }
             }
 
-            $cacheId = 1;
+            $cacheId = 0;
             foreach ($treatReturned as $index => $householdArray) {
                 // use the generated for the first step, and then use existing one
                 $correctId = $this->step === 1 ? $cacheId : $householdArray['id_tmp_cache'];
-                $returnTmp = $verifier->verify($countryIso3, $householdArray, $correctId, $email);
+                try {
+                    $returnTmp = $verifier->verify($countryIso3, $householdArray, $correctId, $email);
+                } catch (\Exception $e) {
+                    $this->clearCacheToken($this->token);
+                    throw $e;
+                }
                 // If there are errors
                 if (! empty($returnTmp)) {
                     // Duplicate verifier returns already an array of duplicates
