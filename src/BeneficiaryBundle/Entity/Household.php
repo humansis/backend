@@ -21,7 +21,7 @@ class Household
      * First value with a column in the csv which can move, depends on the number of country specifics
      * @var string
      */
-    const firstColumnNonStatic = 'L';
+    const firstColumnNonStatic = 'M';
 
     /**
      * The row index of the header (with the name of country specifics)
@@ -44,37 +44,38 @@ class Household
         "address_number" => "B",
         "address_postcode" => "C",
         "livelihood" => "D",
-        "notes" => "E",
-        "latitude" => "F",
-        "longitude" => "G",
+        "income_level" => "E",
+        "notes" => "F",
+        "latitude" => "G",
+        "longitude" => "H",
         "location" => [
             // Location
-            "adm1" => "H",
-            "adm2" => "I",
-            "adm3" => "J",
-            "adm4" => "K"
+            "adm1" => "I",
+            "adm2" => "J",
+            "adm3" => "K",
+            "adm4" => "L"
         ],
         // Beneficiary
         "beneficiaries" => [
-            "en_given_name" => "L",
-            "en_family_name" => "M",
-            "local_given_name" => "N",
-            "local_family_name" => "O",
-            "gender" => "P",
-            "status" => "Q",
-            "residency_status" => "R",
-            "date_of_birth" => "S",
-            "vulnerability_criteria" => "T",
-            "phone1_type" => "U",
-            "phone1_prefix" => "V",
-            "phone1_number" => "W",
-            "phone1_proxy" => "X",
-            "phone2_type" => "Y",
-            "phone2_prefix" => "Z",
-            "phone2_number" => "AA",
-            "phone2_proxy" => "AB",
-            "national_id_type" => "AC",
-            "national_id_number" => "AD"
+            "en_given_name" => "M",
+            "en_family_name" => "N",
+            "local_given_name" => "O",
+            "local_family_name" => "P",
+            "gender" => "Q",
+            "status" => "R",
+            "residency_status" => "S",
+            "date_of_birth" => "T",
+            "vulnerability_criteria" => "U",
+            "phone1_type" => "V",
+            "phone1_prefix" => "W",
+            "phone1_number" => "X",
+            "phone1_proxy" => "Y",
+            "phone2_type" => "Z",
+            "phone2_prefix" => "AA",
+            "phone2_number" => "AB",
+            "phone2_proxy" => "AC",
+            "national_id_type" => "AD",
+            "national_id_number" => "AE"
         ]
     ];
 

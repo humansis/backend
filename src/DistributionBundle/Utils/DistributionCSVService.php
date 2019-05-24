@@ -243,6 +243,7 @@ class DistributionCSVService
                 "address_number" => strval($beneficiaryToCreate['addressNumber']),
                 "address_postcode" => strval($beneficiaryToCreate['addressPostcode']),
                 "livelihood" => $beneficiaryToCreate['livelihood'],
+                "income_level" => $beneficiaryToCreate['incomeLevel'],
                 "notes" => $beneficiaryToCreate['notes'],
                 "latitude" => strval($beneficiaryToCreate['latitude']),
                 "longitude" => strval($beneficiaryToCreate['longitude']),

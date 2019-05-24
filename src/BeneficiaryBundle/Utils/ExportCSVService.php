@@ -24,6 +24,7 @@ class ExportCSVService
         "Address number" => '#contact+address_number',
         "Address postcode" => '#contact+address_postcode',
         "Livelihood" => '',
+        "Income level" => '',
         "Notes" => '#description+notes',
         "Latitude" => '#geo+lat',
         "Longitude" => '#geo+lon',
@@ -40,6 +41,7 @@ class ExportCSVService
         "Address number" => '4943',
         "Address postcode" => '94801',
         "Livelihood" => '2',
+        "Income level" => '3',
         "Notes" => 'Greatest city',
         "Latitude" => '38.018234',
         "Longitude" => '-122.379730',
@@ -56,6 +58,7 @@ class ExportCSVService
         "Address number" => '',
         "Address postcode" => '',
         "Livelihood" => '',
+        "Income level" => '',
         "Notes" => '',
         "Latitude" => '',
         "Longitude" => '',
@@ -71,6 +74,7 @@ class ExportCSVService
         "Address number" => "Number*",
         "Address postcode" => "Number*",
         "Livelihood" => "Number [0-24]",
+        "Income level" => "Number [1-5]",
         "Notes" => "String",
         "Latitude" => "Float",
         "Longitude" => "Float",
@@ -208,8 +212,8 @@ class ExportCSVService
         ];
 
         $tempBenef = [
-            "Given name" => 'Price',
-            "Family name" => 'Smith',
+            "English given name" => 'Price',
+            "English family name" => 'Smith',
             "Gender" => 'Female',
             "Head" => 'true',
             "Residency status" => 'Refugee',
@@ -231,8 +235,8 @@ class ExportCSVService
         ];
 
         $dependent = [
-            "Given name" => 'James',
-            "Family name" => 'Smith',
+            "English given name" => 'James',
+            "English family name" => 'Smith',
             "Gender" => 'Male',
             "Head" => 'false',
             "Residency status" => 'Resident',
@@ -254,8 +258,10 @@ class ExportCSVService
         ];
 
         $details = [
-            "Given name" => 'String*',
-            "Family name" => 'String*',
+            "English given name" => 'String*',
+            "English family name" => 'String*',
+            "Local given name" => 'String*',
+            "Local family name" => 'String*',
             "Gender" => 'Male / Female*',
             "Head" => 'String [true-false]*',
             "Residency status" => 'Refugee / IDP / Resident*',

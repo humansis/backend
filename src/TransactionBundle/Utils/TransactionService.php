@@ -340,6 +340,7 @@ class TransactionService
                 "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
                 "addressPostcode" => $beneficiary->getHousehold()->getAddressPostcode(),
                 "livelihood" => $beneficiary->getHousehold()->getLivelihood(),
+                "incomeLevel" => $beneficiary->getHousehold()->getIncomeLevel(),
                 "notes" => $beneficiary->getHousehold()->getNotes(),
                 "latitude" => $beneficiary->getHousehold()->getLatitude(),
                 "longitude" => $beneficiary->getHousehold()->getLongitude(),
