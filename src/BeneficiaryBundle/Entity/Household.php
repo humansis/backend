@@ -189,6 +189,14 @@ class Household
      */
     private $numberDependents;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold"})
+     */
+    private $incomeLevel;
+
 
     /**
      * Constructor
@@ -613,4 +621,29 @@ class Household
 
         return $this;
     }
+
+    /**
+     * Set incomeLevel.
+     *
+     * @param int $incomeLevel
+     *
+     * @return Household
+     */
+    public function setIncomeLevel($incomeLevel)
+    {
+        $this->incomeLevel = $incomeLevel;
+
+        return $this;
+    }
+
+    /**
+     * Get incomeLevel.
+     *
+     * @return int
+     */
+    public function getIncomeLevel()
+    {
+        return $this->incomeLevel;
+    }
+
 }
