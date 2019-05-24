@@ -59,7 +59,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
         }
 
         if (null === $newHead) {
-            return null;
+            throw new \Exception('A household in the file has no head (household with ' . $householdArray['beneficiaries'][0]['given_name'] . ' ' . $householdArray['beneficiaries'][0]['family_name'] . ').');
         }
 
         $similarHouseholds = $householdRepository->foundSimilarLevenshtein(
