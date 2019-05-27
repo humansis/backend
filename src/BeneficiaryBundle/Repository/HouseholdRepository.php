@@ -148,14 +148,6 @@ class HouseholdRepository extends AbstractCriteriaRepository
             if ($value == "location") {
                 $q->addGroupBy("adm1")->addOrderBy("adm1.name", $direction);
             }
-            // If the field is the english first name, we sort it by the direction sent
-            elseif ($value == "enFirstName") {
-                $q->addGroupBy("b")->addOrderBy("b.enGivenName", $direction);
-            }
-            // If the field is the english family name, we sort it by the direction sent
-            elseif ($value == "enFamilyName") {
-                $q->addGroupBy("b")->addOrderBy("b.enFamilyName", $direction);
-            }
             // If the field is the local first name, we sort it by the direction sent
             elseif ($value == "localFirstName") {
                 $q->addGroupBy("b")->addOrderBy("b.localGivenName", $direction);
