@@ -145,7 +145,7 @@ class UserService
             ->setEmailCanonical($salt)
             ->setSalt($salt)
             ->setPassword("")
-            ->setMustChangePassword(0);
+            ->setChangePassword(0);
 
         $this->em->persist($user);
 
@@ -262,7 +262,7 @@ class UserService
             ->setUsername($user->getUsername())
             ->setUsernameCanonical($user->getUsername())
             ->setRoles($roles)
-            ->setMustChangePassword($userData['must_change_password']);
+            ->setChangePassword($userData['change_password']);
 
         $user->setPassword($userData['password']);
 
@@ -319,7 +319,7 @@ class UserService
         }
 
         $user->setPassword($newPassword)
-            ->setMustChangePassword(0);
+            ->setChangePassword(0);
         $this->em->merge($user);
         $this->em->flush();
 

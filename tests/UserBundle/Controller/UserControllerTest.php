@@ -62,7 +62,7 @@ class UserControllerTest extends BMSServiceTestCase
             "roles" => ["ROLE_ADMIN"],
             "password" => "PSWUNITTEST",
             'salt' => $return['salt'],
-            'must_change_password' => true,
+            'change_password' => true,
         ];
 
         // Fake connection with a token for the user tester (ADMIN)

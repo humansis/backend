@@ -61,7 +61,7 @@ class UserFixtures extends Fixture
                     ->setUsernameCanonical($datum[0])
                     ->setSalt($salt)
                     ->setRoles(["ROLE_ADMIN"])
-                    ->setMustChangePassword(0);
+                    ->setChangePassword(0);
                     $instance->setPassword($this->encoderFactory->getEncoder($instance)->encodePassword($datum[1], $salt));
                     $manager->persist($instance);
                     
