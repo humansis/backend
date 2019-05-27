@@ -121,19 +121,6 @@ class DistributionCSVService
                     } else {
                         $beneficiaryArray[$index] = 0;
                     }
-                } else if ($key == "livelihood" && $beneficiaryArray[$index]) {
-                    $beneficiaryArray[$index] = strtolower($beneficiaryArray[$index]);
-                    $livelihood = null;
-                    foreach (Household::LIVELIHOOD as $livelihoodId => $value) {
-                        if (strtolower($value) === $beneficiaryArray[$index]) {
-                            $livelihood = $livelihoodId;
-                        }
-                    }
-                    if ($livelihood !== null) {
-                        $beneficiaryArray[$index] = $livelihood;
-                    } else {
-                        throw new \Exception("Invalid livelihood at line " . ($beneficiaryIndex + 2));
-                    }
                 }
 
                 $beneficiaryWithKey[$key] = $beneficiaryArray[$index];
@@ -278,6 +265,7 @@ class DistributionCSVService
             );
 
             $this->CSVToArrayMapper->mapLocation($householdToCreate);
+            $this->CSVToArrayMapper->mapLivelihood($householdToCreate);
             $this->householdService->createOrEdit($householdToCreate, array($distributionProject));
             $toCreate = $this->em->getRepository(Beneficiary::class)
                 ->findOneBy(["givenName" => $beneficiaryToCreate['givenName'], 'familyName' => $beneficiaryToCreate['familyName'], 'gender' => $beneficiaryToCreate['gender']]);

@@ -92,21 +92,6 @@ class CSVToArrayMapper extends AbstractMapper
     {
         $formattedHouseholdArray = [];
 
-        if ($row[$mappingCSV['livelihood']]) {
-            $row[$mappingCSV['livelihood']] = strtolower($row[$mappingCSV['livelihood']]);
-            $livelihood = null;
-            foreach (Household::LIVELIHOOD as $livelihoodId => $value) {
-                if (strtolower($value) === $row[$mappingCSV['livelihood']]) {
-                    $livelihood = $livelihoodId;
-                }
-            }
-            if ($livelihood !== null) {
-                $row[$mappingCSV['livelihood']] = $livelihood;
-            } else {
-                throw new \Exception("Invalid livelihood at line " .$lineNumber);
-            }
-        }
-
         foreach ($mappingCSV as $formattedIndex => $csvIndex) {
             if (is_array($csvIndex)) {
                 foreach ($csvIndex as $formattedIndex2 => $csvIndex2) {
@@ -187,6 +172,7 @@ class CSVToArrayMapper extends AbstractMapper
             $this->mapProfile($formattedHouseholdArray);
             $this->mapStatus($formattedHouseholdArray);
             $this->mapLocation($formattedHouseholdArray);
+            $this->mapLivelihood($formattedHouseholdArray);
         } catch (\Exception $exception) {
             throw $exception;
         }
@@ -408,6 +394,28 @@ class CSVToArrayMapper extends AbstractMapper
             throw new \Exception('The Adm4 ' . $location['adm4'] . ' was not found in ' . $adm3->getName());
         } else {
             $formattedHouseholdArray['location']['adm4'] = $adm4->getId();
+        }
+    }
+
+    /**
+     * Reformat the field livelihood.
+     *
+     * @param $formattedHouseholdArray
+     */
+    public function mapLivelihood(&$formattedHouseholdArray)
+    {
+        if ($formattedHouseholdArray['livelihood']) {
+            $livelihood = null;
+            foreach (Household::LIVELIHOOD as $livelihoodId => $value) {
+                if (strcasecmp($value, $formattedHouseholdArray['livelihood']) === 0) {
+                    $livelihood = $livelihoodId;
+                }
+            }
+            if ($livelihood !== null) {
+                $formattedHouseholdArray['livelihood'] = $livelihood;
+            } else {
+                throw new \Exception("Invalid livelihood.");
+            }
         }
     }
 }
