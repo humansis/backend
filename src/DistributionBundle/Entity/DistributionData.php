@@ -617,7 +617,7 @@ class DistributionData implements ExportableInterface
                 return 0;
             }
             $correspondingGeneralRelief = $distributionBeneficiary->getGeneralReliefs()[$commodityIndex];
-            return ($correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0 );
+            return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0 );
         }
     }
 
