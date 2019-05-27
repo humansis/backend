@@ -63,7 +63,8 @@ class DistributionControllerTest extends BMSServiceTestCase
                     ],
                     "type" => "Mobile Money",
                     "unit" => "USD",
-                    "value" => "150"
+                    "value" => "150",
+                    "description" => null
                 ]
             ],
             "date_distribution" => "13-09-2018",
