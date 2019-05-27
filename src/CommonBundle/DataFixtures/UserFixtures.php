@@ -35,7 +35,8 @@ class UserFixtures extends Fixture
     }
 
     private $data = [
-        ['tester', 'tester'],
+        // Changed to reduce access to test server
+        ['reliefapps@yopmail.com', 'reliefapps'],
         ['vendor', 'vendor']
     ];
 
