@@ -399,8 +399,8 @@ class HouseholdService
             $household = $this->em->getRepository(Household::class)->find($householdId);
             $household->setArchived(true);
             $this->em->persist($household);
-            $this->em->flush();
         }
+        $this->em->flush();
         return "Households have been archived";
     }
 
