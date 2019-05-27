@@ -56,23 +56,25 @@ class Household
         ],
         // Beneficiary
         "beneficiaries" => [
-            "given_name" => "L",
-            "family_name" => "M",
-            "gender" => "N",
-            "status" => "O",
-            "residency_status" => "P",
-            "date_of_birth" => "Q",
-            "vulnerability_criteria" => "R",
-            "phone1_type" => "S",
-            "phone1_prefix" => "T",
-            "phone1_number" => "U",
-            "phone1_proxy" => "V",
-            "phone2_type" => "W",
-            "phone2_prefix" => "X",
-            "phone2_number" => "Y",
-            "phone2_proxy" => "Z",
-            "national_id_type" => "AA",
-            "national_id_number" => "AB"
+            "en_given_name" => "L",
+            "en_family_name" => "M",
+            "local_given_name" => "N",
+            "local_family_name" => "O",
+            "gender" => "P",
+            "status" => "Q",
+            "residency_status" => "R",
+            "date_of_birth" => "S",
+            "vulnerability_criteria" => "T",
+            "phone1_type" => "U",
+            "phone1_prefix" => "V",
+            "phone1_number" => "W",
+            "phone1_proxy" => "X",
+            "phone2_type" => "Y",
+            "phone2_prefix" => "Z",
+            "phone2_number" => "AA",
+            "phone2_proxy" => "AB",
+            "national_id_type" => "AC",
+            "national_id_number" => "AD"
         ]
     ];
 

@@ -93,8 +93,10 @@ class BMSServiceTestCase extends KernelTestCase
         ],
         "beneficiaries" => [
             [
-                "given_name" => "FIRSTNAME_TEST",
-                "family_name" => "NAME_TEST",
+                "en_given_name" => "FIRSTNAME_TEST",
+                "en_family_name" => "NAME_TEST",
+                "local_given_name" => "FIRSTNAME_TEST",
+                "local_family_name" => "NAME_TEST",
                 "gender" => 1,
                 "status" => "1",
                 "residency_status" => "IDP",
@@ -123,8 +125,10 @@ class BMSServiceTestCase extends KernelTestCase
                 ]
             ],
             [
-                "given_name" => "GIVENNAME_TEST",
-                "family_name" => "FAMILYNAME_TEST",
+                "en_given_name" => "GIVENNAME_TEST",
+                "en_family_name" => "FAMILYNAME_TEST",
+                "local_given_name" => "GIVENNAME_TEST",
+                "local_family_name" => "FAMILYNAME_TEST",
                 "gender" => 1,
                 "status" => 0,
                 "residency_status" => "resident",

@@ -131,8 +131,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 $this->assertArrayHasKey('adm3', $location);
                 $this->assertArrayHasKey('adm4', $location);
                 $beneficiary = current($household["beneficiaries"]);
-                $this->assertArrayHasKey('given_name', $beneficiary);
-                $this->assertArrayHasKey('family_name', $beneficiary);
+                $this->assertArrayHasKey('local_given_name', $beneficiary);
+                $this->assertArrayHasKey('local_family_name', $beneficiary);
                 $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
                 $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
                 $this->assertArrayHasKey('id', $vulnerability_criterion);
