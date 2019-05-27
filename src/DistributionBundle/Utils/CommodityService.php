@@ -43,7 +43,8 @@ class CommodityService
             ->setModalityType(
                 $this->em->getRepository(ModalityType::class)
                     ->find($commodityArray["modality_type"]["id"])
-            );
+            )
+            ->setDescription($commodityArray["description"]);
 
         $this->em->persist($commodity);
 
