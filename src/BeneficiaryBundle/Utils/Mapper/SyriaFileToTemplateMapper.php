@@ -520,8 +520,14 @@ class SyriaFileToTemplateMapper
      */
     private function getColumnLetter(string $letter)
     {
-        if ($letter >= self::FIRST_LETTER_NON_STATIC) {
-            $ascii = ord($letter) + $this->numberCountrySpecifics;
+        if ($letter >= self::FIRST_LETTER_NON_STATIC || strlen($letter)  > strlen(self::FIRST_LETTER_NON_STATIC)) {
+
+            if (strlen($letter) < 2) {
+                $ascii = ord($letter) + $this->numberCountrySpecifics;
+            } else {
+                // Here we add 26 if the column is a AA, AB, AC, etc...
+                $ascii = 26 + ord(substr($letter[1], 0, 1)) + $this->numberCountrySpecifics;
+            }
             $prefix = '';
             if ($ascii > 90) {
                 $prefix = 'A';

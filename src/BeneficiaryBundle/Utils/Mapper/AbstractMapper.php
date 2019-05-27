@@ -92,6 +92,7 @@ abstract class AbstractMapper
         if ($letter1 == 'AA' || $this->moreThanZ) {
             $prefix = 'A';
             $this->moreThanZ = true;
+            $ascii = 26 + ord(substr($letter1[1], 0, 1)) + $number;
         }
 
         if ($ascii > 90) {
