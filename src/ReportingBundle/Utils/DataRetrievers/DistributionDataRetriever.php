@@ -160,7 +160,8 @@ class DistributionDataRetriever extends AbstractDataRetriever
         $men = $this->BMSU_Distribution_NM($filters);
         $women = $this->BMSU_Distribution_NW($filters);
 
-        return array_merge($men, $women);
+
+        return array_merge_recursive($men,$women);
     }
 
     /**
@@ -170,25 +171,11 @@ class DistributionDataRetriever extends AbstractDataRetriever
      */
     public function BMS_Distribution_PVS(array $filters)
     {
-        $totalVulnerabilitiesServed = $this->BMSU_Distribution_TVS($filters);
-        $vulnerabilitiesServedPerVulnerability = $this->BMSU_Distribution_TVSV($filters);
-
-        // Map total number of vulnerabilities served to the date
-        foreach ($totalVulnerabilitiesServed as $key => $total) {
-            $totalVulnerabilitiesServed[$total['date']] = $total;
-            unset($totalVulnerabilitiesServed[$key]);
-        }
-
-        foreach ($vulnerabilitiesServedPerVulnerability as $key => $vulnerability) {
-            $percentageValue = (int)$vulnerability['value'] / (int)$totalVulnerabilitiesServed[$vulnerability['date']]['value'] * 100;
-            $vulnerabilitiesServedPerVulnerability[$key]['value'] = $percentageValue;
-        }
-
-        return $vulnerabilitiesServedPerVulnerability;
+        return $this->BMSU_Distribution_TVS($filters);
     }
 
     /**
-     * Get the percent of value used in the project by the distribution
+     * Get the percentage of value used in the project by the distribution
      * @param array $filters
      * @return array
      */
@@ -197,7 +184,8 @@ class DistributionDataRetriever extends AbstractDataRetriever
         $repositoryProject = $this->em->getRepository(Project::class);
 
         $projectValue = $this->project->BMSU_Project_PV($filters);
-        $distributionValue = $this->BMS_Distribution_TDV($filters);
+        return $this->BMS_Distribution_TDV($filters);
+
 
         // TODO: Change this in accordance to the new project value (expected beneficiaries)
     }

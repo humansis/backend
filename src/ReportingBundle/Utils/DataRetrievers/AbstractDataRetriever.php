@@ -4,6 +4,7 @@ namespace ReportingBundle\Utils\DataRetrievers;
 
 use Doctrine\ORM\EntityManager;
 
+use phpDocumentor\Reflection\Types\Object_;
 use ReportingBundle\Entity\ReportingDistribution;
 use \ProjectBundle\Entity\Project;
 use \DistributionBundle\Entity\DistributionData;
@@ -79,7 +80,24 @@ abstract class AbstractDataRetriever
             $result = $this->getNameQuarter($qb->getQuery()->getArrayResult());
         }
 
-        return $result;
+        return  $this->splitByPeriod($result);
+    }
+
+    /**
+     * split values by period
+     * @param $values
+     * @return mixed
+     */
+    private function splitByPeriod($values) {
+        $splitValues = [];
+
+        foreach ($values as $value ) {
+            $splitValues[
+                $value["date"]
+            ][] = $value;
+        }
+
+        return $splitValues;
     }
 
     /**

@@ -64,6 +64,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
      */
     public function conditionSelect($qb, $nameFunction)
     {
+
         switch ($nameFunction) {
             case 'BMS_Project_HS':
                 $qb->select('p.name AS name')
@@ -95,7 +96,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
         $qb = $this->getReportingValue('BMS_Project_D', $filters);
         $qb->select('p.name AS name', 'rv.value AS value')
             ->groupBy('name', 'value');
-        return $qb->getQuery()->getArrayResult();
+        return null;
     }
 
     /**
@@ -134,7 +135,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
         $men = $this->BMSU_Project_NM($filters);
         $women = $this->BMSU_Project_NW($filters);
 
-        return array_merge($men, $women);
+        return array_merge_recursive($men, $women);
     }
 
     /**
@@ -142,22 +143,10 @@ class ProjectDataRetriever extends AbstractDataRetriever
      * @param array $filters
      * @return array
      */
+    //TODO: group this with the total amount of vulnerabilities
     public function BMS_Project_PVS(array $filters)
     {
-        $totalVulnerabilitiesServed = $this->BMSU_Project_TVS($filters);
         $vulnerabilitiesServedPerVulnerability = $this->BMSU_Project_TVSV($filters);
-
-        // Map total number of vulnerabilities served to the date
-        foreach ($totalVulnerabilitiesServed as $key => $total) {
-            $totalVulnerabilitiesServed[$total['date']] = $total;
-            unset($totalVulnerabilitiesServed[$key]);
-        }
-
-        foreach ($vulnerabilitiesServedPerVulnerability as $key => $vulnerability) {
-            $percentageValue = (int)$vulnerability['value'] / (int)$totalVulnerabilitiesServed[$vulnerability['date']]['value'] * 100;
-            $vulnerabilitiesServedPerVulnerability[$key]['value'] = $percentageValue;
-        }
-
         return $vulnerabilitiesServedPerVulnerability;
     }
 
@@ -178,6 +167,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
         $qb = $this->getReportingValue('BMSU_Project_NM', $filters);
         $qb = $this->conditionSelect($qb, 'BMSU_Project_NM');
         $result = $this->formatByFrequency($qb, $filters['frequency']);
+        dump($result);
         return $result;
     }
 
