@@ -21,7 +21,11 @@ class SectorFixtures extends Fixture
         ['nutrition'],
         ['protection'],
         ['shelter'],
-        ['water sanitation']
+        ['cash for work'],
+        ['TVET'],
+        ['food, RTE kits'],
+        ['NFIs'],
+        ['WASH'],
     ];
 
     /**
