@@ -74,6 +74,7 @@ class BMSServiceTestCase extends KernelTestCase
         "address_number" => "NUMBER_TEST",
         "address_postcode" => "POSTCODE_TEST",
         "livelihood" => 10,
+        "income_level" => 3,
         "notes" => "NOTES_TEST",
         "latitude" => "1.1544",
         "longitude" => "120.12",

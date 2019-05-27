@@ -34,6 +34,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "location" => $array,
             "country_specific_answers" => $array,
             "beneficiaries" => $array,
+            "income_level" => $optionalNumeric,
         ];
         $location = [
             "country_iso3" => $optionalString,
