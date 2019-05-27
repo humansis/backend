@@ -23,7 +23,8 @@ class DistributionFixtures extends Fixture
                 ],
                 'type' => 'Mobile',
                 'unit' => 'USD',
-                'value' => '45'
+                'value' => '45',
+                'description' => null
             ]
         ],
         'date_distribution' => '13-09-2020',
