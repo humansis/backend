@@ -34,7 +34,11 @@ class ModalityFixtures extends Fixture
                 'RTE Kit',
                 'Bread',
                 'Agricultural Kit',
-                'WASH Kit'
+                'WASH Kit',
+                'On site distribution',
+                'Shelter tool kit',
+                'Hygiene kit',
+                'Dignity kit',
             ]
         ],
         [
