@@ -229,13 +229,13 @@ class SyriaFileToTemplateMapper
                 // We store these names in an array
                 $beneficiaryFirstNames = explode(self::BACKSLASH_SEPARATOR, $beneficiaryFirstNames);
                 // Get the first name of the family's head and write it in column L
-                $mutualOutputRow[$this->getColumnLetter('O')] = trim($beneficiaryFirstNames[0]);
+                $mutualOutputRow[$this->getColumnLetter('M')] = trim($beneficiaryFirstNames[0]);
                 // Get the first name of of the second beneficiary and write it in column L
-                $secondBeneficiaryValues[$this->getColumnLetter('O')] = trim($beneficiaryFirstNames[1]);
+                $secondBeneficiaryValues[$this->getColumnLetter('M')] = trim($beneficiaryFirstNames[1]);
                 ;
             } else { // If only one name is found => second beneficiary doesn't exist
                 // If there is a space in the beneficiary's name
-                $mutualOutputRow[$this->getColumnLetter('O')] = trim($beneficiaryFirstNames);
+                $mutualOutputRow[$this->getColumnLetter('M')] = trim($beneficiaryFirstNames);
             }
             $beneficiaryLastNames = $row['C'];
             // If there is a slash in the beneficiary name
@@ -245,13 +245,13 @@ class SyriaFileToTemplateMapper
                 // We store these names in an array
                 $beneficiaryLastNames = explode(self::BACKSLASH_SEPARATOR, $beneficiaryLastNames);
                 // Get the last name of the family's head and write it in column M
-                $mutualOutputRow[$this->getColumnLetter('P')] = trim($beneficiaryLastNames[0]);
+                $mutualOutputRow[$this->getColumnLetter('N')] = trim($beneficiaryLastNames[0]);
                 // Get the last name of of the second beneficiary and write it in column M
-                $secondBeneficiaryValues[$this->getColumnLetter('P')] = trim($beneficiaryLastNames[1]);
+                $secondBeneficiaryValues[$this->getColumnLetter('N')] = trim($beneficiaryLastNames[1]);
                 ;
             } else { // If only one name is found => second beneficiary doesn't exist
                 // If there is a space in the beneficiary's name
-                $mutualOutputRow[$this->getColumnLetter('P')] = trim($beneficiaryLastNames);
+                $mutualOutputRow[$this->getColumnLetter('N')] = trim($beneficiaryLastNames);
             }
 
             // Get beneficiary's id
@@ -400,7 +400,7 @@ class SyriaFileToTemplateMapper
                     $outputRow = $mutualOutputRowToArrayObject->getArrayCopy();
 
                     // given name
-                    $outputRow[$this->getColumnLetter('O')] = sprintf("%s_%s_%s", $outputRow[$this->getColumnLetter('P')], $column, $j);
+                    $outputRow[$this->getColumnLetter('M')] = sprintf("%s_%s_%s", $outputRow[$this->getColumnLetter('N')], $column, $j);
 
                     // birthday
                     $outputRow[$this->getColumnLetter('T')] = $this->getBirthday($column);
@@ -450,10 +450,10 @@ class SyriaFileToTemplateMapper
         ];
         
         $dynamicColums = [
-            'M' => 'English given name',
-            'N' => 'English family name',
-            'O' => 'Local given name',
-            'P' => 'Local family name',
+            'M' => 'Local given name',
+            'N' => 'Local family name',
+            'O' => 'English given name',
+            'P' => 'English family name',
             'Q' => 'Gender',
             'R' => 'Head',
             'S' => 'Residency Status',
