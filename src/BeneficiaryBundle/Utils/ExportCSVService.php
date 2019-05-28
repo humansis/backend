@@ -187,10 +187,10 @@ class ExportCSVService
     public function exportToCsv(string $type, string $countryISO3)
     {
         $tempHxl = [
-            "English given name" => '#beneficiary+enGivenName',
-            "English family name" => '#beneficiary+enFamilyName',
             "Local given name" => '#beneficiary+localGivenName',
             "Local family name" => '#beneficiary+localFamilyName',
+            "English given name" => '#beneficiary+enGivenName',
+            "English family name" => '#beneficiary+enFamilyName',
             "Gender" => '',
             "Head" => '',
             "Residency status" => '',
@@ -212,6 +212,8 @@ class ExportCSVService
         ];
 
         $tempBenef = [
+            "Local given name" => 'Price',
+            "Local family name" => 'Smith',
             "English given name" => 'Price',
             "English family name" => 'Smith',
             "Gender" => 'Female',
@@ -235,6 +237,8 @@ class ExportCSVService
         ];
 
         $dependent = [
+            "Local given name" => 'James',
+            "Local family name" => 'Smith',
             "English given name" => 'James',
             "English family name" => 'Smith',
             "Gender" => 'Male',
@@ -258,10 +262,10 @@ class ExportCSVService
         ];
 
         $details = [
-            "English given name" => 'String*',
-            "English family name" => 'String*',
             "Local given name" => 'String*',
             "Local family name" => 'String*',
+            "English given name" => 'String',
+            "English family name" => 'String',
             "Gender" => 'Male / Female*',
             "Head" => 'String [true-false]*',
             "Residency status" => 'Refugee / IDP / Resident*',

@@ -57,10 +57,10 @@ class Household
         ],
         // Beneficiary
         "beneficiaries" => [
-            "en_given_name" => "M",
-            "en_family_name" => "N",
-            "local_given_name" => "O",
-            "local_family_name" => "P",
+            "local_given_name" => "M",
+            "local_family_name" => "N",
+            "en_given_name" => "O",
+            "en_family_name" => "P",
             "gender" => "Q",
             "status" => "R",
             "residency_status" => "S",
