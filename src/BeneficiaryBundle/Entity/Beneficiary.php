@@ -148,6 +148,11 @@ class Beneficiary implements ExportableInterface
      */
     private $distributionBeneficiary;
 
+     /**
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Referral", cascade={"persist", "remove"})
+     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution"})
+     */
+    private $referral;
 
 
     /**
@@ -578,6 +583,30 @@ class Beneficiary implements ExportableInterface
     public function getProfile()
     {
         return $this->profile;
+    }
+
+    /**
+     * Set referral.
+     *
+     * @param \BeneficiaryBundle\Entity\Referral|null $referral
+     *
+     * @return Beneficiary
+     */
+    public function setReferral(\BeneficiaryBundle\Entity\Referral $referral = null)
+    {
+        $this->referral = $referral;
+
+        return $this;
+    }
+
+    /**
+     * Get referral.
+     *
+     * @return \BeneficiaryBundle\Entity\Referral|null
+     */
+    public function getReferral()
+    {
+        return $this->referral;
     }
 
 
