@@ -236,8 +236,8 @@ class DistributionCSVService
                 "adm3" => $beneficiaryToCreate['adm3'],
                 "adm4" => $beneficiaryToCreate['adm4']
             );
+            $referralType = null;
             if ($beneficiaryToCreate['Referral Type']) {
-                $referralType = null;
                 foreach (Household::REFERRALTYPES as $referralTypeId => $value) {
                     if (strcasecmp($value, $beneficiaryToCreate['Referral Type']) === 0) {
                         $referralType = $referralTypeId;
