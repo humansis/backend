@@ -198,6 +198,12 @@ class Household
      */
     private $incomeLevel;
 
+    /**
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\HouseholdLocation", cascade={"persist", "remove"})
+     * @Groups({"FullHousehold"})
+     */
+    private $householdLocation;
+
 
     /**
      * Constructor
@@ -646,5 +652,30 @@ class Household
     {
         return $this->incomeLevel;
     }
+
+    /**
+     * Set householdLocation.
+     *
+     * @param \BeneficiaryBundle\Entity\HouseholdLocation|null $householdLocation
+     *
+     * @return Household
+     */
+    public function setHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation = null)
+    {
+        $this->householdLocation = $householdLocation;
+
+        return $this;
+    }
+
+    /**
+     * Get householdLocation.
+     *
+     * @return \BeneficiaryBundle\Entity\HouseholdLocation|null
+     */
+    public function getHouseholdLocation()
+    {
+        return $this->householdLocation;
+    }
+
 
 }
