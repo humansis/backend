@@ -236,7 +236,18 @@ class DistributionCSVService
                 "adm3" => $beneficiaryToCreate['adm3'],
                 "adm4" => $beneficiaryToCreate['adm4']
             );
-            
+            if ($beneficiaryToCreate['Referral Type']) {
+                $referralType = null;
+                foreach (Household::REFERRALTYPES as $referralTypeId => $value) {
+                    if (strcasecmp($value, $beneficiaryToCreate['Referral Type']) === 0) {
+                        $referralType = $referralTypeId;
+                    }
+                }
+                if ($referralType === null) {
+                    throw new \Exception("Invalid referral type.");
+                }
+            }
+
             $householdToCreate = array(
                 "__country" => $countryIso3,
                 "address_street" => $beneficiaryToCreate['addressStreet'],
@@ -264,12 +275,15 @@ class DistributionCSVService
                         ),
                         "vulnerability_criteria" => array(),
                         "phones" => array(),
-                        "national_ids" => array()
+                        "national_ids" => array(),
+                        "referral_type" => $referralType,
+                        "referral_comment" => $beneficiaryToCreate['Referral Comment'],
                     )
                 )
             );
 
             $this->CSVToArrayMapper->mapLocation($householdToCreate);
+
             $this->householdService->createOrEdit($householdToCreate, array($distributionProject));
             $toCreate = $this->em->getRepository(Beneficiary::class)
                 ->findOneBy(["localGivenName" => $beneficiaryToCreate['localGivenName'], 'localFamilyName' => $beneficiaryToCreate['localFamilyName'], 'gender' => $beneficiaryToCreate['gender']]);

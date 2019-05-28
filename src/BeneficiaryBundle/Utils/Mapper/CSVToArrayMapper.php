@@ -177,6 +177,7 @@ class CSVToArrayMapper extends AbstractMapper
             $this->mapProfile($formattedHouseholdArray);
             $this->mapStatus($formattedHouseholdArray);
             $this->mapLocation($formattedHouseholdArray);
+            $this->mapReferral($formattedHouseholdArray);
         } catch (\Exception $exception) {
             throw $exception;
         }
@@ -398,6 +399,23 @@ class CSVToArrayMapper extends AbstractMapper
             throw new \Exception('The Adm4 ' . $location['adm4'] . ' was not found in ' . $adm3->getName());
         } else {
             $formattedHouseholdArray['location']['adm4'] = $adm4->getId();
+        }
+    }
+
+    public function mapReferral(&$formattedHouseholdArray)
+    {
+        if ($formattedHouseholdArray['beneficiaries']['referral_type']) {
+            $referralType = null;
+            foreach (Household::REFERRALTYPES as $referralTypeId => $value) {
+                if (strcasecmp($value, $formattedHouseholdArray['beneficiaries']['referral_type']) === 0) {
+                    $referralType = $referralTypeId;
+                }
+            }
+            if ($referralType !== null) {
+                $formattedHouseholdArray['beneficiaries']['referral_type'] = $referralType;
+            } else {
+                throw new \Exception("Invalid referral type.");
+            }
         }
     }
 }

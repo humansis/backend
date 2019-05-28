@@ -3,6 +3,7 @@
 namespace TransactionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use TransactionBundle\Entity\FinancialProvider;
@@ -335,6 +336,13 @@ class TransactionService
                 $gender = 'Male';
             }
 
+            $referral_type = null;
+            $referral_comment = null;
+            if ($beneficiary->getReferral()) {
+                $referral_type = $beneficiary->getReferral()->getType();
+                $referral_comment = $beneficiary->getReferral()->getComment();
+            }
+
             array_push($exportableTable, array(
                 "addressStreet" => $beneficiary->getHousehold()->getAddressStreet(),
                 "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
@@ -356,6 +364,8 @@ class TransactionService
                 "message" => $transaction->getMessage(),
                 "money_received" => $transaction->getMoneyReceived(),
                 "pickup_date" => $transaction->getPickupDate(),
+                "Referral Type" => $referral_type ? Household::REFERRALTYPES[$referral_type] : null,
+                "Referral Comment" => $referral_comment,
             ));
         }
 

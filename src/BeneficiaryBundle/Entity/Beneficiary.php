@@ -660,6 +660,13 @@ class Beneficiary implements ExportableInterface
             $valueGender = "Male";
         }
 
+        $referral_type = null;
+        $referral_comment = null;
+        if ($this->getReferral()) {
+            $referral_type = $this->getReferral()->getType();
+            $referral_comment = $this->getReferral()->getComment();
+        }
+
         $adm1 = $this->getHousehold()->getLocation()->getAdm1Name();
         $adm2 = $this->getHousehold()->getLocation()->getAdm2Name();
         $adm3 = $this->getHousehold()->getLocation()->getAdm3Name();
@@ -719,7 +726,9 @@ class Beneficiary implements ExportableInterface
             "phone 2" => $valuesphones[1],
             "proxy phone 2" => $proxyphones[1],
             "type national ID" => $typenationalID,
-            'nationalId' => $valuesnationalID
+            'nationalId' => $valuesnationalID,
+            "Referral Type" => $referral_type ? Household::REFERRALTYPES[$referral_type] : null,
+            "Referral Comment" => $referral_comment,
         ];
 
         foreach ($valueCountrySpecific as $key => $value) {

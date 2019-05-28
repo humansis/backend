@@ -400,9 +400,12 @@ class BeneficiaryService
     }
 
     public function updateReferral(Beneficiary $beneficiary, array $beneficiaryData) {
-        if ($beneficiaryData['referral_type'] && $beneficiaryData['referral_comment']) {
+        if (array_key_exists('referral_type', $beneficiaryData) && array_key_exists('referral_comment', $beneficiaryData) &&
+            $beneficiaryData['referral_type'] && $beneficiaryData['referral_comment']) {
             $previousReferral = $beneficiary->getReferral();
-            $this->em->remove($previousReferral);
+            if ($previousReferral) {
+                $this->em->remove($previousReferral);
+            }
             $referral = new Referral();
             $referral->setType($beneficiaryData['referral_type'])
                 ->setComment($beneficiaryData['referral_comment']);
