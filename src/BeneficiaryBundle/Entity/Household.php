@@ -199,10 +199,10 @@ class Household
     private $incomeLevel;
 
     /**
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\HouseholdLocation", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
      * @Groups({"FullHousehold"})
      */
-    private $householdLocation;
+    private $householdLocations;
 
 
     /**
@@ -653,29 +653,40 @@ class Household
         return $this->incomeLevel;
     }
 
-    /**
-     * Set householdLocation.
+   /**
+     * Add householdLocation.
      *
-     * @param \BeneficiaryBundle\Entity\HouseholdLocation|null $householdLocation
+     * @param \BeneficiaryBundle\Entity\HouseholdLocation $householdLocation
      *
      * @return Household
      */
-    public function setHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation = null)
+    public function addHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
     {
-        $this->householdLocation = $householdLocation;
+        $this->householdLocations[] = $householdLocation;
 
         return $this;
     }
 
     /**
-     * Get householdLocation.
+     * Remove householdLocation.
      *
-     * @return \BeneficiaryBundle\Entity\HouseholdLocation|null
+     * @param \BeneficiaryBundle\Entity\HouseholdLocation $householdLocation
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function getHouseholdLocation()
+    public function removeHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
     {
-        return $this->householdLocation;
+        return $this->householdLocations->removeElement($householdLocation);
     }
 
+    /**
+     * Get householdLocations.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getHouseholdLocations()
+    {
+        return $this->householdLocations;
+    }
 
 }

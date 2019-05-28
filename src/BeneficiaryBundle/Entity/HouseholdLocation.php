@@ -45,7 +45,12 @@ class HouseholdLocation
      */
     private $campAddress;
 
-   
+     /**
+     * @var Household
+     *
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="phones")
+     */
+    private $household;
 
     /**
      * Get id.
@@ -151,5 +156,29 @@ class HouseholdLocation
     public function getCampAddress()
     {
         return $this->campAddress;
-    }  
+    }
+
+    /**
+     * Set household.
+     *
+     * @param \BeneficiaryBundle\Entity\Household|null $household
+     *
+     * @return Phone
+     */
+    public function setHousehold(\BeneficiaryBundle\Entity\Household $household = null)
+    {
+        $this->household = $household;
+
+        return $this;
+    }
+
+    /**
+     * Get household.
+     *
+     * @return \BeneficiaryBundle\Entity\Household|null
+     */
+    public function getHousehold()
+    {
+        return $this->household;
+    }
 }
