@@ -137,7 +137,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $q->leftJoin("hh.beneficiaries", "b")
             ->andWhere("hh.id = b.household")
             ->leftJoin("b.vulnerabilityCriteria", "vb")
-            ->leftJoin("hh.projects", "p");
+            ->leftJoin("hh.projects", "p")
+            ->leftJoin("b.referral", "r");
             
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
         if (array_key_exists("sort", $sort) && array_key_exists("direction", $sort)) {
@@ -222,6 +223,13 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     foreach ($filterValues as $indexValue => $filterValue) {
                         $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
                         $orStatement->add($q->expr()->eq("b.residencyStatus", ":filter" . $indexFilter . $indexValue));
+                    }
+                    $q->andWhere($orStatement);
+                } elseif ($category === "referral" && count($filterValues) > 0) {
+                    $orStatement = $q->expr()->orX();
+                    foreach ($filterValues as $indexValue => $filterValue) {
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("r.type", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
                 }
