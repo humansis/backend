@@ -20,21 +20,25 @@ class HouseholdConstraints extends RequestValidatorConstraints
         $optionalBoolean = new Optional($boolean);
         $optionalNumeric = new Optional($numeric);
         $optionalString = new Optional($string);
+        $optionalArray = new Optional($array);
 
         $household = [
             "project" => $optionalNumeric,
-            "address_street" => $string,
-            "address_number" => $string,
-            "address_postcode" => $string,
             "livelihood" => $numeric,
             "notes" => $string,
             "latitude" => $string,
             "longitude" => $string,
             "__country" => $string,
-            "location" => $array,
+            "household_locations" => $array,
             "country_specific_answers" => $array,
             "beneficiaries" => $array,
             "income_level" => $optionalNumeric,
+        ];
+        $householdLocation = [
+            "location_group" => $string,
+            "type" => $string,
+            "address" => $optionalArray,
+            "campAddress" => $optionalArray,
         ];
         $location = [
             "country_iso3" => $optionalString,
@@ -86,6 +90,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
         return [
             'household' => new Collection($household),
             'location' => new Collection($location),
+            'household_locations' => new Collection($householdLocation),
             'country_specific_answer' => new Collection($countrySpecificAnswer),
             'beneficiary' => new Collection($beneficiary),
             'profile' => new Collection($profile),

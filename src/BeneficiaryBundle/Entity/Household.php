@@ -663,7 +663,7 @@ class Household
     public function addHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
     {
         $this->householdLocations[] = $householdLocation;
-
+        $householdLocation->setHousehold($this);
         return $this;
     }
 

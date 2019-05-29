@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Camp
@@ -18,6 +19,7 @@ class Camp
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullHousehold", "FullCamp"})
      */
     private $id;
 
@@ -25,11 +27,13 @@ class Camp
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=45)
+     * @Groups({"FullHousehold", "FullCamp"})
      */
     private $name;
 
     /**
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location", cascade={"persist", "remove"})
+     * @Groups({"FullHousehold"})
      */
     private $location;
 

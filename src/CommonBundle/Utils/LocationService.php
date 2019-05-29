@@ -11,6 +11,7 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
+use BeneficiaryBundle\Entity\Camp;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
@@ -132,6 +133,26 @@ class LocationService
         $adm3 = $this->em->getRepository(Adm3::class)->findBy(["id" => $IDadm3]);
         $adm4 = $this->em->getRepository(Adm4::class)->findBy(["adm3" => $adm3]);
         return $adm4;
+    }
+
+    /**
+     * Get the list of all the camps in this adm
+     * @param array $filters
+     * @return object[]
+    */
+    public function getAllCamps(array $filters)
+    {
+        if (array_key_exists('adm1', $filters)) {
+            $camps = $this->em->getRepository(Camp::class)->findByAdm1($filters['adm1']);
+        } else if (array_key_exists('adm2', $filters)) {
+            $camps = $this->em->getRepository(Camp::class)->findByAdm2($filters['adm2']);
+        } else if (array_key_exists('adm3', $filters)) {
+            $camps = $this->em->getRepository(Camp::class)->findByAdm3($filters['adm3']);
+        } else if (array_key_exists('adm4', $filters)) {
+            $camps = $this->em->getRepository(Camp::class)->findByAdm4($filters['adm4']);
+        }
+
+        return $camps;
     }
 
     /**

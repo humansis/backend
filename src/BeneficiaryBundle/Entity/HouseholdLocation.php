@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * HouseholdLocation
@@ -25,6 +26,7 @@ class HouseholdLocation
      * @var string
      *
      * @ORM\Column(name="locationGroup", type="string", length=45)
+     * @Groups({"FullHousehold"})
      */
     private $locationGroup;
 
@@ -32,23 +34,26 @@ class HouseholdLocation
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=45)
+     * @Groups({"FullHousehold"})
      */
     private $type;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
+     * @Groups({"FullHousehold"})
      */
     private $address;
 
      /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\CampAddress", cascade={"persist", "remove"})
+     * @Groups({"FullHousehold"})
      */
     private $campAddress;
 
      /**
      * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="phones")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="householdLocations")
      */
     private $household;
 
