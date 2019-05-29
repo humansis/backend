@@ -67,8 +67,8 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             $householdArray['address_street'] .
             $householdArray['address_number'] .
             $householdArray['address_postcode'] .
-            $newHead['given_name'] .
-            $newHead['family_name'],
+            $newHead['local_given_name'] .
+            $newHead['local_family_name'],
             $this->maximumDistanceLevenshtein
         );
 

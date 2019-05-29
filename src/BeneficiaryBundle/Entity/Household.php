@@ -51,7 +51,7 @@ class Household
      * First value with a column in the csv which can move, depends on the number of country specifics
      * @var string
      */
-    const firstColumnNonStatic = 'L';
+    const firstColumnNonStatic = 'M';
 
     /**
      * The row index of the header (with the name of country specifics)
@@ -74,35 +74,38 @@ class Household
         "address_number" => "B",
         "address_postcode" => "C",
         "livelihood" => "D",
-        "notes" => "E",
-        "latitude" => "F",
-        "longitude" => "G",
+        "income_level" => "E",
+        "notes" => "F",
+        "latitude" => "G",
+        "longitude" => "H",
         "location" => [
             // Location
-            "adm1" => "H",
-            "adm2" => "I",
-            "adm3" => "J",
-            "adm4" => "K"
+            "adm1" => "I",
+            "adm2" => "J",
+            "adm3" => "K",
+            "adm4" => "L"
         ],
         // Beneficiary
         "beneficiaries" => [
-            "given_name" => "L",
-            "family_name" => "M",
-            "gender" => "N",
-            "status" => "O",
-            "residency_status" => "P",
-            "date_of_birth" => "Q",
-            "vulnerability_criteria" => "R",
-            "phone1_type" => "S",
-            "phone1_prefix" => "T",
-            "phone1_number" => "U",
-            "phone1_proxy" => "V",
-            "phone2_type" => "W",
-            "phone2_prefix" => "X",
-            "phone2_number" => "Y",
-            "phone2_proxy" => "Z",
-            "national_id_type" => "AA",
-            "national_id_number" => "AB"
+            "local_given_name" => "M",
+            "local_family_name" => "N",
+            "en_given_name" => "O",
+            "en_family_name" => "P",
+            "gender" => "Q",
+            "status" => "R",
+            "residency_status" => "S",
+            "date_of_birth" => "T",
+            "vulnerability_criteria" => "U",
+            "phone1_type" => "V",
+            "phone1_prefix" => "W",
+            "phone1_number" => "X",
+            "phone1_proxy" => "Y",
+            "phone2_type" => "Z",
+            "phone2_prefix" => "AA",
+            "phone2_number" => "AB",
+            "phone2_proxy" => "AC",
+            "national_id_type" => "AD",
+            "national_id_number" => "AE"
         ]
     ];
 
@@ -216,6 +219,14 @@ class Household
      * @Groups({"SmallHousehold"})
      */
     private $numberDependents;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold"})
+     */
+    private $incomeLevel;
 
 
     /**
@@ -641,4 +652,29 @@ class Household
 
         return $this;
     }
+
+    /**
+     * Set incomeLevel.
+     *
+     * @param int $incomeLevel
+     *
+     * @return Household
+     */
+    public function setIncomeLevel($incomeLevel)
+    {
+        $this->incomeLevel = $incomeLevel;
+
+        return $this;
+    }
+
+    /**
+     * Get incomeLevel.
+     *
+     * @return int
+     */
+    public function getIncomeLevel()
+    {
+        return $this->incomeLevel;
+    }
+
 }

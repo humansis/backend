@@ -144,7 +144,8 @@ class UserService
             ->setEmail($username)
             ->setEmailCanonical($salt)
             ->setSalt($salt)
-            ->setPassword("");
+            ->setPassword("")
+            ->setChangePassword(0);
 
         $this->em->persist($user);
 
@@ -260,7 +261,8 @@ class UserService
             ->setEnabled(1)
             ->setUsername($user->getUsername())
             ->setUsernameCanonical($user->getUsername())
-            ->setRoles($roles);
+            ->setRoles($roles)
+            ->setChangePassword($userData['change_password']);
 
         $user->setPassword($userData['password']);
 
@@ -316,7 +318,8 @@ class UserService
             throw new \Exception("The old password doesn't match.");
         }
 
-        $user->setPassword($newPassword);
+        $user->setPassword($newPassword)
+            ->setChangePassword(0);
         $this->em->merge($user);
         $this->em->flush();
 

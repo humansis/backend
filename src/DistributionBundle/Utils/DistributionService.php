@@ -285,6 +285,22 @@ class DistributionService
     }
 
     /**
+     * @param DistributionData $distributionData
+     * @return null|object|string
+     */
+    public function complete(DistributionData $distributionData)
+    {
+        if (!empty($distributionData)) {
+            $distributionData->setCompleted(1);
+        }
+
+        $this->em->persist($distributionData);
+        $this->em->flush();
+
+        return "Completed";
+    }
+
+    /**
      * Edit a distribution
      *
      * @param DistributionData $distributionData
@@ -332,6 +348,16 @@ class DistributionService
     public function getTotalValue(string $country)
     {
         $value = (int) $this->em->getRepository(DistributionData::class)->getTotalValue($country);
+        return $value;
+    }
+
+     /**
+     * @param string $country
+     * @return string
+     */
+    public function countCompleted(string $country)
+    {
+        $value = (int) $this->em->getRepository(DistributionData::class)->countCompleted($country);
         return $value;
     }
 
@@ -483,11 +509,14 @@ class DistributionService
                 "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
                 "addressPostcode" => $beneficiary->getHousehold()->getAddressPostcode(),
                 "livelihood" => Household::LIVELIHOOD[$beneficiary->getHousehold()->getLivelihood()],
+                "incomeLevel" => $beneficiary->getHousehold()->getIncomeLevel(),
                 "notes" => $beneficiary->getHousehold()->getNotes(),
                 "latitude" => $beneficiary->getHousehold()->getLatitude(),
                 "longitude" => $beneficiary->getHousehold()->getLongitude(),
-                "givenName" => $beneficiary->getGivenName(),
-                "familyName"=> $beneficiary->getFamilyName(),
+                "localGivenName" => $beneficiary->getLocalGivenName(),
+                "localFamilyName"=> $beneficiary->getLocalFamilyName(),
+                "enGivenName" => $beneficiary->getEnGivenName(),
+                "enFamilyName"=> $beneficiary->getEnFamilyName(),
                 "gender" => $gender,
                 "dateOfBirth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                 "commodity" => $commodity->getModalityType()->getName(),
