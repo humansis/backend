@@ -149,8 +149,10 @@ class BeneficiaryService
 
         $beneficiary->setGender($beneficiaryArray["gender"])
             ->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryArray["date_of_birth"]))
-            ->setFamilyName($beneficiaryArray["family_name"])
-            ->setGivenName($beneficiaryArray["given_name"])
+            ->setEnFamilyName($beneficiaryArray["en_family_name"])
+            ->setEnGivenName($beneficiaryArray["en_given_name"])
+            ->setLocalFamilyName($beneficiaryArray["local_family_name"])
+            ->setLocalGivenName($beneficiaryArray["local_given_name"])
             ->setStatus($beneficiaryArray["status"])
             ->setResidencyStatus($beneficiaryArray["residency_status"])
             ->setUpdatedOn(new \DateTime());
