@@ -285,6 +285,22 @@ class DistributionService
     }
 
     /**
+     * @param DistributionData $distributionData
+     * @return null|object|string
+     */
+    public function complete(DistributionData $distributionData)
+    {
+        if (!empty($distributionData)) {
+            $distributionData->setCompleted(1);
+        }
+
+        $this->em->persist($distributionData);
+        $this->em->flush();
+
+        return "Completed";
+    }
+
+    /**
      * Edit a distribution
      *
      * @param DistributionData $distributionData
@@ -332,6 +348,16 @@ class DistributionService
     public function getTotalValue(string $country)
     {
         $value = (int) $this->em->getRepository(DistributionData::class)->getTotalValue($country);
+        return $value;
+    }
+
+     /**
+     * @param string $country
+     * @return string
+     */
+    public function countCompleted(string $country)
+    {
+        $value = (int) $this->em->getRepository(DistributionData::class)->countCompleted($country);
         return $value;
     }
 

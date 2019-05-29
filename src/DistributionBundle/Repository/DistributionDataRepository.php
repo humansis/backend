@@ -2,6 +2,8 @@
 
 namespace DistributionBundle\Repository;
 
+use CommonBundle\Entity\Location;
+
 /**
  * DistributionDataRepository
  *
@@ -65,5 +67,17 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter('now', new \DateTime());
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function countCompleted(string $countryISO3) {
+        $qb = $this->createQueryBuilder('dd');
+        $qb->select('COUNT(dd)')
+            ->leftJoin("dd.location", "l");
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($qb, $countryISO3);
+        $qb->andWhere("dd.completed = 1");
+
+        return $qb->getQuery()->getSingleScalarResult();
+
     }
 }

@@ -5,11 +5,8 @@ namespace BeneficiaryBundle\Repository;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Doctrine\ORM\Query\Expr\Join;
 use ProjectBundle\Entity\Project;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Location;
 
 /**
  * HouseholdRepository
@@ -27,22 +24,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
     public function findAllByCountry(string $iso3)
     {
         $qb = $this->createQueryBuilder("hh");
-        $q = $qb->leftJoin("hh.location", "l")
-            ->leftJoin("l.adm1", "adm1")
-            ->leftJoin("l.adm2", "adm2")
-            ->leftJoin("l.adm3", "adm3")
-            ->leftJoin("l.adm4", "adm4")
-            ->where("adm1.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm4.adm3", "adm3b")
-            ->leftJoin("adm3b.adm2", "adm2b")
-            ->leftJoin("adm2b.adm1", "adm1b")
-            ->orWhere("adm1b.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm3.adm2", "adm2c")
-            ->leftJoin("adm2c.adm1", "adm1c")
-            ->orWhere("adm1c.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm2.adm1", "adm1d")
-            ->orWhere("adm1d.countryISO3 = :iso3 AND hh.archived = 0")
-            ->setParameter("iso3", $iso3);
+        $q = $qb->innerJoin("hh.location", "l");
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($q, $iso3);
+        $qb->andWhere('hh.archived = 0');
         
         return $q;
     }
@@ -121,20 +106,13 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb = $this->createQueryBuilder("hh");
 
         // Join all location tables (not just the one in the location)
-        $q = $qb->innerJoin("hh.location", "l")
-                ->leftJoin("l.adm4", "adm4")
-                ->leftJoin("l.adm3", "locAdm3")
-                ->leftJoin("l.adm2", "locAdm2")
-                ->leftJoin("l.adm1", "locAdm1")
-                ->leftJoin(Adm3::class, "adm3", Join::WITH, "adm3.id = COALESCE(IDENTITY(adm4.adm3, 'id'), locAdm3.id)")
-                ->leftJoin(Adm2::class, "adm2", Join::WITH, "adm2.id = COALESCE(IDENTITY(adm3.adm2, 'id'), locAdm2.id)")
-                ->leftJoin(Adm1::class, "adm1", Join::WITH, "adm1.id = COALESCE(IDENTITY(adm2.adm1, 'id'), locAdm1.id)")
-                ->where("adm1.countryISO3 = :iso3")
-                ->setParameter("iso3", $iso3)
-                ->andWhere("hh.archived = 0");
+        $q = $qb->innerJoin("hh.location", "l");
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($q, $iso3);
 
         // We join information that is needed for the filters
         $q->leftJoin("hh.beneficiaries", "b")
+            ->andWhere("hh.archived = 0")
             ->andWhere("hh.id = b.household")
             ->leftJoin("b.vulnerabilityCriteria", "vb")
             ->leftJoin("hh.projects", "p");
@@ -267,24 +245,12 @@ class HouseholdRepository extends AbstractCriteriaRepository
     public function getAllByIds(string $iso3, array $ids)
     {
         $qb = $this->createQueryBuilder("hh");
-        $q = $qb->leftJoin("hh.location", "l")
-            ->leftJoin("l.adm1", "adm1")
-            ->leftJoin("l.adm2", "adm2")
-            ->leftJoin("l.adm3", "adm3")
-            ->leftJoin("l.adm4", "adm4")
-            ->where("adm1.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm4.adm3", "adm3b")
-            ->leftJoin("adm3b.adm2", "adm2b")
-            ->leftJoin("adm2b.adm1", "adm1b")
-            ->orWhere("adm1b.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm3.adm2", "adm2c")
-            ->leftJoin("adm2c.adm1", "adm1c")
-            ->orWhere("adm1c.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm2.adm1", "adm1d")
-            ->orWhere("adm1d.countryISO3 = :iso3 AND hh.archived = 0")
-            ->setParameter("iso3", $iso3);
+        $q = $qb->innerJoin("hh.location", "l");
+            $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+            $locationRepository->whereCountry($q, $iso3);
         
-        $q = $q->andWhere("hh.id IN (:ids)")
+        $q = $q->andWhere('hh.archived = 0')
+                ->andWhere("hh.id IN (:ids)")
                 ->setParameter("ids", $ids);
 
         return $q->getQuery()->getResult();
