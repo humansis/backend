@@ -47,8 +47,8 @@ class DuplicateVerifier extends AbstractVerifier
                 // get beneficiaries with the same first name and last name
                 $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByUnarchived(
                     [
-                        'givenName'  => trim($newBeneficiary['given_name']),
-                        'familyName' => trim($newBeneficiary['family_name'])
+                        'localGivenName'  => trim($newBeneficiary['local_given_name']),
+                        'localFamilyName' => trim($newBeneficiary['local_family_name'])
                     ]
                 );
                 foreach ($existingBeneficiaries as $existingBeneficiary) {
