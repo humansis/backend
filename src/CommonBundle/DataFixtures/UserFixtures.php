@@ -35,8 +35,8 @@ class UserFixtures extends Fixture
     }
 
     private $data = [
-        ['tester', 'tester', 'ROLE_ADMIN', null],
-        ['vendor', 'vendor', 'ROLE_VENDOR', 'KHM']
+        ['tester', 'tester', 'ROLE_ADMIN'],
+        ['vendor', 'vendor', 'ROLE_VENDOR']
     ];
 
     /**
@@ -62,13 +62,6 @@ class UserFixtures extends Fixture
                     ->setSalt($salt)
                     ->setRoles([$datum[2]]);
                     $instance->setPassword($this->encoderFactory->getEncoder($instance)->encodePassword($datum[1], $salt));
-                    if ($datum[3]) {
-                        $userCountry = new UserCountry();
-                        $userCountry->setUser($instance)
-                            ->setIso3($datum[3])
-                            ->setRights($datum[2]);
-                            $manager->persist($userCountry);
-                    }
                     $manager->persist($instance);
                     
                     $manager->flush();

@@ -53,6 +53,24 @@ class RequestListener
                     }
                 }
 
+                if ($user->getRoles()[0] === "ROLE_VENDOR") {
+                    $location = $user->getVendor()->getLocation();
+                    $adm1 = $location->getAdm1();
+                    if ($location->getAdm1()) {
+                        $adm1 = $location->getAdm1();
+                    } else if ($location->getAdm2()) {
+                        $adm1 = $location->getAdm2()->getAdm1();
+                    } else if ($location->getAdm3()) {
+                        $adm1 = $location->getAdm3()->getAdm2()->getAdm1();
+                    } else if ($location->getAdm4()) {
+                        $adm1 = $location->getAdm4()->getAdm3()->getAdm2()->getAdm1();
+                    }
+
+                    if ($countryISO3 === $adm1->getCountryISO3()) {
+                        $hasCountry = true;
+                    }
+                }
+
                 if ($user->getRoles()[0] == "ROLE_ADMIN" || $hasCountry) {
                     $event->getRequest()->request->add(["__country" => $countryISO3]);
                 } else {

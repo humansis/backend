@@ -33,7 +33,7 @@ class UserCountry
      * @var string
      *
      * @ORM\Column(name="iso3", type="string", length=3)
-     * @Groups({"FullUser","FullVendor"})
+     * @Groups({"FullUser"})
      */
     private $iso3;
 
