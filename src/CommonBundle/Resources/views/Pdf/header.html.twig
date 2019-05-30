@@ -1,7 +1,9 @@
 
     <header>
         <h1>
-            <img height="42" width="42" src="{{ logo }}"/>
+            {% if logo %}
+                <img height="42" width="42" src="{{ logo }}"/>
+            {% endif %}
             {{ name }}
         </h1>
         <hr>
