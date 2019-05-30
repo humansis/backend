@@ -418,6 +418,10 @@ class CSVToArrayMapper extends AbstractMapper
                 $formattedHouseholdArray['beneficiaries']['referral_type'] = $referralType;
             } else {
                 throw new \Exception("Invalid referral type.");
+            }
+        }
+    }
+
     /**
      * Reformat the field livelihood.
      *
