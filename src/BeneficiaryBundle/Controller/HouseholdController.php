@@ -160,7 +160,7 @@ class HouseholdController extends Controller
 
 
     /**
-     * @Rest\Post("/households/{id}", name="edit_household")
+     * @Rest\Post("/households/{id}", name="edit_household", requirements={"id": "\d+"})
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Households")
@@ -447,7 +447,7 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Post("/delete-households")
+     * @Rest\Post("/households/delete")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Households")
