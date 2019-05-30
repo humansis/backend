@@ -454,46 +454,46 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('distribution_beneficiaries', $distributions[0]);
     }
 
-    /**
-     * @depends testCreateDistribution
-     * @param $distribution
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function testImport($distribution)
-    {
-        // Fake connection with a token for the user tester (ADMIN)
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
+    // /**
+    //  * @depends testCreateDistribution
+    //  * @param $distribution
+    //  * @throws \Doctrine\ORM\ORMException
+    //  * @throws \Doctrine\ORM\OptimisticLockException
+    //  */
+    // public function testImport($distribution)
+    // {
+    //     // Fake connection with a token for the user tester (ADMIN)
+    //     $user = $this->getTestUser(self::USER_TESTER);
+    //     $token = $this->getUserToken($user);
+    //     $this->tokenStorage->setToken($token);
 
-        $distributionCSVService = $this->container->get('distribution.distribution_csv_service');
+    //     $distributionCSVService = $this->container->get('distribution.distribution_csv_service');
 
-        $countryIso3 = 'KHM';
+    //     $countryIso3 = 'KHM';
 
-        //distributionData will be used in the function "parseCSV" to get all the beneficiaries in a project :
-        $distributionData = $this->em->getRepository(DistributionData::class)->findOneById($distribution['id']);
-        $distributionBeneficiaryService = $this->container->get('distribution.distribution_beneficiary_service');
+    //     //distributionData will be used in the function "parseCSV" to get all the beneficiaries in a project :
+    //     $distributionData = $this->em->getRepository(DistributionData::class)->findOneById($distribution['id']);
+    //     $distributionBeneficiaryService = $this->container->get('distribution.distribution_beneficiary_service');
 
-        //beneficiaries contains all beneficiaries in a distribution :
-        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
-        $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiariesInDistribution.csv', 'beneficiaryInDistribution.csv');
+    //     //beneficiaries contains all beneficiaries in a distribution :
+    //     $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
+    //     $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiariesInDistribution.csv', 'beneficiaryInDistribution.csv');
 
-        $import = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
+    //     $import = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
 
-        // Check if the second step succeed
-        $this->assertTrue(gettype($import) == "array");
-        $this->assertArrayHasKey('added', $import);
-        $this->assertArrayHasKey('created', $import);
-        $this->assertArrayHasKey('deleted', $import);
-        $this->assertArrayHasKey('updated', $import);
+    //     // Check if the second step succeed
+    //     $this->assertTrue(gettype($import) == "array");
+    //     $this->assertArrayHasKey('added', $import);
+    //     $this->assertArrayHasKey('created', $import);
+    //     $this->assertArrayHasKey('deleted', $import);
+    //     $this->assertArrayHasKey('updated', $import);
 
-        $save = $distributionCSVService->saveCSV($countryIso3, $distributionData, $import);
+    //     $save = $distributionCSVService->saveCSV($countryIso3, $distributionData, $import);
 
-        $this->assertTrue(gettype($save) == "array");
-        $this->assertArrayHasKey('result', $save);
-        $this->assertEquals($save['result'], "Beneficiary list updated.");
-    }
+    //     $this->assertTrue(gettype($save) == "array");
+    //     $this->assertArrayHasKey('result', $save);
+    //     $this->assertEquals($save['result'], "Beneficiary list updated.");
+    // }
 
 
     /**

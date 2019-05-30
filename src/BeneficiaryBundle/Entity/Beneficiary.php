@@ -631,10 +631,18 @@ class Beneficiary implements ExportableInterface
             $valueGender = "Male";
         }
 
-        $adm1 = $this->getHousehold()->getLocation()->getAdm1Name();
-        $adm2 = $this->getHousehold()->getLocation()->getAdm2Name();
-        $adm3 = $this->getHousehold()->getLocation()->getAdm3Name();
-        $adm4 = $this->getHousehold()->getLocation()->getAdm4Name();
+        $currentHouseholdLocation = $this->getHousehold()->getHouseholdLocations()[0];
+
+        if ($currentHouseholdLocation->getType() === 'camp') {
+            $location = $currentHouseholdLocation->getCampAddress()->getCamp()->getLocation();
+        } else {
+            $location = $currentHouseholdLocation->getAddress()->getLocation();
+        }
+
+        $adm1 = $location->getAdm1Name();
+        $adm2 = $location->getAdm2Name();
+        $adm3 = $location->getAdm3Name();
+        $adm4 = $location->getAdm4Name();
 
         if ($this->status === true) {
             $finalArray = [

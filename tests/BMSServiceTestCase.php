@@ -70,20 +70,29 @@ class BMSServiceTestCase extends KernelTestCase
     protected $namefullnameHousehold = "STREET_TEST";
 
     protected $bodyHousehold = [
-        "address_street" => "STREET_TEST",
-        "address_number" => "NUMBER_TEST",
-        "address_postcode" => "POSTCODE_TEST",
         "livelihood" => 10,
         "income_level" => 3,
         "notes" => "NOTES_TEST",
         "latitude" => "1.1544",
         "longitude" => "120.12",
-        "location" => [
-            "adm1" => 1,
-            "adm2" => 1,
-            "adm3" => 1,
-            "adm4" => 1
-        ],
+        "household_locations" => array(
+            [
+              "location_group" => "current",
+              "type" => "residence",
+              "address" =>  [
+                  "street" => "STREET_TEST",
+                  "number" => "NUMBER_TEST",
+                  "postcode" => "POSTCODE_TEST",
+                  "location" => [
+                      "adm1" => 1,
+                      "adm2" => 1,
+                      "adm3" => 1,
+                      "adm4" => 1,
+                      "country_iso3" => "KHM",
+                  ],
+              ]
+            ]
+        ),
         "country_specific_answers" => [
             [
                 "answer" => "MY_ANSWER_TEST1",
