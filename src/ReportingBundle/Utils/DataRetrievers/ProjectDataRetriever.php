@@ -4,6 +4,7 @@ namespace ReportingBundle\Utils\DataRetrievers;
 
 use Doctrine\ORM\EntityManager;
 
+use Doctrine\ORM\QueryBuilder;
 use ReportingBundle\Entity\ReportingProject;
 
 /**
@@ -45,8 +46,6 @@ class ProjectDataRetriever extends AbstractDataRetriever
                         ->andWhere('p.iso3 = :country')
                         ->setParameter('country', $filters['country']);
 
-        $qb = $this->filterByPeriod($qb, $filters['period']);
-
         $qb = $this->filterByProjects($qb, $filters['projects']);
 
         return $qb;
@@ -62,7 +61,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
      * @param $frequency
      * @return mixed
      */
-    public function conditionSelect($qb, $nameFunction)
+    public function conditionSelect(QueryBuilder $qb, $nameFunction)
     {
 
         switch ($nameFunction) {
@@ -108,7 +107,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMS_Project_HS', $filters);
         $qb = $this->conditionSelect($qb, 'BMS_Project_HS');
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 
@@ -121,7 +120,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMS_Project_AB', $filters);
         $qb = $this->conditionSelect($qb, 'BMS_Project_AB');
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 
@@ -166,7 +165,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
 
         $qb = $this->getReportingValue('BMSU_Project_NM', $filters);
         $qb = $this->conditionSelect($qb, 'BMSU_Project_NM');
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         dump($result);
         return $result;
     }
@@ -180,7 +179,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMSU_Project_NW', $filters);
         $qb = $this->conditionSelect($qb, 'BMSU_Project_NW');
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 
@@ -193,7 +192,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMSU_Project_TVSV', $filters);
         $qb = $this->conditionSelect($qb, 'BMSU_Project_TVSV');
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 
@@ -206,7 +205,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMSU_Project_TVS', $filters);
         $qb = $this->conditionSelect($qb, 'BMSU_Project_TVS');
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 
@@ -219,7 +218,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMSU_Project_PV', $filters);
         $qb = $this->conditionSelect($qb, 'BMSU_Project_PV');
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 }

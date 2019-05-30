@@ -4,6 +4,7 @@ namespace ReportingBundle\Utils\DataRetrievers;
 
 use Doctrine\ORM\EntityManager;
 
+use Doctrine\ORM\QueryBuilder;
 use phpDocumentor\Reflection\Types\Object_;
 use ReportingBundle\Entity\ReportingDistribution;
 use \ProjectBundle\Entity\Project;
@@ -56,12 +57,20 @@ abstract class AbstractDataRetriever
      * make action to return data corresponding to this frequency
      * @param $qb
      * @param string $frequency
+     * @param array $periods
      * @return mixed
      */
-    public function formatByFrequency($qb, string $frequency)
-    {
+    public function formatByFrequency(QueryBuilder $qb, string $frequency, array $periods) {
         if (!$frequency) {
             $frequency = "Month";
+        }
+
+        if(!empty($periods)) {
+            $startDate = \DateTime::createFromFormat('d-m-Y', $periods[0]);
+            $endDate = \DateTime::createFromFormat('d-m-Y', $periods[1]);
+            $qb ->setParameter('startDate', $startDate)
+                ->setParameter('endDate', $endDate)
+                ->andwhere("rv.creationDate BETWEEN :startDate AND :endDate");
         }
 
         $result = array();
@@ -79,7 +88,6 @@ abstract class AbstractDataRetriever
                 ->addGroupBy('unity', 'date');
             $result = $this->getNameQuarter($qb->getQuery()->getArrayResult());
         }
-
         return  $this->splitByPeriod($result);
     }
 
@@ -92,32 +100,10 @@ abstract class AbstractDataRetriever
         $splitValues = [];
 
         foreach ($values as $value ) {
-            $splitValues[
-                $value["date"]
-            ][] = $value;
+            $splitValues[$value["date"]][] = $value;
         }
-
         return $splitValues;
     }
-
-    /**
-     * filter data by period
-     * @param $qb
-     * @param array $period
-     * @return mixed
-     */
-    public function filterByPeriod($qb, array $period) {
-        // TODO check date formats
-        if (!empty($period)) {
-            $qb ->andWhere("DATE_FORMAT(rv.creationDate, '%m/%d/%Y')  >= :from")
-                ->setParameter('from', $period[0])
-                ->andWhere("DATE_FORMAT(rv.creationDate, '%m/%d/%Y')  <= :to")
-                ->setParameter('to', $period[1]);
-        }
-
-        return $qb;
-    }
-
     /**
      * get the name of month which delimits the quarter
      * @param $results

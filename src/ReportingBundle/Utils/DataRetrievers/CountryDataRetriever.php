@@ -45,8 +45,6 @@ class CountryDataRetriever extends AbstractDataRetriever
                         ->andWhere('rc.country = :country')
                         ->setParameter('country', $filters['country']);
 
-        $qb = $this->filterByPeriod($qb, $filters['period']);
-        
         return $qb;
     }
 
@@ -75,7 +73,7 @@ class CountryDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMS_Country_TH', $filters);
         $qb = $this->conditionSelect($qb);
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 
@@ -88,7 +86,7 @@ class CountryDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMS_Country_AP', $filters);
         $qb = $this->conditionSelect($qb);
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 
@@ -101,7 +99,7 @@ class CountryDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMS_Country_TF', $filters);
         $qb = $this->conditionSelect($qb);
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 
@@ -114,7 +112,7 @@ class CountryDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMS_Country_EB', $filters);
         $qb = $this->conditionSelect($qb);
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 
@@ -127,7 +125,7 @@ class CountryDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMS_Country_TND', $filters);
         $qb = $this->conditionSelect($qb);
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 
@@ -140,7 +138,7 @@ class CountryDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMS_Country_TTC', $filters);
         $qb = $this->conditionSelect($qb);
-        $result = $this->formatByFrequency($qb, $filters['frequency']);
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }
 }
