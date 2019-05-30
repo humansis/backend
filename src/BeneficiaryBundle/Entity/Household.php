@@ -230,7 +230,7 @@ class Household
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $householdLocations;
 

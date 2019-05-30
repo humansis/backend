@@ -26,7 +26,7 @@ class HouseholdLocation
      * @var string
      *
      * @ORM\Column(name="locationGroup", type="string", length=45)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $locationGroup;
 
@@ -34,19 +34,19 @@ class HouseholdLocation
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=45)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $type;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $address;
 
      /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\CampAddress", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $campAddress;
 

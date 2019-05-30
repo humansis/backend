@@ -33,7 +33,7 @@ class Camp
 
     /**
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $location;
 
