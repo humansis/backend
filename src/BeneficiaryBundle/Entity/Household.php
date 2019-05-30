@@ -36,17 +36,6 @@ class Household
     const firstRow = 6;
 
     /**
-     * Mapping of possible household livelihood
-     */
-    const REFERRALTYPES = [
-        '1' => 'Type 1',
-        '2' => 'Type 2',
-        '3' => 'Type 3',
-        '4' => 'Type 4',
-        '5' => 'Type 5',
-    ];
-
-    /**
      * Mapping between fields and CSV columns
      */
     const MAPPING_CSV = [

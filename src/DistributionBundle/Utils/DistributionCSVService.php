@@ -29,6 +29,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Class DistributionCSVService
@@ -238,7 +239,7 @@ class DistributionCSVService
             );
             $referralType = null;
             if ($beneficiaryToCreate['Referral Type']) {
-                foreach (Household::REFERRALTYPES as $referralTypeId => $value) {
+                foreach (Referral::REFERRALTYPES as $referralTypeId => $value) {
                     if (strcasecmp($value, $beneficiaryToCreate['Referral Type']) === 0) {
                         $referralType = $referralTypeId;
                     }

@@ -13,6 +13,7 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use UserBundle\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Class TransactionService
@@ -364,7 +365,7 @@ class TransactionService
                 "message" => $transaction->getMessage(),
                 "money_received" => $transaction->getMoneyReceived(),
                 "pickup_date" => $transaction->getPickupDate(),
-                "Referral Type" => $referral_type ? Household::REFERRALTYPES[$referral_type] : null,
+                "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
                 "Referral Comment" => $referral_comment,
             ));
         }

@@ -8,6 +8,7 @@ use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use CommonBundle\Utils\ExportableInterface;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Beneficiary
@@ -727,7 +728,7 @@ class Beneficiary implements ExportableInterface
             "proxy phone 2" => $proxyphones[1],
             "type national ID" => $typenationalID,
             'nationalId' => $valuesnationalID,
-            "Referral Type" => $referral_type ? Household::REFERRALTYPES[$referral_type] : null,
+            "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
             "Referral Comment" => $referral_comment,
         ];
 

@@ -16,6 +16,7 @@ use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Class DistributionService
@@ -504,7 +505,7 @@ class DistributionService
                 "value" => $commodity->getValue() . ' ' . $commodity->getUnit(),
                 "distributedAt" => $generalrelief->getDistributedAt(),
                 "notesDistribution" => $generalrelief->getNotes(),
-                "Referral Type" => $referral_type ? Household::REFERRALTYPES[$referral_type] : null,
+                "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
                 "Referral Comment" => $referral_comment,
             ));
         }

@@ -9,6 +9,7 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use BeneficiaryBundle\Entity\Referral;
 
 class CSVToArrayMapper extends AbstractMapper
 {
@@ -406,7 +407,7 @@ class CSVToArrayMapper extends AbstractMapper
     {
         if ($formattedHouseholdArray['beneficiaries']['referral_type']) {
             $referralType = null;
-            foreach (Household::REFERRALTYPES as $referralTypeId => $value) {
+            foreach (Referral::REFERRALTYPES as $referralTypeId => $value) {
                 if (strcasecmp($value, $formattedHouseholdArray['beneficiaries']['referral_type']) === 0) {
                     $referralType = $referralTypeId;
                 }
