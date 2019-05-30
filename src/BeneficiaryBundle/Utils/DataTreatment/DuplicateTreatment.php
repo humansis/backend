@@ -72,8 +72,8 @@ class DuplicateTreatment extends AbstractTreatment
             else {
                 $duplicatedBeneficiary = $this->em->getRepository(Beneficiary::class)->find($idOldBeneficiary);
                 foreach ($householdArray['new_household']['beneficiaries'] as $index => $beneficiary) {
-                    if ($beneficiary['given_name'] === $householdArray['new']['given_name'] &&
-                        $beneficiary['family_name'] === $householdArray['new']['family_name']) {
+                    if ($beneficiary['local_given_name'] === $householdArray['new']['local_given_name'] &&
+                        $beneficiary['local_family_name'] === $householdArray['new']['local_family_name']) {
                         // if the beneficiary is head, throw an error
                         if ($beneficiary['status']) {
                             throw new \Exception('This beneficiary is a head of household. You can\'t delete them.');

@@ -204,11 +204,13 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $body = array(
             array(
-                'date_of_birth' => '10-06-1976',
-                'family_name' => 'FAMILYNAME_TEST',
+                'date_of_birth' => '10-06-1989',
+                'en_family_name' => 'NAME_TEST',
+                'local_family_name' => 'NAME_TEST',
                 'gender' => "1",
-                'given_name' => 'GIVENNAME_TEST',
-                'id' => 12,
+                'en_given_name' => 'FIRSTNAME_TEST',
+                'local_given_name' => 'FIRSTNAME_TEST',
+                'id' => 11,
                 'national_ids' => [],
                 'phones' => [],
                 'status' => '0',
@@ -518,8 +520,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Check if the second step succeed
         $this->assertTrue(gettype($beneficiaries) == "array");
         $this->assertArrayHasKey('id', $beneficiaries[0]);
-        $this->assertArrayHasKey('given_name', $beneficiaries[0]);
-        $this->assertArrayHasKey('family_name', $beneficiaries[0]);
+        $this->assertArrayHasKey('local_given_name', $beneficiaries[0]);
+        $this->assertArrayHasKey('local_family_name', $beneficiaries[0]);
         $this->assertArrayHasKey('gender', $beneficiaries[0]);
         $this->assertArrayHasKey('status', $beneficiaries[0]);
         $this->assertArrayHasKey('residency_status', $beneficiaries[0]);

@@ -318,7 +318,7 @@ class Booklet implements ExportableInterface
             $this->getDistributionBeneficiary()->getDistributionData()->getName() :
             null;
         $beneficiary = $this->getDistributionBeneficiary() ?
-            $this->getDistributionBeneficiary()->getBeneficiary()->getGivenName() :
+            $this->getDistributionBeneficiary()->getBeneficiary()->getLocalGivenName() :
             null;
 
         $finalArray = [

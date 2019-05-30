@@ -19,7 +19,7 @@ class ModalityType
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullModalityType"})
+     * @Groups({"FullModalityType", "FullDistribution"})
      */
     private $id;
 
