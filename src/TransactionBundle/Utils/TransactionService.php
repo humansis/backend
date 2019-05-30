@@ -348,7 +348,7 @@ class TransactionService
                 "addressStreet" => $beneficiary->getHousehold()->getAddressStreet(),
                 "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
                 "addressPostcode" => $beneficiary->getHousehold()->getAddressPostcode(),
-                "livelihood" => $beneficiary->getHousehold()->getLivelihood(),
+                "livelihood" => Household::LIVELIHOOD[$beneficiary->getHousehold()->getLivelihood()],
                 "incomeLevel" => $beneficiary->getHousehold()->getIncomeLevel(),
                 "notes" => $beneficiary->getHousehold()->getNotes(),
                 "latitude" => $beneficiary->getHousehold()->getLatitude(),

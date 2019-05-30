@@ -113,7 +113,7 @@ class DistributionCSVService
         $sheetArray = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $worksheet->getHighestRow(), null, true, true, true);
         $headers = array_shift($sheetArray);
         $arrayWithKeys = array();
-        foreach ($sheetArray as $beneficiaryArray) {
+        foreach ($sheetArray as $beneficiaryIndex => $beneficiaryArray) {
             $beneficiaryWithKey = array();
             foreach ($headers as $index => $key) {
                 if ($key == "gender") {
@@ -284,7 +284,7 @@ class DistributionCSVService
             );
 
             $this->CSVToArrayMapper->mapLocation($householdToCreate);
-
+            $this->CSVToArrayMapper->mapLivelihood($householdToCreate);
             $this->householdService->createOrEdit($householdToCreate, array($distributionProject));
             $toCreate = $this->em->getRepository(Beneficiary::class)
                 ->findOneBy(["localGivenName" => $beneficiaryToCreate['localGivenName'], 'localFamilyName' => $beneficiaryToCreate['localFamilyName'], 'gender' => $beneficiaryToCreate['gender']]);

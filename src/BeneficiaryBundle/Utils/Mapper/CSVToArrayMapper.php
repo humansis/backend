@@ -92,6 +92,7 @@ class CSVToArrayMapper extends AbstractMapper
     private function mappingCSV(array $mappingCSV, $countryIso3, int $lineNumber, array $row, array $rowHeader)
     {
         $formattedHouseholdArray = [];
+
         foreach ($mappingCSV as $formattedIndex => $csvIndex) {
             if (is_array($csvIndex)) {
                 foreach ($csvIndex as $formattedIndex2 => $csvIndex2) {
@@ -179,6 +180,7 @@ class CSVToArrayMapper extends AbstractMapper
             $this->mapStatus($formattedHouseholdArray);
             $this->mapLocation($formattedHouseholdArray);
             $this->mapReferral($formattedHouseholdArray);
+            $this->mapLivelihood($formattedHouseholdArray);
         } catch (\Exception $exception) {
             throw $exception;
         }
@@ -416,6 +418,24 @@ class CSVToArrayMapper extends AbstractMapper
                 $formattedHouseholdArray['beneficiaries']['referral_type'] = $referralType;
             } else {
                 throw new \Exception("Invalid referral type.");
+    /**
+     * Reformat the field livelihood.
+     *
+     * @param $formattedHouseholdArray
+     */
+    public function mapLivelihood(&$formattedHouseholdArray)
+    {
+        if ($formattedHouseholdArray['livelihood']) {
+            $livelihood = null;
+            foreach (Household::LIVELIHOOD as $livelihoodId => $value) {
+                if (strcasecmp($value, $formattedHouseholdArray['livelihood']) === 0) {
+                    $livelihood = $livelihoodId;
+                }
+            }
+            if ($livelihood !== null) {
+                $formattedHouseholdArray['livelihood'] = $livelihood;
+            } else {
+                throw new \Exception("Invalid livelihood.");
             }
         }
     }

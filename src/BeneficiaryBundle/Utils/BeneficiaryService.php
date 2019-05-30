@@ -360,6 +360,17 @@ class BeneficiaryService
     }
 
     /**
+     * @param string $iso3
+     * @return int
+     */
+    public function countAllServed(string $iso3)
+    {
+        $count = (int) $this->em->getRepository(Beneficiary::class)->countServedInCountry($iso3);
+
+        return $count;
+    }
+
+    /**
      * @param DistributionData $distributionData
      * @param string $type
      * @return mixed
