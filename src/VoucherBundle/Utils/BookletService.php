@@ -372,6 +372,14 @@ class BookletService
         $booklet->setDistributionBeneficiary($distributionBeneficiary)
                 ->setStatus(Booklet::DISTRIBUTED);
         $this->em->merge($booklet);
+
+        $beneficiariesWithoutBooklets = $this->em->getRepository(DistributionBeneficiary::class)->countWithoutBooklet($distributionData);
+        
+        if ($beneficiariesWithoutBooklets === '1') {
+            $distributionData->setCompleted(true);
+            $this->em->merge($distributionData);
+        }  
+
         $this->em->flush();
 
         return "Booklet successfully assigned to the beneficiary";

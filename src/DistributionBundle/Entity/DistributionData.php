@@ -133,6 +133,15 @@ class DistributionData implements ExportableInterface
      */
     private $distributionBeneficiaries;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="completed", type="boolean", options={"default" : 0})
+     *
+     * @Groups({"FullDistribution"})
+     */
+    private $completed = 0;
+
 
     /**
      * Constructor
@@ -262,6 +271,30 @@ class DistributionData implements ExportableInterface
     public function getValidated()
     {
         return $this->validated;
+    }
+
+    /**
+     * Set completed.
+     *
+     * @param bool $completed
+     *
+     * @return DistributionData
+     */
+    public function setCompleted($completed)
+    {
+        $this->completed = $completed;
+
+        return $this;
+    }
+
+    /**
+     * Get completed.
+     *
+     * @return bool
+     */
+    public function getCompleted()
+    {
+        return $this->completed;
     }
 
     /**
