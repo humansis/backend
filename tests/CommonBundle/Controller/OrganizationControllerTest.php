@@ -59,7 +59,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
             'logo' => null,
             'primary_color' => '#4AA896',
             'secondary_color' => '#02617F',
-            'font' => 'Roboto',
+            'font' => 'Courier',
             'footer_content' => 'Powered by reliefApps'
         ];
 
@@ -74,7 +74,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
 
         $initialOrganization = $this->em->getRepository(Organization::class)->findOneBy([]);
         $this->assertEquals($initialOrganization->getName(), 'AKEZI');
-        $this->assertEquals($initialOrganization->getFont(), 'Roboto');
+        $this->assertEquals($initialOrganization->getFont(), 'Courier');
         $this->assertEquals($initialOrganization->getPrimaryColor(), '#4AA896');
 
         return $newOrganization;

@@ -44,12 +44,15 @@ class OrganizationService
     {
        
       $organization->setName($organizationArray["name"])
-        ->setLogo($organizationArray["logo"])
-        ->setFont($organizationArray["font"])
-        ->setPrimaryColor($organizationArray["primary_color"])
-        ->setSecondaryColor($organizationArray["secondary_color"])
-        ->setFooterContent($organizationArray["footer_content"]);
+      ->setFont($organizationArray["font"])
+      ->setPrimaryColor($organizationArray["primary_color"])
+      ->setSecondaryColor($organizationArray["secondary_color"])
+      ->setFooterContent($organizationArray["footer_content"]);
 
+      if (array_key_exists('logo', $organizationArray)) {
+        $organazation->setLogo($organizationArray["logo"]);
+      }
+      
       $this->em->merge($organization);
       $this->em->flush();
 
