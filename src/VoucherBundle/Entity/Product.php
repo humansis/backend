@@ -22,7 +22,7 @@ class Product implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullProduct"})
+     * @Groups({"FullProduct", "ValidatedDistribution"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Product implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"FullProduct"})
+     * @Groups({"FullProduct", "ValidatedDistribution"})
      */
     private $name;
 
@@ -46,7 +46,7 @@ class Product implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="image", type="string", length=255)
-     * @Groups({"FullProduct"})
+     * @Groups({"FullProduct", "ValidatedDistribution"})
      */
     private $image;
 
@@ -59,12 +59,7 @@ class Product implements ExportableInterface
     private $archived;
 
     /**
-     * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="product")
-     */
-    private $booklets;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="product")
+     * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="products")
      */
     private $vouchers;
 
@@ -187,34 +182,6 @@ class Product implements ExportableInterface
     public function getImage()
     {
         return $this->image;
-    }
-
-    /**
-     * @return Collection|Booklet[]
-     */
-    public function getBooklets(): Collection
-    {
-        return $this->booklets;
-    }
-
-    public function addBooklet(Booklet $booklet): self
-    {
-        if (!$this->booklets->contains($booklet)) {
-            $this->booklets[] = $booklet;
-            $booklet->addProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBooklet(Booklet $booklet): self
-    {
-        if ($this->booklets->contains($booklet)) {
-            $this->booklets->removeElement($booklet);
-            $booklet->removeProduct($this);
-        }
-
-        return $this;
     }
 
     /**
