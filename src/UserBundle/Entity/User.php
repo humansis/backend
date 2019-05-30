@@ -93,6 +93,13 @@ class User extends BaseUser implements ExportableInterface
      */
     protected $language;
 
+     /**
+     * @var boolean
+     * @ORM\Column(name="changePassword", type="boolean", options={"default" : 0})
+     * @Groups({"FullUser"})
+     */
+    protected $changePassword;
+
     public function __construct()
     {
         parent::__construct();
@@ -274,5 +281,27 @@ class User extends BaseUser implements ExportableInterface
     public function getVendor()
     {
         return $this->vendor;
+    }
+
+    /**
+    * Get changePassword.
+    *
+    * @return boolean
+    */
+    public function getChangePassword()
+    {
+        return $this->changePassword;
+    }
+
+    /**
+    * Set changePassword.
+    *
+    * @param boolean $changePassword
+    *
+    * @return User
+    */
+    public function setChangePassword($changePassword)
+    {
+        $this->changePassword = $changePassword;
     }
 }

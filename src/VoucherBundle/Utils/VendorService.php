@@ -76,6 +76,7 @@ class VendorService
           'roles' => ['ROLE_VENDOR'],
           'salt' => $vendorData['salt'],
           'password' => $vendorData['password'],
+          'change_password' => false,
         ]
       );
 
