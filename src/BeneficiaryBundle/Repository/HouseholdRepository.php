@@ -7,6 +7,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use ProjectBundle\Entity\Project;
 use CommonBundle\Entity\Location;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * HouseholdRepository
@@ -24,12 +25,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
     public function findAllByCountry(string $iso3)
     {
         $qb = $this->createQueryBuilder("hh");
-        $q = $qb->innerJoin("hh.location", "l");
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($q, $iso3);
+        $this->whereHouseholdInCountry($qb, $iso3);
         $qb->andWhere('hh.archived = 0');
         
-        return $q;
+        return $qb;
     }
     
     public function getUnarchivedByProject(Project $project)
@@ -106,12 +105,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb = $this->createQueryBuilder("hh");
 
         // Join all location tables (not just the one in the location)
-        $q = $qb->innerJoin("hh.location", "l");
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($q, $iso3);
+        $this->whereHouseholdInCountry($qb, $iso3);
 
         // We join information that is needed for the filters
-        $q->leftJoin("hh.beneficiaries", "b")
+        $q = $qb->leftJoin("hh.beneficiaries", "b")
             ->andWhere("hh.archived = 0")
             ->andWhere("hh.id = b.household")
             ->leftJoin("b.vulnerabilityCriteria", "vb")
@@ -368,5 +365,27 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
             ->setParameter("value$i", $filters["value_string"])
             ->setParameter("countrySpecific$i", $filters["id_field"]);
+    }
+
+    /**
+     * Create sub request to get households in country.
+     * The household address location must be in the country ($countryISO3).
+     *
+     * @param QueryBuilder $qb
+     * @param $countryISO3
+     */
+    public function whereHouseholdInCountry(QueryBuilder &$qb, $countryISO3)
+    {
+        $qb->leftJoin("hh.householdLocations", "hl")
+            ->leftJoin("hl.campAddress", "ca")
+            ->leftJoin("ca.camp", "c")
+            ->leftJoin("hl.address", "ad")
+            ->leftJoin(Location::class, "l", Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))");
+            
+            
+            // ->leftJoin("c.location", "l")
+            // ->leftJoin("ad.location", "l");
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($qb, $countryISO3);
     }
 }
