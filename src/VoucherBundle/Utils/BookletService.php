@@ -372,6 +372,14 @@ class BookletService
         $booklet->setDistributionBeneficiary($distributionBeneficiary)
                 ->setStatus(Booklet::DISTRIBUTED);
         $this->em->merge($booklet);
+
+        $beneficiariesWithoutBooklets = $this->em->getRepository(DistributionBeneficiary::class)->countWithoutBooklet($distributionData);
+        
+        if ($beneficiariesWithoutBooklets === '1') {
+            $distributionData->setCompleted(true);
+            $this->em->merge($distributionData);
+        }  
+
         $this->em->flush();
 
         return "Booklet successfully assigned to the beneficiary";
@@ -456,7 +464,7 @@ class BookletService
     public function getPdfHtml(Booklet $booklet, string $voucherHtmlSeparation)
     {
         $name = $booklet->getDistributionBeneficiary() ?
-            $booklet->getDistributionBeneficiary()->getBeneficiary()->getFamilyName() :
+            $booklet->getDistributionBeneficiary()->getBeneficiary()->getLocalFamilyName() :
             '_______';
         $currency = $booklet->getCurrency();
         $bookletQrCode = $booklet->getCode();
@@ -562,8 +570,10 @@ class BookletService
                 "Notes" => $beneficiary->getHousehold()->getNotes(),
                 "Latitude" => $beneficiary->getHousehold()->getLatitude(),
                 "Longitude" => $beneficiary->getHousehold()->getLongitude(),
-                "Given name" => $beneficiary->getGivenName(),
-                "Family name"=> $beneficiary->getFamilyName(),
+                "English given name" => $beneficiary->getEnGivenName(),
+                "English family name"=> $beneficiary->getEnFamilyName(),
+                "Local given name" => $beneficiary->getLocalGivenName(),
+                "Local family name"=> $beneficiary->getLocalFamilyName(),
                 "Gender" => $gender,
                 "Date of birth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                 "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
