@@ -107,7 +107,7 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
             'justification' => 'Jusitification for deletion'
         );
 
-        $crawler = $this->request('POST', '/api/wsse/delete-beneficiaries/'. $beneficiaryId .'?distributionId='. $distributionId, $body);
+        $crawler = $this->request('POST', '/api/wsse/distribution/beneficiaries/'. $beneficiaryId .'/delete?distributionId='. $distributionId, $body);
         $listDistributionBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());

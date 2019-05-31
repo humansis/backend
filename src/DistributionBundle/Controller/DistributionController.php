@@ -208,7 +208,7 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Post("/delete-beneficiaries/{id}", name="remove_one_beneficiary_in_distribution")
+     * @Rest\Post("/distribution/beneficiaries/{id}/delete", name="remove_one_beneficiary_in_distribution")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")

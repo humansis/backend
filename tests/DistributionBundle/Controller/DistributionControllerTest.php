@@ -253,7 +253,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('POST', '/api/wsse/delete-beneficiaries/11?distribution=' . $distribution['id'], $body);
+        $crawler = $this->request('POST', '/api/wsse/distribution/beneficiaries/11/delete?distribution=' . $distribution['id'], $body);
         $remove = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
