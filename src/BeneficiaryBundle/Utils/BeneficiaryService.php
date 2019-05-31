@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
+use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use Doctrine\ORM\EntityManagerInterface;
@@ -189,6 +190,7 @@ class BeneficiaryService
         }
 
         $this->getOrSaveProfile($beneficiary, $beneficiaryArray["profile"], false);
+        $this->updateReferral($beneficiary, $beneficiaryArray);
 
         $this->em->persist($beneficiary);
         if ($flush) {
@@ -387,5 +389,39 @@ class BeneficiaryService
     {
         $exportableTable = $this->em->getRepository(Beneficiary::class)->getAllInCountry($countryIso3);
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
+    }
+
+    /**
+     * Updates a beneficiary
+     *
+     * @param Beneficiary $beneficiary
+     * @param array $beneficiaryData
+     * @return Beneficiary
+     * @throws \Exception
+     */
+    public function update(Beneficiary $beneficiary, array $beneficiaryData)
+    {
+        try {
+            $this->updateReferral($beneficiary, $beneficiaryData);
+            $this->em->persist($beneficiary);
+        } catch (\Exception $e) {
+            throw new \Exception('Error updating Beneficiary');
+        }
+        return $beneficiary;
+    }
+
+    public function updateReferral(Beneficiary $beneficiary, array $beneficiaryData) {
+        if (array_key_exists('referral_type', $beneficiaryData) && array_key_exists('referral_comment', $beneficiaryData) &&
+            $beneficiaryData['referral_type'] && $beneficiaryData['referral_comment']) {
+            $previousReferral = $beneficiary->getReferral();
+            if ($previousReferral) {
+                $this->em->remove($previousReferral);
+            }
+            $referral = new Referral();
+            $referral->setType($beneficiaryData['referral_type'])
+                ->setComment($beneficiaryData['referral_comment']);
+            $beneficiary->setReferral($referral);
+            $this->em->persist($referral);
+        }
     }
 }
