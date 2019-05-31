@@ -145,6 +145,13 @@ class HouseholdService
             $household = new Household();
         }
 
+        if ($household->getHouseholdLocations()) {  
+            foreach ($household->getHouseholdLocations() as $initialHouseholdLocation) {
+                $this->em->remove($initialHouseholdLocation);
+            } 
+        }
+        $this->em->flush();
+
         foreach ($householdArray['household_locations'] as $householdLocation) {
             $newHouseholdLocation = new HouseholdLocation();
             $newHouseholdLocation->setLocationGroup($householdLocation['location_group'])
@@ -181,6 +188,7 @@ class HouseholdService
             $household->addHouseholdLocation($newHouseholdLocation);
             $this->em->persist($newHouseholdLocation);
         }
+
 
         $household->setNotes($householdArray["notes"])
             ->setLivelihood($householdArray["livelihood"])

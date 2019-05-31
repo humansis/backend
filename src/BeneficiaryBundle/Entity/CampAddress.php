@@ -31,7 +31,7 @@ class CampAddress
     private $tentNumber;
 
      /**
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Camp", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Camp")
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $camp;
