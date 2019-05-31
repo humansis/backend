@@ -16,6 +16,7 @@ use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Class DistributionService
@@ -501,6 +502,13 @@ class DistributionService
             } else {
                 $gender = 'Male';
             }
+
+            $referral_type = null;
+            $referral_comment = null;
+            if ($beneficiary->getReferral()) {
+                $referral_type = $beneficiary->getReferral()->getType();
+                $referral_comment = $beneficiary->getReferral()->getComment();
+            }
                 
             $commodity = $distributionData->getCommodities()[0];
 
@@ -522,7 +530,9 @@ class DistributionService
                 "commodity" => $commodity->getModalityType()->getName(),
                 "value" => $commodity->getValue() . ' ' . $commodity->getUnit(),
                 "distributedAt" => $generalrelief->getDistributedAt(),
-                "notesDistribution" => $generalrelief->getNotes()
+                "notesDistribution" => $generalrelief->getNotes(),
+                "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
+                "Referral Comment" => $referral_comment,
             ));
         }
 

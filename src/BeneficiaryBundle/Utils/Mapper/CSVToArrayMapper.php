@@ -9,6 +9,7 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use BeneficiaryBundle\Entity\Referral;
 
 class CSVToArrayMapper extends AbstractMapper
 {
@@ -178,6 +179,7 @@ class CSVToArrayMapper extends AbstractMapper
             $this->mapProfile($formattedHouseholdArray);
             $this->mapStatus($formattedHouseholdArray);
             $this->mapLocation($formattedHouseholdArray);
+            $this->mapReferral($formattedHouseholdArray);
             $this->mapLivelihood($formattedHouseholdArray);
         } catch (\Exception $exception) {
             throw $exception;
@@ -400,6 +402,23 @@ class CSVToArrayMapper extends AbstractMapper
             throw new \Exception('The Adm4 ' . $location['adm4'] . ' was not found in ' . $adm3->getName());
         } else {
             $formattedHouseholdArray['location']['adm4'] = $adm4->getId();
+        }
+    }
+
+    public function mapReferral(&$formattedHouseholdArray)
+    {
+        if ($formattedHouseholdArray['beneficiaries']['referral_type']) {
+            $referralType = null;
+            foreach (Referral::REFERRALTYPES as $referralTypeId => $value) {
+                if (strcasecmp($value, $formattedHouseholdArray['beneficiaries']['referral_type']) === 0) {
+                    $referralType = $referralTypeId;
+                }
+            }
+            if ($referralType !== null) {
+                $formattedHouseholdArray['beneficiaries']['referral_type'] = $referralType;
+            } else {
+                throw new \Exception("Invalid referral type.");
+            }
         }
     }
 

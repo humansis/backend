@@ -395,6 +395,18 @@ class HouseholdService
         return $household;
     }
 
+    public function removeMany(array $householdIds)
+    {
+        foreach($householdIds as $householdId) {
+            $household = $this->em->getRepository(Household::class)->find($householdId);
+            $household->setArchived(true);
+            $this->em->persist($household);
+        }
+        $this->em->flush();
+        return "Households have been archived";
+    }
+
+
     /**
      * @return mixed
      */

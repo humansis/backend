@@ -140,7 +140,7 @@ class OrganizationController extends Controller
     /**
      * To print a template of the organization pdf
      *
-     * @Rest\Get("/organization-print-template", name="print_template")
+     * @Rest\Get("/organization/print/template", name="print_template")
      * @SWG\Tag(name="Organization")
      *
      * @SWG\Response(

@@ -39,7 +39,6 @@ class OrganizationControllerTest extends BMSServiceTestCase
         $organization = json_decode($this->client->getResponse()->getContent(), true);
         if (!empty($organization)) {
             $this->assertArrayHasKey('name', $organization[0]);
-            $this->assertArrayHasKey('logo', $organization[0]);
             $this->assertArrayHasKey('font', $organization[0]);
 
         } else {
@@ -57,10 +56,10 @@ class OrganizationControllerTest extends BMSServiceTestCase
     {
         $body = [
             'name' => 'AKEZI',
-            'logo' => 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a170aba331.png',
+            'logo' => null,
             'primary_color' => '#4AA896',
             'secondary_color' => '#02617F',
-            'font' => 'Roboto',
+            'font' => 'Courier',
             'footer_content' => 'Powered by reliefApps'
         ];
 
@@ -75,7 +74,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
 
         $initialOrganization = $this->em->getRepository(Organization::class)->findOneBy([]);
         $this->assertEquals($initialOrganization->getName(), 'AKEZI');
-        $this->assertEquals($initialOrganization->getFont(), 'Roboto');
+        $this->assertEquals($initialOrganization->getFont(), 'Courier');
         $this->assertEquals($initialOrganization->getPrimaryColor(), '#4AA896');
 
         return $newOrganization;
