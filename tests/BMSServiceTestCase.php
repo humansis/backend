@@ -31,7 +31,7 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var Client $client */
     protected $client;
     const USER_PHPUNIT = 'phpunit';
-    const USER_TESTER = 'tester';
+    const USER_TESTER = 'reliefapps@yopmail.com';
 
     // SERVICES
 
@@ -74,6 +74,7 @@ class BMSServiceTestCase extends KernelTestCase
         "address_number" => "NUMBER_TEST",
         "address_postcode" => "POSTCODE_TEST",
         "livelihood" => 10,
+        "income_level" => 3,
         "notes" => "NOTES_TEST",
         "latitude" => "1.1544",
         "longitude" => "120.12",
@@ -93,8 +94,10 @@ class BMSServiceTestCase extends KernelTestCase
         ],
         "beneficiaries" => [
             [
-                "given_name" => "FIRSTNAME_TEST",
-                "family_name" => "NAME_TEST",
+                "en_given_name" => "FIRSTNAME_TEST",
+                "en_family_name" => "NAME_TEST",
+                "local_given_name" => "FIRSTNAME_TEST",
+                "local_family_name" => "NAME_TEST",
                 "gender" => 1,
                 "status" => "1",
                 "residency_status" => "IDP",
@@ -123,8 +126,10 @@ class BMSServiceTestCase extends KernelTestCase
                 ]
             ],
             [
-                "given_name" => "GIVENNAME_TEST",
-                "family_name" => "FAMILYNAME_TEST",
+                "en_given_name" => "GIVENNAME_TEST",
+                "en_family_name" => "FAMILYNAME_TEST",
+                "local_given_name" => "GIVENNAME_TEST",
+                "local_family_name" => "FAMILYNAME_TEST",
                 "gender" => 1,
                 "status" => 0,
                 "residency_status" => "resident",

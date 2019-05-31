@@ -3,6 +3,7 @@
 namespace TransactionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use TransactionBundle\Entity\FinancialProvider;
@@ -12,6 +13,7 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use UserBundle\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Class TransactionService
@@ -335,16 +337,26 @@ class TransactionService
                 $gender = 'Male';
             }
 
+            $referral_type = null;
+            $referral_comment = null;
+            if ($beneficiary->getReferral()) {
+                $referral_type = $beneficiary->getReferral()->getType();
+                $referral_comment = $beneficiary->getReferral()->getComment();
+            }
+
             array_push($exportableTable, array(
                 "addressStreet" => $beneficiary->getHousehold()->getAddressStreet(),
                 "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
                 "addressPostcode" => $beneficiary->getHousehold()->getAddressPostcode(),
-                "livelihood" => $beneficiary->getHousehold()->getLivelihood(),
+                "livelihood" => Household::LIVELIHOOD[$beneficiary->getHousehold()->getLivelihood()],
+                "incomeLevel" => $beneficiary->getHousehold()->getIncomeLevel(),
                 "notes" => $beneficiary->getHousehold()->getNotes(),
                 "latitude" => $beneficiary->getHousehold()->getLatitude(),
                 "longitude" => $beneficiary->getHousehold()->getLongitude(),
-                "givenName" => $beneficiary->getGivenName(),
-                "familyName"=> $beneficiary->getFamilyName(),
+                "localGivenName" => $beneficiary->getLocalGivenName(),
+                "localFamilyName"=> $beneficiary->getLocalFamilyName(),
+                "enGivenName" => $beneficiary->getEnGivenName(),
+                "enFamilyName"=> $beneficiary->getEnFamilyName(),
                 "gender" => $gender,
                 "dateOfBirth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                 "amount_sent" => $transaction->getAmountSent(),
@@ -353,6 +365,8 @@ class TransactionService
                 "message" => $transaction->getMessage(),
                 "money_received" => $transaction->getMoneyReceived(),
                 "pickup_date" => $transaction->getPickupDate(),
+                "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
+                "Referral Comment" => $referral_comment,
             ));
         }
 

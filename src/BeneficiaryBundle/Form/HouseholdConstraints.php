@@ -34,6 +34,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "location" => $array,
             "country_specific_answers" => $array,
             "beneficiaries" => $array,
+            "income_level" => $optionalNumeric,
         ];
         $location = [
             "country_iso3" => $optionalString,
@@ -49,8 +50,10 @@ class HouseholdConstraints extends RequestValidatorConstraints
         $beneficiary = [
             "id" => $optionalNumeric,
             "id_tmp" => $optionalString,
-            "given_name" => $string,
-            "family_name" => $string,
+            "en_given_name" => $optionalString,
+            "en_family_name" => $optionalString,
+            "local_given_name" => $string,
+            "local_family_name" => $string,
             "gender" => $numeric,
             "status" => $numeric,
             "residency_status" => $string,
@@ -58,7 +61,9 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "profile" => $array,
             "vulnerability_criteria" => $array,
             "phones" => $array,
-            "national_ids" => $array
+            "national_ids" => $array,
+            "referral_type" => $optionalNumeric,
+            "referral_comment" => $optionalString
         ];
         $profile = [
             "id" => $optionalNumeric,

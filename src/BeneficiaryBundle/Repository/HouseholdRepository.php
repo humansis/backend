@@ -5,11 +5,8 @@ namespace BeneficiaryBundle\Repository;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Doctrine\ORM\Query\Expr\Join;
 use ProjectBundle\Entity\Project;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Location;
 
 /**
  * HouseholdRepository
@@ -27,22 +24,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
     public function findAllByCountry(string $iso3)
     {
         $qb = $this->createQueryBuilder("hh");
-        $q = $qb->leftJoin("hh.location", "l")
-            ->leftJoin("l.adm1", "adm1")
-            ->leftJoin("l.adm2", "adm2")
-            ->leftJoin("l.adm3", "adm3")
-            ->leftJoin("l.adm4", "adm4")
-            ->where("adm1.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm4.adm3", "adm3b")
-            ->leftJoin("adm3b.adm2", "adm2b")
-            ->leftJoin("adm2b.adm1", "adm1b")
-            ->orWhere("adm1b.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm3.adm2", "adm2c")
-            ->leftJoin("adm2c.adm1", "adm1c")
-            ->orWhere("adm1c.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm2.adm1", "adm1d")
-            ->orWhere("adm1d.countryISO3 = :iso3 AND hh.archived = 0")
-            ->setParameter("iso3", $iso3);
+        $q = $qb->innerJoin("hh.location", "l");
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($q, $iso3);
+        $qb->andWhere('hh.archived = 0');
         
         return $q;
     }
@@ -89,8 +74,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         COALESCE(hh.addressStreet, ''),
                         COALESCE(hh.addressNumber, ''),
                         COALESCE(hh.addressPostcode, ''),
-                        COALESCE(b.givenName, ''),
-                        COALESCE(b.familyName, '')
+                        COALESCE(b.localGivenName, ''),
+                        COALESCE(b.localFamilyName, '')
                     ),
                     :stringToSearch
                 ) as levenshtein")
@@ -121,23 +106,17 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb = $this->createQueryBuilder("hh");
 
         // Join all location tables (not just the one in the location)
-        $q = $qb->innerJoin("hh.location", "l")
-                ->leftJoin("l.adm4", "adm4")
-                ->leftJoin("l.adm3", "locAdm3")
-                ->leftJoin("l.adm2", "locAdm2")
-                ->leftJoin("l.adm1", "locAdm1")
-                ->leftJoin(Adm3::class, "adm3", Join::WITH, "adm3.id = COALESCE(IDENTITY(adm4.adm3, 'id'), locAdm3.id)")
-                ->leftJoin(Adm2::class, "adm2", Join::WITH, "adm2.id = COALESCE(IDENTITY(adm3.adm2, 'id'), locAdm2.id)")
-                ->leftJoin(Adm1::class, "adm1", Join::WITH, "adm1.id = COALESCE(IDENTITY(adm2.adm1, 'id'), locAdm1.id)")
-                ->where("adm1.countryISO3 = :iso3")
-                ->setParameter("iso3", $iso3)
-                ->andWhere("hh.archived = 0");
+        $q = $qb->innerJoin("hh.location", "l");
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($q, $iso3);
 
         // We join information that is needed for the filters
         $q->leftJoin("hh.beneficiaries", "b")
+            ->andWhere("hh.archived = 0")
             ->andWhere("hh.id = b.household")
             ->leftJoin("b.vulnerabilityCriteria", "vb")
-            ->leftJoin("hh.projects", "p");
+            ->leftJoin("hh.projects", "p")
+            ->leftJoin("b.referral", "r");
             
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
         if (array_key_exists("sort", $sort) && array_key_exists("direction", $sort)) {
@@ -148,13 +127,13 @@ class HouseholdRepository extends AbstractCriteriaRepository
             if ($value == "location") {
                 $q->addGroupBy("adm1")->addOrderBy("adm1.name", $direction);
             }
-            // If the field is the first name, we sort it by the direction sent
-            elseif ($value == "firstName") {
-                $q->addGroupBy("b")->addOrderBy("b.givenName", $direction);
+            // If the field is the local first name, we sort it by the direction sent
+            elseif ($value == "localFirstName") {
+                $q->addGroupBy("b")->addOrderBy("b.localGivenName", $direction);
             }
-            // If the field is the family name, we sort it by the direction sent
-            elseif ($value == "familyName") {
-                $q->addGroupBy("b")->addOrderBy("b.familyName", $direction);
+            // If the field is the local family name, we sort it by the direction sent
+            elseif ($value == "localFamilyName") {
+                $q->addGroupBy("b")->addOrderBy("b.localFamilyName", $direction);
             }
             // If the field is the number of dependents, we sort it by the direction sent
             elseif ($value == "dependents") {
@@ -183,8 +162,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 if ($category === "any" && count($filterValues) > 0) {
                     foreach ($filterValues as $filterValue) {
                         $q->andWhere("CONCAT(
-                            COALESCE(b.familyName, ''),
-                            COALESCE(b.givenName, ''),
+                            COALESCE(b.enFamilyName, ''),
+                            COALESCE(b.enGivenName, ''),
+                            COALESCE(b.localFamilyName, ''),
+                            COALESCE(b.localGivenName, ''),
                             COALESCE(p.name, ''),
                             COALESCE(adm1.name, ''),
                             COALESCE(adm2.name, ''),
@@ -222,6 +203,13 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         $orStatement->add($q->expr()->eq("b.residencyStatus", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
+                } elseif ($category === "referral" && count($filterValues) > 0) {
+                    $orStatement = $q->expr()->orX();
+                    foreach ($filterValues as $indexValue => $filterValue) {
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("r.type", ":filter" . $indexFilter . $indexValue));
+                    }
+                    $q->andWhere($orStatement);
                 }
                 elseif ($category === "livelihood" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
@@ -248,8 +236,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
             $pageSize = 0;
         }
 
-        $q->setFirstResult($begin)
+        if ($pageSize > -1) {
+            $q->setFirstResult($begin)
             ->setMaxResults($pageSize);
+        }
 
         $paginator = new Paginator($q, $fetchJoinCellection = true);
 
@@ -265,24 +255,12 @@ class HouseholdRepository extends AbstractCriteriaRepository
     public function getAllByIds(string $iso3, array $ids)
     {
         $qb = $this->createQueryBuilder("hh");
-        $q = $qb->leftJoin("hh.location", "l")
-            ->leftJoin("l.adm1", "adm1")
-            ->leftJoin("l.adm2", "adm2")
-            ->leftJoin("l.adm3", "adm3")
-            ->leftJoin("l.adm4", "adm4")
-            ->where("adm1.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm4.adm3", "adm3b")
-            ->leftJoin("adm3b.adm2", "adm2b")
-            ->leftJoin("adm2b.adm1", "adm1b")
-            ->orWhere("adm1b.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm3.adm2", "adm2c")
-            ->leftJoin("adm2c.adm1", "adm1c")
-            ->orWhere("adm1c.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm2.adm1", "adm1d")
-            ->orWhere("adm1d.countryISO3 = :iso3 AND hh.archived = 0")
-            ->setParameter("iso3", $iso3);
+        $q = $qb->innerJoin("hh.location", "l");
+            $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+            $locationRepository->whereCountry($q, $iso3);
         
-        $q = $q->andWhere("hh.id IN (:ids)")
+        $q = $q->andWhere('hh.archived = 0')
+                ->andWhere("hh.id IN (:ids)")
                 ->setParameter("ids", $ids);
 
         return $q->getQuery()->getResult();

@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
+use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use Doctrine\ORM\EntityManagerInterface;
@@ -149,8 +150,10 @@ class BeneficiaryService
 
         $beneficiary->setGender($beneficiaryArray["gender"])
             ->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryArray["date_of_birth"]))
-            ->setFamilyName($beneficiaryArray["family_name"])
-            ->setGivenName($beneficiaryArray["given_name"])
+            ->setEnFamilyName($beneficiaryArray["en_family_name"])
+            ->setEnGivenName($beneficiaryArray["en_given_name"])
+            ->setLocalFamilyName($beneficiaryArray["local_family_name"])
+            ->setLocalGivenName($beneficiaryArray["local_given_name"])
             ->setStatus($beneficiaryArray["status"])
             ->setResidencyStatus($beneficiaryArray["residency_status"])
             ->setUpdatedOn(new \DateTime());
@@ -187,6 +190,7 @@ class BeneficiaryService
         }
 
         $this->getOrSaveProfile($beneficiary, $beneficiaryArray["profile"], false);
+        $this->updateReferral($beneficiary, $beneficiaryArray);
 
         $this->em->persist($beneficiary);
         if ($flush) {
@@ -356,6 +360,17 @@ class BeneficiaryService
     }
 
     /**
+     * @param string $iso3
+     * @return int
+     */
+    public function countAllServed(string $iso3)
+    {
+        $count = (int) $this->em->getRepository(Beneficiary::class)->countServedInCountry($iso3);
+
+        return $count;
+    }
+
+    /**
      * @param DistributionData $distributionData
      * @param string $type
      * @return mixed
@@ -370,9 +385,59 @@ class BeneficiaryService
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(string $type, string $countryIso3)
+    public function exportToCsv(string $type, string $countryIso3, $filters, $ids)
     {
-        $exportableTable = $this->em->getRepository(Beneficiary::class)->getAllInCountry($countryIso3);
+        $households = null;
+        if ($ids) {
+            $households = $this->em->getRepository(Household::class)->getAllByIds($countryIso3, $ids);
+        } else if ($filters) {
+            $households = $this->container->get('beneficiary.household_service')->getAll($countryIso3, $filters)[1];
+        } else {
+            $exportableTable = $this->em->getRepository(Beneficiary::class)->getAllInCountry($countryIso3);	
+        }
+        
+        if ($households) {
+            $exportableTable = [];
+            foreach ($households as $household) {
+                foreach ($household->getBeneficiaries() as $beneficiary) {
+                    array_push($exportableTable, $beneficiary);
+                }
+            }
+        }
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
+    }
+
+    /**
+     * Updates a beneficiary
+     *
+     * @param Beneficiary $beneficiary
+     * @param array $beneficiaryData
+     * @return Beneficiary
+     * @throws \Exception
+     */
+    public function update(Beneficiary $beneficiary, array $beneficiaryData)
+    {
+        try {
+            $this->updateReferral($beneficiary, $beneficiaryData);
+            $this->em->persist($beneficiary);
+        } catch (\Exception $e) {
+            throw new \Exception('Error updating Beneficiary');
+        }
+        return $beneficiary;
+    }
+
+    public function updateReferral(Beneficiary $beneficiary, array $beneficiaryData) {
+        if (array_key_exists('referral_type', $beneficiaryData) && array_key_exists('referral_comment', $beneficiaryData) &&
+            $beneficiaryData['referral_type'] && $beneficiaryData['referral_comment']) {
+            $previousReferral = $beneficiary->getReferral();
+            if ($previousReferral) {
+                $this->em->remove($previousReferral);
+            }
+            $referral = new Referral();
+            $referral->setType($beneficiaryData['referral_type'])
+                ->setComment($beneficiaryData['referral_comment']);
+            $beneficiary->setReferral($referral);
+            $this->em->persist($referral);
+        }
     }
 }

@@ -146,7 +146,8 @@ class HouseholdService
             ->setLatitude($householdArray["latitude"])
             ->setAddressStreet($householdArray["address_street"])
             ->setAddressPostcode($householdArray["address_postcode"])
-            ->setAddressNumber($householdArray["address_number"]);
+            ->setAddressNumber($householdArray["address_number"])
+            ->setIncomeLevel($householdArray["income_level"]);
 
         // Save or update location instance
         $location = $this->locationService->getLocation($householdArray['__country'], $householdArray["location"]);
@@ -264,7 +265,8 @@ class HouseholdService
             ->setLatitude($householdArray["latitude"])
             ->setAddressStreet($householdArray["address_street"])
             ->setAddressPostcode($householdArray["address_postcode"])
-            ->setAddressNumber($householdArray["address_number"]);
+            ->setAddressNumber($householdArray["address_number"])
+            >setIncomeLevel($householdArray["income_level"]);
 
         $project = $this->em->getRepository(Project::class)->find($project);
         if (!$project instanceof Project) {
@@ -392,6 +394,18 @@ class HouseholdService
 
         return $household;
     }
+
+    public function removeMany(array $householdIds)
+    {
+        foreach($householdIds as $householdId) {
+            $household = $this->em->getRepository(Household::class)->find($householdId);
+            $household->setArchived(true);
+            $this->em->persist($household);
+        }
+        $this->em->flush();
+        return "Households have been archived";
+    }
+
 
     /**
      * @return mixed

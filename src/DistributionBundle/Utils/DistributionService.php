@@ -16,6 +16,7 @@ use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Class DistributionService
@@ -298,6 +299,22 @@ class DistributionService
     }
 
     /**
+     * @param DistributionData $distributionData
+     * @return null|object|string
+     */
+    public function complete(DistributionData $distributionData)
+    {
+        if (!empty($distributionData)) {
+            $distributionData->setCompleted(1);
+        }
+
+        $this->em->persist($distributionData);
+        $this->em->flush();
+
+        return "Completed";
+    }
+
+    /**
      * Edit a distribution
      *
      * @param DistributionData $distributionData
@@ -346,6 +363,16 @@ class DistributionService
     public function getTotalValue(string $country)
     {
         $value = (int) $this->em->getRepository(DistributionData::class)->getTotalValue($country);
+        return $value;
+    }
+
+     /**
+     * @param string $country
+     * @return string
+     */
+    public function countCompleted(string $country)
+    {
+        $value = (int) $this->em->getRepository(DistributionData::class)->countCompleted($country);
         return $value;
     }
 
@@ -489,6 +516,13 @@ class DistributionService
             } else {
                 $gender = 'Male';
             }
+
+            $referral_type = null;
+            $referral_comment = null;
+            if ($beneficiary->getReferral()) {
+                $referral_type = $beneficiary->getReferral()->getType();
+                $referral_comment = $beneficiary->getReferral()->getComment();
+            }
                 
             $commodity = $distributionData->getCommodities()[0];
 
@@ -496,18 +530,23 @@ class DistributionService
                 "addressStreet" => $beneficiary->getHousehold()->getAddressStreet(),
                 "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
                 "addressPostcode" => $beneficiary->getHousehold()->getAddressPostcode(),
-                "livelihood" => $beneficiary->getHousehold()->getLivelihood(),
+                "livelihood" => Household::LIVELIHOOD[$beneficiary->getHousehold()->getLivelihood()],
+                "incomeLevel" => $beneficiary->getHousehold()->getIncomeLevel(),
                 "notes" => $beneficiary->getHousehold()->getNotes(),
                 "latitude" => $beneficiary->getHousehold()->getLatitude(),
                 "longitude" => $beneficiary->getHousehold()->getLongitude(),
-                "givenName" => $beneficiary->getGivenName(),
-                "familyName"=> $beneficiary->getFamilyName(),
+                "localGivenName" => $beneficiary->getLocalGivenName(),
+                "localFamilyName"=> $beneficiary->getLocalFamilyName(),
+                "enGivenName" => $beneficiary->getEnGivenName(),
+                "enFamilyName"=> $beneficiary->getEnFamilyName(),
                 "gender" => $gender,
                 "dateOfBirth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                 "commodity" => $commodity->getModalityType()->getName(),
                 "value" => $commodity->getValue() . ' ' . $commodity->getUnit(),
                 "distributedAt" => $generalrelief->getDistributedAt(),
-                "notesDistribution" => $generalrelief->getNotes()
+                "notesDistribution" => $generalrelief->getNotes(),
+                "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
+                "Referral Comment" => $referral_comment,
             ));
         }
 

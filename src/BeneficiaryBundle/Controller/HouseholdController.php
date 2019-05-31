@@ -160,7 +160,7 @@ class HouseholdController extends Controller
 
 
     /**
-     * @Rest\Post("/households/{id}", name="edit_household")
+     * @Rest\Post("/households/{id}", name="edit_household", requirements={"id": "\d+"})
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Households")
@@ -444,6 +444,33 @@ class HouseholdController extends Controller
                 SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
             );
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Post("/households/delete")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @return Response
+     */
+    public function removeManyAction(Request $request)
+    {
+        try {
+            /** @var HouseholdService $householdService */
+            $householdService = $this->get("beneficiary.household_service");
+            $ids = $request->request->get('ids');
+            $response = $householdService->removeMany($ids);
+        }  catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        return new Response(json_encode($response));
+
     }
 
     /**

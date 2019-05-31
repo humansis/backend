@@ -9,6 +9,7 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use BeneficiaryBundle\Entity\Referral;
 
 class CSVToArrayMapper extends AbstractMapper
 {
@@ -33,7 +34,7 @@ class CSVToArrayMapper extends AbstractMapper
 
         foreach ($sheetArray as $indexRow => $row) {
             // Check if no column has been deleted
-            if (!$row['A'] && !$row['B'] && !$row['C'] && !$row['D'] && !$row['E'] && !$row['F'] && !$row['G'] && !$row['H'] && !$row['I'] && !$row['J'] && !$row['K'] && !$row['L'] && !$row['M'] && !$row['N'] && !$row['O'] && !$row['P'] && !$row['Q'] && !$row['R'] && !$row['S'] && !$row['T'] && !$row['U'] && !$row['V'] && !$row['W'] && !$row['X'] && !$row['Y'] && !$row['Z'] && !$row['AA']) {
+            if (!$row['A'] && !$row['B'] && !$row['C'] && !$row['D'] && !$row['E'] && !$row['F'] && !$row['G'] && !$row['H'] && !$row['I'] && !$row['J'] && !$row['K'] && !$row['L'] && !$row['M'] && !$row['N'] && !$row['O'] && !$row['P'] && !$row['Q'] && !$row['R'] && !$row['S'] && !$row['T'] && !$row['U'] && !$row['V'] && !$row['W'] && !$row['X'] && !$row['Y'] && !$row['Z'] && !$row['AA'] && !$row['AB'] && !$row['AC'] && !$row['AD'] && !$row['AE']) {
                 continue;
             }
 
@@ -91,23 +92,26 @@ class CSVToArrayMapper extends AbstractMapper
     private function mappingCSV(array $mappingCSV, $countryIso3, int $lineNumber, array $row, array $rowHeader)
     {
         $formattedHouseholdArray = [];
+
         foreach ($mappingCSV as $formattedIndex => $csvIndex) {
             if (is_array($csvIndex)) {
                 foreach ($csvIndex as $formattedIndex2 => $csvIndex2) {
 
                     // Retrieve the beneficiary's information from the array
-                    $givenName = $row[$mappingCSV['beneficiaries']['given_name']];
-                    $familyName = $row[$mappingCSV['beneficiaries']['family_name']];
+                    $enGivenName = $row[$mappingCSV['beneficiaries']['en_given_name']];
+                    $enFamilyName = $row[$mappingCSV['beneficiaries']['en_family_name']];
+                    $localGivenName = $row[$mappingCSV['beneficiaries']['local_given_name']];
+                    $localFamilyName = $row[$mappingCSV['beneficiaries']['local_family_name']];
                     $gender = $row[$mappingCSV['beneficiaries']['gender']];
                     $dateOfBirth = $row[$mappingCSV['beneficiaries']['date_of_birth']];
                     $status = $row[$mappingCSV['beneficiaries']['status']];
                     $residencyStatus = $row[$mappingCSV['beneficiaries']['residency_status']];
 
                     // Verify that there are no missing information in each beneficiary
-                    if ($givenName == null) {
-                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['given_name'].' at the line '.$lineNumber);
-                    } elseif ($familyName == null) {
-                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['family_name'].' at the line '.$lineNumber);
+                    if ($localGivenName == null) {
+                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['local_given_name'].' at the line '.$lineNumber);
+                    } elseif ($localFamilyName == null) {
+                        throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['local_family_name'].' at the line '.$lineNumber);
                     } elseif (strcasecmp(trim($gender), 'Female') !== 0 && strcasecmp(trim($gender), 'Male') !== 0 &&
                         strcasecmp(trim($gender), 'F') !== 0 && strcasecmp(trim($gender), 'M') !== 0) {
                         throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['gender'].' at the line '.$lineNumber);
@@ -161,6 +165,10 @@ class CSVToArrayMapper extends AbstractMapper
         // Add the country iso3 from the request
         $formattedHouseholdArray['location']['country_iso3'] = $countryIso3;
 
+        if ($formattedHouseholdArray['income_level'] && !in_array($formattedHouseholdArray['income_level'], [1,2,3,4,5])) {
+            throw new \Exception('The income level must be between 1 and 5');
+        }
+
         // Treatment on field with multiple value or foreign key inside (switch name to id for example)
         try {
             $this->mapCountrySpecifics($mappingCSV, $formattedHouseholdArray, $rowHeader);
@@ -171,6 +179,8 @@ class CSVToArrayMapper extends AbstractMapper
             $this->mapProfile($formattedHouseholdArray);
             $this->mapStatus($formattedHouseholdArray);
             $this->mapLocation($formattedHouseholdArray);
+            $this->mapReferral($formattedHouseholdArray);
+            $this->mapLivelihood($formattedHouseholdArray);
         } catch (\Exception $exception) {
             throw $exception;
         }
@@ -392,6 +402,45 @@ class CSVToArrayMapper extends AbstractMapper
             throw new \Exception('The Adm4 ' . $location['adm4'] . ' was not found in ' . $adm3->getName());
         } else {
             $formattedHouseholdArray['location']['adm4'] = $adm4->getId();
+        }
+    }
+
+    public function mapReferral(&$formattedHouseholdArray)
+    {
+        if ($formattedHouseholdArray['beneficiaries']['referral_type']) {
+            $referralType = null;
+            foreach (Referral::REFERRALTYPES as $referralTypeId => $value) {
+                if (strcasecmp($value, $formattedHouseholdArray['beneficiaries']['referral_type']) === 0) {
+                    $referralType = $referralTypeId;
+                }
+            }
+            if ($referralType !== null) {
+                $formattedHouseholdArray['beneficiaries']['referral_type'] = $referralType;
+            } else {
+                throw new \Exception("Invalid referral type.");
+            }
+        }
+    }
+
+    /**
+     * Reformat the field livelihood.
+     *
+     * @param $formattedHouseholdArray
+     */
+    public function mapLivelihood(&$formattedHouseholdArray)
+    {
+        if ($formattedHouseholdArray['livelihood']) {
+            $livelihood = null;
+            foreach (Household::LIVELIHOOD as $livelihoodId => $value) {
+                if (strcasecmp($value, $formattedHouseholdArray['livelihood']) === 0) {
+                    $livelihood = $livelihoodId;
+                }
+            }
+            if ($livelihood !== null) {
+                $formattedHouseholdArray['livelihood'] = $livelihood;
+            } else {
+                throw new \Exception("Invalid livelihood.");
+            }
         }
     }
 }

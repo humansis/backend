@@ -17,7 +17,7 @@ class ConfigurationLoader
     /**
      * @var
      */
-    private $criteria;
+    public $criteria;
 
     /**
      * @var array
@@ -74,7 +74,7 @@ class ConfigurationLoader
     private function formatCriteria(array $filters, string $distributionType, $criterion, $type)
     {
         if (in_array($type, $this->MAPPING_TYPE_DEFAULT)) {
-            return ["field_string" => $criterion, "type" => $type, "distribution_type" => $distributionType];
+            return ["field_string" => $criterion, "type" => $type, "distribution_type" => $distributionType, "table_string" => 'Beneficiary'];
         } else {
             $instances = $this->em->getRepository($type)->findForCriteria($filters);
             foreach ($instances as &$instance) {
