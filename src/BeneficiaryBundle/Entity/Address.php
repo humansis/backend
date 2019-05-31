@@ -47,7 +47,7 @@ class Address
     private $postcode;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $location;
