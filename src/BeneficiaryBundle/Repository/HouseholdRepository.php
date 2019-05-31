@@ -236,8 +236,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
             $pageSize = 0;
         }
 
-        $q->setFirstResult($begin)
+        if ($pageSize > -1) {
+            $q->setFirstResult($begin)
             ->setMaxResults($pageSize);
+        }
 
         $paginator = new Paginator($q, $fetchJoinCellection = true);
 
