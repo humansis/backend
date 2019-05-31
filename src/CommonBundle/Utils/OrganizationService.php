@@ -35,7 +35,7 @@ class OrganizationService
    }
 
    /**
-     * @param Organization $organazation
+     * @param Organization $organization
      * @param array $organizationArray
      * @return Organization
      * @throws \Exception
@@ -50,7 +50,7 @@ class OrganizationService
       ->setFooterContent($organizationArray["footer_content"]);
 
       if (array_key_exists('logo', $organizationArray)) {
-        $organazation->setLogo($organizationArray["logo"]);
+        $organization->setLogo($organizationArray["logo"]);
       }
       
       $this->em->merge($organization);
