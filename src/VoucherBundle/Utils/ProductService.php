@@ -76,7 +76,6 @@ class ProductService
      */
     public function findAll($countryIso3)
     {
-        $products =  $this->em->getRepository(Product::class)->findBy(['archived' => false, 'countryISO3' => $countryIso3]);
         return $this->em->getRepository(Product::class)->findBy(['archived' => false, 'countryISO3' => $countryIso3]);
     }
 

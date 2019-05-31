@@ -49,7 +49,9 @@ class ExportController extends Controller
                 $filename = $this->get('distribution.distribution_service')->exportToCsv($idProject, $type);
             } elseif ($request->query->get('beneficiaries')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv($type, $countryIso3);
+                $filters = $request->request->get('filters');
+                $ids = $request->request->get('ids');
+                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv($type, $countryIso3, $filters, $ids);
             } elseif ($request->query->get('beneficiariesInDistribution')) {
                 $idDistribution = $request->query->get('beneficiariesInDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);

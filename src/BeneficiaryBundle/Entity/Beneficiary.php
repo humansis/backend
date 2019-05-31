@@ -8,6 +8,7 @@ use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use CommonBundle\Utils\ExportableInterface;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Beneficiary
@@ -148,6 +149,11 @@ class Beneficiary implements ExportableInterface
      */
     private $distributionBeneficiary;
 
+     /**
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Referral", cascade={"persist", "remove"})
+     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution"})
+     */
+    private $referral;
 
 
     /**
@@ -580,6 +586,30 @@ class Beneficiary implements ExportableInterface
         return $this->profile;
     }
 
+    /**
+     * Set referral.
+     *
+     * @param \BeneficiaryBundle\Entity\Referral|null $referral
+     *
+     * @return Beneficiary
+     */
+    public function setReferral(\BeneficiaryBundle\Entity\Referral $referral = null)
+    {
+        $this->referral = $referral;
+
+        return $this;
+    }
+
+    /**
+     * Get referral.
+     *
+     * @return \BeneficiaryBundle\Entity\Referral|null
+     */
+    public function getReferral()
+    {
+        return $this->referral;
+    }
+
 
     /**
      * Returns an array representation of this class in order to prepare the export
@@ -643,6 +673,12 @@ class Beneficiary implements ExportableInterface
         $adm2 = $location->getAdm2Name();
         $adm3 = $location->getAdm3Name();
         $adm4 = $location->getAdm4Name();
+        $referral_type = null;
+        $referral_comment = null;
+        if ($this->getReferral()) {
+            $referral_type = $this->getReferral()->getType();
+            $referral_comment = $this->getReferral()->getComment();
+        }
 
         if ($this->status === true) {
             $finalArray = [
@@ -698,7 +734,9 @@ class Beneficiary implements ExportableInterface
             "phone 2" => $valuesphones[1],
             "proxy phone 2" => $proxyphones[1],
             "type national ID" => $typenationalID,
-            'nationalId' => $valuesnationalID
+            'nationalId' => $valuesnationalID,
+            "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
+            "Referral Comment" => $referral_comment,
         ];
 
         foreach ($valueCountrySpecific as $key => $value) {

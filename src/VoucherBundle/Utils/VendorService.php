@@ -218,11 +218,6 @@ class VendorService
 
     public function printInvoice(Vendor $vendor)
     {
-        $pdfOptions = new Options();
-        $pdfOptions->set('defaultFont', 'Arial');
-        $pdfOptions->set('isRemoteEnabled', true);
-        $dompdf = new Dompdf($pdfOptions);
-
         try {
             $now = new DateTime();
             $vouchers = $vendor->getVouchers();
@@ -283,18 +278,7 @@ class VendorService
                 )
             );
 
-            $dompdf->loadHtml($html);
-            $dompdf->setPaper('A4', 'portrait');
-            $dompdf->render();
-            $output = $dompdf->output();
-            $pdfFilepath =  getcwd() . '/invoicepdf.pdf';
-            file_put_contents($pdfFilepath, $output);
-
-            $response = new BinaryFileResponse($pdfFilepath);
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'invoicepdf.pdf');
-            $response->headers->set('Content-Type', 'application/pdf');
-            $response->deleteFileAfterSend(true);
-
+            $response = $this->container->get('pdf_service')->printPdf($html, 'invoice');
             return $response;
         } catch (\Exception $e) {
             throw $e;

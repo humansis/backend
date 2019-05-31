@@ -65,7 +65,9 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "profile" => $array,
             "vulnerability_criteria" => $array,
             "phones" => $array,
-            "national_ids" => $array
+            "national_ids" => $array,
+            "referral_type" => $optionalNumeric,
+            "referral_comment" => $optionalString
         ];
         $profile = [
             "id" => $optionalNumeric,

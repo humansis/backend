@@ -29,6 +29,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Class DistributionCSVService
@@ -236,7 +237,18 @@ class DistributionCSVService
                 "adm3" => $beneficiaryToCreate['adm3'],
                 "adm4" => $beneficiaryToCreate['adm4']
             );
-            
+            $referralType = null;
+            if ($beneficiaryToCreate['Referral Type']) {
+                foreach (Referral::REFERRALTYPES as $referralTypeId => $value) {
+                    if (strcasecmp($value, $beneficiaryToCreate['Referral Type']) === 0) {
+                        $referralType = $referralTypeId;
+                    }
+                }
+                if ($referralType === null) {
+                    throw new \Exception("Invalid referral type.");
+                }
+            }
+
             $householdToCreate = array(
                 "__country" => $countryIso3,
                 "address_street" => $beneficiaryToCreate['addressStreet'],
@@ -264,7 +276,9 @@ class DistributionCSVService
                         ),
                         "vulnerability_criteria" => array(),
                         "phones" => array(),
-                        "national_ids" => array()
+                        "national_ids" => array(),
+                        "referral_type" => $referralType,
+                        "referral_comment" => $beneficiaryToCreate['Referral Comment'],
                     )
                 )
             );

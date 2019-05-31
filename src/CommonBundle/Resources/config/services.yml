@@ -12,11 +12,22 @@ services:
             - '@doctrine.orm.entity_manager'
             - "@request_validator"
 
+    organization_service:
+        class: CommonBundle\Utils\OrganizationService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "@service_container"
+
     export_csv_service:
         class: CommonBundle\Utils\ExportService
         arguments:
         - "@doctrine.orm.entity_manager"
         - "@service_container"
+        public: true
+
+    pdf_service:
+        class: CommonBundle\Utils\PdfService
         public: true
 
 #######################################################################################
@@ -103,6 +114,13 @@ services:
             - "@distribution.distribution_service"
         tags:
             - { name: doctrine.fixture.orm }
+    
+    CommonBundle\DataFixtures\OrganizationFixtures:
+        arguments:
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+
 
     CommonBundle\DataFixtures\ProductFixtures:
         arguments:

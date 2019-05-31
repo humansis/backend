@@ -211,8 +211,8 @@ class SyriaFileToTemplateMapper
              * members of a family
              * @var mixed[] $mutualOutputRow
              */
-            $mutualOutputRow = [$this->getColumnLetter('AH') => $indexRow];
-            $secondBeneficiaryValues = [$this->getColumnLetter('AH') => $indexRow];
+            $mutualOutputRow = [$this->getColumnLetter('AJ') => $indexRow];
+            $secondBeneficiaryValues = [$this->getColumnLetter('AJ') => $indexRow];
             $secondBeneficiaryExists = false;
 
             /**
@@ -469,6 +469,8 @@ class SyriaFileToTemplateMapper
             'AC' => 'Proxy phone 2',
             'AD' => 'Type national ID',
             'AE' => 'Number national ID',
+            'AF' => 'Referral Type',
+            'AG' => 'Referral Comment',
         ];
         
         $column = self::FIRST_LETTER_NON_STATIC;
