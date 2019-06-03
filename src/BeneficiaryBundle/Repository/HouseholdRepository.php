@@ -293,11 +293,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
     public function getAllByIds(string $iso3, array $ids)
     {
         $qb = $this->createQueryBuilder("hh");
-        $q = $qb->innerJoin("hh.location", "l");
-            $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-            $locationRepository->whereCountry($q, $iso3);
+        $this->whereHouseholdInCountry($qb, $iso3);
         
-        $q = $q->andWhere('hh.archived = 0')
+        $q = $qb->andWhere('hh.archived = 0')
                 ->andWhere("hh.id IN (:ids)")
                 ->setParameter("ids", $ids);
 

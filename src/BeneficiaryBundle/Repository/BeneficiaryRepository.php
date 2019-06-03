@@ -290,10 +290,9 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
     private function beneficiariesInCountry(QueryBuilder &$qb, $countryISO3) {
-        $qb->leftJoin('b.household', 'hh')
-            ->innerJoin("hh.location", "l");
+        $qb->leftJoin('b.household', 'hh');
 
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($qb, $countryISO3);
+        $householdRepository = $this->getEntityManager()->getRepository(Household::class);
+        $householdRepository->whereHouseholdInCountry($qb, $countryISO3);
     }
 }
