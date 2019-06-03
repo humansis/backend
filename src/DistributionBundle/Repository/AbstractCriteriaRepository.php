@@ -97,8 +97,12 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
      */
     protected function setCountry(QueryBuilder &$qb, $countryISO3, $i = '')
     {
-        $qb->leftJoin("hh$i.location", "l$i")
-
+        $qb->leftJoin("hh$i.householdLocations", "hl$i")
+            ->leftJoin("hl$i.campAddress", "ca$i")
+            ->leftJoin("ca$i.camp", "c$i")
+            ->leftJoin("hl$i.address", "ad$i")
+            ->leftJoin(Location::class, "l$i", Join::WITH, "l.id = COALESCE(IDENTITY(c$i.location, 'id'), IDENTITY(ad$i.location, 'id'))")
+        
             ->leftJoin("l$i.adm1", "adm1$i")
             ->andWhere("adm1$i.countryISO3 = :iso3 AND hh$i.archived = 0")
 

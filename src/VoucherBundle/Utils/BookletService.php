@@ -20,6 +20,8 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use DistributionBundle\Entity\DistributionData;
+use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Entity\Household;
 
 class BookletService
 {
@@ -574,11 +576,45 @@ class BookletService
             } else {
                 $gender = 'Male';
             }
+
+            $referral_type = null;
+            $referral_comment = null;
+            if ($beneficiary->getReferral()) {
+                $referral_type = $beneficiary->getReferral()->getType();
+                $referral_comment = $beneficiary->getReferral()->getComment();
+            }
+
+            $householdLocations = $beneficiary->getHousehold()->getHouseholdLocations();
+            $currentHouseholdLocation = null;
+            foreach ($householdLocations as $householdLocation) {
+                if ($householdLocation->getLocationGroup() === 'current') {
+                    $currentHouseholdLocation = $householdLocation;
+                }
+            }
+
+            $camp = null;
+            $tentNumber = null;
+            $addressNumber = null;
+            $addressStreet = null;
+            $addressPostcode = null;
+    
+            if ($currentHouseholdLocation->getType() === 'camp') {
+                $camp = $currentHouseholdLocation->getCampAddress()->getCamp()->getName();
+                $tentNumber = $currentHouseholdLocation->getCampAddress()->getTentNumber();
+            } else {
+                $addressNumber = $currentHouseholdLocation->getAddress()->getNumber();
+                $addressStreet = $currentHouseholdLocation->getAddress()->getStreet();
+                $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
+            }
+
             array_push($exportableTable, array(
-                "Address street" => $beneficiary->getHousehold()->getAddressStreet(),
-                "Address number" => $beneficiary->getHousehold()->getAddressNumber(),
-                "Address postcode" => $beneficiary->getHousehold()->getAddressPostcode(),
-                "Livelihood" => $beneficiary->getHousehold()->getLivelihood(),
+                "addressStreet" =>  $addressStreet,
+                "addressNumber" => $addressNumber,
+                "addressPostcode" =>  $addressPostcode,
+                "camp" => $camp,
+                "tent number" => $tentNumber,
+                "livelihood" => $beneficiary->getHousehold()->getLivelihood() ?
+                    Household::LIVELIHOOD[$beneficiary->getHousehold()->getLivelihood()] : null,
                 "Notes" => $beneficiary->getHousehold()->getNotes(),
                 "Latitude" => $beneficiary->getHousehold()->getLatitude(),
                 "Longitude" => $beneficiary->getHousehold()->getLongitude(),
@@ -592,6 +628,8 @@ class BookletService
                 "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
                 "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
                 "Used at" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
+                "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
+                "Referral Comment" => $referral_comment,
             ));
         }
 
