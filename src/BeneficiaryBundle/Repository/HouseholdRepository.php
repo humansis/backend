@@ -82,7 +82,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     :stringToSearch
                 ) as levenshtein")
             ->andWhere("b.status = 1")
-            // ->groupBy("b")
+            ->groupBy("b, ad")
             ->having("levenshtein <= :minimumTolerance")
             ->setParameter("stringToSearch", $stringToSearch)
             ->setParameter("minimumTolerance", $minimumTolerance)
@@ -119,7 +119,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     :stringToSearch
                 ) as levenshtein")
             ->andWhere("b.status = 1")
-            // ->groupBy("b")
+            ->groupBy("b, c, ca")
             ->having("levenshtein <= :minimumTolerance")
             ->setParameter("stringToSearch", $stringToSearch)
             ->setParameter("minimumTolerance", $minimumTolerance)

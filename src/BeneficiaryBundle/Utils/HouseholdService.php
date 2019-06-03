@@ -286,6 +286,7 @@ class HouseholdService
      * @return Household
      * @throws ValidationException
      * @throws \Exception
+     * TODO : Not use it but refactor it to replace editOrCreate later
      */
     public function update(Household $household, Project $project, array $householdArray, bool $updateBeneficiary = true)
     {
