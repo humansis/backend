@@ -67,7 +67,7 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var string $iso3 */
     protected $iso3 = "KHM";
 
-    protected $namefullnameHousehold = "STREET_TEST";
+    protected $namefullnameHousehold = "NOTES_TEST";
 
     protected $bodyHousehold = [
         "livelihood" => 10,
@@ -376,16 +376,16 @@ class BMSServiceTestCase extends KernelTestCase
     /**
      * @depends testGetHouseholds
      *
-     * @param $addressStreet
+     * @param $notes
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function removeHousehold($addressStreet)
+    public function removeHousehold($notes)
     {
         $this->em->clear();
         /** @var Household $household */
-        $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($addressStreet);
+        $household = $this->em->getRepository(Household::class)->findOneByNotes($notes);
         if ($household instanceof Household) {
             $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
             if (!empty($beneficiaries)) {

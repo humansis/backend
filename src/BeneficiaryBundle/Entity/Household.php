@@ -125,30 +125,6 @@ class Household
     private $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="address_street", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "FullReceivers"})
-     */
-    private $addressStreet;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="address_number", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "FullReceivers"})
-     */
-    private $addressNumber;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="address_postcode", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "FullReceivers"})
-     */
-    private $addressPostcode;
-
-    /**
      * @var int
      *
      * @ORM\Column(name="livelihood", type="integer", nullable=true)
@@ -179,14 +155,6 @@ class Household
      * @Groups({"FullHousehold"})
      */
     private $longitude;
-
-    /**
-     * @var Location
-     *
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location", cascade={"persist"})
-     * @Groups({"FullHousehold", "SmallHousehold"})
-     */
-    private $location;
 
     /**
      * @var CountrySpecificAnswer
@@ -273,78 +241,6 @@ class Household
     }
 
     /**
-     * Set addressStreet.
-     *
-     * @param string $addressStreet
-     *
-     * @return Household
-     */
-    public function setAddressStreet($addressStreet)
-    {
-        $this->addressStreet = $addressStreet;
-
-        return $this;
-    }
-
-    /**
-     * Get addressStreet.
-     *
-     * @return string
-     */
-    public function getAddressStreet()
-    {
-        return $this->addressStreet;
-    }
-
-    /**
-     * Set addressNumber.
-     *
-     * @param string $addressNumber
-     *
-     * @return Household
-     */
-    public function setAddressNumber($addressNumber)
-    {
-        $this->addressNumber = $addressNumber;
-
-        return $this;
-    }
-
-    /**
-     * Get addressNumber.
-     *
-     * @return string
-     */
-    public function getAddressNumber()
-    {
-        return $this->addressNumber;
-    }
-
-    /**
-     * Set addressPostcode.
-     *
-     * @param string $addressPostcode
-     *
-     * @return Household
-     */
-    public function setAddressPostcode($addressPostcode)
-    {
-        $this->addressPostcode = $addressPostcode;
-
-        return $this;
-    }
-
-    /**
-     * Get addressPostcode.
-     *
-     * @return string
-     */
-    public function getAddressPostcode()
-    {
-        return $this->addressPostcode;
-    }
-
-    /**
      * Set livelihood.
      *
      * @param int $livelihood
@@ -390,30 +286,6 @@ class Household
     public function getNotes()
     {
         return $this->notes;
-    }
-
-    /**
-     * Set location.
-     *
-     * @param \CommonBundle\Entity\Location|null $location
-     *
-     * @return Household
-     */
-    public function setLocation(\CommonBundle\Entity\Location $location = null)
-    {
-        $this->location = $location;
-
-        return $this;
-    }
-
-    /**
-     * Get location.
-     *
-     * @return \CommonBundle\Entity\Location|null
-     */
-    public function getLocation()
-    {
-        return $this->location;
     }
 
     /**
