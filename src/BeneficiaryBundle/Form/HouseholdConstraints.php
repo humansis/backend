@@ -38,7 +38,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "location_group" => $string,
             "type" => $string,
             "address" => $optionalArray,
-            "campAddress" => $optionalArray,
+            "camp_address" => $optionalArray,
         ];
         $location = [
             "country_iso3" => $optionalString,

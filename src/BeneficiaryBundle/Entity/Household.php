@@ -51,7 +51,7 @@ class Household
      * First value with a column in the csv which can move, depends on the number of country specifics
      * @var string
      */
-    const firstColumnNonStatic = 'M';
+    const firstColumnNonStatic = 'O';
 
     /**
      * The row index of the header (with the name of country specifics)
@@ -73,41 +73,43 @@ class Household
         "address_street" => "A",
         "address_number" => "B",
         "address_postcode" => "C",
-        "livelihood" => "D",
-        "income_level" => "E",
-        "notes" => "F",
-        "latitude" => "G",
-        "longitude" => "H",
+        "camp" => "D",
+        "tent_number" => "E",
+        "livelihood" => "F",
+        "income_level" => "G",
+        "notes" => "H",
+        "latitude" => "I",
+        "longitude" => "J",
         "location" => [
             // Location
-            "adm1" => "I",
-            "adm2" => "J",
-            "adm3" => "K",
-            "adm4" => "L"
+            "adm1" => "K",
+            "adm2" => "L",
+            "adm3" => "M",
+            "adm4" => "N"
         ],
         // Beneficiary
         "beneficiaries" => [
-            "local_given_name" => "M",
-            "local_family_name" => "N",
-            "en_given_name" => "O",
-            "en_family_name" => "P",
-            "gender" => "Q",
-            "status" => "R",
-            "residency_status" => "S",
-            "date_of_birth" => "T",
-            "vulnerability_criteria" => "U",
-            "phone1_type" => "V",
-            "phone1_prefix" => "W",
-            "phone1_number" => "X",
-            "phone1_proxy" => "Y",
-            "phone2_type" => "Z",
-            "phone2_prefix" => "AA",
-            "phone2_number" => "AB",
-            "phone2_proxy" => "AC",
-            "national_id_type" => "AD",
-            "national_id_number" => "AE",
-            "referral_type" => "AF",
-            "referral_comment" => "AG",
+            "local_given_name" => "O",
+            "local_family_name" => "P",
+            "en_given_name" => "Q",
+            "en_family_name" => "R",
+            "gender" => "S",
+            "status" => "T",
+            "residency_status" => "U",
+            "date_of_birth" => "V",
+            "vulnerability_criteria" => "W",
+            "phone1_type" => "X",
+            "phone1_prefix" => "Y",
+            "phone1_number" => "Z",
+            "phone1_proxy" => "AA",
+            "phone2_type" => "AB",
+            "phone2_prefix" => "AC",
+            "phone2_number" => "AD",
+            "phone2_proxy" => "AE",
+            "national_id_type" => "AF",
+            "national_id_number" => "AG",
+            "referral_type" => "AH",
+            "referral_comment" => "AI",
         ]
     ];
 

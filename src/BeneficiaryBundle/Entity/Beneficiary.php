@@ -661,12 +661,29 @@ class Beneficiary implements ExportableInterface
             $valueGender = "Male";
         }
 
-        $currentHouseholdLocation = $this->getHousehold()->getHouseholdLocations()[0];
+        $householdLocations = $this->getHousehold()->getHouseholdLocations();
+        $currentHouseholdLocation = null;
+        foreach ($householdLocations as $householdLocation) {
+            if ($householdLocation->getLocationGroup() === 'current') {
+                $currentHouseholdLocation = $householdLocation;
+            }
+        }
+
+        $camp = null;
+        $tentNumber = null;
+        $addressNumber = null;
+        $addressStreet = null;
+        $addressPostcode = null;
 
         if ($currentHouseholdLocation->getType() === 'camp') {
             $location = $currentHouseholdLocation->getCampAddress()->getCamp()->getLocation();
+            $camp = $currentHouseholdLocation->getCampAddress()->getCamp()->getName();
+            $tentNumber = $currentHouseholdLocation->getCampAddress()->getTentNumber();
         } else {
             $location = $currentHouseholdLocation->getAddress()->getLocation();
+            $addressNumber = $currentHouseholdLocation->getAddress()->getNumber();
+            $addressStreet = $currentHouseholdLocation->getAddress()->getStreet();
+            $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
         }
 
         $adm1 = $location->getAdm1Name();
@@ -683,10 +700,12 @@ class Beneficiary implements ExportableInterface
         if ($this->status === true) {
             $finalArray = [
                 "household ID" => $this->getHousehold()->getId(),
-                "addressStreet" => $this->getHousehold()->getAddressStreet(),
-                "addressNumber" => $this->getHousehold()->getAddressNumber(),
-                "addressPostcode" => $this->getHousehold()->getAddressPostcode(),
-                "livelihood" => Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()],
+                "addressStreet" =>  $addressStreet,
+                "addressNumber" => $addressNumber,
+                "addressPostcode" =>  $addressPostcode,
+                "camp" => $camp,
+                "tent number" => $tentNumber,
+                "livelihood" => $this->getHousehold()->getLivelihood() ? Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()] : null,
                 "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
                 "notes" => $this->getHousehold()->getNotes(),
                 "latitude" => $this->getHousehold()->getLatitude(),
@@ -702,6 +721,8 @@ class Beneficiary implements ExportableInterface
                 "addressStreet" => "",
                 "addressNumber" => "",
                 "addressPostcode" => "",
+                "camp" => "",
+                "tent number" => "",
                 "livelihood" => "",
                 "incomeLevel" => "",
                 "notes" => "",

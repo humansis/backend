@@ -61,25 +61,28 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * @param int $minimumTolerance
      * @return mixed
      */
-    public function foundSimilarLevenshtein(string $iso3, string $stringToSearch, int $minimumTolerance)
+    public function foundSimilarAddressLevenshtein(string $iso3, string $stringToSearch, int $minimumTolerance)
     {
         $qb = $this->findAllByCountry($iso3);
         $q = $qb->leftJoin("hh.beneficiaries", "b")
+            // Those leftJoins are already done in findAllByCountry
+            // ->leftJoin("hh.householdLocations", "hl")
+            // ->leftJoin("hl.address", "ad")
             ->select("hh as household")
             ->andWhere("hh.archived = 0")
             ->addSelect(
                 "LEVENSHTEIN(
                     CONCAT(
-                        COALESCE(hh.addressStreet, ''),
-                        COALESCE(hh.addressNumber, ''),
-                        COALESCE(hh.addressPostcode, ''),
+                        COALESCE(ad.street, ''),
+                        COALESCE(ad.number, ''),
+                        COALESCE(ad.postcode, ''),
                         COALESCE(b.localGivenName, ''),
                         COALESCE(b.localFamilyName, '')
                     ),
                     :stringToSearch
                 ) as levenshtein")
             ->andWhere("b.status = 1")
-            ->groupBy("b")
+            // ->groupBy("b")
             ->having("levenshtein <= :minimumTolerance")
             ->setParameter("stringToSearch", $stringToSearch)
             ->setParameter("minimumTolerance", $minimumTolerance)
@@ -87,6 +90,44 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         return $q->getQuery()->getResult();
     }
+
+    /**
+     * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
+     * @param string $iso3
+     * @param string $stringToSearch
+     * @param int $minimumTolerance
+     * @return mixed
+     */
+    public function foundSimilarCampLevenshtein(string $iso3, string $stringToSearch, int $minimumTolerance)
+    {
+        $qb = $this->findAllByCountry($iso3);
+        $q = $qb->leftJoin("hh.beneficiaries", "b")
+            // Those leftJoins are already done in findAllByCountry
+            // ->leftJoin("hh.householdLocations", "hl")
+            // ->leftJoin("hl.campAddress", "ca")
+            // ->leftJoin("ca.camp", "c")
+            ->select("hh as household")
+            ->andWhere("hh.archived = 0")
+            ->addSelect(
+                "LEVENSHTEIN(
+                    CONCAT(
+                        COALESCE(c.name, ''),
+                        COALESCE(ca.tentNumber, ''),
+                        COALESCE(b.localGivenName, ''),
+                        COALESCE(b.localFamilyName, '')
+                    ),
+                    :stringToSearch
+                ) as levenshtein")
+            ->andWhere("b.status = 1")
+            // ->groupBy("b")
+            ->having("levenshtein <= :minimumTolerance")
+            ->setParameter("stringToSearch", $stringToSearch)
+            ->setParameter("minimumTolerance", $minimumTolerance)
+            ->orderBy("levenshtein", "ASC");
+
+        return $q->getQuery()->getResult();
+    }
+
 
     
 

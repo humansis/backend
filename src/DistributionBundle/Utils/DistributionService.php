@@ -512,11 +512,37 @@ class DistributionService
                 
             $commodity = $distributionData->getCommodities()[0];
 
+            $householdLocations = $beneficiary->getHousehold()->getHouseholdLocations();
+            $currentHouseholdLocation = null;
+            foreach ($householdLocations as $householdLocation) {
+                if ($householdLocation->getLocationGroup() === 'current') {
+                    $currentHouseholdLocation = $householdLocation;
+                }
+            }
+
+            $camp = null;
+            $tentNumber = null;
+            $addressNumber = null;
+            $addressStreet = null;
+            $addressPostcode = null;
+    
+            if ($currentHouseholdLocation->getType() === 'camp') {
+                $camp = $currentHouseholdLocation->getCampAddress()->getCamp()->getName();
+                $tentNumber = $currentHouseholdLocation->getCampAddress()->getTentNumber();
+            } else {
+                $addressNumber = $currentHouseholdLocation->getAddress()->getNumber();
+                $addressStreet = $currentHouseholdLocation->getAddress()->getStreet();
+                $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
+            }
+
             array_push($exportableTable, array(
-                "addressStreet" => $beneficiary->getHousehold()->getAddressStreet(),
-                "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
-                "addressPostcode" => $beneficiary->getHousehold()->getAddressPostcode(),
-                "livelihood" => Household::LIVELIHOOD[$beneficiary->getHousehold()->getLivelihood()],
+                "addressStreet" =>  $addressStreet,
+                "addressNumber" => $addressNumber,
+                "addressPostcode" =>  $addressPostcode,
+                "camp" => $camp,
+                "tent number" => $tentNumber,
+                "livelihood" => $beneficiary->getHousehold()->getLivelihood() ? 
+                    Household::LIVELIHOOD[$beneficiary->getHousehold()->getLivelihood()] : null,
                 "incomeLevel" => $beneficiary->getHousehold()->getIncomeLevel(),
                 "notes" => $beneficiary->getHousehold()->getNotes(),
                 "latitude" => $beneficiary->getHousehold()->getLatitude(),

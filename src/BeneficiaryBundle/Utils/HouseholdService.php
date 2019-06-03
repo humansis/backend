@@ -158,9 +158,8 @@ class HouseholdService
                 ->setType($householdLocation['type']);
 
             if ($householdLocation['type'] === 'camp') {
-                if ($householdLocation['camp_address']['camp']['id']) {
-                    $camp = $this->em->getRepository(Camp::class)->find($householdLocation['camp_address']['camp']['id']);
-                } else {
+                $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $householdLocation['camp_address']['camp']['name']]);
+                if (!$camp) {
                     $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['camp_address']['camp']["location"]);
                     if (null === $location) {
                         throw new \Exception("Location was not found.");
