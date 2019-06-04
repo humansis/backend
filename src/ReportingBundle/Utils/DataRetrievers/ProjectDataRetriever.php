@@ -98,7 +98,6 @@ class ProjectDataRetriever extends AbstractDataRetriever
 
         $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         $formattedResult = [];
-        dump($result);
         // Count number of donor occurrences for each project for each period
         foreach ($result as $period => $periodResult) {
             $donorsProjectCount = [];
