@@ -570,67 +570,17 @@ class BookletService
                     $transactionBooklet = $booklets[0];
                 }
             }
-            $gender = '';
-            if ($beneficiary->getGender() == 0) {
-                $gender = 'Female';
-            } else {
-                $gender = 'Male';
-            }
 
-            $referral_type = null;
-            $referral_comment = null;
-            if ($beneficiary->getReferral()) {
-                $referral_type = $beneficiary->getReferral()->getType();
-                $referral_comment = $beneficiary->getReferral()->getComment();
-            }
+            $commonFields = $this->container->get('beneficiary.household_csv_service')->getCommonExportFields($beneficiary);
 
-            $householdLocations = $beneficiary->getHousehold()->getHouseholdLocations();
-            $currentHouseholdLocation = null;
-            foreach ($householdLocations as $householdLocation) {
-                if ($householdLocation->getLocationGroup() === 'current') {
-                    $currentHouseholdLocation = $householdLocation;
-                }
-            }
-
-            $camp = null;
-            $tentNumber = null;
-            $addressNumber = null;
-            $addressStreet = null;
-            $addressPostcode = null;
-    
-            if ($currentHouseholdLocation->getType() === 'camp') {
-                $camp = $currentHouseholdLocation->getCampAddress()->getCamp()->getName();
-                $tentNumber = $currentHouseholdLocation->getCampAddress()->getTentNumber();
-            } else {
-                $addressNumber = $currentHouseholdLocation->getAddress()->getNumber();
-                $addressStreet = $currentHouseholdLocation->getAddress()->getStreet();
-                $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
-            }
-
-            array_push($exportableTable, array(
-                "addressStreet" =>  $addressStreet,
-                "addressNumber" => $addressNumber,
-                "addressPostcode" =>  $addressPostcode,
-                "camp" => $camp,
-                "tent number" => $tentNumber,
-                "livelihood" => $beneficiary->getHousehold()->getLivelihood() ?
-                    Household::LIVELIHOOD[$beneficiary->getHousehold()->getLivelihood()] : null,
-                "Notes" => $beneficiary->getHousehold()->getNotes(),
-                "Latitude" => $beneficiary->getHousehold()->getLatitude(),
-                "Longitude" => $beneficiary->getHousehold()->getLongitude(),
-                "English given name" => $beneficiary->getEnGivenName(),
-                "English family name"=> $beneficiary->getEnFamilyName(),
-                "Local given name" => $beneficiary->getLocalGivenName(),
-                "Local family name"=> $beneficiary->getLocalFamilyName(),
-                "Gender" => $gender,
-                "Date of birth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
+            array_push($exportableTable,
+                array_merge($commonFields, array(
                 "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
                 "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
                 "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
-                "Used at" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
-                "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
-                "Referral Comment" => $referral_comment,
-            ));
+                "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
+                ))
+            );
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'qrVouchers', $type);
