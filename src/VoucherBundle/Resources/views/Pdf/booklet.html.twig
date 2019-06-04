@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <style>{{ source('@Voucher/Pdf/main.css') }}</style>
+        <style>{{ source('@Common/Pdf/main.css') }}</style>
         <style>
+            body {
+                font-family: {{ font }};
+            }
+
+            header, footer, header h1 {
+              font-weight: normal;
+              color: {{ primaryColor }}
+            }
+
             .beneficiary-name, .voucher-value {
-              color : #DC3D49
+              color : {{ secondaryColor }}
             }
 
             .address p {
@@ -21,8 +30,9 @@
             }
 
             h3 {
-                color: #4AA896;
                 margin-left: 5px;
+                font-weight: normal;
+                color:  {{ secondaryColor }}
             }
 
             .qr-code {
@@ -56,7 +66,8 @@
         </style>
     </head>
     <body>
-        {{ include('@Voucher/Pdf/header.html.twig') }}
+       {% set vars = {'name': organizationName, 'logo': organizationLogo, 'footer': footer, 'primaryColor': primaryColor} %}
+        {% include('@Common/Pdf/header.html.twig') with vars %}
 
         <main>
             <h3>Beneficiary's information</h3>

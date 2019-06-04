@@ -29,7 +29,8 @@ services:
     pdf_service:
         class: CommonBundle\Utils\PdfService
         public: true
-
+        arguments:
+            - "@doctrine.orm.entity_manager"
 #######################################################################################
 ##                                     LISTENER                                      ##
 #######################################################################################

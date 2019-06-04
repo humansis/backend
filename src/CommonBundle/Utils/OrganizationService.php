@@ -65,17 +65,10 @@ class OrganizationService
         try {
             $html = $this->container->get('templating')->render(
             '@Common/Pdf/template.html.twig',
-                array(
-                  'name' => $organization->getName(),
-                  'logo' => $organization->getLogo(),
-                  'footer' => $organization->getFooterContent(),
-                  'primaryColor' => $organization->getPrimaryColor(),
-                  'secondaryColor' => $organization->getSecondaryColor(),
-                  'font' => $organization->getFont(),
-                )
+              $this->container->get('pdf_service')->getInformationStyle()
             );
 
-            $response = $this->container->get('pdf_service')->printPdf($html, 'organizationTemplate');
+            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'organizationTemplate');
 
             return $response;
         } catch (\Exception $e) {

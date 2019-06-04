@@ -70,6 +70,14 @@ class Donor implements ExportableInterface
      */
     private $projects;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="logo", type="string", length=255, nullable=true)
+     * @Groups({"FullDonor"})
+     */
+    private $logo;
+
 
     /**
      * Set id.
@@ -254,5 +262,30 @@ class Donor implements ExportableInterface
             "Notes" => $this->getNotes(),
             "Project" => $project,
         ];
+    }
+
+
+     /**
+     * Set logo.
+     *
+     * @param string $logo
+     *
+     * @return Donor
+     */
+    public function setLogo($logo)
+    {
+        $this->logo = $logo;
+
+        return $this;
+    }
+
+    /**
+     * Get logo.
+     *
+     * @return string
+     */
+    public function getLogo()
+    {
+        return $this->logo;
     }
 }

@@ -67,7 +67,8 @@ class DonorService
 
         $donor->setFullname($donorArray["fullname"])
             ->setShortname($donorArray["shortname"])
-            ->setNotes($donorArray["notes"]);
+            ->setNotes($donorArray["notes"])
+            ->setLogo($donorArray["logo"]);
 
         $donor->setDateAdded(new \DateTime());
 
@@ -97,7 +98,8 @@ class DonorService
         /** @var Donor $editedDonor */
     $donor->setFullname($donorArray["fullname"])
         ->setShortname($donorArray["shortname"])
-        ->setNotes($donorArray["notes"]);
+        ->setNotes($donorArray["notes"])
+        ->setLogo($donorArray["logo"]);
 
 
         $errors = $this->validator->validate($donor);

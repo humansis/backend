@@ -32,7 +32,7 @@
         </style>
     </head>
     <body>
-    {% set vars = {'name': name, 'logo': logo, 'footer': footer, 'primaryColor': primaryColor} %}
+    {% set vars = {'name': organizationName, 'logo': organizationLogo, 'footer': footer, 'primaryColor': primaryColor} %}
     {% include('@Common/Pdf/header.html.twig') with vars %}
         <main>
             <div class="template">

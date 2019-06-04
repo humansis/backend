@@ -439,11 +439,6 @@ class BookletService
 
     public function generatePdf(array $booklets)
     {
-        $pdfOptions = new Options();
-        $pdfOptions->set('defaultFont', 'Arial');
-        $pdfOptions->set('isRemoteEnabled', true);
-        $dompdf = new Dompdf($pdfOptions);
-
         try {
             $voucherHtmlSeparation = '<p class="next-voucher"></p>';
             $html = $this->getPdfHtml($booklets[0], $voucherHtmlSeparation);
@@ -458,17 +453,7 @@ class BookletService
                 }
             }
 
-            $dompdf->loadHtml($html);
-            $dompdf->setPaper('A4', 'portrait');
-            $dompdf->render();
-            $output = $dompdf->output();
-            $pdfFilepath =  getcwd() . '/otherpdf.pdf';
-            file_put_contents($pdfFilepath, $output);
-
-            $response = new BinaryFileResponse($pdfFilepath);
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'mypdf.pdf');
-            $response->headers->set('Content-Type', 'application/pdf');
-            $response->deleteFileAfterSend(true);
+            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'booklets');
 
             return $response;
         } catch (\Exception $e) {
@@ -493,12 +478,15 @@ class BookletService
 
         $bookletHtml = $this->container->get('templating')->render(
             '@Voucher/Pdf/booklet.html.twig',
-            array(
-                'name'  => $name,
-                'value' => $totalValue,
-                'currency' => $currency,
-                'qrCodeLink' => 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' . $bookletQrCode,
-                'numberVouchers' => $numberVouchers
+            array_merge(
+                array(
+                    'name'  => $name,
+                    'value' => $totalValue,
+                    'currency' => $currency,
+                    'qrCodeLink' => 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' . $bookletQrCode,
+                    'numberVouchers' => $numberVouchers
+                ),
+                $this->container->get('pdf_service')->getInformationStyle()
             )
         );
 
