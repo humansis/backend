@@ -52,7 +52,9 @@
             <div class="donors">
                 <span> Donors : <span>
                 {% for donor in project.donors %}
-                    <img src="{{ donor.logo }}" />
+                    {% if donor.logo %}
+                        <img src="{{ donor.logo }}" />
+                    {% endif %}
                     <span>{{ donor.shortname }} </span>
                 {% endfor %}
             </div>
