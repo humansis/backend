@@ -4,6 +4,7 @@ namespace ReportingBundle\Utils\DataRetrievers;
 
 use Doctrine\ORM\EntityManager;
 
+use function GuzzleHttp\Psr7\str;
 use ReportingBundle\Entity\ReportingDistribution;
 use \ProjectBundle\Entity\Project;
 use \DistributionBundle\Entity\DistributionData;
@@ -55,7 +56,6 @@ class DistributionDataRetriever extends AbstractDataRetriever
                         ->andWhere('p.iso3 = :country')
                         ->setParameter('country', $filters['country']);
 
-        $qb = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
 
         $qb = $this->filterByProjects($qb, $filters['projects']);
         $qb = $this->filterByDistributions($qb, $filters['distributions']);
@@ -159,9 +159,16 @@ class DistributionDataRetriever extends AbstractDataRetriever
     {
         $men = $this->BMSU_Distribution_NM($filters);
         $women = $this->BMSU_Distribution_NW($filters);
+        dump($men, $women);
+        $menAndWomen = [];
 
-
-        return array_merge_recursive($men,$women);
+        foreach(array_unique(array_merge(array_keys($men), array_keys($women))) as $period) {
+            $menAndWomen[$period] = [
+                array_key_exists($period, $men)? $men[$period][0] : ["value" => "0", "unity" => "Men", "date" => $period],
+                array_key_exists($period, $women)? $women[$period][0] : ["value" => "0", "unity" => "Women", "date" => $period],
+            ];
+        }
+        return $menAndWomen;
     }
 
     /**

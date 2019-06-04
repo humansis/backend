@@ -133,8 +133,15 @@ class ProjectDataRetriever extends AbstractDataRetriever
     {
         $men = $this->BMSU_Project_NM($filters);
         $women = $this->BMSU_Project_NW($filters);
+        $menAndWomen = [];
 
-        return array_merge_recursive($men, $women);
+        foreach(array_unique(array_merge(array_keys($men), array_keys($women))) as $period) {
+            $menAndWomen[$period] = [
+                array_key_exists($period, $men)? $men[$period][0] : ["value" => "0", "unity" => "Men", "date" => $period],
+                array_key_exists($period, $women)? $women[$period][0] : ["value" => "0", "unity" => "Women", "date" => $period],
+            ];
+        }
+        return $menAndWomen;
     }
 
     /**
