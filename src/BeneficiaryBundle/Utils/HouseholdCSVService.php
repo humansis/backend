@@ -25,9 +25,6 @@ use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\Referral;
 
 class HouseholdCSVService
 {
@@ -460,68 +457,5 @@ class HouseholdCSVService
         }
         closedir($dir);
         rmdir($src);
-    }
-
-    public function getCommonExportFields(Beneficiary $beneficiary)
-    {
-        $gender = '';
-        if ($beneficiary->getGender() == 0) {
-            $gender = 'Female';
-        } else {
-            $gender = 'Male';
-        }
-
-        $referral_type = null;
-        $referral_comment = null;
-        if ($beneficiary->getReferral()) {
-            $referral_type = $beneficiary->getReferral()->getType();
-            $referral_comment = $beneficiary->getReferral()->getComment();
-        }
-            
-
-        $householdLocations = $beneficiary->getHousehold()->getHouseholdLocations();
-        $currentHouseholdLocation = null;
-        foreach ($householdLocations as $householdLocation) {
-            if ($householdLocation->getLocationGroup() === 'current') {
-                $currentHouseholdLocation = $householdLocation;
-            }
-        }
-
-        $camp = null;
-        $tentNumber = null;
-        $addressNumber = null;
-        $addressStreet = null;
-        $addressPostcode = null;
-
-        if ($currentHouseholdLocation->getType() === 'camp') {
-            $camp = $currentHouseholdLocation->getCampAddress()->getCamp()->getName();
-            $tentNumber = $currentHouseholdLocation->getCampAddress()->getTentNumber();
-        } else {
-            $addressNumber = $currentHouseholdLocation->getAddress()->getNumber();
-            $addressStreet = $currentHouseholdLocation->getAddress()->getStreet();
-            $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
-        }
-
-        return [
-            "Address Street" =>  $addressStreet,
-            "Address Number" => $addressNumber,
-            "Address Postcode" =>  $addressPostcode,
-            "Camp" => $camp,
-            "Tent Number" => $tentNumber,
-            "Livelihood" => $beneficiary->getHousehold()->getLivelihood() ? 
-                Household::LIVELIHOOD[$beneficiary->getHousehold()->getLivelihood()] : null,
-            "Income Level" => $beneficiary->getHousehold()->getIncomeLevel(),
-            "Notes" => $beneficiary->getHousehold()->getNotes(),
-            "Latitude" => $beneficiary->getHousehold()->getLatitude(),
-            "Longitude" => $beneficiary->getHousehold()->getLongitude(),
-            "Local Given Name" => $beneficiary->getLocalGivenName(),
-            "Local Family Name"=> $beneficiary->getLocalFamilyName(),
-            "English Given Name" => $beneficiary->getEnGivenName(),
-            "English Family Name"=> $beneficiary->getEnFamilyName(),
-            "Gender" => $gender,
-            "Date Of Birth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
-            "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
-            "Referral Comment" => $referral_comment,
-        ];
     }
 }

@@ -669,21 +669,10 @@ class Beneficiary implements ExportableInterface
             }
         }
 
-        $camp = null;
-        $tentNumber = null;
-        $addressNumber = null;
-        $addressStreet = null;
-        $addressPostcode = null;
-
         if ($currentHouseholdLocation->getType() === 'camp') {
             $location = $currentHouseholdLocation->getCampAddress()->getCamp()->getLocation();
-            $camp = $currentHouseholdLocation->getCampAddress()->getCamp()->getName();
-            $tentNumber = $currentHouseholdLocation->getCampAddress()->getTentNumber();
         } else {
             $location = $currentHouseholdLocation->getAddress()->getLocation();
-            $addressNumber = $currentHouseholdLocation->getAddress()->getNumber();
-            $addressStreet = $currentHouseholdLocation->getAddress()->getStreet();
-            $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
         }
 
         $adm1 = $location->getAdm1Name();
@@ -697,24 +686,18 @@ class Beneficiary implements ExportableInterface
             $referral_comment = $this->getReferral()->getComment();
         }
 
+        $householdFields = $this->getCommonHouseholdExportFields();
+        $beneficiaryFields = $this->getCommonBeneficiaryExportFields();
+
         if ($this->status === true) {
-            $finalArray = [
-                "household ID" => $this->getHousehold()->getId(),
-                "addressStreet" =>  $addressStreet,
-                "addressNumber" => $addressNumber,
-                "addressPostcode" =>  $addressPostcode,
-                "camp" => $camp,
-                "tent number" => $tentNumber,
-                "livelihood" => $this->getHousehold()->getLivelihood() ? Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()] : null,
-                "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
-                "notes" => $this->getHousehold()->getNotes(),
-                "latitude" => $this->getHousehold()->getLatitude(),
-                "longitude" => $this->getHousehold()->getLongitude(),
-                "adm1" => $adm1,
+            $finalArray = array_merge(
+                ["household ID" => $this->getHousehold()->getId()],
+                $householdFields,
+                ["adm1" => $adm1,
                 "adm2" =>$adm2,
                 "adm3" =>$adm3,
-                "adm4" =>$adm4,
-            ];
+                "adm4" =>$adm4]
+            );
         } else {
             $finalArray = [
                 "household ID" => "",
@@ -770,4 +753,79 @@ class Beneficiary implements ExportableInterface
 
         return $finalArray;
     }
+
+    public function getCommonBeneficiaryExportFields()
+    {
+        $gender = '';
+        if ($this->getGender() == 0) {
+            $gender = 'Female';
+        } else {
+            $gender = 'Male';
+        }
+
+        $referral_type = null;
+        $referral_comment = null;
+        if ($this->getReferral()) {
+            $referral_type = $this->getReferral()->getType();
+            $referral_comment = $this->getReferral()->getComment();
+        }
+
+        return [
+            "Local Given Name" => $this->getLocalGivenName(),
+            "Local Family Name"=> $this->getLocalFamilyName(),
+            "English Given Name" => $this->getEnGivenName(),
+            "English Family Name"=> $this->getEnFamilyName(),
+            "Gender" => $gender,
+            "Date Of Birth" => $this->getDateOfBirth()->format('d-m-Y'),
+            "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
+            "Referral Comment" => $referral_comment,
+        ];
+    }
+
+    public function getCommonHouseholdExportFields()
+    {
+        
+        $householdLocations = $this->getHousehold()->getHouseholdLocations();
+        $currentHouseholdLocation = null;
+        foreach ($householdLocations as $householdLocation) {
+            if ($householdLocation->getLocationGroup() === 'current') {
+                $currentHouseholdLocation = $householdLocation;
+            }
+        }
+
+        $camp = null;
+        $tentNumber = null;
+        $addressNumber = null;
+        $addressStreet = null;
+        $addressPostcode = null;
+
+        if ($currentHouseholdLocation->getType() === 'camp') {
+            $camp = $currentHouseholdLocation->getCampAddress()->getCamp()->getName();
+            $tentNumber = $currentHouseholdLocation->getCampAddress()->getTentNumber();
+        } else {
+            $addressNumber = $currentHouseholdLocation->getAddress()->getNumber();
+            $addressStreet = $currentHouseholdLocation->getAddress()->getStreet();
+            $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
+        }
+
+        return [
+            "addressStreet" =>  $addressStreet,
+            "addressNumber" => $addressNumber,
+            "addressPostcode" =>  $addressPostcode,
+            "camp" => $camp,
+            "tent number" => $tentNumber,
+            "livelihood" => $this->getHousehold()->getLivelihood() ? 
+                Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()] : null,
+            "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
+            "notes" => $this->getHousehold()->getNotes(),
+            "latitude" => $this->getHousehold()->getLatitude(),
+            "longitude" => $this->getHousehold()->getLongitude(),
+        ];
+    }
+
+    public function getCommonExportFields()
+    {
+        return array_merge($this->getCommonHouseholdExportFields(), $this->getCommonBeneficiaryExportFields());
+    }
+
 }

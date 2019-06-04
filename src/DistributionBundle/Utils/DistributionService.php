@@ -497,7 +497,7 @@ class DistributionService
             $beneficiary = $generalrelief->getDistributionBeneficiary()->getBeneficiary();
             $commodity = $distributionData->getCommodities()[0];
 
-            $commonFields = $this->container->get('beneficiary.household_csv_service')->getCommonExportFields($beneficiary);
+            $commonFields = $beneficiary->getCommonExportFields();
 
             array_push($exportableTable, 
                 array_merge($commonFields, array(
