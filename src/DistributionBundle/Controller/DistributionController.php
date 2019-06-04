@@ -19,6 +19,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * Class DistributionController
@@ -208,7 +209,9 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Post("/distribution/beneficiaries/{id}/delete", name="remove_one_beneficiary_in_distribution")
+     * @Rest\Post("/distributions/{distributionId}/beneficiaries/{beneficiaryId}/delete", name="remove_one_beneficiary_in_distribution")
+     * @ParamConverter("distribution", options={"mapping": {"distributionId" : "id"}})
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
@@ -219,27 +222,22 @@ class DistributionController extends Controller
      * )
      *
      * @param Request $request
+     * @param DistributionData $distribution
      * @param Beneficiary $beneficiary
      *
      * @return Response
      */
-    public function removeOneBeneficiaryAction(Request $request, Beneficiary $beneficiary)
+    public function removeOneBeneficiaryAction(Request $request, DistributionData $distribution, Beneficiary $beneficiary)
     {
-        if ($request->query->get('distribution')) {
-            $distributionId = $request->query->get('distribution');
-            $deletionData = $request->request->all();
+        $deletionData = $request->request->all();
 
-            /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-            $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
 
-            $return = $distributionBeneficiaryService->removeBeneficiaryInDistribution($distributionId, $beneficiary, $deletionData);
+        $return = $distributionBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
 
-            return new Response(json_encode($return));
-        } else {
-            $json = $this->get('jms_serializer')
-                ->serialize('An error occured, please check the body', 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
-            return new Response($json);
-        }
+        return new Response(json_encode($return));
+       
     }
 
     /**
