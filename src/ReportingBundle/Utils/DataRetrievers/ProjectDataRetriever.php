@@ -66,6 +66,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
 
         switch ($nameFunction) {
             case 'BMS_Project_HS':
+            case 'BMS_Project_D':
                 $qb->select('p.name AS name')
                     ->groupBy('name');
                 break;
@@ -93,9 +94,32 @@ class ProjectDataRetriever extends AbstractDataRetriever
     public function BMS_Project_D(array $filters)
     {
         $qb = $this->getReportingValue('BMS_Project_D', $filters);
-        $qb->select('p.name AS name', 'rv.value AS value')
-            ->groupBy('name', 'value');
-        return null;
+        $qb = $this->conditionSelect($qb, 'BMS_Project_D');
+
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
+        $formattedResult = [];
+        dump($result);
+        // Count number of donor occurrences for each project for each period
+        foreach ($result as $period => $periodResult) {
+            $donorsProjectCount = [];
+            // Count number of donor occurrences for each project
+            foreach ($periodResult as $projectResult) {
+                if (!array_key_exists($projectResult['unity'], $donorsProjectCount)) {
+                    $donorsProjectCount[$projectResult['unity']] = [
+                        'value' => 0,
+                        'unity' => 'projects',
+                        'name'  => $projectResult['unity']
+                    ];
+                }
+                $donorsProjectCount[$projectResult['unity']]['value']++;
+            }
+            // Format results (remove donor keys)
+            foreach ($donorsProjectCount as $donorProjectCount) {
+                $formattedResult[$period][] = $donorProjectCount;
+            }
+
+        }
+        return $formattedResult;
     }
 
     /**
@@ -173,7 +197,6 @@ class ProjectDataRetriever extends AbstractDataRetriever
         $qb = $this->getReportingValue('BMSU_Project_NM', $filters);
         $qb = $this->conditionSelect($qb, 'BMSU_Project_NM');
         $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
-        dump($result);
         return $result;
     }
 

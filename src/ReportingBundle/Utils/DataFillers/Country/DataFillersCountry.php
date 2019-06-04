@@ -3,6 +3,8 @@
 namespace ReportingBundle\Utils\DataFillers\Country;
 
 use Doctrine\ORM\EntityManager;
+use ProjectBundle\Entity\Donor;
+use ReportingBundle\Entity\ReportingProject;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 use ReportingBundle\Utils\DataFillers\DataFillers;
