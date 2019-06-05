@@ -9,6 +9,7 @@ use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use CommonBundle\Utils\ExportableInterface;
 use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Entity\HouseholdLocation;
 
 /**
  * Beneficiary
@@ -664,16 +665,12 @@ class Beneficiary implements ExportableInterface
         $householdLocations = $this->getHousehold()->getHouseholdLocations();
         $currentHouseholdLocation = null;
         foreach ($householdLocations as $householdLocation) {
-            if ($householdLocation->getLocationGroup() === 'current') {
+            if ($householdLocation->getLocationGroup() === HouseholdLocation::LOCATION_GROUP_CURRENT) {
                 $currentHouseholdLocation = $householdLocation;
             }
         }
 
-        if ($currentHouseholdLocation->getType() === 'camp') {
-            $location = $currentHouseholdLocation->getCampAddress()->getCamp()->getLocation();
-        } else {
-            $location = $currentHouseholdLocation->getAddress()->getLocation();
-        }
+        $location = $currentHouseholdLocation->getLocation();
 
         $adm1 = $location->getAdm1Name();
         $adm2 = $location->getAdm2Name();
@@ -788,7 +785,7 @@ class Beneficiary implements ExportableInterface
         $householdLocations = $this->getHousehold()->getHouseholdLocations();
         $currentHouseholdLocation = null;
         foreach ($householdLocations as $householdLocation) {
-            if ($householdLocation->getLocationGroup() === 'current') {
+            if ($householdLocation->getLocationGroup() === HouseholdLocation::LOCATION_GROUP_CURRENT) {
                 $currentHouseholdLocation = $householdLocation;
             }
         }
@@ -799,7 +796,7 @@ class Beneficiary implements ExportableInterface
         $addressStreet = null;
         $addressPostcode = null;
 
-        if ($currentHouseholdLocation->getType() === 'camp') {
+        if ($currentHouseholdLocation->getType() === HouseholdLocation::LOCATION_TYPE_CAMP) {
             $camp = $currentHouseholdLocation->getCampAddress()->getCamp()->getName();
             $tentNumber = $currentHouseholdLocation->getCampAddress()->getTentNumber();
         } else {

@@ -31,6 +31,7 @@ use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
 use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Entity\HouseholdLocation;
 
 /**
  * Class DistributionCSVService
@@ -261,8 +262,8 @@ class DistributionCSVService
             $campName = $beneficiaryToCreate['camp'];
             $householdLocations = [
                 [
-                    'location_group' => 'current',
-                    'type' => 'camp',
+                    'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
+                    'type' => HouseholdLocation::LOCATION_TYPE_CAMP,
                     'camp_address' => [
                         'camp' => [
                             'id' => null,
@@ -283,8 +284,8 @@ class DistributionCSVService
             }
             $householdLocations = [
                 [
-                    'location_group' => 'current',
-                    'type' => 'residence',
+                    'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
+                    'type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE,
                     'address' => [
                         'number' => $beneficiaryToCreate['addressNumber'],
                         'street' =>  $beneficiaryToCreate['addressStreet'],
@@ -297,16 +298,12 @@ class DistributionCSVService
 
             $householdToCreate = array(
                 "__country" => $countryIso3,
-                // "address_street" => $beneficiaryToCreate['addressStreet'],
-                // "address_number" => strval($beneficiaryToCreate['addressNumber']),
-                // "address_postcode" => strval($beneficiaryToCreate['addressPostcode']),
                 "livelihood" => $beneficiaryToCreate['livelihood'],
                 "household_locations" => $householdLocations,
                 "income_level" => $beneficiaryToCreate['incomeLevel'],
                 "notes" => $beneficiaryToCreate['notes'],
                 "latitude" => strval($beneficiaryToCreate['latitude']),
                 "longitude" => strval($beneficiaryToCreate['longitude']),
-                // "location" => $locationArray,
                 "country_specific_answers" => array(),
                 "beneficiaries" => array(
                     array(

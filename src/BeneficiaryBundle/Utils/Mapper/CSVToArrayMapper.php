@@ -11,6 +11,7 @@ use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Entity\HouseholdLocation;
 
 class CSVToArrayMapper extends AbstractMapper
 {
@@ -179,8 +180,8 @@ class CSVToArrayMapper extends AbstractMapper
             $campName = $formattedHouseholdArray['camp'];
             $formattedHouseholdArray['household_locations'] = [
                 [
-                    'location_group' => 'current',
-                    'type' => 'camp',
+                    'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
+                    'type' => HouseholdLocation::LOCATION_TYPE_CAMP,
                     'camp_address' => [
                         'camp' => [
                             'id' => null,
@@ -201,8 +202,8 @@ class CSVToArrayMapper extends AbstractMapper
             }
             $formattedHouseholdArray['household_locations'] = [
                 [
-                    'location_group' => 'current',
-                    'type' => 'residence',
+                    'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
+                    'type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE,
                     'address' => [
                         'number' => $formattedHouseholdArray['address_number'],
                         'street' =>  $formattedHouseholdArray['address_street'],

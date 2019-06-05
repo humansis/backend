@@ -430,10 +430,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->leftJoin("ca.camp", "c")
             ->leftJoin("hl.address", "ad")
             ->leftJoin(Location::class, "l", Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))");
-            
-            
-            // ->leftJoin("c.location", "l")
-            // ->leftJoin("ad.location", "l");
+
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
         $locationRepository->whereCountry($qb, $countryISO3);
     }

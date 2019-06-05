@@ -157,8 +157,10 @@ class HouseholdService
             $newHouseholdLocation->setLocationGroup($householdLocation['location_group'])
                 ->setType($householdLocation['type']);
 
-            if ($householdLocation['type'] === 'camp') {
+            if ($householdLocation['type'] === HouseholdLocation::LOCATION_TYPE_CAMP) {
+                // Try to find the camp with the name in the request
                 $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $householdLocation['camp_address']['camp']['name']]);
+                // Or create a camp with the name in the request
                 if (!$camp) {
                     $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['camp_address']['camp']["location"]);
                     if (null === $location) {

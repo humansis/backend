@@ -74,9 +74,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
                 $newHead['local_family_name'],
                 $this->maximumDistanceLevenshtein
             );
-        }
-
-        if (array_key_exists('camp_address', $householdLocation)) {
+        } else if (array_key_exists('camp_address', $householdLocation)) {
             $similarHouseholds = $householdRepository->foundSimilarCampLevenshtein(
                 $countryISO3,
                 $householdLocation['camp_address']['camp']['name'] .

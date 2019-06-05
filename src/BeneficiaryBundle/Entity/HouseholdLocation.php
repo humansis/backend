@@ -5,6 +5,13 @@ namespace BeneficiaryBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 
+const LOCATION_GROUP_CURRENT = 'current';
+const LOCATION_GROUP_RESIDENT = 'resident';
+
+const LOCATION_TYPE_SETTLEMENT = 'temporary_settlement';
+const LOCATION_TYPE_RESIDENCE = 'residence';
+const LOCATION_TYPE_CAMP = 'camp';
+
 /**
  * HouseholdLocation
  *
@@ -186,4 +193,19 @@ class HouseholdLocation
     {
         return $this->household;
     }
+
+     /**
+     * Get the nested location of the household.
+     *
+     * @return \BeneficiaryBundle\Entity\Location|null
+     */
+    public function getLocation()
+    {
+        if ($this->getType() === self::LOCATION_TYPE_CAMP) {
+            return $this->getCampAddress()->getCamp()->getLocation();
+        } else {
+            return $this->getAddress()->getLocation();
+        }
+    }
+
 }

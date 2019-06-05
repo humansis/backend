@@ -296,7 +296,6 @@ class SyriaFileToTemplateMapper
             // address
             $headOfHouseholdRow[$this->getColumnLetter('D')] = $addressStreet;
             $headOfHouseholdRow[$this->getColumnLetter('E')] = $row['A'];
-            // $headOfHouseholdRow[$this->getColumnLetter('C')] = 'Unknown';
             $headOfHouseholdRow[$this->getColumnLetter($defaultMapping['adm1'])] = $location[0];
             $headOfHouseholdRow[$this->getColumnLetter($defaultMapping['adm2'])] = $location[1];
             $headOfHouseholdRow[$this->getColumnLetter($defaultMapping['adm3'])] = $location[2];

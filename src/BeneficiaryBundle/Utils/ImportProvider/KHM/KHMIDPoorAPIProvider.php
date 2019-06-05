@@ -245,13 +245,10 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
         }
 
         $address = new Address();
-        $address->setLocation($beneficiary['location'])
-            ->setNumber('')
-            ->setStreet('')
-            ->setPostcode('');
+        $address->setLocation($beneficiary['location']);
         $householdLocation = new HouseholdLocation();
-        $householdLocation->setLocationGroup('current')
-            ->setType('residence')
+        $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT)
+            ->setType(HouseholdLocation::LOCATION_TYPE_RESIDENCE)
             ->setAddress($address);
         if ($household->getHouseholdLocations()) {  
             foreach ($household->getHouseholdLocations() as $initialHouseholdLocation) {
