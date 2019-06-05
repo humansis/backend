@@ -1,25 +1,43 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <style>{{ source('@Common/Pdf/main.css') }}</style>
         <style>
             td, th {
                padding: 10px;
             }
+            body {
+                font-family: {{ font }};
+            }
+
+            header, footer, header h1 {
+                color: {{ primaryColor }}
+            }
+
+            h1 {
+                font-weight: normal;
+                color:  {{ secondaryColor }}
+            }
+
         </style>
     </head>
     <body>
-        <h1>Vouchers codes</h1>
-        <table>
-            <tr>
-                <th>Booklet Number</th>
-                <th>Voucher Codes</th>
-            </tr>
-            {% for voucher in vouchers %}
+        {% set vars = {'name': organizationName, 'logo': organizationLogo, 'footer': footer, 'primaryColor': primaryColor} %}
+        {% include('@Common/Pdf/header.html.twig') with vars %}
+        <main>
+            <h1>Vouchers codes</h1>
+            <table>
                 <tr>
-                    <td>{{ voucher.booklet.code }}</td>
-                    <td>{{ voucher.code }}</td>
+                    <th>Booklet Number</th>
+                    <th>Voucher Codes</th>
                 </tr>
-            {% endfor %}
-        </table>
+                {% for voucher in vouchers %}
+                    <tr>
+                        <td>{{ voucher.booklet.code }}</td>
+                        <td>{{ voucher.code }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </main>
     </body>
 </html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>{{ source('@Common/Pdf/main.css') }}</style>
+        <style>
+            body {
+                font-family: {{ font }};
+            }
+            .container {
+                height: 25%;
+            }
+            h1 {
+                font-weight: normal;
+                color:  {{ secondaryColor }}
+            }
+            h2 {
+                font-weight: normal;
+                margin-top: 100px;
+                text-align: center;
+            }
+            header, footer, header h1 {
+                color: {{ primaryColor }}
+            }
+            .template {
+                position: absolute;
+                font-size: 150px;
+                transform: rotate(45deg);
+                top: 250px;
+                color: darkred;
+                opacity: 0.3;
+            }
+        </style>
+    </head>
+    <body>
+    {% set vars = {'name': organizationName, 'logo': organizationLogo, 'footer': footer, 'primaryColor': primaryColor} %}
+    {% include('@Common/Pdf/header.html.twig') with vars %}
+        <main>
+            <div class="template">
+                TEMPLATE
+            </div>
+            <div class="container">
+                <h1>Title 1</h1>
+                <h2> Content 1 </h2>
+            </div>
+            <div class="container">
+                <h1>Title 2</h1>
+                <h2> Content 2 </h2>
+            </div>
+            <div class="container">
+                <h1>Title 3</h1>
+                <h2> Content 3 </h2>
+            </div>
+        </main>
+    </body>
+</html>

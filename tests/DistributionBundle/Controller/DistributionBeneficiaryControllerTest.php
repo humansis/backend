@@ -60,7 +60,8 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
         // If everything is ok, we create a new distributionBeneficiary
         $distributionBeneficiary = new DistributionBeneficiary();
         $distributionBeneficiary->setBeneficiary($beneficiary[0])
-            ->setDistributionData($distributionData[0]);
+            ->setDistributionData($distributionData[0])
+            ->setRemoved(0);
 
         $this->em->persist($distributionBeneficiary);
 
@@ -102,8 +103,12 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
+        $body = array(
+            'justification' => 'Jusitification for deletion'
+        );
 
-        $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/'. $beneficiaryId .'?distributionId='. $distributionId);
+        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distributionId .'/beneficiaries/'. $beneficiaryId .'/delete', $body);
+        
         $listDistributionBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());

@@ -218,11 +218,6 @@ class VendorService
 
     public function printInvoice(Vendor $vendor)
     {
-        $pdfOptions = new Options();
-        $pdfOptions->set('defaultFont', 'Arial');
-        $pdfOptions->set('isRemoteEnabled', true);
-        $dompdf = new Dompdf($pdfOptions);
-
         try {
             $now = new DateTime();
             $vouchers = $vendor->getVouchers();
@@ -266,35 +261,27 @@ class VendorService
 
             $html = $this->container->get('templating')->render(
             '@Voucher/Pdf/invoice.html.twig',
-                array(
-                    'name'  => $vendor->getName(),
-                    'shop'  => $vendor->getShop(),
-                    'addressStreet'  => $vendor->getAddressStreet(),
-                    'addressPostcode'  => $vendor->getAddressPostcode(),
-                    'addressNumber'  => $vendor->getAddressNumber(),
-                    'addressVillage' => $village ? $village->getName() : null,
-                    'addressCommune' => $commune ? $commune->getName() : null,
-                    'addressDistrict' => $district ? $district->getName() : null,
-                    'addressProvince' => $province ? $province->getName() : null,
-                    'addressCountry' => $province ? $province->getCountryISO3() : null,
-                    'date'  => $now->format('d-m-Y'),
-                    'vouchers' => $vouchers,
-                    'totalValue' => $totalValue
+                array_merge(
+                    array(
+                        'name'  => $vendor->getName(),
+                        'shop'  => $vendor->getShop(),
+                        'addressStreet'  => $vendor->getAddressStreet(),
+                        'addressPostcode'  => $vendor->getAddressPostcode(),
+                        'addressNumber'  => $vendor->getAddressNumber(),
+                        'addressVillage' => $village ? $village->getName() : null,
+                        'addressCommune' => $commune ? $commune->getName() : null,
+                        'addressDistrict' => $district ? $district->getName() : null,
+                        'addressProvince' => $province ? $province->getName() : null,
+                        'addressCountry' => $province ? $province->getCountryISO3() : null,
+                        'date'  => $now->format('d-m-Y'),
+                        'vouchers' => $vouchers,
+                        'totalValue' => $totalValue
+                    ),
+                    $this->container->get('pdf_service')->getInformationStyle()
                 )
             );
 
-            $dompdf->loadHtml($html);
-            $dompdf->setPaper('A4', 'portrait');
-            $dompdf->render();
-            $output = $dompdf->output();
-            $pdfFilepath =  getcwd() . '/invoicepdf.pdf';
-            file_put_contents($pdfFilepath, $output);
-
-            $response = new BinaryFileResponse($pdfFilepath);
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'invoicepdf.pdf');
-            $response->headers->set('Content-Type', 'application/pdf');
-            $response->deleteFileAfterSend(true);
-
+            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'invoice');
             return $response;
         } catch (\Exception $e) {
             throw $e;

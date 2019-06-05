@@ -41,15 +41,20 @@ class ExportController extends Controller
     public function exportAction(Request $request)
     {
         try {
-            // Format of the file (csv, xls, ods)
+            // Format of the file (csv, xls, ods, pdf)
             $type = $request->query->get('type');
             // Generate corresponding file depending on request
             if ($request->query->get('distributions')) {
                 $idProject = $request->query->get('distributions');
+                if ($type === 'pdf') {
+                    return $this->get('distribution.distribution_service')->exportToPdf($idProject);
+                }
                 $filename = $this->get('distribution.distribution_service')->exportToCsv($idProject, $type);
             } elseif ($request->query->get('beneficiaries')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv($type, $countryIso3);
+                $filters = $request->request->get('filters');
+                $ids = $request->request->get('ids');
+                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv($type, $countryIso3, $filters, $ids);
             } elseif ($request->query->get('beneficiariesInDistribution')) {
                 $idDistribution = $request->query->get('beneficiariesInDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
@@ -78,7 +83,7 @@ class ExportController extends Controller
                 $filename = $this->get('voucher.booklet_service')->exportToCsv($type);
             } elseif ($request->query->get('bookletCodes')) {
                 if ($type === 'pdf') {
-                    return $this->get('voucher.voucher_service')->exportToPdf($type);
+                    return $this->get('voucher.voucher_service')->exportToPdf();
                 }
                 $filename = $this->get('voucher.voucher_service')->exportToCsv($type);
             } elseif ($request->query->get('reporting')) {

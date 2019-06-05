@@ -105,7 +105,9 @@ class Household
             "phone2_number" => "AB",
             "phone2_proxy" => "AC",
             "national_id_type" => "AD",
-            "national_id_number" => "AE"
+            "national_id_number" => "AE",
+            "referral_type" => "AF",
+            "referral_comment" => "AG",
         ]
     ];
 
