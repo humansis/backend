@@ -39,7 +39,7 @@ class ProjectFixtures extends Fixture
                     ->setStartDate(new \DateTime())
                     ->setEndDate((new \DateTime())->add(new \DateInterval("P1M")))
                     ->setNumberOfHouseholds($datum[1])
-                    ->setValue($datum[2])
+                    ->setTarget($datum[2])
                     ->setNotes($datum[3])
                     ->setIso3($datum[4]);
                     $manager->persist($project);
