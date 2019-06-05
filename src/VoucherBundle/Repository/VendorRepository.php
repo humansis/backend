@@ -3,6 +3,8 @@
 namespace VoucherBundle\Repository;
 
 use Doctrine\ORM\QueryBuilder;
+use UserBundle\Entity\User;
+use CommonBundle\Entity\Location;
 
 /**
  * VendorRepository
@@ -12,12 +14,25 @@ use Doctrine\ORM\QueryBuilder;
  */
 class VendorRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getVendorByUser($user)
+    public function getVendorByUser(User $user)
     {
         $qb = $this->createQueryBuilder('v');
         $q = $qb->where('v.user = :user')
             ->setParameter('user', $user);
         
         return $q->getQuery()->getResult();
+    }
+
+    public function getVendorCountry(User $user)
+    {
+        $qb = $this->createQueryBuilder('v');
+        $q = $qb->where('v.user = :user')
+                ->setParameter('user', $user)
+                ->leftJoin('v.location', 'l');
+
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->getCountry($q);
+
+        return $q->getQuery()->getSingleResult()['country'];
     }
 }

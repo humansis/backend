@@ -8,6 +8,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
 use UserBundle\Entity\User;
+use VoucherBundle\Entity\Vendor;
 
 class RequestListener
 {
@@ -54,19 +55,9 @@ class RequestListener
                 }
 
                 if ($user->getRoles()[0] === "ROLE_VENDOR") {
-                    $location = $user->getVendor()->getLocation();
-                    $adm1 = $location->getAdm1();
-                    if ($location->getAdm1()) {
-                        $adm1 = $location->getAdm1();
-                    } else if ($location->getAdm2()) {
-                        $adm1 = $location->getAdm2()->getAdm1();
-                    } else if ($location->getAdm3()) {
-                        $adm1 = $location->getAdm3()->getAdm2()->getAdm1();
-                    } else if ($location->getAdm4()) {
-                        $adm1 = $location->getAdm4()->getAdm3()->getAdm2()->getAdm1();
-                    }
+                    $country = $this->em->getRepository(Vendor::class)->getVendorCountry($user);
 
-                    if ($countryISO3 === $adm1->getCountryISO3()) {
+                    if ($countryISO3 === $country) {
                         $hasCountry = true;
                     }
                 }
@@ -83,7 +74,7 @@ class RequestListener
         }
         // return error response if api request (i.e. not profiler or doc) or login routes (for api tester)
         elseif (preg_match('/api/', $event->getRequest()->getPathInfo()) &&
-                !preg_match('/api\/(login || salt)/', $event->getRequest()->getPathInfo())) {
+                !preg_match('/api\/wsse\/(login|salt)/', $event->getRequest()->getPathInfo())) {
             $response = new Response("'country' header missing from request (iso3 code).", Response::HTTP_BAD_REQUEST);
             $event->setResponse($response);
         }

@@ -78,7 +78,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         COALESCE(b.localFamilyName, '')
                     ),
                     :stringToSearch
-                ) as levenshtein")
+                ) as levenshtein"
+            )
             ->andWhere("b.status = 1")
             ->groupBy("b")
             ->having("levenshtein <= :minimumTolerance")
@@ -173,47 +174,41 @@ class HouseholdRepository extends AbstractCriteriaRepository
                             COALESCE(vb.fieldString, '')
                         ) LIKE '%" . $filterValue . "%'");
                     }
-                }
-                elseif ($category === "gender") {
+                } elseif ($category === "gender") {
                     // If the category is the gender only one option can be selected and filterValues is a string instead of an array
                     $q->andWhere("b.gender = :filterValue")
                         ->setParameter("filterValue", $filterValues);
-                }
-                elseif ($category === "projects" && count($filterValues) > 0) {
+                } elseif ($category === "projects" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
                         $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
                         $orStatement->add($q->expr()->eq("p.id", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
-                }
-                elseif ($category === "vulnerabilities" && count($filterValues) > 0) {
+                } elseif ($category === "vulnerabilities" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
                         $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
                         $orStatement->add($q->expr()->eq("vb.id", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
-                }
-                elseif ($category === "residency" && count($filterValues) > 0) {
+                } elseif ($category === "residency" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
                         $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
                         $orStatement->add($q->expr()->eq("b.residencyStatus", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
-                }
-                elseif ($category === "livelihood" && count($filterValues) > 0) {
+                } elseif ($category === "livelihood" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
                         $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
                         $orStatement->add($q->expr()->eq("hh.livelihood", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
-                }
-                elseif ($category === "locations") {
+                } elseif ($category === "locations") {
                     // If the category is the location, filterValues is an array of adm ids
-                    foreach($filterValues as $adm => $id) {
+                    foreach ($filterValues as $adm => $id) {
                         $q->andWhere($adm . " = :id" . $indexFilter)
                             ->setParameter("id" . $indexFilter, $id);
                     }
@@ -246,8 +241,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
     {
         $qb = $this->createQueryBuilder("hh");
         $q = $qb->innerJoin("hh.location", "l");
-            $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-            $locationRepository->whereCountry($q, $iso3);
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($q, $iso3);
         
         $q = $q->andWhere('hh.archived = 0')
                 ->andWhere("hh.id IN (:ids)")
