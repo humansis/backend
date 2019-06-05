@@ -7,6 +7,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use VoucherBundle\Entity\Vendor;
 use UserBundle\Entity\User;
+use CommonBundle\Entity\Location;
 use Symfony\Component\HttpKernel\Kernel;
 
 class VendorFixtures extends Fixture
@@ -16,7 +17,7 @@ class VendorFixtures extends Fixture
     private $kernel;
 
     private $data = [
-        ['vendor', 'shop', '1', 'rue de la Paix', '75000', 0, 'vendor']
+        ['vendor', 'shop', '1', 'rue de la Paix', '75000', 0, 'vendor', 1]
     ];
 
 
@@ -35,6 +36,7 @@ class VendorFixtures extends Fixture
         if ($this->kernel->getEnvironment() === "test" || $this->kernel->getEnvironment() === "dev") {
             foreach ($this->data as $datum) {
                 $user = $manager->getRepository(User::class)->findOneByUsername($datum[6]);
+                $location = $manager->getRepository(Location::class)->find($datum[7]);
                 $vendor = new Vendor();
                 $vendor->setName($datum[0])
                 ->setShop($datum[1])
@@ -42,7 +44,8 @@ class VendorFixtures extends Fixture
                 ->setAddressStreet($datum[3])
                 ->setAddressPostcode($datum[4])
                 ->setArchived($datum[5])
-                ->setUser($user);
+                ->setUser($user)
+                ->setLocation($location);
                 $manager->persist($vendor);
                 $manager->flush();
             }

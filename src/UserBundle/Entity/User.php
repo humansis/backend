@@ -47,7 +47,7 @@ class User extends BaseUser implements ExportableInterface
     protected $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserCountry", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserCountry", mappedBy="user", cascade={"persist","remove"})
      * @Groups({"FullUser"})
      */
     private $countries;

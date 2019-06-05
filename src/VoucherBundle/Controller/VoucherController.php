@@ -161,6 +161,7 @@ class VoucherController extends Controller
     public function scannedVouchersAction(Request $request)
     {
         $vouchersData = $request->request->all();
+        unset($vouchersData['__country']);
         $newVouchers = [];
 
         foreach ($vouchersData as $voucherData) {
