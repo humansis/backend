@@ -5,12 +5,6 @@ namespace BeneficiaryBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 
-const LOCATION_GROUP_CURRENT = 'current';
-const LOCATION_GROUP_RESIDENT = 'resident';
-
-const LOCATION_TYPE_SETTLEMENT = 'temporary_settlement';
-const LOCATION_TYPE_RESIDENCE = 'residence';
-const LOCATION_TYPE_CAMP = 'camp';
 
 /**
  * HouseholdLocation
@@ -20,6 +14,13 @@ const LOCATION_TYPE_CAMP = 'camp';
  */
 class HouseholdLocation
 {
+    const LOCATION_GROUP_CURRENT = 'current';
+    const LOCATION_GROUP_RESIDENT = 'resident';
+    
+    const LOCATION_TYPE_SETTLEMENT = 'temporary_settlement';
+    const LOCATION_TYPE_RESIDENCE = 'residence';
+    const LOCATION_TYPE_CAMP = 'camp';
+
     /**
      * @var int
      *
