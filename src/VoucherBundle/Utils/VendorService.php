@@ -261,24 +261,27 @@ class VendorService
 
             $html = $this->container->get('templating')->render(
             '@Voucher/Pdf/invoice.html.twig',
-                array(
-                    'name'  => $vendor->getName(),
-                    'shop'  => $vendor->getShop(),
-                    'addressStreet'  => $vendor->getAddressStreet(),
-                    'addressPostcode'  => $vendor->getAddressPostcode(),
-                    'addressNumber'  => $vendor->getAddressNumber(),
-                    'addressVillage' => $village ? $village->getName() : null,
-                    'addressCommune' => $commune ? $commune->getName() : null,
-                    'addressDistrict' => $district ? $district->getName() : null,
-                    'addressProvince' => $province ? $province->getName() : null,
-                    'addressCountry' => $province ? $province->getCountryISO3() : null,
-                    'date'  => $now->format('d-m-Y'),
-                    'vouchers' => $vouchers,
-                    'totalValue' => $totalValue
+                array_merge(
+                    array(
+                        'name'  => $vendor->getName(),
+                        'shop'  => $vendor->getShop(),
+                        'addressStreet'  => $vendor->getAddressStreet(),
+                        'addressPostcode'  => $vendor->getAddressPostcode(),
+                        'addressNumber'  => $vendor->getAddressNumber(),
+                        'addressVillage' => $village ? $village->getName() : null,
+                        'addressCommune' => $commune ? $commune->getName() : null,
+                        'addressDistrict' => $district ? $district->getName() : null,
+                        'addressProvince' => $province ? $province->getName() : null,
+                        'addressCountry' => $province ? $province->getCountryISO3() : null,
+                        'date'  => $now->format('d-m-Y'),
+                        'vouchers' => $vouchers,
+                        'totalValue' => $totalValue
+                    ),
+                    $this->container->get('pdf_service')->getInformationStyle()
                 )
             );
 
-            $response = $this->container->get('pdf_service')->printPdf($html, 'invoice');
+            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'invoice');
             return $response;
         } catch (\Exception $e) {
             throw $e;

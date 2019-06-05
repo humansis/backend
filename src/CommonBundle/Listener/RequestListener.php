@@ -8,6 +8,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
 use UserBundle\Entity\User;
+use VoucherBundle\Entity\Vendor;
 
 class RequestListener
 {
@@ -53,6 +54,14 @@ class RequestListener
                     }
                 }
 
+                if ($user->getRoles()[0] === "ROLE_VENDOR") {
+                    $country = $this->em->getRepository(Vendor::class)->getVendorCountry($user);
+
+                    if ($countryISO3 === $country) {
+                        $hasCountry = true;
+                    }
+                }
+
                 if ($user->getRoles()[0] == "ROLE_ADMIN" || $hasCountry) {
                     $event->getRequest()->request->add(["__country" => $countryISO3]);
                 } else {
@@ -65,7 +74,7 @@ class RequestListener
         }
         // return error response if api request (i.e. not profiler or doc) or login routes (for api tester)
         elseif (preg_match('/api/', $event->getRequest()->getPathInfo()) &&
-                !preg_match('/api\/(login || salt)/', $event->getRequest()->getPathInfo())) {
+                !preg_match('/api\/wsse\/(login|salt)/', $event->getRequest()->getPathInfo())) {
             $response = new Response("'country' header missing from request (iso3 code).", Response::HTTP_BAD_REQUEST);
             $event->setResponse($response);
         }

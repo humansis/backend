@@ -36,8 +36,8 @@ class UserFixtures extends Fixture
 
     private $data = [
         // Changed to reduce access to test server
-        ['reliefapps@yopmail.com', 'reliefapps'],
-        ['vendor', 'vendor']
+        ['reliefapps@yopmail.com', 'reliefapps',  'ROLE_ADMIN'],
+        ['vendor', 'vendor', 'ROLE_VENDOR']
     ];
 
     /**
@@ -61,7 +61,7 @@ class UserFixtures extends Fixture
                     ->setUsername($datum[0])
                     ->setUsernameCanonical($datum[0])
                     ->setSalt($salt)
-                    ->setRoles(["ROLE_ADMIN"])
+                    ->setRoles([$datum[2]])
                     ->setChangePassword(0);
                     $instance->setPassword($this->encoderFactory->getEncoder($instance)->encodePassword($datum[1], $salt));
                     $manager->persist($instance);

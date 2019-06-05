@@ -203,29 +203,30 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $body = array(
-            array(
-                'date_of_birth' => '10-06-1989',
-                'en_family_name' => 'NAME_TEST',
-                'local_family_name' => 'NAME_TEST',
-                'gender' => "1",
-                'en_given_name' => 'FIRSTNAME_TEST',
-                'local_given_name' => 'FIRSTNAME_TEST',
-                'id' => 11,
-                'national_ids' => [],
-                'phones' => [],
-                'status' => '0',
-                'residency_status' => 'resident',
-                'vulnerability_criteria' => [
-                    [
-                        "id" => 1,
-                        "field_string" => "disabled"
-                    ]                
-                ]
-            )
+            'beneficiaries' => array(
+                array(
+                    'date_of_birth' => '10-06-1976',
+                    'en_family_name' => 'NAME_TEST',
+                    'local_family_name' => 'NAME_TEST',
+                    'gender' => "1",
+                    'en_given_name' => 'FIRSTNAME_TEST',
+                    'local_given_name' => 'FIRSTNAME_TEST',
+                    'id' => 12,
+                    'national_ids' => [],
+                    'phones' => [],
+                    'status' => '0',
+                    'residency_status' => 'resident',
+                    'vulnerability_criteria' => [
+                        [
+                            "id" => 1,
+                            "field_string" => "disabled"
+                        ]                
+                    ]
+                )
+            ),
+            'justification' => 'Justification for addition'
         );
 
-        // Second step
-        // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('PUT', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiary', $body);
         $error = $this->client->getResponse()->getContent();
         $this->assertEquals($error, 'This beneficiary/household is already part of the distribution');
@@ -246,9 +247,13 @@ class DistributionControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        $body = array(
+            'justification' => 'Jusitification for deletion'
+        );
+
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/11?distribution=' . $distribution['id']);
+        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiaries/11/delete' , $body);
         $remove = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -487,6 +492,16 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('created', $import);
         $this->assertArrayHasKey('deleted', $import);
         $this->assertArrayHasKey('updated', $import);
+
+        $justifiedTypes = ['added', 'created', 'deleted'];
+        foreach ($justifiedTypes as $justifiedType) {
+            $justifiedBeneficiaries = [];
+            foreach ($import[$justifiedType] as $beneficiary) {
+                $beneficiary['justification'] = 'Justification ' . $justifiedType;
+                array_push($justifiedBeneficiaries, $beneficiary);
+            }
+            $import[$justifiedType] = $justifiedBeneficiaries;
+        }
 
         $save = $distributionCSVService->saveCSV($countryIso3, $distributionData, $import);
 

@@ -150,7 +150,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         // Using a fake header or else a country is gonna be put in the body
-        $crawler = $this->request('POST', '/api/wsse/vouchers/scanned', $body, [], ['fakeHeader']);
+        $crawler = $this->request('POST', '/api/wsse/vouchers/scanned', $body);
         $newVoucherReceived = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
