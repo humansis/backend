@@ -679,7 +679,7 @@ class Beneficiary implements ExportableInterface
                 "addressStreet" => $this->getHousehold()->getAddressStreet(),
                 "addressNumber" => $this->getHousehold()->getAddressNumber(),
                 "addressPostcode" => $this->getHousehold()->getAddressPostcode(),
-                "livelihood" => Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()],
+                "livelihood" => $this->getHousehold()->getLivelihood() ? Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()] : null,
                 "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
                 "notes" => $this->getHousehold()->getNotes(),
                 "latitude" => $this->getHousehold()->getLatitude(),
