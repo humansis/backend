@@ -1,6 +1,7 @@
 <?php
 
 namespace BeneficiaryBundle\Repository;
+use CommonBundle\Entity\Location;
 
 /**
  * CampRepository
@@ -13,49 +14,36 @@ class CampRepository extends \Doctrine\ORM\EntityRepository
 
     public function findByAdm1($adm1Id) {
         $qb = $this->createQueryBuilder('c')
-            ->leftJoin('c.location', 'l')
-            ->leftJoin('l.adm1', 'adm1')
-            ->leftJoin('l.adm2', 'adm2')
-            ->leftJoin('l.adm3', 'adm3')
-            ->leftJoin('l.adm4', 'adm4')
-            ->where('adm1.id = :adm1Id')
-            ->leftJoin('adm4.adm3', 'adm3b')
-            ->leftJoin('adm3b.adm2', 'adm2b')
-            ->leftJoin('adm2b.adm1', 'adm1b')
-            ->orWhere('adm1b.id = :adm1Id')
-            ->leftJoin('adm3.adm2', 'adm2c')
-            ->leftJoin('adm2c.adm1', 'adm1c')
-            ->orWhere('adm1c.id = :adm1Id')
-            ->leftJoin('adm2.adm1', 'adm1d')
-            ->orWhere('adm1d.id = :adm1Id')
+            ->leftJoin('c.location', 'l');
+
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->getAdm1($qb);
+
+        $qb->orWhere('adm1.id = :adm1Id')
             ->setParameter('adm1Id', $adm1Id);
         return $qb->getQuery()->getResult();
     }
 
     public function findByAdm2($adm2Id) {
         $qb = $this->createQueryBuilder('c')
-            ->leftJoin('c.location', 'l')
-            ->leftJoin('l.adm2', 'adm2')
-            ->leftJoin('l.adm3', 'adm3')
-            ->leftJoin('l.adm4', 'adm4')
-            ->leftJoin('adm4.adm3', 'adm3b')
-            ->leftJoin('adm3b.adm2', 'adm2b')
-            ->orWhere('adm2b.id = :adm2Id')
-            ->leftJoin('adm3.adm2', 'adm2c')
-            ->orWhere('adm2c.id = :adm2Id')
-            ->orWhere('adm2.id = :adm2Id')
+            ->leftJoin('c.location', 'l');
+
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->getAdm2($qb);
+
+        $qb->orWhere('adm2.id = :adm2Id')
             ->setParameter('adm2Id', $adm2Id);
         return $qb->getQuery()->getResult();
     }
 
     public function findByAdm3($adm3Id) {
         $qb = $this->createQueryBuilder('c')
-            ->leftJoin('c.location', 'l')
-            ->leftJoin('l.adm3', 'adm3')
-            ->leftJoin('l.adm4', 'adm4')
-            ->leftJoin('adm4.adm3', 'adm3b')
-            ->orWhere('adm3b.id = :adm3Id')
-            ->orWhere('adm3.id = :adm3Id')
+            ->leftJoin('c.location', 'l');
+
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->getAdm3($qb);
+
+        $qb->orWhere('adm3.id = :adm3Id')
             ->setParameter('adm3Id', $adm3Id);
         return $qb->getQuery()->getResult();
     }
