@@ -20,16 +20,6 @@ class ConfigurationLoader
     public $criteria;
 
     /**
-     * @var array
-     */
-    private $MAPPING_TYPE_DEFAULT = [
-        "boolean",
-        "string",
-        "number",
-        "date"
-    ];
-
-    /**
      * ConfigurationLoader constructor.
      * @param EntityManagerInterface $entityManager
      * @param $criteria
@@ -87,6 +77,6 @@ class ConfigurationLoader
      */
     private function formatOtherCriteria(string $target, $criterion, $type)
     {
-        return ["field_string" => $criterion, "type" => $type, "kind_beneficiary" => $target, "table_string" => 'Beneficiary'];
+        return ["field_string" => $criterion, "type" => $type, "kind_beneficiary" => $target, "table_string" => 'Personnal'];
     }
 }

@@ -168,7 +168,7 @@ class CriteriaDistributionService
         $listOfCriteria = $this->configurationLoader->criteria;
 
         // If it is not a vulnerabilityCriteria nor a countrySpecific
-        if (key_exists('table_string', $criterion) && $criterion['table_string'] === 'Beneficiary') {
+        if (key_exists('table_string', $criterion) && $criterion['table_string'] === 'Personnal') {
             $type = $listOfCriteria[$criterion['field_string']]['type'];
             if ($type == 'boolean') {
                 $criterion['value_string'] = intval($criterion['value_string']);
