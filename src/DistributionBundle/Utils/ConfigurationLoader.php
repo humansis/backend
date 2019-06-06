@@ -51,11 +51,10 @@ class ConfigurationLoader
     {
         $criteriaFormatted = [];
         foreach ($this->criteria as $criterion => $info) {
-
             if ($criterion === 'countrySpecific') {
                 $criteriaFormatted = array_merge($criteriaFormatted, $this->formatClassCriteria($countryISO3, $info['target'], $criterion, $info['type']));
             } else if ($criterion === 'vulnerabilityCriteria') {
-                    $criteriaFormatted = array_merge($criteriaFormatted, $this->formatClassCriteria($countryISO3, $info['target'], $criterion, $info['type']));
+                $criteriaFormatted = array_merge($criteriaFormatted, $this->formatClassCriteria($countryISO3, $info['target'], $criterion, $info['type']));
             } else {
                 $criteriaFormatted[] = $this->formatOtherCriteria($info['target'], $criterion, $info['type']);
             }
