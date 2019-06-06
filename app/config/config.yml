@@ -158,6 +158,18 @@ distribution:
                 type: date,
                 target: Beneficiary
             },
+            disabledHeadOfHousehold: {
+                type: disabled,
+                target: Head
+            },
+            headOfHouseholdDateOfBirth: {
+                type: date,
+                target: Head
+            },
+            headOfHouseholdGender: {
+                type: boolean,
+                target: Head
+            },
             vulnerabilityCriteria: {
                 type: BeneficiaryBundle\Entity\VulnerabilityCriterion,
                 target: Beneficiary

@@ -95,6 +95,9 @@ class CriteriaDistributionService
                     foreach ($beneficiaries as $beneficiary) {
                         $count += $this->countBeneficiary($criterion, $beneficiary);
                     }
+                } elseif ($criterion['kind_beneficiary'] == "Head") {
+                    $headBeneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
+                    $count = $this->countBeneficiary($criterion, $headBeneficiary);
                 } else {
                     throw new \Exception("A problem was found. Kind of beneficiary is unknown");
                 }
@@ -132,6 +135,11 @@ class CriteriaDistributionService
                         $count += $this->countHousehold($criterion, $countryISO3, $household);
                     } elseif ($criterion['kind_beneficiary'] == "Beneficiary") {
                         $count += $this->countBeneficiary($criterion, $beneficiary);
+                    } elseif ($criterion['kind_beneficiary'] == "Head") {
+                        $headBeneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
+                        $count = $this->countBeneficiary($criterion, $headBeneficiary);
+                    } else {
+                        throw new \Exception("A problem was found. Kind of beneficiary is unknown");
                     }
                 }
 
@@ -173,8 +181,13 @@ class CriteriaDistributionService
             if ($type == 'boolean') {
                 $criterion['value_string'] = intval($criterion['value_string']);
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasGender($criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
-            } else {
+            } else if ($type === 'date') {
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasDateOfBirth($criterion['value_string'], $criterion['condition_string'], $beneficiary->getId());
+            }
+            
+            // It cannot be treated as below, because otherwise all the headOfHouseholds vulnerabilities would be criteria
+            else if ($type === 'disabled') {
+                $hasVC = $this->em->getRepository(Beneficiary::class)->hasVulnerabilityCriterion(1, $criterion['condition_string'], $beneficiary->getId());
             }
         } else {
             $hasVC = $this->em->getRepository(Beneficiary::class)->hasVulnerabilityCriterion($vulnerabilityCriteria[0]->getId(), $criterion['condition_string'], $beneficiary->getId());
