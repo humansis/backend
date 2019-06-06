@@ -74,7 +74,7 @@ class ConfigurationLoader
         $instances = $this->em->getRepository($class)->findForCriteria($countryISO3);
         foreach ($instances as &$instance) {
             $instance->setTableString($criterion);
-            $instance->setKindOfBeneficiary($target);
+            $instance->setKindBeneficiary($target);
         }
         return $instances;
     }
