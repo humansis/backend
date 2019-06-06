@@ -150,10 +150,22 @@ nelmio_cors:
 distribution:
     retriever: BeneficiaryBundle\Utils\Distribution\DefaultRetriever
     criteria: {
-        gender: boolean,
-        dateOfBirth: date,
-        vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
-        countrySpecific: BeneficiaryBundle\Entity\CountrySpecific
+            gender: {
+                type: boolean,
+                target: Beneficiary
+            },
+            dateOfBirth: {
+                type: date,
+                target: Beneficiary
+            },
+            vulnerabilityCriteria: {
+                type: BeneficiaryBundle\Entity\VulnerabilityCriterion,
+                target: Beneficiary
+            },
+            countrySpecific: {
+                type: BeneficiaryBundle\Entity\CountrySpecific,
+                target: Household
+            }
         }
 
 services:

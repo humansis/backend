@@ -75,7 +75,9 @@ class CriteriaDistributionController extends Controller
     {
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        $criteria = $criteriaDistributionService->getAll($request->request->all());
+        $filters = $request->request->all();
+        $countryISO3 = $filters['__country'];
+        $criteria = $criteriaDistributionService->getAll($countryISO3);
 
         $json = $this->get('jms_serializer')
             ->serialize(

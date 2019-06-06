@@ -234,12 +234,12 @@ class CriteriaDistributionService
     }
 
     /**
-     * @param array $filters
+     * @param string $countryISO3
      * @return array
      */
-    public function getAll(array $filters)
+    public function getAll(string $countryISO3)
     {
-        $criteria = $this->configurationLoader->load($filters);
+        $criteria = $this->configurationLoader->load($countryISO3);
         return $criteria;
     }
 }
