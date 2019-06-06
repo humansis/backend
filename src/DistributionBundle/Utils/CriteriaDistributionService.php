@@ -118,7 +118,7 @@ class CriteriaDistributionService
      */
     public function loadBeneficiary(array $criteria, int $threshold, string $countryISO3, Project $project)
     {
-        $households = $project->getHouseholds();
+        $households = $this->em->getRepository(Household::class)->getUnarchivedByProject($project);
         $finalArray = array();
 
         foreach ($households as $household) {
@@ -154,13 +154,7 @@ class CriteriaDistributionService
     {
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findBy(['fieldString' => $criterion['field_string'], 'countryIso3' => $countryISO3]);
         $hasCountry = $this->em->getRepository(CountrySpecificAnswer::class)->hasValue($countrySpecific[0]->getId(), $criterion['value_string'], $criterion['condition_string'], $household);
-
-        $count = 0;
-        if ($hasCountry) {
-            $count = $criterion['weight'];
-        }
-
-        return $count;
+        return $hasCountry ? $criterion['weight'] : 0;
     }
 
     /**
@@ -171,50 +165,21 @@ class CriteriaDistributionService
     public function countBeneficiary(array $criterion, Beneficiary $beneficiary)
     {
         $vulnerabilityCriteria = $this->em->getRepository(VulnerabilityCriterion::class)->findBy(['fieldString' => $criterion['field_string']]);
-
         $listOfCriteria = $this->configurationLoader->criteria;
 
         // If it is not a vulnerabilityCriteria nor a countrySpecific
         if (key_exists('table_string', $criterion) && $criterion['table_string'] === 'Beneficiary') {
-            $type = $listOfCriteria[$criterion['field_string']];
+            $type = $listOfCriteria[$criterion['field_string']]['type'];
             if ($type == 'boolean') {
                 $criterion['value_string'] = intval($criterion['value_string']);
-
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasGender($criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
-
-                $count = 0;
-                if ($hasVC) {
-                    $count = $criterion['weight'];
-                }
-                return $count;
             } else {
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasDateOfBirth($criterion['value_string'], $criterion['condition_string'], $beneficiary->getId());
-
-                $count = 0;
-                if ($hasVC) {
-                    $count = $count + 1;
-                }
-
-                return $count;
             }
         } else {
             $hasVC = $this->em->getRepository(Beneficiary::class)->hasVulnerabilityCriterion($vulnerabilityCriteria[0]->getId(), $criterion['condition_string'], $beneficiary->getId());
-
-            $count = 0;
-            if ($hasVC) {
-                if ($criterion['condition_string'] == "false") {
-                    $count = $criterion['weight'];
-                } else {
-                    foreach ($beneficiary->getVulnerabilityCriteria()->getValues() as $value) {
-                        if ($value->getFieldString() == $criterion['field_string']) {
-                            $count = $count + $criterion['weight'];
-                        }
-                    }
-                }
-            }
-
-            return $count;
         }
+        return $hasVC ? $criterion['weight'] : 0;
     }
 
     /**

@@ -84,20 +84,23 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     public function hasVulnerabilityCriterion(int $vulnerabilityId, string $conditionString, int $beneficiaryId)
     {
         $qb = $this->createQueryBuilder('b');
+        $q = $qb->leftJoin('b.vulnerabilityCriteria', 'vc')
+            ->andWhere('b.id = :beneficiaryId')
+            ->setParameter(':beneficiaryId', $beneficiaryId);
 
         if ($conditionString == "true") {
-            $q = $qb->leftJoin('b.vulnerabilityCriteria', 'vc')
-                ->where(':vulnerabilityId = vc.id')
-                ->setParameter('vulnerabilityId', $vulnerabilityId)
-                ->andWhere(':beneficiaryId = b.id')
-                ->setParameter(':beneficiaryId', $beneficiaryId);
+            $q->andWhere(':vulnerabilityId = vc.id');
         } else {
-            $q = $qb->leftJoin('b.vulnerabilityCriteria', 'vc')
-                ->where(':vulnerabilityId <> vc.id')
-                ->setParameter('vulnerabilityId', $vulnerabilityId)
-                ->andWhere(':beneficiaryId = b.id')
-                ->setParameter(':beneficiaryId', $beneficiaryId);
+            $orStatement = $q->expr()->orX();
+            //     $q->having('COUNT(vc.id) = 0'),
+            //     $q->expr()->neq(':vulnerabilityId', 'vc.id')
+            // );
+            $orStatement->add($q->expr()->eq('SIZE(b.vulnerabilityCriteria)', 0))
+                        ->add($q->expr()->neq(':vulnerabilityId', 'vc.id'));
+            $q->andWhere($orStatement);
         }
+
+        $q->setParameter('vulnerabilityId', $vulnerabilityId);
 
         return $q->getQuery()->getResult();
     }
