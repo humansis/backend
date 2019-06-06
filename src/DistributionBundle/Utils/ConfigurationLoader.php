@@ -65,7 +65,7 @@ class ConfigurationLoader
 
     /**
      * @param string $countryISO3
-     * @param string $distributionType
+     * @param string $target
      * @param $criterion
      * @param $class
      * @return array
@@ -75,13 +75,13 @@ class ConfigurationLoader
         $instances = $this->em->getRepository($class)->findForCriteria($countryISO3);
         foreach ($instances as &$instance) {
             $instance->setTableString($criterion);
-            $instance->setDistributionType($target);
+            $instance->setKindOfBeneficiary($target);
         }
         return $instances;
     }
 
     /**
-     * @param string $distributionType
+     * @param string $target
      * @param $criterion
      * @param $type
      * @return array

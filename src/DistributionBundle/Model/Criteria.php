@@ -35,27 +35,27 @@ class Criteria
     }
 
     /**
-    * @var string $distributionType
+    * @var string $kindOfBeneficiary
     * @Groups({"Criteria"})
     *
     */
-    protected $distributionType;
+    protected $kindOfBeneficiary;
 
     /**
      * @return string
      */
-    public function getDistributionType(): string
+    public function getkindOfBeneficiary(): string
     {
-        return $this->distributionType;
+        return $this->kindOfBeneficiary;
     }
 
     /**
-     * @param string $distributionType
+     * @param string $kindOfBeneficiary
      * @return Criteria
      */
-    public function setDistributionType(string $distributionType)
+    public function setkindOfBeneficiary(string $kindOfBeneficiary)
     {
-        $this->distributionType = $distributionType;
+        $this->kindOfBeneficiary = $kindOfBeneficiary;
 
         return $this;
     }
