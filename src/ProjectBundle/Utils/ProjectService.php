@@ -102,7 +102,7 @@ class ProjectService
                 ->setStartDate(DateTime::createFromFormat('d-m-Y',$projectArray["start_date"]))
                 ->setEndDate(DateTime::createFromFormat('d-m-Y',$projectArray["end_date"]))
                 ->setIso3($countryISO3)
-                ->setValue($projectArray["value"])
+                ->setTarget($projectArray["target"])
                 ->setNotes($projectArray["notes"]);
 
         $existingProject = $this->em->getRepository(Project::class)->findBy(
@@ -170,7 +170,7 @@ class ProjectService
             $project->setName($projectArray['name'])
                 ->setStartDate(new DateTime($projectArray['start_date']))
                 ->setEndDate(new DateTime($projectArray['end_date']))
-                ->setValue($projectArray['value'])
+                ->setTarget($projectArray['target'])
                 ->setNotes($projectArray["notes"]);
 
             $sectors = $projectArray['sectors'];

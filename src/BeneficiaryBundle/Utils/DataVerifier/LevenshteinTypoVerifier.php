@@ -59,7 +59,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
         }
 
         if (null === $newHead) {
-            return null;
+            throw new \Exception('A household in the file has no head (household with ' . $householdArray['beneficiaries'][0]['given_name'] . ' ' . $householdArray['beneficiaries'][0]['family_name'] . ').');
         }
 
         $similarHouseholds = $householdRepository->foundSimilarLevenshtein(
@@ -67,8 +67,8 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             $householdArray['address_street'] .
             $householdArray['address_number'] .
             $householdArray['address_postcode'] .
-            $newHead['given_name'] .
-            $newHead['family_name'],
+            $newHead['local_given_name'] .
+            $newHead['local_family_name'],
             $this->maximumDistanceLevenshtein
         );
 

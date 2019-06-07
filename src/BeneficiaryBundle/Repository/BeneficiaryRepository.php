@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\DistributionData;
+use CommonBundle\Entity\Location;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -126,29 +127,22 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
+    public function getAllInCountry(string $iso3) {
+        $qb = $this->createQueryBuilder('b');
+        $this->beneficiariesInCountry($qb, $iso3);
+        $qb->andWhere('hh.archived = 0');
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function countAllInCountry(string $iso3)
     {
         $qb = $this->createQueryBuilder('b');
-        $q = $qb->select('COUNT(b)')
-            ->leftJoin('b.household', 'hh')
-            ->leftJoin('hh.location', 'l')
-            ->leftJoin('l.adm1', 'adm1')
-            ->leftJoin('l.adm2', 'adm2')
-            ->leftJoin('l.adm3', 'adm3')
-            ->leftJoin('l.adm4', 'adm4')
-            ->where('adm1.countryISO3 = :iso3 AND hh.archived = 0')
-            ->leftJoin('adm4.adm3', 'adm3b')
-            ->leftJoin('adm3b.adm2', 'adm2b')
-            ->leftJoin('adm2b.adm1', 'adm1b')
-            ->orWhere('adm1b.countryISO3 = :iso3 AND hh.archived = 0')
-            ->leftJoin('adm3.adm2', 'adm2c')
-            ->leftJoin('adm2c.adm1', 'adm1c')
-            ->orWhere('adm1c.countryISO3 = :iso3 AND hh.archived = 0')
-            ->leftJoin('adm2.adm1', 'adm1d')
-            ->orWhere('adm1d.countryISO3 = :iso3 AND hh.archived = 0')
-            ->setParameter('iso3', $iso3);
+        $this->beneficiariesInCountry($qb, $iso3);
+        $qb->andWhere('hh.archived = 0')
+            ->select('COUNT(b)');
 
-        return $q->getQuery()->getSingleScalarResult();
+        return $qb->getQuery()->getSingleScalarResult();
     }
 
     public function getAllofDistribution(DistributionData $distributionData)
@@ -156,6 +150,17 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb = $this->createQueryBuilder('b');
         $q = $qb->leftJoin('b.distributionBeneficiary', 'db')
             ->where('db.distributionData = :distributionData')
+            ->setParameter('distributionData', $distributionData);
+
+        return $q->getQuery()->getResult();
+    }
+
+    public function getNotRemovedofDistribution(DistributionData $distributionData)
+    {
+        $qb = $this->createQueryBuilder('b');
+        $q = $qb->leftJoin('b.distributionBeneficiary', 'db')
+            ->where('db.distributionData = :distributionData')
+            ->andWhere('db.removed = 0')
             ->setParameter('distributionData', $distributionData);
 
         return $q->getQuery()->getResult();
@@ -279,5 +284,27 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->setParameter("countrySpecific$i", $filters['id_field'])
             ->andWhere("csa$i.answer {$filters['condition_string']} :value$i")
             ->setParameter("value$i", $filters['value_string']);
+    }
+
+    public function countServedInCountry($iso3) {
+        $qb = $this->createQueryBuilder('b');
+        $this->beneficiariesInCountry($qb, $iso3);
+
+        $qb->select('COUNT(DISTINCT b)')
+            ->leftJoin('b.distributionBeneficiary', 'db')
+            ->leftJoin('db.booklets', 'bk')
+            ->leftJoin('db.transactions', 't')
+            ->leftJoin('db.generalReliefs', 'gri')
+            ->andWhere('t.transactionStatus = 1 OR gri.distributedAt IS NOT NULL OR bk.id IS NOT NULL');
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    private function beneficiariesInCountry(QueryBuilder &$qb, $countryISO3) {
+        $qb->leftJoin('b.household', 'hh')
+            ->innerJoin("hh.location", "l");
+
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($qb, $countryISO3);
     }
 }

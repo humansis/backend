@@ -50,6 +50,13 @@ class Commodity
     private $distributionData;
 
     /**
+     * @var string
+     * @Groups({"FullDistribution"})
+     * @ORM\Column(name="description", type="string",length=511, nullable=true)
+     */
+    private $description;
+
+    /**
      * Get id.
      *
      * @return int
@@ -153,5 +160,29 @@ class Commodity
     public function getModalityType()
     {
         return $this->modalityType;
+    }
+
+     /**
+     * Set description.
+     *
+     * @param string $description
+     *
+     * @return Commodity
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description.
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

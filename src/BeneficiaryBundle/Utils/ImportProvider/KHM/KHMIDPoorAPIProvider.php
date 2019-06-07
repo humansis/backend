@@ -119,11 +119,11 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
                         }
                     }
                     if ($fullName) {
-                        $givenName = $fullName[0];
-                        $familyName = $fullName[1];
+                        $localGivenName = $fullName[0];
+                        $localFamilyName = $fullName[1];
                     } else {
-                        $givenName = ' ';
-                        $familyName = $householdMember['MemberName'];
+                        $localGivenName = ' ';
+                        $localFamilyName = $householdMember['MemberName'];
                     }
                     // Status
                     $headOfHousehold = ($householdMember['RelationshipToHH'] == "Head of Household") ? 1: 0;
@@ -136,8 +136,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
                             'equityCardNo' => $householdMember['EquityCardNo'],
                             'status' => $headOfHousehold,
                             'residencyStatus' => 'resident',
-                            'givenName' => $givenName,
-                            'familyName' => $familyName,
+                            'localGivenName' => $localGivenName,
+                            'localFamilyName' => $localFamilyName,
                             'IDPoor' => $householdMember['PovertyLevel'],
                             'gender' => $sex,
                             'dateOfBirth' => $householdMember['YearOfBirth'] . '-01-01',
@@ -212,15 +212,15 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
     {
         // Check if household already exists by searching one of its beneficiaries
         $dateOfBirth = new DateTime($beneficiary['dateOfBirth']);
-        $familyName = $beneficiary['familyName'];
-        $givenName = $beneficiary['givenName'];
+        $localFamilyName = $beneficiary['localFamilyName'];
+        $localGivenName = $beneficiary['localGivenName'];
         $status = $beneficiary['status'];
         $gender = $beneficiary['gender'];
         
         $existingBeneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy(
             [
-                'givenName' => $givenName,
-                'familyName' => $familyName,
+                'localGivenName' => $localGivenName,
+                'localFamilyName' => $localFamilyName,
                 'gender' => $gender,
                 'status' => $status,
                 'dateOfBirth' => $dateOfBirth
@@ -325,8 +325,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
         // Check that beneficiary does not already exists
         $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy(
             [
-                'givenName' => $beneficiaryArray["givenName"],
-                'familyName' => $beneficiaryArray["familyName"],
+                'localGivenName' => $beneficiaryArray["localGivenName"],
+                'localFamilyName' => $beneficiaryArray["localFamilyName"],
                 'gender' => $beneficiaryArray["gender"],
                 'status' => $beneficiaryArray["status"],
                 'dateOfBirth' => new DateTime($beneficiaryArray['dateOfBirth'])
@@ -338,8 +338,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
             $beneficiary->setHousehold($household);
             $beneficiary->setGender($beneficiaryArray["gender"])
                         ->setDateOfBirth(new \DateTime($beneficiaryArray["dateOfBirth"])) // From API so no formatting
-                        ->setFamilyName($beneficiaryArray["familyName"])
-                        ->setGivenName($beneficiaryArray["givenName"])
+                        ->setlocalFamilyName($beneficiaryArray["localFamilyName"])
+                        ->setlocalGivenName($beneficiaryArray["localGivenName"])
                         ->setStatus($beneficiaryArray["status"])
                         ->setResidencyStatus($beneficiaryArray["residencyStatus"]);
             $profile = new Profile();

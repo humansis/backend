@@ -29,6 +29,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Class DistributionCSVService
@@ -112,11 +113,11 @@ class DistributionCSVService
         $sheetArray = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $worksheet->getHighestRow(), null, true, true, true);
         $headers = array_shift($sheetArray);
         $arrayWithKeys = array();
-        foreach ($sheetArray as $beneficiaryArray) {
+        foreach ($sheetArray as $beneficiaryIndex => $beneficiaryArray) {
             $beneficiaryWithKey = array();
             foreach ($headers as $index => $key) {
                 if ($key == "gender") {
-                    if (strcasecmp(trim($beneficiaryArray[$index]), 'Male') == 0) {
+                    if (strcasecmp(trim($beneficiaryArray[$index]), 'Male') === 0 || strcasecmp(trim($beneficiaryArray[$index]), 'M') === 0) {
                         $beneficiaryArray[$index] = 1;
                     } else {
                         $beneficiaryArray[$index] = 0;
@@ -135,20 +136,30 @@ class DistributionCSVService
         foreach ($beneficiaries as $beneficiary) {
             $inFile = false;
             foreach ($arrayWithKeys as $arrayBeneficiary) {
-                if (($beneficiary->getGivenName() === $arrayBeneficiary['givenName']
-                        || $beneficiary->getGivenName() === "")
-                    && ($beneficiary->getFamilyName() === $arrayBeneficiary['familyName']
-                        || $beneficiary->getFamilyName() === "")) {
+                if (($beneficiary->getLocalGivenName() === $arrayBeneficiary['localGivenName']
+                        || $beneficiary->getLocalGivenName() === "")
+                    && ($beneficiary->getLocalFamilyName() === $arrayBeneficiary['localFamilyName']
+                        || $beneficiary->getLocalFamilyName() === "")) {
                     $arrayBeneficiary['id'] = $beneficiary->getId();
                     array_push($updateArray, $arrayBeneficiary);
                     $inFile = true;
                 }
             }
-            if (! $inFile) {
+
+            $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
+            ->findOneBy(
+                [
+                    'beneficiary' => $beneficiary,
+                    'distributionData' => $distributionData
+                ]
+            );
+            if (! $inFile && !$distributionBeneficiary->getRemoved()) {
                 $beneficiaryToDelete = array(
                     'id' => $beneficiary->getId(),
-                    'givenName' => $beneficiary->getGivenName(),
-                    'familyName' => $beneficiary->getFamilyName(),
+                    'enGivenName' => $beneficiary->getEnGivenName(),
+                    'enFamilyName' => $beneficiary->getEnFamilyName(),
+                    'localGivenName' => $beneficiary->getLocalGivenName(),
+                    'localFamilyName' => $beneficiary->getLocalFamilyName(),
                     'dateOfBirth' => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                     'gender' => $beneficiary->getGender()
                 );
@@ -163,7 +174,7 @@ class DistributionCSVService
             $inDistribution = false;
 
             foreach ($updateArray as $value) {
-                if ($arrayWithKey['givenName'] === $value['givenName'] && $arrayWithKey['familyName'] === $value['familyName']) {
+                if ($arrayWithKey['localGivenName'] === $value['localGivenName'] && $arrayWithKey['localFamilyName'] === $value['localFamilyName']) {
                     $inDistribution = true;
                 }
             }
@@ -181,14 +192,14 @@ class DistributionCSVService
         foreach ($newAndAddArray as $beneficiaryArray) {
             $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy(
                 [
-                    "givenName" => $beneficiaryArray['givenName'],
-                    "familyName" => $beneficiaryArray['familyName']
+                    "localGivenName" => $beneficiaryArray['localGivenName'],
+                    "localFamilyName" => $beneficiaryArray['localFamilyName']
                 ]
             );
             if ($beneficiary instanceof Beneficiary) {
                 // Check if the beneficiary is associate to the project of the distribution
                 if (in_array($distributionData->getProject(), $beneficiary->getHousehold()->getProjects()->getValues())) {
-                    array_push($addArray, $beneficiary);
+                    array_push($addArray, $beneficiaryArray);
                 }
             } else {
                 array_push($createArray, $beneficiaryArray);
@@ -222,8 +233,8 @@ class DistributionCSVService
         
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
-            if ($beneficiaryToCreate['head'] != 'true') {
-                throw new \Exception("You must insert only a head of the household in the file to import.");
+            if ($beneficiaryToCreate['head'] !== 'true') {
+                throw new \Exception("You can only insert a head of the household in the file to import.");
             }
 
             // There the location is still filled with adm names and not id
@@ -234,13 +245,25 @@ class DistributionCSVService
                 "adm3" => $beneficiaryToCreate['adm3'],
                 "adm4" => $beneficiaryToCreate['adm4']
             );
-            
+            $referralType = null;
+            if ($beneficiaryToCreate['Referral Type']) {
+                foreach (Referral::REFERRALTYPES as $referralTypeId => $value) {
+                    if (strcasecmp($value, $beneficiaryToCreate['Referral Type']) === 0) {
+                        $referralType = $referralTypeId;
+                    }
+                }
+                if ($referralType === null) {
+                    throw new \Exception("Invalid referral type.");
+                }
+            }
+
             $householdToCreate = array(
                 "__country" => $countryIso3,
                 "address_street" => $beneficiaryToCreate['addressStreet'],
                 "address_number" => strval($beneficiaryToCreate['addressNumber']),
                 "address_postcode" => strval($beneficiaryToCreate['addressPostcode']),
                 "livelihood" => $beneficiaryToCreate['livelihood'],
+                "income_level" => $beneficiaryToCreate['incomeLevel'],
                 "notes" => $beneficiaryToCreate['notes'],
                 "latitude" => strval($beneficiaryToCreate['latitude']),
                 "longitude" => strval($beneficiaryToCreate['longitude']),
@@ -248,8 +271,10 @@ class DistributionCSVService
                 "country_specific_answers" => array(),
                 "beneficiaries" => array(
                     array(
-                        "given_name" => $beneficiaryToCreate['givenName'],
-                        "family_name" => $beneficiaryToCreate['familyName'],
+                        "en_given_name" => $beneficiaryToCreate['enGivenName'],
+                        "en_family_name" => $beneficiaryToCreate['enFamilyName'],
+                        "local_given_name" => $beneficiaryToCreate['localGivenName'],
+                        "local_family_name" => $beneficiaryToCreate['localFamilyName'],
                         "gender" => $beneficiaryToCreate['gender'],
                         "status" => 1,
                         "residency_status" => $beneficiaryToCreate['residencyStatus'],
@@ -259,31 +284,38 @@ class DistributionCSVService
                         ),
                         "vulnerability_criteria" => array(),
                         "phones" => array(),
-                        "national_ids" => array()
+                        "national_ids" => array(),
+                        "referral_type" => $referralType,
+                        "referral_comment" => $beneficiaryToCreate['Referral Comment'],
                     )
                 )
             );
 
             $this->CSVToArrayMapper->mapLocation($householdToCreate);
+            $this->CSVToArrayMapper->mapLivelihood($householdToCreate);
             $this->householdService->createOrEdit($householdToCreate, array($distributionProject));
             $toCreate = $this->em->getRepository(Beneficiary::class)
-                ->findOneBy(["givenName" => $beneficiaryToCreate['givenName'], 'familyName' => $beneficiaryToCreate['familyName'], 'gender' => $beneficiaryToCreate['gender']]);
+                ->findOneBy(["localGivenName" => $beneficiaryToCreate['localGivenName'], 'localFamilyName' => $beneficiaryToCreate['localFamilyName'], 'gender' => $beneficiaryToCreate['gender']]);
             $this->em->persist($toCreate);
             
             // Add created beneficiary to distribution
             $newDistributionBeneficiary = new DistributionBeneficiary();
-            $newDistributionBeneficiary->setBeneficiary($toCreate);
-            $newDistributionBeneficiary->setDistributionData($distributionData);
+            $newDistributionBeneficiary->setBeneficiary($toCreate)
+                ->setDistributionData($distributionData)
+                ->setRemoved(0)
+                ->setJustification($beneficiaryToCreate['justification']);
             $this->em->persist($newDistributionBeneficiary);
         }
         
         // Add
         foreach ($data['added'] as $beneficiaryToAdd) {
-            if ($beneficiaryToAdd instanceof Beneficiary) {
-                $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd->getId());
-            } else {
-                $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToAdd['id']);
-            }
+            $justification = $beneficiaryToAdd['justification'];
+            $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->findOneBy(
+                [
+                    "localGivenName" => $beneficiaryToAdd['localGivenName'],
+                    "localFamilyName" => $beneficiaryToAdd['localFamilyName']
+                ]
+            );
 
             $household = $beneficiaryToAdd->getHousehold();
             if (! $household->getProjects()->contains($distributionProject)) {
@@ -291,8 +323,10 @@ class DistributionCSVService
                 $this->em->persist($household);
             }
             $distributionBeneficiary = new DistributionBeneficiary();
-            $distributionBeneficiary->setBeneficiary($beneficiaryToAdd);
-            $distributionBeneficiary->setDistributionData($distributionData);
+            $distributionBeneficiary->setBeneficiary($beneficiaryToAdd)
+                ->setDistributionData($distributionData)
+                ->setRemoved(0)
+                ->setJustification($justification);
             $this->em->persist($distributionBeneficiary);
         }
 
@@ -306,21 +340,39 @@ class DistributionCSVService
                         'distributionData' => $distributionData
                     ]
                 );
-            $this->em->remove($toRemove);
+            $toRemove->setRemoved(1)
+                ->setJustification($beneficiaryToRemove['justification']);
+            $this->em->persist($toRemove);
         }
 
         // Update
         foreach ($data['updated'] as $beneficiaryToUpdate) {
             $toUpdate = $this->em->getRepository(Beneficiary::class)
                 ->find($beneficiaryToUpdate['id']);
+
+            $distributionBeneficiaryToUpdate = $this->em->getRepository(DistributionBeneficiary::class)
+                ->findOneBy(
+                    [
+                        'beneficiary' => $toUpdate,
+                        'distributionData' => $distributionData
+                    ]
+                );
             
-            $toUpdate->setGivenName($beneficiaryToUpdate['givenName']);
-            $toUpdate->setFamilyName($beneficiaryToUpdate['familyName']);
+            if ($distributionBeneficiaryToUpdate->getRemoved()) {
+                $distributionBeneficiaryToUpdate->setRemoved(0)
+                    ->setJustification('');
+                $this->em->merge($distributionBeneficiaryToUpdate);
+            }
+            $toUpdate->setEnGivenName($beneficiaryToUpdate['enGivenName']);
+            $toUpdate->setEnFamilyName($beneficiaryToUpdate['enFamilyName']);
+            $toUpdate->setLocalGivenName($beneficiaryToUpdate['localGivenName']);
+            $toUpdate->setLocalFamilyName($beneficiaryToUpdate['localFamilyName']);
             $toUpdate->setGender($beneficiaryToUpdate['gender']);
             $toUpdate->setStatus(($beneficiaryToUpdate['head']) === 'true' ? 1 : 0);
             $toUpdate->setResidencyStatus($beneficiaryToUpdate['residencyStatus']);
             $toUpdate->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryToUpdate['dateOfBirth']));
             
+
             $toUpdate->setVulnerabilityCriteria(null);
             if (strpos($beneficiaryToUpdate['vulnerabilityCriteria'], ",")) {
                 $vulnerabilityCriteria = explode(",", $beneficiaryToUpdate['vulnerabilityCriteria']);
@@ -369,7 +421,10 @@ class DistributionCSVService
             }
 
             $this->em->merge($toUpdate);
+
         }
+
+        $distributionData->setUpdatedOn(new \DateTime());
 
         $this->em->flush();
         

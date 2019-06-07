@@ -372,6 +372,14 @@ class BookletService
         $booklet->setDistributionBeneficiary($distributionBeneficiary)
                 ->setStatus(Booklet::DISTRIBUTED);
         $this->em->merge($booklet);
+
+        $beneficiariesWithoutBooklets = $this->em->getRepository(DistributionBeneficiary::class)->countWithoutBooklet($distributionData);
+        
+        if ($beneficiariesWithoutBooklets === '1') {
+            $distributionData->setCompleted(true);
+            $this->em->merge($distributionData);
+        }  
+
         $this->em->flush();
 
         return "Booklet successfully assigned to the beneficiary";
@@ -431,11 +439,6 @@ class BookletService
 
     public function generatePdf(array $booklets)
     {
-        $pdfOptions = new Options();
-        $pdfOptions->set('defaultFont', 'Arial');
-        $pdfOptions->set('isRemoteEnabled', true);
-        $dompdf = new Dompdf($pdfOptions);
-
         try {
             $voucherHtmlSeparation = '<p class="next-voucher"></p>';
             $html = $this->getPdfHtml($booklets[0], $voucherHtmlSeparation);
@@ -450,17 +453,7 @@ class BookletService
                 }
             }
 
-            $dompdf->loadHtml($html);
-            $dompdf->setPaper('A4', 'portrait');
-            $dompdf->render();
-            $output = $dompdf->output();
-            $pdfFilepath =  getcwd() . '/otherpdf.pdf';
-            file_put_contents($pdfFilepath, $output);
-
-            $response = new BinaryFileResponse($pdfFilepath);
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'mypdf.pdf');
-            $response->headers->set('Content-Type', 'application/pdf');
-            $response->deleteFileAfterSend(true);
+            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'booklets');
 
             return $response;
         } catch (\Exception $e) {
@@ -471,7 +464,7 @@ class BookletService
     public function getPdfHtml(Booklet $booklet, string $voucherHtmlSeparation)
     {
         $name = $booklet->getDistributionBeneficiary() ?
-            $booklet->getDistributionBeneficiary()->getBeneficiary()->getFamilyName() :
+            $booklet->getDistributionBeneficiary()->getBeneficiary()->getLocalFamilyName() :
             '_______';
         $currency = $booklet->getCurrency();
         $bookletQrCode = $booklet->getCode();
@@ -485,12 +478,15 @@ class BookletService
 
         $bookletHtml = $this->container->get('templating')->render(
             '@Voucher/Pdf/booklet.html.twig',
-            array(
-                'name'  => $name,
-                'value' => $totalValue,
-                'currency' => $currency,
-                'qrCodeLink' => 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' . $bookletQrCode,
-                'numberVouchers' => $numberVouchers
+            array_merge(
+                array(
+                    'name'  => $name,
+                    'value' => $totalValue,
+                    'currency' => $currency,
+                    'qrCodeLink' => 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' . $bookletQrCode,
+                    'numberVouchers' => $numberVouchers
+                ),
+                $this->container->get('pdf_service')->getInformationStyle()
             )
         );
 
@@ -574,8 +570,10 @@ class BookletService
                 "Notes" => $beneficiary->getHousehold()->getNotes(),
                 "Latitude" => $beneficiary->getHousehold()->getLatitude(),
                 "Longitude" => $beneficiary->getHousehold()->getLongitude(),
-                "Given name" => $beneficiary->getGivenName(),
-                "Family name"=> $beneficiary->getFamilyName(),
+                "English given name" => $beneficiary->getEnGivenName(),
+                "English family name"=> $beneficiary->getEnFamilyName(),
+                "Local given name" => $beneficiary->getLocalGivenName(),
+                "Local family name"=> $beneficiary->getLocalFamilyName(),
                 "Gender" => $gender,
                 "Date of birth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                 "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,

@@ -94,7 +94,7 @@ class DistributionBeneficiaryService
      */
     public function getRandomBeneficiaries(DistributionData $distributionData, Int $numberRandomBeneficiary)
     {
-        $listReceivers = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
+        $listReceivers = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($distributionData);
 
         if (sizeof($listReceivers) < $numberRandomBeneficiary) {
             return $listReceivers;
@@ -123,14 +123,18 @@ class DistributionBeneficiaryService
      * @return DistributionBeneficiary
      * @throws \Exception
      */
-    public function addBeneficiary(DistributionData $distributionData, array $beneficiariesArray)
+    public function addBeneficiary(DistributionData $distributionData, array $beneficiariesData)
     {
         $beneficiary = null;
+
+        $beneficiariesArray = $beneficiariesData['beneficiaries'];
+
+        $distributionBeneficiaries = [];
 
         if ($beneficiariesArray && sizeof($beneficiariesArray) > 0) {
             foreach ($beneficiariesArray as $beneficiaryArray) {
 
-                if ($beneficiaryArray !== $beneficiariesArray["__country"]) {
+                if ($beneficiaryArray !== $beneficiariesData["__country"]) {
                     switch ($distributionData->getType()) {
                         case 0:
                             $headHousehold = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
@@ -152,34 +156,48 @@ class DistributionBeneficiaryService
                     $sameDistributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
                         ->findOneBy(['beneficiary' => $beneficiary, 'distributionData' => $distributionData]);
                     // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
-                    if ($sameDistributionBeneficiary && sizeof($beneficiariesArray) <= 2) {
+                    if ($sameDistributionBeneficiary && sizeof($beneficiariesArray) <= 2 && !$sameDistributionBeneficiary->getRemoved()) {
                         throw new \Exception('This beneficiary/household is already part of the distribution', Response::HTTP_BAD_REQUEST);
+                    } else if ($sameDistributionBeneficiary && sizeof($beneficiariesArray) <= 2 && $sameDistributionBeneficiary->getRemoved()) {
+                        $sameDistributionBeneficiary->setRemoved(0)
+                            ->setJustification($beneficiariesData['justification']);
+                        $this->em->persist($sameDistributionBeneficiary);
                     } else if (!$sameDistributionBeneficiary) {
-                        $distributionBeneficiary->setDistributionData($distributionData);
-                        $distributionBeneficiary->setBeneficiary($beneficiary);
+                        $distributionBeneficiary->setDistributionData($distributionData)
+                            ->setBeneficiary($beneficiary)
+                            ->setRemoved(0)
+                            ->setJustification($beneficiariesData['justification']);
                         $this->em->persist($distributionBeneficiary);
+                        array_push($distributionBeneficiaries, $distributionBeneficiary);
                     }
                 }
             }
+            if ($distributionData->getValidated()) {
+                $distributionData = $this->container->get('distribution.distribution_service')->setCommoditiesToNewBeneficiaries($distributionData, $distributionBeneficiaries);
+            }
+
+            $distributionData->setUpdatedOn(new \DateTime());
+            $this->em->persist($distributionData);
+
             $this->em->flush();
         } else {
             return null;
         }
-
         return $distributionBeneficiary;
     }
 
     /**
-     * @param Int $distributionId
+     * @param DistributionData $distributionData
      * @param Beneficiary $beneficiary
      * @return bool
      */
-    public function removeBeneficiaryInDistribution(Int $distributionId, Beneficiary $beneficiary)
+    public function removeBeneficiaryInDistribution(DistributionData $distributionData, Beneficiary $beneficiary, $deletionData)
     {
-        $distributionData = $this->em->getRepository(DistributionData::class)->find($distributionId);
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'distributionData' => $distributionData->getId()]);
         
-        $this->em->remove($distributionBeneficiary);
+        $distributionBeneficiary->setRemoved(1)
+            ->setJustification($deletionData['justification']);
+        $this->em->persist($distributionBeneficiary);
         $this->em->flush();
         return true;
     }
@@ -202,8 +220,10 @@ class DistributionBeneficiaryService
             }
 
             array_push($beneficiaries, [
-                "Given name" => $value['given_name'],
-                "Family name"=> $value['family_name'],
+                "English given name" => $value['en_given_name'],
+                "English family name"=> $value['en_family_name'],
+                "Local given name" => $value['local_given_name'],
+                "Local family name"=> $value['local_family_name'],
                 "Gender" => $gender,
                 "Status" => $value['status'],
                 "Residency status" => $value['residency_status'],

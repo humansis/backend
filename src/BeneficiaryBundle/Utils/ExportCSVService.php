@@ -24,6 +24,7 @@ class ExportCSVService
         "Address number" => '#contact+address_number',
         "Address postcode" => '#contact+address_postcode',
         "Livelihood" => '',
+        "Income level" => '',
         "Notes" => '#description+notes',
         "Latitude" => '#geo+lat',
         "Longitude" => '#geo+lon',
@@ -39,7 +40,8 @@ class ExportCSVService
         "Address street" => 'Thompson Drive',
         "Address number" => '4943',
         "Address postcode" => '94801',
-        "Livelihood" => '2',
+        "Livelihood" => 'Education',
+        "Income level" => '3',
         "Notes" => 'Greatest city',
         "Latitude" => '38.018234',
         "Longitude" => '-122.379730',
@@ -56,6 +58,7 @@ class ExportCSVService
         "Address number" => '',
         "Address postcode" => '',
         "Livelihood" => '',
+        "Income level" => '',
         "Notes" => '',
         "Latitude" => '',
         "Longitude" => '',
@@ -70,7 +73,8 @@ class ExportCSVService
         "Address street" => "String*",
         "Address number" => "Number*",
         "Address postcode" => "Number*",
-        "Livelihood" => "Number [0-24]",
+        "Livelihood" => "String",
+        "Income level" => "Number [1-5]",
         "Notes" => "String",
         "Latitude" => "Float",
         "Longitude" => "Float",
@@ -183,8 +187,10 @@ class ExportCSVService
     public function exportToCsv(string $type, string $countryISO3)
     {
         $tempHxl = [
-            "Given name" => '#beneficiary+givenName',
-            "Family name" => '#beneficiary+familyName',
+            "Local given name" => '#beneficiary+localGivenName',
+            "Local family name" => '#beneficiary+localFamilyName',
+            "English given name" => '#beneficiary+enGivenName',
+            "English family name" => '#beneficiary+enFamilyName',
             "Gender" => '',
             "Head" => '',
             "Residency status" => '',
@@ -200,14 +206,18 @@ class ExportCSVService
             "Proxy phone 2" => "",
             "Type national ID" => '',
             "Number national ID" => '',
+            "Referral Type" => '',
+            "Referral Comment" => '',
             "  " => '',
             "" => "     -->",
             " " => 'Do not remove this line.'
         ];
 
         $tempBenef = [
-            "Given name" => 'Price',
-            "Family name" => 'Smith',
+            "Local given name" => 'Price',
+            "Local family name" => 'Smith',
+            "English given name" => 'Price',
+            "English family name" => 'Smith',
             "Gender" => 'Female',
             "Head" => 'true',
             "Residency status" => 'Refugee',
@@ -223,14 +233,18 @@ class ExportCSVService
             "Proxy phone 2" => "N",
             "Type national ID" => 'IDCard',
             "Number national ID" => '030617701',
+            "Referral Type" => 'Type 5',
+            "Referral Comment" => 'This is a referral comment',
             "  " => '[Head]',
             "" => "     -->",
             " " => 'This Example line and the Type Helper line below must not be removed.'
         ];
 
         $dependent = [
-            "Given name" => 'James',
-            "Family name" => 'Smith',
+            "Local given name" => 'James',
+            "Local family name" => 'Smith',
+            "English given name" => 'James',
+            "English family name" => 'Smith',
             "Gender" => 'Male',
             "Head" => 'false',
             "Residency status" => 'Resident',
@@ -246,14 +260,18 @@ class ExportCSVService
             "Proxy phone 2" => "Y",
             "Type national ID" => '',
             "Number national ID" => '',
+            "Referral Type" => 'Type 3',
+            "Referral Comment" => 'This is another referral comment',
             "  " => '[Member]',
             "" => "     -->",
             " " => "'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
         ];
 
         $details = [
-            "Given name" => 'String*',
-            "Family name" => 'String*',
+            "Local given name" => 'String*',
+            "Local family name" => 'String*',
+            "English given name" => 'String',
+            "English family name" => 'String',
             "Gender" => 'Male / Female*',
             "Head" => 'String [true-false]*',
             "Residency status" => 'Refugee / IDP / Resident*',
@@ -269,6 +287,8 @@ class ExportCSVService
             "Proxy phone 2" => "Y / N (Proxy)",
             "Type national ID" => '"TypeAsString"',
             "Number national ID" => 'Number',
+            "Referral Type" => 'String',
+            "Referral Comment" => 'String',
             "  " => '',
             "" => "     -->",
             " " => "'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."

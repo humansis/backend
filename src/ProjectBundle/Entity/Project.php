@@ -68,11 +68,11 @@ class Project implements ExportableInterface
     /**
      * @var float
      *
-     * @ORM\Column(name="value", type="float", nullable=true)
+     * @ORM\Column(name="target", type="float", nullable=true)
      *
      * @Groups({"FullProject"})
      */
-    private $value;
+    private $target;
 
     /**
      * @var string
@@ -265,27 +265,27 @@ class Project implements ExportableInterface
     }
 
     /**
-     * Set value.
+     * Set target.
      *
-     * @param float $value
+     * @param float $target
      *
      * @return Project
      */
-    public function setValue($value)
+    public function setTarget($target)
     {
-        $this->value = $value;
+        $this->target = $target;
 
         return $this;
     }
 
     /**
-     * Get value.
+     * Get target.
      *
      * @return float
      */
-    public function getValue()
+    public function getTarget()
     {
-        return $this->value;
+        return $this->target;
     }
 
     /**
@@ -619,11 +619,12 @@ class Project implements ExportableInterface
         $sectors = join(',', $sectors);
 
         return [
+            "ID" => $this->getId(),
             "Project name" => $this->getName(),
             "Start date"=> $this->getStartDate()->format('d-m-Y'),
             "End date" => $this->getEndDate()->format('d-m-Y'),
             "Number of households" => $this->getNumberOfHouseholds(),
-            "Value" => $this->getValue(),
+            "Total Target beneficiaries" => $this->getTarget(),
             "Notes" => $this->getNotes(),
             "Country" => $this->getIso3(),
             "Donors" => $donors,

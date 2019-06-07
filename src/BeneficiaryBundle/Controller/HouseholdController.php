@@ -160,7 +160,7 @@ class HouseholdController extends Controller
 
 
     /**
-     * @Rest\Post("/households/{id}", name="edit_household")
+     * @Rest\Post("/households/{id}", name="edit_household", requirements={"id": "\d+"})
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Households")
@@ -259,6 +259,8 @@ class HouseholdController extends Controller
      */
     public function importAction(Request $request, Project $project)
     {
+
+        set_time_limit(0); // 0 = no limits
         if ($request->query->has('token')) {
             $token = $request->query->get('token');
             if (empty($token)) {
@@ -445,6 +447,33 @@ class HouseholdController extends Controller
     }
 
     /**
+     * @Rest\Post("/households/delete")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @return Response
+     */
+    public function removeManyAction(Request $request)
+    {
+        try {
+            /** @var HouseholdService $householdService */
+            $householdService = $this->get("beneficiary.household_service");
+            $ids = $request->request->get('ids');
+            $response = $householdService->removeMany($ids);
+        }  catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        return new Response(json_encode($response));
+
+    }
+
+    /**
      * @Rest\Post("/import/api/households/project/{id}", name="get_all_beneficiaries_via_api")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Beneficiary")
@@ -498,14 +527,11 @@ class HouseholdController extends Controller
         if (! $request->files->has('file')) {
             return new JsonResponse("You must upload a file.", Response::HTTP_BAD_REQUEST);
         }
-        if (! $request->query->has('adm')) {
-            return new JsonResponse("A location is required.", Response::HTTP_BAD_REQUEST);
-        }
-        if (! $request->query->has('name')) {
+        if (! $request->query->has('adm1')) {
             return new JsonResponse("A location is required.", Response::HTTP_BAD_REQUEST);
         }
 
-        $location = array($request->query->get('adm') => $request->query->get('name'));
+        $location = [$request->query->get('adm1'), $request->query->get('adm2'), $request->query->get('adm3'), $request->query->get('adm4')];
 
         try {
             // get mapper and map

@@ -17,6 +17,7 @@ class DonorControllerTest extends BMSServiceTestCase
         "fullname" => "TEST_DONOR_NAME_PHPUNIT",
         "shortname" => "TEST_DONOR_NAME",
         "date_added" => "01-04-2018 11:20:13",
+        "logo" => "https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/donors/5ce65b74992a5.png",
         "notes" => "This is a note"
     ];
 

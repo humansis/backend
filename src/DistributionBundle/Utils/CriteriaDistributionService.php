@@ -56,9 +56,9 @@ class CriteriaDistributionService
 
         $distributionType = $filters['distribution_type'];
 
-        if ($distributionType == "household" || $distributionType == "Household") {
+        if ($distributionType == "household" || $distributionType == "Household" || $distributionType == '0') {
             $finalArray = $this->loadHousehold($filters['criteria'], $threshold, $countryISO3, $project);
-        } elseif ($distributionType == "individual" || $distributionType == "Individual") {
+        } elseif ($distributionType == "individual" || $distributionType == "Individual" || $distributionType == '1') {
             $finalArray = $this->loadBeneficiary($filters['criteria'], $threshold, $countryISO3, $project);
         } else {
             throw new \Exception("A problem was found. Distribution type is unknown");
@@ -172,13 +172,13 @@ class CriteriaDistributionService
     {
         $vulnerabilityCriteria = $this->em->getRepository(VulnerabilityCriterion::class)->findBy(['fieldString' => $criterion['field_string']]);
 
-        if (!key_exists('table_string', $criterion)) {
-            if ($criterion['type'] == 'boolean') {
-                if ($criterion['value_string'] == "Woman") {
-                    $criterion['value_string'] = 0;
-                } else {
-                    $criterion['value_string'] = 1;
-                }
+        $listOfCriteria = $this->configurationLoader->criteria;
+
+        // If it is not a vulnerabilityCriteria nor a countrySpecific
+        if (key_exists('table_string', $criterion) && $criterion['table_string'] === 'Beneficiary') {
+            $type = $listOfCriteria[$criterion['field_string']];
+            if ($type == 'boolean') {
+                $criterion['value_string'] = intval($criterion['value_string']);
 
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasGender($criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
 

@@ -63,7 +63,8 @@ class DistributionControllerTest extends BMSServiceTestCase
                     ],
                     "type" => "Mobile Money",
                     "unit" => "USD",
-                    "value" => "150"
+                    "value" => "150",
+                    "description" => null
                 ]
             ],
             "date_distribution" => "13-09-2018",
@@ -169,7 +170,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/validate');
+        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] .'/validate', array());
         $validate = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -188,9 +189,6 @@ class DistributionControllerTest extends BMSServiceTestCase
     }
 
 
-    // Now we have a verification 'This beneficiary is already in the distribution' which makes this test fail
-    // TODO : Create a new household and beneficiary, get his body, send it
-
     /**
      * @depends testCreateDistribution
      * @param $distribution
@@ -205,27 +203,30 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $body = array(
-            array(
-                'date_of_birth' => '10-06-1989',
-                'family_name' => 'NAME_TEST',
-                'gender' => "1",
-                'given_name' => 'FIRSTNAME_TEST',
-                'id' => 11,
-                'national_ids' => [],
-                'phones' => [],
-                'status' => '1',
-                'residency_status' => 'refugee',
-                'vulnerability_criteria' => [
-                    [
-                        "id" => 1,
-                        "field_string" => "disabled"
-                    ]                
-                ]
-            )
+            'beneficiaries' => array(
+                array(
+                    'date_of_birth' => '10-06-1976',
+                    'en_family_name' => 'NAME_TEST',
+                    'local_family_name' => 'NAME_TEST',
+                    'gender' => "1",
+                    'en_given_name' => 'FIRSTNAME_TEST',
+                    'local_given_name' => 'FIRSTNAME_TEST',
+                    'id' => 12,
+                    'national_ids' => [],
+                    'phones' => [],
+                    'status' => '0',
+                    'residency_status' => 'resident',
+                    'vulnerability_criteria' => [
+                        [
+                            "id" => 1,
+                            "field_string" => "disabled"
+                        ]                
+                    ]
+                )
+            ),
+            'justification' => 'Justification for addition'
         );
 
-        // Second step
-        // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('PUT', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiary', $body);
         $error = $this->client->getResponse()->getContent();
         $this->assertEquals($error, 'This beneficiary/household is already part of the distribution');
@@ -246,9 +247,13 @@ class DistributionControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        $body = array(
+            'justification' => 'Jusitification for deletion'
+        );
+
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('DELETE', '/api/wsse/beneficiaries/11?distribution=' . $distribution['id']);
+        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiaries/11/delete' , $body);
         $remove = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -488,6 +493,16 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('deleted', $import);
         $this->assertArrayHasKey('updated', $import);
 
+        $justifiedTypes = ['added', 'created', 'deleted'];
+        foreach ($justifiedTypes as $justifiedType) {
+            $justifiedBeneficiaries = [];
+            foreach ($import[$justifiedType] as $beneficiary) {
+                $beneficiary['justification'] = 'Justification ' . $justifiedType;
+                array_push($justifiedBeneficiaries, $beneficiary);
+            }
+            $import[$justifiedType] = $justifiedBeneficiaries;
+        }
+
         $save = $distributionCSVService->saveCSV($countryIso3, $distributionData, $import);
 
         $this->assertTrue(gettype($save) == "array");
@@ -520,8 +535,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Check if the second step succeed
         $this->assertTrue(gettype($beneficiaries) == "array");
         $this->assertArrayHasKey('id', $beneficiaries[0]);
-        $this->assertArrayHasKey('given_name', $beneficiaries[0]);
-        $this->assertArrayHasKey('family_name', $beneficiaries[0]);
+        $this->assertArrayHasKey('local_given_name', $beneficiaries[0]);
+        $this->assertArrayHasKey('local_family_name', $beneficiaries[0]);
         $this->assertArrayHasKey('gender', $beneficiaries[0]);
         $this->assertArrayHasKey('status', $beneficiaries[0]);
         $this->assertArrayHasKey('residency_status', $beneficiaries[0]);

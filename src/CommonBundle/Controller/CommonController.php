@@ -46,8 +46,13 @@ class CommonController extends Controller
             $active_projects = $this->get('project.project_service')->countAll($country);
             $enrolled_beneficiaries = $this->get('distribution.distribution_service')->countAllBeneficiaries($country);
             $total_value_transactions = $this->get('distribution.distribution_service')->getTotalValue($country);
+
+            $total_beneficiary_served = $this->get('beneficiary.beneficiary_service')->countAllServed($country);
+
+            $total_completed_distributions = $this->get('distribution.distribution_service')->countCompleted($country);
             
-            $result = array($total_beneficiaries, $active_projects, $enrolled_beneficiaries, $total_value_transactions);
+            $result = array($total_beneficiaries, $active_projects, $enrolled_beneficiaries,
+                $total_value_transactions, $total_beneficiary_served, $total_completed_distributions);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

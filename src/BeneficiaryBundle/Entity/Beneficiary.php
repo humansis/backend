@@ -8,6 +8,7 @@ use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use CommonBundle\Utils\ExportableInterface;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Beneficiary
@@ -30,20 +31,36 @@ class Beneficiary implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="givenName", type="string", length=255, nullable=true)
+     * @ORM\Column(name="enGivenName", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet"})
-     * @Assert\NotBlank(message="The given name is required.")
      */
-    private $givenName;
+    private $enGivenName;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="familyName", type="string", length=255, nullable=true)
+     * @ORM\Column(name="enFamilyName", type="string", length=255, nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
-     * @Assert\NotBlank(message="The family name is required.")
      */
-    private $familyName;
+    private $enFamilyName;
+
+     /**
+     * @var string
+     *
+     * @ORM\Column(name="localGivenName", type="string", length=255, nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet"})
+     * @Assert\NotBlank(message="The local given name is required.")
+     */
+    private $localGivenName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="localFamilyName", type="string", length=255, nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Assert\NotBlank(message="The local family name is required.")
+     */
+    private $localFamilyName;
 
     /**
      * @var int
@@ -132,6 +149,11 @@ class Beneficiary implements ExportableInterface
      */
     private $distributionBeneficiary;
 
+     /**
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Referral", cascade={"persist", "remove"})
+     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution"})
+     */
+    private $referral;
 
 
     /**
@@ -158,51 +180,99 @@ class Beneficiary implements ExportableInterface
     }
 
     /**
-     * Set givenName.
+     * Set enGivenName.
      *
-     * @param string $givenName
+     * @param string $enGivenName
      *
      * @return Beneficiary
      */
-    public function setGivenName($givenName)
+    public function setEnGivenName($enGivenName)
     {
-        $this->givenName = $givenName;
+        $this->enGivenName = $enGivenName;
 
         return $this;
     }
 
     /**
-     * Get givenName.
+     * Get enGivenName.
      *
      * @return string
      */
-    public function getGivenName()
+    public function getEnGivenName()
     {
-        return $this->givenName;
+        return $this->enGivenName;
     }
 
     /**
-     * Set familyName.
+     * Set enFamilyName.
      *
-     * @param string $familyName
+     * @param string $enFamilyName
      *
      * @return Beneficiary
      */
-    public function setFamilyName($familyName)
+    public function setEnFamilyName($enFamilyName)
     {
-        $this->familyName = $familyName;
+        $this->enFamilyName = $enFamilyName;
 
         return $this;
     }
 
     /**
-     * Get familyName.
+     * Get enFamilyName.
      *
      * @return string
      */
-    public function getFamilyName()
+    public function getEnFamilyName()
     {
-        return $this->familyName;
+        return $this->enFamilyName;
+    }
+
+     /**
+     * Set localGivenName.
+     *
+     * @param string $localGivenName
+     *
+     * @return Beneficiary
+     */
+    public function setLocalGivenName($localGivenName)
+    {
+        $this->localGivenName = $localGivenName;
+
+        return $this;
+    }
+
+    /**
+     * Get localGivenName.
+     *
+     * @return string
+     */
+    public function getLocalGivenName()
+    {
+        return $this->localGivenName;
+    }
+
+    /**
+     * Set localFamilyName.
+     *
+     * @param string $localFamilyName
+     *
+     * @return Beneficiary
+     */
+    public function setLocalFamilyName($localFamilyName)
+    {
+        $this->localFamilyName = $localFamilyName;
+
+        return $this;
+    }
+
+    /**
+     * Get localFamilyName.
+     *
+     * @return string
+     */
+    public function getLocalFamilyName()
+    {
+        return $this->localFamilyName;
     }
 
     /**
@@ -516,6 +586,30 @@ class Beneficiary implements ExportableInterface
         return $this->profile;
     }
 
+    /**
+     * Set referral.
+     *
+     * @param \BeneficiaryBundle\Entity\Referral|null $referral
+     *
+     * @return Beneficiary
+     */
+    public function setReferral(\BeneficiaryBundle\Entity\Referral $referral = null)
+    {
+        $this->referral = $referral;
+
+        return $this;
+    }
+
+    /**
+     * Get referral.
+     *
+     * @return \BeneficiaryBundle\Entity\Referral|null
+     */
+    public function getReferral()
+    {
+        return $this->referral;
+    }
+
 
     /**
      * Returns an array representation of this class in order to prepare the export
@@ -567,6 +661,13 @@ class Beneficiary implements ExportableInterface
             $valueGender = "Male";
         }
 
+        $referral_type = null;
+        $referral_comment = null;
+        if ($this->getReferral()) {
+            $referral_type = $this->getReferral()->getType();
+            $referral_comment = $this->getReferral()->getComment();
+        }
+
         $adm1 = $this->getHousehold()->getLocation()->getAdm1Name();
         $adm2 = $this->getHousehold()->getLocation()->getAdm2Name();
         $adm3 = $this->getHousehold()->getLocation()->getAdm3Name();
@@ -574,10 +675,12 @@ class Beneficiary implements ExportableInterface
 
         if ($this->status === true) {
             $finalArray = [
+                "household ID" => $this->getHousehold()->getId(),
                 "addressStreet" => $this->getHousehold()->getAddressStreet(),
                 "addressNumber" => $this->getHousehold()->getAddressNumber(),
                 "addressPostcode" => $this->getHousehold()->getAddressPostcode(),
-                "livelihood" => $this->getHousehold()->getLivelihood(),
+                "livelihood" => $this->getHousehold()->getLivelihood() ? Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()] : null,
+                "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
                 "notes" => $this->getHousehold()->getNotes(),
                 "latitude" => $this->getHousehold()->getLatitude(),
                 "longitude" => $this->getHousehold()->getLongitude(),
@@ -588,10 +691,12 @@ class Beneficiary implements ExportableInterface
             ];
         } else {
             $finalArray = [
+                "household ID" => "",
                 "addressStreet" => "",
                 "addressNumber" => "",
                 "addressPostcode" => "",
                 "livelihood" => "",
+                "incomeLevel" => "",
                 "notes" => "",
                 "latitude" => "",
                 "longitude" => "",
@@ -602,10 +707,14 @@ class Beneficiary implements ExportableInterface
             ];
         }
 
-        $tempBenef = [ "givenName" => $this->getGivenName(),
-            "familyName"=> $this->getFamilyName(),
+        $tempBenef = [
+            "beneficiary ID" => $this->getId(),
+            "localGivenName" => $this->getLocalGivenName(),
+            "localFamilyName"=> $this->getLocalFamilyName(),
+            "enGivenName" => $this->getEnGivenName(),
+            "enFamilyName"=> $this->getEnFamilyName(),
             "gender" => $valueGender,
-            "head" => $this->getStatus() === 1 ? "true" : "false",
+            "head" => $this->getStatus() === true ? "true" : "false",
             "residencyStatus" => $this->getResidencyStatus(),
             "dateOfBirth" => $this->getDateOfBirth()->format('d-m-Y'),
             "vulnerabilityCriteria" => $valuescriteria,
@@ -618,7 +727,9 @@ class Beneficiary implements ExportableInterface
             "phone 2" => $valuesphones[1],
             "proxy phone 2" => $proxyphones[1],
             "type national ID" => $typenationalID,
-            'nationalId' => $valuesnationalID
+            'nationalId' => $valuesnationalID,
+            "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
+            "Referral Comment" => $referral_comment,
         ];
 
         foreach ($valueCountrySpecific as $key => $value) {

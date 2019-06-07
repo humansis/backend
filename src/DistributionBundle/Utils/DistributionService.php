@@ -16,6 +16,7 @@ use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Class DistributionService
@@ -100,27 +101,38 @@ class DistributionService
     public function validateDistribution(DistributionData $distributionData)
     {
         try {
-            $distributionData->setValidated(true);
-            $commodities = $distributionData->getCommodities();
-            foreach ($commodities as $commodity) {
-                $modality = $commodity->getModalityType()->getModality();
-                if ($modality->getName() === 'In Kind' ||
-                    $modality->getName() === 'Other' ||
-                    $commodity->getModalityType()->getName() === 'Paper Voucher') {
-                    $beneficiaries = $distributionData->getDistributionBeneficiaries();
-                    foreach ($beneficiaries as $beneficiary) {
-                        $generalRelief = new GeneralReliefItem();
-                        $generalRelief->setDistributionBeneficiary($beneficiary);
-                        $this->em->persist($generalRelief);
-                    }
-                }
-            }
-
-            $this->em->flush();
-            return $distributionData;
+            $distributionData->setValidated(true)
+                ->setUpdatedOn(new \DateTime());
+            $beneficiaries = $distributionData->getDistributionBeneficiaries();
+            return $this->setCommoditiesToNewBeneficiaries($distributionData, $beneficiaries);
         } catch (\Exception $e) {
             throw $e;
         }
+    }
+
+    /**
+     * @param DistributionData $distributionData
+     * @param $beneficiaries
+     * @return DistributionData
+     * @throws \Exception
+     */
+    public function setCommoditiesToNewBeneficiaries(DistributionData $distributionData, $beneficiaries) {
+        $commodities = $distributionData->getCommodities();
+        foreach ($commodities as $commodity) {
+            $modality = $commodity->getModalityType()->getModality();
+            if ($modality->getName() === 'In Kind' ||
+                $modality->getName() === 'Other' ||
+                $commodity->getModalityType()->getName() === 'Paper Voucher') {
+                foreach ($beneficiaries as $beneficiary) {
+                    $generalRelief = new GeneralReliefItem();
+                    $generalRelief->setDistributionBeneficiary($beneficiary);
+                    $this->em->persist($generalRelief);
+                }
+            }
+        }
+        $this->em->flush();
+
+        return $distributionData;
     }
 
     /**
@@ -148,7 +160,8 @@ class DistributionService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        if ($distributionArray['type'] === "Beneficiary") {
+        // TODO : make the front send 0 or 1 instead of Individual (Beneficiary comes from the import)
+        if ($distributionArray['type'] === "Beneficiary" || $distributionArray['type'] === "Individual" || $distributionArray['type'] === "1") {
             $distribution->settype(1);
         } else {
             $distribution->settype(0);
@@ -222,11 +235,13 @@ class DistributionService
                 $head = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($receiver);
                 $distributionBeneficiary = new DistributionBeneficiary();
                 $distributionBeneficiary->setDistributionData($distributionData)
-                    ->setBeneficiary($head);
+                    ->setBeneficiary($head)
+                    ->setRemoved(0);
             } elseif ($receiver instanceof Beneficiary) {
                 $distributionBeneficiary = new DistributionBeneficiary();
                 $distributionBeneficiary->setDistributionData($distributionData)
-                    ->setBeneficiary($receiver);
+                    ->setBeneficiary($receiver)
+                    ->setRemoved(0);
             } else {
                 throw new \Exception("A problem was found. The distribution has no beneficiary");
             }
@@ -284,6 +299,22 @@ class DistributionService
     }
 
     /**
+     * @param DistributionData $distributionData
+     * @return null|object|string
+     */
+    public function complete(DistributionData $distributionData)
+    {
+        if (!empty($distributionData)) {
+            $distributionData->setCompleted(1);
+        }
+
+        $this->em->persist($distributionData);
+        $this->em->flush();
+
+        return "Completed";
+    }
+
+    /**
      * Edit a distribution
      *
      * @param DistributionData $distributionData
@@ -293,7 +324,8 @@ class DistributionService
      */
     public function edit(DistributionData $distributionData, array $distributionArray)
     {
-        $distributionData->setDateDistribution(\DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']));
+        $distributionData->setDateDistribution(\DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']))
+            ->setUpdatedOn(new \DateTime());
         $distributionNameWithoutDate = explode('-', $distributionData->getName())[0];
         $newDistributionName = $distributionNameWithoutDate . '-' . $distributionArray['date_distribution'];
         $distributionData->setName($newDistributionName);
@@ -331,6 +363,16 @@ class DistributionService
     public function getTotalValue(string $country)
     {
         $value = (int) $this->em->getRepository(DistributionData::class)->getTotalValue($country);
+        return $value;
+    }
+
+     /**
+     * @param string $country
+     * @return string
+     */
+    public function countCompleted(string $country)
+    {
+        $value = (int) $this->em->getRepository(DistributionData::class)->countCompleted($country);
         return $value;
     }
 
@@ -474,6 +516,13 @@ class DistributionService
             } else {
                 $gender = 'Male';
             }
+
+            $referral_type = null;
+            $referral_comment = null;
+            if ($beneficiary->getReferral()) {
+                $referral_type = $beneficiary->getReferral()->getType();
+                $referral_comment = $beneficiary->getReferral()->getComment();
+            }
                 
             $commodity = $distributionData->getCommodities()[0];
 
@@ -481,21 +530,55 @@ class DistributionService
                 "addressStreet" => $beneficiary->getHousehold()->getAddressStreet(),
                 "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
                 "addressPostcode" => $beneficiary->getHousehold()->getAddressPostcode(),
-                "livelihood" => $beneficiary->getHousehold()->getLivelihood(),
+                "livelihood" => Household::LIVELIHOOD[$beneficiary->getHousehold()->getLivelihood()],
+                "incomeLevel" => $beneficiary->getHousehold()->getIncomeLevel(),
                 "notes" => $beneficiary->getHousehold()->getNotes(),
                 "latitude" => $beneficiary->getHousehold()->getLatitude(),
                 "longitude" => $beneficiary->getHousehold()->getLongitude(),
-                "givenName" => $beneficiary->getGivenName(),
-                "familyName"=> $beneficiary->getFamilyName(),
+                "localGivenName" => $beneficiary->getLocalGivenName(),
+                "localFamilyName"=> $beneficiary->getLocalFamilyName(),
+                "enGivenName" => $beneficiary->getEnGivenName(),
+                "enFamilyName"=> $beneficiary->getEnFamilyName(),
                 "gender" => $gender,
                 "dateOfBirth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
                 "commodity" => $commodity->getModalityType()->getName(),
                 "value" => $commodity->getValue() . ' ' . $commodity->getUnit(),
                 "distributedAt" => $generalrelief->getDistributedAt(),
-                "notesDistribution" => $generalrelief->getNotes()
+                "notesDistribution" => $generalrelief->getNotes(),
+                "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
+                "Referral Comment" => $referral_comment,
             ));
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'generalrelief', $type);
     }
+
+
+        /**
+         * Export all distributions in a pdf
+         * @param int $projectId
+         * @return mixed
+         */
+        public function exportToPdf(int $projectId)
+        {
+            $exportableTable = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId, 'archived' => false]);
+            $project = $this->em->getRepository(Project::class)->find($projectId);
+
+            try {
+                $html =  $this->container->get('templating')->render(
+                    '@Distribution/Pdf/distributions.html.twig',
+                    array_merge(
+                        ['project' => $project,
+                        'distributions' => $exportableTable],
+                        $this->container->get('pdf_service')->getInformationStyle()
+                    )
+
+                );
+
+                $response = $this->container->get('pdf_service')->printPdf($html, 'landscape', 'bookletCodes');
+                return $response;
+            } catch (\Exception $e) {
+                throw new \Exception($e);
+            }
+        }
 }

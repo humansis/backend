@@ -206,41 +206,26 @@ class VoucherService
 
         /**
          * Export all vouchers in a pdf
-         * @param string $type
          * @return mixed
          */
-        public function exportToPdf(string $type)
+        public function exportToPdf()
         {
             $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
-            
-            $pdfOptions = new Options();
-            $pdfOptions->set('defaultFont', 'Arial');
-            $pdfOptions->set('isRemoteEnabled', true);
-            $dompdf = new Dompdf($pdfOptions);
 
             try {
                 $html =  $this->container->get('templating')->render(
                     '@Voucher/Pdf/codes.html.twig',
-                    ['vouchers' => $exportableTable]
+                    array_merge(
+                        ['vouchers' => $exportableTable],
+                        $this->container->get('pdf_service')->getInformationStyle()
+                    )
+
                 );
 
-                $dompdf->loadHtml($html);
-                $dompdf->setPaper('A4', 'portrait');
-                $dompdf->render();
-                $output = $dompdf->output();
-                $pdfFilepath =  getcwd() . '/pdf.pdf';
-                file_put_contents($pdfFilepath, $output);
-
-                $response = new BinaryFileResponse($pdfFilepath);
-                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'mypdf.pdf');
-                $response->headers->set('Content-Type', 'application/pdf');
-                $response->deleteFileAfterSend(true);
-
+                $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'bookletCodes');
                 return $response;
             } catch (\Exception $e) {
                 throw new \Exception($e);
             }
-    
-            return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
         }
 }

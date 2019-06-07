@@ -178,7 +178,27 @@ knp_gaufrette:
                 detect_content_type: true
                 options:
                     directory: 'products'
+        organization:
+            aws_s3:
+                service_id: 'acme.aws_s3.client'
+                bucket_name: '%aws_s3_bucket_name%'
+                detect_content_type: true
+                options:
+                    directory: 'organization'
+        donors:
+            aws_s3:
+                service_id: 'acme.aws_s3.client'
+                bucket_name: '%aws_s3_bucket_name%'
+                detect_content_type: true
+                options:
+                    directory: 'donors'
     filesystems:
         products:
             adapter:    products
             alias:      products_filesystem
+        organization:
+            adapter:    organization
+            alias:      organization_filesystem
+        donors:
+            adapter:    donors
+            alias:      donors_filesystem

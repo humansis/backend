@@ -168,4 +168,45 @@ class DonorController extends Controller
             return new Response("", Response::HTTP_BAD_REQUEST);
         }
     }
+
+      /**
+     * @Rest\Post("/donor/upload/logo", name="upload_donor_logo")
+     *
+     * @SWG\Tag(name="Donor")
+     *
+     * @SWG\Parameter(
+     *     name="file",
+     *     in="formData",
+     *     required=true,
+     *     type="file"
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Image uploaded",
+     *     @SWG\Schema(
+     *          type="string"
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function uploadLogoAction(Request $request)
+    {
+        $content = $request->getContent();
+        $file = $request->files->get('file');
+
+        $type = $file->getMimeType();
+        if ($type !== 'image/gif' && $type !== 'image/jpeg' && $type !== 'image/png') {
+            return new Response('The image type must be gif, png or jpg.', Response::HTTP_BAD_REQUEST);
+        }
+
+        $adapter = $this->container->get('knp_gaufrette.filesystem_map')->get('donors')->getAdapter();
+        $filename = $this->get('common.upload_service')->uploadImage($file, $adapter);
+        $bucketName = $this->getParameter('aws_s3_bucket_name');
+        $region = $this->getParameter('aws_s3_region');
+
+        $return = 'https://s3.'.$region.'.amazonaws.com/'.$bucketName.'/donors/'.$filename;
+        return new Response(json_encode($return));
+    }
 }

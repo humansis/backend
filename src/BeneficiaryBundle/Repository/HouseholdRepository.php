@@ -4,11 +4,9 @@ namespace BeneficiaryBundle\Repository;
 
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use ProjectBundle\Entity\Project;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Location;
 
 /**
  * HouseholdRepository
@@ -26,22 +24,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
     public function findAllByCountry(string $iso3)
     {
         $qb = $this->createQueryBuilder("hh");
-        $q = $qb->leftJoin("hh.location", "l")
-            ->leftJoin("l.adm1", "adm1")
-            ->leftJoin("l.adm2", "adm2")
-            ->leftJoin("l.adm3", "adm3")
-            ->leftJoin("l.adm4", "adm4")
-            ->where("adm1.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm4.adm3", "adm3b")
-            ->leftJoin("adm3b.adm2", "adm2b")
-            ->leftJoin("adm2b.adm1", "adm1b")
-            ->orWhere("adm1b.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm3.adm2", "adm2c")
-            ->leftJoin("adm2c.adm1", "adm1c")
-            ->orWhere("adm1c.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm2.adm1", "adm1d")
-            ->orWhere("adm1d.countryISO3 = :iso3 AND hh.archived = 0")
-            ->setParameter("iso3", $iso3);
+        $q = $qb->innerJoin("hh.location", "l");
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($q, $iso3);
+        $qb->andWhere('hh.archived = 0');
         
         return $q;
     }
@@ -88,11 +74,12 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         COALESCE(hh.addressStreet, ''),
                         COALESCE(hh.addressNumber, ''),
                         COALESCE(hh.addressPostcode, ''),
-                        COALESCE(b.givenName, ''),
-                        COALESCE(b.familyName, '')
+                        COALESCE(b.localGivenName, ''),
+                        COALESCE(b.localFamilyName, '')
                     ),
                     :stringToSearch
-                ) as levenshtein")
+                ) as levenshtein"
+            )
             ->andWhere("b.status = 1")
             ->groupBy("b")
             ->having("levenshtein <= :minimumTolerance")
@@ -118,171 +105,141 @@ class HouseholdRepository extends AbstractCriteriaRepository
     {
         // Recover global information for the page
         $qb = $this->createQueryBuilder("hh");
+
         // Join all location tables (not just the one in the location)
-        $q = $qb->innerJoin("hh.location", "l")
-                ->leftJoin("l.adm4", "adm4")
-                ->leftJoin("l.adm3", "locAdm3")
-                ->leftJoin("l.adm2", "locAdm2")
-                ->leftJoin("l.adm1", "locAdm1")
-                ->leftJoin(Adm3::class, "adm3", Join::WITH, "adm3.id = COALESCE(IDENTITY(adm4.adm3, 'id'), locAdm3.id)")
-                ->leftJoin(Adm2::class, "adm2", Join::WITH, "adm2.id = COALESCE(IDENTITY(adm3.adm2, 'id'), locAdm2.id)")
-                ->leftJoin(Adm1::class, "adm1", Join::WITH, "adm1.id = COALESCE(IDENTITY(adm2.adm1, 'id'), locAdm1.id)")
-                ->where("adm1.countryISO3 = :iso3 AND hh.archived = 0")
-                ->setParameter("iso3", $iso3);
+        $q = $qb->innerJoin("hh.location", "l");
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($q, $iso3);
+
+        // We join information that is needed for the filters
+        $q->leftJoin("hh.beneficiaries", "b")
+            ->andWhere("hh.archived = 0")
+            ->andWhere("hh.id = b.household")
+            ->leftJoin("b.vulnerabilityCriteria", "vb")
+            ->leftJoin("hh.projects", "p")
+            ->leftJoin("b.referral", "r");
             
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
-        if (array_key_exists('sort', $sort) && array_key_exists('direction', $sort)) {
-            $value = $sort['sort'];
-            $direction = $sort['direction'];
+        if (array_key_exists("sort", $sort) && array_key_exists("direction", $sort)) {
+            $value = $sort["sort"];
+            $direction = $sort["direction"];
 
             // If the field is the location, we sort it by the direction sent
-            if ($value == 'location') {
-                $q->addSelect("(COALESCE(adm4.name, adm3.name, adm2.name, adm1.name)) AS HIDDEN order_adm");
-                $q->addOrderBy("order_adm", $direction)
-                    ->addGroupBy("order_adm")
-                    ->addGroupBy('hh.id');
+            if ($value == "location") {
+                $q->addGroupBy("adm1")->addOrderBy("adm1.name", $direction);
             }
-            // If the field is the first name, we sort it by the direction sent
-            elseif ($value == 'firstName') {
-                $q->leftJoin('hh.beneficiaries', 'b')
-                    ->andWhere('hh.id = b.household')
-                    ->addOrderBy('b.givenName', $direction)
-                    ->addGroupBy("b.givenName")
-                    ->addGroupBy('hh.id');
+            // If the field is the local first name, we sort it by the direction sent
+            elseif ($value == "localFirstName") {
+                $q->addGroupBy("b")->addOrderBy("b.localGivenName", $direction);
             }
-            // If the field is the family name, we sort it by the direction sent
-            elseif ($value == 'familyName') {
-                $q->leftJoin('hh.beneficiaries', 'b')
-                    ->andWhere('hh.id = b.household')
-                    ->addOrderBy('b.familyName', $direction)
-                    ->addGroupBy("b.familyName")
-                    ->addGroupBy('hh.id');
+            // If the field is the local family name, we sort it by the direction sent
+            elseif ($value == "localFamilyName") {
+                $q->addGroupBy("b")->addOrderBy("b.localFamilyName", $direction);
             }
             // If the field is the number of dependents, we sort it by the direction sent
-            elseif ($value == 'dependents') {
-                $q->leftJoin("hh.beneficiaries", 'b')
-                    ->andWhere('hh.id = b.household')
-                    ->addSelect('COUNT(b.household) AS HIDDEN countBenef')
-                    ->addGroupBy('b.household')
-                    ->addOrderBy('countBenef', $direction)
-                    ->addGroupBy('hh.id');
+            elseif ($value == "dependents") {
+                $q->addGroupBy("b.household")->addOrderBy("COUNT(b.household)", $direction);
             }
             // If the field is the projects, we sort it by the direction sent
-            elseif ($value == 'projects') {
-                $q->leftJoin('hh.projects', 'p')
-                    ->addOrderBy('p.name', $direction)
-                    ->addGroupBy("p.name")
-                    ->addGroupBy('hh.id');
+            elseif ($value == "projects") {
+                $q->addGroupBy("p")->addOrderBy("p.name", $direction);
             }
             // If the field is the vulnerabilities, we sort it by the direction sent
-            elseif ($value == 'vulnerabilities') {
-                $q->leftJoin('hh.beneficiaries', 'b')
-                    ->andWhere('hh.id = b.household')
-                    ->leftJoin('b.vulnerabilityCriteria', 'vb')
-                    ->addOrderBy('vb.fieldString', $direction)
-                    ->addGroupBy("vb.fieldString")
-                    ->addGroupBy('hh.id');
+            elseif ($value == "vulnerabilities") {
+                $q->addGroupBy("vb")->addOrderBy("vb.fieldString", $direction);
             }
+
+            $q->addGroupBy("hh.id");
         }
 
         // If there is a filter array in the request
         if (count($filters) > 0) {
-            // We join information that is needed for the filters
-            $q->leftJoin('hh.beneficiaries', 'b2')
-                ->andWhere('hh.id = b2.household')
-                ->leftJoin('b2.vulnerabilityCriteria', 'vb2')
-                ->leftJoin('hh.projects', 'p2');
-
-            // For each filters in our array, we recover an index (to avoid parameters' repetitions in the WHERE clause) and the filters
+            // For each filter in our array, we recover an index (to avoid parameters' repetitions in the WHERE clause) and the filters
             foreach ($filters as $indexFilter => $filter) {
                 // We recover the category of the filter chosen and the value of the filter
-                $category = $filter['category'];
-                $filterValues = $filter['filter'];
+                $category = $filter["category"];
+                $filterValues = $filter["filter"];
 
-                // We check if we have a location for the filter because we have to do a special treatment for this field
-                if ($category !== 'locations') {
-                    // If there is at least one filter index in the array
-                    if (count($filter['filter']) > 0) {
-                        // We initialize counts to be able to do a AND WHERE or a OR WHERE when there is more filter in a category
-                        $countProjects = 0;
-                        $countVulnerabilities = 0;
-
-                        // Foreach filters in the array we get an index (to avoid duplicate parameters) and the filter chosen (because the user can filter more than one value)
-                        foreach ($filterValues as $indexValue => $filterValue) {
-                            if ($category === 'any') {
-                                $q->andWhere("CONCAT(
-                                    COALESCE(b2.familyName, ''),
-                                    COALESCE(b2.givenName, ''),
-                                    COALESCE(p2.name, ''),
-                                    COALESCE(adm1.name, ''),
-                                    COALESCE(adm2.name, ''),
-                                    COALESCE(adm3.name, ''),
-                                    COALESCE(adm4.name, ''),
-                                    COALESCE(vb2.fieldString, '')
-                                ) LIKE '%" . $filterValue . "%'");
-                            }
-
-                            elseif ($category == 'projects') {
-                                // If this is the first time we get there
-                                if ($countProjects == 0) {
-                                    // We do a AND WHERE clause to add the filter in our initial request
-                                    $q->andWhere('p2.id = :filter' . $indexFilter . $indexValue)
-                                        ->addGroupBy('hh')
-                                        ->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
-                                    // And we increment the count to don't come back in this condition if there is iteration
-                                    $countProjects++;
-                                }
-                                // If this isn't the first time we get there
-                                else {
-                                    // We do a OR WHERE clause to add the Xth filter in our initial request and don't erase the AND WHERE when count's value is 0
-                                    $q->orWhere('p2.id = :filter' . $indexFilter . $indexValue)
-                                        ->addGroupBy('hh')
-                                        ->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
-                                }
-                                // We check if the category is vulnerabilities
-                            } elseif ($category == 'vulnerabilities') {
-                                // If this is the first time we get there
-                                if ($countVulnerabilities == 0) {
-                                    // We do a AND WHERE clause to add the filter in our initial request
-                                    $q->andWhere('hh.id = b2.household')
-                                        ->andWhere('vb2.id = :filter' . $indexFilter . $indexValue)
-                                        ->addGroupBy('hh')
-                                        ->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
-                                    // And we increment the count to don't come back in this condition if there is iteration
-                                    $countVulnerabilities++;
-                                }
-                                // If this isn't the first time we get there
-                                else {
-                                    // We do a OR WHERE clause to add the Xth filter in our initial request and don't erase the AND WHERE when count's value is 0
-                                    $q->andWhere('hh.id = b2.household')
-                                        ->orWhere('vb2.id = :filter' . $indexFilter . $indexValue)
-                                        ->addGroupBy('hh')
-                                        ->setParameter('filter' . $indexFilter . $indexValue, $filterValue);
-                                }
-                            }
-                        }
+                if ($category === "any" && count($filterValues) > 0) {
+                    foreach ($filterValues as $filterValue) {
+                        $q->andWhere("CONCAT(
+                            COALESCE(b.enFamilyName, ''),
+                            COALESCE(b.enGivenName, ''),
+                            COALESCE(b.localFamilyName, ''),
+                            COALESCE(b.localGivenName, ''),
+                            COALESCE(p.name, ''),
+                            COALESCE(adm1.name, ''),
+                            COALESCE(adm2.name, ''),
+                            COALESCE(adm3.name, ''),
+                            COALESCE(adm4.name, ''),
+                            COALESCE(vb.fieldString, '')
+                        ) LIKE '%" . $filterValue . "%'");
                     }
+                } elseif ($category === "gender") {
+                    // If the category is the gender only one option can be selected and filterValues is a string instead of an array
+                    $q->andWhere("b.gender = :filterValue")
+                        ->setParameter("filterValue", $filterValues);
+                } elseif ($category === "projects" && count($filterValues) > 0) {
+                    $orStatement = $q->expr()->orX();
+                    foreach ($filterValues as $indexValue => $filterValue) {
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("p.id", ":filter" . $indexFilter . $indexValue));
+                    }
+                    $q->andWhere($orStatement);
+                } elseif ($category === "vulnerabilities" && count($filterValues) > 0) {
+                    $orStatement = $q->expr()->orX();
+                    foreach ($filterValues as $indexValue => $filterValue) {
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("vb.id", ":filter" . $indexFilter . $indexValue));
+                    }
+                    $q->andWhere($orStatement);
+                } elseif ($category === "residency" && count($filterValues) > 0) {
+                    $orStatement = $q->expr()->orX();
+                    foreach ($filterValues as $indexValue => $filterValue) {
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("b.residencyStatus", ":filter" . $indexFilter . $indexValue));
+                    }
+                    $q->andWhere($orStatement);
+                } elseif ($category === "referral" && count($filterValues) > 0) {
+                    $orStatement = $q->expr()->orX();
+                    foreach ($filterValues as $indexValue => $filterValue) {
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("r.type", ":filter" . $indexFilter . $indexValue));
+                    }
+                    $q->andWhere($orStatement);
                 }
-
-                // If the category is the location, filterValues is an array of adm ids
-                elseif ($filter['category'] == 'locations') {
-                    foreach($filterValues as $adm => $id) {
+                elseif ($category === "livelihood" && count($filterValues) > 0) {
+                    $orStatement = $q->expr()->orX();
+                    foreach ($filterValues as $indexValue => $filterValue) {
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("hh.livelihood", ":filter" . $indexFilter . $indexValue));
+                    }
+                    $q->andWhere($orStatement);
+                } elseif ($category === "locations") {
+                    // If the category is the location, filterValues is an array of adm ids
+                    foreach ($filterValues as $adm => $id) {
                         $q->andWhere($adm . " = :id" . $indexFilter)
-                            ->setParameter('id' . $indexFilter, $id);
+                            ->setParameter("id" . $indexFilter, $id);
                     }
                 }
             }
         }
 
-        $allData = $q->getQuery()->getResult();
+        if (is_null($begin)) {
+            $begin = 0;
+        }
+        if (is_null($pageSize)) {
+            $pageSize = 0;
+        }
 
-        if (is_null($begin) && is_null($pageSize)) {
-            return $allData;
-        } else {
+        if ($pageSize > -1) {
             $q->setFirstResult($begin)
             ->setMaxResults($pageSize);
-            return [count($allData), $q->getQuery()->getResult()];
         }
+
+        $paginator = new Paginator($q, $fetchJoinCellection = true);
+
+        return [count($paginator), $paginator->getQuery()->getResult()];
     }
 
     /**
@@ -294,24 +251,12 @@ class HouseholdRepository extends AbstractCriteriaRepository
     public function getAllByIds(string $iso3, array $ids)
     {
         $qb = $this->createQueryBuilder("hh");
-        $q = $qb->leftJoin("hh.location", "l")
-            ->leftJoin("l.adm1", "adm1")
-            ->leftJoin("l.adm2", "adm2")
-            ->leftJoin("l.adm3", "adm3")
-            ->leftJoin("l.adm4", "adm4")
-            ->where("adm1.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm4.adm3", "adm3b")
-            ->leftJoin("adm3b.adm2", "adm2b")
-            ->leftJoin("adm2b.adm1", "adm1b")
-            ->orWhere("adm1b.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm3.adm2", "adm2c")
-            ->leftJoin("adm2c.adm1", "adm1c")
-            ->orWhere("adm1c.countryISO3 = :iso3 AND hh.archived = 0")
-            ->leftJoin("adm2.adm1", "adm1d")
-            ->orWhere("adm1d.countryISO3 = :iso3 AND hh.archived = 0")
-            ->setParameter("iso3", $iso3);
+        $q = $qb->innerJoin("hh.location", "l");
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($q, $iso3);
         
-        $q = $q->andWhere("hh.id IN (:ids)")
+        $q = $q->andWhere('hh.archived = 0')
+                ->andWhere("hh.id IN (:ids)")
                 ->setParameter("ids", $ids);
 
         return $q->getQuery()->getResult();
