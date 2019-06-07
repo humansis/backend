@@ -178,4 +178,22 @@ class ExportService
 
         return $filename;
     }
+
+
+    /**
+     * Export two-dimension array to file (csv, xls, ods)
+     * @param  array[] $exportTable
+     * @param  string $name
+     * @param  string $type
+     * @return string $filename
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     */
+    public function exportRaw(Array $exportTable, string $name, string $type)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->fromArray($exportTable, NULL, 'A1');
+        $filename = $this->generateFile($spreadsheet, $name, $type);
+        return $filename;
+    }
 }

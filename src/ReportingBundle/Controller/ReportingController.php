@@ -40,11 +40,6 @@ class ReportingController extends Controller
     {
         $filters = $request->query->all();
 
-        // Format string list into array
-        $filters['period'] = $filters['period'] === '' ? [] : explode(',', $filters['period']);
-        $filters['projects'] = $filters['projects'] === '' ? [] : explode(',', $filters['projects']);
-        $filters['distributions'] = $filters['distributions'] === '' ? [] : explode(',', $filters['distributions']);
-
         try {
             $filteredGraphs = $this->get('reporting.reporting_service')->getFilteredData($filters);
         } catch (\Exception $e) {

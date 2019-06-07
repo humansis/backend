@@ -81,13 +81,7 @@ class ExportController extends Controller
                 }
                 $filename = $this->get('voucher.voucher_service')->exportToCsv($type);
             } elseif ($request->query->get('reporting')) {
-                $indicatorsId  = $request->request->get('indicators');
-                $frequency     = $request->request->get('frequency');
-                $projects      = $request->request->get('projects');
-                $distributions = $request->request->get('distributions');
-                $country       = $request->request->get('__country');
-
-                $filename = $this->get('reporting.reporting_service')->exportToCsv($indicatorsId, $frequency, $projects, $distributions, $country, $type);
+                $filename = $this->get('reporting.reporting_service')->exportToCsv($request->request, $type);
             } elseif ($request->query->get('generalreliefDistribution')) {
                 $idDistribution = $request->query->get('generalreliefDistribution');
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);

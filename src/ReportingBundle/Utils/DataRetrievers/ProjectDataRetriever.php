@@ -159,10 +159,12 @@ class ProjectDataRetriever extends AbstractDataRetriever
         $menAndWomen = [];
 
         foreach(array_unique(array_merge(array_keys($men), array_keys($women))) as $period) {
-            $menAndWomen[$period] = [
-                array_key_exists($period, $men)? $men[$period][0] : ["value" => "0", "unity" => "Men", "date" => $period],
-                array_key_exists($period, $women)? $women[$period][0] : ["value" => "0", "unity" => "Women", "date" => $period],
-            ];
+            if(array_key_exists($period, $men)) {
+                $menAndWomen[$period][] = $men[$period][0];
+            }
+            if(array_key_exists($period, $women)) {
+                $menAndWomen[$period][] = $women[$period][0];
+            }
         }
         return $menAndWomen;
     }
@@ -176,7 +178,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
     public function BMS_Project_PVS(array $filters)
     {
         $vulnerabilitiesServedPerVulnerability = $this->BMSU_Project_TVSV($filters);
-        return $vulnerabilitiesServedPerVulnerability;
+        return $this->pieValuesToPieValuePercentage($vulnerabilitiesServedPerVulnerability);
     }
 
 
@@ -222,6 +224,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
         $qb = $this->getReportingValue('BMSU_Project_TVSV', $filters);
         $qb = $this->conditionSelect($qb, 'BMSU_Project_TVSV');
         $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
+
         return $result;
     }
 

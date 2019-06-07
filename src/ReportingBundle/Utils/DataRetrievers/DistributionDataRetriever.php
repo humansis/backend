@@ -163,10 +163,12 @@ class DistributionDataRetriever extends AbstractDataRetriever
         $menAndWomen = [];
 
         foreach(array_unique(array_merge(array_keys($men), array_keys($women))) as $period) {
-            $menAndWomen[$period] = [
-                array_key_exists($period, $men)? $men[$period][0] : ["value" => "0", "unity" => "Men", "date" => $period],
-                array_key_exists($period, $women)? $women[$period][0] : ["value" => "0", "unity" => "Women", "date" => $period],
-            ];
+            if(array_key_exists($period, $men)) {
+                $menAndWomen[$period][] = $men[$period][0];
+            }
+            if(array_key_exists($period, $women)) {
+                $menAndWomen[$period][] = $women[$period][0];
+            }
         }
         return $menAndWomen;
     }
@@ -178,7 +180,7 @@ class DistributionDataRetriever extends AbstractDataRetriever
      */
     public function BMS_Distribution_PVS(array $filters)
     {
-        return $this->BMSU_Distribution_TVS($filters);
+        return $this->pieValuesToPieValuePercentage($this->BMSU_Distribution_TVS($filters));
     }
 
     /**
@@ -188,10 +190,10 @@ class DistributionDataRetriever extends AbstractDataRetriever
      */
     public function BMS_Distribution_PPV(array $filters)
     {
-        $repositoryProject = $this->em->getRepository(Project::class);
-
-        $projectValue = $this->project->BMSU_Project_PV($filters);
-        return $this->BMS_Distribution_TDV($filters);
+//        $repositoryProject = $this->em->getRepository(Project::class);
+//
+//        $projectValue = $this->project->BMSU_Project_PV($filters);
+        return $this->pieValuesToPieValuePercentage($this->BMS_Distribution_TDV($filters));
 
 
         // TODO: Change this in accordance to the new project value (expected beneficiaries)

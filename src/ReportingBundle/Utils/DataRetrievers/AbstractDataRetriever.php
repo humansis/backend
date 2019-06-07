@@ -124,4 +124,18 @@ abstract class AbstractDataRetriever
         }
         return $results;
     }
+
+    protected function pieValuesToPieValuePercentage(Array $periodValues) {
+
+        foreach ($periodValues as $period => $periodValue) {
+            $periodTotalValue = 0;
+            foreach ($periodValue as $value) {
+                $periodTotalValue += $value['value'];
+            }
+            foreach ($periodValue as $index => $value) {
+                $periodValues[$period][$index]['value'] = $value['value'] * 100 / $periodTotalValue;
+            }
+        }
+        return $periodValues;
+    }
 }
