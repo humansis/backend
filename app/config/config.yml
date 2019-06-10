@@ -183,7 +183,7 @@ distribution:
                 target: Household
             },
             numberDependents: {
-                type: table_field,
+                type: size,
                 target: Household
             },
             incomeLevel: {

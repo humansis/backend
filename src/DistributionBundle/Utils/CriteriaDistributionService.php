@@ -160,9 +160,39 @@ class CriteriaDistributionService
      */
     public function countHousehold(array $criterion, string $countryISO3, Household $household)
     {
-        $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findBy(['fieldString' => $criterion['field_string'], 'countryIso3' => $countryISO3]);
-        $hasCountry = $this->em->getRepository(CountrySpecificAnswer::class)->hasValue($countrySpecific[0]->getId(), $criterion['value_string'], $criterion['condition_string'], $household);
-        return $hasCountry ? $criterion['weight'] : 0;
+        if (key_exists('table_string', $criterion) && $criterion['table_string'] === 'Personnal') {
+            $listOfCriteria = $this->configurationLoader->criteria;
+            $type = $listOfCriteria[$criterion['field_string']]['type'];
+            $value = $criterion['value_string'];
+            if ($type === 'table_field') {
+                $hasVC = $this->em->getRepository(Household::class)
+                    ->hasParameter($criterion['field_string'], $criterion['condition_string'], $criterion['value_string'], $household->getId());
+                return $hasVC ? $criterion['weight'] : 0;
+            } else if ($type === 'size') {
+                $numberDependents = $household->getNumberDependents();
+                switch ($criterion['condition_string'])
+                {
+                    case '=':
+                        return $numberDependents === $value ? $criterion['weight'] : 0;
+                    case '!=':
+                        return $numberDependents !== $value ? $criterion['weight'] : 0;
+                    case '<=':
+                        return $numberDependents <= $value ? $criterion['weight'] : 0;
+                    case '>=':
+                        return $numberDependents >= $value ? $criterion['weight'] : 0;
+                    case '<':
+                        return $numberDependents < $value ? $criterion['weight'] : 0;
+                    case '>':
+                        return $numberDependents > $value ? $criterion['weight'] : 0;
+                    default:
+                        return 0;
+                }
+            }
+        } else {
+            $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findBy(['fieldString' => $criterion['field_string'], 'countryIso3' => $countryISO3]);
+            $hasCountry = $this->em->getRepository(CountrySpecificAnswer::class)->hasValue($countrySpecific[0]->getId(), $criterion['value_string'], $criterion['condition_string'], $household);
+            return $hasCountry ? $criterion['weight'] : 0;
+        }
     }
 
     /**

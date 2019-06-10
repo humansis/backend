@@ -195,7 +195,9 @@ class HouseholdService
             ->setLivelihood($householdArray["livelihood"])
             ->setLongitude($householdArray["longitude"])
             ->setLatitude($householdArray["latitude"])
-            ->setIncomeLevel($householdArray["income_level"]);
+            ->setIncomeLevel($householdArray["income_level"])
+            ->setCopingStrategiesIndex($householdArray["coping_strategies_index"])
+            ->setFoodConsumptionScore($householdArray["food_consumption_score"]);
 
         // Add projects
         foreach ($projectsArray as $project) {

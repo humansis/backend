@@ -430,4 +430,32 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
         $locationRepository->whereCountry($qb, $countryISO3);
     }
+
+    /**
+     * @param string $fieldString
+     * @param string $conditionString
+     * @param string $valueString
+     * @param int $householId
+     * @return mixed
+     */
+    public function hasParameter(string $fieldString, string $conditionString, string $valueString, int $householId)
+    {
+        $qb = $this->createQueryBuilder('h');
+
+        $column = 'h.' . $fieldString;
+
+        if ($conditionString !== '!=') {
+            $q = $qb->where(':parameter ' . $conditionString . ' ' . $column)
+                ->setParameter('parameter', $valueString)
+                ->andWhere(':householId = h.id')
+                ->setParameter(':householId', $householId);
+        } else {
+            $q = $qb->where(':parameter <>' . $column)
+                ->setParameter('parameter', $valueString)
+                ->andWhere(':householId = h.id')
+                ->setParameter(':householId', $householId);
+        }
+
+        return $q->getQuery()->getResult();
+    }
 }
