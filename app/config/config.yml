@@ -162,6 +162,10 @@ distribution:
                 type: table_field,
                 target: Beneficiary
             },
+            hasNotBeenInADistributionSince: {
+                type: distribution_beneficiary,
+                target: Beneficiary
+            },
             disabledHeadOfHousehold: {
                 type: disabled,
                 target: Head

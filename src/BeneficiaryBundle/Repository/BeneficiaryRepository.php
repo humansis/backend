@@ -158,6 +158,26 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
+    /**
+     * @param string $valueString
+     * @param int $beneficiaryId
+     * @return mixed
+     */
+    public function lastDistributionAfter(string $valueString, int $beneficiaryId)
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        $q = $qb->leftJoin('b.distributionBeneficiary', 'db')
+            ->leftJoin('db.distributionData', 'd')
+            ->andWhere('SIZE(b.distributionBeneficiary) > 0')
+            ->andWhere(':beneficiaryId = b.id')
+            ->andWhere('d.dateDistribution >= :date')
+            ->setParameter(':date', $valueString)
+            ->setParameter(':beneficiaryId', $beneficiaryId);
+
+        return $q->getQuery()->getResult();
+    }
+
     public function getAllInCountry(string $iso3) {
         $qb = $this->createQueryBuilder('b');
         $this->beneficiariesInCountry($qb, $iso3);

@@ -208,7 +208,9 @@ class CriteriaDistributionService
         // If it is not a vulnerabilityCriteria nor a countrySpecific
         if (key_exists('table_string', $criterion) && $criterion['table_string'] === 'Personnal') {
             $type = $listOfCriteria[$criterion['field_string']]['type'];
-            if ($type === 'table_field') {
+            if ($type === 'distribution_beneficiary') {
+                $hasVC = !$this->em->getRepository(Beneficiary::class)->lastDistributionAfter($criterion['value_string'], $beneficiary->getId());
+            } else if ($type === 'table_field') {
                 $hasVC = $this->em->getRepository(Beneficiary::class)
                     ->hasParameter($criterion['field_string'], $criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
                 return $hasVC ? $criterion['weight'] : 0;
