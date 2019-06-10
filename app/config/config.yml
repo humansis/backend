@@ -170,6 +170,26 @@ distribution:
                 type: boolean,
                 target: Head
             },
+            livelihood: {
+                type: table_field,
+                target: Household
+            },
+            foodConsumptionScore: {
+                type: table_field,
+                target: Household
+            },
+            copingStrategiesIndex: {
+                type: table_field,
+                target: Household
+            },
+            numberDependents: {
+                type: table_field,
+                target: Household
+            },
+            incomeLevel: {
+                type: table_field,
+                target: Household
+            },
             vulnerabilityCriteria: {
                 type: BeneficiaryBundle\Entity\VulnerabilityCriterion,
                 target: Beneficiary
