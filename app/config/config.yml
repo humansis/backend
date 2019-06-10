@@ -158,6 +158,10 @@ distribution:
                 type: date,
                 target: Beneficiary
             },
+            residencyStatus: {
+                type: table_field,
+                target: Beneficiary
+            },
             disabledHeadOfHousehold: {
                 type: disabled,
                 target: Head

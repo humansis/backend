@@ -130,6 +130,34 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
+     /**
+     * @param string $fieldString
+     * @param string $conditionString
+     * @param string $valueString
+     * @param int $beneficiaryId
+     * @return mixed
+     */
+    public function hasParameter(string $fieldString, string $conditionString, string $valueString, int $beneficiaryId)
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        $column = 'b.' . $fieldString;
+
+        if ($conditionString !== '!=') {
+            $q = $qb->where(':parameter ' . $conditionString . ' ' . $column)
+                ->setParameter('parameter', $valueString)
+                ->andWhere(':beneficiaryId = b.id')
+                ->setParameter(':beneficiaryId', $beneficiaryId);
+        } else {
+            $q = $qb->where(':parameter <>' . $column)
+                ->setParameter('parameter', $valueString)
+                ->andWhere(':beneficiaryId = b.id')
+                ->setParameter(':beneficiaryId', $beneficiaryId);
+        }
+
+        return $q->getQuery()->getResult();
+    }
+
     public function getAllInCountry(string $iso3) {
         $qb = $this->createQueryBuilder('b');
         $this->beneficiariesInCountry($qb, $iso3);
