@@ -329,45 +329,18 @@ class TransactionService
             }
 
             $beneficiary = $transaction->getDistributionBeneficiary()->getBeneficiary();
-            $gender = '';
+            $commonFields = $beneficiary->getCommonExportFields();
 
-            if ($beneficiary->getGender() == 0) {
-                $gender = 'Female';
-            } else {
-                $gender = 'Male';
-            }
-
-            $referral_type = null;
-            $referral_comment = null;
-            if ($beneficiary->getReferral()) {
-                $referral_type = $beneficiary->getReferral()->getType();
-                $referral_comment = $beneficiary->getReferral()->getComment();
-            }
-
-            array_push($exportableTable, array(
-                "addressStreet" => $beneficiary->getHousehold()->getAddressStreet(),
-                "addressNumber" => $beneficiary->getHousehold()->getAddressNumber(),
-                "addressPostcode" => $beneficiary->getHousehold()->getAddressPostcode(),
-                "livelihood" => Household::LIVELIHOOD[$beneficiary->getHousehold()->getLivelihood()],
-                "incomeLevel" => $beneficiary->getHousehold()->getIncomeLevel(),
-                "notes" => $beneficiary->getHousehold()->getNotes(),
-                "latitude" => $beneficiary->getHousehold()->getLatitude(),
-                "longitude" => $beneficiary->getHousehold()->getLongitude(),
-                "localGivenName" => $beneficiary->getLocalGivenName(),
-                "localFamilyName"=> $beneficiary->getLocalFamilyName(),
-                "enGivenName" => $beneficiary->getEnGivenName(),
-                "enFamilyName"=> $beneficiary->getEnFamilyName(),
-                "gender" => $gender,
-                "dateOfBirth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
-                "amount_sent" => $transaction->getAmountSent(),
-                "date_sent" => $transaction->getDateSent(),
-                "transaction_status" => $status,
-                "message" => $transaction->getMessage(),
-                "money_received" => $transaction->getMoneyReceived(),
-                "pickup_date" => $transaction->getPickupDate(),
-                "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
-                "Referral Comment" => $referral_comment,
-            ));
+            array_push($exportableTable,
+                array_merge($commonFields, array(
+                "Amount Sent" => $transaction->getAmountSent(),
+                "Sent At" => $transaction->getDateSent(),
+                "Transactios Status" => $status,
+                "Message" => $transaction->getMessage(),
+                "Money Received" => $transaction->getMoneyReceived(),
+                "Pickup Date" => $transaction->getPickupDate(),
+                ))
+            );
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'transaction', $type);

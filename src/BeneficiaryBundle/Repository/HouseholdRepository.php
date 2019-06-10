@@ -7,6 +7,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use ProjectBundle\Entity\Project;
 use CommonBundle\Entity\Location;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * HouseholdRepository
@@ -24,12 +25,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
     public function findAllByCountry(string $iso3)
     {
         $qb = $this->createQueryBuilder("hh");
-        $q = $qb->innerJoin("hh.location", "l");
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($q, $iso3);
+        $this->whereHouseholdInCountry($qb, $iso3);
         $qb->andWhere('hh.archived = 0');
         
-        return $q;
+        return $qb;
     }
     
     public function getUnarchivedByProject(Project $project)
@@ -62,26 +61,28 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * @param int $minimumTolerance
      * @return mixed
      */
-    public function foundSimilarLevenshtein(string $iso3, string $stringToSearch, int $minimumTolerance)
+    public function foundSimilarAddressLevenshtein(string $iso3, string $stringToSearch, int $minimumTolerance)
     {
         $qb = $this->findAllByCountry($iso3);
         $q = $qb->leftJoin("hh.beneficiaries", "b")
+            // Those leftJoins are already done in findAllByCountry
+            // ->leftJoin("hh.householdLocations", "hl")
+            // ->leftJoin("hl.address", "ad")
             ->select("hh as household")
             ->andWhere("hh.archived = 0")
             ->addSelect(
                 "LEVENSHTEIN(
                     CONCAT(
-                        COALESCE(hh.addressStreet, ''),
-                        COALESCE(hh.addressNumber, ''),
-                        COALESCE(hh.addressPostcode, ''),
+                        COALESCE(ad.street, ''),
+                        COALESCE(ad.number, ''),
+                        COALESCE(ad.postcode, ''),
                         COALESCE(b.localGivenName, ''),
                         COALESCE(b.localFamilyName, '')
                     ),
                     :stringToSearch
-                ) as levenshtein"
-            )
+                ) as levenshtein")
             ->andWhere("b.status = 1")
-            ->groupBy("b")
+            ->groupBy("b, ad")
             ->having("levenshtein <= :minimumTolerance")
             ->setParameter("stringToSearch", $stringToSearch)
             ->setParameter("minimumTolerance", $minimumTolerance)
@@ -89,6 +90,45 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         return $q->getQuery()->getResult();
     }
+
+    /**
+     * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
+     * @param string $iso3
+     * @param string $stringToSearch
+     * @param int $minimumTolerance
+     * @return mixed
+     */
+    public function foundSimilarCampLevenshtein(string $iso3, string $stringToSearch, int $minimumTolerance)
+    {
+        $qb = $this->findAllByCountry($iso3);
+        $q = $qb->leftJoin("hh.beneficiaries", "b")
+            // Those leftJoins are already done in findAllByCountry
+            // ->leftJoin("hh.householdLocations", "hl")
+            // ->leftJoin("hl.campAddress", "ca")
+            // ->leftJoin("ca.camp", "c")
+            ->select("hh as household")
+            ->andWhere("hh.archived = 0")
+            ->addSelect(
+                "LEVENSHTEIN(
+                    CONCAT(
+                        COALESCE(c.name, ''),
+                        COALESCE(ca.tentNumber, ''),
+                        COALESCE(b.localGivenName, ''),
+                        COALESCE(b.localFamilyName, '')
+                    ),
+                    :stringToSearch
+                ) as levenshtein"
+            )
+            ->andWhere("b.status = 1")
+            ->groupBy("b, c, ca")
+            ->having("levenshtein <= :minimumTolerance")
+            ->setParameter("stringToSearch", $stringToSearch)
+            ->setParameter("minimumTolerance", $minimumTolerance)
+            ->orderBy("levenshtein", "ASC");
+
+        return $q->getQuery()->getResult();
+    }
+
 
     
 
@@ -107,12 +147,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb = $this->createQueryBuilder("hh");
 
         // Join all location tables (not just the one in the location)
-        $q = $qb->innerJoin("hh.location", "l");
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($q, $iso3);
+        $this->whereHouseholdInCountry($qb, $iso3);
 
         // We join information that is needed for the filters
-        $q->leftJoin("hh.beneficiaries", "b")
+        $q = $qb->leftJoin("hh.beneficiaries", "b")
             ->andWhere("hh.archived = 0")
             ->andWhere("hh.id = b.household")
             ->leftJoin("b.vulnerabilityCriteria", "vb")
@@ -251,11 +289,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
     public function getAllByIds(string $iso3, array $ids)
     {
         $qb = $this->createQueryBuilder("hh");
-        $q = $qb->innerJoin("hh.location", "l");
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($q, $iso3);
+        $this->whereHouseholdInCountry($qb, $iso3);
         
-        $q = $q->andWhere('hh.archived = 0')
+        $q = $qb->andWhere('hh.archived = 0')
                 ->andWhere("hh.id IN (:ids)")
                 ->setParameter("ids", $ids);
 
@@ -374,5 +410,24 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
             ->setParameter("value$i", $filters["value_string"])
             ->setParameter("countrySpecific$i", $filters["id_field"]);
+    }
+
+    /**
+     * Create sub request to get households in country.
+     * The household address location must be in the country ($countryISO3).
+     *
+     * @param QueryBuilder $qb
+     * @param $countryISO3
+     */
+    public function whereHouseholdInCountry(QueryBuilder &$qb, $countryISO3)
+    {
+        $qb->leftJoin("hh.householdLocations", "hl")
+            ->leftJoin("hl.campAddress", "ca")
+            ->leftJoin("ca.camp", "c")
+            ->leftJoin("hl.address", "ad")
+            ->leftJoin(Location::class, "l", Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))");
+
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($qb, $countryISO3);
     }
 }

@@ -67,23 +67,32 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var string $iso3 */
     protected $iso3 = "KHM";
 
-    protected $namefullnameHousehold = "STREET_TEST";
+    protected $namefullnameHousehold = "NOTES_TEST";
 
     protected $bodyHousehold = [
-        "address_street" => "STREET_TEST",
-        "address_number" => "NUMBER_TEST",
-        "address_postcode" => "POSTCODE_TEST",
         "livelihood" => 10,
         "income_level" => 3,
         "notes" => "NOTES_TEST",
         "latitude" => "1.1544",
         "longitude" => "120.12",
-        "location" => [
-            "adm1" => 1,
-            "adm2" => 1,
-            "adm3" => 1,
-            "adm4" => 1
-        ],
+        "household_locations" => array(
+            [
+              "location_group" => "current",
+              "type" => "residence",
+              "address" =>  [
+                  "street" => "STREET_TEST",
+                  "number" => "NUMBER_TEST",
+                  "postcode" => "POSTCODE_TEST",
+                  "location" => [
+                      "adm1" => 1,
+                      "adm2" => 1,
+                      "adm3" => 1,
+                      "adm4" => 1,
+                      "country_iso3" => "KHM",
+                  ],
+              ]
+            ]
+        ),
         "country_specific_answers" => [
             [
                 "answer" => "MY_ANSWER_TEST1",
@@ -367,16 +376,16 @@ class BMSServiceTestCase extends KernelTestCase
     /**
      * @depends testGetHouseholds
      *
-     * @param $addressStreet
+     * @param $notes
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function removeHousehold($addressStreet)
+    public function removeHousehold($notes)
     {
         $this->em->clear();
         /** @var Household $household */
-        $household = $this->em->getRepository(Household::class)->findOneByAddressStreet($addressStreet);
+        $household = $this->em->getRepository(Household::class)->findOneByNotes($notes);
         if ($household instanceof Household) {
             $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
             if (!empty($beneficiaries)) {

@@ -20,6 +20,8 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use DistributionBundle\Entity\DistributionData;
+use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Entity\Household;
 
 class BookletService
 {
@@ -556,31 +558,17 @@ class BookletService
                     $transactionBooklet = $booklets[0];
                 }
             }
-            $gender = '';
-            if ($beneficiary->getGender() == 0) {
-                $gender = 'Female';
-            } else {
-                $gender = 'Male';
-            }
-            array_push($exportableTable, array(
-                "Address street" => $beneficiary->getHousehold()->getAddressStreet(),
-                "Address number" => $beneficiary->getHousehold()->getAddressNumber(),
-                "Address postcode" => $beneficiary->getHousehold()->getAddressPostcode(),
-                "Livelihood" => $beneficiary->getHousehold()->getLivelihood(),
-                "Notes" => $beneficiary->getHousehold()->getNotes(),
-                "Latitude" => $beneficiary->getHousehold()->getLatitude(),
-                "Longitude" => $beneficiary->getHousehold()->getLongitude(),
-                "English given name" => $beneficiary->getEnGivenName(),
-                "English family name"=> $beneficiary->getEnFamilyName(),
-                "Local given name" => $beneficiary->getLocalGivenName(),
-                "Local family name"=> $beneficiary->getLocalFamilyName(),
-                "Gender" => $gender,
-                "Date of birth" => $beneficiary->getDateOfBirth()->format('d-m-Y'),
+
+            $commonFields = $beneficiary->getCommonExportFields();
+
+            array_push($exportableTable,
+                array_merge($commonFields, array(
                 "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
                 "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
                 "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
-                "Used at" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
-            ));
+                "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
+                ))
+            );
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'qrVouchers', $type);
