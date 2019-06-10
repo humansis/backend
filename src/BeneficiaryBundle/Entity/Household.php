@@ -230,6 +230,22 @@ class Household
      */
     private $incomeLevel;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="foodConsumptionScore", type="integer", nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold"})
+     */
+    private $foodConsumptionScore;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="copingStrategiesIndex", type="integer", nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold"})
+     */
+    private $copingStrategiesIndex;
+
 
     /**
      * Constructor
@@ -677,6 +693,54 @@ class Household
     public function getIncomeLevel()
     {
         return $this->incomeLevel;
+    }
+
+    /**
+     * Set foodConsumptionScore.
+     *
+     * @param int $foodConsumptionScore
+     *
+     * @return Household
+     */
+    public function setFoodConsumptionScore($foodConsumptionScore)
+    {
+        $this->foodConsumptionScore = $foodConsumptionScore;
+
+        return $this;
+    }
+
+    /**
+     * Get foodConsumptionScore.
+     *
+     * @return int
+     */
+    public function getFoodConsumptionScore()
+    {
+        return $this->foodConsumptionScore;
+    }
+
+    /**
+     * Set copingStrategiesIndex.
+     *
+     * @param int $copingStrategiesIndex
+     *
+     * @return Household
+     */
+    public function setCopingStrategiesIndex($copingStrategiesIndex)
+    {
+        $this->copingStrategiesIndex = $copingStrategiesIndex;
+
+        return $this;
+    }
+
+    /**
+     * Get copingStrategiesIndex.
+     *
+     * @return int
+     */
+    public function getCopingStrategiesIndex()
+    {
+        return $this->copingStrategiesIndex;
     }
 
 }
