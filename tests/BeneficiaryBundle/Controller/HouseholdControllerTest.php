@@ -39,22 +39,17 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $household = $this->createHousehold();
         try {
             $this->assertArrayHasKey('id', $household);
-            $this->assertArrayHasKey('address_street', $household);
-            $this->assertArrayHasKey('address_number', $household);
-            $this->assertArrayHasKey('address_postcode', $household);
             $this->assertArrayHasKey('livelihood', $household);
             $this->assertArrayHasKey('income_level', $household);
             $this->assertArrayHasKey('notes', $household);
             $this->assertArrayHasKey('latitude', $household);
             $this->assertArrayHasKey('longitude', $household);
-            $this->assertArrayHasKey('location', $household);
             $this->assertArrayHasKey('country_specific_answers', $household);
             $this->assertArrayHasKey('beneficiaries', $household);
-            $location = $household["location"];
-            $this->assertArrayHasKey('adm1', $location);
-            $this->assertArrayHasKey('adm2', $location);
-            $this->assertArrayHasKey('adm3', $location);
-            $this->assertArrayHasKey('adm4', $location);
+            $this->assertArrayHasKey('household_locations', $household);
+            $householdLocation = $household["household_locations"][0];
+            $this->assertArrayHasKey('type', $householdLocation);
+            $this->assertArrayHasKey('location_group', $householdLocation);
             $country_specific_answer = current($household["country_specific_answers"]);
             $this->assertArrayHasKey('answer', $country_specific_answer);
             $this->assertArrayHasKey('country_specific', $country_specific_answer);
@@ -124,13 +119,11 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $household = current($households);
             try {
                 $this->assertArrayHasKey('id', $household);
-                $this->assertArrayHasKey('location', $household);
+                $this->assertArrayHasKey('household_locations', $household);
                 $this->assertArrayHasKey('beneficiaries', $household);
-                $location = $household["location"];
-                $this->assertArrayHasKey('adm1', $location);
-                $this->assertArrayHasKey('adm2', $location);
-                $this->assertArrayHasKey('adm3', $location);
-                $this->assertArrayHasKey('adm4', $location);
+                $householdLocation = $household["household_locations"][0];
+                $this->assertArrayHasKey('type', $householdLocation);
+                $this->assertArrayHasKey('location_group', $householdLocation);
                 $beneficiary = current($household["beneficiaries"]);
                 $this->assertArrayHasKey('local_given_name', $beneficiary);
                 $this->assertArrayHasKey('local_family_name', $beneficiary);
@@ -171,9 +164,10 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $householdsArray = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('id', $householdsArray);
-        $this->assertArrayHasKey('address_postcode', $householdsArray);
-        $this->assertArrayHasKey('address_street', $householdsArray);
-        $this->assertArrayHasKey('address_number', $householdsArray);
+        $this->assertArrayHasKey('household_locations', $householdsArray);
+        $householdLocation = $householdsArray["household_locations"][0];
+        $this->assertArrayHasKey('type', $householdLocation);
+        $this->assertArrayHasKey('location_group', $householdLocation);
         $this->assertArrayHasKey('latitude', $householdsArray);
         $this->assertArrayHasKey('longitude', $householdsArray);
         $this->assertArrayHasKey('livelihood', $householdsArray);
@@ -181,7 +175,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('notes', $householdsArray);
         $this->assertArrayHasKey('beneficiaries', $householdsArray);
         $this->assertArrayHasKey('country_specific_answers', $householdsArray);
-        $this->assertArrayHasKey('location', $householdsArray);
         $this->assertArrayHasKey('projects', $householdsArray);
 
         return true;

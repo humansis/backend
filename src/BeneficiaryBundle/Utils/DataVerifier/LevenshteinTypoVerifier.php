@@ -62,15 +62,28 @@ class LevenshteinTypoVerifier extends AbstractVerifier
             throw new \Exception('A household in the file has no head (household with ' . $householdArray['beneficiaries'][0]['given_name'] . ' ' . $householdArray['beneficiaries'][0]['family_name'] . ').');
         }
 
-        $similarHouseholds = $householdRepository->foundSimilarLevenshtein(
-            $countryISO3,
-            $householdArray['address_street'] .
-            $householdArray['address_number'] .
-            $householdArray['address_postcode'] .
-            $newHead['local_given_name'] .
-            $newHead['local_family_name'],
-            $this->maximumDistanceLevenshtein
-        );
+        $householdLocation = $householdArray['household_locations'][0];
+
+        if (array_key_exists('address', $householdLocation)) {
+            $similarHouseholds = $householdRepository->foundSimilarAddressLevenshtein(
+                $countryISO3,
+                $householdLocation['address']['street'] .
+                $householdLocation['address']['number'] .
+                $householdLocation['address']['postcode'] .
+                $newHead['local_given_name'] .
+                $newHead['local_family_name'],
+                $this->maximumDistanceLevenshtein
+            );
+        } else if (array_key_exists('camp_address', $householdLocation)) {
+            $similarHouseholds = $householdRepository->foundSimilarCampLevenshtein(
+                $countryISO3,
+                $householdLocation['camp_address']['camp']['name'] .
+                $householdLocation['camp_address']['tent_number'] .
+                $newHead['local_given_name'] .
+                $newHead['local_family_name'],
+                $this->maximumDistanceLevenshtein
+            );
+        }
 
         if (empty($similarHouseholds)) {
             // new households that will be created

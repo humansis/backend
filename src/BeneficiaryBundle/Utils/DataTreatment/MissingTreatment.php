@@ -27,7 +27,7 @@ class MissingTreatment extends AbstractTreatment
     {
         foreach ($householdsArray as $index => $value) {
             $index = intval($index) + 6;
-            if (!$value['address_street'] || !$value['address_number'] || !$value['address_postcode'] || !$value['location'] || !$value['beneficiaries']) {
+            if (!$value['household_locations'] || !$value['beneficiaries']) {
                 return ['miss' => 'line ' . $index];
             }
             foreach ($value['beneficiaries'] as $beneficiary) {

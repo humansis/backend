@@ -8,6 +8,8 @@ use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Address;
+use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Utils\ImportProvider\DefaultAPIProvider;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Utils\LocationService;
@@ -242,8 +244,21 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
             $household->addProject($project);
         }
 
+        $address = new Address();
+        $address->setLocation($beneficiary['location']);
+        $householdLocation = new HouseholdLocation();
+        $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT)
+            ->setType(HouseholdLocation::LOCATION_TYPE_RESIDENCE)
+            ->setAddress($address);
+        if ($household->getHouseholdLocations()) {  
+            foreach ($household->getHouseholdLocations() as $initialHouseholdLocation) {
+                $this->em->remove($initialHouseholdLocation);
+            } 
+        }
+        $this->em->flush();
+        $household->addHouseholdLocation($householdLocation);
+
         // Set household location and country specifics
-        $household->setLocation($beneficiary['location']);
         $country_specific_answers = $this->setCountrySpecificAnswer("KHM", $household, $beneficiary);
         foreach ($country_specific_answers as $country_specific_answer) {
             $household->addCountrySpecificAnswer($country_specific_answer);

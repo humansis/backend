@@ -5,6 +5,7 @@ namespace DistributionBundle\Repository;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\DistributionData;
 use CommonBundle\Entity\Location;
+use BeneficiaryBundle\Entity\Household;
 
 /**
  * DistributionBeneficiaryRepository
@@ -19,10 +20,9 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder("db");
         $q = $qb->select("COUNT(DISTINCT db.beneficiary)")
                 ->leftJoin("db.beneficiary", "b")
-                ->leftJoin("b.household", "hh")
-                ->leftJoin("hh.location", "l");
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($q, $iso3);
+                ->leftJoin("b.household", "hh");
+        $householdRepository = $this->getEntityManager()->getRepository(Household::class);
+        $householdRepository->whereHouseholdInCountry($q, $iso3);
         $q->andWhere('hh.archived = 0');        
         return $q->getQuery()->getSingleScalarResult();
     }

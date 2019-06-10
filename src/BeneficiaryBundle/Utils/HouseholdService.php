@@ -25,6 +25,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use BeneficiaryBundle\Entity\HouseholdLocation;
+use BeneficiaryBundle\Entity\CampAddress;
+use BeneficiaryBundle\Entity\Address;
+use BeneficiaryBundle\Entity\Camp;
 
 /**
  * Class HouseholdService
@@ -140,21 +144,58 @@ class HouseholdService
             $actualAction = 'create';
             $household = new Household();
         }
+
+        if ($household->getHouseholdLocations()) {  
+            foreach ($household->getHouseholdLocations() as $initialHouseholdLocation) {
+                $this->em->remove($initialHouseholdLocation);
+            } 
+        }
+        $this->em->flush();
+
+        foreach ($householdArray['household_locations'] as $householdLocation) {
+            $newHouseholdLocation = new HouseholdLocation();
+            $newHouseholdLocation->setLocationGroup($householdLocation['location_group'])
+                ->setType($householdLocation['type']);
+
+            if ($householdLocation['type'] === HouseholdLocation::LOCATION_TYPE_CAMP) {
+                // Try to find the camp with the name in the request
+                $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $householdLocation['camp_address']['camp']['name']]);
+                // Or create a camp with the name in the request
+                if (!$camp) {
+                    $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['camp_address']['camp']["location"]);
+                    if (null === $location) {
+                        throw new \Exception("Location was not found.");
+                    }
+                    $camp = new Camp();
+                    $camp->setName($householdLocation['camp_address']['camp']['name']);
+                    $camp->setLocation($location);
+                }
+                $campAddress = new CampAddress();
+                $campAddress->setTentNumber($householdLocation['camp_address']['tent_number'])
+                    ->setCamp($camp);
+                $newHouseholdLocation->setCampAddress($campAddress);
+            } else {
+                $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['address']["location"]);
+                if (null === $location) {
+                    throw new \Exception("Location was not found.");
+                }
+                $address = new Address();
+                $address->setNumber($householdLocation['address']['number'])
+                    ->setStreet($householdLocation['address']['street'])
+                    ->setPostcode($householdLocation['address']['postcode'])
+                    ->setLocation($location);
+                $newHouseholdLocation->setAddress($address);
+            }
+            $household->addHouseholdLocation($newHouseholdLocation);
+            $this->em->persist($newHouseholdLocation);
+        }
+
+
         $household->setNotes($householdArray["notes"])
             ->setLivelihood($householdArray["livelihood"])
             ->setLongitude($householdArray["longitude"])
             ->setLatitude($householdArray["latitude"])
-            ->setAddressStreet($householdArray["address_street"])
-            ->setAddressPostcode($householdArray["address_postcode"])
-            ->setAddressNumber($householdArray["address_number"])
             ->setIncomeLevel($householdArray["income_level"]);
-
-        // Save or update location instance
-        $location = $this->locationService->getLocation($householdArray['__country'], $householdArray["location"]);
-        if (null === $location) {
-            throw new \Exception("Location was not found.");
-        }
-        $household->setLocation($location);
 
         // Add projects
         foreach ($projectsArray as $project) {
@@ -247,6 +288,7 @@ class HouseholdService
      * @return Household
      * @throws ValidationException
      * @throws \Exception
+     * TODO : Not use it but refactor it to replace editOrCreate later
      */
     public function update(Household $household, Project $project, array $householdArray, bool $updateBeneficiary = true)
     {
