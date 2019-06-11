@@ -97,7 +97,7 @@ class CriteriaDistributionService
                     }
                 } elseif ($criterion['kind_beneficiary'] == "Head") {
                     $headBeneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
-                    $count = $this->countBeneficiary($criterion, $headBeneficiary);
+                    $count += $this->countBeneficiary($criterion, $headBeneficiary);
                 } else {
                     throw new \Exception("A problem was found. Kind of beneficiary is unknown");
                 }
