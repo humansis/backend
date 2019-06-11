@@ -167,32 +167,37 @@ class CriteriaDistributionService
             if ($type === 'table_field') {
                 $hasVC = $this->em->getRepository(Household::class)
                     ->hasParameter($criterion['field_string'], $criterion['condition_string'], $criterion['value_string'], $household->getId());
-                return $hasVC ? $criterion['weight'] : 0;
             } else if ($type === 'size') {
                 $numberDependents = $household->getNumberDependents();
                 switch ($criterion['condition_string'])
                 {
                     case '=':
-                        return $numberDependents === $value ? $criterion['weight'] : 0;
+                        $hasVC = $numberDependents === $value;
                     case '!=':
-                        return $numberDependents !== $value ? $criterion['weight'] : 0;
+                        $hasVC = $numberDependents !== $value;
                     case '<=':
-                        return $numberDependents <= $value ? $criterion['weight'] : 0;
+                        $hasVC = $numberDependents <= $value;
                     case '>=':
-                        return $numberDependents >= $value ? $criterion['weight'] : 0;
+                        $hasVC = $numberDependents >= $value;
                     case '<':
-                        return $numberDependents < $value ? $criterion['weight'] : 0;
+                        $hasVC = $numberDependents < $value;
                     case '>':
-                        return $numberDependents > $value ? $criterion['weight'] : 0;
+                        $hasVC = $numberDependents > $value;
                     default:
-                        return 0;
+                        $hasVC = false;
                 }
+            } else if ($type === 'householdLocationType') {
+                $hasVC = $this->em->getRepository(Household::class)
+                    ->hasLocationType($criterion['condition_string'], $criterion['value_string'], $household->getId());
+            } else if ($type === 'campName') {
+                $hasVC = $this->em->getRepository(Household::class)
+                    ->hasCamp($criterion['value_string'], $household->getId());
             }
         } else {
             $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findBy(['fieldString' => $criterion['field_string'], 'countryIso3' => $countryISO3]);
-            $hasCountry = $this->em->getRepository(CountrySpecificAnswer::class)->hasValue($countrySpecific[0]->getId(), $criterion['value_string'], $criterion['condition_string'], $household);
-            return $hasCountry ? $criterion['weight'] : 0;
+            $hasVC = $this->em->getRepository(CountrySpecificAnswer::class)->hasValue($countrySpecific[0]->getId(), $criterion['value_string'], $criterion['condition_string'], $household);
         }
+        return $hasVC ? $criterion['weight'] : 0;
     }
 
     /**
@@ -213,11 +218,10 @@ class CriteriaDistributionService
             } else if ($type === 'table_field') {
                 $hasVC = $this->em->getRepository(Beneficiary::class)
                     ->hasParameter($criterion['field_string'], $criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
-                return $hasVC ? $criterion['weight'] : 0;
-            } else if ($type == 'boolean') {
+            } else if ($type == 'gender') {
                 $criterion['value_string'] = intval($criterion['value_string']);
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasGender($criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
-            } else if ($type === 'date') {
+            } else if ($type === 'dateOfBirth') {
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasDateOfBirth($criterion['value_string'], $criterion['condition_string'], $beneficiary->getId());
             }
             

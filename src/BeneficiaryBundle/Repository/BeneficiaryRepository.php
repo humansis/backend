@@ -92,9 +92,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             $q->andWhere(':vulnerabilityId = vc.id');
         } else {
             $orStatement = $q->expr()->orX();
-            //     $q->having('COUNT(vc.id) = 0'),
-            //     $q->expr()->neq(':vulnerabilityId', 'vc.id')
-            // );
             $orStatement->add($q->expr()->eq('SIZE(b.vulnerabilityCriteria)', 0))
                         ->add($q->expr()->neq(':vulnerabilityId', 'vc.id'));
             $q->andWhere($orStatement);
@@ -116,16 +113,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb = $this->createQueryBuilder('b');
 
         if ($conditionString == '=') {
-            $q = $qb->where(':gender = b.gender')
-                ->setParameter('gender', $valueString)
-                ->andWhere(':beneficiaryId = b.id')
-                ->setParameter(':beneficiaryId', $beneficiaryId);
+            $qb->where(':gender = b.gender');
         } else {
-            $q = $qb->where(':gender <> b.gender')
-                ->setParameter('gender', $valueString)
-                ->andWhere(':beneficiaryId = b.id')
-                ->setParameter(':beneficiaryId', $beneficiaryId);
+            $qb->where(':gender <> b.gender');
         }
+
+        $q = $qb->setParameter('gender', $valueString)
+            ->andWhere(':beneficiaryId = b.id')
+            ->setParameter(':beneficiaryId', $beneficiaryId);
 
         return $q->getQuery()->getResult();
     }
@@ -140,20 +135,17 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     public function hasParameter(string $fieldString, string $conditionString, string $valueString, int $beneficiaryId)
     {
         $qb = $this->createQueryBuilder('b');
-
         $column = 'b.' . $fieldString;
 
         if ($conditionString !== '!=') {
-            $q = $qb->where(':parameter ' . $conditionString . ' ' . $column)
-                ->setParameter('parameter', $valueString)
-                ->andWhere(':beneficiaryId = b.id')
-                ->setParameter(':beneficiaryId', $beneficiaryId);
+            $qb->where(':parameter ' . $conditionString . ' ' . $column);
         } else {
-            $q = $qb->where(':parameter <>' . $column)
-                ->setParameter('parameter', $valueString)
-                ->andWhere(':beneficiaryId = b.id')
-                ->setParameter(':beneficiaryId', $beneficiaryId);
+            $qb->where(':parameter <>' . $column);
         }
+
+        $q = $qb->setParameter('parameter', $valueString)
+            ->andWhere(':beneficiaryId = b.id')
+            ->setParameter(':beneficiaryId', $beneficiaryId);
 
         return $q->getQuery()->getResult();
     }

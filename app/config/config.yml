@@ -151,18 +151,18 @@ distribution:
     retriever: BeneficiaryBundle\Utils\Distribution\DefaultRetriever
     criteria: {
             gender: {
-                type: boolean,
+                type: gender,
                 target: Beneficiary
             },
             dateOfBirth: {
-                type: date,
+                type: dateOfBirth,
                 target: Beneficiary
             },
             residencyStatus: {
                 type: table_field,
                 target: Beneficiary
             },
-            hasNotBeenInADistributionSince: {
+            hasNotBeenInDistributionsSince: {
                 type: distribution_beneficiary,
                 target: Beneficiary
             },
@@ -171,11 +171,11 @@ distribution:
                 target: Head
             },
             headOfHouseholdDateOfBirth: {
-                type: date,
+                type: dateOfBirth,
                 target: Head
             },
             headOfHouseholdGender: {
-                type: boolean,
+                type: gender,
                 target: Head
             },
             livelihood: {
@@ -190,12 +190,20 @@ distribution:
                 type: table_field,
                 target: Household
             },
+            incomeLevel: {
+                type: table_field,
+                target: Household
+            },
             numberDependents: {
                 type: size,
                 target: Household
             },
-            incomeLevel: {
-                type: table_field,
+            locationType: {
+                type: householdLocationType,
+                target: Household
+            },
+            campName: {
+                type: campName,
                 target: Household
             },
             vulnerabilityCriteria: {

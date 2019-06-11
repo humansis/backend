@@ -445,16 +445,58 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $column = 'h.' . $fieldString;
 
         if ($conditionString !== '!=') {
-            $q = $qb->where(':parameter ' . $conditionString . ' ' . $column)
-                ->setParameter('parameter', $valueString)
-                ->andWhere(':householId = h.id')
-                ->setParameter(':householId', $householId);
+            $qb->where(':parameter ' . $conditionString . ' ' . $column);
         } else {
-            $q = $qb->where(':parameter <>' . $column)
-                ->setParameter('parameter', $valueString)
-                ->andWhere(':householId = h.id')
-                ->setParameter(':householId', $householId);
+            $qb->where(':parameter <>' . $column);
         }
+
+        $q = $qb->setParameter('parameter', $valueString)
+            ->andWhere(':householId = h.id')
+            ->setParameter(':householId', $householId);
+
+        return $q->getQuery()->getResult();
+    }
+
+    /**
+     * @param string $conditionString
+     * @param string $valueString
+     * @param int $householId
+     * @return mixed
+     */
+    public function hasLocationType(string $conditionString, string $valueString, int $householId)
+    {
+        $qb = $this->createQueryBuilder('h');
+        $qb->leftJoin('h.householdLocations', 'hl');
+
+        if ($conditionString !== '!=') {
+            $qb->where(':parameter = hl.type');
+        } else {
+            $qb->where(':parameter <> hl.type');
+        }
+
+        $q = $qb->setParameter('parameter', $valueString)
+            ->andWhere(':householId = h.id')
+            ->setParameter(':householId', $householId);
+
+        return $q->getQuery()->getResult();
+    }
+
+    /**
+     * @param string $valueString
+     * @param int $householId
+     * @return mixed
+     */
+    public function hasCamp(string $valueString, int $householId)
+    {
+        $qb = $this->createQueryBuilder('h');
+
+        $q = $qb->leftJoin('h.householdLocations', 'hl')
+            ->leftJoin('hl.campAddress', 'ca')
+            ->leftJoin('ca.camp', 'c')
+            ->where(':parameter = c.name')
+            ->setParameter('parameter', $valueString)
+            ->andWhere(':householId = h.id')
+            ->setParameter(':householId', $householId);
 
         return $q->getQuery()->getResult();
     }
