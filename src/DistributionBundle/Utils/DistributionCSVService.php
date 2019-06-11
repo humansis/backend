@@ -313,6 +313,8 @@ class DistributionCSVService
                 "latitude" => strval($beneficiaryToCreate['latitude']),
                 "longitude" => strval($beneficiaryToCreate['longitude']),
                 "country_specific_answers" => array(),
+                "coping_strategies_index" => null,
+                "food_consumption_score" => null,
                 "beneficiaries" => array(
                     array(
                         "en_given_name" => $beneficiaryToCreate['enGivenName'],

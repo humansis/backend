@@ -18,6 +18,8 @@ class BeneficiaryFixtures extends Fixture
           "notes" => null,
           "latitude" => null,
           "longitude" => null,
+          "coping_strategies_index" => "2",
+          "food_consumption_score" => "3",
           "household_locations" => array(
               [
                 "location_group" => "current",
@@ -141,6 +143,8 @@ class BeneficiaryFixtures extends Fixture
             "notes" => null,
             "latitude" => null,
             "longitude" => null,
+            "coping_strategies_index" => "4",
+            "food_consumption_score" => "5",
             "household_locations" => array(
                 [
                   "location_group" => "current",
