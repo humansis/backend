@@ -64,7 +64,7 @@ class ConfigurationLoader
         $instances = $this->em->getRepository($class)->findForCriteria($countryISO3);
         foreach ($instances as &$instance) {
             $instance->setTableString($criterion);
-            $instance->setKindBeneficiary($target);
+            $instance->setTarget($target);
         }
         return $instances;
     }
@@ -77,6 +77,6 @@ class ConfigurationLoader
      */
     private function formatOtherCriteria(string $target, $criterion, $type)
     {
-        return ["field_string" => $criterion, "type" => $type, "kind_beneficiary" => $target, "table_string" => 'Personnal'];
+        return ["field_string" => $criterion, "type" => $type, "target" => $target, "table_string" => 'Personnal'];
     }
 }

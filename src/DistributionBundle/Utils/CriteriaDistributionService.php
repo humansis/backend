@@ -88,18 +88,18 @@ class CriteriaDistributionService
             $count = 0;
 
             foreach ($criteria as $criterion) {
-                if ($criterion['kind_beneficiary'] == "Household") {
+                if ($criterion['target'] == "Household") {
                     $count += $this->countHousehold($criterion, $countryISO3, $household);
-                } elseif ($criterion['kind_beneficiary'] == "Beneficiary") {
+                } elseif ($criterion['target'] == "Beneficiary") {
                     $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
                     foreach ($beneficiaries as $beneficiary) {
                         $count += $this->countBeneficiary($criterion, $beneficiary);
                     }
-                } elseif ($criterion['kind_beneficiary'] == "Head") {
+                } elseif ($criterion['target'] == "Head") {
                     $headBeneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
                     $count += $this->countBeneficiary($criterion, $headBeneficiary);
                 } else {
-                    throw new \Exception("A problem was found. Kind of beneficiary is unknown");
+                    throw new \Exception("A problem was found. Target is unknown");
                 }
             }
 
@@ -131,15 +131,15 @@ class CriteriaDistributionService
                 $count = 0;
 
                 foreach ($criteria as $criterion) {
-                    if ($criterion['kind_beneficiary'] == "Household") {
+                    if ($criterion['target'] == "Household") {
                         $count += $this->countHousehold($criterion, $countryISO3, $household);
-                    } elseif ($criterion['kind_beneficiary'] == "Beneficiary") {
+                    } elseif ($criterion['target'] == "Beneficiary") {
                         $count += $this->countBeneficiary($criterion, $beneficiary);
-                    } elseif ($criterion['kind_beneficiary'] == "Head") {
+                    } elseif ($criterion['target'] == "Head") {
                         $headBeneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
                         $count = $this->countBeneficiary($criterion, $headBeneficiary);
                     } else {
-                        throw new \Exception("A problem was found. Kind of beneficiary is unknown");
+                        throw new \Exception("A problem was found. Target of beneficiary is unknown");
                     }
                 }
 

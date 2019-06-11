@@ -337,15 +337,15 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qbSub->leftJoin("hh$i.beneficiaries", "b$i")
             ->andWhere("b$i.{$filters["field_string"]} {$filters["condition_string"]} :val$i")
             ->setParameter("val$i", $filters["value_string"]);
-        if (null !== $filters["kind_beneficiary"]) {
+        if (null !== $filters["target"]) {
             $qbSub->andWhere("b$i.status = :status$i")
-                ->setParameter("status$i", $filters["kind_beneficiary"]);
+                ->setParameter("status$i", $filters["target"]);
         }
 
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
             ->setParameter("val$i", $filters["value_string"]);
-        if (null !== $filters["kind_beneficiary"]) {
-            $qb->setParameter("status$i", $filters["kind_beneficiary"]);
+        if (null !== $filters["target"]) {
+            $qb->setParameter("status$i", $filters["target"]);
         }
     }
 
@@ -378,14 +378,14 @@ class HouseholdRepository extends AbstractCriteriaRepository
             $qbSub->andWhere($qbSub->expr()->notIn("hh$i", $qbSubNotIn->getDQL()));
         }
 
-        if (null !== $filters["kind_beneficiary"]) {
+        if (null !== $filters["target"]) {
             $qbSub->andWhere("b$i.status = :status$i")
-                ->setParameter("status$i", $filters["kind_beneficiary"]);
+                ->setParameter("status$i", $filters["target"]);
         }
 
         $qb->andWhere($qb->expr()->in("hh", $qbSub->getDQL()))
             ->setParameter("idvc$i", $filters["id_field"])
-            ->setParameter("status$i", $filters["kind_beneficiary"]);
+            ->setParameter("status$i", $filters["target"]);
     }
 
     /**

@@ -70,7 +70,7 @@ class CriteriaDistributionControllerTest extends BMSServiceTestCase
     {
         $criteria = array('criteria' => array([
 
-            "kind_beneficiary" => "Beneficiary",
+            "target" => "Beneficiary",
               "table_string" => "vulnerabilityCriteria",
               "field_string" => "pregnant",
               "condition_string" => "true",
@@ -78,7 +78,7 @@ class CriteriaDistributionControllerTest extends BMSServiceTestCase
               "weight" => 1
             ],
             [
-               "kind_beneficiary" => "Household",
+               "target" => "Household",
                "table_string" => "countrySpecific",
                "field_string" => "IDPoor",
                "condition_string" => ">",

@@ -35,27 +35,27 @@ class Criteria
     }
 
     /**
-    * @var string $kindBeneficiary
+    * @var string $target
     * @Groups({"Criteria"})
     *
     */
-    protected $kindBeneficiary;
+    protected $target;
 
     /**
      * @return string
      */
-    public function getkindBeneficiary(): string
+    public function getTarget(): string
     {
-        return $this->kindBeneficiary;
+        return $this->target;
     }
 
     /**
-     * @param string $kindBeneficiary
+     * @param string $target
      * @return Criteria
      */
-    public function setkindBeneficiary(string $kindBeneficiary)
+    public function setTarget(string $target)
     {
-        $this->kindBeneficiary = $kindBeneficiary;
+        $this->target = $target;
 
         return $this;
     }
