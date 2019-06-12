@@ -527,6 +527,7 @@ class SyriaFileToTemplateMapper
     private function getColumnLetter(string $letter)
     {
         if ($letter >= self::FIRST_LETTER_NON_STATIC || strlen($letter)  > strlen(self::FIRST_LETTER_NON_STATIC)) {
+
             if (strlen($letter) < 2) {
                 $ascii = ord($letter) + $this->numberCountrySpecifics;
             } else {

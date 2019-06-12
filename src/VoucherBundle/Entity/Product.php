@@ -22,7 +22,7 @@ class Product implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullProduct"})
+     * @Groups({"FullProduct", "ValidatedDistribution"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Product implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"FullProduct"})
+     * @Groups({"FullProduct", "ValidatedDistribution"})
      */
     private $name;
 
@@ -46,7 +46,7 @@ class Product implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="image", type="string", length=255)
-     * @Groups({"FullProduct"})
+     * @Groups({"FullProduct", "ValidatedDistribution"})
      */
     private $image;
 
@@ -59,7 +59,7 @@ class Product implements ExportableInterface
     private $archived;
 
     /**
-     * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="product")
+     * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="products")
      */
     private $vouchers;
 
