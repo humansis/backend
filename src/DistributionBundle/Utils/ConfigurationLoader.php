@@ -41,6 +41,7 @@ class ConfigurationLoader
     {
         $criteriaFormatted = [];
         foreach ($this->criteria as $criterion => $info) {
+            // The type can be the countrySpecific or the vulnerabilityCriteria classes, or anything else
             if ($criterion === 'countrySpecific') {
                 $criteriaFormatted = array_merge($criteriaFormatted, $this->formatClassCriteria($countryISO3, $info['target'], $criterion, $info['type']));
             } else if ($criterion === 'vulnerabilityCriteria') {

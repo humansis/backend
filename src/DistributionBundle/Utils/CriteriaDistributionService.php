@@ -160,14 +160,18 @@ class CriteriaDistributionService
      */
     public function countHousehold(array $criterion, string $countryISO3, Household $household)
     {
+        // If it is not a countrySpecific nor a vulnarabilityCriteria
         if (key_exists('table_string', $criterion) && $criterion['table_string'] === 'Personnal') {
             $listOfCriteria = $this->configurationLoader->criteria;
             $type = $listOfCriteria[$criterion['field_string']]['type'];
             $value = $criterion['value_string'];
+            // If the type is table_field, it means we can directly fetch the value in the DB
             if ($type === 'table_field') {
                 $hasVC = $this->em->getRepository(Household::class)
                     ->hasParameter($criterion['field_string'], $criterion['condition_string'], $criterion['value_string'], $household->getId());
-            } else if ($type === 'size') {
+            }
+            // The selection criteria is the size of the household
+            else if ($type === 'size') {
                 $numberDependents = $household->getNumberDependents();
                 switch ($criterion['condition_string'])
                 {
@@ -186,10 +190,14 @@ class CriteriaDistributionService
                     default:
                         $hasVC = false;
                 }
-            } else if ($type === 'householdLocationType') {
+            }
+            // The selection criteria is the location type (residence, camp...)
+            else if ($type === 'householdLocationType') {
                 $hasVC = $this->em->getRepository(Household::class)
                     ->hasLocationType($criterion['condition_string'], $criterion['value_string'], $household->getId());
-            } else if ($type === 'campName') {
+            } 
+            // The selection criteria is the name of the camp in which the household lives
+            else if ($type === 'campName') {
                 $hasVC = $this->em->getRepository(Household::class)
                     ->hasCamp($criterion['value_string'], $household->getId());
             }
@@ -213,9 +221,12 @@ class CriteriaDistributionService
         // If it is not a vulnerabilityCriteria nor a countrySpecific
         if (key_exists('table_string', $criterion) && $criterion['table_string'] === 'Personnal') {
             $type = $listOfCriteria[$criterion['field_string']]['type'];
+            // The selection criteria is about the beneficiary's last distribution
             if ($type === 'distribution_beneficiary') {
                 $hasVC = !$this->em->getRepository(Beneficiary::class)->lastDistributionAfter($criterion['value_string'], $beneficiary->getId());
-            } else if ($type === 'table_field') {
+            }
+            // Table_field means we can directly fetch the value in the DB
+            else if ($type === 'table_field') {
                 $hasVC = $this->em->getRepository(Beneficiary::class)
                     ->hasParameter($criterion['field_string'], $criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
             } else if ($type == 'gender') {

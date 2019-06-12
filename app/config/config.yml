@@ -149,6 +149,7 @@ nelmio_cors:
 
 distribution:
     retriever: BeneficiaryBundle\Utils\Distribution\DefaultRetriever
+    # The type 'table_field' means the criteria is a real field in the target table (for eg, residencyStatus in the Beneficiary table)
     criteria: {
             gender: {
                 type: gender,
