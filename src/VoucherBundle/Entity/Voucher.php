@@ -50,9 +50,9 @@ class Voucher implements ExportableInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="vouchers")
-     * @Groups({"FullVoucher"})
+     * @Groups({"FullVoucher", "ValidatedDistribution"})
      */
-    private $product;
+    private $products;
 
     /**
      * @var int
@@ -162,15 +162,15 @@ class Voucher implements ExportableInterface
     /**
      * @return Collection|Product[]
      */
-    public function getProduct(): Collection
+    public function getProducts(): Collection
     {
-        return $this->product;
+        return $this->products;
     }
 
     public function addProduct(Product $product): self
     {
-        if (!$this->product->contains($product)) {
-            $this->product[] = $product;
+        if (!$this->products->contains($product)) {
+            $this->products[] = $product;
         }
 
         return $this;
@@ -178,8 +178,8 @@ class Voucher implements ExportableInterface
 
     public function removeProduct(Product $product): self
     {
-        if ($this->product->contains($product)) {
-            $this->product->removeElement($product);
+        if ($this->products->contains($product)) {
+            $this->products->removeElement($product);
         }
 
         return $this;

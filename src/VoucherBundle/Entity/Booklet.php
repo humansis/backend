@@ -74,12 +74,6 @@ class Booklet implements ExportableInterface
     public $password;
 
     /**
-     * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="booklets")
-     * @Groups({"FullBooklet"})
-     */
-    private $product;
-
-    /**
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", orphanRemoval=true)
      * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
@@ -226,32 +220,6 @@ class Booklet implements ExportableInterface
     public function getPassword()
     {
         return $this->password;
-    }
-
-    /**
-     * @return Collection|Product[]
-     */
-    public function getProduct(): Collection
-    {
-        return $this->product;
-    }
-
-    public function addProduct(Product $product): self
-    {
-        if (!$this->product->contains($product)) {
-            $this->product[] = $product;
-        }
-
-        return $this;
-    }
-
-    public function removeProduct(Product $product): self
-    {
-        if ($this->product->contains($product)) {
-            $this->product->removeElement($product);
-        }
-
-        return $this;
     }
 
     /**
