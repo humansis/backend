@@ -59,11 +59,6 @@ class Product implements ExportableInterface
     private $archived;
 
     /**
-     * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="product")
-     */
-    private $booklets;
-
-    /**
      * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="product")
      */
     private $vouchers;
@@ -78,7 +73,6 @@ class Product implements ExportableInterface
 
     public function __construct()
     {
-        $this->booklets = new ArrayCollection();
         $this->vouchers = new ArrayCollection();
     }
 
@@ -189,33 +183,6 @@ class Product implements ExportableInterface
         return $this->image;
     }
 
-    /**
-     * @return Collection|Booklet[]
-     */
-    public function getBooklets(): Collection
-    {
-        return $this->booklets;
-    }
-
-    public function addBooklet(Booklet $booklet): self
-    {
-        if (!$this->booklets->contains($booklet)) {
-            $this->booklets[] = $booklet;
-            $booklet->addProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBooklet(Booklet $booklet): self
-    {
-        if ($this->booklets->contains($booklet)) {
-            $this->booklets->removeElement($booklet);
-            $booklet->removeProduct($this);
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection|Voucher[]
