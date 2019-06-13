@@ -152,11 +152,11 @@ distribution:
     # The type 'table_field' means the criteria is a real field in the target table (for eg, residencyStatus in the Beneficiary table)
     criteria: {
             gender: {
-                type: gender,
+                type: table_field,
                 target: Beneficiary
             },
             dateOfBirth: {
-                type: dateOfBirth,
+                type: table_field,
                 target: Beneficiary
             },
             residencyStatus: {
@@ -172,11 +172,11 @@ distribution:
                 target: Head
             },
             headOfHouseholdDateOfBirth: {
-                type: dateOfBirth,
+                type: table_field,
                 target: Head
             },
             headOfHouseholdGender: {
-                type: gender,
+                type: table_field,
                 target: Head
             },
             livelihood: {
@@ -195,7 +195,7 @@ distribution:
                 type: table_field,
                 target: Household
             },
-            numberDependents: {
+            householdSize: {
                 type: size,
                 target: Household
             },

@@ -97,6 +97,7 @@ class CriteriaDistributionService
                     }
                 } elseif ($criterion['target'] == "Head") {
                     $headBeneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
+                    $criterion = $this->formatHouseholdCriteria($criterion);
                     $count += $this->countBeneficiary($criterion, $headBeneficiary);
                 } else {
                     throw new \Exception("A problem was found. Target is unknown");
@@ -137,6 +138,7 @@ class CriteriaDistributionService
                         $count += $this->countBeneficiary($criterion, $beneficiary);
                     } elseif ($criterion['target'] == "Head") {
                         $headBeneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
+                        $criterion = $this->formatHouseholdCriteria($criterion);
                         $count = $this->countBeneficiary($criterion, $headBeneficiary);
                     } else {
                         throw new \Exception("A problem was found. Target of beneficiary is unknown");
@@ -150,6 +152,15 @@ class CriteriaDistributionService
         }
 
         return $finalArray;
+    }
+
+    public function formatHouseholdCriteria($criterion) {
+        if ($criterion['field_string'] === 'headOfHouseholdDateOfBirth') {
+            $criterion['field_string'] = 'dateOfBirth';
+        } else if ($criterion['field_string'] === 'headOfHouseholdGender') {
+            $criterion['field_string'] = 'gender';
+        }
+        return $criterion;
     }
 
     /**
@@ -172,24 +183,8 @@ class CriteriaDistributionService
             }
             // The selection criteria is the size of the household
             else if ($type === 'size') {
-                $numberDependents = $household->getNumberDependents();
-                switch ($criterion['condition_string'])
-                {
-                    case '=':
-                        $hasVC = $numberDependents === $value;
-                    case '!=':
-                        $hasVC = $numberDependents !== $value;
-                    case '<=':
-                        $hasVC = $numberDependents <= $value;
-                    case '>=':
-                        $hasVC = $numberDependents >= $value;
-                    case '<':
-                        $hasVC = $numberDependents < $value;
-                    case '>':
-                        $hasVC = $numberDependents > $value;
-                    default:
-                        $hasVC = false;
-                }
+                $hasVC = $this->em->getRepository(Household::class)
+                    ->hasSize($criterion['value_string'], $criterion['condition_string'], $household->getId());
             }
             // The selection criteria is the location type (residence, camp...)
             else if ($type === 'householdLocationType') {
@@ -229,13 +224,7 @@ class CriteriaDistributionService
             else if ($type === 'table_field') {
                 $hasVC = $this->em->getRepository(Beneficiary::class)
                     ->hasParameter($criterion['field_string'], $criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
-            } else if ($type == 'gender') {
-                $criterion['value_string'] = intval($criterion['value_string']);
-                $hasVC = $this->em->getRepository(Beneficiary::class)->hasGender($criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
-            } else if ($type === 'dateOfBirth') {
-                $hasVC = $this->em->getRepository(Beneficiary::class)->hasDateOfBirth($criterion['value_string'], $criterion['condition_string'], $beneficiary->getId());
-            }
-            
+            }            
             // It cannot be treated as below, because otherwise all the headOfHouseholds vulnerabilities would be criteria
             else if ($type === 'disabled') {
                 $hasVC = $this->em->getRepository(Beneficiary::class)->hasVulnerabilityCriterion(1, $criterion['condition_string'], $beneficiary->getId());

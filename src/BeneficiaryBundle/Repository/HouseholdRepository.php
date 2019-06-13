@@ -445,7 +445,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $column = 'h.' . $fieldString;
 
         if ($conditionString !== '!=') {
-            $qb->where(':parameter ' . $conditionString . ' ' . $column);
+            $qb->where( $column . $conditionString . ' :parameter ');
         } else {
             $qb->where(':parameter <>' . $column);
         }
@@ -498,6 +498,27 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->andWhere(':householId = h.id')
             ->setParameter(':householId', $householId);
 
+        return $q->getQuery()->getResult();
+    }
+
+    /**
+     * @param string $valueString
+     * @param string $conditionString
+     * @param int $householId
+     * @return mixed
+     */
+    public function hasSize(string $valueString, string $conditionString, int $householId)
+    {
+        $qb = $this->createQueryBuilder('h');
+
+        if ($conditionString !== '!=') {
+            $q = $qb->andWhere('SIZE(h.beneficiaries)' . $conditionString . ' :parameter');
+        } else {
+            $q = $qb->andWhere('SIZE(h.beneficiaries) <> :parameter');
+        }
+        $q = $qb->setParameter('parameter', $valueString)
+            ->andWhere(':householId = h.id')
+            ->setParameter(':householId', $householId);
         return $q->getQuery()->getResult();
     }
 }

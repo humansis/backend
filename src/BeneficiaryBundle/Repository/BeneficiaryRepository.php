@@ -58,24 +58,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
     /**
-     * @param string $value
-     * @param string $conditionString
-     * @param int $beneficiaryId
-     * @return mixed
-     */
-    public function hasDateOfBirth(string $value, string $conditionString, int $beneficiaryId)
-    {
-        $qb = $this->createQueryBuilder('b');
-
-        $q  = $qb->where('b.dateOfBirth ' . $conditionString . ' :value')
-            ->setParameter('value', $value)
-            ->andWhere('b.id = :beneficiaryId')
-            ->setParameter('beneficiaryId', $beneficiaryId);
-
-        return $q->getQuery()->getResult();
-    }
-
-    /**
      * @param int $vulnerabilityId
      * @param string $conditionString
      * @param int $beneficiaryId
@@ -102,28 +84,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
-    /**
-     * @param string $conditionString
-     * @param string $valueString
-     * @param int $beneficiaryId
-     * @return mixed
-     */
-    public function hasGender(string $conditionString, string $valueString, int $beneficiaryId)
-    {
-        $qb = $this->createQueryBuilder('b');
-
-        if ($conditionString == '=') {
-            $qb->where(':gender = b.gender');
-        } else {
-            $qb->where(':gender <> b.gender');
-        }
-
-        $q = $qb->setParameter('gender', $valueString)
-            ->andWhere(':beneficiaryId = b.id')
-            ->setParameter(':beneficiaryId', $beneficiaryId);
-
-        return $q->getQuery()->getResult();
-    }
 
      /**
      * @param string $fieldString
@@ -138,7 +98,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $column = 'b.' . $fieldString;
 
         if ($conditionString !== '!=') {
-            $qb->where(':parameter ' . $conditionString . ' ' . $column);
+            $qb->where($column . $conditionString . ' :parameter '  );
         } else {
             $qb->where(':parameter <>' . $column);
         }
