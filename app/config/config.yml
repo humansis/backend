@@ -164,11 +164,11 @@ distribution:
                 target: Beneficiary
             },
             hasNotBeenInDistributionsSince: {
-                type: distribution_beneficiary,
+                type: other,
                 target: Beneficiary
             },
             disabledHeadOfHousehold: {
-                type: disabled,
+                type: other,
                 target: Head
             },
             headOfHouseholdDateOfBirth: {
@@ -196,15 +196,15 @@ distribution:
                 target: Household
             },
             householdSize: {
-                type: size,
+                type: other,
                 target: Household
             },
             locationType: {
-                type: householdLocationType,
+                type: other,
                 target: Household
             },
             campName: {
-                type: campName,
+                type: other,
                 target: Household
             },
             vulnerabilityCriteria: {

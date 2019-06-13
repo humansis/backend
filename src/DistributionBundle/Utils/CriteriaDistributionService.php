@@ -56,18 +56,27 @@ class CriteriaDistributionService
 
         $distributionType = $filters['distribution_type'];
 
-        if ($distributionType == "household" || $distributionType == "Household" || $distributionType == '0') {
-            $finalArray = $this->loadHousehold($filters['criteria'], $threshold, $countryISO3, $project);
-        } elseif ($distributionType == "individual" || $distributionType == "Individual" || $distributionType == '1') {
-            $finalArray = $this->loadBeneficiary($filters['criteria'], $threshold, $countryISO3, $project);
-        } else {
-            throw new \Exception("A problem was found. Distribution type is unknown");
-        }
+        // return $this->em->getRepository(Beneficiary::class)
+        //     ->getDistributionBeneficiaries($filters['criteria'], $project, $countryISO3, $threshold, $distributionType, $isCount);
+
+        // if ($distributionType === '0') {
+        //     $finalArray = $this->loadHousehold($filters['criteria'], $threshold, $countryISO3, $project);
+        // } elseif ($distributionType === '1') {
+        //     $finalArray = $this->loadBeneficiary($filters['criteria'], $threshold, $countryISO3, $project);
+        // } else {
+        //     throw new \Exception("A problem was found. Distribution type is unknown");
+        // }
+
+        $reachedBeneficiaries = $distributionType === '0' ? 
+            $this->em->getRepository(Beneficiary::class)
+                ->getDistributionBeneficiariesForHouseholds($filters['criteria'], $project, $countryISO3, $threshold, $distributionType, $isCount) :
+            $this->em->getRepository(Beneficiary::class)
+                ->getDistributionBeneficiariesForBeneficiaries($filters['criteria'], $project, $countryISO3, $threshold, $distributionType, $isCount);
 
         if ($isCount) {
-            return ['number' => count($finalArray)];
+            return ['number' =>  $reachedBeneficiaries];
         } else {
-            return ['finalArray' => $finalArray];
+            return ['finalArray' =>  $reachedBeneficiaries];
         }
     }
 
@@ -97,7 +106,7 @@ class CriteriaDistributionService
                     }
                 } elseif ($criterion['target'] == "Head") {
                     $headBeneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
-                    $criterion = $this->formatHouseholdCriteria($criterion);
+                    $criterion = $this->formatHeadOfHouseholdCriteria($criterion);
                     $count += $this->countBeneficiary($criterion, $headBeneficiary);
                 } else {
                     throw new \Exception("A problem was found. Target is unknown");
@@ -138,8 +147,8 @@ class CriteriaDistributionService
                         $count += $this->countBeneficiary($criterion, $beneficiary);
                     } elseif ($criterion['target'] == "Head") {
                         $headBeneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
-                        $criterion = $this->formatHouseholdCriteria($criterion);
-                        $count = $this->countBeneficiary($criterion, $headBeneficiary);
+                        $criterion = $this->formatHeadOfHouseholdCriteria($criterion);
+                        $count += $this->countBeneficiary($criterion, $headBeneficiary);
                     } else {
                         throw new \Exception("A problem was found. Target of beneficiary is unknown");
                     }
@@ -154,7 +163,7 @@ class CriteriaDistributionService
         return $finalArray;
     }
 
-    public function formatHouseholdCriteria($criterion) {
+    public function formatHeadOfHouseholdCriteria($criterion) {
         if ($criterion['field_string'] === 'headOfHouseholdDateOfBirth') {
             $criterion['field_string'] = 'dateOfBirth';
         } else if ($criterion['field_string'] === 'headOfHouseholdGender') {

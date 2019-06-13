@@ -156,6 +156,12 @@ class Beneficiary implements ExportableInterface
      */
     private $referral;
 
+    /**
+     * Score
+     * @var int
+     */
+    private $score;
+
 
     /**
      * Constructor

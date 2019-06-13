@@ -309,4 +309,253 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $householdRepository = $this->getEntityManager()->getRepository(Household::class);
         $householdRepository->whereHouseholdInCountry($qb, $countryISO3);
     }
+
+    
+    public function getDistributionBeneficiariesForHouseholds(
+        array $criteria, 
+        Project $project, 
+        string $country, 
+        int $threshold, 
+        string $distributionTarget, 
+        bool $count)
+    {
+        $hhRepository = $this->getEntityManager()->getRepository(Household::class);
+
+        $qb = $hhRepository->createQueryBuilder("hh");
+        $qb->leftJoin("hh.projects", "p")
+            ->where("p = :project")
+            ->setParameter("project", $project)
+            ->andWhere("hh.archived = 0")
+            ->leftJoin('hh.beneficiaries', 'b')
+            ->leftJoin('hh.beneficiaries', 'head')
+            ->andWhere('head.status = 1');
+
+        $orStatement = $qb->expr()->orX();
+        foreach ($criteria as $criterion) {
+            $this->getDistributionBeneficiariesPerCriteria($criterion, $country, $qb,  $orStatement);
+        }
+        $qb->andWhere($orStatement);
+
+        if ($count) {
+            $q = $qb->select('COUNT(DISTINCT head)');
+            return intval($q->getQuery()->getSingleScalarResult());
+        } else {
+            $q = $qb->select('DISTINCT head');
+            return $q->getQuery()->getResults();
+        }
+    }
+
+    public function getDistributionBeneficiariesForBeneficiaries(
+        array $criteria, 
+        Project $project, 
+        string $country, 
+        int $threshold, 
+        string $distributionTarget,
+        bool $count)
+    {
+        $hhRepository = $this->getEntityManager()->getRepository(Household::class);
+
+        $qb = $hhRepository->createQueryBuilder("hh");
+        $qb->leftJoin("hh.projects", "p")
+            ->where("p = :project")
+            ->setParameter("project", $project)
+            ->andWhere("hh.archived = 0")
+            ->leftJoin('hh.beneficiaries', 'b');
+
+        $orStatement = $qb->expr()->orX();
+        foreach ($criteria as $criterion) {
+            $this->getDistributionBeneficiariesPerCriteria($criterion, $country, $qb,  $orStatement);
+        }
+        $qb->andWhere($orStatement);
+
+        if ($count) {
+            $q = $qb->select('COUNT(DISTINCT b)');
+            return intval($q->getQuery()->getSingleScalarResult());
+        } else {
+            $q = $qb->select('DISTINCT b');
+            return $q->getQuery()->getResults();
+        }
+    }
+
+
+    public function getDistributionBeneficiariesPerCriteria(
+        array $criterion, 
+        string $country, 
+        &$qb,
+        &$orStatement)
+    {
+        
+        $criterion['condition_string'] = $criterion['condition_string'] === '!=' ? '<>' : $criterion['condition_string'];
+        if ($criterion['target'] == "Household") {
+            $this->getHouseholdWithCriterion($qb, $criterion, $orStatement);
+        } elseif ($criterion['target'] == "Beneficiary") {
+            $this->getBeneficiaryWithCriterion($qb, $criterion, $orStatement);
+        } elseif ($criterion['target'] == "Head") {
+            $this->getHeadWithCriterion($qb, $criterion, $orStatement);
+        }
+        $qb->setParameter('parameter', $criterion['value_string']);
+
+    }
+
+    
+    private function getHouseholdWithCriterion(&$qb, $criterion, &$orStatement)
+    {
+        if ($criterion['type'] === 'table_field') {
+            $orStatement->add('hh.' . $criterion['field_string'] . $criterion['condition_string'] . ' :parameter ');
+                // ->andWhere( 'fshh ' . $criterion['condition_string'] . ' :parameter ');
+        }
+        // The selection criteria is a country Specific
+        else if ($criterion['type'] = 'BeneficiaryBundle\Entity\CountrySpecific') {
+            $qb->leftJoin('h.countrySpecificAnswers', 'csa')
+            ->leftJoin('csa.countrySpecific', 'cs')
+            ->andWhere('cs.fieldString = ' . $criterion['field_string']);
+            $orStatement->add('csa.answer ' . $criterion['condition_string'] . ' :parameter');
+            // ->andWhere('csa.answer ' . $criterion['condition_string'] . ' :parameter');
+        }
+        else if ($criteria['type'] === 'other') {
+            // The selection criteria is the size of the household
+            if ($criterion['field_string'] === 'householdSize') {
+                $orStatement->add('SIZE(b) ' . $criterion['condition_string'] . ' :parameter');
+                // $qb->andWhere('SIZE(b) ' . $criterion['condition_string'] . ' :parameter');
+            }
+            // The selection criteria is the location type (residence, camp...)
+            else if ($criterion['field_string'] === 'locationType') {
+                $qb->leftJoin('h.householdLocations', 'hl');
+                $orStatement->add('hl.type ' . $criterion['condition_string'] . ' :parameter');
+                    // ->andWhere('hl.type ' . $criterion['condition_string'] . ' :parameter');
+            } 
+            // The selection criteria is the name of the camp in which the household lives
+            else if ($criterion['field_string'] === 'campName') {
+                $qb->leftJoin('h.householdLocations', 'hl')
+                    ->leftJoin('hl.campAddress', 'ca')
+                    ->leftJoin('ca.camp', 'c');
+                $orStatement->add('c.name = :parameter');
+                    // ->andWhere('c.name = :parameter');
+            }
+        }
+    }
+
+    private function getBeneficiaryWithCriterion(&$qb, $criterion, &$orStatement)
+    {
+        // Table_field means we can directly fetch the value in the DB
+        if ($criterion['type'] === 'table_field') {
+            // $qb->leftJoin('b.' . $criterion['field_string'], 'fsb');
+            $orStatement->add('b.' . $criterion['field_string'] . $criterion['condition_string'] . ' :parameter ');
+                // ->andWhere( 'fsb ' . $criterion['condition_string'] . ' :parameter ');
+        }
+        // The selection criteria is a vulnerability criterion
+        else if ($criterion['type'] === 'BeneficiaryBundle\Entity\VulnerabilityCriterion') {
+            $this->hasVC($qb, 'b', $criterion['condition_string'], $criterion['field_string'], $orStatement);
+        }       
+        else if ($criterion['type'] === 'other') {
+            // The selection criteria is the last distribution
+            if ($criterion['field_string'] === 'hasNotBeenInDistributionsSince') {
+                $qb->leftJoin('b.distributionBeneficiary', 'db')
+                    ->leftJoin('db.distributionData', 'd')
+                    ->andWhere('d.dateDistribution >= :parameter');
+                $orStatement->add($qb->expr()->eq('SIZE(d)', 0));
+                    // ->having('COUNT(d) = 0');
+            }
+        }
+    }
+
+    private function getHeadWithCriterion(&$qb, $criterion, &$orStatement)
+    {
+        $qb->leftJoin('hh.beneficiaries', 'hhh')
+            ->andWhere('hhh.status = 1');
+        // Table_field means we can directly fetch the value in the DB
+        if ($criterion['type'] === 'table_field') {
+            if ($criterion['field_string'] === 'headOfHouseholdDateOfBirth') {
+                $criterion['field_string'] = 'dateOfBirth';
+            } else if ($criterion['field_string'] === 'headOfHouseholdGender') {
+                $criterion['field_string'] = 'gender';
+            }
+            $qb->leftJoin('hhh.' . $criterion['field_string'], 'fsh');
+            $orStatement->add('fsh ' . $criterion['condition_string'] . ' :parameter ');
+            // ->andWhere( 'fsh ' . $criterion['condition_string'] . ' :parameter ');
+        }
+        else if ($criterion['type'] === 'other') {
+            if ($criteria['field_string'] === 'disabledHeadOfHousehold') {
+                $this->hasVC($qb, 'hhh', $criterion['condition_string'], 'disabled', $orStatement);
+            }
+        }
+    }
+
+    private function hasVC(&$qb, $on, $conditionString, $vulnerabilityName, &$orStatement) {
+        $qb->leftJoin($on . '.vulnerabilityCriteria', 'vc');
+        if ($conditionString == "true") {
+            $orStatement->add('vc.fieldString = ' . $vulnerabilityName);
+            // $qb->andWhere('vc.fieldString = ' . $vulnerabilityName);
+        } else {
+            $or = $qb->expr()->orX();
+            $or->add($qb->expr()->eq('SIZE(vc)', 0))
+                ->add($qb->expr()->neq($vulnerabilityName, 'vc.fieldString'));
+                $orStatement->add($or);
+            // $qb->andWhere($orStatement);
+        }
+    }
+
+    private function getDistributionBeneficiariesBis(
+        array $criteria, 
+        Project $project, 
+        string $country, 
+        int $threshold, 
+        string $distributionTarget, 
+        boolean $count)
+    {
+        $hhRepository = $this->getEntityManager()->getRepository(Household::class);
+
+        $qb = $hhRepository->createQueryBuilder("hh");
+        $qb->leftJoin("hh.projects", "p")
+            ->where("p = :project")
+            ->setParameter("project", $project)
+            ->andWhere("hh.archived = 0")
+            ->leftJoin('hh.beneficiaries', 'b');
+
+        $selectableBeneficiaries = [];
+
+        foreach ($criteria as $criterion) {
+            $criterion['condition_string'] = $criterion['condition_string'] === '!=' ? '<>' : $criterion['condition_string'];
+            if ($criterion['target'] == "Household") {
+                $this->getHouseholdWithCriterion($qb, $criterion);
+            } elseif ($criterion['target'] == "Beneficiary") {
+                $this->getBeneficiaryWithCriterion($qb, $criterion);
+            } elseif ($criterion['target'] == "Head") {
+                $this->getHeadWithCriterion($qb, $criterion);
+            }
+            $qb->setParameter(':parameter', $criterion['value_string']);
+
+            // Target: Household
+            if ($distributionTarget === '0') {
+                $qb->andWhere('b.status = 1');
+            }
+            $q = $qb->select('b');
+
+            $beneficiaries = $q->getQuery()->getResult();
+
+            foreach ($beneficiaries as $beneficiary) {
+                $selectableBeneficiaries[$beneficiary->getId()] = $selectableBeneficiaries[$beneficiary->getId()] ?
+                    $selectableBeneficiaries[$beneficiary->getId()] + $criterion['weight'] :
+                    $criterion['weight'];
+            }
+
+        }
+
+        $numberOfBeneficiaries = 0;
+        $finalArrayOfBeneficiaries;
+        foreach ($selectableBeneficiaries as $beneficiaryId => $score) {
+            if ($score >= $threshold) {
+                $numberOfBeneficiaries += 1;
+                array_push($finalArrayOfBeneficiaries, $beneficiaryId);
+            }
+        }
+
+        if ($count) {
+            return $numberOfBeneficiaries;
+        } else {
+            return $finalArrayOfBeneficiaries;
+        }
+        
+    }
+
 }
