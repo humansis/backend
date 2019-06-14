@@ -67,12 +67,16 @@ class CriteriaDistributionService
         //     throw new \Exception("A problem was found. Distribution type is unknown");
         // }
 
+        $isCount = false;
+
         $reachedBeneficiaries = $distributionType === '0' ? 
             $this->em->getRepository(Beneficiary::class)
                 ->getDistributionBeneficiariesForHouseholds($filters['criteria'], $project, $countryISO3, $threshold, $distributionType, $isCount) :
             $this->em->getRepository(Beneficiary::class)
                 ->getDistributionBeneficiariesForBeneficiaries($filters['criteria'], $project, $countryISO3, $threshold, $distributionType, $isCount);
-
+        
+        dump($reachedBeneficiaries);
+        
         if ($isCount) {
             return ['number' =>  $reachedBeneficiaries];
         } else {
