@@ -16,6 +16,13 @@ class Criteria
     protected $tableString;
 
     /**
+    * @var string $target
+    * @Groups({"Criteria"})
+    *
+    */
+    protected $target;
+
+    /**
      * @return string
      */
     public function getTableString(): string
@@ -34,12 +41,6 @@ class Criteria
         return $this;
     }
 
-    /**
-    * @var string $target
-    * @Groups({"Criteria"})
-    *
-    */
-    protected $target;
 
     /**
      * @return string

@@ -39,7 +39,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 ->setParameter("project", $project)
                 ->andWhere("hh.archived = 0");
                 
-        return $q->getQuery()->getResult();
+        return $q;
     }
     
     public function countUnarchivedByProject(Project $project)
