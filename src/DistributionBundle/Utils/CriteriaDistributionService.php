@@ -57,28 +57,36 @@ class CriteriaDistributionService
         $isCount = false; // TODO: delete
         $criteria = $filters['criteria'];
 
-        $reachedBeneficiaries = $this->em->getRepository(Beneficiary::class)
+        $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
                 ->getDistributionBeneficiaries($criteria, $project, $countryISO3, $threshold, $distributionType);
 
         $beneficiaryScores = [];
+        $reachedBeneficiaries = [];
         
-        foreach ($reachedBeneficiaries as $beneficiary) {
+        // 1. Calculate the selection score foreach beneficiary
+        foreach ($selectableBeneficiaries as $beneficiary) {
             $score = 0;
-            foreach ($criteria as $criterion) {
 
-                // If the distribution type is Household and the beneficiary is not the head, count only the criterion targetting the beneficiaries
+            // 1.1 Update the score foreach selection criterion
+            foreach ($criteria as $criterion) {
+                $fieldString = $criterion['field_string'];
+                $valueString = $criterion['value_string'];
+
+                // If the distribution type is Household and the beneficiary is not the head, count only the criteria targetting the beneficiaries
                 if ($distributionType !== '0' || $beneficiary['headId'] === $beneficiary['id'] || $criterion['target'] === 'Beneficiary') {
-                    $fieldString = $criterion['field_string'];
     
+                    // In the case of vulnerabilityCriteria, dql forces us to add a b or a hhh in front of the key for it to be unique
                     if ($criterion['table_string'] === 'vulnerabilityCriteria') {
-                        $criterion['value_string'] = $fieldString; // value = disabled/lactating etc
+                        $valueString = $fieldString; // value = disabled/lactating etc
                         $fieldString = 'b' . $fieldString; // fieldString = bdisabled/blactating etc
                     } if ($criterion['field_string'] === 'disabledHeadOfHousehold') {
-                        $criterion['value_string'] = 'disabled'; // value = disabled/lactating etc
+                        $valueString = 'disabled'; // value = disabled/lactating etc
                         $fieldString = 'hhhdisabled';
                     }
         
                     if (array_key_exists($fieldString, $beneficiary) && !is_null($beneficiary[$fieldString])) {
+
+                        // Format to string to be able to use ===
                         if (gettype($beneficiary[$fieldString]) === 'integer') {
                             $beneficiary[$fieldString] = (string) $beneficiary[$fieldString];
                         } else if ($beneficiary[$fieldString] instanceof \DateTime) {
@@ -87,30 +95,27 @@ class CriteriaDistributionService
     
                         switch ($criterion['condition_string']) {
                             case '>':
-                                $score = $beneficiary[$fieldString] > $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                $score = $beneficiary[$fieldString] > $valueString ? $score + $criterion['weight'] : $score;
                                 break;
                             case '<':
-                                $score = $beneficiary[$fieldString] < $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                $score = $beneficiary[$fieldString] < $valueString ? $score + $criterion['weight'] : $score;
                                 break;
                             case '<=':
-                                $score = $beneficiary[$fieldString] <= $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                $score = $beneficiary[$fieldString] <= $valueString ? $score + $criterion['weight'] : $score;
                                 break;
                             case '>=':
-                                $score = $beneficiary[$fieldString] >= $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                $score = $beneficiary[$fieldString] >= $valueString ? $score + $criterion['weight'] : $score;
                                 break;
                             case '!=':
                             case 'false':
-                                $score = $beneficiary[$fieldString] !== $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                $score = $beneficiary[$fieldString] !== $valueString ? $score + $criterion['weight'] : $score;
                                 break;
                             case '=':
                             case 'true':
-                                if (!is_null($criterion['value_string'])) {
-                                    $score = $beneficiary[$fieldString] == $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                if (!is_null($valueString)) {
+                                    $score = $beneficiary[$fieldString] === $valueString ? $score + $criterion['weight'] : $score;
                                 }
-                                break;
-                            default:
-                                break;
-    
+                                break;    
                         }
                     }
                     // If there is no distribution for a beneficiary, it means it has not been in a distribution since forever
@@ -119,10 +124,10 @@ class CriteriaDistributionService
                     } else if (!array_key_exists($fieldString, $beneficiary) && $criterion['condition_string'] === '!=' || $criterion['condition_string'] === 'false') {
                         $score += $criterion['weight'];
                     }
-                    // case vulnerabilities
                 }
             }
-            // In case it is a distrbution targetting households, gather the score to the head
+
+            // 1.2. In case it is a distribution targetting households, gather the score to the head, else just store it
             if ($distributionType === '0') {
                 if (!array_key_exists($beneficiary['headId'], $beneficiaryScores)) {
                     $beneficiaryScores[$beneficiary['headId']] = $score;
@@ -134,11 +139,19 @@ class CriteriaDistributionService
             }
         }
         
+        // 2. Verify who is above the threshold 
+        foreach ($beneficiaryScores as $selectableBeneficiaryId => $score) {
+            if ($score >= $threshold) {
+                array_push($reachedBeneficiaries, $selectableBeneficiaryId);
+            }
+        }
+        
         dump($beneficiaryScores);
 
         if ($isCount) {
-            return ['number' =>  $reachedBeneficiaries];
+            return ['number' =>  count($reachedBeneficiaries)];
         } else {
+            // !!!! Those are ids, not directly beneficiaries !!!!
             return ['finalArray' =>  $reachedBeneficiaries];
         }
     }
