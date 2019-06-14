@@ -386,14 +386,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
 
-    public function getDistributionBeneficiariesPerCriteria(
-        array $criterion,
-        int $index, 
-        string $country, 
-        &$qb,
-        &$orStatement)
+    public function getDistributionBeneficiariesPerCriteria(array $criterion, int $index, string $country, &$qb, &$orStatement)
     {
-        
         $criterion['condition_string'] = $criterion['condition_string'] === '!=' ? '<>' : $criterion['condition_string'];
         if ($criterion['target'] == "Household") {
             $this->getHouseholdWithCriterion($qb, $criterion, $index, $orStatement);
@@ -403,7 +397,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             $this->getHeadWithCriterion($qb, $criterion, $index, $orStatement);
         }
         $qb->setParameter('parameter' . $index, $criterion['value_string']);
-
     }
 
     
@@ -411,7 +404,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         if ($criterion['type'] === 'table_field') {
             $orStatement->add('hh.' . $criterion['field_string'] . $criterion['condition_string'] . ' :parameter' . $index);
-                // ->andWhere( 'fshh ' . $criterion['condition_string'] . ' :parameter' . $index);
         }
         // The selection criteria is a country Specific
         else if ($criterion['type'] = 'BeneficiaryBundle\Entity\CountrySpecific') {
@@ -425,13 +417,11 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             // The selection criteria is the size of the household
             if ($criterion['field_string'] === 'householdSize') {
                 $orStatement->add('SIZE(b) ' . $criterion['condition_string'] . ' :parameter' . $index);
-                // $qb->andWhere('SIZE(b) ' . $criterion['condition_string'] . ' :parameter' . $index);
             }
             // The selection criteria is the location type (residence, camp...)
             else if ($criterion['field_string'] === 'locationType') {
                 $qb->leftJoin('h.householdLocations', 'hl');
                 $orStatement->add('hl.type ' . $criterion['condition_string'] . ' :parameter' . $index);
-                    // ->andWhere('hl.type ' . $criterion['condition_string'] . ' :parameter' . $index);
             } 
             // The selection criteria is the name of the camp in which the household lives
             else if ($criterion['field_string'] === 'campName') {
@@ -439,7 +429,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                     ->leftJoin('hl.campAddress', 'ca')
                     ->leftJoin('ca.camp', 'c');
                 $orStatement->add('c.name = :parameter' . $index);
-                    // ->andWhere('c.name = :parameter' . $index);
             }
         }
     }
@@ -448,10 +437,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         // Table_field means we can directly fetch the value in the DB
         if ($criterion['type'] === 'table_field') {
-            // $qb->leftJoin('b.' . $criterion['field_string'], 'fsb');
             $orStatement->add('b.' . $criterion['field_string'] . $criterion['condition_string'] . ' :parameter' . $index);
             $qb->addSelect('b.' . $criterion['field_string'] . ' AS ' . $criterion['field_string']);
-                // ->andWhere( 'fsb ' . $criterion['condition_string'] . ' :parameter' . $index);
         }
         // The selection criteria is a vulnerability criterion
         else if ($criterion['type'] === 'BeneficiaryBundle\Entity\VulnerabilityCriterion') {
@@ -464,7 +451,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                     ->leftJoin('db.distributionData', 'd')
                     ->andWhere('d.dateDistribution >= :parameter' . $index);
                 $orStatement->add($qb->expr()->eq('SIZE(d)', 0));
-                    // ->having('COUNT(d) = 0');
             }
         }
     }
@@ -482,7 +468,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             }
             $qb->leftJoin('hhh.' . $criterion['field_string'], 'fsh');
             $orStatement->add('fsh ' . $criterion['condition_string'] . ' :parameter' . $index);
-            // ->andWhere( 'fsh ' . $criterion['condition_string'] . ' :parameter' . $index);
         }
         else if ($criterion['type'] === 'other') {
             if ($criterion['field_string'] === 'disabledHeadOfHousehold') {
@@ -495,77 +480,12 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->leftJoin($on . '.vulnerabilityCriteria', 'vc');
         if ($conditionString == "true") {
             $orStatement->add('vc.fieldString = ' . $vulnerabilityName);
-            // $qb->andWhere('vc.fieldString = ' . $vulnerabilityName);
         } else {
             $or = $qb->expr()->orX();
             $or->add($qb->expr()->eq('SIZE(vc)', 0))
                 ->add($qb->expr()->neq($vulnerabilityName, 'vc.fieldString'));
                 $orStatement->add($or);
-            // $qb->andWhere($orStatement);
         }
     }
-
-    // private function getDistributionBeneficiariesBis(
-    //     array $criteria, 
-    //     Project $project, 
-    //     string $country, 
-    //     int $threshold, 
-    //     string $distributionTarget, 
-    //     boolean $count)
-    // {
-    //     $hhRepository = $this->getEntityManager()->getRepository(Household::class);
-
-    //     $qb = $hhRepository->createQueryBuilder("hh");
-    //     $qb->leftJoin("hh.projects", "p")
-    //         ->where("p = :project")
-    //         ->setParameter("project", $project)
-    //         ->andWhere("hh.archived = 0")
-    //         ->leftJoin('hh.beneficiaries', 'b');
-
-    //     $selectableBeneficiaries = [];
-
-    //     foreach ($criteria as $criterion) {
-    //         $criterion['condition_string'] = $criterion['condition_string'] === '!=' ? '<>' : $criterion['condition_string'];
-    //         if ($criterion['target'] == "Household") {
-    //             $this->getHouseholdWithCriterion($qb, $criterion);
-    //         } elseif ($criterion['target'] == "Beneficiary") {
-    //             $this->getBeneficiaryWithCriterion($qb, $criterion);
-    //         } elseif ($criterion['target'] == "Head") {
-    //             $this->getHeadWithCriterion($qb, $criterion);
-    //         }
-    //         $qb->setParameter(':parameter', $criterion['value_string']);
-
-    //         // Target: Household
-    //         if ($distributionTarget === '0') {
-    //             $qb->andWhere('b.status = 1');
-    //         }
-    //         $q = $qb->select('b');
-
-    //         $beneficiaries = $q->getQuery()->getResult();
-
-    //         foreach ($beneficiaries as $beneficiary) {
-    //             $selectableBeneficiaries[$beneficiary->getId()] = $selectableBeneficiaries[$beneficiary->getId()] ?
-    //                 $selectableBeneficiaries[$beneficiary->getId()] + $criterion['weight'] :
-    //                 $criterion['weight'];
-    //         }
-
-    //     }
-
-    //     $numberOfBeneficiaries = 0;
-    //     $finalArrayOfBeneficiaries;
-    //     foreach ($selectableBeneficiaries as $beneficiaryId => $score) {
-    //         if ($score >= $threshold) {
-    //             $numberOfBeneficiaries += 1;
-    //             array_push($finalArrayOfBeneficiaries, $beneficiaryId);
-    //         }
-    //     }
-
-    //     if ($count) {
-    //         return $numberOfBeneficiaries;
-    //     } else {
-    //         return $finalArrayOfBeneficiaries;
-    //     }
-        
-    // }
 
 }
