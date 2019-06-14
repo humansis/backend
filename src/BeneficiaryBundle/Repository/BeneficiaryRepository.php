@@ -242,16 +242,21 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         $hhRepository = $this->getEntityManager()->getRepository(Household::class);
         $qb = $hhRepository->getUnarchivedByProject($project);
+
+        // First we get all the beneficiaries, and we store the headId for later
         $qb->leftJoin('hh.beneficiaries', 'b')
             ->select('DISTINCT b.id AS id')
             ->leftJoin('hh.beneficiaries', 'head')
             ->andWhere('head.status = 1')
             ->addSelect('head.id AS headId');
+
+        // If a beneficiary has a criterion, they are selectable, therefore every criterion has to go in a orX()
         $orStatement = $qb->expr()->orX();
         foreach ($criteria as $index => $criterion) {
             $condition = $criterion['condition_string'];
             $field = $criterion['field_string'];
             $condition = $condition === '!=' ? '<>' : $condition;
+
             if ($criterion['target'] == "Household") {
                 $this->getHouseholdWithCriterion($qb, $field, $condition, $criterion, $index, $orStatement);
             } elseif ($criterion['target'] == "Beneficiary") {
@@ -272,21 +277,25 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     
     private function getHouseholdWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$orStatement)
     {
+        // The selection criteria is a country Specific
         if ($criterion['table_string'] === 'countrySpecific') {
             $qb->leftJoin('hh.countrySpecificAnswers', 'csa'. $i)
             ->leftJoin('csa'.$i . '.countrySpecific', 'cs'.$i)
             ->setParameter('csName'.$i, $field);
+
+            // To validate the criterion, the household has to answer the countrySpecific AND have the good value for it
             $andStatement = $qb->expr()->andX();
             $andStatement->add('cs'.$i . '.fieldString = :csName'.$i);
             $andStatement->add('csa'.$i . '.answer ' . $condition . ' :parameter'.$i);
             $orStatement->add($andStatement);
             $qb->addSelect('(CASE WHEN csa'.$i . '.answer ' . $condition . ' :parameter'.$i . ' THEN csa'.$i . '.answer ELSE :null END) AS ' . $field.$i);
         }
+
+        // The selection criteria is directly a field in the Household table
         else if ($criterion['type'] === 'table_field') {
             $orStatement->add('hh.' . $field . $condition . ' :parameter'.$i);
             $qb->addSelect('(CASE WHEN hh.' . $field . $condition . ' :parameter'.$i . ' THEN hh. ' . $field . ' ELSE :null END) AS ' . $field.$i);
         }
-        // The selection criteria is a country Specific
         else if ($criterion['type'] === 'other') {
             // The selection criteria is the size of the household
             if ($field === 'householdSize') {
@@ -316,7 +325,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         if ($criterion['table_string'] === 'vulnerabilityCriteria') {
             $this->hasVulnerabilityCriterion($qb, 'b', $condition, $field, $orStatement, $i);
         }
-        // Table_field means we can directly fetch the value in the DB
+        // The selection criteria is directly a field in the Beneficiary table
         else if ($criterion['type'] === 'table_field') {
             $orStatement->add('b.' . $field . $condition . ' :parameter'.$i);
             $qb->addSelect('(CASE WHEN b.' . $field . $condition . ' :parameter'.$i . ' THEN b.' . $field . ' ELSE :null END) AS ' . $field.$i);
@@ -328,6 +337,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                     ->leftJoin('db'.$i . '.distributionData', 'd'.$i)
                     ->addSelect('(CASE WHEN d'.$i . '.dateDistribution < :parameter'.$i . ' THEN d'.$i . '.dateDistribution WHEN SIZE(b.distributionBeneficiary) = 0 THEN :noDistribution ELSE :null END)'. ' AS ' . $criterion['field_string'].$i)
                     ->setParameter('noDistribution', 'noDistribution');
+                // The beneficiary answers the criteria if they didn't have a distribution after this date or if they never had a distribution at all
                 $orStatement->add($qb->expr()->eq('SIZE(b.distributionBeneficiary)', '0'));
                 $orStatement->add($qb->expr()->lte('d'.$i . '.dateDistribution', ':parameter'.$i));
             }
@@ -338,8 +348,9 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         $qb->leftJoin('hh.beneficiaries', 'hhh'.$i)
             ->andWhere('hhh'.$i . '.status = 1');
-        // Table_field means we can directly fetch the value in the DB
+        // The selection criteria is directly a field in the Beneficiary table
         if ($criterion['type'] === 'table_field') {
+            // The criterion name identifies the criterion (eg. headOfHouseholdDateOfBirth) whereas the field is gonna identify the table field (eg. dateOfBirth) in the Beneficiary table
             $criterionName = $field;
             if ($field === 'headOfHouseholdDateOfBirth') {
                 $field = 'dateOfBirth';
@@ -364,6 +375,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         } else {
             $orStatement->add($qb->expr()->eq('SIZE(' . $on . '.vulnerabilityCriteria)', 0))
             ->add($qb->expr()->neq( 'vc'.$i . '.fieldString', ':vulnerability'.$i));
+            // The beneficiary doesn't have a vulnerability A if all their vulnerabilities are != A or if they have no vulnerabilities
             $qb->addSelect('(CASE WHEN vc'.$i . '.fieldString <> :vulnerability'.$i . ' THEN vc'.$i . '.fieldString WHEN SIZE(' . $on . '.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS ' . $on . $vulnerabilityName.$i)
             ->setParameter('noCriteria', 'noCriteria');
         }
