@@ -310,48 +310,16 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $householdRepository->whereHouseholdInCountry($qb, $countryISO3);
     }
 
-    
-    public function getDistributionBeneficiariesForHouseholds(
-        array $criteria, Project $project, string $country, 
-        int $threshold, string $distributionTarget, bool $count)
+
+    public function getDistributionBeneficiaries(array $criteria, Project $project, string $country, int $threshold, string $distributionTarget)
     {
         $hhRepository = $this->getEntityManager()->getRepository(Household::class);
-
         $qb = $hhRepository->getUnarchivedByProject($project);
         $qb->leftJoin('hh.beneficiaries', 'b')
+            ->select('b.id AS id')
             ->leftJoin('hh.beneficiaries', 'head')
-            ->andWhere('head.status = 1');
-
-        if ($count) {
-            $qb->select('COUNT(DISTINCT head)');
-        } else {
-            $qb->select('head.id AS id');
-        }
-
-        return $this->getDistributionBeneficiaries($criteria, $country, $qb, $count);
-    }
-
-    public function getDistributionBeneficiariesForBeneficiaries(
-        array $criteria, Project $project, string $country, 
-        int $threshold, string $distributionTarget, bool $count)
-    {
-        $hhRepository = $this->getEntityManager()->getRepository(Household::class);
-
-        $qb = $hhRepository->getUnarchivedByProject($project);
-        $qb->leftJoin('hh.beneficiaries', 'b');
-
-        if ($count) {
-            $qb->select('COUNT(DISTINCT b)');
-        } else {
-            $qb->select('b.id AS id');
-        }
-
-        return $this->getDistributionBeneficiaries($criteria, $country, $qb, $count);
-    }
-
-
-    public function getDistributionBeneficiaries(array $criteria, string $country, &$qb, bool $count)
-    {
+            ->andWhere('head.status = 1')
+            ->addSelect('head.id AS headId');
         $orStatement = $qb->expr()->orX();
         foreach ($criteria as $index => $criterion) {
             $criterion['condition_string'] = $criterion['condition_string'] === '!=' ? '<>' : $criterion['condition_string'];
@@ -368,11 +336,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         }
         $qb->andWhere($orStatement);
 
-        if ($count) {
-            return intval($qb->getQuery()->getSingleScalarResult());
-        } else {
-            return $qb->getQuery()->getResult();
-        }
+        return $qb->getQuery()->getResult();
     }
 
     

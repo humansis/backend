@@ -53,30 +53,89 @@ class CriteriaDistributionService
     public function load(array $filters, Project $project, int $threshold, bool $isCount)
     {
         $countryISO3 = $filters['countryIso3'];
-
         $distributionType = $filters['distribution_type'];
+        $isCount = false; // TODO: delete
+        $criteria = $filters['criteria'];
 
-        // return $this->em->getRepository(Beneficiary::class)
-        //     ->getDistributionBeneficiaries($filters['criteria'], $project, $countryISO3, $threshold, $distributionType, $isCount);
+        $reachedBeneficiaries = $this->em->getRepository(Beneficiary::class)
+                ->getDistributionBeneficiaries($criteria, $project, $countryISO3, $threshold, $distributionType);
 
-        // if ($distributionType === '0') {
-        //     $finalArray = $this->loadHousehold($filters['criteria'], $threshold, $countryISO3, $project);
-        // } elseif ($distributionType === '1') {
-        //     $finalArray = $this->loadBeneficiary($filters['criteria'], $threshold, $countryISO3, $project);
-        // } else {
-        //     throw new \Exception("A problem was found. Distribution type is unknown");
-        // }
-
-        $isCount = false;
-
-        $reachedBeneficiaries = $distributionType === '0' ? 
-            $this->em->getRepository(Beneficiary::class)
-                ->getDistributionBeneficiariesForHouseholds($filters['criteria'], $project, $countryISO3, $threshold, $distributionType, $isCount) :
-            $this->em->getRepository(Beneficiary::class)
-                ->getDistributionBeneficiariesForBeneficiaries($filters['criteria'], $project, $countryISO3, $threshold, $distributionType, $isCount);
+        $beneficiaryScores = [];
         
-        dump($reachedBeneficiaries);
+        foreach ($reachedBeneficiaries as $beneficiary) {
+            $score = 0;
+            foreach ($criteria as $criterion) {
+
+                // If the distribution type is Household and the beneficiary is not the head, count only the criterion targetting the beneficiaries
+                if ($distributionType !== '0' || $beneficiary['headId'] === $beneficiary['id'] || $criterion['target'] === 'Beneficiary') {
+                    $fieldString = $criterion['field_string'];
+    
+                    if ($criterion['table_string'] === 'vulnerabilityCriteria') {
+                        $criterion['value_string'] = $fieldString; // value = disabled/lactating etc
+                        $fieldString = 'b' . $fieldString; // fieldString = bdisabled/blactating etc
+                    } if ($criterion['field_string'] === 'disabledHeadOfHousehold') {
+                        $criterion['value_string'] = 'disabled'; // value = disabled/lactating etc
+                        $fieldString = 'hhhdisabled';
+                    }
         
+                    if (array_key_exists($fieldString, $beneficiary) && !is_null($beneficiary[$fieldString])) {
+                        if (gettype($beneficiary[$fieldString]) === 'integer') {
+                            $beneficiary[$fieldString] = (string) $beneficiary[$fieldString];
+                        } else if ($beneficiary[$fieldString] instanceof \DateTime) {
+                            $beneficiary[$fieldString] = $beneficiary[$fieldString]->format('Y-m-d');
+                        }
+    
+                        switch ($criterion['condition_string']) {
+                            case '>':
+                                $score = $beneficiary[$fieldString] > $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                break;
+                            case '<':
+                                $score = $beneficiary[$fieldString] < $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                break;
+                            case '<=':
+                                $score = $beneficiary[$fieldString] <= $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                break;
+                            case '>=':
+                                $score = $beneficiary[$fieldString] >= $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                break;
+                            case '!=':
+                            case 'false':
+                                $score = $beneficiary[$fieldString] !== $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                break;
+                            case '=':
+                            case 'true':
+                                if (!is_null($criterion['value_string'])) {
+                                    $score = $beneficiary[$fieldString] == $criterion['value_string'] ? $score + $criterion['weight'] : $score;
+                                }
+                                break;
+                            default:
+                                break;
+    
+                        }
+                    }
+                    // If there is no distribution for a beneficiary, it means it has not been in a distribution since forever
+                    else if ($criterion['field_string'] === 'hasNotBeenInDistributionsSince') {
+                        $score += $criterion['weight'];
+                    } else if (!array_key_exists($fieldString, $beneficiary) && $criterion['condition_string'] === '!=' || $criterion['condition_string'] === 'false') {
+                        $score += $criterion['weight'];
+                    }
+                    // case vulnerabilities
+                }
+            }
+            // In case it is a distrbution targetting households, gather the score to the head
+            if ($distributionType === '0') {
+                if (!array_key_exists($beneficiary['headId'], $beneficiaryScores)) {
+                    $beneficiaryScores[$beneficiary['headId']] = $score;
+                } else {
+                    $beneficiaryScores[$beneficiary['headId']] = intval($beneficiaryScores[$beneficiary['headId']]) + $score;
+                }
+            } else {
+                $beneficiaryScores[$beneficiary['id']] = $score;
+            }
+        }
+        
+        dump($beneficiaryScores);
+
         if ($isCount) {
             return ['number' =>  $reachedBeneficiaries];
         } else {
