@@ -335,11 +335,12 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             if ($field === 'hasNotBeenInDistributionsSince') {
                 $qb->leftJoin('b.distributionBeneficiary', 'db'.$i)
                     ->leftJoin('db'.$i . '.distributionData', 'd'.$i)
+                    // If has criteria, add it to the select to calculate weight later
                     ->addSelect('(CASE WHEN d'.$i . '.dateDistribution < :parameter'.$i . ' THEN d'.$i . '.dateDistribution WHEN SIZE(b.distributionBeneficiary) = 0 THEN :noDistribution ELSE :null END)'. ' AS ' . $criterion['field_string'].$i)
                     ->setParameter('noDistribution', 'noDistribution');
                 // The beneficiary answers the criteria if they didn't have a distribution after this date or if they never had a distribution at all
-                $orStatement->add($equality1);
-                $orStatement->add($equality2);
+                $orStatement->add($qb->expr()->eq('SIZE(b.distributionBeneficiary)', '0'));
+                $orStatement->add($qb->expr()->lte('d'.$i . '.dateDistribution', ':parameter'.$i));
             }
         }
     }
@@ -371,13 +372,13 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->leftJoin($on . '.vulnerabilityCriteria', 'vc'.$i);
         if ($conditionString == "true") {
             $orStatement->add($qb->expr()->eq('vc'.$i . '.fieldString', ':vulnerability'.$i));
+            // If has criteria, add it to the select to calculate weight later
             $qb->addSelect(' (CASE WHEN vc'.$i . '.fieldString = :vulnerability'.$i . ' THEN vc'.$i . '.fieldString ELSE :null END) AS ' . $on . $vulnerabilityName.$i);
         } else {
-            $equality1 = 'SIZE(' . $on . '.vulnerabilityCriteria) = 0';
-            $equality2 = 'vc'.$i . '.fieldString <> :vulnerability'.$i;
-            $orStatement->add($equality1)
-                ->add($equality2);
+            $orStatement->add($qb->expr()->eq('SIZE(' . $on . '.vulnerabilityCriteria)', 0))
+            ->add($qb->expr()->neq( 'vc'.$i . '.fieldString', ':vulnerability'.$i));
             // The beneficiary doesn't have a vulnerability A if all their vulnerabilities are != A or if they have no vulnerabilities
+            // If has criteria, add it to the select to calculate weight later
             $qb->addSelect('(CASE WHEN vc'.$i . '.fieldString <> :vulnerability'.$i . ' THEN vc'.$i . '.fieldString WHEN SIZE(' . $on . '.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS ' . $on . $vulnerabilityName.$i)
             ->setParameter('noCriteria', 'noCriteria');
         }
