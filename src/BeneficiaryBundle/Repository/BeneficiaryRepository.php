@@ -10,6 +10,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use ProjectBundle\Entity\Project;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * BeneficiaryRepository.
@@ -267,7 +268,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             if (!is_null($criterion['value_string'])) {
                 $qb->setParameter('parameter' . $index, $criterion['value_string']);
             }
-            $qb->setParameter('null', null);
+            // $qb->setParameter('null', null);
         }
         $qb->andWhere($orStatement);
 
@@ -304,9 +305,9 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             }
             // The selection criteria is the location type (residence, camp...)
             else if ($field === 'locationType') {
-                $qb->leftJoin('hh.householdLocations', 'hl');
-                $orStatement->add('hl.type ' . $condition . ' :parameter'.$i);
-                $qb->addSelect('(CASE WHEN hl.type ' . $condition . ' :parameter'.$i . ' THEN hl.type ELSE :null END) AS ' . $field.$i);
+                $qb->leftJoin('hh.householdLocations', 'hl'.$i);
+                $orStatement->add('hl'.$i . '.type ' . $condition . ' :parameter'.$i);
+                $qb->addSelect('(CASE WHEN hl'.$i . '.type ' . $condition . ' :parameter'.$i . ' THEN hl'.$i . '.type ELSE :null END) AS ' . $field.$i);
             } 
             // The selection criteria is the name of the camp in which the household lives
             else if ($field === 'campName') {
@@ -369,11 +370,12 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
     private function hasVulnerabilityCriterion(&$qb, $on, $conditionString, $vulnerabilityName, &$orStatement, int $i) {
-        $qb->leftJoin($on . '.vulnerabilityCriteria', 'vc'.$i);
         if ($conditionString == "true") {
+            // Find a way to act directly on the join table beneficiary_vulnerability
+            $qb->leftJoin($on . '.vulnerabilityCriteria', 'vc'.$i, Join::WITH, 'vc'.$i . '.fieldString = :vulnerability'.$i);
             $orStatement->add($qb->expr()->eq('vc'.$i . '.fieldString', ':vulnerability'.$i));
             // If has criteria, add it to the select to calculate weight later
-            $qb->addSelect(' (CASE WHEN vc'.$i . '.fieldString = :vulnerability'.$i . ' THEN vc'.$i . '.fieldString ELSE :null END) AS ' . $on . $vulnerabilityName.$i);
+            $qb->addSelect('vc'.$i . '.fieldString AS ' . $on . $vulnerabilityName.$i);
         } else {
             $orStatement->add($qb->expr()->eq('SIZE(' . $on . '.vulnerabilityCriteria)', 0))
             ->add($qb->expr()->neq( 'vc'.$i . '.fieldString', ':vulnerability'.$i));

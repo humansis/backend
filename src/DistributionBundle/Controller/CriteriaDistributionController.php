@@ -50,7 +50,7 @@ class CriteriaDistributionController extends Controller
      *             {
      *              "table_string": "vulnerabilityCriteria",
      *              "id": 2,
-     *              "field_string": "solo parent"
+     *              "field_string": "soloParent"
      *             },
      *             {
      *              "table_string": "countrySpecific",
