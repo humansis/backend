@@ -268,7 +268,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             if (!is_null($criterion['value_string'])) {
                 $qb->setParameter('parameter' . $index, $criterion['value_string']);
             }
-            // $qb->setParameter('null', null);
         }
         $qb->andWhere($orStatement);
 
@@ -281,7 +280,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         // The selection criteria is a country Specific
         if ($criterion['table_string'] === 'countrySpecific') {
             $qb->leftJoin('hh.countrySpecificAnswers', 'csa'. $i)
-            ->leftJoin('csa'.$i . '.countrySpecific', 'cs'.$i)
+            ->leftJoin('csa'.$i . '.countrySpecific', 'cs'.$i, Join::WITH, 'csa'.$i . '.answer ' . $condition . ' :parameter'.$i)
             ->setParameter('csName'.$i, $field);
 
             // To validate the criterion, the household has to answer the countrySpecific AND have the good value for it
@@ -289,33 +288,36 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             $andStatement->add('cs'.$i . '.fieldString = :csName'.$i);
             $andStatement->add('csa'.$i . '.answer ' . $condition . ' :parameter'.$i);
             $orStatement->add($andStatement);
-            $qb->addSelect('(CASE WHEN csa'.$i . '.answer ' . $condition . ' :parameter'.$i . ' THEN csa'.$i . '.answer ELSE :null END) AS ' . $field.$i);
+            $qb->addSelect('(CASE WHEN csa'.$i . '.answer ' . $condition . ' :parameter'.$i . ' THEN csa'.$i . '.answer ELSE :null END) AS ' . $field.$i)
+                ->setParameter('null', null);
         }
 
         // The selection criteria is directly a field in the Household table
         else if ($criterion['type'] === 'table_field') {
             $orStatement->add('hh.' . $field . $condition . ' :parameter'.$i);
-            $qb->addSelect('(CASE WHEN hh.' . $field . $condition . ' :parameter'.$i . ' THEN hh. ' . $field . ' ELSE :null END) AS ' . $field.$i);
+            $qb->addSelect('(CASE WHEN hh.' . $field . $condition . ' :parameter'.$i . ' THEN hh. ' . $field . ' ELSE :null END) AS ' . $field.$i)
+                ->setParameter('null', null);
         }
         else if ($criterion['type'] === 'other') {
             // The selection criteria is the size of the household
             if ($field === 'householdSize') {
                 $orStatement->add('SIZE(hh.beneficiaries) ' . $condition . ' :parameter'.$i);
-                $qb->addSelect('(CASE WHEN SIZE(hh.beneficiaries) ' . $condition . ' :parameter'.$i .' THEN SIZE(hh.beneficiaries) ELSE :null END) AS ' . $field.$i);
+                $qb->addSelect('(CASE WHEN SIZE(hh.beneficiaries) ' . $condition . ' :parameter'.$i .' THEN SIZE(hh.beneficiaries) ELSE :null END) AS ' . $field.$i)
+                    ->setParameter('null', null);
             }
             // The selection criteria is the location type (residence, camp...)
             else if ($field === 'locationType') {
-                $qb->leftJoin('hh.householdLocations', 'hl'.$i);
+                $qb->leftJoin('hh.householdLocations', 'hl'.$i, Join::WITH, 'hl'.$i . '.type ' . $condition . ' :parameter'.$i);
                 $orStatement->add('hl'.$i . '.type ' . $condition . ' :parameter'.$i);
-                $qb->addSelect('(CASE WHEN hl'.$i . '.type ' . $condition . ' :parameter'.$i . ' THEN hl'.$i . '.type ELSE :null END) AS ' . $field.$i);
+                $qb->addSelect('hl'.$i . '.type AS ' . $field.$i);
             } 
             // The selection criteria is the name of the camp in which the household lives
             else if ($field === 'campName') {
                 $qb->leftJoin('hh.householdLocations', 'hl')
                     ->leftJoin('hl.campAddress', 'ca'.$i)
-                    ->leftJoin('ca'.$i.'.camp', 'c'.$i);
+                    ->leftJoin('ca'.$i.'.camp', 'c'.$i, Join::WITH, 'c'.$i . '.name = :parameter'.$i);
                 $orStatement->add('c'.$i . '.name = :parameter'.$i);
-                $qb->addSelect('(CASE WHEN c'.$i . '.name = :parameter'.$i . ' THEN c'.$i . '.name ELSE :null END) AS ' . $field.$i);
+                $qb->addSelect('c'.$i . '.name AS ' . $field.$i);
             }
         }
     }
@@ -329,7 +331,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         // The selection criteria is directly a field in the Beneficiary table
         else if ($criterion['type'] === 'table_field') {
             $orStatement->add('b.' . $field . $condition . ' :parameter'.$i);
-            $qb->addSelect('(CASE WHEN b.' . $field . $condition . ' :parameter'.$i . ' THEN b.' . $field . ' ELSE :null END) AS ' . $field.$i);
+            $qb->addSelect('(CASE WHEN b.' . $field . $condition . ' :parameter'.$i . ' THEN b.' . $field . ' ELSE :null END) AS ' . $field.$i)
+                ->setParameter('null', null);
         }
         else if ($criterion['type'] === 'other') {
             // The selection criteria is the last distribution
@@ -338,7 +341,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                     ->leftJoin('db'.$i . '.distributionData', 'd'.$i)
                     // If has criteria, add it to the select to calculate weight later
                     ->addSelect('(CASE WHEN d'.$i . '.dateDistribution < :parameter'.$i . ' THEN d'.$i . '.dateDistribution WHEN SIZE(b.distributionBeneficiary) = 0 THEN :noDistribution ELSE :null END)'. ' AS ' . $criterion['field_string'].$i)
-                    ->setParameter('noDistribution', 'noDistribution');
+                    ->setParameter('noDistribution', 'noDistribution')
+                    ->setParameter('null', null);
                 // The beneficiary answers the criteria if they didn't have a distribution after this date or if they never had a distribution at all
                 $orStatement->add($qb->expr()->eq('SIZE(b.distributionBeneficiary)', '0'));
                 $orStatement->add($qb->expr()->lte('d'.$i . '.dateDistribution', ':parameter'.$i));
@@ -360,7 +364,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                 $field = 'gender';
             }
             $orStatement->add('hhh'.$i . '.' . $field . $condition . ' :parameter'.$i);
-            $qb->addSelect('(CASE WHEN hhh'.$i . '.' . $field . $condition . ' :parameter'.$i . ' THEN hhh'.$i . '.' . $field . ' ELSE :null END) AS ' . $criterionName.$i);
+            $qb->addSelect('(CASE WHEN hhh'.$i . '.' . $field . $condition . ' :parameter'.$i . ' THEN hhh'.$i . '.' . $field . ' ELSE :null END) AS ' . $criterionName.$i)
+                ->setParameter('null', null);
         }
         else if ($criterion['type'] === 'other') {
             if ($field === 'disabledHeadOfHousehold') {
@@ -370,19 +375,21 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
     private function hasVulnerabilityCriterion(&$qb, $on, $conditionString, $vulnerabilityName, &$orStatement, int $i) {
+        // Find a way to act directly on the join table beneficiary_vulnerability
         if ($conditionString == "true") {
-            // Find a way to act directly on the join table beneficiary_vulnerability
             $qb->leftJoin($on . '.vulnerabilityCriteria', 'vc'.$i, Join::WITH, 'vc'.$i . '.fieldString = :vulnerability'.$i);
             $orStatement->add($qb->expr()->eq('vc'.$i . '.fieldString', ':vulnerability'.$i));
             // If has criteria, add it to the select to calculate weight later
             $qb->addSelect('vc'.$i . '.fieldString AS ' . $on . $vulnerabilityName.$i);
         } else {
+            $qb->leftJoin($on . '.vulnerabilityCriteria', 'vc'.$i, Join::WITH, 'vc'.$i . '.fieldString <> :vulnerability'.$i);
             $orStatement->add($qb->expr()->eq('SIZE(' . $on . '.vulnerabilityCriteria)', 0))
             ->add($qb->expr()->neq( 'vc'.$i . '.fieldString', ':vulnerability'.$i));
             // The beneficiary doesn't have a vulnerability A if all their vulnerabilities are != A or if they have no vulnerabilities
             // If has criteria, add it to the select to calculate weight later
             $qb->addSelect('(CASE WHEN vc'.$i . '.fieldString <> :vulnerability'.$i . ' THEN vc'.$i . '.fieldString WHEN SIZE(' . $on . '.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS ' . $on . $vulnerabilityName.$i)
-            ->setParameter('noCriteria', 'noCriteria');
+            ->setParameter('noCriteria', 'noCriteria')
+            ->setParameter('null', null);
         }
         $qb->setParameter(':vulnerability'.$i, $vulnerabilityName);
     }
