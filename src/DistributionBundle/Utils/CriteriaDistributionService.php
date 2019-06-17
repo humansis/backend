@@ -62,6 +62,8 @@ class CriteriaDistributionService
         $beneficiaryScores = [];
         $reachedBeneficiaries = [];
 
+        dump($selectableBeneficiaries);
+
         // 1. Calculate the selection score foreach beneficiary
         foreach ($selectableBeneficiaries as $beneficiary) {
             $score = 0;
@@ -104,9 +106,11 @@ class CriteriaDistributionService
                 array_push($reachedBeneficiaries, $selectableBeneficiaryId);
             }
         }
+        
+        dump($beneficiaryScores);
 
         if ($isCount) {
-            return ['number' =>  count($reachedBeneficiaries)];
+            return ['number' =>  $selectableBeneficiaries];
         } else {
             // !!!! Those are ids, not directly beneficiaries !!!!
             return ['finalArray' =>  $reachedBeneficiaries];
