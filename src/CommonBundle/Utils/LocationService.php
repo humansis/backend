@@ -168,6 +168,8 @@ class LocationService
         $response = [];
 
         foreach ($distributions as $distribution) {
+            dump($distribution);
+
             $upcomingDistributionFind = false;
 
             /** @var Location $location */
@@ -202,6 +204,7 @@ class LocationService
                     "date" => $distribution->getDateDistribution(),
                     "project_name" => $distribution->getProject()->getName(),
                     "location_name" => $location_name,
+                    "commodity" => $distribution->getCommodities()[0]->getModalityType(),
                 ];
                 array_push($data['distribution'], $upcomingDistribution);
                 array_push($response, $data);
