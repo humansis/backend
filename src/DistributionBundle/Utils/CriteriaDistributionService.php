@@ -62,7 +62,8 @@ class CriteriaDistributionService
         $beneficiaryScores = [];
         $reachedBeneficiaries = [];
 
-        dump($selectableBeneficiaries);
+        $vulnerabilityCriteria = [];
+        $alreadyPassedOnce = [];
 
         // 1. Calculate the selection score foreach beneficiary
         foreach ($selectableBeneficiaries as $beneficiary) {
@@ -81,12 +82,29 @@ class CriteriaDistributionService
                     } if ($criterion['field_string'] === 'disabledHeadOfHousehold') {
                         $fieldString = 'hhh'.$index.'disabled';
                     }
-        
+                    
                     if (array_key_exists($fieldString.$index, $beneficiary) && !is_null($beneficiary[$fieldString.$index])) {
-                        $score += $criterion['weight'];
+                        // Sometimes the vulnerability criteria are counted several times
+                        if ($criterion['table_string'] === 'vulnerabilityCriteria') {
+                            if (array_key_exists($beneficiary['id'], $vulnerabilityCriteria)) {
+                                if (!in_array($fieldString, $vulnerabilityCriteria[$beneficiary['id']])) {
+                                    array_push($vulnerabilityCriteria[$beneficiary['id']], $fieldString);
+                                    $score += $criterion['weight'];
+                                }
+                            } else {
+                                $vulnerabilityCriteria[$beneficiary['id']] = [$fieldString];
+                                $score += $criterion['weight'];
+                            }
+                        }
+                        // If it exists, it means we are in one of the duplicates from the vulnerability criteria bug
+                        else if (!in_array($beneficiary['id'], $alreadyPassedOnce)) {
+                            $score += $criterion['weight'];
+                        }
                     }
                 }
             }
+
+            array_push($alreadyPassedOnce, $beneficiary['id']);
 
             // 1.2. In case it is a distribution targetting households, gather the score to the head, else just store it
             if ($distributionType === '0') {
@@ -96,7 +114,11 @@ class CriteriaDistributionService
                     $beneficiaryScores[$beneficiary['headId']] = intval($beneficiaryScores[$beneficiary['headId']]) + $score;
                 }
             } else {
-                $beneficiaryScores[$beneficiary['id']] = $score;
+                if (!array_key_exists($beneficiary['id'], $beneficiaryScores)) {
+                    $beneficiaryScores[$beneficiary['id']] = $score;
+                } else {
+                    $beneficiaryScores[$beneficiary['id']] = intval($beneficiaryScores[$beneficiary['id']]) + $score;
+                }
             }
         }
         
@@ -107,10 +129,9 @@ class CriteriaDistributionService
             }
         }
         
-        dump($beneficiaryScores);
 
         if ($isCount) {
-            return ['number' =>  $selectableBeneficiaries];
+            return ['number' =>  count($reachedBeneficiaries)];
         } else {
             // !!!! Those are ids, not directly beneficiaries !!!!
             return ['finalArray' =>  $reachedBeneficiaries];

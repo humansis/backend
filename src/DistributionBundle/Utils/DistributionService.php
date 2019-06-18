@@ -231,20 +231,11 @@ class DistributionService
     public function saveReceivers(DistributionData $distributionData, array $listReceivers)
     {
         foreach ($listReceivers['finalArray'] as $receiver) {
-            if ($receiver instanceof Household) {
-                $head = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($receiver);
-                $distributionBeneficiary = new DistributionBeneficiary();
-                $distributionBeneficiary->setDistributionData($distributionData)
-                    ->setBeneficiary($head)
-                    ->setRemoved(0);
-            } elseif ($receiver instanceof Beneficiary) {
-                $distributionBeneficiary = new DistributionBeneficiary();
-                $distributionBeneficiary->setDistributionData($distributionData)
-                    ->setBeneficiary($receiver)
-                    ->setRemoved(0);
-            } else {
-                throw new \Exception("A problem was found. The distribution has no beneficiary");
-            }
+        $distributionBeneficiary = new DistributionBeneficiary();
+        $distributionBeneficiary->setDistributionData($distributionData)
+            ->setBeneficiary($this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver))
+            ->setRemoved(0);
+           
             $this->em->persist($distributionBeneficiary);
         }
     }

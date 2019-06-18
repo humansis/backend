@@ -265,7 +265,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             } elseif ($criterion['target'] == "Head") {
                 $this->getHeadWithCriterion($qb, $field, $condition, $criterion, $index, $orStatement);
             }
-            if (!is_null($criterion['value_string'])) {
+            if (array_key_exists('value_string', $criterion) && !is_null($criterion['value_string'])) {
                 $qb->setParameter('parameter' . $index, $criterion['value_string']);
             }
         }
@@ -279,8 +279,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         // The selection criteria is a country Specific
         if ($criterion['table_string'] === 'countrySpecific') {
-            $qb->leftJoin('hh.countrySpecificAnswers', 'csa'. $i)
-            ->leftJoin('csa'.$i . '.countrySpecific', 'cs'.$i, Join::WITH, 'csa'.$i . '.answer ' . $condition . ' :parameter'.$i)
+            $qb->leftJoin('hh.countrySpecificAnswers', 'csa'. $i, Join::WITH, 'csa'.$i . '.answer ' . $condition . ' :parameter'.$i)
+            ->leftJoin('csa'.$i . '.countrySpecific', 'cs'.$i, Join::WITH, 'cs'.$i . '.fieldString = :csName'.$i)
             ->setParameter('csName'.$i, $field);
 
             // To validate the criterion, the household has to answer the countrySpecific AND have the good value for it
@@ -288,8 +288,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             $andStatement->add('cs'.$i . '.fieldString = :csName'.$i);
             $andStatement->add('csa'.$i . '.answer ' . $condition . ' :parameter'.$i);
             $orStatement->add($andStatement);
-            $qb->addSelect('(CASE WHEN csa'.$i . '.answer ' . $condition . ' :parameter'.$i . ' THEN csa'.$i . '.answer ELSE :null END) AS ' . $field.$i)
-                ->setParameter('null', null);
+            $qb->addSelect('cs'.$i . '.fieldString AS ' . $field.$i);
         }
 
         // The selection criteria is directly a field in the Household table
@@ -313,9 +312,10 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             } 
             // The selection criteria is the name of the camp in which the household lives
             else if ($field === 'campName') {
-                $qb->leftJoin('hh.householdLocations', 'hl')
-                    ->leftJoin('hl.campAddress', 'ca'.$i)
-                    ->leftJoin('ca'.$i.'.camp', 'c'.$i, Join::WITH, 'c'.$i . '.name = :parameter'.$i);
+                $qb->leftJoin('hh.householdLocations', 'hl'.$i, Join::WITH, 'hl'.$i . '.type = :camp')
+                    ->leftJoin('hl' . $i . '.campAddress', 'ca'.$i)
+                    ->leftJoin('ca'.$i.'.camp', 'c'.$i, Join::WITH, 'c'.$i . '.name = :parameter'.$i)
+                    ->setParameter('camp', 'camp');
                 $orStatement->add('c'.$i . '.name = :parameter'.$i);
                 $qb->addSelect('c'.$i . '.name AS ' . $field.$i);
             }
