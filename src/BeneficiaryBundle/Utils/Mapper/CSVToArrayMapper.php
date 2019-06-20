@@ -102,6 +102,7 @@ class CSVToArrayMapper extends AbstractMapper
                     $dateOfBirth = $row[$mappingCSV['beneficiaries']['date_of_birth']];
                     $status = $row[$mappingCSV['beneficiaries']['status']];
                     $residencyStatus = $row[$mappingCSV['beneficiaries']['residency_status']];
+                    $nationalIdNumber = $row[$mappingCSV['beneficiaries']['national_id_number']];
 
                     // Verify that there are no missing information in each beneficiary
                     if ($givenName == null) {
@@ -117,6 +118,8 @@ class CSVToArrayMapper extends AbstractMapper
                         throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['date_of_birth'].' at the line '.$lineNumber);
                     } elseif ($residencyStatus == null) {
                         throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['residency_status'].' at the line '.$lineNumber);
+                    } elseif(strlen($nationalIdNumber) > 45) {
+                        throw new \Exception('The national Id number is too long at the line '.$lineNumber);
                     }
 
                     // Check that residencyStatus has one of the authorized values
