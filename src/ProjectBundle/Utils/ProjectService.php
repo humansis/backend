@@ -290,7 +290,6 @@ class ProjectService
                     $project->setArchived(true);
                     $this->em->persist($project);
 
-                    $this->archive($project);
                 } catch (\Exception $error) {
                     throw new \Exception("Error archiving project");
                 }

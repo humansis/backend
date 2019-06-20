@@ -98,7 +98,7 @@ class UserService
         
         if (key_exists('projects', $userData)) {
             foreach ($userData['projects'] as $project) {
-                $project = $this->em->getRepository(Project::class)->find($project);
+                $project = $this->em->getRepository(Project::class)->findOneById($project);
 
                 if ($project instanceof Project) {
                     $userProject = new UserProject();
@@ -268,7 +268,7 @@ class UserService
 
         if (key_exists('projects', $userData)) {
             foreach ($userData['projects'] as $project) {
-                $project = $this->em->getRepository(Project::class)->find($project);
+                $project = $this->em->getRepository(Project::class)->findOneById($project);
 
                 if ($project instanceof Project) {
                     $userProject = new UserProject();
