@@ -120,7 +120,7 @@ class Project implements ExportableInterface
     private $usersProject;
 
     /**
-    * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingProject", mappedBy="project", cascade={"persist"})
+    * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingProject", mappedBy="project", cascade={"persist", "remove"})
     **/
     private $reportingProject;
 
