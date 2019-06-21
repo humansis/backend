@@ -107,7 +107,7 @@ class DistributionData implements ExportableInterface
     private $validated = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingDistribution", mappedBy="distribution", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingDistribution", mappedBy="distribution", cascade={"persist", "remove"})
      **/
     private $reportingDistribution;
 
