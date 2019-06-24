@@ -73,7 +73,6 @@ class Product implements ExportableInterface
 
     public function __construct()
     {
-        $this->booklets = new ArrayCollection();
         $this->vouchers = new ArrayCollection();
     }
 
@@ -183,6 +182,7 @@ class Product implements ExportableInterface
     {
         return $this->image;
     }
+
 
     /**
      * @return Collection|Voucher[]

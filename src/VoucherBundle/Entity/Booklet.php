@@ -6,7 +6,6 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use \VoucherBundle\Entity\Product;
 use JMS\Serializer\Annotation\Groups;
 use CommonBundle\Utils\ExportableInterface;
 
@@ -87,7 +86,6 @@ class Booklet implements ExportableInterface
 
     public function __construct()
     {
-        $this->product = new ArrayCollection();
         $this->vouchers = new ArrayCollection();
     }
 
@@ -221,6 +219,7 @@ class Booklet implements ExportableInterface
     {
         return $this->password;
     }
+
 
     /**
      * @return Collection|Voucher[]
