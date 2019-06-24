@@ -13,21 +13,29 @@ class BeneficiaryFixtures extends Fixture
 {
     private $householdArray = [
         [
-          "address_street" => "azerrt",
-          "address_number" => "1",
-          "address_postcode" => "12345",
           "livelihood" => "1",
           "income_level" => 3,
           "notes" => null,
           "latitude" => null,
           "longitude" => null,
-          "location" => [
-            "adm1" => 1,
-            "adm2" => 1,
-            "adm3" => 1,
-            "adm4" => null,
-            "country_iso3" => "KHM",
-          ],
+          "household_locations" => array(
+              [
+                "location_group" => "current",
+                "type" => "residence",
+                "address" =>  [
+                    "street" => "azerrt",
+                    "number" => "1",
+                    "postcode" => "12345",
+                    "location" => [
+                        "adm1" => 1,
+                        "adm2" => 1,
+                        "adm3" => 1,
+                        "adm4" => null,
+                        "country_iso3" => "KHM",
+                    ],
+                ]
+              ]
+            ),
           "country_specific_answers" => [
               [
                 "answer" => "2",
@@ -128,21 +136,29 @@ class BeneficiaryFixtures extends Fixture
           "__country" => "KHM"
         ],
         [
-            "address_street" => "azerrt",
-            "address_number" => "2",
-            "address_postcode" => "12346",
             "livelihood" => "1",
             "income_level" => 4,
             "notes" => null,
             "latitude" => null,
             "longitude" => null,
-            "location" => [
-                "adm1" => 1,
-                "adm2" => 1,
-                "adm3" => 1,
-                "adm4" => null,
-                "country_iso3" => "KHM",
-            ],
+            "household_locations" => array(
+                [
+                  "location_group" => "current",
+                  "type" => "residence",
+                  "address" =>  [
+                      "street" => "azerrt",
+                      "number" => "2",
+                      "postcode" => "12346",
+                      "location" => [
+                          "adm1" => 1,
+                          "adm2" => 1,
+                          "adm3" => 1,
+                          "adm4" => null,
+                          "country_iso3" => "KHM",
+                      ],
+                  ]
+                ]
+              ),
             "country_specific_answers" => [
                 [
                     "answer" => "3",

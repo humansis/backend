@@ -9,7 +9,9 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Entity\HouseholdLocation;
 
 class CSVToArrayMapper extends AbstractMapper
 {
@@ -55,7 +57,7 @@ class CSVToArrayMapper extends AbstractMapper
             }
             // Check if it's a new household or just a new beneficiary in the current household
             // If address_street exists it's a new household
-            if ($formattedHouseholdArray['address_street'] !== null) {
+            if (array_key_exists('household_locations', $formattedHouseholdArray)) {
                 // If there is already a previous household, add it to the list of households and create a new one
                 if (null !== $householdArray) {
                     $listHouseholdArray[] = $householdArray;
@@ -169,6 +171,56 @@ class CSVToArrayMapper extends AbstractMapper
             throw new \Exception('The income level must be between 1 and 5');
         }
 
+        $this->mapLocation($formattedHouseholdArray);
+
+        if ($formattedHouseholdArray['camp']) {
+            if (!$formattedHouseholdArray['tent_number']) {
+                throw new \Exception('You have to enter a tent number');
+            }
+            $campName = $formattedHouseholdArray['camp'];
+            $formattedHouseholdArray['household_locations'] = [
+                [
+                    'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
+                    'type' => HouseholdLocation::LOCATION_TYPE_CAMP,
+                    'camp_address' => [
+                        'camp' => [
+                            'id' => null,
+                            'name' => $campName,
+                            'location' => $formattedHouseholdArray['location']
+                        ],
+                        'tent_number' =>  $formattedHouseholdArray['tent_number'],
+                    ]
+                ]
+            ];
+            $alreadyExistingCamp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $campName]);
+            if ($alreadyExistingCamp) {
+                $formattedHouseholdArray['household_locations'][0]['camp_address']['camp']['id'] = $alreadyExistingCamp->getId();
+            }
+        } else if ($formattedHouseholdArray['address_number']) {
+            if (!$formattedHouseholdArray['address_street'] || !$formattedHouseholdArray['address_postcode']) {
+                throw new \Exception('The address is invalid');
+            }
+            $formattedHouseholdArray['household_locations'] = [
+                [
+                    'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
+                    'type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE,
+                    'address' => [
+                        'number' => $formattedHouseholdArray['address_number'],
+                        'street' =>  $formattedHouseholdArray['address_street'],
+                        'postcode' =>  $formattedHouseholdArray['address_postcode'],
+                        'location' => $formattedHouseholdArray['location']
+                    ]
+                ]
+            ];
+        }
+
+        unset($formattedHouseholdArray['location']);
+        unset($formattedHouseholdArray['address_number']);
+        unset($formattedHouseholdArray['address_street']);
+        unset($formattedHouseholdArray['address_postcode']);
+        unset($formattedHouseholdArray['camp']);
+        unset($formattedHouseholdArray['tent_number']);
+
         // Treatment on field with multiple value or foreign key inside (switch name to id for example)
         try {
             $this->mapCountrySpecifics($mappingCSV, $formattedHouseholdArray, $rowHeader);
@@ -178,7 +230,6 @@ class CSVToArrayMapper extends AbstractMapper
             $this->mapNationalIds($formattedHouseholdArray);
             $this->mapProfile($formattedHouseholdArray);
             $this->mapStatus($formattedHouseholdArray);
-            $this->mapLocation($formattedHouseholdArray);
             $this->mapReferral($formattedHouseholdArray);
             $this->mapLivelihood($formattedHouseholdArray);
         } catch (\Exception $exception) {
@@ -325,7 +376,7 @@ class CSVToArrayMapper extends AbstractMapper
         $location = $formattedHouseholdArray['location'];
 
         if ($location['adm1'] === null && $location['adm2'] === null && $location['adm3'] === null && $location['adm4'] === null) {
-            if ($formattedHouseholdArray['address_street']) {
+            if ($formattedHouseholdArray['address_street'] || $formattedHouseholdArray['camp']) {
                 throw new \Exception('A location is required');
             } else {
                 return;

@@ -51,7 +51,7 @@ class Household
      * First value with a column in the csv which can move, depends on the number of country specifics
      * @var string
      */
-    const firstColumnNonStatic = 'M';
+    const firstColumnNonStatic = 'O';
 
     /**
      * The row index of the header (with the name of country specifics)
@@ -73,41 +73,43 @@ class Household
         "address_street" => "A",
         "address_number" => "B",
         "address_postcode" => "C",
-        "livelihood" => "D",
-        "income_level" => "E",
-        "notes" => "F",
-        "latitude" => "G",
-        "longitude" => "H",
+        "camp" => "D",
+        "tent_number" => "E",
+        "livelihood" => "F",
+        "income_level" => "G",
+        "notes" => "H",
+        "latitude" => "I",
+        "longitude" => "J",
         "location" => [
             // Location
-            "adm1" => "I",
-            "adm2" => "J",
-            "adm3" => "K",
-            "adm4" => "L"
+            "adm1" => "K",
+            "adm2" => "L",
+            "adm3" => "M",
+            "adm4" => "N"
         ],
         // Beneficiary
         "beneficiaries" => [
-            "local_given_name" => "M",
-            "local_family_name" => "N",
-            "en_given_name" => "O",
-            "en_family_name" => "P",
-            "gender" => "Q",
-            "status" => "R",
-            "residency_status" => "S",
-            "date_of_birth" => "T",
-            "vulnerability_criteria" => "U",
-            "phone1_type" => "V",
-            "phone1_prefix" => "W",
-            "phone1_number" => "X",
-            "phone1_proxy" => "Y",
-            "phone2_type" => "Z",
-            "phone2_prefix" => "AA",
-            "phone2_number" => "AB",
-            "phone2_proxy" => "AC",
-            "national_id_type" => "AD",
-            "national_id_number" => "AE",
-            "referral_type" => "AF",
-            "referral_comment" => "AG",
+            "local_given_name" => "O",
+            "local_family_name" => "P",
+            "en_given_name" => "Q",
+            "en_family_name" => "R",
+            "gender" => "S",
+            "status" => "T",
+            "residency_status" => "U",
+            "date_of_birth" => "V",
+            "vulnerability_criteria" => "W",
+            "phone1_type" => "X",
+            "phone1_prefix" => "Y",
+            "phone1_number" => "Z",
+            "phone1_proxy" => "AA",
+            "phone2_type" => "AB",
+            "phone2_prefix" => "AC",
+            "phone2_number" => "AD",
+            "phone2_proxy" => "AE",
+            "national_id_type" => "AF",
+            "national_id_number" => "AG",
+            "referral_type" => "AH",
+            "referral_comment" => "AI",
         ]
     ];
 
@@ -121,30 +123,6 @@ class Household
      * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="address_street", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "FullReceivers"})
-     */
-    private $addressStreet;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="address_number", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "FullReceivers"})
-     */
-    private $addressNumber;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="address_postcode", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "FullReceivers"})
-     */
-    private $addressPostcode;
 
     /**
      * @var int
@@ -177,14 +155,6 @@ class Household
      * @Groups({"FullHousehold"})
      */
     private $longitude;
-
-    /**
-     * @var Location
-     *
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location", cascade={"persist"})
-     * @Groups({"FullHousehold", "SmallHousehold"})
-     */
-    private $location;
 
     /**
      * @var CountrySpecificAnswer
@@ -230,6 +200,12 @@ class Household
      */
     private $incomeLevel;
 
+    /**
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
+     * @Groups({"FullHousehold", "SmallHousehold"})
+     */
+    private $householdLocations;
+
 
     /**
      * Constructor
@@ -262,78 +238,6 @@ class Household
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set addressStreet.
-     *
-     * @param string $addressStreet
-     *
-     * @return Household
-     */
-    public function setAddressStreet($addressStreet)
-    {
-        $this->addressStreet = $addressStreet;
-
-        return $this;
-    }
-
-    /**
-     * Get addressStreet.
-     *
-     * @return string
-     */
-    public function getAddressStreet()
-    {
-        return $this->addressStreet;
-    }
-
-    /**
-     * Set addressNumber.
-     *
-     * @param string $addressNumber
-     *
-     * @return Household
-     */
-    public function setAddressNumber($addressNumber)
-    {
-        $this->addressNumber = $addressNumber;
-
-        return $this;
-    }
-
-    /**
-     * Get addressNumber.
-     *
-     * @return string
-     */
-    public function getAddressNumber()
-    {
-        return $this->addressNumber;
-    }
-
-    /**
-     * Set addressPostcode.
-     *
-     * @param string $addressPostcode
-     *
-     * @return Household
-     */
-    public function setAddressPostcode($addressPostcode)
-    {
-        $this->addressPostcode = $addressPostcode;
-
-        return $this;
-    }
-
-    /**
-     * Get addressPostcode.
-     *
-     * @return string
-     */
-    public function getAddressPostcode()
-    {
-        return $this->addressPostcode;
     }
 
     /**
@@ -382,30 +286,6 @@ class Household
     public function getNotes()
     {
         return $this->notes;
-    }
-
-    /**
-     * Set location.
-     *
-     * @param \CommonBundle\Entity\Location|null $location
-     *
-     * @return Household
-     */
-    public function setLocation(\CommonBundle\Entity\Location $location = null)
-    {
-        $this->location = $location;
-
-        return $this;
-    }
-
-    /**
-     * Get location.
-     *
-     * @return \CommonBundle\Entity\Location|null
-     */
-    public function getLocation()
-    {
-        return $this->location;
     }
 
     /**
@@ -677,6 +557,42 @@ class Household
     public function getIncomeLevel()
     {
         return $this->incomeLevel;
+    }
+
+   /**
+     * Add householdLocation.
+     *
+     * @param \BeneficiaryBundle\Entity\HouseholdLocation $householdLocation
+     *
+     * @return Household
+     */
+    public function addHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
+    {
+        $this->householdLocations[] = $householdLocation;
+        $householdLocation->setHousehold($this);
+        return $this;
+    }
+
+    /**
+     * Remove householdLocation.
+     *
+     * @param \BeneficiaryBundle\Entity\HouseholdLocation $householdLocation
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
+    {
+        return $this->householdLocations->removeElement($householdLocation);
+    }
+
+    /**
+     * Get householdLocations.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getHouseholdLocations()
+    {
+        return $this->householdLocations;
     }
 
 }

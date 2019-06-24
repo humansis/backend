@@ -151,6 +151,38 @@ class LocationController extends Controller
         return new Response($json);
     }
 
+     /**
+     * @Rest\Post("/location/camps", name="all_camps")
+     *
+     * @SWG\Tag(name="Location")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All camps",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Camp::class))
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getAllCamps(Request $request)
+    {
+        $filters = $request->request->all();
+        $locationService = $this->get('location_service');
+        $camps = $locationService->getAllCamps($filters);
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $camps,
+                'json',
+                SerializationContext::create()->setGroups("FullCamp")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
+
 
     /**
     * @Rest\Get("/location/upcoming_distribution", name="all_location")

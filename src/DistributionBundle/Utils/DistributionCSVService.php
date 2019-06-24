@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Utils\ExportCSVService;
@@ -30,6 +31,7 @@ use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
 use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Entity\HouseholdLocation;
 
 /**
  * Class DistributionCSVService
@@ -257,17 +259,92 @@ class DistributionCSVService
                 }
             }
 
+
+            $beneficiaryToCreate['location'] = $locationArray;
+            $this->CSVToArrayMapper->mapLocation($beneficiaryToCreate);
+
+            if ($beneficiaryToCreate['camp']) {
+                if (!$beneficiaryToCreate['tent number']) {
+                    throw new \Exception('You have to enter a tent number');
+                }
+                $campName = $beneficiaryToCreate['camp'];
+                $householdLocations = [
+                    [
+                        'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
+                        'type' => HouseholdLocation::LOCATION_TYPE_CAMP,
+                        'camp_address' => [
+                            'camp' => [
+                                'id' => null,
+                                'name' => $campName,
+                                'location' => $beneficiaryToCreate['location']
+                            ],
+                            'tent_number' =>  $beneficiaryToCreate['tent number'],
+                        ]
+                    ]
+                ];
+                $alreadyExistingCamp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $campName]);
+                if ($alreadyExistingCamp) {
+                    $householdLocations[0]['camp_address']['camp']['id'] = $alreadyExistingCamp->getId();
+                }
+            } else if ($beneficiaryToCreate['addressNumber']) {
+                if (!$beneficiaryToCreate['addressStreet'] || !$beneficiaryToCreate['addressPostcode']) {
+                    throw new \Exception('The address is invalid');
+                }
+                $householdLocations = [
+                    [
+                        'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
+                        'type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE,
+                        'address' => [
+                            'number' => $beneficiaryToCreate['addressNumber'],
+                            'street' =>  $beneficiaryToCreate['addressStreet'],
+                            'postcode' =>  $beneficiaryToCreate['addressPostcode'],
+                            'location' => $beneficiaryToCreate['location']
+                        ]
+                    ]
+                ];
+            }
+
+            $phones = [];
+            for ($i = 1; $i < 3; $i++) {
+                if ($beneficiaryToCreate['type phone ' . $i] && $beneficiaryToCreate['prefix phone ' . $i] &&
+                    $beneficiaryToCreate['phone ' . $i] && $beneficiaryToCreate['proxy phone ' . $i]
+                ) {
+                    array_push($phones, [
+                        'prefix' => $beneficiaryToCreate['prefix phone ' . $i],
+                        'type' => $beneficiaryToCreate['type phone ' . $i],
+                        'proxy' => $beneficiaryToCreate['proxy phone ' . $i],
+                        'number' => strval($beneficiaryToCreate['phone ' . $i])
+
+                    ]);
+                }
+            }
+
+            $nationalIds = [];
+            if ($beneficiaryToCreate['type national ID'] && $beneficiaryToCreate['nationalId']) {
+                array_push($nationalIds, [
+                    'id_type' => $beneficiaryToCreate['type national ID'],
+                    'id_number' => strval($beneficiaryToCreate['nationalId'])
+                ]);
+            }
+
+            $vulnerabilityCriteria = [];
+            $vulnerabilityCriteriaArray = array_map('trim', explode(';', $beneficiaryToCreate['vulnerabilityCriteria']));
+            foreach ($vulnerabilityCriteriaArray as $item) {
+                $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneByFieldString($item);
+                if (!$vulnerabilityCriterion instanceof VulnerabilityCriterion) {
+                    continue;
+                }
+                $vulnerabilityCriteria[] = ['id' => $vulnerabilityCriterion->getId()];
+            }
+
             $householdToCreate = array(
                 "__country" => $countryIso3,
-                "address_street" => $beneficiaryToCreate['addressStreet'],
-                "address_number" => strval($beneficiaryToCreate['addressNumber']),
-                "address_postcode" => strval($beneficiaryToCreate['addressPostcode']),
                 "livelihood" => $beneficiaryToCreate['livelihood'],
+                "household_locations" => $householdLocations,
                 "income_level" => $beneficiaryToCreate['incomeLevel'],
                 "notes" => $beneficiaryToCreate['notes'],
                 "latitude" => strval($beneficiaryToCreate['latitude']),
                 "longitude" => strval($beneficiaryToCreate['longitude']),
-                "location" => $locationArray,
                 "country_specific_answers" => array(),
                 "beneficiaries" => array(
                     array(
@@ -282,17 +359,17 @@ class DistributionCSVService
                         "profile" => array(
                             "photo" => ""
                         ),
-                        "vulnerability_criteria" => array(),
-                        "phones" => array(),
-                        "national_ids" => array(),
+                        "vulnerability_criteria" => $vulnerabilityCriteria,
+                        "phones" => $phones,
+                        "national_ids" => $nationalIds,
                         "referral_type" => $referralType,
                         "referral_comment" => $beneficiaryToCreate['Referral Comment'],
                     )
                 )
             );
 
-            $this->CSVToArrayMapper->mapLocation($householdToCreate);
             $this->CSVToArrayMapper->mapLivelihood($householdToCreate);
+
             $this->householdService->createOrEdit($householdToCreate, array($distributionProject));
             $toCreate = $this->em->getRepository(Beneficiary::class)
                 ->findOneBy(["localGivenName" => $beneficiaryToCreate['localGivenName'], 'localFamilyName' => $beneficiaryToCreate['localFamilyName'], 'gender' => $beneficiaryToCreate['gender']]);

@@ -5,28 +5,28 @@ declare(strict_types=1);
 namespace BeneficiaryBundle\Utils\Mapper;
 
 use ArrayObject;
+use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Exception\MapperException;
 use CommonBundle\Utils\ExportService;
 use DateInterval;
 use DateTime;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Exception as PhpOfficeException;
-use PhpOffice\PhpSpreadsheet\Reader\Exception as PhpOfficeReaderException;
-use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpOfficeWriterException;
-use Symfony\Component\HttpFoundation\File\File;
-use Throwable;
-use BeneficiaryBundle\Entity\CountrySpecific;
 use Doctrine\ORM\EntityManagerInterface;
 use function explode;
 use function implode;
 use function in_array;
 use function microtime;
-use function sprintf;
 use function set_time_limit;
-use function strpos;
+use function sprintf;
 use function str_replace;
+use function strpos;
 use function trim;
+use PhpOffice\PhpSpreadsheet\Exception as PhpOfficeException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Exception as PhpOfficeReaderException;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpOfficeWriterException;
+use Symfony\Component\HttpFoundation\File\File;
+use Throwable;
 
 class SyriaFileToTemplateMapper
 {
@@ -54,7 +54,7 @@ class SyriaFileToTemplateMapper
     private const SPACE_SEPARATOR   = ' ';
     private const BACKSLASH_SEPARATOR = '/';
     
-    private const FIRST_LETTER_NON_STATIC = 'M';
+    private const FIRST_LETTER_NON_STATIC = 'O';
     
     private $numberCountrySpecifics = 0;
 
@@ -211,8 +211,8 @@ class SyriaFileToTemplateMapper
              * members of a family
              * @var mixed[] $mutualOutputRow
              */
-            $mutualOutputRow = [$this->getColumnLetter('AJ') => $indexRow];
-            $secondBeneficiaryValues = [$this->getColumnLetter('AJ') => $indexRow];
+            $mutualOutputRow = [$this->getColumnLetter('AL') => $indexRow];
+            $secondBeneficiaryValues = [$this->getColumnLetter('AL') => $indexRow];
             $secondBeneficiaryExists = false;
 
             /**
@@ -229,13 +229,13 @@ class SyriaFileToTemplateMapper
                 // We store these names in an array
                 $beneficiaryFirstNames = explode(self::BACKSLASH_SEPARATOR, $beneficiaryFirstNames);
                 // Get the first name of the family's head and write it in column L
-                $mutualOutputRow[$this->getColumnLetter('M')] = trim($beneficiaryFirstNames[0]);
+                $mutualOutputRow[$this->getColumnLetter('O')] = trim($beneficiaryFirstNames[0]);
                 // Get the first name of of the second beneficiary and write it in column L
-                $secondBeneficiaryValues[$this->getColumnLetter('M')] = trim($beneficiaryFirstNames[1]);
+                $secondBeneficiaryValues[$this->getColumnLetter('O')] = trim($beneficiaryFirstNames[1]);
                 ;
             } else { // If only one name is found => second beneficiary doesn't exist
                 // If there is a space in the beneficiary's name
-                $mutualOutputRow[$this->getColumnLetter('M')] = trim($beneficiaryFirstNames);
+                $mutualOutputRow[$this->getColumnLetter('O')] = trim($beneficiaryFirstNames);
             }
             $beneficiaryLastNames = $row['C'];
             // If there is a slash in the beneficiary name
@@ -245,20 +245,20 @@ class SyriaFileToTemplateMapper
                 // We store these names in an array
                 $beneficiaryLastNames = explode(self::BACKSLASH_SEPARATOR, $beneficiaryLastNames);
                 // Get the last name of the family's head and write it in column M
-                $mutualOutputRow[$this->getColumnLetter('N')] = trim($beneficiaryLastNames[0]);
+                $mutualOutputRow[$this->getColumnLetter('P')] = trim($beneficiaryLastNames[0]);
                 // Get the last name of of the second beneficiary and write it in column M
-                $secondBeneficiaryValues[$this->getColumnLetter('N')] = trim($beneficiaryLastNames[1]);
+                $secondBeneficiaryValues[$this->getColumnLetter('P')] = trim($beneficiaryLastNames[1]);
                 ;
             } else { // If only one name is found => second beneficiary doesn't exist
                 // If there is a space in the beneficiary's name
-                $mutualOutputRow[$this->getColumnLetter('N')] = trim($beneficiaryLastNames);
+                $mutualOutputRow[$this->getColumnLetter('P')] = trim($beneficiaryLastNames);
             }
 
             // Get beneficiary's id
             $beneficiaryId = strval($row['D']);
             if (!empty($beneficiaryId)) {
                 // Writes 'ID Card' in the column AC
-                $mutualOutputRow[$this->getColumnLetter('AD')] = 'ID Card';
+                $mutualOutputRow[$this->getColumnLetter('AF')] = 'ID Card';
                 // If there is a slash in the id => two ids
                 if (strpos($beneficiaryId, self::BACKSLASH_SEPARATOR) !== false) {
                     $beneficiariesId = explode(self::BACKSLASH_SEPARATOR, $beneficiaryId);
@@ -266,7 +266,7 @@ class SyriaFileToTemplateMapper
 
                     if ($secondBeneficiaryExists) {
                         $secondBeneficiaryValues[$this->getColumnLetter($defaultMapping['C'])] = trim($beneficiariesId[1]);
-                        $secondBeneficiaryValues[$this->getColumnLetter('AD')] = 'ID Card';
+                        $secondBeneficiaryValues[$this->getColumnLetter('AF')] = 'ID Card';
                     } else {
                         // File badly filled in
                         // throw new Exception('Die' . $indexRow);
@@ -279,24 +279,23 @@ class SyriaFileToTemplateMapper
             // Get the gender of the family's head
             $headGender = $row['U'];
             // Writes the gender in column N
-            $mutualOutputRow[$this->getColumnLetter('Q')] = intval($headGender) === 1 ? self::FEMALE : self::MALE;
+            $mutualOutputRow[$this->getColumnLetter('S')] = intval($headGender) === 1 ? self::FEMALE : self::MALE;
             // Residency status
             $houseHoldResidencyStatus = intval($row['F']) === 1 ? 'IDP' : 'resident';
-            $mutualOutputRow[$this->getColumnLetter('S')] = $houseHoldResidencyStatus;
-            $secondBeneficiaryValues[$this->getColumnLetter('S')] = $houseHoldResidencyStatus;
+            $mutualOutputRow[$this->getColumnLetter('U')] = $houseHoldResidencyStatus;
+            $secondBeneficiaryValues[$this->getColumnLetter('U')] = $houseHoldResidencyStatus;
 
             // Set head of household status
-            $mutualOutputRow[$this->getColumnLetter('R')] = 'true';
+            $mutualOutputRow[$this->getColumnLetter('T')] = 'true';
             if ($secondBeneficiaryExists) {
-                $secondBeneficiaryValues[$this->getColumnLetter('R')] = 'false';
+                $secondBeneficiaryValues[$this->getColumnLetter('T')] = 'false';
             }
 
             // B. LET ADD HEAD OF HOUSEHOLD and its second
             $headOfHouseholdRow = new ArrayObject($mutualOutputRow);
             // address
-            $headOfHouseholdRow[$this->getColumnLetter('A')] = $addressStreet;
-            $headOfHouseholdRow[$this->getColumnLetter('B')] = $row['A'];
-            $headOfHouseholdRow[$this->getColumnLetter('C')] = 'Unknown';
+            $headOfHouseholdRow[$this->getColumnLetter('D')] = $addressStreet;
+            $headOfHouseholdRow[$this->getColumnLetter('E')] = $row['A'];
             $headOfHouseholdRow[$this->getColumnLetter($defaultMapping['adm1'])] = $location[0];
             $headOfHouseholdRow[$this->getColumnLetter($defaultMapping['adm2'])] = $location[1];
             $headOfHouseholdRow[$this->getColumnLetter($defaultMapping['adm3'])] = $location[2];
@@ -304,10 +303,10 @@ class SyriaFileToTemplateMapper
 
             // Head phone number
             if (!empty($row['E'])) {
-                $headOfHouseholdRow[$this->getColumnLetter('V')] = 'Mobile';
-                $headOfHouseholdRow[$this->getColumnLetter('W')] = '\'+963';
-                $headOfHouseholdRow[$this->getColumnLetter('X')] = '\'' . $row['E'];
-                $headOfHouseholdRow[$this->getColumnLetter('Y')] = 'N';
+                $headOfHouseholdRow[$this->getColumnLetter('X')] = 'Mobile';
+                $headOfHouseholdRow[$this->getColumnLetter('Y')] = '\'+963';
+                $headOfHouseholdRow[$this->getColumnLetter('Z')] = '\'' . $row['E'];
+                $headOfHouseholdRow[$this->getColumnLetter('AA')] = 'N';
             }
 
             /**
@@ -336,7 +335,7 @@ class SyriaFileToTemplateMapper
                         //we potentially found the first older person having the head of household sex
                         //we remove him
 
-                        $headOfHouseholdRow[$this->getColumnLetter('T')] = $this->getBirthday($letter);
+                        $headOfHouseholdRow[$this->getColumnLetter('V')] = $this->getBirthday($letter);
 
                         $row[$letter] = --$cellValue;
                         $mainHeadRemoved = true;
@@ -352,8 +351,8 @@ class SyriaFileToTemplateMapper
                     $row[$letter] = intval($row[$letter]) - 1;
                     $subHeadRemoved = true;
                     // set second beneficiary sex and birthday: odd means woman
-                    $secondBeneficiaryValues[$this->getColumnLetter('Q')] = $i % 2 != 0 ? self::FEMALE : self::MALE;
-                    $secondBeneficiaryValues[$this->getColumnLetter('T')] = $this->getBirthday($letter);
+                    $secondBeneficiaryValues[$this->getColumnLetter('S')] = $i % 2 != 0 ? self::FEMALE : self::MALE;
+                    $secondBeneficiaryValues[$this->getColumnLetter('V')] = $this->getBirthday($letter);
 
                     if ($mainHeadRemoved) {
                         break;
@@ -371,7 +370,7 @@ class SyriaFileToTemplateMapper
             // knowing that mainhead and subhead have been removed
 
             // remove head status for beneficiaries
-            $mutualOutputRow[$this->getColumnLetter('R')] = 'false';
+            $mutualOutputRow[$this->getColumnLetter('T')] = 'false';
             // starting from here, we create a row per value of column
             $mutualOutputRowToArrayObject = new ArrayObject($mutualOutputRow);
             $letters = range('J', 'S');
@@ -400,18 +399,18 @@ class SyriaFileToTemplateMapper
                     $outputRow = $mutualOutputRowToArrayObject->getArrayCopy();
 
                     // given name
-                    $outputRow[$this->getColumnLetter('M')] = sprintf("%s_%s_%s", $outputRow[$this->getColumnLetter('N')], $column, $j);
+                    $outputRow[$this->getColumnLetter('O')] = sprintf("%s_%s_%s", $outputRow[$this->getColumnLetter('P')], $column, $j);
 
                     // birthday
-                    $outputRow[$this->getColumnLetter('T')] = $this->getBirthday($column);
+                    $outputRow[$this->getColumnLetter('V')] = $this->getBirthday($column);
 
                     // sex
                     if (in_array($column, ['K', 'M', 'O', 'Q', 'S'])) {
-                        $outputRow[$this->getColumnLetter('Q')] = self::FEMALE;
+                        $outputRow[$this->getColumnLetter('S')] = self::FEMALE;
                     } elseif (in_array($column, ['J', 'L', 'N', 'P', 'R'])) {
-                        $outputRow[$this->getColumnLetter('Q')] = self::MALE;
+                        $outputRow[$this->getColumnLetter('S')] = self::MALE;
                     } else {
-                        $outputRow[$this->getColumnLetter('Q')] = $genders[array_rand($genders)];
+                        $outputRow[$this->getColumnLetter('S')] = $genders[array_rand($genders)];
                     }
 
                     $outputRows[] = $outputRow;
@@ -438,39 +437,41 @@ class SyriaFileToTemplateMapper
             'A' => 'Address street',
             'B' => 'Address number',
             'C' => 'Address postcode',
-            'D' => 'Livelihood',
-            'E' => 'Income level',
-            'F' => 'Notes',
-            'G' => 'Latitude',
-            'H' => 'Longitude',
-            'I' => 'Adm1',
-            'J' => 'Adm2',
-            'K' => 'Adm3',
-            'L' => 'Adm4'
+            'D' => 'Camp',
+            'E' => 'Tent number',
+            'F' => 'Livelihood',
+            'G' => 'Income level',
+            'H' => 'Notes',
+            'I' => 'Latitude',
+            'J' => 'Longitude',
+            'K' => 'Adm1',
+            'L' => 'Adm2',
+            'M' => 'Adm3',
+            'N' => 'Adm4'
         ];
         
         $dynamicColums = [
-            'M' => 'Local given name',
-            'N' => 'Local family name',
-            'O' => 'English given name',
-            'P' => 'English family name',
-            'Q' => 'Gender',
-            'R' => 'Head',
-            'S' => 'Residency Status',
-            'T' => 'Date of birth',
-            'U' => 'Vulnerability criteria',
-            'V' => 'Type phone 1',
-            'W' => 'Prefix phone 1',
-            'X' => 'Number phone 1',
-            'Y' => 'Proxy phone 1',
-            'Z' => 'Type phone 2',
-            'AA' => 'Prefix phone 2',
-            'AB' => 'Number phone 2',
-            'AC' => 'Proxy phone 2',
-            'AD' => 'Type national ID',
-            'AE' => 'Number national ID',
-            'AF' => 'Referral Type',
-            'AG' => 'Referral Comment',
+            'O' => 'Local given name',
+            'P' => 'Local family name',
+            'Q' => 'English given name',
+            'R' => 'English family name',
+            'S' => 'Gender',
+            'T' => 'Head',
+            'U' => 'Residency Status',
+            'V' => 'Date of birth',
+            'W' => 'Vulnerability criteria',
+            'X' => 'Type phone 1',
+            'Y' => 'Prefix phone 1',
+            'Z' => 'Number phone 1',
+            'AA' => 'Proxy phone 1',
+            'AB' => 'Type phone 2',
+            'AC' => 'Prefix phone 2',
+            'AD' => 'Number phone 2',
+            'AE' => 'Proxy phone 2',
+            'AF' => 'Type national ID',
+            'AG' => 'Number national ID',
+            'AH' => 'Referral Type',
+            'AI' => 'Referral Comment',
         ];
         
         $column = self::FIRST_LETTER_NON_STATIC;
@@ -504,12 +505,12 @@ class SyriaFileToTemplateMapper
 
         $this->mapping = [
             self::INPUT_COLUMN_START => '',  // id
-            'B' => 'B',  // tent number
-            'C' => 'AE',  // id number ob beneficiary
-            'adm1' => 'I',
-            'adm2' => 'J',
-            'adm3' => 'K',
-            'adm4' => 'L',
+            'B' => 'E',  // tent number
+            'C' => 'AG',  // id number ob beneficiary
+            'adm1' => 'K',
+            'adm2' => 'L',
+            'adm3' => 'M',
+            'adm4' => 'N',
             self::INPUT_COLUMN_END => '',  // Signature / Thumbprint of beneficiary
         ];
 
