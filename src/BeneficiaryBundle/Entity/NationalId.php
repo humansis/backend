@@ -26,7 +26,7 @@ class NationalId
     /**
      * @var string
      *
-     * @ORM\Column(name="id_number", type="string", length=45)
+     * @ORM\Column(name="id_number", type="string", length=255)
      * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $idNumber;
