@@ -168,8 +168,6 @@ class LocationService
         $response = [];
 
         foreach ($distributions as $distribution) {
-            dump($distribution);
-
             $upcomingDistributionFind = false;
 
             /** @var Location $location */
