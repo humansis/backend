@@ -75,12 +75,6 @@ class ProjectDataRetriever extends AbstractDataRetriever
 //                $qb->select("CONCAT(rv.unity, '/', p.name) AS name, p.name AS project")
 //                    ->groupBy('name', 'project');
                 break;
-            case 'BMSU_Project_PV':
-                $qb->select('p.name AS name', 'p.id AS id')
-                    ->groupBy('name', 'id');
-                break;
-            default:
-                $qb->select('');
         }
 
         return $qb;
@@ -237,19 +231,6 @@ class ProjectDataRetriever extends AbstractDataRetriever
     {
         $qb = $this->getReportingValue('BMSU_Project_TVS', $filters);
         $qb = $this->conditionSelect($qb, 'BMSU_Project_TVS');
-        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
-        return $result;
-    }
-
-    /**
-     * Get the total of value in a project
-     * @param array $filters
-     * @return mixed
-     */
-    public function BMSU_Project_PV(array $filters)
-    {
-        $qb = $this->getReportingValue('BMSU_Project_PV', $filters);
-        $qb = $this->conditionSelect($qb, 'BMSU_Project_PV');
         $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
     }

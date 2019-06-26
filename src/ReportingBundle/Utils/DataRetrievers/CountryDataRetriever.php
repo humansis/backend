@@ -91,19 +91,6 @@ class CountryDataRetriever extends AbstractDataRetriever
     }
 
     /**
-     * Get total funding by country
-     * @param array $filters
-     * @return mixed
-     */
-    public function BMS_Country_TF(array $filters)
-    {
-        $qb = $this->getReportingValue('BMS_Country_TF', $filters);
-        $qb = $this->conditionSelect($qb);
-        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
-        return $result;
-    }
-
-    /**
      * Get total of enrolled beneficiaries by country
      * @param array $filters
      * @return mixed

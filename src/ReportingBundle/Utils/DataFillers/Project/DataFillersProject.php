@@ -473,45 +473,6 @@ class DataFillersProject
     }
 
     /**
-     * Fill in ReportingValue and ReportingProject with total value of project
-     */
-    public function BMSU_Project_PV()
-    {
-        $this->em->getConnection()->beginTransaction();
-        try {
-            $this->repository = $this->em->getRepository(Project::class);
-            $qb = $this->repository->createQueryBuilder('p')
-                                   ->select('p.value AS value', 'p.id as project');
-            $results = $qb->getQuery()->getArrayResult();
-            $reference = $this->getReferenceId("BMSU_Project_PV");
-            foreach ($results as $result) {
-                $new_value = new ReportingValue();
-                $new_value->setValue($result['value']);
-                $new_value->setUnity('project value');
-                $new_value->setCreationDate(new \DateTime());
-
-                $this->em->persist($new_value);
-                $this->em->flush();
-
-                $this->repository = $this->em->getRepository(Project::class);
-                $project = $this->repository->findOneBy(['id' => $result['project']]);
-
-                $new_reportingProject = new ReportingProject();
-                $new_reportingProject->setIndicator($reference);
-                $new_reportingProject->setValue($new_value);
-                $new_reportingProject->setProject($project);
-
-                $this->em->persist($new_reportingProject);
-                $this->em->flush();
-            }
-            $this->em->getConnection()->commit();
-        } catch (Exception $e) {
-            $this->em->getConnection()->rollback();
-            throw $e;
-        }
-    }
-
-    /**
      * Use to sort beneficiary by age interval
      * If the age is in the interval, increment the corresponding counter
      * @param $ages

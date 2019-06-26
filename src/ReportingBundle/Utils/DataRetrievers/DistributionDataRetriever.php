@@ -190,9 +190,6 @@ class DistributionDataRetriever extends AbstractDataRetriever
      */
     public function BMS_Distribution_PPV(array $filters)
     {
-//        $repositoryProject = $this->em->getRepository(Project::class);
-//
-//        $projectValue = $this->project->BMSU_Project_PV($filters);
         return $this->pieValuesToPieValuePercentage($this->BMS_Distribution_TDV($filters));
 
 
