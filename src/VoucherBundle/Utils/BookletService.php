@@ -561,12 +561,23 @@ class BookletService
 
             $commonFields = $beneficiary->getCommonExportFields();
 
+            $products = [];
+            if ($transactionBooklet) {
+                foreach($transactionBooklet->getVouchers() as $voucher) {
+                    foreach ($voucher->getProducts() as $product) {
+                        array_push($products, $product->getName());
+                    }
+                }
+            }
+            $products = implode(', ', array_unique($products));
+
             array_push($exportableTable,
                 array_merge($commonFields, array(
                 "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
                 "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
                 "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
                 "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
+                "Purchased items" => $products
                 ))
             );
         }
