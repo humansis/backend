@@ -159,7 +159,6 @@ class DistributionDataRetriever extends AbstractDataRetriever
     {
         $men = $this->BMSU_Distribution_NM($filters);
         $women = $this->BMSU_Distribution_NW($filters);
-        dump($men, $women);
         $menAndWomen = [];
 
         foreach(array_unique(array_merge(array_keys($men), array_keys($women))) as $period) {
@@ -188,12 +187,36 @@ class DistributionDataRetriever extends AbstractDataRetriever
      * @param array $filters
      * @return array
      */
-    public function BMS_Distribution_PPV(array $filters)
+    public function BMS_Distribution_BR(array $filters)
     {
-        return $this->pieValuesToPieValuePercentage($this->BMS_Distribution_TDV($filters));
+        $beneficiariesEnrolled = $this->BMS_Distribution_NEB($filters);
 
+        $projectTarget = $this->em->createQueryBuilder()
+            ->from(Project::class, 'p')
+            ->where('p.id = :id')
+            ->setParameter('id', $filters['projects'][0])
+            ->select('p.target')
+            ->getQuery()->getSingleScalarResult();
 
-        // TODO: Change this in accordance to the new project value (expected beneficiaries)
+        foreach ($beneficiariesEnrolled as $period => $periodValues) {
+            $totalReached = 0;
+            foreach ($periodValues as $index => $value) {
+                $percentage = $value['value'] / $projectTarget * 100;
+
+                $beneficiariesEnrolled[$period][$index]['unity'] = $value['name'];
+                $beneficiariesEnrolled[$period][$index]['value'] = $percentage;
+
+                $totalReached += $percentage;
+                unset($beneficiariesEnrolled[$period][$index]['name']);
+            }
+            $beneficiariesEnrolled[$period][] = [
+                'date' => $period,
+                'unity' => "Not reached",
+                'value' => max(100 - $totalReached, 0)
+            ];
+        }
+
+        return $beneficiariesEnrolled;
     }
 
 

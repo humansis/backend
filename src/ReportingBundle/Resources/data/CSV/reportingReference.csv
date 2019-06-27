@@ -7,19 +7,19 @@ Donors,BMS_Project_D,frequency,number
 Household Served,BMS_Project_HS,frequency,number
 Number Men and Women,BMS_Project_NMW,frequency,pie
 Age Breakdown,BMS_Project_AB,frequency,pie
-Vulnerabilities Served,BMS_Project_PVS,frequency,pie
+Percentage of Vulnerabilities Served,BMS_Project_PVS,frequency,pie
 Number of Men,BMSU_Project_NM,,
 Number of Women,BMSU_Project_NW,,
-Total of Vulnerabilities  Served,BMSU_Project_TVS,,
+Total of Vulnerabilities Served,BMSU_Project_TVS,,
 Total of Vulnerabilities Served by Vulnerabilities,BMSU_Project_TVSV,,
 Number of Enrolled Beneficiaries,BMS_Distribution_NEB,frequency,number
 Total Distribution Value,BMS_Distribution_TDV,frequency,number
-////////// Percentage of Project Value,BMS_Distribution_PPV,frequency,grid
+Percentage of Beneficiaries Reached,BMS_Distribution_BR,frequency,pie
 Modality,BMS_Distribution_M,frequency,number
 Number Men and Women,BMS_Distribution_NMW,frequency,pie
 Age Breakdown,BMS_Distribution_AB,frequency,pie
-Vulnerabilities Served,BMS_Distribution_PVS,frequency,pie
+Percentage of Vulnerabilities Served,BMS_Distribution_PVS,frequency,pie
 Number of Men,BMSU_Distribution_NM,,
 Number of Women,BMSU_Distribution_NW,,
-Vulnerabilities  Served,BMSU_Distribution_TVS,,
+Vulnerabilities Served,BMSU_Distribution_TVS,,
 Vulnerabilities Served by Vulnerabilities,BMSU_Distribution_TVSV,,
