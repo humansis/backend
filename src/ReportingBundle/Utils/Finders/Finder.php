@@ -34,27 +34,35 @@ class Finder implements FinderInterface
     }
 
     /**
+     * @param string|null $type
+     * @return ReportingIndicator[]
+     */
+    public function getIndicatorsByType(string $type = null) {
+        $this->repository = $this->em->getRepository(ReportingIndicator::class);
+
+        return $this->repository->findByType($type);
+    }
+
+    /**
      * Search an indicator with its code and return indicator with its id, its name and the type of its graph
      *
-     * @return object
+     * @return array
      */
-    public function findIndicator()
+    public function generateIndicatorsData()
     {
         $data = [];
-        $this->repository = $this->em->getRepository(ReportingIndicator::class);
-        $indicators = $this->repository->findAll();
+        $indicators = $this->getIndicatorsByType();
         foreach ($indicators as $indicator) {
-            if (preg_match("#^BMS_#", $indicator->getCode())) {
-                $type = explode('_', $indicator->getCode());
-                $infoIndicator = [
-                            'type_graph' => $indicator->getGraph(),
-                            'id' => $indicator->getId(),
-                            'full_name' => $indicator->getReference(),
-                            'filter' => $indicator->getFilters(),
-                            'type' => $type[1]
-                        ];
-                array_push($data, (object) $infoIndicator);
-            }
+            $type = explode('_', $indicator->getCode());
+            $infoIndicator = [
+                        'type_graph' => $indicator->getGraph(),
+                        'id' => $indicator->getId(),
+                        'full_name' => $indicator->getReference(),
+                        'filter' => $indicator->getFilters(),
+                        'type' => $type[1],
+                        'code' => $indicator->getCode(),
+                    ];
+            array_push($data, (object) $infoIndicator);
         }
         return $data;
     }

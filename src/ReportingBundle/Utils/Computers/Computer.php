@@ -5,9 +5,9 @@ namespace ReportingBundle\Utils\Computers;
 use ReportingBundle\Utils\Computers\ComputerInterface;
 use ReportingBundle\Utils\Model\IndicatorInterface;
 
-use ReportingBundle\Utils\DataRetrievers\CountryDataRetrievers;
-use ReportingBundle\Utils\DataRetrievers\ProjectDataRetrievers;
-use ReportingBundle\Utils\DataRetrievers\DistributionDataRetrievers;
+use ReportingBundle\Utils\DataRetrievers\CountryDataRetriever;
+use ReportingBundle\Utils\DataRetrievers\ProjectDataRetriever;
+use ReportingBundle\Utils\DataRetrievers\DistributionDataRetriever;
 
 use Doctrine\ORM\EntityManager;
 
@@ -23,7 +23,7 @@ class Computer implements ComputerInterface
      */
     private $em;
     /**
-     * @var ProjectDataRetrievers
+     * @var ProjectDataRetriever
      */
     private $project;
 
@@ -31,9 +31,9 @@ class Computer implements ComputerInterface
     /**
      * Computer constructor.
      * @param EntityManager $em
-     * @param ProjectDataRetrievers $project
+     * @param ProjectDataRetriever $project
      */
-    public function __construct(EntityManager $em, ProjectDataRetrievers $project)
+    public function __construct(EntityManager $em, ProjectDataRetriever $project)
     {
         $this->em = $em;
         $this->project = $project;
@@ -53,20 +53,21 @@ class Computer implements ComputerInterface
         ];
 
         if (preg_match("#^BMS_C#", $indicator->getCode())) {
-            if (is_callable(array(new CountryDataRetrievers($this->em), $indicator->getCode()))) {
-                return call_user_func_array([new CountryDataRetrievers($this->em), $indicator->getCode()], [$filters]);
+            if (is_callable(array(new CountryDataRetriever($this->em), $indicator->getCode()))) {
+
+                return call_user_func_array([new CountryDataRetriever($this->em), $indicator->getCode()], [$filters]);
             }
         }
 
         if (preg_match("#^BMS_P#", $indicator->getCode())) {
-            if (is_callable(array(new ProjectDataRetrievers($this->em), $indicator->getCode()))) {
-                return call_user_func_array([new ProjectDataRetrievers($this->em), $indicator->getCode()], [$filters]);
+            if (is_callable(array(new ProjectDataRetriever($this->em), $indicator->getCode()))) {
+                return call_user_func_array([new ProjectDataRetriever($this->em), $indicator->getCode()], [$filters]);
             }
         }
 
         if (preg_match("#^BMS_D#", $indicator->getCode())) {
-            if (is_callable(array(new DistributionDataRetrievers($this->em, $this->project), $indicator->getCode()))) {
-                return call_user_func_array([new DistributionDataRetrievers($this->em, $this->project), $indicator->getCode()], [$filters]);
+            if (is_callable(array(new DistributionDataRetriever($this->em, $this->project), $indicator->getCode()))) {
+                return call_user_func_array([new DistributionDataRetriever($this->em, $this->project), $indicator->getCode()], [$filters]);
             }
         }
     }

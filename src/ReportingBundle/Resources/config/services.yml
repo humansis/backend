@@ -41,17 +41,17 @@ services:
     ############################### Data Retrievers ###############################
 
     reporting.data_retrievers.country:
-        class: ReportingBundle\Utils\DataRetrievers\CountryDataRetrievers
+        class: ReportingBundle\Utils\DataRetrievers\CountryDataRetriever
         arguments: ['@doctrine.orm.entity_manager']
         public: true
 
     reporting.data_retrievers.project:
-        class: ReportingBundle\Utils\DataRetrievers\ProjectDataRetrievers
+        class: ReportingBundle\Utils\DataRetrievers\ProjectDataRetriever
         arguments: ['@doctrine.orm.entity_manager']
         public: true
 
     reporting.data_retrievers.distribution:
-        class: ReportingBundle\Utils\DataRetrievers\DistributionDataRetrievers
+        class: ReportingBundle\Utils\DataRetrievers\DistributionDataRetriever
         arguments: ['@doctrine.orm.entity_manager', '@reporting.data_retrievers.project']
         public: true
 

@@ -64,6 +64,44 @@ class DataFillersProject
     }
 
     /**
+     * Fill in ReportingValue and ReportingProject with name of donors
+     */
+    public function BMS_Project_D()
+    {
+        $this->repository = $this->em->getRepository(Donor::class);
+        $qb = $this->repository->createQueryBuilder('d')
+            ->leftJoin('d.projects', 'p')
+            ->select('d.shortname as donor', 'p.id as project')
+            ->groupBy('donor, project');
+        $results = $qb->getQuery()->getArrayResult();
+
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $reference = $this->getReferenceId("BMS_Project_D");
+            foreach ($results as $result) {
+                $new_value = new ReportingValue();
+                $new_value->setValue(1);
+                $new_value->setUnity($result['donor']);
+                $new_value->setCreationDate(new \DateTime());
+
+                $this->em->persist($new_value);
+
+                $new_reportingProject = new ReportingProject();
+                $new_reportingProject->setIndicator($reference);
+                $new_reportingProject->setValue($new_value);
+                $new_reportingProject->setProject($this->em->getRepository(Project::class)->find($result['project']));
+
+                $this->em->persist($new_reportingProject);
+                $this->em->flush();
+            }
+            $this->em->getConnection()->commit();
+        } catch (Exception $e) {
+            $this->em->getConnection()->rollback();
+            throw $e;
+        }
+    }
+
+    /**
      * Fill in ReportingValue and ReportingProject with number of Men in a project
      */
     public function BMSU_Project_NM()
@@ -324,48 +362,6 @@ class DataFillersProject
         }
     }
 
-    /**
-     * Fill in ReportingValue and ReportingProject with name of donors
-     */
-    public function BMS_Project_D()
-    {
-        $projects = $this->getProject();
-        foreach ($projects as $project) {
-            foreach ($project->getDonors() as $donor) {
-                $this->repository = $this->em->getRepository(Donor::class);
-                $qb = $this->repository->createQueryBuilder('d')
-                                        ->where('d.id = :donor')
-                                            ->setParameter('donor', $donor->getId())
-                                        ->select("CONCAT(d.fullname,' ',d.shortname) as value");
-                $results = $qb->getQuery()->getArrayResult();
-                $this->em->getConnection()->beginTransaction();
-                try {
-                    $reference = $this->getReferenceId("BMS_Project_D");
-                    foreach ($results as $result) {
-                        $new_value = new ReportingValue();
-                        $new_value->setValue($result['value']);
-                        $new_value->setUnity($project->getName());
-                        $new_value->setCreationDate(new \DateTime());
-
-                        $this->em->persist($new_value);
-                        $this->em->flush();
-
-                        $new_reportingProject = new ReportingProject();
-                        $new_reportingProject->setIndicator($reference);
-                        $new_reportingProject->setValue($new_value);
-                        $new_reportingProject->setProject($project);
-
-                        $this->em->persist($new_reportingProject);
-                        $this->em->flush();
-                    }
-                    $this->em->getConnection()->commit();
-                } catch (Exception $e) {
-                    $this->em->getConnection()->rollback();
-                    throw $e;
-                }
-            }
-        }
-    }
 
     /**
      * Fill in ReportingValue and ReportingProject with number of household served in a project
@@ -473,45 +469,6 @@ class DataFillersProject
                     throw $e;
                 }
             }
-        }
-    }
-
-    /**
-     * Fill in ReportingValue and ReportingProject with total value of project
-     */
-    public function BMSU_Project_PV()
-    {
-        $this->em->getConnection()->beginTransaction();
-        try {
-            $this->repository = $this->em->getRepository(Project::class);
-            $qb = $this->repository->createQueryBuilder('p')
-                                   ->select('p.value AS value', 'p.id as project');
-            $results = $qb->getQuery()->getArrayResult();
-            $reference = $this->getReferenceId("BMSU_Project_PV");
-            foreach ($results as $result) {
-                $new_value = new ReportingValue();
-                $new_value->setValue($result['value']);
-                $new_value->setUnity('project value');
-                $new_value->setCreationDate(new \DateTime());
-
-                $this->em->persist($new_value);
-                $this->em->flush();
-
-                $this->repository = $this->em->getRepository(Project::class);
-                $project = $this->repository->findOneBy(['id' => $result['project']]);
-
-                $new_reportingProject = new ReportingProject();
-                $new_reportingProject->setIndicator($reference);
-                $new_reportingProject->setValue($new_value);
-                $new_reportingProject->setProject($project);
-
-                $this->em->persist($new_reportingProject);
-                $this->em->flush();
-            }
-            $this->em->getConnection()->commit();
-        } catch (Exception $e) {
-            $this->em->getConnection()->rollback();
-            throw $e;
         }
     }
 
