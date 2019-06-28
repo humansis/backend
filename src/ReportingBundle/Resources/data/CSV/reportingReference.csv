@@ -12,6 +12,7 @@ Number of Men,BMSU_Project_NM,,
 Number of Women,BMSU_Project_NW,,
 Total of Vulnerabilities Served,BMSU_Project_TVS,,
 Total of Vulnerabilities Served by Vulnerabilities,BMSU_Project_TVSV,,
+Percentage of Beneficiaries Reached,BMS_Project_BR,frequency,number
 Number of Enrolled Beneficiaries,BMS_Distribution_NEB,frequency,number
 Total Distribution Value,BMS_Distribution_TDV,frequency,number
 Percentage of Beneficiaries Reached,BMS_Distribution_BR,frequency,pie
@@ -23,3 +24,4 @@ Number of Men,BMSU_Distribution_NM,,
 Number of Women,BMSU_Distribution_NW,,
 Vulnerabilities Served,BMSU_Distribution_TVS,,
 Vulnerabilities Served by Vulnerabilities,BMSU_Distribution_TVSV,,
+Percentage of Beneficiaries Reached,BMS_Distribution_BR,frequency,pie

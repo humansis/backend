@@ -5,6 +5,7 @@ namespace ReportingBundle\Utils\DataRetrievers;
 use Doctrine\ORM\EntityManager;
 
 use Doctrine\ORM\QueryBuilder;
+use ProjectBundle\Entity\Project;
 use ReportingBundle\Entity\ReportingProject;
 
 /**
@@ -63,17 +64,15 @@ class ProjectDataRetriever extends AbstractDataRetriever
      */
     public function conditionSelect(QueryBuilder $qb, $nameFunction)
     {
-
         switch ($nameFunction) {
             case 'BMS_Project_HS':
             case 'BMS_Project_D':
                 $qb->select('p.name AS name')
                     ->groupBy('name');
                 break;
-            case 'BMSU_Project_NM':
-            case 'BMSU_Project_NW':
-//                $qb->select("CONCAT(rv.unity, '/', p.name) AS name, p.name AS project")
-//                    ->groupBy('name', 'project');
+            case 'BMS_Project_BR':
+                $qb->select('p.name AS name', 'p.target AS target')
+                    ->groupBy('name', 'target');
                 break;
         }
 
@@ -233,5 +232,19 @@ class ProjectDataRetriever extends AbstractDataRetriever
         $qb = $this->conditionSelect($qb, 'BMSU_Project_TVS');
         $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
         return $result;
+    }
+
+    /**
+     * Get the percentage of target beneficiaries compared to actually served for project
+     * @param array $filters
+     * @return mixed
+     */
+    public function BMS_Project_BR(array $filters)
+    {
+        $qb = $this->getReportingValue('BMS_Project_BR', $filters);
+        $qb = $this->conditionSelect($qb, 'BMS_Project_BR');
+        $result = $this->formatByFrequency($qb, $filters['frequency'], $filters['period']);
+        return $result;
+
     }
 }

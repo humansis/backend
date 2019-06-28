@@ -57,10 +57,9 @@ class DataFillersProject
     /**
      * @return array|object[]
      */
-    public function getProject()
+    public function getProjects()
     {
-        $this->repository = $this->em->getRepository(Project::class);
-        return $this->repository->findAll();
+        return $this->em->getRepository(Project::class)->findAll();
     }
 
     /**
@@ -106,7 +105,7 @@ class DataFillersProject
      */
     public function BMSU_Project_NM()
     {
-        $projects = $this->getProject();
+        $projects = $this->getProjects();
         $results = [];
         foreach ($projects as $project) {
             foreach ($project->getHouseholds() as $household) {
@@ -162,7 +161,7 @@ class DataFillersProject
      */
     public function BMSU_Project_NW()
     {
-        $projects = $this->getProject();
+        $projects = $this->getProjects();
         $results = [];
         foreach ($projects as $project) {
             foreach ($project->getHouseholds() as $household) {
@@ -222,7 +221,7 @@ class DataFillersProject
         $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
         $vulnerabilityCriterion = $this->repository->findAll();
 
-        $projects = $this->getProject();
+        $projects = $this->getProjects();
 
         //Search all vulnerability criterion foreach beneficiary in a project and put the result in a array
         $results = [];
@@ -307,7 +306,7 @@ class DataFillersProject
         $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
         $vulnerabilityCriterion = $this->repository->findAll();
 
-        $projects = $this->getProject();
+        $projects = $this->getProjects();
         $results = [];
         //Search all vulnerability criterion foreach beneficiary in a project  and count the vulnerability served
         foreach ($projects as $project) {
@@ -368,7 +367,7 @@ class DataFillersProject
      */
     public function BMS_Project_HS()
     {
-        $projects = $this->getProject();
+        $projects = $this->getProjects();
         foreach ($projects as $project) {
             $results = [];
             foreach ($project->getHouseholds() as $household) {
@@ -416,12 +415,60 @@ class DataFillersProject
         }
     }
 
+
+    /**
+     * Fill in ReportingValue and ReportingProject with number of beneficiaries served in a project
+     */
+    public function BMS_Project_BR()
+    {
+        $projects = $this->getProjects();
+        foreach ($projects as $project) {
+            $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+            $qb = $this->repository->createQueryBuilder('db')
+                ->leftjoin('db.distributionData', 'dd')
+                ->leftJoin('dd.project', 'p')
+                ->where('p.id = :project')
+                ->setParameter('project', $project->getId())
+                ->select('DISTINCT COUNT(db.id) AS value', 'p.id AS project', 'p.target AS target')
+                ->groupBy('project');
+
+            $results = $qb->getQuery()->getArrayResult();
+
+            $this->em->getConnection()->beginTransaction();
+            try {
+                $reference = $this->getReferenceId("BMS_Project_HS");
+                foreach ($results as $result) {
+                    $new_value = new ReportingValue();
+                    $new_value->setValue($result['value']/$result['target']*100);
+                    $new_value->setUnity('% beneficiaries');
+                    $new_value->setCreationDate(new \DateTime());
+
+                    $this->em->persist($new_value);
+                    $this->em->flush();
+
+                    $new_reportingProject = new ReportingProject();
+                    $new_reportingProject->setIndicator($reference);
+                    $new_reportingProject->setValue($new_value);
+                    $new_reportingProject->setProject($project);
+
+                    $this->em->persist($new_reportingProject);
+                    $this->em->flush();
+                }
+                $this->em->getConnection()->commit();
+            } catch (Exception $e) {
+                $this->em->getConnection()->rollback();
+                throw $e;
+            }
+        }
+    }
+
+
     /**
     * Fill in ReportingValue and ReportingProject with age breakdown in a project
     */
     public function BMS_Project_AB()
     {
-        $projects = $this->getProject();
+        $projects = $this->getProjects();
         //Search the age of all beneficiary in all project and push the result of the query in a array
         foreach ($projects as $project) {
             $results = [];
