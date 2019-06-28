@@ -98,7 +98,6 @@ abstract class AbstractDataRetriever
      */
     private function splitByPeriod($values) {
         $splitValues = [];
-        dump($values);
 
         foreach ($values as $value ) {
             $splitValues[$value["date"]][] = $value;
