@@ -270,84 +270,11 @@ class HouseholdService
             $this->em->flush();
             $household = $this->em->getRepository(Household::class)->find($household->getId());
             $country_specific_answers = $this->em->getRepository(CountrySpecificAnswer::class)->findByHousehold($household);
-            $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
             foreach ($country_specific_answers as $country_specific_answer) {
                 $household->addCountrySpecificAnswer($country_specific_answer);
             }
         }
 
-
-        return $household;
-    }
-
-    /**
-     * @param Household $household
-     * @param Project $project
-     * @param array $householdArray
-     * @param bool $updateBeneficiary => If true, we update the beneficiaries inside the array
-     * @return Household
-     * @throws ValidationException
-     * @throws \Exception
-     * TODO : Not use it but refactor it to replace editOrCreate later
-     */
-    public function update(Household $household, Project $project, array $householdArray, bool $updateBeneficiary = true)
-    {
-        $this->requestValidator->validate(
-            "household",
-            HouseholdConstraints::class,
-            $householdArray,
-            'any'
-        );
-
-        /** @var Household $household */
-        $household = $this->em->getRepository(Household::class)->find($household);
-        $household->setNotes($householdArray["notes"])
-            ->setLivelihood($householdArray["livelihood"])
-            ->setLongitude($householdArray["longitude"])
-            ->setLatitude($householdArray["latitude"])
-            ->setAddressStreet($householdArray["address_street"])
-            ->setAddressPostcode($householdArray["address_postcode"])
-            ->setAddressNumber($householdArray["address_number"])
-            >setIncomeLevel($householdArray["income_level"]);
-
-        $project = $this->em->getRepository(Project::class)->find($project);
-        if (!$project instanceof Project) {
-            throw new \Exception("This project is not found");
-        }
-
-
-        if (!in_array($project, $household->getProjects()->toArray())) {
-            $household->addProject($project);
-        }
-
-        // Save or update location instance
-        $location = $this->locationService->getLocation($householdArray['__country'], $householdArray["location"]);
-        $household->setLocation($location);
-
-        $this->em->persist($household);
-
-        if (!empty($householdArray["beneficiaries"])) {
-            foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
-                if ($updateBeneficiary) {
-                    if ($beneficiaryToSave['gender'] === 'Male' || $beneficiaryToSave['gender'] === 'M') {
-                        $beneficiaryToSave['gender'] = 1;
-                    } elseif ($beneficiaryToSave['gender'] === 'Female' || $beneficiaryToSave['gender'] === 'F') {
-                        $beneficiaryToSave['gender'] = 0;
-                    }
-
-                    $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
-                    $this->em->persist($beneficiary);
-                }
-            }
-        }
-
-        if (!empty($householdArray["country_specific_answers"])) {
-            foreach ($householdArray["country_specific_answers"] as $country_specific_answer) {
-                $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
-            }
-        }
-
-        $this->em->flush();
 
         return $household;
     }
