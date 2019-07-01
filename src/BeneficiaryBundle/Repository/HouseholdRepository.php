@@ -88,7 +88,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->setParameter("minimumTolerance", $minimumTolerance)
             ->orderBy("levenshtein", "ASC");
 
-        return $q->getQuery()->getResult();
+        $query = $q->getQuery();
+        $query->useResultCache(true,3600);
+
+        return $query->getResult();
     }
 
     /**
@@ -126,7 +129,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->setParameter("minimumTolerance", $minimumTolerance)
             ->orderBy("levenshtein", "ASC");
 
-        return $q->getQuery()->getResult();
+        $query = $q->getQuery();
+        $query->useResultCache(true,3600);
+
+        return $query->getResult();
     }
 
 
@@ -277,7 +283,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         $paginator = new Paginator($q, $fetchJoinCellection = true);
 
-        return [count($paginator), $paginator->getQuery()->getResult()];
+        $query = $q->getQuery();
+        $query->useResultCache(true,3600);
+
+        return [count($paginator), $query->getResult()];
     }
 
     /**
