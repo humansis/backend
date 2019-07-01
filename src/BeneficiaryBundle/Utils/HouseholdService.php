@@ -3,13 +3,18 @@
 
 namespace BeneficiaryBundle\Utils;
 
+use BeneficiaryBundle\Entity\Address;
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Camp;
+use BeneficiaryBundle\Entity\CampAddress;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Form\HouseholdConstraints;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,18 +22,13 @@ use JMS\Serializer\Serializer;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
-use BeneficiaryBundle\Form\HouseholdConstraints;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\CampAddress;
-use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\Camp;
 
 /**
  * Class HouseholdService
@@ -128,7 +128,7 @@ class HouseholdService
      */
     public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
     {
-        if(!empty($projectsArray) && (gettype($projectsArray[0]) === 'string' || gettype($projectsArray[0]) === 'integer')) {
+        if (!empty($projectsArray) && (gettype($projectsArray[0]) === 'string' || gettype($projectsArray[0]) === 'integer')) {
             $projectsArray = $this->em->getRepository(Project::class)->findBy(["id" => $projectsArray]);
         }
         $actualAction = 'update';
@@ -145,10 +145,10 @@ class HouseholdService
             $household = new Household();
         }
 
-        if ($household->getHouseholdLocations()) {  
+        if ($household->getHouseholdLocations()) {
             foreach ($household->getHouseholdLocations() as $initialHouseholdLocation) {
                 $this->em->remove($initialHouseholdLocation);
-            } 
+            }
         }
         $this->em->flush();
 
@@ -359,7 +359,7 @@ class HouseholdService
     public function removeBeneficiaries(array $householdArray)
     {
         $household = $this->em->getRepository(Household::class)->find($householdArray['id']);
-        $beneficiaryIds = array_map(function($beneficiary) {
+        $beneficiaryIds = array_map(function ($beneficiary) {
             return $beneficiary['id'];
         }, $householdArray['beneficiaries']);
 
@@ -439,7 +439,7 @@ class HouseholdService
 
     public function removeMany(array $householdIds)
     {
-        foreach($householdIds as $householdId) {
+        foreach ($householdIds as $householdId) {
             $household = $this->em->getRepository(Household::class)->find($householdId);
             $household->setArchived(true);
             $this->em->persist($household);

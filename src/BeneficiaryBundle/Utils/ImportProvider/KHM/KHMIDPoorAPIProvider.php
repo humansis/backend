@@ -2,26 +2,26 @@
 
 namespace BeneficiaryBundle\Utils\ImportProvider\KHM;
 
+use BeneficiaryBundle\Entity\Address;
+use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
+use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\HouseholdLocation;
+use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Entity\Profile;
+use BeneficiaryBundle\Utils\ImportProvider\DefaultAPIProvider;
+use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use CommonBundle\Utils\LocationService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Utils\ImportProvider\DefaultAPIProvider;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Utils\LocationService;
-use DateTime;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\Profile;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class KHMApiProvider
@@ -77,8 +77,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
         if (key_exists('locationCode (KHXXXXXX)', $params)) {
             $householdsArray = $this->importByCountryCode($params);
 
-            if ($householdsArray == "errorLocationCode") {
-                return ['error' => "You entered an incorrect locationCode"];
+            if (array_key_exists('error', $householdsArray) && array_key_exists('message', $householdsArray)) {
+                throw new \Exception($householdsArray['message']);
             }
 
             return $this->parseData($householdsArray, $countryIso3, $project);
@@ -103,8 +103,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
 
         try {
             $villages = $this->sendRequest("GET", $route);
-            if ($villages == "badRequestCurl") {
-                return 'errorLocationCode';
+            if (array_key_exists('error', $villages) && array_key_exists('message', $villages)) {
+                return $villages;
             }
             
             $beneficiariesArray = array();
@@ -250,10 +250,10 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
         $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT)
             ->setType(HouseholdLocation::LOCATION_TYPE_RESIDENCE)
             ->setAddress($address);
-        if ($household->getHouseholdLocations()) {  
+        if ($household->getHouseholdLocations()) {
             foreach ($household->getHouseholdLocations() as $initialHouseholdLocation) {
                 $this->em->remove($initialHouseholdLocation);
-            } 
+            }
         }
         $this->em->flush();
         $household->addHouseholdLocation($householdLocation);
@@ -428,7 +428,10 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
         curl_close($curl);
 
         if ($err) {
-            return "badRequestCurl";
+            return array(
+                'error' => true,
+                'message' => $err
+            );
         } else {
             $result = json_decode($response, true);
             return $result;
