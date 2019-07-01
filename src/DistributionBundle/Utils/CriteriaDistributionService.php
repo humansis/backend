@@ -12,6 +12,7 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\SelectionCriteria;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
+use BeneficiaryBundle\Entity\Camp;
 
 /**
  * Class CriteriaDistributionService
@@ -53,167 +54,88 @@ class CriteriaDistributionService
     public function load(array $filters, Project $project, int $threshold, bool $isCount)
     {
         $countryISO3 = $filters['countryIso3'];
-
         $distributionType = $filters['distribution_type'];
+        $criteria = $filters['criteria'];
 
-        if ($distributionType == "household" || $distributionType == "Household" || $distributionType == '0') {
-            $finalArray = $this->loadHousehold($filters['criteria'], $threshold, $countryISO3, $project);
-        } elseif ($distributionType == "individual" || $distributionType == "Individual" || $distributionType == '1') {
-            $finalArray = $this->loadBeneficiary($filters['criteria'], $threshold, $countryISO3, $project);
-        } else {
-            throw new \Exception("A problem was found. Distribution type is unknown");
-        }
+        $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
+                ->getDistributionBeneficiaries($criteria, $project, $countryISO3, $threshold, $distributionType);
 
-        if ($isCount) {
-            return ['number' => count($finalArray)];
-        } else {
-            return ['finalArray' => $finalArray];
-        }
-    }
+        $beneficiaryScores = [];
+        $reachedBeneficiaries = [];
 
-    /**
-     * @param array $criteria
-     * @param int $threshold
-     * @param string $countryISO3
-     * @param Project $project
-     * @return array
-     * @throws \Exception
-     */
-    public function loadHousehold(array $criteria, int $threshold, string $countryISO3, Project $project)
-    {
-        $households = $this->em->getRepository(Household::class)->getUnarchivedByProject($project);
-        $finalArray = array();
+        $vulnerabilityCriteria = [];
+        $alreadyPassedOnce = [];
 
-        foreach ($households as $household) {
-            $count = 0;
+        // 1. Calculate the selection score foreach beneficiary
+        foreach ($selectableBeneficiaries as $beneficiary) {
+            $score = 0;
 
-            foreach ($criteria as $criterion) {
-                if ($criterion['kind_beneficiary'] == "Household") {
-                    $count += $this->countHousehold($criterion, $countryISO3, $household);
-                } elseif ($criterion['kind_beneficiary'] == "Beneficiary") {
-                    $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
-                    foreach ($beneficiaries as $beneficiary) {
-                        $count += $this->countBeneficiary($criterion, $beneficiary);
+            // 1.1 Update the score foreach selection criterion
+            foreach ($criteria as $index => $criterion) {
+                $fieldString = $criterion['field_string'];
+
+                // If the distribution type is Household and the beneficiary is not the head, count only the criteria targetting the beneficiaries
+                if ($distributionType !== '0' || $beneficiary['headId'] === $beneficiary['id'] || $criterion['target'] === 'Beneficiary') {
+    
+                    // In the case of vulnerabilityCriteria, dql forces us to add a b or a hhh in front of the key for it to be unique
+                    if ($criterion['table_string'] === 'vulnerabilityCriteria') {
+                        $fieldString = 'b' . $fieldString; // fieldString = bdisabled/blactating etc
+                    } if ($criterion['field_string'] === 'disabledHeadOfHousehold') {
+                        $fieldString = 'hhh'.$index.'disabled';
                     }
-                } else {
-                    throw new \Exception("A problem was found. Kind of beneficiary is unknown");
-                }
-            }
-
-            if ($count >= $threshold) {
-                array_push($finalArray, $household);
-            }
-        }
-
-        return $finalArray;
-    }
-
-    /**
-     * @param array $criteria
-     * @param int $threshold
-     * @param string $countryISO3
-     * @param Project $project
-     * @return array
-     * @throws \Exception
-     */
-    public function loadBeneficiary(array $criteria, int $threshold, string $countryISO3, Project $project)
-    {
-        $households = $project->getHouseholds();
-        $finalArray = array();
-
-        foreach ($households as $household) {
-            $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
-
-            foreach ($beneficiaries as $beneficiary) {
-                $count = 0;
-
-                foreach ($criteria as $criterion) {
-                    if ($criterion['kind_beneficiary'] == "Household") {
-                        $count += $this->countHousehold($criterion, $countryISO3, $household);
-                    } elseif ($criterion['kind_beneficiary'] == "Beneficiary") {
-                        $count += $this->countBeneficiary($criterion, $beneficiary);
-                    }
-                }
-
-                if ($count >= $threshold) {
-                    array_push($finalArray, $beneficiary);
-                }
-            }
-        }
-
-        return $finalArray;
-    }
-
-    /**
-     * @param array $criterion
-     * @param string $countryISO3
-     * @param Household $household
-     * @return int
-     */
-    public function countHousehold(array $criterion, string $countryISO3, Household $household)
-    {
-        $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findBy(['fieldString' => $criterion['field_string'], 'countryIso3' => $countryISO3]);
-        $hasCountry = $this->em->getRepository(CountrySpecificAnswer::class)->hasValue($countrySpecific[0]->getId(), $criterion['value_string'], $criterion['condition_string'], $household);
-
-        $count = 0;
-        if ($hasCountry) {
-            $count = $criterion['weight'];
-        }
-
-        return $count;
-    }
-
-    /**
-     * @param array $criterion
-     * @param $beneficiary
-     * @return int
-     */
-    public function countBeneficiary(array $criterion, Beneficiary $beneficiary)
-    {
-        $vulnerabilityCriteria = $this->em->getRepository(VulnerabilityCriterion::class)->findBy(['fieldString' => $criterion['field_string']]);
-
-        $listOfCriteria = $this->configurationLoader->criteria;
-
-        // If it is not a vulnerabilityCriteria nor a countrySpecific
-        if (key_exists('table_string', $criterion) && $criterion['table_string'] === 'Beneficiary') {
-            $type = $listOfCriteria[$criterion['field_string']];
-            if ($type == 'boolean') {
-                $criterion['value_string'] = intval($criterion['value_string']);
-
-                $hasVC = $this->em->getRepository(Beneficiary::class)->hasGender($criterion['condition_string'], $criterion['value_string'], $beneficiary->getId());
-
-                $count = 0;
-                if ($hasVC) {
-                    $count = $criterion['weight'];
-                }
-                return $count;
-            } else {
-                $hasVC = $this->em->getRepository(Beneficiary::class)->hasDateOfBirth($criterion['value_string'], $criterion['condition_string'], $beneficiary->getId());
-
-                $count = 0;
-                if ($hasVC) {
-                    $count = $count + 1;
-                }
-
-                return $count;
-            }
-        } else {
-            $hasVC = $this->em->getRepository(Beneficiary::class)->hasVulnerabilityCriterion($vulnerabilityCriteria[0]->getId(), $criterion['condition_string'], $beneficiary->getId());
-
-            $count = 0;
-            if ($hasVC) {
-                if ($criterion['condition_string'] == "false") {
-                    $count = $criterion['weight'];
-                } else {
-                    foreach ($beneficiary->getVulnerabilityCriteria()->getValues() as $value) {
-                        if ($value->getFieldString() == $criterion['field_string']) {
-                            $count = $count + $criterion['weight'];
+                    
+                    if (array_key_exists($fieldString.$index, $beneficiary) && !is_null($beneficiary[$fieldString.$index])) {
+                        // Sometimes the vulnerability criteria are counted several times
+                        if ($criterion['table_string'] === 'vulnerabilityCriteria') {
+                            if (array_key_exists($beneficiary['id'], $vulnerabilityCriteria)) {
+                                if (!in_array($fieldString, $vulnerabilityCriteria[$beneficiary['id']])) {
+                                    array_push($vulnerabilityCriteria[$beneficiary['id']], $fieldString);
+                                    $score += $criterion['weight'];
+                                }
+                            } else {
+                                $vulnerabilityCriteria[$beneficiary['id']] = [$fieldString];
+                                $score += $criterion['weight'];
+                            }
+                        }
+                        // If it exists, it means we are in one of the duplicates from the vulnerability criteria bug
+                        else if (!in_array($beneficiary['id'], $alreadyPassedOnce)) {
+                            $score += $criterion['weight'];
                         }
                     }
                 }
             }
 
-            return $count;
+            array_push($alreadyPassedOnce, $beneficiary['id']);
+
+            // 1.2. In case it is a distribution targetting households, gather the score to the head, else just store it
+            if ($distributionType === '0') {
+                if (!array_key_exists($beneficiary['headId'], $beneficiaryScores)) {
+                    $beneficiaryScores[$beneficiary['headId']] = $score;
+                } else {
+                    $beneficiaryScores[$beneficiary['headId']] = intval($beneficiaryScores[$beneficiary['headId']]) + $score;
+                }
+            } else {
+                if (!array_key_exists($beneficiary['id'], $beneficiaryScores)) {
+                    $beneficiaryScores[$beneficiary['id']] = $score;
+                } else {
+                    $beneficiaryScores[$beneficiary['id']] = intval($beneficiaryScores[$beneficiary['id']]) + $score;
+                }
+            }
+        }
+        
+        // 2. Verify who is above the threshold 
+        foreach ($beneficiaryScores as $selectableBeneficiaryId => $score) {
+            if ($score >= $threshold) {
+                array_push($reachedBeneficiaries, $selectableBeneficiaryId);
+            }
+        }
+        
+
+        if ($isCount) {
+            return ['number' =>  count($reachedBeneficiaries)];
+        } else {
+            // !!!! Those are ids, not directly beneficiaries !!!!
+            return ['finalArray' =>  $reachedBeneficiaries];
         }
     }
 
@@ -234,12 +156,23 @@ class CriteriaDistributionService
     }
 
     /**
-     * @param array $filters
+     * @param string $countryISO3
      * @return array
      */
-    public function getAll(array $filters)
+    public function getAll(string $countryISO3)
     {
-        $criteria = $this->configurationLoader->load($filters);
+        $criteria = $this->configurationLoader->load($countryISO3);
         return $criteria;
     }
+
+    /**
+     * @param string $countryISO3
+     * @return array
+     */
+    public function getCamps(string $countryISO3)
+    {
+        $camps = $this->em->getRepository(Camp::class)->findByCountry($countryISO3);
+        return $camps;
+    }
+
 }

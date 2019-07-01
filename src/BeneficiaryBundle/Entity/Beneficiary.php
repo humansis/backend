@@ -156,7 +156,6 @@ class Beneficiary implements ExportableInterface
      */
     private $referral;
 
-
     /**
      * Constructor
      */

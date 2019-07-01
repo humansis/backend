@@ -66,6 +66,7 @@
                     <th>Items Distributed</th>
                     <th>Quantity</th>
                     <th>Amount distributed</th>
+                    <th>Selection criteria</th>
                 </tr>
                 {% for distribution in distributions %}
                     <tr>
@@ -100,6 +101,13 @@
                             <p>
                                 {% for commodity in distribution.commodities %}
                                     {{ distribution.getPercentageValue(commodity) }} % <br>
+                                {% endfor %}
+                            </p>
+                        </td>
+                        <td>
+                            <p>
+                                {% for criterion in distribution.selectionCriteria %}
+                                    {{ criterion.fieldString }} {{ criterion.conditionString }} {{ criterion.valueString }}
                                 {% endfor %}
                             </p>
                         </td>

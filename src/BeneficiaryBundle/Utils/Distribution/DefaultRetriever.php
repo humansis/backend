@@ -33,7 +33,7 @@ class DefaultRetriever extends AbstractRetriever
     {
         if ($distributionType === 'household' || $distributionType === 'beneficiary') {
             foreach ($criteria as $index => $criterion) {
-                $criteria[$index]["kind_beneficiary"] = $this->getStatusBeneficiaryCriterion($criterion["kind_beneficiary"]);
+                $criteria[$index]["target"] = $this->getStatusBeneficiaryCriterion($criterion["target"]);
             }
         } else {
             throw new \Exception("The distribution type '$distributionType' is unknown.");
@@ -59,14 +59,14 @@ class DefaultRetriever extends AbstractRetriever
     /**
      * Return the value of the beneficiary status (is head of household or not)
      *
-     * @param $kindBeneficiary
+     * @param $target
      * @return int
      * @throws \Exception
      */
-    protected function getStatusBeneficiaryCriterion($kindBeneficiary)
+    protected function getStatusBeneficiaryCriterion($target)
     {
-        $kindBeneficiary = trim(strtolower(strval($kindBeneficiary)));
-        switch ($kindBeneficiary) {
+        $target = trim(strtolower(strval($target)));
+        switch ($target) {
             case 'beneficiary':
                 return 1;
             case 'household':
@@ -75,6 +75,6 @@ class DefaultRetriever extends AbstractRetriever
                 return null;
         }
 
-        throw new \Exception("The kindBeneficiary '$kindBeneficiary' is not implemented yet.");
+        throw new \Exception("The target '$target' is not implemented yet.");
     }
 }

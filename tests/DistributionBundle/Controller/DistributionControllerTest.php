@@ -98,7 +98,7 @@ class DistributionControllerTest extends BMSServiceTestCase
                     "condition_string"=> "true",
                     "field_string"=> "disabled",
                     "id_field"=> "1",
-                    "kind_beneficiary"=> "Beneficiary",
+                    "target"=> "Beneficiary",
                     "table_string"=> "vulnerabilityCriteria",
                     "weight"=> "1"
                 ]

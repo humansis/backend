@@ -20,16 +20,6 @@ class ConfigurationLoader
     public $criteria;
 
     /**
-     * @var array
-     */
-    private $MAPPING_TYPE_DEFAULT = [
-        "boolean",
-        "string",
-        "number",
-        "date"
-    ];
-
-    /**
      * ConfigurationLoader constructor.
      * @param EntityManagerInterface $entityManager
      * @param $criteria
@@ -44,45 +34,50 @@ class ConfigurationLoader
     /**
      * Get all data from the config file.
      *
-     * @param array $filters : [$field => $value]
+     * @param string $countryISO3
      * @return array
      */
-    public function load(array $filters)
+    public function load(string $countryISO3)
     {
         $criteriaFormatted = [];
-        foreach ($this->criteria as $criterion => $type) {
-            if ($criterion !== 'countrySpecific') {
-                if ($criterion !== 'vulnerabilityCriteria') {
-                    $criteriaFormatted[] = $this->formatCriteria($filters, 'Beneficiary', $criterion, $type);
-                } else {
-                    $criteriaFormatted = array_merge($criteriaFormatted, $this->formatCriteria($filters, 'Beneficiary', $criterion, $type));
-                }
+        foreach ($this->criteria as $criterion => $info) {
+            // The type can be the countrySpecific or the vulnerabilityCriteria classes, or anything else
+            if ($criterion === 'countrySpecific') {
+                $criteriaFormatted = array_merge($criteriaFormatted, $this->formatClassCriteria($countryISO3, $info['target'], $criterion, $info['type']));
+            } else if ($criterion === 'vulnerabilityCriteria') {
+                $criteriaFormatted = array_merge($criteriaFormatted, $this->formatClassCriteria($countryISO3, $info['target'], $criterion, $info['type']));
             } else {
-                $criteriaFormatted = array_merge($criteriaFormatted, $this->formatCriteria($filters, 'Household', $criterion, $type));
+                $criteriaFormatted[] = $this->formatOtherCriteria($info['target'], $criterion, $info['type']);
             }
         }
         return $criteriaFormatted;
     }
 
     /**
-     * @param array $filters
-     * @param string $distributionType
+     * @param string $countryISO3
+     * @param string $target
+     * @param $criterion
+     * @param $class
+     * @return array
+     */
+    private function formatClassCriteria(string $countryISO3, string $target, $criterion, $class)
+    {
+        $instances = $this->em->getRepository($class)->findForCriteria($countryISO3);
+        foreach ($instances as &$instance) {
+            $instance->setTableString($criterion)
+                ->setTarget($target);
+        }
+        return $instances;
+    }
+
+    /**
+     * @param string $target
      * @param $criterion
      * @param $type
      * @return array
      */
-    private function formatCriteria(array $filters, string $distributionType, $criterion, $type)
+    private function formatOtherCriteria(string $target, $criterion, $type)
     {
-        if (in_array($type, $this->MAPPING_TYPE_DEFAULT)) {
-            return ["field_string" => $criterion, "type" => $type, "distribution_type" => $distributionType, "table_string" => 'Beneficiary'];
-        } else {
-            $instances = $this->em->getRepository($type)->findForCriteria($filters);
-            foreach ($instances as &$instance) {
-                $instance->setTableString($criterion);
-                $instance->setDistributionType($distributionType);
-            }
-        
-            return $instances;
-        }
+        return ["field_string" => $criterion, "type" => $type, "target" => $target, "table_string" => 'Personnal'];
     }
 }

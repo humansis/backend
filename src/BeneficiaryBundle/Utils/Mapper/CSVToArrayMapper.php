@@ -232,6 +232,8 @@ class CSVToArrayMapper extends AbstractMapper
             $this->mapStatus($formattedHouseholdArray);
             $this->mapReferral($formattedHouseholdArray);
             $this->mapLivelihood($formattedHouseholdArray);
+            $formattedHouseholdArray['coping_strategies_index'] = null;
+            $formattedHouseholdArray['food_consumption_score'] = null;
         } catch (\Exception $exception) {
             throw $exception;
         }

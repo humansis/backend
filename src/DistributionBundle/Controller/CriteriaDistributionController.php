@@ -50,7 +50,7 @@ class CriteriaDistributionController extends Controller
      *             {
      *              "table_string": "vulnerabilityCriteria",
      *              "id": 2,
-     *              "field_string": "solo parent"
+     *              "field_string": "soloParent"
      *             },
      *             {
      *              "table_string": "countrySpecific",
@@ -75,7 +75,9 @@ class CriteriaDistributionController extends Controller
     {
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        $criteria = $criteriaDistributionService->getAll($request->request->all());
+        $filters = $request->request->all();
+        $countryISO3 = $filters['__country'];
+        $criteria = $criteriaDistributionService->getAll($countryISO3);
 
         $json = $this->get('jms_serializer')
             ->serialize(
@@ -120,16 +122,63 @@ class CriteriaDistributionController extends Controller
         $threshold = $filters['threshold'];
 
         /** @var CriteriaDistributionService $criteriaDistributionService */
-        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
         try {
+            $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
             $receivers = $criteriaDistributionService->load($filters, $project, $threshold, true);
         } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), 500);
+            return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $json = $this->get('jms_serializer')
             ->serialize(
                 $receivers,
+                'json'
+            );
+
+        return new Response($json);
+    }
+
+     /**
+     * @Rest\Get("/camps")
+     *
+     * @SWG\Tag(name="CriteriaDistributionsCamps")
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     required=true,
+     *     schema={}
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getCamps(Request $request)
+    {
+        $data = $request->request->all();
+        $countryIso3 = $data['__country'];
+
+        /** @var CriteriaDistributionService $criteriaDistributionService */
+        try {
+            $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
+            $camps = $criteriaDistributionService->getCamps($countryIso3);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $camps,
                 'json'
             );
 

@@ -149,11 +149,72 @@ nelmio_cors:
 
 distribution:
     retriever: BeneficiaryBundle\Utils\Distribution\DefaultRetriever
+    # The type 'table_field' means the criteria is a real field in the target table (for eg, residencyStatus in the Beneficiary table)
     criteria: {
-        gender: boolean,
-        dateOfBirth: date,
-        vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
-        countrySpecific: BeneficiaryBundle\Entity\CountrySpecific
+            gender: {
+                type: table_field,
+                target: Beneficiary
+            },
+            dateOfBirth: {
+                type: table_field,
+                target: Beneficiary
+            },
+            residencyStatus: {
+                type: table_field,
+                target: Beneficiary
+            },
+            hasNotBeenInDistributionsSince: {
+                type: other,
+                target: Beneficiary
+            },
+            disabledHeadOfHousehold: {
+                type: other,
+                target: Head
+            },
+            headOfHouseholdDateOfBirth: {
+                type: table_field,
+                target: Head
+            },
+            headOfHouseholdGender: {
+                type: table_field,
+                target: Head
+            },
+            livelihood: {
+                type: table_field,
+                target: Household
+            },
+            foodConsumptionScore: {
+                type: table_field,
+                target: Household
+            },
+            copingStrategiesIndex: {
+                type: table_field,
+                target: Household
+            },
+            incomeLevel: {
+                type: table_field,
+                target: Household
+            },
+            householdSize: {
+                type: other,
+                target: Household
+            },
+            locationType: {
+                type: other,
+                target: Household
+            },
+            campName: {
+                type: other,
+                target: Household
+            },
+            vulnerabilityCriteria: {
+                type: BeneficiaryBundle\Entity\VulnerabilityCriterion,
+                target: Beneficiary
+            },
+            countrySpecific: {
+                type: BeneficiaryBundle\Entity\CountrySpecific,
+                target: Household
+            }
         }
 
 services:
