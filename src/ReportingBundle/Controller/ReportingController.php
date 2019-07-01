@@ -29,50 +29,23 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 class ReportingController extends Controller
 {
 
-     /**
-     * Send data formatted corresponding to code to display it in front
-     * @Rest\Post("/indicators/serve/{id}")
+    /**
+     * Send formatted data
+     * @Rest\Get("/indicators/filtered")
      *
-     * @SWG\Tag(name="Reporting")
-     *
-     * @SWG\Parameter(
-     *     name="Project",
-     *     in="body",
-     *     required=true,
-     *     @Model(type=ReportingIndicator::class)
-     * )
-     *
-     * @SWG\Response(
-     *      response=200,
-     *          description="Get data reporting",
-     *          @SWG\Schema(
-     *              type="array",
-     *              @SWG\Items(ref=@Model(type=ReportingIndicator::class))
-     *          )
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param ReportingIndicator $indicator
      * @param Request $request
      * @return Response
      */
-    public function serveAction(Request $request, ReportingIndicator $indicator)
+    public function getFilteredDataAction(Request $request)
     {
-        $filters = $request->request->get('filters');
-        $contentJson = $request->request->all();
-        $filters['country'] = $contentJson['__country'];
+        $filters = $request->query->all();
 
         try {
-            $dataComputed = $this->get('reporting.computer')->compute($indicator, $filters);
-            $dataFormatted = $this->get('reporting.formatter')->format(Formatter::DefaultFormat, $dataComputed, $indicator->getGraph());
+            $filteredGraphs = $this->get('reporting.reporting_service')->getFilteredData($filters);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), $e->getCode() > 200 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
         }
-        return new JsonResponse($dataFormatted, Response::HTTP_OK);
+        return new JsonResponse($filteredGraphs);
     }
 
 
@@ -96,8 +69,8 @@ class ReportingController extends Controller
      */
     public function getAction()
     {
-        $indicatorFinded = $this->get('reporting.finder')->findIndicator();
-        $json = json_encode($indicatorFinded);
+        $indicatorFound = $this->get('reporting.finder')->generateIndicatorsData();
+        $json = json_encode($indicatorFound);
         return new Response($json, Response::HTTP_OK);
     }
 }

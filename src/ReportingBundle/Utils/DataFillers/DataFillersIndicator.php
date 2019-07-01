@@ -52,7 +52,7 @@ class DataFillersIndicator
             $new = new ReportingIndicator();
             $filter = [];
             $new->setreference($data[0]);
-            $new->setGraph($data[3]);
+            $new->setGraph($data[3] ? $data[3] : null);
             $new->setCode($data[1]);
             array_push($filter, $data[2]);
             

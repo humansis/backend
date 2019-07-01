@@ -413,6 +413,20 @@ class HouseholdRepository extends AbstractCriteriaRepository
     }
 
     /**
+     * Create sub request to get location from household
+     *
+     * @param QueryBuilder $qb
+     */
+    protected function getHouseholdLocation(QueryBuilder &$qb)
+    {
+        $qb->leftJoin("hh.householdLocations", "hl")
+            ->leftJoin("hl.campAddress", "ca")
+            ->leftJoin("ca.camp", "c")
+            ->leftJoin("hl.address", "ad")
+            ->leftJoin(Location::class, "l", Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))");
+    }
+
+    /**
      * Create sub request to get households in country.
      * The household address location must be in the country ($countryISO3).
      *
@@ -421,13 +435,20 @@ class HouseholdRepository extends AbstractCriteriaRepository
      */
     public function whereHouseholdInCountry(QueryBuilder &$qb, $countryISO3)
     {
-        $qb->leftJoin("hh.householdLocations", "hl")
-            ->leftJoin("hl.campAddress", "ca")
-            ->leftJoin("ca.camp", "c")
-            ->leftJoin("hl.address", "ad")
-            ->leftJoin(Location::class, "l", Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))");
-
+        $this->getHouseholdLocation($qb);
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
         $locationRepository->whereCountry($qb, $countryISO3);
+    }
+
+    /**
+     * Create sub request to get the country of the household
+     *
+     * @param QueryBuilder $qb
+     */
+    public function getHouseholdCountry(QueryBuilder &$qb)
+    {
+        $this->getHouseholdLocation($qb);
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->getCountry($qb);
     }
 }

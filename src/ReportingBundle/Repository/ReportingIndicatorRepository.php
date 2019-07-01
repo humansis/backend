@@ -14,9 +14,17 @@ class ReportingIndicatorRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder('ri');
 
-        $qb
-            ->andWhere('ri.id IN (:indicatorsId)')
-                ->setParameter('indicatorsId', $indicatorsId);
+        $qb->where('ri.id IN (:indicatorsId)')
+            ->setParameter('indicatorsId', $indicatorsId);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findByType($type) {
+        $qb = $this->createQueryBuilder('ri');
+
+        $qb->where('ri.code LIKE :type')
+            ->setParameter('type', 'BMS_' . $type . '%');
 
         return $qb->getQuery()->getResult();
     }
