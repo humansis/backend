@@ -57,6 +57,13 @@ class CriteriaDistributionService
         $distributionType = $filters['distribution_type'];
         $criteria = $filters['criteria'];
 
+        foreach ($criteria as $index => $criterion) {
+            if ($criterion['table_string'] === 'Personnal') {
+                $criterion['type'] = $this->configurationLoader->criteria[$criterion['field_string']]['type'];
+                $criteria[$index] = $criterion;
+            }
+        }
+
         $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
                 ->getDistributionBeneficiaries($criteria, $project, $countryISO3, $threshold, $distributionType);
 
