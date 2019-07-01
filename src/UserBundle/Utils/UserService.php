@@ -98,7 +98,7 @@ class UserService
         
         if (key_exists('projects', $userData)) {
             foreach ($userData['projects'] as $project) {
-                $project = $this->em->getRepository(Project::class)->find($project);
+                $project = $this->em->getRepository(Project::class)->findOneById($project);
 
                 if ($project instanceof Project) {
                     $userProject = new UserProject();
@@ -178,7 +178,7 @@ class UserService
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
 
         if (!$user instanceof User) {
-            throw new \Exception("Bad credentials", Response::HTTP_BAD_REQUEST);
+            throw new \Exception("This username doesn't exist", Response::HTTP_BAD_REQUEST);
         }
 
         return ["user_id" => $user->getId(), "salt" => $user->getSalt()];
@@ -226,7 +226,7 @@ class UserService
             //     throw new \Exception('Unable to log in from this country (' . $origin . ')', Response::HTTP_BAD_REQUEST);
             // }
         } else {
-            throw new \Exception('Bad credentials (username: ' . $username . ')', Response::HTTP_BAD_REQUEST);
+            throw new \Exception('Wrong password', Response::HTTP_BAD_REQUEST);
         }
 
         return $user;
@@ -270,7 +270,7 @@ class UserService
 
         if (key_exists('projects', $userData)) {
             foreach ($userData['projects'] as $project) {
-                $project = $this->em->getRepository(Project::class)->find($project);
+                $project = $this->em->getRepository(Project::class)->findOneById($project);
 
                 if ($project instanceof Project) {
                     $userProject = new UserProject();

@@ -13,7 +13,6 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use Gaufrette\Adapter\AwsS3;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
