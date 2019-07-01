@@ -186,13 +186,6 @@ class Household
     private $archived = 0;
 
     /**
-     * Number of dependent beneficiaries
-     * @var int
-     * @Groups({"SmallHousehold"})
-     */
-    private $numberDependents;
-
-    /**
      * @var int
      *
      * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
@@ -537,18 +530,7 @@ class Household
      */
     public function getNumberDependents(): int
     {
-        return $this->numberDependents ? $this->numberDependents : count($this->getBeneficiaries()) - 1;
-    }
-
-    /**
-     * @param int $numberDependents
-     * @return Household
-     */
-    public function setNumberDependents(int $numberDependents)
-    {
-        $this->numberDependents = $numberDependents;
-
-        return $this;
+        return count($this->getBeneficiaries()) - 1;
     }
 
     /**

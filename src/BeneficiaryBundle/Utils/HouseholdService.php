@@ -103,18 +103,7 @@ class HouseholdService
         $households = $this->em->getRepository(Household::class)->getAllBy($iso3, $limitMinimum, $pageSize, $sort, $filter);
         $length = $households[0];
         $households = $households[1];
-        /** @var Household $household */
-        foreach ($households as $household) {
-            $numberDependents = 0;
-            /** @var Beneficiary $beneficiary */
-            foreach ($household->getBeneficiaries() as $beneficiary) {
-                if ($beneficiary->getStatus() != 1) {
-                    $numberDependents++;
-                    // $household->removeBeneficiary($beneficiary);
-                }
-            }
-            $household->setNumberDependents($numberDependents);
-        }
+
         return [$length, $households];
     }
 
