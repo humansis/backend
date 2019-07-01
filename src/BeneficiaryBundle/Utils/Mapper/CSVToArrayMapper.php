@@ -275,7 +275,9 @@ class CSVToArrayMapper extends AbstractMapper
     private function mapVulnerabilityCriteria(&$formattedHouseholdArray)
     {
         $vulnerability_criteria_string = $formattedHouseholdArray['beneficiaries']['vulnerability_criteria'];
-        $vulnerability_criteria_array = array_map('trim', explode(';', $vulnerability_criteria_string));
+
+        // We are separating the vulnerability criteria in the list and turning them into camelCase as in DB
+        $vulnerability_criteria_array = array_map('trim', explode(';', str_replace(' ', '', ucwords($vulnerability_criteria_string))));
         $formattedHouseholdArray['beneficiaries']['vulnerability_criteria'] = [];
         foreach ($vulnerability_criteria_array as $item) {
             $vulnerability_criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneByFieldString($item);
