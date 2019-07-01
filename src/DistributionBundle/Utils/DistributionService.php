@@ -6,12 +6,12 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Utils\LocationService;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\GeneralReliefItem;
+use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
-use DistributionBundle\Entity\DistributionData;
-use DistributionBundle\Entity\SelectionCriteria;
-use DistributionBundle\Entity\GeneralReliefItem;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -363,7 +363,7 @@ class DistributionService
             $commodities = $distribution->getCommodities();
             $isQrVoucher = false;
             foreach ($commodities as $commodity) {
-                if ($commodity->getModalityType()->getId() === 2) {
+                if ($commodity->getModalityType()->getName() === "QR Code Voucher") {
                     $isQrVoucher = true;
                 }
             }
