@@ -41,10 +41,10 @@ class SelectionCriteria
     /**
      * @var string
      *
-     * @ORM\Column(name="kind_beneficiary", type="string", length=255, nullable=true)
+     * @ORM\Column(name="target", type="string", length=255, nullable=true)
      * @Groups({"FullDistribution"})
      */
-    private $kindBeneficiary;
+    private $target;
 
     /**
      * @var string
@@ -209,27 +209,27 @@ class SelectionCriteria
     }
 
     /**
-     * Set kindBeneficiary.
+     * Set target.
      *
-     * @param string|null $kindBeneficiary
+     * @param string|null $target
      *
      * @return SelectionCriteria
      */
-    public function setKindBeneficiary($kindBeneficiary = null)
+    public function setTarget($target = null)
     {
-        $this->kindBeneficiary = $kindBeneficiary;
+        $this->target = $target;
 
         return $this;
     }
 
     /**
-     * Get kindBeneficiary.
+     * Get target.
      *
      * @return string|null
      */
-    public function getKindBeneficiary()
+    public function getTarget()
     {
-        return $this->kindBeneficiary;
+        return $this->target;
     }
 
     /**

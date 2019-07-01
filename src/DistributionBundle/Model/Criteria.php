@@ -16,6 +16,13 @@ class Criteria
     protected $tableString;
 
     /**
+    * @var string $target
+    * @Groups({"Criteria"})
+    *
+    */
+    protected $target;
+
+    /**
      * @return string
      */
     public function getTableString(): string
@@ -34,28 +41,22 @@ class Criteria
         return $this;
     }
 
-    /**
-    * @var string $distributionType
-    * @Groups({"Criteria"})
-    *
-    */
-    protected $distributionType;
 
     /**
      * @return string
      */
-    public function getDistributionType(): string
+    public function getTarget(): string
     {
-        return $this->distributionType;
+        return $this->target;
     }
 
     /**
-     * @param string $distributionType
+     * @param string $target
      * @return Criteria
      */
-    public function setDistributionType(string $distributionType)
+    public function setTarget(string $target)
     {
-        $this->distributionType = $distributionType;
+        $this->target = $target;
 
         return $this;
     }

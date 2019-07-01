@@ -22,7 +22,9 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('criteria')
-                    ->scalarPrototype()->end()
+                    ->arrayPrototype()
+                        ->scalarPrototype()->end()
+                    ->end()
                 ->end()
                 ->scalarNode('retriever')
                     ->defaultValue('')

@@ -23,7 +23,7 @@ class CountrySpecificAnswerRepository extends \Doctrine\ORM\EntityRepository
         if (!$hasAnswers && $conditionString === "!=") {
             return true;
         } elseif ($hasAnswers) {
-            $q = $q->andWhere('csa.answer '. $conditionString . ' :answer OR csa.answer IS NULL')
+            $q = $q->andWhere('csa.answer '. $conditionString . ' :answer')
             ->setParameter('answer', $answer)
             ->andWhere('csa.household = :household')
             ->setParameter('household', $household);

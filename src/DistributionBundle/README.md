@@ -62,7 +62,7 @@ Example of criteria list :
   {
     "table_string": "vulnerabilityCriteria",
     "id": 2,
-    "field_string": "solo parent"
+    "field_string": "soloParent"
   },
   {
     "table_string": "countrySpecific",
@@ -119,7 +119,7 @@ These methods are used to add criteria on their field.
 OR 'beneficiary' (to send distribution to a specific beneficiary)
 - **criteria** : list of criterion :
     - **table_string** : 'default' or name used in config (the key)
-    - **kind_beneficiary** : 'beneficiary' (head of household) or 'dependent' (head of household dependents) or 'null' (both)
+    - **target** : 'beneficiary' (head of household) or 'dependent' (head of household dependents) or 'null' (both)
     - **field_string** : name of a column of Beneficiary table or null 
     - **condition_string** : '=', '<', '>', '<=', '>=', '!='. It's the operator used for compare the wanted value with the value in database
     - **value_string** : value to be compare with the database column
@@ -133,7 +133,7 @@ Example :
   "criteria": [
     {
       "table_string": "countrySpecific",
-      "kind_beneficiary": "beneficiary",
+      "target": "beneficiary",
       "field_string": null,
       "condition_string": "=",
       "value_string": 1,
@@ -141,7 +141,7 @@ Example :
     },
     {
       "table_string": "vulnerabilityCriteria",
-      "kind_beneficiary": "beneficiary",
+      "target": "beneficiary",
       "field_string": null,
       "condition_string": true,
       "value_string": null,
@@ -149,14 +149,14 @@ Example :
     },
     {
       "table_string": "default",
-      "kind_beneficiary": "beneficiary",
+      "target": "beneficiary",
       "field_string": "gender",
       "condition_string": "=",
       "value_string": 0
     },
     {
       "table_string": "default",
-      "kind_beneficiary": "beneficiary",
+      "target": "beneficiary",
       "field_string": "dateOfBirth",
       "condition_string": "=",
       "value_string": "1975-11-30"
@@ -240,14 +240,14 @@ PUT(/distributions)
   "selection_criteria": [
     {
       "table_string": "default",
-      "kind_beneficiary": "beneficiary",
+      "target": "beneficiary",
       "field_string": "gender",
       "condition_string": "=",
       "value_string": 0
     },
     {
       "table_string": "default",
-      "kind_beneficiary": "beneficiary",
+      "target": "beneficiary",
       "field_string": "dateOfBirth",
       "condition_string": "=",
       "value_string": "1975-11-30"

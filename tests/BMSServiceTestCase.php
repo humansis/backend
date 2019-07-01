@@ -75,6 +75,8 @@ class BMSServiceTestCase extends KernelTestCase
         "notes" => "NOTES_TEST",
         "latitude" => "1.1544",
         "longitude" => "120.12",
+        "coping_strategies_index" => "6",
+        "food_consumption_score" => "7",
         "household_locations" => array(
             [
               "location_group" => "current",

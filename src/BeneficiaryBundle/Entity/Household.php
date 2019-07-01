@@ -186,19 +186,28 @@ class Household
     private $archived = 0;
 
     /**
-     * Number of dependent beneficiaries
-     * @var int
-     * @Groups({"SmallHousehold"})
-     */
-    private $numberDependents;
-
-    /**
      * @var int
      *
      * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $incomeLevel;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="foodConsumptionScore", type="integer", nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold"})
+     */
+    private $foodConsumptionScore;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="copingStrategiesIndex", type="integer", nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold"})
+     */
+    private $copingStrategiesIndex;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
@@ -521,18 +530,7 @@ class Household
      */
     public function getNumberDependents(): int
     {
-        return $this->numberDependents;
-    }
-
-    /**
-     * @param int $numberDependents
-     * @return Household
-     */
-    public function setNumberDependents(int $numberDependents)
-    {
-        $this->numberDependents = $numberDependents;
-
-        return $this;
+        return count($this->getBeneficiaries()) - 1;
     }
 
     /**
@@ -559,18 +557,51 @@ class Household
         return $this->incomeLevel;
     }
 
-   /**
-     * Add householdLocation.
+    /**
+     * Set foodConsumptionScore.
      *
-     * @param \BeneficiaryBundle\Entity\HouseholdLocation $householdLocation
+     * @param int $foodConsumptionScore
      *
      * @return Household
      */
-    public function addHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
+    public function setFoodConsumptionScore($foodConsumptionScore)
     {
-        $this->householdLocations[] = $householdLocation;
-        $householdLocation->setHousehold($this);
+        $this->foodConsumptionScore = $foodConsumptionScore;
+
+    }
+
+    /**
+     * Get foodConsumptionScore.
+     *
+     * @return int
+     */
+    public function getFoodConsumptionScore()
+    {
+        return $this->foodConsumptionScore;
+    }
+
+    /**
+     * Set copingStrategiesIndex.
+     *
+     * @param int $copingStrategiesIndex
+     *
+     * @return Household
+     */
+    public function setCopingStrategiesIndex($copingStrategiesIndex)
+    {
+        $this->copingStrategiesIndex = $copingStrategiesIndex;
+
         return $this;
+    }
+
+    /**
+     * Get copingStrategiesIndex.
+     *
+     * @return int
+     */
+    public function getCopingStrategiesIndex()
+    {
+        return $this->copingStrategiesIndex;
     }
 
     /**
@@ -583,6 +614,20 @@ class Household
     public function removeHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
     {
         return $this->householdLocations->removeElement($householdLocation);
+    }
+
+    /**
+     * Add householdLocation.
+     *
+     * @param \BeneficiaryBundle\Entity\HouseholdLocation $householdLocation
+     *
+     * @return Household
+     */
+    public function addHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
+    {
+        $this->householdLocations[] = $householdLocation;
+        $householdLocation->setHousehold($this);
+        return $this;
     }
 
     /**
