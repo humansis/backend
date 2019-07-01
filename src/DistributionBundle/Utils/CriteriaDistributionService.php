@@ -12,6 +12,7 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\SelectionCriteria;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
+use BeneficiaryBundle\Entity\Camp;
 
 /**
  * Class CriteriaDistributionService
@@ -163,4 +164,15 @@ class CriteriaDistributionService
         $criteria = $this->configurationLoader->load($countryISO3);
         return $criteria;
     }
+
+    /**
+     * @param string $countryISO3
+     * @return array
+     */
+    public function getCamps(string $countryISO3)
+    {
+        $camps = $this->em->getRepository(Camp::class)->findByCountry($countryISO3);
+        return $camps;
+    }
+
 }

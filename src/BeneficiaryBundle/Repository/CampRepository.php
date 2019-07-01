@@ -12,6 +12,16 @@ use CommonBundle\Entity\Location;
 class CampRepository extends \Doctrine\ORM\EntityRepository
 {
 
+    public function findByCountry(string $countryISO3)
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.location', 'l');
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($qb, $countryISO3);
+        return $qb->getQuery()->getResult();
+
+    }
+
     public function findByAdm1($adm1Id) {
         $qb = $this->createQueryBuilder('c')
             ->leftJoin('c.location', 'l');

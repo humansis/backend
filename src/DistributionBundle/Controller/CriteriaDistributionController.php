@@ -137,4 +137,51 @@ class CriteriaDistributionController extends Controller
 
         return new Response($json);
     }
+
+     /**
+     * @Rest\Get("/camps")
+     *
+     * @SWG\Tag(name="CriteriaDistributionsCamps")
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     required=true,
+     *     schema={}
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getCamps(Request $request)
+    {
+        $data = $request->request->all();
+        $countryIso3 = $data['__country'];
+
+        /** @var CriteriaDistributionService $criteriaDistributionService */
+        try {
+            $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
+            $camps = $criteriaDistributionService->getCamps($countryIso3);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $camps,
+                'json'
+            );
+
+        return new Response($json);
+    }
 }

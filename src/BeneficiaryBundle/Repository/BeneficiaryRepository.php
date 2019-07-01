@@ -314,10 +314,10 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             else if ($field === 'campName') {
                 $qb->leftJoin('hh.householdLocations', 'hl'.$i, Join::WITH, 'hl'.$i . '.type = :camp')
                     ->leftJoin('hl' . $i . '.campAddress', 'ca'.$i)
-                    ->leftJoin('ca'.$i.'.camp', 'c'.$i, Join::WITH, 'c'.$i . '.name = :parameter'.$i)
+                    ->leftJoin('ca'.$i.'.camp', 'c'.$i, Join::WITH, 'c'.$i . '.id = :parameter'.$i)
                     ->setParameter('camp', 'camp');
-                $orStatement->add('c'.$i . '.name = :parameter'.$i);
-                $qb->addSelect('c'.$i . '.name AS ' . $field.$i);
+                $orStatement->add('c'.$i . '.id = :parameter'.$i);
+                $qb->addSelect('c'.$i . '.id AS ' . $field.$i);
             }
         }
     }
