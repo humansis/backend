@@ -122,12 +122,12 @@ class CriteriaDistributionController extends Controller
         $threshold = $filters['threshold'];
 
         /** @var CriteriaDistributionService $criteriaDistributionService */
-        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        // try {
-        // } catch (\Exception $exception) {
-        //     return new Response($exception->getMessage(), 500);
-        // }
-        $receivers = $criteriaDistributionService->load($filters, $project, $threshold, true);
+        try {
+            $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
+            $receivers = $criteriaDistributionService->load($filters, $project, $threshold, true);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
         $json = $this->get('jms_serializer')
             ->serialize(

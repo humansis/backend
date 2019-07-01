@@ -537,7 +537,7 @@ class Household
      */
     public function getNumberDependents(): int
     {
-        return $this->numberDependents ? $this->numberDependents : count($this->getBeneficiaries());
+        return $this->numberDependents ? $this->numberDependents : count($this->getBeneficiaries()) - 1;
     }
 
     /**
