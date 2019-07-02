@@ -97,10 +97,17 @@ class ProjectService
     {
         /** @var Project $project */
 
+        $startDate = DateTime::createFromFormat('d-m-Y',$projectArray["start_date"]);
+        $endDate = DateTime::createFromFormat('d-m-Y',$projectArray["end_date"]);
+
+        if ($startDate > $endDate) {
+            throw new \Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
+        }
+
         $project = new Project();
         $project->setName($projectArray["name"])
-                ->setStartDate(DateTime::createFromFormat('d-m-Y',$projectArray["start_date"]))
-                ->setEndDate(DateTime::createFromFormat('d-m-Y',$projectArray["end_date"]))
+                ->setStartDate($startDate)
+                ->setEndDate($endDate)
                 ->setIso3($countryISO3)
                 ->setTarget($projectArray["target"])
                 ->setNotes($projectArray["notes"]);
@@ -164,12 +171,19 @@ class ProjectService
      */
     public function edit(Project $project, array $projectArray)
     {
+        $startDate = DateTime::createFromFormat('d-m-Y',$projectArray["start_date"]);
+        $endDate = DateTime::createFromFormat('d-m-Y',$projectArray["end_date"]);
+
+        if ($startDate > $endDate) {
+            throw new \Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
+        }
+    
         /** @var Project $editedProject */
         $oldProject = $this->em->getRepository(Project::class)->find($project->getId());
         if($oldProject->getArchived() == 0){
             $project->setName($projectArray['name'])
-                ->setStartDate(new DateTime($projectArray['start_date']))
-                ->setEndDate(new DateTime($projectArray['end_date']))
+                ->setStartDate($startDate)
+                ->setEndDate($endDate)
                 ->setTarget($projectArray['target'])
                 ->setNotes($projectArray["notes"]);
 
