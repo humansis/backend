@@ -4,12 +4,7 @@
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Cache\Simple\FilesystemCache;
 
 class DuplicateTreatment extends AbstractTreatment
 {
@@ -36,7 +31,7 @@ class DuplicateTreatment extends AbstractTreatment
      * @return string
      * @throws \Exception
      */
-    public function treat(Project $project, array $householdsArray, string $email)
+    public function treat(Project $project, array &$householdsArray, string $email)
     {
         foreach ($householdsArray as $index => $householdArray) {
             $idOldBeneficiary = $householdArray['old']['id'];

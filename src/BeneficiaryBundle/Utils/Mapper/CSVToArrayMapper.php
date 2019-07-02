@@ -280,7 +280,6 @@ class CSVToArrayMapper extends AbstractMapper
         if (! array_key_exists($field, $this->countrySpecificIds)) {
             $repo = $this->em->getRepository(CountrySpecific::class);
             $this->countrySpecificIds[$field] = $repo->findOneByFieldString($field)->getId();
-            dump($this->countrySpecificIds[$field]);
         }
 
         return $this->countrySpecificIds[$field];

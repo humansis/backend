@@ -4,11 +4,9 @@
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
 use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\Beneficiary;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Cache\Simple\FilesystemCache;
 
 class ValidateTreatment extends AbstractTreatment
 {
@@ -24,7 +22,7 @@ class ValidateTreatment extends AbstractTreatment
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Exception
      */
-    public function treat(Project $project, array $householdsArray, string $email)
+    public function treat(Project $project, array &$householdsArray, string $email)
     {
         $to_create = $this->getFromCache('to_create', $email) ?: [];
         $to_update = $this->getFromCache('to_update', $email) ?: [];

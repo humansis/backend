@@ -3,7 +3,6 @@
 
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
-use BeneficiaryBundle\Entity\Household;
 use ProjectBundle\Entity\Project;
 
 class MoreTreatment extends AbstractTreatment
@@ -28,7 +27,7 @@ class MoreTreatment extends AbstractTreatment
      * @return array
      * @throws \Exception
      */
-    public function treat(Project $project, array $householdsArray, string $email)
+    public function treat(Project $project, array &$householdsArray, string $email)
     {
         foreach ($householdsArray as $householdArray) {
             // Save to update the new household with its removed beneficiary

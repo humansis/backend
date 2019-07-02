@@ -41,15 +41,16 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 
         return $q->getQuery()->getResult();
     }
-    
+
     public function countUnarchivedByProject(Project $project)
     {
-        $qb = $this->createQueryBuilder("hh");
-        $q = $qb->select("COUNT(hh)")
-                ->leftJoin("hh.projects", "p")
-                ->where("p = :project")
-                ->setParameter("project", $project)
-                ->andWhere("hh.archived = 0");
+        $qb = $this
+            ->createQueryBuilder("hh")
+            ->select("COUNT(hh)")
+            ->leftJoin("hh.projects", "p")
+            ->where("p = :project")
+            ->setParameter("project", $project)
+            ->andWhere("hh.archived = 0");
 
         return $qb->getQuery()->getSingleScalarResult();
     }
@@ -311,7 +312,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * @param $onlyCount
      * @param $countryISO3
      * @param Project $project
-     * @return QueryBuilder|void
+     * @return QueryBuilder
      */
     public function configurationQueryBuilder($onlyCount, $countryISO3, Project $project = null)
     {

@@ -3,15 +3,7 @@
 
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Utils\BeneficiaryService;
-use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
-use BeneficiaryBundle\Utils\HouseholdService;
-use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
-use Symfony\Component\DependencyInjection\Container;
 
 class MissingTreatment extends AbstractTreatment
 {
@@ -23,7 +15,7 @@ class MissingTreatment extends AbstractTreatment
      * @param string $email
      * @return array
      */
-    public function treat(Project $project, array $householdsArray, string $email)
+    public function treat(Project $project, array &$householdsArray, string $email)
     {
         foreach ($householdsArray as $index => $value) {
             $index = intval($index) + 6;

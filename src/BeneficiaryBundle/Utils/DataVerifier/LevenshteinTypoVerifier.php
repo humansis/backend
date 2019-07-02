@@ -46,7 +46,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
      * @return array|bool|null
      * @throws \Exception
      */
-    public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
+    public function verify(string $countryISO3, array &$householdArray, int $cacheId, string $email)
     {
 
         $householdRepository = $this->em->getRepository(Household::class);

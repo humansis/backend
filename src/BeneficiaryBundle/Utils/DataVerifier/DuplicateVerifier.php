@@ -29,7 +29,7 @@ class DuplicateVerifier extends AbstractVerifier
      * @return array|null
      * @throws \Exception
      */
-    public function verify(string $countryISO3, array $householdArray, int $cacheId, string $email)
+    public function verify(string $countryISO3, array &$householdArray, int $cacheId, string $email)
     {
         // Get the old household the new one corresponds to if it exists
         if (array_key_exists('old', $householdArray) && ! empty($householdArray['old'])) {
