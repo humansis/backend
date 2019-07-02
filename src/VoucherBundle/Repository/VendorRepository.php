@@ -35,4 +35,13 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
 
         return $q->getQuery()->getSingleResult()['country'];
     }
+
+    public function findByCountry($countryISO3)
+    {
+        $qb = $this->createQueryBuilder('v')
+            ->leftJoin('v.location', 'l');
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($qb, $countryISO3);
+        return $qb->getQuery()->getResult();
+    }
 }

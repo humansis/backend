@@ -115,11 +115,12 @@ class ProductService
     /**
      * Export all products in a CSV file
      * @param string $type
+     * @param string $countryIso3
      * @return mixed
      */
-    public function exportToCsv(string $type)
+    public function exportToCsv(string $type, string $countryIso3)
     {
-        $exportableTable = $this->em->getRepository(Product::class)->findAll();
+        $exportableTable = $this->em->getRepository(Product::class)->findBy(['archived' => false, 'countryISO3' => $countryIso3]);
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'products', $type);
     }

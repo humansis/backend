@@ -98,7 +98,7 @@ class VendorController extends Controller
     public function getAllAction(Request $request)
     {
         try {
-            $vendors = $this->get('voucher.vendor_service')->findAll();
+            $vendors = $this->get('voucher.vendor_service')->findAll($request->get('__country'));
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
