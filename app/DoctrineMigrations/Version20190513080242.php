@@ -15,7 +15,7 @@ final class Version20190513080242 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE beneficiary ADD enGivenName VARCHAR(255) DEFAULT NULL, ADD enFamilyName VARCHAR(255) DEFAULT NULL, ADD localGivenName VARCHAR(255) DEFAULT NULL, ADD localFamilyName VARCHAR(255) DEFAULT NULL, DROP givenName, DROP familyName');
+        $this->addSql('ALTER TABLE beneficiary ADD enGivenName VARCHAR(255) DEFAULT NULL, ADD enFamilyName VARCHAR(255) DEFAULT NULL, CHANGE givenName localGivenName VARCHAR(255) DEFAULT NULL, CHANGE familyName localFamilyName VARCHAR(255) DEFAULT NULL');
     }
 
     public function down(Schema $schema) : void

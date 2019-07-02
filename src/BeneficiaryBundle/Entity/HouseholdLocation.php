@@ -33,7 +33,7 @@ class HouseholdLocation
     /**
      * @var string
      *
-     * @ORM\Column(name="locationGroup", type="string", length=45)
+     * @ORM\Column(name="location_group", type="string", length=45)
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $locationGroup;
