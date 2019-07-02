@@ -17,6 +17,28 @@ use \DistributionBundle\Entity\DistributionData;
 abstract class AbstractDataRetriever
 {
 
+    private $monthMapper = [
+        1 => 'Jan',
+        2 => 'Feb',
+        3 => 'Mar',
+        4 => 'Apr',
+        5 => 'May',
+        6 => 'Jun',
+        7 => 'Jul',
+        8 => 'Aug',
+        9 => 'Sep',
+        10 => 'Oct',
+        11 => 'Nov',
+        12 => 'Dec'
+    ];
+
+    private $quarterMapper = [
+        1 => 'Jan-Mar',
+        2 => 'Apr-Jun',
+        3 => 'Jul-Sep',
+        4 => 'Oct-Dec',
+    ];
+
     /**
      * Use to verify if a key project exist in filter
      * If this key exists, it means a project was selected in selector
@@ -76,18 +98,19 @@ abstract class AbstractDataRetriever
         $result = array();
 
         if ($frequency === "Month") {
-            $qb ->addSelect('AVG(rv.value) AS value', 'rv.unity AS unity', "MONTH(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
-                ->addGroupBy('unity', 'date');
-            $result = $qb->getQuery()->getArrayResult();
+            $qb ->addSelect('AVG(rv.value) AS value', 'rv.unity AS unity', "MONTH(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date", "YEAR(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS year")
+                ->addGroupBy('unity', 'date', 'year');
+            $result = $this->formatMonths($qb->getQuery()->getArrayResult());
         } elseif ($frequency === "Year") {
             $qb ->addSelect('AVG(rv.value) AS value', 'rv.unity AS unity', "YEAR(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
                 ->addGroupBy('unity', 'date');
             $result = $qb->getQuery()->getArrayResult();
         } elseif ($frequency === "Quarter") {
-            $qb ->addSelect('AVG(rv.value) AS value', 'rv.unity AS unity', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date")
-                ->addGroupBy('unity', 'date');
-            $result = $this->getNameQuarter($qb->getQuery()->getArrayResult());
+            $qb ->addSelect('AVG(rv.value) AS value', 'rv.unity AS unity', "QUARTER(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS date", "YEAR(DATE_FORMAT(rv.creationDate, '%Y-%m-%d')) AS year")
+                ->addGroupBy('unity', 'date', 'year');
+            $result = $this->formatQuarters($qb->getQuery()->getArrayResult());
         }
+
         return  $this->splitByPeriod($result);
     }
 
@@ -109,30 +132,45 @@ abstract class AbstractDataRetriever
      * @param $results
      * @return mixed
      */
-    public function getNameQuarter($results)
+    private function formatQuarters($results)
     {
         foreach ($results as &$result) {
-            if ($result['date'] === "1") {
-                $result["date"] = "Jan-Mar";
-            } elseif ($result['date'] === "2") {
-                $result["date"] = "Apr-Jun";
-            } elseif ($result['date'] === "3") {
-                $result["date"] = "Jul-Sep";
-            } else {
-                $result["date"] = "Oct-Dec";
-            }
+            $result['date'] = $this->quarterMapper[$result['date']];
+        }
+        return $this->addYear($results);
+    }
+
+
+    private function formatMonths($results)
+    {
+        foreach ($results as &$result) {
+            $result['date'] = $this->monthMapper[$result['date']];
+        }
+        return $this->addYear($results);
+    }
+
+    private function addYear($results)
+    {
+        foreach ($results as &$result)
+        {
+            $result['date'] = $result['date'].' '.$result['year'];
+            unset($result['year']);
         }
         return $results;
     }
 
-    protected function pieValuesToPieValuePercentage(Array $periodValues) {
+    protected function pieValuesToPieValuePercentage(Array $periodValues)
+    {
 
-        foreach ($periodValues as $period => $periodValue) {
+        foreach ($periodValues as $period => $periodValue)
+        {
             $periodTotalValue = 0;
-            foreach ($periodValue as $value) {
+            foreach ($periodValue as $value)
+            {
                 $periodTotalValue += $value['value'];
             }
-            foreach ($periodValue as $index => $value) {
+            foreach ($periodValue as $index => $value)
+            {
                 $periodValues[$period][$index]['value'] = $value['value'] * 100 / $periodTotalValue;
             }
         }
