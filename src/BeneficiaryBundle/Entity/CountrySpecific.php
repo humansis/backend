@@ -191,18 +191,10 @@ class CountrySpecific extends Criteria implements ExportableInterface
 
     public function getMappedValueForExport(): array
     {
-        $countrySpecificAnswers = array();
-
-        foreach ($this->getCountrySpecificAnswers()->getValues() as $value) {
-            array_push($countrySpecificAnswers, $value->getAnswer());
-        }
-        $countrySpecificAnswers = join(',', $countrySpecificAnswers);
-
         return [
             "type" => $this->getType(),
             "Country Iso3"=> $this->getCountryIso3(),
-            "Field" => $this->getFieldString(),
-            "country specific answers " => $countrySpecificAnswers,
+            "Field" => $this->getFieldString()
         ];
     }
 }
