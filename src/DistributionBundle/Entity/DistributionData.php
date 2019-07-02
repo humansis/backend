@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\Expr\Select;
 use ProjectBundle\Entity\Project;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
+use BeneficiaryBundle\Entity\Household;
 
 /**
  * DistributionData
@@ -550,7 +551,28 @@ class DistributionData implements ExportableInterface
 
         $valueselectioncriteria = [];
         foreach ($this->getSelectionCriteria() as $criterion) {
-            $stringCriterion = $criterion->getFieldString() . " " . $criterion->getConditionString() . " " . $criterion->getValueString();
+            // First we split the camelCase field names
+            $field = implode(' ', preg_split('/(?=[A-Z])/', $criterion->getFieldString()));
+            // Then we replace the = by a :
+            $condition = $criterion->getConditionString() === '=' ? ':' : $criterion->getConditionString();
+            $value = $criterion->getValueString();
+
+            // Then we make the string coherent
+            if ($field === 'livelihood') {
+                $value = Household::LIVELIHOOD[$value];
+            } else if ($field === 'camp Name') {
+                $field = 'camp Id';
+            }
+
+            if ($field === 'gender' || $field === 'head Of Household Gender') {
+                $stringCriterion = $field . " " . $condition . ($value === '0' ? ' Female' : ' Male');
+            } else if ($condition === 'true') {
+                $stringCriterion = $field;
+            } else if ($condition === 'false') {
+                $stringCriterion = 'not ' . $field;
+            } else {
+                $stringCriterion = $field . " " . $condition . " " . $value;
+            }
             array_push($valueselectioncriteria, $stringCriterion);
         }
         $valueselectioncriteria = join(', ', $valueselectioncriteria);
