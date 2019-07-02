@@ -109,9 +109,9 @@ class VendorService
      *
      * @return array
      */
-    public function findAll()
+    public function findAll($countryISO3)
     {
-        $vendors = $this->em->getRepository(Vendor::class)->findByArchived(false);
+        $vendors = $this->em->getRepository(Vendor::class)->findByCountry($countryISO3);
         return $vendors;
     }
 
@@ -293,11 +293,12 @@ class VendorService
     /**
      * Export all vendors in a CSV file
      * @param string $type
+     * @param string $countryISO3
      * @return mixed
      */
-    public function exportToCsv(string $type)
+    public function exportToCsv(string $type, string $countryISO3)
     {
-        $exportableTable = $this->em->getRepository(Vendor::class)->findAll();
+        $exportableTable = $this->em->getRepository(Vendor::class)->findByCountry($countryISO3);
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'vendors', $type);
     }

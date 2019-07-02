@@ -97,9 +97,11 @@ class ExportController extends Controller
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('voucher.booklet_service')->exportVouchersDistributionToCsv($distribution, $type);
             } elseif ($request->query->get('products')) {
-                $filename = $this->get('voucher.product_service')->exportToCsv($type);
+                $countryIso3 = $request->request->get("__country");
+                $filename = $this->get('voucher.product_service')->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('vendors')) {
-                $filename = $this->get('voucher.vendor_service')->exportToCsv($type);
+                $countryIso3 = $request->request->get("__country");
+                $filename = $this->get('voucher.vendor_service')->exportToCsv($type, $countryIso3);
             }
 
             // Create binary file to send
