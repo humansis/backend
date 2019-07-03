@@ -13,7 +13,6 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use UserBundle\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Class TransactionService
