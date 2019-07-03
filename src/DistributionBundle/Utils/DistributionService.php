@@ -518,31 +518,98 @@ class DistributionService
     }
 
 
-        /**
-         * Export all distributions in a pdf
-         * @param int $projectId
-         * @return mixed
-         */
-        public function exportToPdf(int $projectId)
-        {
-            $exportableTable = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId, 'archived' => false]);
-            $project = $this->em->getRepository(Project::class)->find($projectId);
+    /**
+     * Export all distributions in a pdf
+     * @param int $projectId
+     * @return mixed
+     */
+    public function exportToPdf(int $projectId)
+    {
+        $exportableTable = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId, 'archived' => false]);
+        $project = $this->em->getRepository(Project::class)->find($projectId);
 
-            try {
-                $html =  $this->container->get('templating')->render(
-                    '@Distribution/Pdf/distributions.html.twig',
-                    array_merge(
-                        ['project' => $project,
-                        'distributions' => $exportableTable],
-                        $this->container->get('pdf_service')->getInformationStyle()
-                    )
+        try {
+            $html =  $this->container->get('templating')->render(
+                '@Distribution/Pdf/distributions.html.twig',
+                array_merge(
+                    ['project' => $project,
+                    'distributions' => $exportableTable],
+                    $this->container->get('pdf_service')->getInformationStyle()
+                )
 
-                );
+            );
 
-                $response = $this->container->get('pdf_service')->printPdf($html, 'landscape', 'bookletCodes');
-                return $response;
-            } catch (\Exception $e) {
-                throw new \Exception($e);
+            $response = $this->container->get('pdf_service')->printPdf($html, 'landscape', 'bookletCodes');
+            return $response;
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+     /**
+     * Export a distribution in pdf
+     * @param int $distributionId
+     * @return mixed
+     */
+    public function exportOneToPdf(int $distributionId)
+    {
+        $exportableDistribution = $this->em->getRepository(DistributionData::class)->findOneBy(['id' => $distributionId, 'archived' => false]);
+
+        $booklets = [];
+
+        if ($exportableDistribution->getCommodities()[0]->getModalityType()->getName() === 'QR Code Voucher') {
+            foreach ($exportableDistribution->getDistributionBeneficiaries() as $distributionBeneficiary) {
+                if (count($distributionBeneficiary->getBooklets()) > 0) {
+                    $activatedBooklets = array_map(
+                        function($booklet) { return $booklet->getStatus() < 3 ? $booklet : false; },
+                        $distributionBeneficiary->getBooklets()->toArray()
+                    );
+                    if (count($activatedBooklets) > 0) {
+                        $products = [];
+                        $productIds = [];
+                        foreach ($activatedBooklets[0]->getVouchers() as $voucher) {
+                            foreach ($voucher->getProducts() as $product) {
+                                if (!in_array($product->getId(), $productIds)) {
+                                    array_push($productIds, $product->getId());
+                                    array_push($products, $product->getName());
+                                }
+                            }
+                        }
+                        $booklet = [
+                            "code" => $activatedBooklets[0]->getCode(),
+                            "status" => $activatedBooklets[0]->getStatus(),
+                            "vouchers" => $activatedBooklets[0]->getVouchers(),
+                            "products" => implode(', ', $products),
+                            "value" => $activatedBooklets[0]->getTotalValue(),
+                            "currency" => $activatedBooklets[0]->getCurrency(),
+                            "usedAt" => $activatedBooklets[0]->getUsedAt()
+                        ];
+                        $booklets[$distributionBeneficiary->getId()] = $booklet;
+                    }
+                }
             }
         }
+
+        try {
+            $html =  $this->container->get('templating')->render(
+                '@Distribution/Pdf/distribution.html.twig',
+                array_merge(
+                    [
+                        'distribution' => $exportableDistribution,
+                        'booklets' => $booklets,
+                        'commodities' => implode(', ', array_map(
+                            function($commodity) { return $commodity->getValue() . ' ' . $commodity->getUnit() . '/pers'; }, 
+                            $exportableDistribution->getCommodities()->toArray()
+                        ))
+                    ],
+                    $this->container->get('pdf_service')->getInformationStyle()
+                )
+            );
+
+            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'bookletCodes');
+            return $response;
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
 }
