@@ -131,7 +131,15 @@ class ExportService
 
         // get table headers titles
         reset($rows);
-        $tableHeaders = array_keys($rows[0]);
+
+        $headers = [];
+        // We get all the keys that will become the column names for the csv
+        foreach($rows as $row) {
+            // We merge the results because some rows can have more or less columns
+            $headers = array_merge($headers, array_keys($row));
+        }
+        // We get the distinct column names and reorder them
+        $tableHeaders = array_values(array_unique($headers));
 
         foreach ($tableHeaders as $key => $value) {
             if ($key == 26) {
