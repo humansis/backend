@@ -339,6 +339,8 @@ class TransactionService
                 "Message" => $transaction->getMessage(),
                 "Money Received" => $transaction->getMoneyReceived(),
                 "Pickup Date" => $transaction->getPickupDate(),
+                "Removed" => $transaction->getDistributionBeneficiary()->getRemoved() ? 'Yes' : 'No',
+                "Justification for adding/removing" => $transaction->getDistributionBeneficiary()->getJustification(),
                 ))
             );
         }

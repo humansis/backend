@@ -500,16 +500,31 @@ class DistributionService
 
         foreach ($generalreliefs as $generalrelief) {
             $beneficiary = $generalrelief->getDistributionBeneficiary()->getBeneficiary();
-            $commodity = $distributionData->getCommodities()[0];
+            $commodityNames = implode(', ',
+                array_map(
+                    function($commodity) { return  $commodity->getModalityType()->getName(); }, 
+                    $distributionData->getCommodities()->toArray()
+                )
+            );
+
+
+            $commodityValues = implode(', ',
+                array_map(
+                    function($commodity) { return  $commodity->getValue() . ' ' . $commodity->getUnit(); }, 
+                    $distributionData->getCommodities()->toArray()
+                )
+            );
 
             $commonFields = $beneficiary->getCommonExportFields();
 
             array_push($exportableTable, 
                 array_merge($commonFields, array(
-                    "Commodity" => $commodity->getModalityType()->getName(),
-                    "Value" => $commodity->getValue() . ' ' . $commodity->getUnit(),
+                    "Commodity" => $commodityNames,
+                    "Value" => $commodityValues,
                     "Distributed At" => $generalrelief->getDistributedAt(),
                     "Notes Distribution" => $generalrelief->getNotes(),
+                    "Removed" => $generalrelief->getDistributionBeneficiary()->getRemoved() ? 'Yes' : 'No',
+                    "Justification for adding/removing" => $generalrelief->getDistributionBeneficiary()->getJustification(),
                 ))
             );
         }

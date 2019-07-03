@@ -577,7 +577,9 @@ class BookletService
                 "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
                 "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
                 "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
-                "Purchased items" => $products
+                "Purchased items" => $products,
+                "Removed" => $distributionBeneficiary->getRemoved() ? 'Yes' : 'No',
+                "Justification for adding/removing" => $distributionBeneficiary->getJustification(),
                 ))
             );
         }
