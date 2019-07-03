@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use DistributionBundle\Entity\DistributionData;
-use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\Household;
 
 class BookletService
