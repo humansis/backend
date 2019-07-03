@@ -13,6 +13,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use DistributionBundle\Entity\DistributionData;
 use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use DateTime;
 
 /**
  * Class DistributionBeneficiaryService
@@ -194,7 +195,10 @@ class DistributionBeneficiaryService
     public function removeBeneficiaryInDistribution(DistributionData $distributionData, Beneficiary $beneficiary, $deletionData)
     {
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'distributionData' => $distributionData->getId()]);
-        
+
+        // Update updatedOn datetime
+        $distributionData->setUpdatedOn(new DateTime());
+
         $distributionBeneficiary->setRemoved(1)
             ->setJustification($deletionData['justification']);
         $this->em->persist($distributionBeneficiary);

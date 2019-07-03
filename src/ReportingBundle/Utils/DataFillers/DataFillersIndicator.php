@@ -39,7 +39,6 @@ class DataFillersIndicator
         return  array_map("str_getcsv", preg_split('/\r*\n+|\r+/', $file));
     }
 
-
     /**
      * Call function to parse CSV
      * And add data in the database
@@ -51,8 +50,9 @@ class DataFillersIndicator
         foreach ($contentFile as $data) {
             $new = new ReportingIndicator();
             $filter = [];
+            dump($data);
             $new->setreference($data[0]);
-            $new->setGraph($data[3] ? $data[3] : null);
+            $new->setGraph($data[3]);
             $new->setCode($data[1]);
             array_push($filter, $data[2]);
             
