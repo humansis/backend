@@ -37,7 +37,7 @@ class Vendor implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="shop", type="string", length=255)
+     * @ORM\Column(name="shop", type="string", length=255, nullable=true)
      * @Groups({"FullVendor"})
      */
     private $shop;
