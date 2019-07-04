@@ -145,7 +145,7 @@ class HouseholdService
             $household = new Household();
         }
 
-        if ($household->getHouseholdLocations()) {  
+        if ($household->getHouseholdLocations()) {
             foreach ($household->getHouseholdLocations() as $initialHouseholdLocation) {
                 $this->em->remove($initialHouseholdLocation);
             } 
@@ -154,7 +154,8 @@ class HouseholdService
 
         foreach ($householdArray['household_locations'] as $householdLocation) {
             $newHouseholdLocation = new HouseholdLocation();
-            $newHouseholdLocation->setLocationGroup($householdLocation['location_group'])
+            $newHouseholdLocation
+                ->setLocationGroup($householdLocation['location_group'])
                 ->setType($householdLocation['type']);
 
             if ($householdLocation['type'] === HouseholdLocation::LOCATION_TYPE_CAMP) {

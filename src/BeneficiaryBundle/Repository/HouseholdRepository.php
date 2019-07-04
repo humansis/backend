@@ -296,16 +296,15 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * @param array  $ids
      * @return mixed
      */
-    public function getAllByIds(string $iso3, array $ids)
+    public function getAllByIds(array $ids)
     {
-        $qb = $this->createQueryBuilder("hh");
-        $this->whereHouseholdInCountry($qb, $iso3);
-        
-        $q = $qb->andWhere('hh.archived = 0')
-                ->andWhere("hh.id IN (:ids)")
-                ->setParameter("ids", $ids);
+        $qb = $this
+            ->createQueryBuilder("hh")
+            ->andWhere('hh.archived = 0')
+            ->andWhere("hh.id IN (:ids)")
+            ->setParameter("ids", $ids);
 
-        return $q->getQuery()->getResult();
+        return $qb->getQuery()->getResult();
     }
 
     /**

@@ -389,7 +389,7 @@ class BeneficiaryService
     {
         $households = null;
         if ($ids) {
-            $households = $this->em->getRepository(Household::class)->getAllByIds($countryIso3, $ids);
+            $households = $this->em->getRepository(Household::class)->getAllByIds($ids);
         } else if ($filters) {
             $households = $this->container->get('beneficiary.household_service')->getAll($countryIso3, $filters)[1];
         } else {

@@ -24,31 +24,53 @@ class ValidateTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array &$householdsArray, string $email)
     {
-        $to_create = $this->getFromCache('to_create', $email) ?: [];
-        $to_update = $this->getFromCache('to_update', $email) ?: [];
+        $createdHouseholds = $this->createHouseholds($project, $email);
+        $updatedHouseholds = $this->updateHouseholds($project, $email);
 
-        $householdsAdded = [];
+        return array_merge($createdHouseholds, $updatedHouseholds);
+    }
 
+    /**
+     * @throws \Exception
+     */
+    private function createHouseholds(Project &$project, string $email)
+    {
+        $householdsToCreate = $this->getFromCache('to_create', $email) ?: [];
+        $createdHouseholds  = [];
 
-        foreach ($to_create as $i => $household) {
-            $household = $this->householdService->createOrEdit($household['new'], array($project), null);
-            $householdsAdded[] = $household;
+        foreach ($householdsToCreate as $household) {
+            $createdHouseholds[] = $this->householdService->createOrEdit($household['new'], [$project], null);
         }
 
-        foreach ($to_update as $i => $household) {
-            $oldHousehold = $this->em->getRepository(Household::class)->find($household['old']['id']);
+        return $createdHouseholds;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function updateHouseholds(Project &$project, string $email)
+    {
+        $householdsToUpdate = $this->getFromCache('to_update', $email) ?: [];
+        $householdsUpdated  = [];
+        $householdsIds      = [];
+
+        foreach ($householdsToUpdate as $household) {
+            $householdsIds[] = $household['old']['id'];
+        }
+
+        $oldHouseholds = $this->em->getRepository(Household::class)->getAllByIds($householdsIds);
+
+        foreach ($oldHouseholds as $oldHousehold) {
             if (! empty($household['new']) && ! array_key_exists('id', $household['new'])) {
                 $household = $this->householdService->createOrEdit($household['new'], array($project), $oldHousehold);
-            // If household was not previously managed and was fetched from database for duplication
+                // If household was not previously managed and was fetched from database for duplication
             } elseif (! empty($household['new']) && array_key_exists('id', $household['new'])) {
                 $household = $this->householdService->removeBeneficiaries($household['new']);
             } else {
                 $this->householdService->addToProject($oldHousehold, $project);
                 $household = $oldHousehold;
             }
-            $householdsAdded[] = $household;
+            $householdsUpdated[] = $household;
         }
-
-        return $householdsAdded;
     }
 }
