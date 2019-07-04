@@ -151,11 +151,12 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         // We join information that is needed for the filters
         $q = $qb->leftJoin("hh.beneficiaries", "b")
-            ->andWhere("hh.archived = 0")
-            ->andWhere("hh.id = b.household")
-            ->leftJoin("b.vulnerabilityCriteria", "vb")
-            ->leftJoin("hh.projects", "p")
-            ->leftJoin("b.referral", "r");
+                ->leftJoin("hh.projects", "p")
+                ->leftJoin("b.vulnerabilityCriteria", "vb")
+                ->leftJoin("b.referral", "r")
+                ->leftJoin("hh.beneficiaries", "head")
+                ->andWhere("head.status = 1")
+                ->andWhere("hh.archived = 0");
             
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
         if (array_key_exists("sort", $sort) && array_key_exists("direction", $sort)) {
@@ -163,20 +164,20 @@ class HouseholdRepository extends AbstractCriteriaRepository
             $direction = $sort["direction"];
 
             // If the field is the location, we sort it by the direction sent
-            if ($value == "location") {
+            if ($value == "currentHouseholdLocation") {
                 $q->addGroupBy("adm1")->addOrderBy("adm1.name", $direction);
             }
             // If the field is the local first name, we sort it by the direction sent
             elseif ($value == "localFirstName") {
-                $q->addGroupBy("b")->addOrderBy("b.localGivenName", $direction);
+                $q->addGroupBy("head.localGivenName")->addOrderBy("head.localGivenName", $direction);
             }
             // If the field is the local family name, we sort it by the direction sent
             elseif ($value == "localFamilyName") {
-                $q->addGroupBy("b")->addOrderBy("b.localFamilyName", $direction);
+                $q->addGroupBy("head.localFamilyName")->addOrderBy("head.localFamilyName", $direction);
             }
             // If the field is the number of dependents, we sort it by the direction sent
             elseif ($value == "dependents") {
-                $q->addGroupBy("b.household")->addOrderBy("COUNT(b.household)", $direction);
+                $q->addOrderBy("COUNT(DISTINCT b)", $direction);
             }
             // If the field is the projects, we sort it by the direction sent
             elseif ($value == "projects") {
@@ -185,6 +186,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
             // If the field is the vulnerabilities, we sort it by the direction sent
             elseif ($value == "vulnerabilities") {
                 $q->addGroupBy("vb")->addOrderBy("vb.fieldString", $direction);
+            } elseif ($value == "id") {
+                $q->addOrderBy("hh.id", $direction);
             }
 
             $q->addGroupBy("hh.id");
