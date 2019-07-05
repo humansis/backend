@@ -13,7 +13,6 @@ use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use UserBundle\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use BeneficiaryBundle\Entity\Referral;
 
 /**
  * Class TransactionService
@@ -339,6 +338,8 @@ class TransactionService
                 "Message" => $transaction->getMessage(),
                 "Money Received" => $transaction->getMoneyReceived(),
                 "Pickup Date" => $transaction->getPickupDate(),
+                "Removed" => $transaction->getDistributionBeneficiary()->getRemoved() ? 'Yes' : 'No',
+                "Justification for adding/removing" => $transaction->getDistributionBeneficiary()->getJustification(),
                 ))
             );
         }

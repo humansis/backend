@@ -57,6 +57,9 @@ class ExportController extends Controller
                 $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv($type, $countryIso3, $filters, $ids);
             } elseif ($request->query->get('beneficiariesInDistribution')) {
                 $idDistribution = $request->query->get('beneficiariesInDistribution');
+                if ($type === 'pdf') {
+                    return $this->get('distribution.distribution_service')->exportOneToPdf($idDistribution);
+                }
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('beneficiary.beneficiary_service')->exportToCsvBeneficiariesInDistribution($distribution, $type);
             } elseif ($request->query->get('users')) {
@@ -77,6 +80,9 @@ class ExportController extends Controller
                 $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('transactionDistribution')) {
                 $idDistribution = $request->query->get('transactionDistribution');
+                if ($type === 'pdf') {
+                    return $this->get('distribution.distribution_service')->exportOneToPdf($idDistribution);
+                }
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, $type);
             } elseif ($request->query->get('booklets')) {
@@ -90,16 +96,24 @@ class ExportController extends Controller
                 $filename = $this->get('reporting.reporting_service')->exportToCsv($request->request, $type);
             } elseif ($request->query->get('generalreliefDistribution')) {
                 $idDistribution = $request->query->get('generalreliefDistribution');
+                if ($type === 'pdf') {
+                    return $this->get('distribution.distribution_service')->exportOneToPdf($idDistribution);
+                }
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('distribution.distribution_service')->exportGeneralReliefDistributionToCsv($distribution, $type);
             } elseif ($request->query->get('voucherDistribution')) {
                 $idDistribution = $request->query->get('voucherDistribution');
+                if ($type === 'pdf') {
+                    return $this->get('distribution.distribution_service')->exportOneToPdf($idDistribution);
+                }
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('voucher.booklet_service')->exportVouchersDistributionToCsv($distribution, $type);
             } elseif ($request->query->get('products')) {
-                $filename = $this->get('voucher.product_service')->exportToCsv($type);
+                $countryIso3 = $request->request->get("__country");
+                $filename = $this->get('voucher.product_service')->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('vendors')) {
-                $filename = $this->get('voucher.vendor_service')->exportToCsv($type);
+                $countryIso3 = $request->request->get("__country");
+                $filename = $this->get('voucher.vendor_service')->exportToCsv($type, $countryIso3);
             }
 
             // Create binary file to send

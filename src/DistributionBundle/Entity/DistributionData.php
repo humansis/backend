@@ -48,7 +48,7 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="UpdatedOn", type="datetime")
-     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
+     * @JMS_Type("DateTime<'d-m-Y H:i:s'>")
      *
      * @Groups({"FullDistribution"})
      */

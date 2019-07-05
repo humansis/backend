@@ -214,8 +214,6 @@ class ExportCSVService
             "Proxy phone 2" => "",
             "Type national ID" => '',
             "Number national ID" => '',
-            "Referral Type" => '',
-            "Referral Comment" => '',
             "  " => '',
             "" => "     -->",
             " " => 'Do not remove this line.'
@@ -241,8 +239,6 @@ class ExportCSVService
             "Proxy phone 2" => "N",
             "Type national ID" => 'IDCard',
             "Number national ID" => '030617701',
-            "Referral Type" => 'Type 5',
-            "Referral Comment" => 'This is a referral comment',
             "  " => '[Head]',
             "" => "     -->",
             " " => 'This Example line and the Type Helper line below must not be removed.'
@@ -268,8 +264,6 @@ class ExportCSVService
             "Proxy phone 2" => "Y",
             "Type national ID" => '',
             "Number national ID" => '',
-            "Referral Type" => 'Type 3',
-            "Referral Comment" => 'This is another referral comment',
             "  " => '[Member]',
             "" => "     -->",
             " " => "'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
@@ -295,8 +289,6 @@ class ExportCSVService
             "Proxy phone 2" => "Y / N (Proxy)",
             "Type national ID" => '"TypeAsString"',
             "Number national ID" => 'Number',
-            "Referral Type" => 'String',
-            "Referral Comment" => 'String',
             "  " => '',
             "" => "     -->",
             " " => "'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."

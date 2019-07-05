@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use DistributionBundle\Entity\DistributionData;
-use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\Household;
 
 class BookletService
@@ -577,7 +576,9 @@ class BookletService
                 "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
                 "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
                 "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
-                "Purchased items" => $products
+                "Purchased items" => $products,
+                "Removed" => $distributionBeneficiary->getRemoved() ? 'Yes' : 'No',
+                "Justification for adding/removing" => $distributionBeneficiary->getJustification(),
                 ))
             );
         }

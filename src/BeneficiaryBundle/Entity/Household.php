@@ -108,8 +108,6 @@ class Household
             "phone2_proxy" => "AE",
             "national_id_type" => "AF",
             "national_id_number" => "AG",
-            "referral_type" => "AH",
-            "referral_comment" => "AI",
         ]
     ];
 

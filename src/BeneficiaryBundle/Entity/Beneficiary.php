@@ -675,12 +675,6 @@ class Beneficiary implements ExportableInterface
         $adm2 = $location->getAdm2Name();
         $adm3 = $location->getAdm3Name();
         $adm4 = $location->getAdm4Name();
-        $referral_type = null;
-        $referral_comment = null;
-        if ($this->getReferral()) {
-            $referral_type = $this->getReferral()->getType();
-            $referral_comment = $this->getReferral()->getComment();
-        }
 
         $householdFields = $this->getCommonHouseholdExportFields();
         $beneficiaryFields = $this->getCommonBeneficiaryExportFields();
@@ -735,8 +729,6 @@ class Beneficiary implements ExportableInterface
             "proxy phone 2" => $proxyphones[1],
             "type national ID" => $typenationalID,
             'nationalId' => $valuesnationalID,
-            "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
-            "Referral Comment" => $referral_comment,
         ];
 
         foreach ($valueCountrySpecific as $key => $value) {
@@ -759,13 +751,6 @@ class Beneficiary implements ExportableInterface
             $gender = 'Male';
         }
 
-        $referral_type = null;
-        $referral_comment = null;
-        if ($this->getReferral()) {
-            $referral_type = $this->getReferral()->getType();
-            $referral_comment = $this->getReferral()->getComment();
-        }
-
         return [
             "Local Given Name" => $this->getLocalGivenName(),
             "Local Family Name"=> $this->getLocalFamilyName(),
@@ -773,8 +758,6 @@ class Beneficiary implements ExportableInterface
             "English Family Name"=> $this->getEnFamilyName(),
             "Gender" => $gender,
             "Date Of Birth" => $this->getDateOfBirth()->format('d-m-Y'),
-            "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
-            "Referral Comment" => $referral_comment,
         ];
     }
 
@@ -821,7 +804,20 @@ class Beneficiary implements ExportableInterface
 
     public function getCommonExportFields()
     {
-        return array_merge($this->getCommonHouseholdExportFields(), $this->getCommonBeneficiaryExportFields());
+
+        $referral_type = null;
+        $referral_comment = null;
+        if ($this->getReferral()) {
+            $referral_type = $this->getReferral()->getType();
+            $referral_comment = $this->getReferral()->getComment();
+        }
+
+        $referralInfo = [
+            "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
+            "Referral Comment" => $referral_comment
+        ];
+
+        return array_merge($this->getCommonHouseholdExportFields(), $this->getCommonBeneficiaryExportFields(), $referralInfo);
     }
 
 }
