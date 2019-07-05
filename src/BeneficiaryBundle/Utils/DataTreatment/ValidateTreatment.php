@@ -38,8 +38,12 @@ class ValidateTreatment extends AbstractTreatment
         $householdsToCreate = $this->getFromCache('to_create', $email) ?: [];
         $createdHouseholds  = [];
 
-        foreach ($householdsToCreate as $household) {
-            $createdHouseholds[] = $this->householdService->createOrEdit($household['new'], [$project], null);
+        foreach ($householdsToCreate as $index => $household) {
+            $createdHouseholds[] = $this->householdService->createOrEdit($household['new'], [$project], null, false);
+
+            if ($index !== 0 && $index % 300 === 0) {
+                $this->em->flush();
+            }
         }
 
         return $createdHouseholds;
@@ -60,9 +64,9 @@ class ValidateTreatment extends AbstractTreatment
 
         $oldHouseholds = $this->em->getRepository(Household::class)->getAllByIds($householdsIds);
 
-        foreach ($oldHouseholds as $oldHousehold) {
+        foreach ($oldHouseholds as $index => $oldHousehold) {
             if (! empty($household['new']) && ! array_key_exists('id', $household['new'])) {
-                $household = $this->householdService->createOrEdit($household['new'], array($project), $oldHousehold);
+                $household = $this->householdService->createOrEdit($household['new'], array($project), $oldHousehold, false);
                 // If household was not previously managed and was fetched from database for duplication
             } elseif (! empty($household['new']) && array_key_exists('id', $household['new'])) {
                 $household = $this->householdService->removeBeneficiaries($household['new']);
@@ -70,7 +74,14 @@ class ValidateTreatment extends AbstractTreatment
                 $this->householdService->addToProject($oldHousehold, $project);
                 $household = $oldHousehold;
             }
+
+            if ($index !== 0 && $index % 300 === 0) {
+                $this->em->flush();
+            }
+
             $householdsUpdated[] = $household;
         }
+
+        return $householdsUpdated;
     }
 }

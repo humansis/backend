@@ -150,7 +150,7 @@ class HouseholdService
                 $this->em->remove($initialHouseholdLocation);
             } 
         }
-        $this->em->flush();
+        // $this->em->flush();
 
         foreach ($householdArray['household_locations'] as $householdLocation) {
             $newHouseholdLocation = new HouseholdLocation();
@@ -297,7 +297,6 @@ class HouseholdService
                 $this->em->remove($beneficiary);
             }
         }
-        $this->em->flush();
 
         return $householdArray;
     }
@@ -311,7 +310,6 @@ class HouseholdService
         if (! $household->getProjects()->contains($project)) {
             $household->addProject($project);
             $this->em->persist($household);
-            $this->em->flush();
         }
     }
 

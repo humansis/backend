@@ -300,9 +300,14 @@ class HouseholdRepository extends AbstractCriteriaRepository
     {
         $qb = $this
             ->createQueryBuilder("hh")
+            ->addSelect(['beneficiaries', 'projects', 'location', 'specificAnswers'])
+            ->leftJoin('hh.beneficiaries', 'beneficiaries')
+            ->leftJoin('hh.projects', 'projects')
+            ->leftJoin('hh.householdLocations', 'location')
+            ->leftJoin('hh.countrySpecificAnswers', 'specificAnswers')
             ->andWhere('hh.archived = 0')
-            ->andWhere("hh.id IN (:ids)")
-            ->setParameter("ids", $ids);
+            ->andWhere('hh.id IN (:ids)')
+                ->setParameter('ids', $ids);
 
         return $qb->getQuery()->getResult();
     }
