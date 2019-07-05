@@ -25,7 +25,8 @@ before_install:
 # Install composer dependencies,
 # Create database, schema and fixtures
 install:
-  - pecl install apcu
+  - sudo apt-get install -y php-apcu
+  - sudo phpenmod apcu
   - cp app/config/parameters.yml.travis app/config/parameters.yml
   - composer install
   - php bin/console doctrine:database:create --env=test
