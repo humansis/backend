@@ -58,23 +58,40 @@ class ValidateTreatment extends AbstractTreatment
         $householdsUpdated  = [];
         $householdsIds      = [];
 
+        // Get the ids of the households to update
         foreach ($householdsToUpdate as $household) {
             $householdsIds[] = $household['old']['id'];
         }
 
+        // Fetch the households from the database
+        /** @var Household[] $oldHouseholds */
         $oldHouseholds = $this->em->getRepository(Household::class)->getAllByIds($householdsIds);
 
-        foreach ($oldHouseholds as $index => $oldHousehold) {
+        // Create a hash id => household
+        $oldHouselholdsMap = [];
+        foreach ($oldHouseholds as $oldHousehold) {
+            $oldHouselholdsMap[$oldHousehold->getId()] = $oldHousehold;
+        }
+
+        foreach ($householdsToUpdate as $index => $household) {
+            // Get the household fetched from the database
+            $oldHousehold = $oldHouselholdsMap[$household['old']['id']];
+
+            // If the household is new, create it
             if (! empty($household['new']) && ! array_key_exists('id', $household['new'])) {
                 $household = $this->householdService->createOrEdit($household['new'], array($project), $oldHousehold, false);
-                // If household was not previously managed and was fetched from database for duplication
-            } elseif (! empty($household['new']) && array_key_exists('id', $household['new'])) {
+            }
+            // If the household is in new but has an id, delete its beneficiaries
+            elseif (! empty($household['new']) && array_key_exists('id', $household['new'])) {
                 $household = $this->householdService->removeBeneficiaries($household['new']);
-            } else {
+            }
+            // Else add the household to the given project
+            else {
                 $this->householdService->addToProject($oldHousehold, $project);
                 $household = $oldHousehold;
             }
 
+            // Flush every N modifications
             if ($index !== 0 && $index % 300 === 0) {
                 $this->em->flush();
             }
