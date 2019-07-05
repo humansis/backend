@@ -51,7 +51,7 @@ class DuplicateTreatment extends AbstractTreatment
                     foreach ($householdRemovedBeneficiary['beneficiaries'] as $index => $beneficiary) {
                         if ($beneficiary['id'] === $idOldBeneficiary) {
                             // if the beneficiary is head, throw an error
-                            if ($beneficiary['status']) {
+                            if ($beneficiary['status'] === 1) {
                                 throw new \Exception('This beneficiary is a head of household. You can\'t delete them.');
                             }
                             unset($householdRemovedBeneficiary['beneficiaries'][$index]);

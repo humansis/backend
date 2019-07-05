@@ -57,7 +57,7 @@ class TypoTreatment extends AbstractTreatment
                 $this->saveInCache('to_update', $householdArray['id_tmp_cache'], $householdArray['new'], $email, $householdArray['old']);
                 
             }
-            // If state is equal to 0, keep both households
+            // If state is equal to 2, keep both households
             elseif ($householdArray['state'] === 2) {
                 // save in create cache new as new household array and old as empty
                 $this->saveInCache('to_create', $householdArray['id_tmp_cache'], $householdArray['new'], $email, []);

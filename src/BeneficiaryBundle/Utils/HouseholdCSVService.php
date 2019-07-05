@@ -12,6 +12,7 @@ use BeneficiaryBundle\Utils\DataTreatment\TypoTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\MissingTreatment;
 use BeneficiaryBundle\Utils\DataVerifier\AbstractVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
+use BeneficiaryBundle\Utils\DataVerifier\ExistingHouseholdVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\LessVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\LevenshteinTypoVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
@@ -257,7 +258,7 @@ class HouseholdCSVService
         switch ($step) {
             // CASE FOUND TYPO ISSUES
             case 1:
-                return new LevenshteinTypoVerifier($this->em, $this->container, $this->initOrGetToken());
+                return new ExistingHouseholdVerifier($this->em, $this->container, $this->initOrGetToken()); // new LevenshteinTypoVerifier($this->em, $this->container, $this->initOrGetToken());
                 break;
             // CASE FOUND MORE ISSUES
             case 2:

@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use BeneficiaryBundle\Entity\HouseholdLocation;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -310,6 +311,49 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 ->setParameter('ids', $ids);
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     *
+     */
+    public function getByHeadAndLocation(
+        string $givenName,
+        string $familyName,
+        string $locationType,
+        string $street = null,
+        string $number = null,
+        string $tentNumber = null
+    ) {
+        $qb = $this->createQueryBuilder('hh')
+            ->select('hh')
+            ->innerJoin('hh.beneficiaries', 'b')
+            ->innerJoin('hh.householdLocations', 'hl')
+            ->where('hh.archived = 0')
+            ->andWhere('b.status = 1')
+            ->andWhere('b.localGivenName = :givenName')
+                ->setParameter('givenName', $givenName)
+            ->andWhere('b.localFamilyName = :familyName')
+                ->setParameter('familyName', $familyName)
+        ;
+
+        if ($locationType === HouseholdLocation::LOCATION_TYPE_CAMP) {
+            $qb
+                ->leftJoin('hl.campAddress', 'ca')
+                ->andWhere('ca.tentNumber = :tentNumber')
+                    ->setParameter('tentNumber', $tentNumber)
+            ;
+        }
+        else {
+            $qb
+                ->leftJoin('hl.address', 'ad')
+                ->andWhere('ad.street = :street')
+                    ->setParameter('street', $street)
+                ->andWhere('ad.number = :number')
+                    ->setParameter('number', $number)
+            ;
+        }
+
+        return $qb->getQuery()->useResultCache(true, 600)->getOneOrNullResult();
     }
 
     /**
