@@ -13,15 +13,15 @@ use JMS\Serializer\Annotation\Groups;
  */
 class Referral
 {
-     /**
-     * Mapping of possible referral types
-     */
+    /**
+    * Mapping of possible referral types
+    */
     const REFERRALTYPES = [
-        '1' => 'Type 1',
-        '2' => 'Type 2',
-        '3' => 'Type 3',
-        '4' => 'Type 4',
-        '5' => 'Type 5',
+        '1' => 'Health',
+        '2' => 'Protection',
+        '3' => 'Shelter',
+        '4' => 'Nutrition',
+        '5' => 'Other',
     ];
 
     /**
