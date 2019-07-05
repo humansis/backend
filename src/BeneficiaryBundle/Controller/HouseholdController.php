@@ -259,16 +259,8 @@ class HouseholdController extends Controller
      */
     public function importAction(Request $request, Project $project)
     {
-
         set_time_limit(0); // 0 = no limits
-        if ($request->query->has('token')) {
-            $token = $request->query->get('token');
-            if (empty($token)) {
-                $token = null;
-            }
-        } else {
-            $token = null;
-        }
+        $token = empty($request->query->get('token')) ? null : $request->query->get('token');
 
         $contentJson = $request->request->get('errors');
 
@@ -357,65 +349,6 @@ class HouseholdController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-    }
-
-    /**
-     * @Rest\Post("/households/{id}/project/{id_project}")
-     * @ParamConverter("project", options={"mapping": {"id_project" : "id"}})
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
-     *
-     * NOTE : YOU CAN'T EDIT THE PROJECTS LIST OF THE HOUSEHOLD HERE
-     *
-     * @SWG\Tag(name="Households")
-     *
-     * @SWG\Parameter(
-     *     name="household",
-     *     in="body",
-     *     type="string",
-     *     schema={},
-     *     required=true,
-     *     description="fields of the household which must be updated",
-     *     @Model(type=Household::class)
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="SUCCESS",
-     *     @Model(type=Household::class)
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param Request $request
-     * @param Household $household
-     * @param Project $project
-     * @return Response
-     */
-    public function editOldAction(Request $request, Household $household, Project $project)
-    {
-        $arrayHousehold = $request->request->all();
-        /** @var HouseholdService $householdService */
-        $householdService = $this->get('beneficiary.household_service');
-
-        try {
-            $newHousehold = $householdService->update($household, $project, $arrayHousehold);
-        } catch (ValidationException $exception) {
-            return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $newHousehold,
-                'json',
-                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
-            );
-
-        return new Response($json);
     }
 
     /**

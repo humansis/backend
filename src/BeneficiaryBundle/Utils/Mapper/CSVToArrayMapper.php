@@ -14,6 +14,12 @@ use BeneficiaryBundle\Entity\HouseholdLocation;
 
 class CSVToArrayMapper extends AbstractMapper
 {
+    private $countrySpecificIds = [];
+
+    private $vulnerabilityCriteriaIds = [];
+
+    private $adms = [];
+
     /**
      * Get the list of households with their beneficiaries.
      *
@@ -254,15 +260,29 @@ class CSVToArrayMapper extends AbstractMapper
         foreach ($formattedHouseholdArray as $indexFormatted => $value) {
             if (substr($indexFormatted, 0, 20) === 'tmp_country_specific') {
                 $field = $rowHeader[$mappingCSV[$indexFormatted]];
-                $countrySpecific = $this->em->getRepository(CountrySpecific::class)
-                    ->findOneByFieldString($field);
                 $formattedHouseholdArray['country_specific_answers'][] = [
                     'answer' => $value,
-                    'country_specific' => ['id' => $countrySpecific->getId()],
+                    'country_specific' => ['id' => $this->getCountrySpecificId($field)],
                 ];
                 unset($formattedHouseholdArray[$indexFormatted]);
             }
         }
+    }
+
+    /**
+     * Returns the id of the CountrySpecific passed in parameter
+     *
+     * @param string $field
+     * @return int
+     */
+    private function getCountrySpecificId(string $field) : int
+    {
+        if (! array_key_exists($field, $this->countrySpecificIds)) {
+            $repo = $this->em->getRepository(CountrySpecific::class);
+            $this->countrySpecificIds[$field] = $repo->findOneByFieldString($field)->getId();
+        }
+
+        return $this->countrySpecificIds[$field];
     }
 
     /**
@@ -278,12 +298,34 @@ class CSVToArrayMapper extends AbstractMapper
         $vulnerability_criteria_array = array_map('trim', explode(';', str_replace(' ', '', ucwords($vulnerability_criteria_string))));
         $formattedHouseholdArray['beneficiaries']['vulnerability_criteria'] = [];
         foreach ($vulnerability_criteria_array as $item) {
-            $vulnerability_criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneByFieldString($item);
-            if (!$vulnerability_criterion instanceof VulnerabilityCriterion) {
+            $vulnerabilityId = $this->getVulnerabilityCriteriaId($item);
+            if (empty($vulnerabilityId)) {
                 continue;
             }
-            $formattedHouseholdArray['beneficiaries']['vulnerability_criteria'][] = ['id' => $vulnerability_criterion->getId()];
+            $formattedHouseholdArray['beneficiaries']['vulnerability_criteria'][] = ['id' => $vulnerabilityId];
         }
+    }
+
+    /**
+     * Returns the id of the vulnerability criteria passed in parameter
+     *
+     * @param string $name
+     * @return int|null
+     */
+    private function getVulnerabilityCriteriaId(string $name)
+    {
+        if (empty($name)) {
+            return null;
+        }
+
+        if (! array_key_exists($name, $this->vulnerabilityCriteriaIds)) {
+            $repo          = $this->em->getRepository(VulnerabilityCriterion::class);
+            $vulnerability = $repo->findOneByFieldString($name);
+
+            $this->vulnerabilityCriteriaIds[$name] = $vulnerability ? $vulnerability->getId() : null;
+        }
+
+        return $this->vulnerabilityCriteriaIds[$name];
     }
 
     /**
@@ -369,9 +411,48 @@ class CSVToArrayMapper extends AbstractMapper
     }
 
     /**
+     * Makes sure the ADM are only retrieved once from the database to save database accesses
+     *
+     * @param mixed[] $location
+     * @param string $admClass
+     * @param string $admType
+     * @param string $parentAdmType
+     * @param mixed $parentAdm
+     *
+     * @return mixed
+     */
+    private function getAdmByLocation(&$location, string $admClass, string $admType, string $parentAdmType = null, &$parentAdm = null)
+    {
+        // The query schema is different for the Adm1
+        if ($admClass === Adm1::class) {
+            $query = [
+                'name' => $location['adm1'],
+                'countryISO3' => $location['country_iso3']
+            ];
+        }
+
+        // Return the ADM if it has already been loaded before
+        if (! empty($this->adms[$admType][$location[$admType]])) {
+            return $this->adms[$admType][$location[$admType]];
+        }
+
+        // If it is not an Adm1, build the query
+        if (empty($query)) {
+            $query = ['name' => $location[$admType]];
+            $query[$parentAdmType] = $parentAdm;
+        }
+
+        // Store the result of the query for next times
+        $this->adms[$admType][$location[$admType]] = $this->em->getRepository($admClass)->findOneBy($query);
+
+        return $this->adms[$admType][$location[$admType]];
+    }
+
+    /**
      * Reformat the field location.
      *
      * @param $formattedHouseholdArray
+     * @throws \Exception
      */
     public function mapLocation(&$formattedHouseholdArray)
     {
@@ -390,12 +471,7 @@ class CSVToArrayMapper extends AbstractMapper
         }
 
         // Map adm1
-        $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(
-            [
-                'name' => $location['adm1'],
-                'countryISO3' => $location['country_iso3']
-            ]
-        );
+        $adm1 = $this->getAdmByLocation($location, Adm1::class, 'adm1');
         
         if (! $adm1 instanceof Adm1) {
             throw new \Exception('The Adm1 ' . $location['adm1'] . ' was not found in ' . $location['country_iso3']);
@@ -408,12 +484,7 @@ class CSVToArrayMapper extends AbstractMapper
         }
 
         // Map adm2
-        $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(
-            [
-                'name' => $location['adm2'],
-                'adm1' => $adm1
-            ]
-        );
+        $adm2 = $this->getAdmByLocation($location, Adm2::class, 'adm2', 'adm1', $adm1);
         
         if (! $adm2 instanceof Adm2) {
             throw new \Exception('The Adm2 ' . $location['adm2'] . ' was not found in ' . $adm1->getName());
@@ -426,12 +497,7 @@ class CSVToArrayMapper extends AbstractMapper
         }
 
         // Map adm3
-        $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(
-            [
-                'name' => $location['adm3'],
-                'adm2' => $adm2
-            ]
-        );
+        $adm3 = $this->getAdmByLocation($location, Adm3::class, 'adm3', 'adm2', $adm2);
         
         if (! $adm3 instanceof Adm3) {
             throw new \Exception('The Adm3 ' . $location['adm3'] . ' was not found in ' . $adm2->getName());
@@ -444,12 +510,7 @@ class CSVToArrayMapper extends AbstractMapper
         }
 
         // Map adm4
-        $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(
-            [
-                'name' => $location['adm4'],
-                'adm3' => $adm3
-            ]
-        );
+        $adm4 = $this->getAdmByLocation($location, Adm4::class, 'adm4', 'adm3', $adm3);
         
         if (! $adm4 instanceof Adm4) {
             throw new \Exception('The Adm4 ' . $location['adm4'] . ' was not found in ' . $adm3->getName());

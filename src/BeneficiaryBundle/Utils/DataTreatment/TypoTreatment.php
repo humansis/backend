@@ -3,16 +3,7 @@
 
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Utils\BeneficiaryService;
-use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
-use BeneficiaryBundle\Utils\HouseholdService;
-use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Cache\Simple\FilesystemCache;
 
 class TypoTreatment extends AbstractTreatment
 {
@@ -39,7 +30,7 @@ class TypoTreatment extends AbstractTreatment
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      * @throws \Exception
      */
-    public function treat(Project $project, array $householdsArray, string $email)
+    public function treat(Project $project, array &$householdsArray, string $email)
     {
 
         foreach ($householdsArray as $index => $householdArray) {
@@ -66,7 +57,7 @@ class TypoTreatment extends AbstractTreatment
                 $this->saveInCache('to_update', $householdArray['id_tmp_cache'], $householdArray['new'], $email, $householdArray['old']);
                 
             }
-            // If state is equal to 0, keep both households
+            // If state is equal to 2, keep both households
             elseif ($householdArray['state'] === 2) {
                 // save in create cache new as new household array and old as empty
                 $this->saveInCache('to_create', $householdArray['id_tmp_cache'], $householdArray['new'], $email, []);

@@ -68,6 +68,12 @@ doctrine:
             numeric_functions:
                 levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
                 levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
+        metadata_cache_driver:
+            type: apcu
+        result_cache_driver:
+            type: apcu
+        query_cache_driver:
+            type: apcu
 
 # Swiftmailer Configuration
 swiftmailer:

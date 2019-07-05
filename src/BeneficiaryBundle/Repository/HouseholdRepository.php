@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use BeneficiaryBundle\Entity\HouseholdLocation;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -41,15 +42,16 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 
         return $q;
     }
-    
+
     public function countUnarchivedByProject(Project $project)
     {
-        $qb = $this->createQueryBuilder("hh");
-        $q = $qb->select("COUNT(hh)")
-                ->leftJoin("hh.projects", "p")
-                ->where("p = :project")
-                ->setParameter("project", $project)
-                ->andWhere("hh.archived = 0");
+        $qb = $this
+            ->createQueryBuilder("hh")
+            ->select("COUNT(hh)")
+            ->leftJoin("hh.projects", "p")
+            ->where("p = :project")
+            ->setParameter("project", $project)
+            ->andWhere("hh.archived = 0");
 
         return $qb->getQuery()->getSingleScalarResult();
     }
@@ -88,7 +90,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->setParameter("minimumTolerance", $minimumTolerance)
             ->orderBy("levenshtein", "ASC");
 
-        return $q->getQuery()->getResult();
+        $query = $q->getQuery();
+        $query->useResultCache(true,3600);
+
+        return $query->getResult();
     }
 
     /**
@@ -126,7 +131,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->setParameter("minimumTolerance", $minimumTolerance)
             ->orderBy("levenshtein", "ASC");
 
-        return $q->getQuery()->getResult();
+        $query = $q->getQuery();
+        $query->useResultCache(true,3600);
+
+        return $query->getResult();
     }
 
 
@@ -280,7 +288,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         $paginator = new Paginator($q, $fetchJoinCellection = true);
 
-        return [count($paginator), $paginator->getQuery()->getResult()];
+        $query = $q->getQuery();
+        $query->useResultCache(true,3600);
+
+        return [count($paginator), $query->getResult()];
     }
 
     /**
@@ -289,23 +300,70 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * @param array  $ids
      * @return mixed
      */
-    public function getAllByIds(string $iso3, array $ids)
+    public function getAllByIds(array $ids)
     {
-        $qb = $this->createQueryBuilder("hh");
-        $this->whereHouseholdInCountry($qb, $iso3);
-        
-        $q = $qb->andWhere('hh.archived = 0')
-                ->andWhere("hh.id IN (:ids)")
-                ->setParameter("ids", $ids);
+        $qb = $this
+            ->createQueryBuilder("hh")
+            ->addSelect(['beneficiaries', 'projects', 'location', 'specificAnswers'])
+            ->leftJoin('hh.beneficiaries', 'beneficiaries')
+            ->leftJoin('hh.projects', 'projects')
+            ->leftJoin('hh.householdLocations', 'location')
+            ->leftJoin('hh.countrySpecificAnswers', 'specificAnswers')
+            ->andWhere('hh.archived = 0')
+            ->andWhere('hh.id IN (:ids)')
+                ->setParameter('ids', $ids);
 
-        return $q->getQuery()->getResult();
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     *
+     */
+    public function getByHeadAndLocation(
+        string $givenName,
+        string $familyName,
+        string $locationType,
+        string $street = null,
+        string $number = null,
+        string $tentNumber = null
+    ) {
+        $qb = $this->createQueryBuilder('hh')
+            ->select('hh')
+            ->innerJoin('hh.beneficiaries', 'b')
+            ->innerJoin('hh.householdLocations', 'hl')
+            ->where('hh.archived = 0')
+            ->andWhere('b.status = 1')
+            ->andWhere('b.localGivenName = :givenName')
+                ->setParameter('givenName', $givenName)
+            ->andWhere('b.localFamilyName = :familyName')
+                ->setParameter('familyName', $familyName)
+        ;
+
+        if ($locationType === HouseholdLocation::LOCATION_TYPE_CAMP) {
+            $qb
+                ->leftJoin('hl.campAddress', 'ca')
+                ->andWhere('ca.tentNumber = :tentNumber')
+                    ->setParameter('tentNumber', $tentNumber)
+            ;
+        }
+        else {
+            $qb
+                ->leftJoin('hl.address', 'ad')
+                ->andWhere('ad.street = :street')
+                    ->setParameter('street', $street)
+                ->andWhere('ad.number = :number')
+                    ->setParameter('number', $number)
+            ;
+        }
+
+        return $qb->getQuery()->useResultCache(true, 600)->getOneOrNullResult();
     }
 
     /**
      * @param $onlyCount
      * @param $countryISO3
      * @param Project $project
-     * @return QueryBuilder|void
+     * @return QueryBuilder
      */
     public function configurationQueryBuilder($onlyCount, $countryISO3, Project $project = null)
     {

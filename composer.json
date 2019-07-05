@@ -24,8 +24,10 @@
 	},
 	"require": {
 		"php": ">=7.0",
+		"ext-json": "*",
+		"ext-Zend-OPcache": "*",
 		"aws/aws-sdk-php": "^3.90",
-		"beberlei/DoctrineExtensions": "^1.0",
+		"beberlei/doctrineextensions": "^1.0",
 		"doctrine/doctrine-bundle": "^1.6",
 		"doctrine/doctrine-fixtures-bundle": "^3.0",
 		"doctrine/doctrine-migrations-bundle": "^1.3",

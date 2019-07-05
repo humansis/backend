@@ -137,7 +137,7 @@ class LocationFixtures extends Fixture
 
                 $rowIterator->next();
                 
-                if ($rowIndex % 25 == 0) {
+                if ($rowIndex % 1000 == 0) {
                     $manager->flush();
                 }
                 

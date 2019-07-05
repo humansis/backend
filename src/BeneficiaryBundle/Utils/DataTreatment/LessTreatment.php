@@ -3,13 +3,7 @@
 
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Utils\BeneficiaryService;
-use BeneficiaryBundle\Utils\HouseholdService;
-use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
-use Symfony\Component\DependencyInjection\Container;
 
 class LessTreatment extends AbstractTreatment
 {
@@ -32,7 +26,7 @@ class LessTreatment extends AbstractTreatment
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function treat(Project $project, array $householdsArray, string $email)
+    public function treat(Project $project, array &$householdsArray, string $email)
     {
         foreach ($householdsArray as $householdArray) {
             // Save to update the new household with its removed beneficiary

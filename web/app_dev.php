@@ -20,6 +20,12 @@ use Symfony\Component\HttpFoundation\Request;
 
 require __DIR__.'/../vendor/autoload.php';
 Debug::enable();
+
+if ($this->kernel->getEnvironment() !== "test") {
+    opcache_reset();
+    apcu_clear_cache();
+}
+
 $kernel = new AppKernel('dev', true);
 if (PHP_VERSION_ID < 70000) {
     $kernel->loadClassCache();

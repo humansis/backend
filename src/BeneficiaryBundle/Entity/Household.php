@@ -2,10 +2,9 @@
 
 namespace BeneficiaryBundle\Entity;
 
-use CommonBundle\Entity\Location;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Household
@@ -219,8 +218,10 @@ class Household
      */
     public function __construct()
     {
-        $this->countrySpecificAnswers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->beneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->countrySpecificAnswers = new ArrayCollection();
+        $this->beneficiaries = new ArrayCollection();
+        $this->projects = new ArrayCollection();
+        $this->householdLocations = new ArrayCollection();
     }
 
 

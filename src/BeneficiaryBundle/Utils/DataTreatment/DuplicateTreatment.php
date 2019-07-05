@@ -4,12 +4,7 @@
 namespace BeneficiaryBundle\Utils\DataTreatment;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Cache\Simple\FilesystemCache;
 
 class DuplicateTreatment extends AbstractTreatment
 {
@@ -36,7 +31,7 @@ class DuplicateTreatment extends AbstractTreatment
      * @return string
      * @throws \Exception
      */
-    public function treat(Project $project, array $householdsArray, string $email)
+    public function treat(Project $project, array &$householdsArray, string $email)
     {
         foreach ($householdsArray as $index => $householdArray) {
             $idOldBeneficiary = $householdArray['old']['id'];
@@ -56,7 +51,7 @@ class DuplicateTreatment extends AbstractTreatment
                     foreach ($householdRemovedBeneficiary['beneficiaries'] as $index => $beneficiary) {
                         if ($beneficiary['id'] === $idOldBeneficiary) {
                             // if the beneficiary is head, throw an error
-                            if ($beneficiary['status']) {
+                            if ($beneficiary['status'] === 1) {
                                 throw new \Exception('This beneficiary is a head of household. You can\'t delete them.');
                             }
                             unset($householdRemovedBeneficiary['beneficiaries'][$index]);

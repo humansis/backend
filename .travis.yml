@@ -25,6 +25,7 @@ before_install:
 # Install composer dependencies,
 # Create database, schema and fixtures
 install:
+  - echo "extension=apcu.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - cp app/config/parameters.yml.travis app/config/parameters.yml
   - composer install
   - php bin/console doctrine:database:create --env=test
@@ -33,10 +34,6 @@ install:
 
 jobs:
     include:
-        - stage: test
-          script: ./vendor/bin/phpunit
-          fast_finish: true
-          php: 7.1
         - stage: test
           script: ./vendor/bin/phpunit
           fast_finish: true

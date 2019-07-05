@@ -12,15 +12,13 @@ use BeneficiaryBundle\Utils\DataTreatment\TypoTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\MissingTreatment;
 use BeneficiaryBundle\Utils\DataVerifier\AbstractVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
+use BeneficiaryBundle\Utils\DataVerifier\ExistingHouseholdVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\LessVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\LevenshteinTypoVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
 use Doctrine\ORM\EntityManagerInterface;
-use PhpOffice\PhpSpreadsheet\Reader\Csv as CsvReader;
-use PhpOffice\PhpSpreadsheet\Reader\Xls as XlsReader;
-use PhpOffice\PhpSpreadsheet\Reader\Ods as OdsReader;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -125,7 +123,7 @@ class HouseholdCSVService
      * @return array|bool
      * @throws \Exception
      */
-    public function foundErrors($countryIso3, Project $project, array $treatReturned, $token, string $email)
+    public function foundErrors($countryIso3, Project $project, array &$treatReturned, $token, string $email)
     {
         // Clean cache if timestamp is expired
         $this->clearExpiredSessions();
@@ -260,7 +258,7 @@ class HouseholdCSVService
         switch ($step) {
             // CASE FOUND TYPO ISSUES
             case 1:
-                return new LevenshteinTypoVerifier($this->em, $this->container, $this->initOrGetToken());
+                return new ExistingHouseholdVerifier($this->em, $this->container, $this->initOrGetToken()); // new LevenshteinTypoVerifier($this->em, $this->container, $this->initOrGetToken());
                 break;
             // CASE FOUND MORE ISSUES
             case 2:
