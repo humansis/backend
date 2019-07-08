@@ -5,6 +5,7 @@ namespace UserBundle\Utils;
 use CommonBundle\Entity\Logs;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -13,7 +14,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
-use Psr\Container\ContainerInterface;
 
 /**
  * Class UserService
@@ -21,7 +21,6 @@ use Psr\Container\ContainerInterface;
  */
 class UserService
 {
-
     private $countryList = [
         "KHM",
         "SYR",
@@ -110,8 +109,8 @@ class UserService
             }
         }
 
-        if (key_exists('country', $userData)) {
-            foreach ($userData['country'] as $country) {
+        if (key_exists('countries', $userData)) {
+            foreach ($userData['countries'] as $country) {
                 $userCountry = new UserCountry();
                 $userCountry->setUser($user)
                     ->setIso3($country)
@@ -193,7 +192,7 @@ class UserService
      */
     public function login(string $username, string $saltedPassword, $origin)
     {
-        $repository = $this->em->getRepository('UserBundle:User');
+        $repository = $this->em->getRepository(User::class);
 
         $user = $repository->findOneBy([
             'username' => $username,
@@ -202,25 +201,25 @@ class UserService
         ]);
 
         if ($user instanceof User) {
-            $countries = array();
+            // $countries = array();
             
-            $countryRepo = $this->em->getRepository('UserBundle:UserCountry');
-            $userCountries = $countryRepo->findBy(["user" => $user]);
-            if ($userCountries) {
-                foreach ($userCountries as $userCountry) {
-                    array_push($countries, $userCountry->getIso3());
-                }
-            } else {
-                $countries = $this->countryList;
-            }
+            // $countryRepo = $this->em->getRepository(UserCountry::class);
+            // $userCountries = $countryRepo->findBy(["user" => $user]);
+            // if ($userCountries) {
+            //     foreach ($userCountries as $userCountry) {
+            //         array_push($countries, $userCountry->getIso3());
+            //     }
+            // } else {
+            //     $countries = $this->countryList;
+            // }
             
-            $projectRepo = $this->em->getRepository('UserBundle:UserProject');
-            $userProjects = $projectRepo->findBy(["user" => $user]);
-            if ($userProjects) {
-                foreach ($userProjects as $userProject) {
-                    array_push($countries, $userProject->getProject()->getIso3());
-                }
-            }
+            // $projectRepo = $this->em->getRepository('UserBundle:UserProject');
+            // $userProjects = $projectRepo->findBy(["user" => $user]);
+            // if ($userProjects) {
+            //     foreach ($userProjects as $userProject) {
+            //         array_push($countries, $userProject->getProject()->getIso3());
+            //     }
+            // }
             
             // if ($origin && $user->getRoles()[0] !== "ROLE_ADMIN" && !in_array($origin, array_unique($countries))) {
             //     throw new \Exception('Unable to log in from this country (' . $origin . ')', Response::HTTP_BAD_REQUEST);
@@ -282,8 +281,8 @@ class UserService
             }
         }
 
-        if (key_exists('country', $userData)) {
-            foreach ($userData['country'] as $country) {
+        if (key_exists('countries', $userData)) {
+            foreach ($userData['countries'] as $country) {
                 $userCountry = new UserCountry();
                 $userCountry->setUser($user)
                     ->setIso3($country)
