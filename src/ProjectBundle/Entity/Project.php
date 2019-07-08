@@ -110,7 +110,7 @@ class Project implements ExportableInterface
      * @var boolean
      *
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
-     * @Groups({"FullProject"})
+     * @Groups({"FullProject", "FullUser", "SmallHousehold", "FullHousehold"})
      */
     private $archived = 0;
 
