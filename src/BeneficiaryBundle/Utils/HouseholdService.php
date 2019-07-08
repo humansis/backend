@@ -139,7 +139,7 @@ class HouseholdService
                 $this->em->remove($initialHouseholdLocation);
             }
         }
-        // $this->em->flush();
+        $this->em->flush();
 
         foreach ($householdArray['household_locations'] as $householdLocation) {
             $newHouseholdLocation = new HouseholdLocation();
