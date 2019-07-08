@@ -232,12 +232,11 @@ class UserService
     }
 
     /**
-     * @param User $user
      * @param array $userData
      * @return mixed
      * @throws \Exception
      */
-    public function create(User $user, array $userData)
+    public function create(array $userData)
     {
         $roles = $userData['roles'];
 
@@ -245,25 +244,25 @@ class UserService
             throw new \Exception("Rights can not be empty");
         }
 
-        $userSaved = $this->em->getRepository(User::class)->findOneByUsername($user->getUsername());
-        if (!$userSaved instanceof User) {
-            throw new \Exception("The user with username " . $user->getUsername() . " has been not preconfigured. You need to ask 
+        $user = $this->em->getRepository(User::class)->findOneByUsername($userData['username']);
+
+        if (!$user instanceof User) {
+            throw new \Exception("The user with username " . $userData['username'] . " has been not preconfigured. You need to ask 
             the salt for this username beforehand.");
-        } elseif ($userSaved->isEnabled()) {
-            throw new \Exception("The user with username " . $user->getUsername() . " has already been added");
+        } elseif ($user->isEnabled()) {
+            throw new \Exception("The user with username " . $userData['username'] . " has already been added");
         }
 
-        $user->setId($userSaved->getId())
-            ->setSalt($userData['salt'])
+
+        $user->setSalt($userData['salt'])
             ->setEmail($user->getUsername())
             ->setEmailCanonical($user->getUsername())
-            ->setEnabled(1)
             ->setUsername($user->getUsername())
             ->setUsernameCanonical($user->getUsername())
+            ->setEnabled(1)
             ->setRoles($roles)
-            ->setChangePassword($userData['change_password']);
-
-        $user->setPassword($userData['password']);
+            ->setChangePassword($userData['change_password'])
+            ->setPassword($userData['password']);
 
         $this->em->merge($user);
 

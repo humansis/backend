@@ -233,12 +233,10 @@ class UserController extends Controller
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
 
-        $user = $request->request->all();
-        $userData = $user;
+        $userData = $request->request->all();
 
         try {
-            $user = $serializer->deserialize(json_encode($request->request->all()), User::class, 'json');
-            $return = $this->get('user.user_service')->create($user, $userData);
+            $return = $this->get('user.user_service')->create($userData);
 
             if (!$user instanceof User) {
                 return new JsonResponse($user);
