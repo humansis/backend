@@ -320,6 +320,7 @@ class HouseholdService
         );
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)
             ->find($countrySpecificAnswerArray["country_specific"]["id"]);
+
         if (!$countrySpecific instanceof CountrySpecific) {
             throw new \Exception("This country specific is unknown");
         }
