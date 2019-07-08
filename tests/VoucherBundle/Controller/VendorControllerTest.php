@@ -212,7 +212,6 @@ class VendorControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('POST', '/api/wsse/vendors/' . $newVendor['id'], $body);
         $newVendorReceived = json_decode($this->client->getResponse()->getContent(), true);
-        // var_dump($newVendorReceived);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 

@@ -2,8 +2,8 @@
 
 namespace ReportingBundle\Utils\DataFillers;
 
-use ReportingBundle\Entity\ReportingIndicator;
 use Doctrine\ORM\EntityManager;
+use ReportingBundle\Entity\ReportingIndicator;
 
 /**
  * Class DataFillersIndicator
@@ -50,7 +50,6 @@ class DataFillersIndicator
         foreach ($contentFile as $data) {
             $new = new ReportingIndicator();
             $filter = [];
-            dump($data);
             $new->setreference($data[0]);
             $new->setGraph($data[3]);
             $new->setCode($data[1]);

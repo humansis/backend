@@ -253,7 +253,6 @@ class UserService
             throw new \Exception("The user with username " . $userData['username'] . " has already been added");
         }
 
-
         $user->setSalt($userData['salt'])
             ->setEmail($user->getUsername())
             ->setEmailCanonical($user->getUsername())
@@ -261,8 +260,9 @@ class UserService
             ->setUsernameCanonical($user->getUsername())
             ->setEnabled(1)
             ->setRoles($roles)
-            ->setChangePassword($userData['change_password'])
-            ->setPassword($userData['password']);
+            ->setChangePassword($userData['change_password']);
+        
+        $user->setPassword($userData['password']);
 
         $this->em->merge($user);
 

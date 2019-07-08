@@ -238,10 +238,6 @@ class UserController extends Controller
         try {
             $return = $this->get('user.user_service')->create($userData);
 
-            if (!$user instanceof User) {
-                return new JsonResponse($user);
-            }
-
             $userJson = $serializer->serialize(
                 $return,
                 'json',
@@ -249,12 +245,7 @@ class UserController extends Controller
             );
             return new Response($userJson);
         } catch (\Exception $exception) {
-            if ($user instanceof User) {
-                $this->get('user.user_service')->deleteByUsername($user->getUsername());
-            } else {
-                $this->get('user.user_service')->deleteByUsername($user['username']);
-            }
-
+            $this->get('user.user_service')->deleteByUsername($user['username']);
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

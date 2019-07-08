@@ -3,23 +3,23 @@
 namespace VoucherBundle\Utils;
 
 use CommonBundle\Entity\Logs;
+use CommonBundle\Utils\LocationService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use JMS\Serializer\Serializer;
+use Psr\Container\ContainerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use VoucherBundle\Entity\Vendor;
 use UserBundle\Entity\User;
-use JMS\Serializer\Serializer;
-use Psr\Container\ContainerInterface;
-use Dompdf\Dompdf;
-use Dompdf\Options;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use DateTime;
-use CommonBundle\Utils\LocationService;
+use VoucherBundle\Entity\Vendor;
 
 class VendorService
 {
@@ -69,20 +69,19 @@ class VendorService
         $vendorSaved = $userSaved instanceof User ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
 
         if (!($vendorSaved instanceof Vendor)) {
-            $userSaved = $this->em->getRepository(User::class)->findOneByUsername($vendorData['username']);
             $user = $this->container->get('user.user_service')->create(
-        $userSaved,
-        [
-          'roles' => ['ROLE_VENDOR'],
-          'salt' => $vendorData['salt'],
-          'password' => $vendorData['password'],
-          'change_password' => false,
-        ]
-      );
+                [
+                    'username' => $username,
+                    'email' => $vendorData['email'],
+                    'roles' => ['ROLE_VENDOR'],
+                    'password' => $vendorData['password'],
+                    'salt' => $vendorData['salt'],
+                    'change_password' => false,
+                ]
+            );
 
-      $location = $vendorData['location'];
-      $location = $this->locationService->getLocation($countryISO3, $location);
-
+            $location = $vendorData['location'];
+            $location = $this->locationService->getLocation($countryISO3, $location);
 
             $vendor = new Vendor();
             $vendor->setName($vendorData['name'])
@@ -237,17 +236,17 @@ class VendorService
                 $commune = $village->getAdm3();
                 $district = $commune->getAdm2();
                 $province = $district->getAdm1();
-            } else if ($location && $location->getAdm3()) {
+            } elseif ($location && $location->getAdm3()) {
                 $commune = $location->getAdm3();
                 $district = $commune->getAdm2();
                 $province = $district->getAdm1();
                 $village = null;
-            } else if ($location && $location->getAdm2()) {
+            } elseif ($location && $location->getAdm2()) {
                 $district = $location->getAdm2();
                 $province = $district->getAdm1();
                 $village = null;
                 $commune = null;
-            } else if ($location && $location->getAdm1()) {
+            } elseif ($location && $location->getAdm1()) {
                 $province = $location->getAdm1();
                 $village = null;
                 $commune = null;
@@ -260,7 +259,7 @@ class VendorService
             }
 
             $html = $this->container->get('templating')->render(
-            '@Voucher/Pdf/invoice.html.twig',
+                '@Voucher/Pdf/invoice.html.twig',
                 array_merge(
                     array(
                         'name'  => $vendor->getName(),
