@@ -15,7 +15,7 @@ class VoucherRepository extends \Doctrine\ORM\EntityRepository
      * @param array  $ids
      * @return mixed
      */
-    public function getAllByIds(array $ids)
+    public function getAllByBookletIds(array $ids)
     {
         $qb = $this->createQueryBuilder("v")
             ->leftJoin('v.booklet', 'b')

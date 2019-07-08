@@ -200,7 +200,7 @@ class VoucherService
         public function exportToCsv(string $type, $ids)
         {
             if ($ids) {
-                $exportableTable = $this->em->getRepository(Voucher::class)->getAllByIds($ids);
+                $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
             } else {
                 $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
             }
@@ -215,7 +215,7 @@ class VoucherService
         public function exportToPdf($ids)
         {
             if ($ids) {
-                $exportableTable = $this->em->getRepository(Voucher::class)->getAllByIds($ids);
+                $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
             } else {
                 $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
             }
