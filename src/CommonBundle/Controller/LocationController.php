@@ -14,6 +14,7 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use BeneficiaryBundle\Entity\Camp;
 use JMS\Serializer\SerializationContext;
 
 /**
