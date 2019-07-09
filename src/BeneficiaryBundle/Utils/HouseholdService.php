@@ -320,6 +320,7 @@ class HouseholdService
         );
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)
             ->find($countrySpecificAnswerArray["country_specific"]["id"]);
+
         if (!$countrySpecific instanceof CountrySpecific) {
             throw new \Exception("This country specific is unknown");
         }
@@ -329,15 +330,23 @@ class HouseholdService
                 "countrySpecific" => $countrySpecific,
                 "household" => $household
             ]);
-        if (!$countrySpecificAnswer instanceof CountrySpecificAnswer) {
-            $countrySpecificAnswer = new CountrySpecificAnswer();
-            $countrySpecificAnswer->setCountrySpecific($countrySpecific)
-                ->setHousehold($household);
+
+        if ($countrySpecificAnswerArray["answer"]) {
+            if (!$countrySpecificAnswer instanceof CountrySpecificAnswer) {
+                $countrySpecificAnswer = new CountrySpecificAnswer();
+                $countrySpecificAnswer->setCountrySpecific($countrySpecific)
+                    ->setHousehold($household);
+            }
+    
+            $countrySpecificAnswer->setAnswer($countrySpecificAnswerArray["answer"]);
+    
+            $this->em->persist($countrySpecificAnswer);
+        } else {
+            if ($countrySpecificAnswer instanceof CountrySpecificAnswer) {
+                $this->em->remove($countrySpecificAnswer);
+            }
         }
 
-        $countrySpecificAnswer->setAnswer($countrySpecificAnswerArray["answer"]);
-
-        $this->em->persist($countrySpecificAnswer);
         if ($flush) {
             $this->em->flush();
         }
