@@ -26,7 +26,8 @@ if [[ $1 == "master" ]]; then
 elif [[ $1 == "dev" ]] || [[ $1 == "2.0" ]]; then
     ssh -i $2 ubuntu@$ec2 \
         "cd /var/www/html/bms_api; \
-        sudo docker-compose exec -T php bash -c 'clean'"
+        sudo docker-compose exec -T php bash -c 'php bin/console c:c'; \
+        sudo docker-compose exec  -T php bash -c 'php bin/console d:m:m -n'"
 else
     echo "Unable to deploy"
     exit
