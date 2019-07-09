@@ -200,9 +200,11 @@ class SyriaFileToTemplateMapper
                 continue;
             }
 
-            if (empty($row['A'])) {
+            if (empty($row['A']) && empty($row['B'])) {
                 // we break at the first empty row
                 break;
+            } else if (empty($row['A'])) {
+                $row['A'] = 'Undefined';
             }
 
             // A. HANDLE SHARED COLUMNS
