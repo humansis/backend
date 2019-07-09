@@ -71,7 +71,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb = $this->createQueryBuilder('b');
         $this->beneficiariesInCountry($qb, $iso3);
         $qb->andWhere('hh.archived = 0')
-            ->select('COUNT(b)');
+            ->select('COUNT(DISTINCT b)');
 
         return $qb->getQuery()->getSingleScalarResult();
     }
