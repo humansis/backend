@@ -151,8 +151,8 @@ class HouseholdService
                 // Try to find the camp with the name in the request
                 $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $householdLocation['camp_address']['camp']['name']]);
                 // Or create a camp with the name in the request
-                if (!$camp) {
-                    $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['camp_address']['camp']["location"]);
+                if (!$camp instanceof Camp) {
+                    $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['camp_address']['camp']['location']);
                     if (null === $location) {
                         throw new \Exception("Location was not found.");
                     }
