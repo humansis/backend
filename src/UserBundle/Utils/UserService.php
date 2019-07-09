@@ -342,7 +342,9 @@ class UserService
         $userProjects = $this->em->getRepository(UserProject::class)->findByUser($user);
         if (!empty($userProjects)) {
             foreach ($userProjects as $userProject) {
-                $this->em->remove($userProject);
+                if ($removeUser || !$userProject->getProject()->getArchived()) {
+                    $this->em->remove($userProject);
+                }
             }
         }
 
