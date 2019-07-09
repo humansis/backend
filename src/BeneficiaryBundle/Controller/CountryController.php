@@ -43,7 +43,7 @@ class CountryController extends Controller
 
     /**
      * @Rest\Put("/country_specifics")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Country")
      *
      * @SWG\Response(
@@ -71,7 +71,7 @@ class CountryController extends Controller
 
     /**
      * @Rest\Post("/country_specifics/{id}")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Country")
      *
@@ -102,7 +102,7 @@ class CountryController extends Controller
     /**
      * Edit a countrySpecific
      * @Rest\Delete("/country_specifics/{id}", name="delete_country_specific")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Country")
      *

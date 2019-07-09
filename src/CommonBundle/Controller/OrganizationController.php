@@ -24,6 +24,7 @@ class OrganizationController extends Controller
 
     /**
      * @Rest\Get("/organization", name="get_organization")
+     * @Security("is_granted('ROLE_ADMIN')")
      *
      * @SWG\Tag(name="Organization")
      *
@@ -98,6 +99,7 @@ class OrganizationController extends Controller
 
      /**
      * @Rest\Post("/organization/upload/logo", name="upload_logo")
+     * @Security("is_granted('ROLE_ADMIN')")
      *
      * @SWG\Tag(name="Organization")
      *
@@ -141,6 +143,8 @@ class OrganizationController extends Controller
      * To print a template of the organization pdf
      *
      * @Rest\Get("/organization/print/template", name="print_template")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * 
      * @SWG\Tag(name="Organization")
      *
      * @SWG\Response(

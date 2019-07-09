@@ -26,6 +26,7 @@ class VendorController extends Controller
      * Create a new Vendor. You must have called getSalt before use this one
      *
      * @Rest\Put("/vendors", name="add_vendor")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Vendors")
      *
@@ -75,6 +76,7 @@ class VendorController extends Controller
      * Get all vendors
      *
      * @Rest\Get("/vendors", name="get_all_vendors")
+     * @Security("is_granted('ROLE_USER')")
      *
      * @SWG\Tag(name="Vendors")
      *
@@ -111,7 +113,8 @@ class VendorController extends Controller
      * Get single vendor
      *
      * @Rest\Get("/vendors/{id}", name="get_single_vendor")
-     *
+     * @Security("is_granted('ROLE_USER')")
+     * 
      * @SWG\Tag(name="Single Vendor")
      *
      * @SWG\Response(
@@ -143,6 +146,7 @@ class VendorController extends Controller
      * Edit a vendor {id} with data in the body
      *
      * @Rest\Post("/vendors/{id}", name="update_vendor")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Vendors")
      *
@@ -189,6 +193,7 @@ class VendorController extends Controller
      * Archive a Vendor using their id
      *
      * @Rest\Post("/vendors/{id}/archive", name="archive_vendor")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Vendors")
      *
@@ -222,6 +227,7 @@ class VendorController extends Controller
     /**
      * Delete an vendor with its links in the api
      * @Rest\Delete("/vendors/{id}", name="delete_vendor")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Vendors")
      *

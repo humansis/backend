@@ -40,7 +40,7 @@ class BeneficiaryController extends Controller
      * Edit a beneficiary {id} with data in the body
      *
      * @Rest\Post("/beneficiaries/{id}", name="update_beneficiary")
-     *
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Beneficiaries")
      *
      * @SWG\Parameter(
