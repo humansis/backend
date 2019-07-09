@@ -10,4 +10,18 @@ namespace VoucherBundle\Repository;
  */
 class VoucherRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Get all Vouchers by id
+     * @param array  $ids
+     * @return mixed
+     */
+    public function getAllByBookletIds(array $ids)
+    {
+        $qb = $this->createQueryBuilder("v")
+            ->leftJoin('v.booklet', 'b')
+            ->andWhere('b.id IN (:ids)')
+            ->setParameter('ids', $ids);
+
+        return $qb->getQuery()->getResult();
+    }
 }

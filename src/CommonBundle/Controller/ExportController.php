@@ -85,13 +85,12 @@ class ExportController extends Controller
                 }
                 $distribution = $this->get('distribution.distribution_service')->findOneById($idDistribution);
                 $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, $type);
-            } elseif ($request->query->get('booklets')) {
-                $filename = $this->get('voucher.booklet_service')->exportToCsv($type);
             } elseif ($request->query->get('bookletCodes')) {
+                $ids = $request->request->get('ids');
                 if ($type === 'pdf') {
-                    return $this->get('voucher.voucher_service')->exportToPdf();
+                    return $this->get('voucher.voucher_service')->exportToPdf($ids);
                 }
-                $filename = $this->get('voucher.voucher_service')->exportToCsv($type);
+                $filename = $this->get('voucher.voucher_service')->exportToCsv($type, $ids);
             } elseif ($request->query->get('reporting')) {
                 $filename = $this->get('reporting.reporting_service')->exportToCsv($request->request, $type);
             } elseif ($request->query->get('generalreliefDistribution')) {

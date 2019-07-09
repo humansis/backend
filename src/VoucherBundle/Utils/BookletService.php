@@ -520,18 +520,7 @@ class BookletService
 
         return $bookletHtml;
     }
-    /**
-         * Export all booklets in a CSV file
-         * @param string $type
-         * @return mixed
-         */
-    public function exportToCsv(string $type)
-    {
-        $exportableTable = $this->em->getRepository(Booklet::class)->findAll();
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'booklets', $type);
-    }
-    
     /**
      * @param DistributionData $distributionData
      * @param string $type
