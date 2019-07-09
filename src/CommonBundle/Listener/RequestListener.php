@@ -37,7 +37,7 @@ class RequestListener
                 $user = $this->em->getRepository(User::class)->find($this->getUser());
 
                 $countries = $user->getCountries()->getValues();
-                $projects = $user->getUserProjects()->getValues();
+                $projects = $user->getProjects()->getValues();
                 $hasCountry = false;
 
                 foreach ($countries as $country) {

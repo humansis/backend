@@ -3,8 +3,8 @@
 namespace UserBundle\Entity;
 
 use CommonBundle\Utils\ExportableInterface;
-use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use FOS\UserBundle\Model\User as BaseUser;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use TransactionBundle\Entity\Transaction;
@@ -56,7 +56,7 @@ class User extends BaseUser implements ExportableInterface
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="user")
      * @Groups({"FullUser"})
      */
-    private $userProjects;
+    private $projects;
 
     /**
      * @var string
@@ -163,7 +163,7 @@ class User extends BaseUser implements ExportableInterface
      */
     public function addUserProject(\UserBundle\Entity\UserProject $userProject)
     {
-        $this->userProjects[] = $userProject;
+        $this->projects[] = $userProject;
 
         return $this;
     }
@@ -177,17 +177,17 @@ class User extends BaseUser implements ExportableInterface
      */
     public function removeUserProject(\UserBundle\Entity\UserProject $userProject)
     {
-        return $this->userProjects->removeElement($userProject);
+        return $this->projects->removeElement($userProject);
     }
 
     /**
-     * Get userProjects.
+     * Get projects.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUserProjects()
+    public function getProjects()
     {
-        return $this->userProjects;
+        return $this->projects;
     }
     
     /**

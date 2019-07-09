@@ -64,7 +64,7 @@ class UserService
      */
     public function findAllProjects(User $user)
     {
-        $projects = $user->getUserProjects()->getValues();
+        $projects = $user->getProjects()->getValues();
 
         $allProjects = array();
 
