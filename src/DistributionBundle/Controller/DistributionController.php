@@ -115,7 +115,7 @@ class DistributionController extends Controller
      * Create a distribution.
      *
      * @Rest\Put("/distributions", name="add_distribution")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -165,7 +165,7 @@ class DistributionController extends Controller
 
     /**
      * @Rest\Put("/distributions/{id}/beneficiary", name="add_beneficiary_in_distribution")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -212,7 +212,7 @@ class DistributionController extends Controller
      * @Rest\Post("/distributions/{distributionId}/beneficiaries/{beneficiaryId}/delete", name="remove_one_beneficiary_in_distribution")
      * @ParamConverter("distribution", options={"mapping": {"distributionId" : "id"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -389,7 +389,7 @@ class DistributionController extends Controller
      * Edit a distribution.
      *
      * @Rest\Post("/distributions/{id}", name="update_distribution")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -436,7 +436,7 @@ class DistributionController extends Controller
      * Archive a distribution.
      *
      * @Rest\Post("/distributions/archive/{id}", name="archived_project")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -720,7 +720,7 @@ class DistributionController extends Controller
      * Edit general relief item
      *
      * @Rest\Post("/distributions/generalrelief/notes", name="edit_general_relief_notes")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="General Relief")
      *
@@ -756,7 +756,7 @@ class DistributionController extends Controller
      * Set general relief items as distributed
      *
      * @Rest\Post("/distributions/generalrelief/distributed", name="distribute_general_relief")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="General Relief")
      *

@@ -136,7 +136,7 @@ class ProjectController extends Controller
     /**
      * Delete a project
      * @Rest\Delete("/projects/{id}", name="delete_project")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR', project)")
      *
      * @SWG\Tag(name="Projects")
      *

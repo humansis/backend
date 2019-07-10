@@ -52,7 +52,7 @@ class CommonControllerTest extends BMSServiceTestCase
         $summary = json_decode($this->client->getResponse()->getContent(), true);
         if (!empty($summary)) {
             $this->assertContainsOnly('int', $summary);
-            $this->assertCount(6, $summary);
+            $this->assertCount(5, $summary);
         } else {
             $this->markTestIncomplete("The database is incomplete.");
         }

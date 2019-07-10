@@ -171,6 +171,7 @@ class DonorController extends Controller
 
       /**
      * @Rest\Post("/donor/upload/logo", name="upload_donor_logo")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Donor")
      *

@@ -28,6 +28,7 @@ class ProductController extends Controller
      * Create a new Product.
      *
      * @Rest\Put("/products", name="add_product")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Product")
      *
@@ -77,6 +78,7 @@ class ProductController extends Controller
      * Get Products.
      *
      * @Rest\Get("/products", name="get_products")
+     * @Security("is_granted('ROLE_USER')")
      *
      * @SWG\Tag(name="Product")
      *
@@ -126,6 +128,7 @@ class ProductController extends Controller
      * Update Products.
      *
      * @Rest\Post("/products/{id}", name="update_product")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Product")
      *
@@ -176,6 +179,7 @@ class ProductController extends Controller
      * Delete a Product.
      *
      * @Rest\Delete("/products/{id}", name="delete_product")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Product")
      *
@@ -213,6 +217,7 @@ class ProductController extends Controller
 
     /**
      * @Rest\Post("/products/upload/image", name="upload_image")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Product")
      *
