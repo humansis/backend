@@ -25,6 +25,7 @@ class VoucherController extends Controller
      * Create a new Voucher.
      *
      * @Rest\Put("/vouchers", name="add_voucher")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Vouchers")
      *
@@ -75,6 +76,7 @@ class VoucherController extends Controller
      * Get all vouchers
      *
      * @Rest\Get("/vouchers", name="get_all_vouchers")
+     * @Security("is_granted('ROLE_USER')")
      *
      * @SWG\Tag(name="Vouchers")
      *
@@ -111,6 +113,7 @@ class VoucherController extends Controller
      * Get single voucher
      *
      * @Rest\Get("/vouchers/{id}", name="get_single_voucher")
+     * @Security("is_granted('ROLE_USER')")
      *
      * @SWG\Tag(name="Single Voucher")
      *
@@ -143,6 +146,7 @@ class VoucherController extends Controller
      * When a vendor sends their scanned vouchers
      *
      * @Rest\Post("/vouchers/scanned", name="scanned_vouchers")
+     * @Security("is_granted('ROLE_VENDOR')")
      * @SWG\Tag(name="Vouchers")
      *
      * @SWG\Response(
@@ -181,6 +185,7 @@ class VoucherController extends Controller
     /**
      * Delete a booklet
      * @Rest\Delete("/vouchers/{id}", name="delete_voucher")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Vouchers")
      *
@@ -208,7 +213,7 @@ class VoucherController extends Controller
     /**
      * Delete a batch of vouchers
      * @Rest\Delete("/vouchers/delete_batch/{id}", name="delete_batch_vouchers")
-     *
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Vouchers")
      *
      * @SWG\Response(

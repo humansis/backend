@@ -353,7 +353,7 @@ class HouseholdController extends Controller
 
     /**
      * @Rest\Delete("/households/{id}")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Households")
      *
@@ -381,7 +381,7 @@ class HouseholdController extends Controller
 
     /**
      * @Rest\Post("/households/delete")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Households")
      *

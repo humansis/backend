@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +27,7 @@ class BookletController extends Controller
      * Create a new Booklet.
      *
      * @Rest\Put("/booklets", name="add_booklet")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -222,6 +224,7 @@ class BookletController extends Controller
      * Edit a booklet {id} with data in the body
      *
      * @Rest\Post("/booklets/{id}", name="update_booklet")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -266,7 +269,7 @@ class BookletController extends Controller
     /**
      * Deactivate booklets
      * @Rest\Post("/deactivate-booklets", name="deactivate_booklets")
-     *
+     * @Security("is_granted('ROLE_USER')")
      * @SWG\Tag(name="Booklets")
      *
      * @SWG\Response(
@@ -319,7 +322,7 @@ class BookletController extends Controller
     /**
      * Delete a booklet
      * @Rest\Delete("/booklets/{id}", name="delete_booklet")
-     *
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Booklets")
      *
      * @SWG\Response(
@@ -345,7 +348,7 @@ class BookletController extends Controller
     /**
      * Update password of the booklet
      * @Rest\Post("/booklets/update/password", name="update_password_booklet")
-     *
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Booklets")
      *
      * @SWG\Response(
@@ -379,6 +382,7 @@ class BookletController extends Controller
     /**
      * Assign the booklet to a specific beneficiary
      * @Rest\Post("/booklets/assign/{beneficiaryId}/{distributionId}", name="assign_booklet")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      * @ParamConverter("distributionData", options={"mapping": {"distributionId": "id"}})
@@ -413,6 +417,7 @@ class BookletController extends Controller
      * To print a batch of booklets
      *
      * @Rest\Post("/booklets-print", name="print_booklets")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Booklets")
      *
      * @SWG\Response(
@@ -444,6 +449,7 @@ class BookletController extends Controller
      * To print a booklet
      *
      * @Rest\Get("/booklets/print/{id}", name="print_booklet")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Booklets")
      *
      * @SWG\Response(
