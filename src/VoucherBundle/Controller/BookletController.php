@@ -269,7 +269,7 @@ class BookletController extends Controller
     /**
      * Deactivate booklets
      * @Rest\Post("/deactivate-booklets", name="deactivate_booklets")
-     *
+     * @Security("is_granted('ROLE_USER')")
      * @SWG\Tag(name="Booklets")
      *
      * @SWG\Response(

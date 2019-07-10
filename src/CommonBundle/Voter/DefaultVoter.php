@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\Role\RoleHierarchy;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
+use VoucherBundle\Entity\Vendor;
 
 /**
  * Class DefaultVoter
@@ -113,6 +114,14 @@ class DefaultVoter extends BMSVoter
             ->findBy(["user" => $user]);
         foreach ($userProject as $up) {
             if ($up->getProject()->getIso3() === $countryISO3) {
+                return true;
+            }
+        }
+
+        if ($user->getRoles()[0] === "ROLE_VENDOR") {
+            $country = $this->em->getRepository(Vendor::class)->getVendorCountry($user);
+
+            if ($countryISO3 === $country) {
                 return true;
             }
         }
