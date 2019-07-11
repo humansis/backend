@@ -1,6 +1,5 @@
 <?php
 
-
 namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
