@@ -1,58 +1,59 @@
-version: '2'
+version: '3.7'
 
-# Declaration of all services needed in the up
+volumes:
+    mysqldata:
+
+networks:
+    backend:
+        external: false
+    database:
+        external: false
+    pma:
+        external: false
+
 services:
-
-    # DATABASE
-    # Pull the mysql image
     db:
-        image: mysql:5.7.16
+        image: mysql:5.7
         command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
-        # Declare it on your port 3308 and mapped it on the port 3307 in the container
-        ports:
-            - 3309:3307
-        # Create volume for the db
         volumes:
-            - "./.data/db:/var/lib/mysql"
-        # Declare variable for mysql. Use them in your symfony project
+            - mysqldata:/var/lib/mysql
+        networks:
+            - database
+            - pma
         environment:
             MYSQL_ROOT_PASSWORD: 'fg!s%qdsfv'
-            MYSQL_DATABASE: 'bms'
-            MYSQL_USER: 'bms_user'
-            MYSQL_PASSWORD: 'aA123'
+            MYSQL_DATABASE: bms
+            MYSQL_USER: bms_user
+            MYSQL_PASSWORD: aA123
 
-    # PHP
     php:
-        # docker-compose will search your Dockerfile in the folder Docker/php. It will build it and run it
-        build: docker/php/
-        # Use the port 9000 for php
-        ports:
-            - 9001:8000
-        # PHP links MySQL, so you can access to your db with php container
-        links:
-            - db:mysqldb
+        build:
+            dockerfile: docker/dev/php/Dockerfile
+            context: .
+        depends_on:
+            - db
         volumes:
-            - ./:/var/www/html/symfony
-            - ./docker/php/php-ini-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+            - .:/var/www/html
+            - ./docker/dev/php/php.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+        networks:
+            - backend
+            - database
 
-    # PHPMYADMIN (for developer)
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         ports:
-            - "8081:80"
-        links:
-            - db
+            - 8081:80
+        networks:
+            - pma
 
-    # SERVER
     nginx:
-        # Pull the nginx image
         image: nginx
-        # The server will listen on port 8086 (so on your computer you will use 8086 in order to access at your app)
         ports:
             - 8087:80
+        depends_on:
+            - php
         volumes:
-            - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-        volumes_from:
-            - php
-        links:
-            - php
+            - .:/var/www/html
+            - ./docker/dev/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - backend

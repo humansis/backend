@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 //    exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information.');
 //}
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 Debug::enable();
 
 $kernel = new AppKernel('dev', true);
@@ -26,7 +26,7 @@ if (PHP_VERSION_ID < 70000) {
     $kernel->loadClassCache();
 }
 
-if ($kernel->getEnvironment() !== "test") {
+if ($kernel->getEnvironment() === 'dev') {
     opcache_reset();
     apcu_clear_cache();
 }

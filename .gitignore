@@ -33,4 +33,4 @@ phpcs.xml
 /.idea/
 
 # Docker
-.data/
+/docker-compose.yml
