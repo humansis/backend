@@ -215,9 +215,11 @@ class HouseholdService
                         $beneficiaryToSave['gender'] = 0;
                     }
 
-                    $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
                     if (! array_key_exists("id", $beneficiaryToSave)) {
+                        $beneficiary = $this->beneficiaryService->update($household, $beneficiaryToSave, false);
                         $household->addBeneficiary($beneficiary);
+                    } else {
+                        $beneficiary = $this->beneficiaryService->create($household, $beneficiaryToSave, false);
                     }
                     $beneficiariesPersisted[] = $beneficiary;
                 } catch (\Exception $exception) {

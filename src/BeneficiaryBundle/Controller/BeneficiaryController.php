@@ -72,7 +72,7 @@ class BeneficiaryController extends Controller
         $beneficiaryData = $request->request->all();
 
         try {
-            $newBeneficiary = $this->get('beneficiary.beneficiary_service')->update($beneficiary, $beneficiaryData);
+            $newBeneficiary = $this->get('beneficiary.beneficiary_service')->updateFromDistribution($beneficiary, $beneficiaryData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

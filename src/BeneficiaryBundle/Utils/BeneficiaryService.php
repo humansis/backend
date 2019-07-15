@@ -73,6 +73,7 @@ class BeneficiaryService
         return $this->em->getRepository(VulnerabilityCriterion::class)->findAll();
     }
 
+
     /**
      * @param Household $household
      * @param array $beneficiaryArray
@@ -81,7 +82,66 @@ class BeneficiaryService
      * @throws \Exception
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
+    public function update(Household $household, array $beneficiaryArray, $flush)
+    {
+        $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
+        if (!$beneficiary instanceof Beneficiary) {
+            throw new \Exception("Beneficiary was not found.");
+        }
+        if ($beneficiary->getHousehold() !== $household) {
+            throw new \Exception("You are trying to update a beneficiary in the wrong household.");
+        }
+        
+        // Clear vulnerability criteria, phones and national id
+        $beneficiary->setVulnerabilityCriteria(null);
+        $items = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
+        foreach ($items as $item) {
+            $this->em->remove($item);
+        }
+        $items = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+        foreach ($items as $item) {
+            $this->em->remove($item);
+        }
+
+        if ($flush) {
+            $this->em->flush();
+        }
+
+        $beneficiary = $this->edit($household, $beneficiaryArray, $beneficiary, $flush);
+       
+        
+        return $beneficiary;
+    }
+
+    /**
+     * @param Household $household
+     * @param array $beneficiaryArray
+     * @param $flush
+     * @return Beneficiary|null|object
+     * @throws \Exception
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     */
+    public function create(Household $household, array $beneficiaryArray, $flush)
+    {
+        $beneficiary = new Beneficiary();
+        $beneficiary->setHousehold($household);
+        $beneficiary = $this->edit($household, $beneficiaryArray, $beneficiary, $flush);
+       
+        
+        return $beneficiary;
+    }
+
+
+    /**
+     * @param Household $household
+     * @param Beneficiary $beneficiary
+     * @param array $beneficiaryArray
+     * @param $flush
+     * @return Beneficiary|null|object
+     * @throws \Exception
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     */
+    public function edit(Household $household, array $beneficiaryArray, Beneficiary $beneficiary, $flush)
     {
         if ($beneficiaryArray["gender"] === 'Male' || $beneficiaryArray["gender"] === 'M') {
             $beneficiaryArray["gender"] = 1;
@@ -119,34 +179,6 @@ class BeneficiaryService
             $beneficiaryArray,
             'any'
         );
-
-        if (array_key_exists("id", $beneficiaryArray) && $beneficiaryArray['id'] !== null) {
-            $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
-            if (!$beneficiary instanceof Beneficiary) {
-                throw new \Exception("Beneficiary was not found.");
-            }
-            if ($beneficiary->getHousehold() !== $household) {
-                throw new \Exception("You are trying to update a beneficiary in the wrong household.");
-            }
-            
-            // Clear vulnerability criteria, phones and national id
-            $beneficiary->setVulnerabilityCriteria(null);
-            $items = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
-            foreach ($items as $item) {
-                $this->em->remove($item);
-            }
-            $items = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
-            foreach ($items as $item) {
-                $this->em->remove($item);
-            }
-
-            if ($flush) {
-                $this->em->flush();
-            }
-        } else {
-            $beneficiary = new Beneficiary();
-            $beneficiary->setHousehold($household);
-        }
 
         $beneficiary->setGender($beneficiaryArray["gender"])
             ->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryArray["date_of_birth"]))
@@ -415,7 +447,7 @@ class BeneficiaryService
      * @return Beneficiary
      * @throws \Exception
      */
-    public function update(Beneficiary $beneficiary, array $beneficiaryData)
+    public function updateFromDistribution(Beneficiary $beneficiary, array $beneficiaryData)
     {
         try {
             $this->updateReferral($beneficiary, $beneficiaryData);
