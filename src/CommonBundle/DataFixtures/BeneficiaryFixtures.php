@@ -285,7 +285,7 @@ class BeneficiaryFixtures extends Fixture
         if ($this->kernel->getEnvironment() !== "prod") {
             $projects = $manager->getRepository(Project::class)->findAll();
             foreach ($this->householdArray as $household) {
-                $this->householdService->createOrEdit($household, $projects);
+                $this->householdService->create($household, $projects);
             }
         }
     }

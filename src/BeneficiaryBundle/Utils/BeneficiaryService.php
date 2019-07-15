@@ -108,8 +108,6 @@ class BeneficiaryService
         }
 
         $beneficiary = $this->edit($household, $beneficiaryArray, $beneficiary, $flush);
-       
-        
         return $beneficiary;
     }
 
@@ -126,8 +124,6 @@ class BeneficiaryService
         $beneficiary = new Beneficiary();
         $beneficiary->setHousehold($household);
         $beneficiary = $this->edit($household, $beneficiaryArray, $beneficiary, $flush);
-       
-        
         return $beneficiary;
     }
 
@@ -203,20 +199,19 @@ class BeneficiaryService
             throw new \Exception($errorsMessage);
         }
 
-
         foreach ($beneficiaryArray["vulnerability_criteria"] as $vulnerability_criterion) {
             $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion["id"]));
         }
         foreach ($beneficiaryArray["phones"] as $phoneArray) {
             if (!empty($phoneArray["type"]) && !empty($phoneArray["prefix"]) && !empty($phoneArray["number"])) {
-                $phone = $this->getOrSavePhone($beneficiary, $phoneArray, false);
+                $phone = $this->savePhone($beneficiary, $phoneArray, false);
                 $beneficiary->addPhone($phone);
             }
         }
 
         foreach ($beneficiaryArray["national_ids"] as $nationalIdArray) {
             if (!empty($nationalIdArray["id_type"]) && !empty($nationalIdArray["id_number"])) {
-                $nationalId = $this->getOrSaveNationalId($beneficiary, $nationalIdArray, false);
+                $nationalId = $this->saveNationalId($beneficiary, $nationalIdArray, false);
                 $beneficiary->addNationalId($nationalId);
             }
         }
@@ -255,7 +250,7 @@ class BeneficiaryService
      * @return Phone|null|object
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
+    public function savePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
         if (!$phoneArray['proxy'] || ($phoneArray['proxy'] && $phoneArray['proxy'] === 'N')) {
             $phoneArray['proxy'] = false;
@@ -297,7 +292,7 @@ class BeneficiaryService
      * @return NationalId|null|object
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function getOrSaveNationalId(Beneficiary $beneficiary, array $nationalIdArray, $flush)
+    public function saveNationalId(Beneficiary $beneficiary, array $nationalIdArray, $flush)
     {
         $this->requestValidator->validate(
             "nationalId",

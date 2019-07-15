@@ -357,7 +357,7 @@ class DistributionCSVService
 
             $this->CSVToArrayMapper->mapLivelihood($householdToCreate);
 
-            $this->householdService->createOrEdit($householdToCreate, array($distributionProject));
+            $this->householdService->create($householdToCreate, array($distributionProject));
             $toCreate = $this->em->getRepository(Beneficiary::class)
                 ->findOneBy(["localGivenName" => $beneficiaryToCreate['localGivenName'], 'localFamilyName' => $beneficiaryToCreate['localFamilyName'], 'gender' => $beneficiaryToCreate['gender']]);
             $this->em->persist($toCreate);

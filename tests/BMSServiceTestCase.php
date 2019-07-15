@@ -360,7 +360,7 @@ class BMSServiceTestCase extends KernelTestCase
         }
 
         $this->bodyHousehold["__country"] = $this->iso3;
-        $household = $this->householdService->createOrEdit(
+        $household = $this->householdService->create(
             $this->bodyHousehold,
             [current($projects)]
         );

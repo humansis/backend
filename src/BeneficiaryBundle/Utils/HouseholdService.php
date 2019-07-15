@@ -115,23 +115,49 @@ class HouseholdService
      * @throws ValidationException
      * @throws \Exception
      */
-    public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
+    public function create(array $householdArray, array $projectsArray, bool $flush = true)
+    {
+        $household = new Household();
+        if (!empty($projectsArray) && (gettype($projectsArray[0]) === 'string' || gettype($projectsArray[0]) === 'integer')) {
+            $projectsArray = $this->em->getRepository(Project::class)->findBy(["id" => $projectsArray]);
+        }
+        // Add projects
+        foreach ($projectsArray as $project) {
+            if (! $project instanceof Project) {
+                throw new \Exception("The project could not be found.");
+            }
+            $household->addProject($project);
+        }
+        if (!empty($householdArray["beneficiaries"])) {
+            $this->handleBeneficiaries($householdArray, $projectsArray, $household);
+        }
+
+        $household = $this->edit($householdArray, $projectsArray, $household, $flush);
+
+        return $household;
+    }
+
+    /**
+     * @param array $householdArray
+     * @param $projectsArray
+     * @param bool $flush
+     * @return Household
+     * @throws ValidationException
+     * @throws \Exception
+     */
+    public function update(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
     {
         if (!empty($projectsArray) && (gettype($projectsArray[0]) === 'string' || gettype($projectsArray[0]) === 'integer')) {
             $projectsArray = $this->em->getRepository(Project::class)->findBy(["id" => $projectsArray]);
         }
-        $actualAction = 'update';
-        $this->requestValidator->validate(
-            "household",
-            HouseholdConstraints::class,
-            $householdArray,
-            'any'
-        );
-
-        /** @var Household $household */
-        if (!$household) {
-            $actualAction = 'create';
-            $household = new Household();
+        // Add projects
+        foreach ($projectsArray as $project) {
+            if (! $project instanceof Project) {
+                throw new \Exception("The project could not be found.");
+            }
+            if (! $household->getProjects()->contains($project)) {
+                $household->addProject($project);
+            }
         }
 
         if ($household->getHouseholdLocations()) {
@@ -141,12 +167,55 @@ class HouseholdService
         }
         $this->em->flush();
 
+        if (!empty($householdArray["beneficiaries"])) {
+            $beneficiariesPersisted = $this->handleBeneficiaries($householdArray, $projectsArray, $household);
+            $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(["household" => $household]);
+            $toRemove = array_udiff(
+                $oldBeneficiaries,
+                $beneficiariesPersisted,
+                function ($oldB, $newB) {
+                    if ($oldB->getId() === $newB->getId()) {
+                        return 0;
+                    } else {
+                        return -1;
+                    }
+                }
+            );
+            foreach ($toRemove as $beneficiaryToRemove) {
+                $household->removeBeneficiary($beneficiaryToRemove);
+                $this->em->remove($beneficiaryToRemove);
+            }
+            
+        }
+        
+        $household = $this->edit($householdArray, $projectsArray, $household, $flush);
+
+        return $household;
+    }
+
+    /**
+     * @param array $householdArray
+     * @param $projectsArray
+     * @param bool $flush
+     * @return Household
+     * @throws ValidationException
+     * @throws \Exception
+     */
+    public function edit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
+    {
+        $this->requestValidator->validate(
+            "household",
+            HouseholdConstraints::class,
+            $householdArray,
+            'any'
+        );
+
         foreach ($householdArray['household_locations'] as $householdLocation) {
             $newHouseholdLocation = new HouseholdLocation();
             $newHouseholdLocation
-                ->setLocationGroup($householdLocation['location_group'])
-                ->setType($householdLocation['type']);
-
+            ->setLocationGroup($householdLocation['location_group'])
+            ->setType($householdLocation['type']);
+            
             if ($householdLocation['type'] === HouseholdLocation::LOCATION_TYPE_CAMP) {
                 // Try to find the camp with the name in the request
                 $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $householdLocation['camp_address']['camp']['name']]);
@@ -162,7 +231,7 @@ class HouseholdService
                 }
                 $campAddress = new CampAddress();
                 $campAddress->setTentNumber($householdLocation['camp_address']['tent_number'])
-                    ->setCamp($camp);
+                ->setCamp($camp);
                 $newHouseholdLocation->setCampAddress($campAddress);
             } else {
                 $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['address']["location"]);
@@ -171,88 +240,25 @@ class HouseholdService
                 }
                 $address = new Address();
                 $address->setNumber($householdLocation['address']['number'])
-                    ->setStreet($householdLocation['address']['street'])
-                    ->setPostcode($householdLocation['address']['postcode'])
-                    ->setLocation($location);
+                ->setStreet($householdLocation['address']['street'])
+                ->setPostcode($householdLocation['address']['postcode'])
+                ->setLocation($location);
                 $newHouseholdLocation->setAddress($address);
             }
             $household->addHouseholdLocation($newHouseholdLocation);
             $this->em->persist($newHouseholdLocation);
         }
-
-
+        
+        
         $household->setNotes($householdArray["notes"])
-            ->setLivelihood($householdArray["livelihood"])
-            ->setLongitude($householdArray["longitude"])
-            ->setLatitude($householdArray["latitude"])
-            ->setIncomeLevel($householdArray["income_level"])
-            ->setCopingStrategiesIndex($householdArray["coping_strategies_index"])
-            ->setFoodConsumptionScore($householdArray["food_consumption_score"]);
-
-        // Add projects
-        foreach ($projectsArray as $project) {
-            if (! $project instanceof Project) {
-                throw new \Exception("The project could not be found.");
-            }
-            if ($actualAction !== 'update' || ! $household->getProjects()->contains($project)) {
-                $household->addProject($project);
-            }
-        }
+        ->setLivelihood($householdArray["livelihood"])
+        ->setLongitude($householdArray["longitude"])
+        ->setLatitude($householdArray["latitude"])
+        ->setIncomeLevel($householdArray["income_level"])
+        ->setCopingStrategiesIndex($householdArray["coping_strategies_index"])
+        ->setFoodConsumptionScore($householdArray["food_consumption_score"]);
         
         $this->em->persist($household);
-
-        if (!empty($householdArray["beneficiaries"])) {
-            $hasHead = false;
-            $beneficiariesPersisted = [];
-            if ($actualAction === "update") {
-                $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(["household" => $household]);
-            }
-            foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
-                try {
-                    if ($beneficiaryToSave['gender'] === 'Male') {
-                        $beneficiaryToSave['gender'] = 1;
-                    } elseif ($beneficiaryToSave['gender'] === 'Female') {
-                        $beneficiaryToSave['gender'] = 0;
-                    }
-
-                    if (! array_key_exists("id", $beneficiaryToSave)) {
-                        $beneficiary = $this->beneficiaryService->update($household, $beneficiaryToSave, false);
-                        $household->addBeneficiary($beneficiary);
-                    } else {
-                        $beneficiary = $this->beneficiaryService->create($household, $beneficiaryToSave, false);
-                    }
-                    $beneficiariesPersisted[] = $beneficiary;
-                } catch (\Exception $exception) {
-                    throw $exception;
-                }
-                if ($beneficiary->getStatus()) {
-                    if ($hasHead) {
-                        throw new \Exception("You have defined more than 1 head of household.");
-                    }
-                    $hasHead = true;
-                }
-                $this->em->persist($beneficiary);
-            }
-            
-            // Remove beneficiaries that are not in the household anymore
-            if ($actualAction === 'update') {
-                $toRemove = array_udiff(
-                    $oldBeneficiaries,
-                    $beneficiariesPersisted,
-                    function ($oldB, $newB) {
-                        if ($oldB->getId() === $newB->getId()) {
-                            return 0;
-                        } else {
-                            return -1;
-                        }
-                    }
-                );
-                foreach ($toRemove as $beneficiaryToRemove) {
-                    $household->removeBeneficiary($beneficiaryToRemove);
-                    $this->em->remove($beneficiaryToRemove);
-                }
-            }
-        }
         
         if (!empty($householdArray["country_specific_answers"])) {
             foreach ($householdArray["country_specific_answers"] as $country_specific_answer) {
@@ -267,10 +273,43 @@ class HouseholdService
             foreach ($country_specific_answers as $country_specific_answer) {
                 $household->addCountrySpecificAnswer($country_specific_answer);
             }
+        }        
+        
+        return $household;
+    }
+    
+    public function handleBeneficiaries(array $householdArray, array $projectsArray, &$household)
+    {
+        $hasHead = false;
+        $beneficiariesPersisted = [];
+        foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
+            try {
+                if ($beneficiaryToSave['gender'] === 'Male') {
+                    $beneficiaryToSave['gender'] = 1;
+                } elseif ($beneficiaryToSave['gender'] === 'Female') {
+                    $beneficiaryToSave['gender'] = 0;
+                }
+                
+                if (! array_key_exists("id", $beneficiaryToSave) || !$beneficiaryToSave['id']) {
+                    $beneficiary = $this->beneficiaryService->create($household, $beneficiaryToSave, false);
+                    $household->addBeneficiary($beneficiary);
+                } else {
+                    $beneficiary = $this->beneficiaryService->update($household, $beneficiaryToSave, false);
+                }
+                $beneficiariesPersisted[] = $beneficiary;
+            } catch (\Exception $exception) {
+                throw $exception;
+            }
+            if ($beneficiary->getStatus()) {
+                if ($hasHead) {
+                    throw new \Exception("You have defined more than 1 head of household.");
+                }
+                $hasHead = true;
+            }
+            $this->em->persist($beneficiary);
         }
 
-
-        return $household;
+        return $beneficiariesPersisted;
     }
 
     /**

@@ -39,7 +39,7 @@ class ValidateTreatment extends AbstractTreatment
         $createdHouseholds  = [];
 
         foreach ($householdsToCreate as $index => $household) {
-            $createdHouseholds[] = $this->householdService->createOrEdit($household['new'], [$project], null, false);
+            $createdHouseholds[] = $this->householdService->create($household['new'], [$project], false);
 
             if ($index !== 0 && $index % 300 === 0) {
                 $this->em->flush();
@@ -79,7 +79,7 @@ class ValidateTreatment extends AbstractTreatment
 
             // If the household is new, create it
             if (! empty($household['new']) && ! array_key_exists('id', $household['new'])) {
-                $household = $this->householdService->createOrEdit($household['new'], array($project), $oldHousehold, false);
+                $household = $this->householdService->update($household['new'], array($project), $oldHousehold, false);
             }
             // If the household is in new but has an id, delete its beneficiaries
             elseif (! empty($household['new']) && array_key_exists('id', $household['new'])) {
