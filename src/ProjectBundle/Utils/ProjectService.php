@@ -2,21 +2,21 @@
 
 namespace ProjectBundle\Utils;
 
-use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\ProjectBeneficiary;
+use dateTime;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 use ProjectBundle\Entity\Donor;
+use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\Sector;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserProject;
-use dateTime;
 
 /**
  * Class ProjectService
@@ -97,8 +97,8 @@ class ProjectService
     {
         /** @var Project $project */
 
-        $startDate = DateTime::createFromFormat('d-m-Y',$projectArray["start_date"]);
-        $endDate = DateTime::createFromFormat('d-m-Y',$projectArray["end_date"]);
+        $startDate = DateTime::createFromFormat('d-m-Y', $projectArray["start_date"]);
+        $endDate = DateTime::createFromFormat('d-m-Y', $projectArray["end_date"]);
 
         if ($startDate > $endDate) {
             throw new \Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
@@ -171,8 +171,8 @@ class ProjectService
      */
     public function edit(Project $project, array $projectArray)
     {
-        $startDate = DateTime::createFromFormat('d-m-Y',$projectArray["start_date"]);
-        $endDate = DateTime::createFromFormat('d-m-Y',$projectArray["end_date"]);
+        $startDate = DateTime::createFromFormat('d-m-Y', $projectArray["start_date"]);
+        $endDate = DateTime::createFromFormat('d-m-Y', $projectArray["end_date"]);
 
         if ($startDate > $endDate) {
             throw new \Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
@@ -180,7 +180,7 @@ class ProjectService
     
         /** @var Project $editedProject */
         $oldProject = $this->em->getRepository(Project::class)->find($project->getId());
-        if($oldProject->getArchived() == 0){
+        if ($oldProject->getArchived() == 0) {
             $project->setName($projectArray['name'])
                 ->setStartDate($startDate)
                 ->setEndDate($endDate)
@@ -188,28 +188,26 @@ class ProjectService
                 ->setNotes($projectArray["notes"]);
 
             $sectors = $projectArray['sectors'];
-            if (null !== $sectors)
-            {
+            if (null !== $sectors) {
                 $project->removeSectors();
-                foreach ($sectors as $sector)
-                {
+                foreach ($sectors as $sector) {
                     $newSector = $this->em->getRepository(Sector::class)->find($sector);
-                    if ($newSector instanceof Sector)
+                    if ($newSector instanceof Sector) {
                         $project->addSector($newSector);
+                    }
                 }
             }
 
             $donors = $projectArray['donors'];
 
-            if (null !== $donors)
-            {
+            if (null !== $donors) {
                 $project->removeDonors();
                 /** @var Donor $donor */
-                foreach ($donors as $donor)
-                {
+                foreach ($donors as $donor) {
                     $newDonor = $this->em->getRepository(Donor::class)->find($donor);
-                    if ($newDonor instanceof Donor)
+                    if ($newDonor instanceof Donor) {
                         $project->addDonor($newDonor);
+                    }
                 }
             }
 
@@ -268,13 +266,15 @@ class ProjectService
     public function addUser(Project $project, User $user)
     {
         $right = $user->getRoles();
-        $userProject = new UserProject();
-        $userProject->setUser($user)
-            ->setProject($project)
-            ->setRights($right[0]);
-
-        $this->em->persist($userProject);
-        $this->em->flush();
+        if ($right[0] !== "ROLE_ADMIN") {
+            $userProject = new UserProject();
+            $userProject->setUser($user)
+                ->setProject($project)
+                ->setRights($right[0]);
+    
+            $this->em->persist($userProject);
+            $this->em->flush();
+        }
     }
 
     /**
@@ -303,7 +303,6 @@ class ProjectService
 
                     $project->setArchived(true);
                     $this->em->persist($project);
-
                 } catch (\Exception $error) {
                     throw new \Exception("Error archiving project");
                 }
