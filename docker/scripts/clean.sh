@@ -14,6 +14,6 @@ php bin/console cache:clear
 
 echo "** Starting cron **"
 status=$(printf 'symfony\n' | sudo -S service cron status | cut -c 1-16)
-if [[ "$status" != "cron is running."" ]]; then
+if [[ "$status" != "cron is running." ]]; then
     printf 'symfony\n' | sudo -S cron
 fi
