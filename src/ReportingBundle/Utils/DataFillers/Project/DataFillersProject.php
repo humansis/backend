@@ -2,20 +2,20 @@
 
 namespace ReportingBundle\Utils\DataFillers\Project;
 
-use ReportingBundle\Utils\Model\IndicatorInterface;
-
-use \ReportingBundle\Entity\ReportingIndicator;
-use \ReportingBundle\Entity\ReportingValue;
-use \ReportingBundle\Entity\ReportingProject;
-
-use \DistributionBundle\Entity\DistributionBeneficiary;
-use \ProjectBundle\Entity\Project;
-use \ProjectBundle\Entity\Donor;
 use \BeneficiaryBundle\Entity\Beneficiary;
+
 use \BeneficiaryBundle\Entity\Household;
 use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use \DistributionBundle\Entity\DistributionBeneficiary;
 
+use \ProjectBundle\Entity\Donor;
+use \ProjectBundle\Entity\Project;
+use \ReportingBundle\Entity\ReportingIndicator;
+use \ReportingBundle\Entity\ReportingProject;
+use \ReportingBundle\Entity\ReportingValue;
 use Doctrine\ORM\EntityManager;
+
+use ReportingBundle\Utils\Model\IndicatorInterface;
 
 /**
  * Class DataFillersProject
@@ -69,7 +69,7 @@ class DataFillersProject
     {
         $this->repository = $this->em->getRepository(Donor::class);
         $qb = $this->repository->createQueryBuilder('d')
-            ->leftJoin('d.projects', 'p')
+            ->innerJoin('d.projects', 'p')
             ->select('d.shortname as donor', 'p.id as project')
             ->groupBy('donor, project');
         $results = $qb->getQuery()->getArrayResult();
