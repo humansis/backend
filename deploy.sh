@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#immediately exits if a command exits with an non-zero status
+set -e
+
 if [[ $1 == "master" ]]; then
     ec2="ec2-35-158-182-63.eu-central-1.compute.amazonaws.com"
 elif [[ $1 == "dev" ]]; then
@@ -20,7 +23,3 @@ ssh -i $2 ubuntu@$ec2 \
     sudo docker-compose exec -T php bash -c 'composer install';\
     sudo docker-compose exec -T php bash -c 'php bin/console c:c'; \
     sudo docker-compose exec  -T php bash -c 'php bin/console d:m:m -n'"
-else
-    echo "Unable to deploy"
-    exit
-fi
