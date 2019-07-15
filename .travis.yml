@@ -37,7 +37,6 @@ jobs:
         - stage: test
           script: ./vendor/bin/phpunit
           fast_finish: true
-          php: 7.2
         - stage: deploy
           if: branch = dev AND NOT type = "pull_request"
           install:
