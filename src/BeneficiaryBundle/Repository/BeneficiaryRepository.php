@@ -11,6 +11,9 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use ProjectBundle\Entity\Project;
 use Doctrine\ORM\Query\Expr\Join;
+use CommonBundle\Entity\Adm3;
+use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Adm1;
 
 /**
  * BeneficiaryRepository.
@@ -274,7 +277,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getResult();
     }
 
-    
+
     private function getHouseholdWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$orStatement)
     {
         // The selection criteria is a country Specific
@@ -309,7 +312,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                 $qb->leftJoin('hh.householdLocations', 'hl'.$i, Join::WITH, 'hl'.$i . '.type ' . $condition . ' :parameter'.$i);
                 $orStatement->add('hl'.$i . '.type ' . $condition . ' :parameter'.$i);
                 $qb->addSelect('hl'.$i . '.type AS ' . $field.$i);
-            } 
+            }
             // The selection criteria is the name of the camp in which the household lives
             else if ($field === 'campName') {
                 $qb->leftJoin('hh.householdLocations', 'hl'.$i, Join::WITH, 'hl'.$i . '.type = :camp')
@@ -318,6 +321,25 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                     ->setParameter('camp', 'camp');
                 $orStatement->add('c'.$i . '.id = :parameter'.$i);
                 $qb->addSelect('c'.$i . '.id AS ' . $field.$i);
+            } else if ($field === 'currentAdm1') {
+                $qb->leftJoin('hh.householdLocations', 'hl'.$i)
+                    ->leftJoin('hl'.$i.'.campAddress', 'ca'.$i)
+                    ->leftJoin('ca'.$i.'.camp', 'c')
+                    ->leftJoin('hl'.$i.'.address', 'ad')
+                    ->leftJoin(Location::class, 'l', Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))")
+                    ->leftJoin('l.adm4', 'adm4')
+                    ->leftJoin('l.adm3', 'locAdm3')
+                    ->leftJoin('l.adm2', 'locAdm2')
+                    ->leftJoin('l.adm1', 'locAdm1')
+                    ->leftJoin(Adm3::class, 'adm3', Join::WITH, "adm3.id = COALESCE(IDENTITY(adm4.adm3, 'id'), locAdm3.id)")
+                    ->leftJoin(Adm2::class, 'adm2', Join::WITH, "adm2.id = COALESCE(IDENTITY(adm3.adm2, 'id'), locAdm2.id)")
+                    ->leftJoin(Adm1::class, 'adm1', Join::WITH, "adm1.id = COALESCE(IDENTITY(adm2.adm1, 'id'), locAdm1.id)");
+                $andStatement = $qb->expr()->andX();
+                $andStatement->add('hl'.$i.'.locationGroup = :current');
+                $qb->setParameter('current', 'current');
+                $andStatement->add('adm1.id ' . $condition . ' :parameter'.$i);
+                $orStatement->add($andStatement);
+                $qb->addSelect('adm1.id AS ' . $field.$i);
             }
         }
     }
