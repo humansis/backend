@@ -334,7 +334,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                     ->leftJoin('l'.$i.'.adm1', 'locAdm1'.$i)
                     ->leftJoin(Adm3::class, 'adm3'.$i, Join::WITH, "adm3".$i.".id = COALESCE(IDENTITY(adm4".$i.".adm3, 'id'), locAdm3".$i.".id)")
                     ->leftJoin(Adm2::class, 'adm2'.$i, Join::WITH, "adm2".$i.".id = COALESCE(IDENTITY(adm3".$i.".adm2, 'id'), locAdm2".$i.".id)")
-                    ->leftJoin(Adm1::class, 'adm1'.$i, Join::WITH, "adm1".$i.".id = COALESCE(IDENTITY(adm2".$i.".adm1, 'id'), locAdm1".$i.".id)");
+                    ->leftJoin(Adm1::class, 'adm1'.$i, Join::WITH, "adm1".$i.".id = COALESCE(IDENTITY(adm2".$i.".adm1, 'id'), locAdm1".$i.".id) AND adm1".$i.".id " . $condition . " :parameter".$i);
                 $andStatement = $qb->expr()->andX();
                 $andStatement->add('hl'.$i.'.locationGroup = :current');
                 $qb->setParameter('current', 'current');
