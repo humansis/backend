@@ -209,4 +209,18 @@ class Location
             return "";
         }
     }
+
+    public function getCode()
+    {
+        if ($this->getAdm1()) {
+            return $this->getAdm1()->getCode();
+        } elseif ($this->getAdm2()) {
+            return $this->getAdm2()->getCode();
+        } elseif ($this->getAdm3()) {
+            return $this->getAdm3()->getCode();
+        } elseif ($this->getAdm4()) {
+            return $this->getAdm4()->getCode();
+        }
+
+    }
 }

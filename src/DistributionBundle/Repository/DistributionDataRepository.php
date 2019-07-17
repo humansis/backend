@@ -3,6 +3,7 @@
 namespace DistributionBundle\Repository;
 
 use CommonBundle\Entity\Location;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * DistributionDataRepository
@@ -80,4 +81,60 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
 
     }
+
+    public function getNoBenificiaryByResidencyStatus(int $distributionId, string $residencyStatus) {
+        $qb = $this->createQueryBuilder('dd');
+        $qb
+            ->andWhere('dd.id = :distributionId')
+                ->setParameter('distributionId', $distributionId)
+            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
+            ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus')
+                ->setParameter('residencyStatus', $residencyStatus)
+            ->select('COUNT(b)');
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function getNoHeadHouseholdsByGender(int $distributionId, int $gender) {
+        $qb = $this->createQueryBuilder('dd');
+        $qb
+            ->andWhere('dd.id = :distributionId')
+                ->setParameter('distributionId', $distributionId)
+            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
+            ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.gender = :gender AND b.status = 1')
+                ->setParameter('gender', $gender)
+            ->select('COUNT(b)');
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function getNoFamilies(int $distributionId) {
+        $qb = $this->createQueryBuilder('dd');
+        $qb
+            ->andWhere('dd.id = :distributionId')
+                ->setParameter('distributionId', $distributionId)
+            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
+            ->leftJoin('db.beneficiary', 'b')
+            ->leftJoin('b.household', 'hh')
+            ->select('COUNT(DISTINCT hh)');
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge) {
+        $maxDateOfBirth = new \DateTime();
+        $minDateOfBirth = new \DateTime();
+        $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
+        $minDateOfBirth->sub(new \DateInterval('P'.$maxAge.'Y'));
+        $qb = $this->createQueryBuilder('dd');
+        $qb
+            ->andWhere('dd.id = :distributionId')
+                ->setParameter('distributionId', $distributionId)
+            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
+            ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth > :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender')
+                ->setParameter('minDateOfBirth', $minDateOfBirth)
+                ->setParameter('maxDateOfBirth', $maxDateOfBirth)
+                ->setParameter('gender', $gender)
+            ->select('COUNT(b)');
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+
 }

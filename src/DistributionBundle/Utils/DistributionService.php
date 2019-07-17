@@ -337,6 +337,169 @@ class DistributionService
         return $this->container->get('export_csv_service')->export($exportableTable, 'distributions', $type);
     }
 
+    public function exportToOfficialCsv(int $projectId, string $type)
+    {
+        $distributions = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId]);
+        $project = $this->em->getRepository(Project::class)->find($projectId);
+        $exportableTable = [];
+
+        $donors = implode(', ',
+            array_map(
+                function($donor) { return $donor->getShortname(); },
+                $project->getDonors()->toArray()
+            )
+        );
+        
+        foreach ($distributions as $distribution) {
+            $distributionBeneficiaries = $distribution->getDistributionBeneficiaries();
+
+            $beneficiaries = array_map(
+                function($distributionBeneficiary) { return $distributionBeneficiary->getBeneficiary();},
+                    $distributionBeneficiaries->toArray()
+            );
+            $members = [];
+
+            if ($distribution->getType() === DistributionData::TYPE_HOUSEHOLD) {
+                foreach ($beneficiaries as $headOfHousehold) {
+                    foreach ($headOfHousehold->getHousehold()->getBeneficiaries() as $member) {
+                        array_push($members, $member);
+                    }
+                }
+                $beneficiaries = $members;
+            }
+
+
+            $commodityNames = implode(', ',
+                    array_map(
+                        function($commodity) { return  $commodity->getModalityType()->getName(); }, 
+                        $distribution->getCommodities()->toArray()
+                    )
+                );
+    
+    
+            $commodityUnit = implode(', ',
+                array_map(
+                    function($commodity) { return  $commodity->getUnit(); }, 
+                    $distribution->getCommodities()->toArray()
+                )
+            );
+
+            $numberOfUnits = implode(', ',
+                array_map(
+                    function($commodity) use($distributionBeneficiaries) { return  $commodity->getValue(); }, 
+                    $distribution->getCommodities()->toArray()
+                )
+            );
+            $totalAmount = implode(', ',
+                array_map(
+                    function($commodity) use($distributionBeneficiaries) { return  $commodity->getValue() * count($distributionBeneficiaries) . ' ' . $commodity->getUnit(); }, 
+                    $distribution->getCommodities()->toArray()
+                )
+            );
+
+            $idps = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "IDP");
+            $residents = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "resident");
+            $noFamilies = $this->em->getRepository(DistributionData::class)->getNoFamilies($distribution->getId());
+            $maleHHH = $this->em->getRepository(DistributionData::class)->getNoHeadHouseholdsByGender($distribution->getId(), 1);
+            $femaleHHH = $this->em->getRepository(DistributionData::class)->getNoHeadHouseholdsByGender($distribution->getId(), 0);
+            $maleChildrenUnder23month = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 0, 2);
+            $femaleChildrenUnder23month = 0;
+            $maleChildrenUnder5years = 0;
+            $femaleChildrenUnder5years = 0;
+            $maleUnder17years = 0;
+            $femaleUnder17years = 0;
+            $maleUnder59years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 18, 59);
+            $femaleUnder59years = 0;
+            $maleOver60years = 0;
+            $femaleOver60years = 0;
+            $maleTotal = 0;
+            $femaleTotal = 0;
+            $beneficiaryServed = 0;
+
+            foreach ($distributionBeneficiaries as $distributionBeneficiary) {
+                $modalityType = $distribution->getCommodities()[0]->getModalityType()->getName();
+                if ($modalityType === 'Mobile Money') {
+                    $numberOfTransactions = count($distributionBeneficiary->getTransactions());
+                    if (count($distributionBeneficiary->getTransactions()) > 0) {
+                        $transaction = $distributionBeneficiary->getTransactions()[$numberOfTransactions - 1];
+                        if ($transaction->getTransactionStatus() === 1) {
+                            $beneficiaryServed++;
+                        };
+                    } 
+                } else if ($modalityType === 'QR Code Voucher') {
+                    $booklets =  $distributionBeneficiary->getBooklets();
+                    $isServed = false;
+                    foreach ($booklets as $booklet) {
+                        if ($booklet->getStatus() === 1 || $booklet->getStatus() === 2) {
+                            $isServed = true;
+                        }
+                    }
+                    if ($isServed) {
+                        $beneficiaryServed++;
+                    }
+                } else {
+                    if ($distributionBeneficiary->getGeneralReliefs()[0]->getDistributedAt()) {
+                        $beneficiaryServed++;
+                    }
+                }     
+            }
+            
+            $row = [
+                "Navi/Elo number" => " ",
+                "DISTR. NO." => $distribution->getId(),
+                "Distributed by" => " ",
+                "Round" => " ",
+                "Donor" => $donors,
+                "Starting Date" => $distribution->getDateDistribution(),
+                "Ending Date" => $distribution->getDateDistribution(),
+                "Governorate" => $distribution->getLocation()->getAdm1Name(),
+                "District" => $distribution->getLocation()->getAdm2Name(),
+                "Sub-District" => $distribution->getLocation()->getAdm3Name(),
+                "Town, Village" => $distribution->getLocation()->getAdm4Name(),
+                "Location = School/Camp" => " ",
+                "Neighbourhood (Camp Name)" => " ",
+                "Latitude" => " ",
+                "Longitude" => " ",
+                // "Location Code" => $distribution->getLocation()->getCode(),
+                "Activity (Modality)" => $commodityNames,
+                "UNIT" => $commodityUnit,
+                "Nº Of Units" => $numberOfUnits,
+                "Amount (USD/SYP)" => " ",
+                "Total Amount" => $totalAmount,
+                "Bebelac Type" => " ",
+                "Water\nNº of 1.5 bottles " => " ",
+                "Bebelac kg" => " ",
+                "Nappies Pack" => " ",
+                "IDPs" => $idps,
+                "Residents" => $residents,
+                "Nº FAMILIES" => $noFamilies,
+                "FEMALE\nHead of Family gender" => $femaleHHH,
+                "MALE\nHead of Family gender" => $maleHHH,
+                /*
+                * Male and Female children from 0 to 17 months
+                *
+                */
+                "Children\n0-23 months\nMale" => $maleChildrenUnder23month,
+                "Children\n0-23 months\nFemale" => $femaleChildrenUnder23month,
+                //"Children\n2-5" => $childrenUnder5years
+                "Children\n2-5\nMale" => $maleChildrenUnder5years,
+                "Children\n2-5\nFemale" => $femaleChildrenUnder5years,
+                "Males\n6-17" => $maleUnder17years,
+                "Females\n6-17" => $femaleUnder17years,
+                "Males\n18-59" => $maleUnder59years,
+                "Females\n18-59" => $femaleUnder59years,
+                "Males\n60+" => $maleOver60years,
+                "Females\n60+" => $femaleOver60years,
+                "Total\nMales" => $maleTotal,
+                "Total\nFemales" => $femaleTotal,
+                "Individ. Benef.\nServed" => $beneficiaryServed,
+                "Family\nSize" => $noFamilies ? count($beneficiaries) / $noFamilies : 0
+            ];
+            array_push($exportableTable, $row);
+        }
+        return $this->container->get('export_csv_service')->export($exportableTable, 'distributions', $type);
+    }
+
     /**
      * @param string $country
      * @return int
