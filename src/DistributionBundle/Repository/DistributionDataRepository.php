@@ -4,6 +4,8 @@ namespace DistributionBundle\Repository;
 
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Query\Expr\Join;
+use \DateTime;
+use DistributionBundle\Entity\DistributionData;
 
 /**
  * DistributionDataRepository
@@ -82,15 +84,21 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
 
     }
 
-    public function getNoBenificiaryByResidencyStatus(int $distributionId, string $residencyStatus) {
+    public function getNoBenificiaryByResidencyStatus(int $distributionId, string $residencyStatus, int $distributionType) {
         $qb = $this->createQueryBuilder('dd');
         $qb
             ->andWhere('dd.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
-            ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus')
-                ->setParameter('residencyStatus', $residencyStatus)
-            ->select('COUNT(b)');
+            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
+        if ($distributionType === DistributionData::TYPE_BENEFICIARY) {
+            $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus');
+        } else {
+            $qb->leftJoin('db.beneficiary', 'hhh')
+                ->leftJoin('hhh.household', 'hh')
+                ->leftJoin('hh.beneficiaries', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus');
+        }
+           $qb->setParameter('residencyStatus', $residencyStatus)
+                ->select('COUNT(b)');
         return $qb->getQuery()->getSingleScalarResult();
     }
 
@@ -106,19 +114,19 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    // public function getNoFamilies(int $distributionId) {
-    //     $qb = $this->createQueryBuilder('dd');
-    //     $qb
-    //         ->andWhere('dd.id = :distributionId')
-    //             ->setParameter('distributionId', $distributionId)
-    //         ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
-    //         ->leftJoin('db.beneficiary', 'b')
-    //         ->leftJoin('b.household', 'hh')
-    //         ->select('COUNT(DISTINCT hh)');
-    //     return $qb->getQuery()->getSingleScalarResult();
-    // }
+    public function getNoFamilies(int $distributionId) {
+        $qb = $this->createQueryBuilder('dd');
+        $qb
+            ->andWhere('dd.id = :distributionId')
+                ->setParameter('distributionId', $distributionId)
+            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
+            ->leftJoin('db.beneficiary', 'b')
+            ->leftJoin('b.household', 'hh')
+            ->select('COUNT(DISTINCT hh)');
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 
-    public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge, DateTime $distributionDate) {
+    public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge, DateTime $distributionDate, int $distributionType) {
         $maxDateOfBirth = clone $distributionDate;
         $minDateOfBirth = clone $distributionDate;
         $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
@@ -127,27 +135,39 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
         $qb
             ->andWhere('dd.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
-            ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender')
-                ->setParameter('minDateOfBirth', $minDateOfBirth)
+            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
+ 
+        if ($distributionType === DistributionData::TYPE_BENEFICIARY) {
+            $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender');
+        } else {
+            $qb->leftJoin('db.beneficiary', 'hhh')
+                ->leftJoin('hhh.household', 'hh')
+                ->leftJoin('hh.beneficiaries', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender');
+        }
+                $qb->setParameter('minDateOfBirth', $minDateOfBirth)
                 ->setParameter('maxDateOfBirth', $maxDateOfBirth)
                 ->setParameter('gender', $gender)
-            ->select('COUNT(b)');
+            ->select('COUNT(DISTINCT b)');
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    // public function getNoUnits(int $distributionId, string $commodities) {
-    //     $qb = $this->createQueryBuilder('dd');
-    //     $qb
-    //         ->andWhere('dd.id = :distributionId')
-    //             ->setParameter('distributionId', $distributionId)
+    public function getNoServed(int $distributionId, string $modalityType) {
+        $qb = $this->createQueryBuilder('dd');
+        $qb
+            ->andWhere('dd.id = :distributionId')
+                ->setParameter('distributionId', $distributionId)
+                ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
+                ->select('COUNT(DISTINCT db)');
 
-    //         ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
-    //         ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus')
-    //             ->setParameter('residencyStatus', $residencyStatus)
-    //         ->select('COUNT(b)');
-    //     return $qb->getQuery()->getSingleScalarResult();
-    // }
+                if ($modalityType === 'Mobile Money') {
+                    $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
+                } else if ($modalityType === 'QR Code Voucher') {
+                    $qb->innerJoin('db.booklets', 'b', Join::WITH, 'b.status = 1 OR b.status = 2');
+                } else {
+                    $qb->innerJoin('db.generalReliefs', 'gr', Join::WITH, 'gr.distributedAt IS NOT NULL');
+                }     
+        return $qb->getQuery()->getSingleScalarResult();
+    }
     
 
 }
