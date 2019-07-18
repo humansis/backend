@@ -106,21 +106,21 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getNoFamilies(int $distributionId) {
-        $qb = $this->createQueryBuilder('dd');
-        $qb
-            ->andWhere('dd.id = :distributionId')
-                ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
-            ->leftJoin('db.beneficiary', 'b')
-            ->leftJoin('b.household', 'hh')
-            ->select('COUNT(DISTINCT hh)');
-        return $qb->getQuery()->getSingleScalarResult();
-    }
+    // public function getNoFamilies(int $distributionId) {
+    //     $qb = $this->createQueryBuilder('dd');
+    //     $qb
+    //         ->andWhere('dd.id = :distributionId')
+    //             ->setParameter('distributionId', $distributionId)
+    //         ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
+    //         ->leftJoin('db.beneficiary', 'b')
+    //         ->leftJoin('b.household', 'hh')
+    //         ->select('COUNT(DISTINCT hh)');
+    //     return $qb->getQuery()->getSingleScalarResult();
+    // }
 
-    public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge) {
-        $maxDateOfBirth = new \DateTime();
-        $minDateOfBirth = new \DateTime();
+    public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge, DateTime $distributionDate) {
+        $maxDateOfBirth = clone $distributionDate;
+        $minDateOfBirth = clone $distributionDate;
         $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
         $minDateOfBirth->sub(new \DateInterval('P'.$maxAge.'Y'));
         $qb = $this->createQueryBuilder('dd');
@@ -128,7 +128,7 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('dd.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
             ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
-            ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth > :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender')
+            ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender')
                 ->setParameter('minDateOfBirth', $minDateOfBirth)
                 ->setParameter('maxDateOfBirth', $maxDateOfBirth)
                 ->setParameter('gender', $gender)
@@ -136,5 +136,18 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    // public function getNoUnits(int $distributionId, string $commodities) {
+    //     $qb = $this->createQueryBuilder('dd');
+    //     $qb
+    //         ->andWhere('dd.id = :distributionId')
+    //             ->setParameter('distributionId', $distributionId)
+
+    //         ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
+    //         ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus')
+    //             ->setParameter('residencyStatus', $residencyStatus)
+    //         ->select('COUNT(b)');
+    //     return $qb->getQuery()->getSingleScalarResult();
+    // }
+    
 
 }
