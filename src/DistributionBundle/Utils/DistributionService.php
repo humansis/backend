@@ -338,6 +338,125 @@ class DistributionService
     }
 
     /**
+     * @param int $projectId
+     * @param string $type
+     * @return mixed
+     */
+    public function exportToOfficialCsv(int $projectId, string $type)
+    {
+        $distributions = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId]);
+        $project = $this->em->getRepository(Project::class)->find($projectId);
+        $exportableTable = [];
+
+        $donors = implode(', ',
+            array_map(function($donor) { return $donor->getShortname(); }, $project->getDonors()->toArray())
+        );
+        
+        foreach ($distributions as $distribution) {
+
+            $idps = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "IDP", $distribution->getType());
+            $residents = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "resident", $distribution->getType());
+            $maleHHH = $this->em->getRepository(DistributionData::class)->getNoHeadHouseholdsByGender($distribution->getId(), 1);
+            $femaleHHH = $this->em->getRepository(DistributionData::class)->getNoHeadHouseholdsByGender($distribution->getId(), 0);
+            $maleChildrenUnder23month = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 0, 2, $distribution->getDateDistribution(), $distribution->getType());
+            $femaleChildrenUnder23month = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 0, 2, $distribution->getDateDistribution(), $distribution->getType());
+            $maleChildrenUnder5years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 2, 6, $distribution->getDateDistribution(), $distribution->getType());
+            $femaleChildrenUnder5years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 2, 6, $distribution->getDateDistribution(), $distribution->getType());
+            $maleUnder17years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 6, 18, $distribution->getDateDistribution(), $distribution->getType());
+            $femaleUnder17years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 6, 18, $distribution->getDateDistribution(), $distribution->getType());
+            $maleUnder59years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 18, 60, $distribution->getDateDistribution(), $distribution->getType());
+            $femaleUnder59years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 18, 60, $distribution->getDateDistribution(), $distribution->getType());
+            $maleOver60years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 60, 200, $distribution->getDateDistribution(), $distribution->getType());
+            $femaleOver60years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 60, 200, $distribution->getDateDistribution(), $distribution->getType());
+            $maleTotal = $maleChildrenUnder23month + $maleChildrenUnder5years + $maleUnder17years + $maleUnder59years + $maleOver60years;
+            $femaleTotal = $femaleChildrenUnder23month + $femaleChildrenUnder5years + $femaleUnder17years + $femaleUnder59years + $femaleOver60years;
+            $noFamilies = $distribution->getType() === DistributionData::TYPE_BENEFICIARY ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
+            $familySize = $distribution->getType() === DistributionData::TYPE_HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
+            $modalityType = $distribution->getCommodities()[0]->getModalityType()->getName();
+            $beneficiaryServed =  $this->em->getRepository(DistributionData::class)->getNoServed($distribution->getId(), $modalityType);
+
+            $commodityNames = implode(', ',
+                    array_map(
+                        function($commodity) { return  $commodity->getModalityType()->getName(); }, 
+                        $distribution->getCommodities()->toArray()
+                    )
+                );
+            $commodityUnit = implode(', ',
+                array_map(
+                    function($commodity) { return  $commodity->getUnit(); }, 
+                    $distribution->getCommodities()->toArray()
+                )
+            );
+            $numberOfUnits = implode(', ',
+                array_map(
+                    function($commodity) { return  $commodity->getValue(); }, 
+                    $distribution->getCommodities()->toArray()
+                )
+            );
+            
+            $totalAmount = implode(', ',
+                array_map(
+                    function($commodity) use($noFamilies) { return  $commodity->getValue() * count($noFamilies) . ' ' . $commodity->getUnit(); }, 
+                    $distribution->getCommodities()->toArray()
+                )
+            );
+            
+            $row = [
+                "Navi/Elo number" => " ",
+                "DISTR. NO." => $distribution->getId(),
+                "Distributed by" => " ",
+                "Round" => " ",
+                "Donor" => $donors,
+                "Starting Date" => $distribution->getDateDistribution(),
+                "Ending Date" => $distribution->getDateDistribution(),
+                "Governorate" => $distribution->getLocation()->getAdm1Name(),
+                "District" => $distribution->getLocation()->getAdm2Name(),
+                "Sub-District" => $distribution->getLocation()->getAdm3Name(),
+                "Town, Village" => $distribution->getLocation()->getAdm4Name(),
+                "Location = School/Camp" => " ",
+                "Neighbourhood (Camp Name)" => " ",
+                "Latitude" => " ",
+                "Longitude" => " ",
+                // "Location Code" => $distribution->getLocation()->getCode(),
+                "Activity (Modality)" => $commodityNames,
+                "UNIT" => $commodityUnit,
+                "Nº Of Units" => $numberOfUnits,
+                "Amount (USD/SYP)" => " ",
+                "Total Amount" => $totalAmount,
+                "Bebelac Type" => " ",
+                "Water\nNº of 1.5 bottles " => " ",
+                "Bebelac kg" => " ",
+                "Nappies Pack" => " ",
+                "IDPs" => $idps,
+                "Residents" => $residents,
+                "Nº FAMILIES" => $noFamilies,
+                "FEMALE\nHead of Family gender" => $femaleHHH,
+                "MALE\nHead of Family gender" => $maleHHH,
+                /*
+                * Male and Female children from 0 to 17 months
+                */
+                "Children\n0-23 months\nMale" => $maleChildrenUnder23month,
+                "Children\n0-23 months\nFemale" => $femaleChildrenUnder23month,
+                //"Children\n2-5" => $childrenUnder5years
+                "Children\n2-5\nMale" => $maleChildrenUnder5years,
+                "Children\n2-5\nFemale" => $femaleChildrenUnder5years,
+                "Males\n6-17" => $maleUnder17years,
+                "Females\n6-17" => $femaleUnder17years,
+                "Males\n18-59" => $maleUnder59years,
+                "Females\n18-59" => $femaleUnder59years,
+                "Males\n60+" => $maleOver60years,
+                "Females\n60+" => $femaleOver60years,
+                "Total\nMales" => $maleTotal,
+                "Total\nFemales" => $femaleTotal,
+                "Individ. Benef.\nServed" => $beneficiaryServed,
+                "Family\nSize" => $familySize
+            ];
+            array_push($exportableTable, $row);
+        }
+        return $this->container->get('export_csv_service')->export($exportableTable, 'distributions', $type);
+    }
+
+    /**
      * @param string $country
      * @return int
      */

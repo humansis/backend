@@ -19,8 +19,8 @@ use BeneficiaryBundle\Entity\Household;
  */
 class DistributionData implements ExportableInterface
 {
-    const TYPE_BENEFICIARY = 0;
-    const TYPE_HOUSEHOLD = 1;
+    const TYPE_BENEFICIARY = 1;
+    const TYPE_HOUSEHOLD = 0;
 
     const NAME_HEADER_ID = "ID SYNC";
 
