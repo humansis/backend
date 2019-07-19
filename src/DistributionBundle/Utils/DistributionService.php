@@ -396,7 +396,7 @@ class DistributionService
             
             $totalAmount = implode(', ',
                 array_map(
-                    function($commodity) use($noFamilies) { return  $commodity->getValue() * count($noFamilies) . ' ' . $commodity->getUnit(); }, 
+                    function($commodity) use($noFamilies) { return  $commodity->getValue() * $noFamilies . ' ' . $commodity->getUnit(); }, 
                     $distribution->getCommodities()->toArray()
                 )
             );
