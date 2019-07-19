@@ -296,7 +296,8 @@ class DistributionService
     public function complete(DistributionData $distributionData)
     {
         if (!empty($distributionData)) {
-            $distributionData->setCompleted(1);
+            $distributionData->setCompleted(1)
+                            ->setUpdatedOn(new \DateTime);
         }
 
         $this->em->persist($distributionData);
@@ -400,6 +401,8 @@ class DistributionService
                     $distribution->getCommodities()->toArray()
                 )
             );
+
+            
             
             $row = [
                 "Navi/Elo number" => " ",
@@ -408,7 +411,7 @@ class DistributionService
                 "Round" => " ",
                 "Donor" => $donors,
                 "Starting Date" => $distribution->getDateDistribution(),
-                "Ending Date" => $distribution->getDateDistribution(),
+                "Ending Date" => $distribution->getCompleted() ? $distribution->getUpdatedOn() : " - ",
                 "Governorate" => $distribution->getLocation()->getAdm1Name(),
                 "District" => $distribution->getLocation()->getAdm2Name(),
                 "Sub-District" => $distribution->getLocation()->getAdm3Name(),
