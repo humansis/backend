@@ -147,129 +147,131 @@
                     {% endif %}
                 </tr>
                 {% for distributionBeneficiary in distribution.distributionBeneficiaries %}
-                    <tr>
-                        <td>{{ distributionBeneficiary.beneficiary.localFamilyName }} </td>
-                        <td>{{ distributionBeneficiary.beneficiary.localGivenName }} </td>
-                        {% if not distribution.validated %}
-                            <td>
-                                {% if distributionBeneficiary.beneficiary.gender == '0' %}
-                                    Female
-                                {% elseif distributionBeneficiary.beneficiary.gender == '1' %}
-                                    Male
-                                {% endif %}
-                            </td>
-                            <td>
-                                {{ distributionBeneficiary.beneficiary.dateOfBirth | date("m/d/Y") }}
-                            </td>
-                            <td>
-                                {{ distributionBeneficiary.beneficiary.residencyStatus }}
-                            </td>
-                            <td>
-                                {% for vulnerability in distributionBeneficiary.beneficiary.vulnerabilityCriteria %}
-                                    <span> {{ vulnerability.fieldString }} </span>
-                                {% endfor %}
-                            </td>
-                        {% elseif distribution.commodities[0].modalityType.name == 'QR Code Voucher' %}
-                            <td>
-                                {% if booklets[distributionBeneficiary.id] is defined %}
-                                    {{ booklets[distributionBeneficiary.id].code }}
-                                {% else %}
-                                    None
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if booklets[distributionBeneficiary.id]  is defined %}
-                                    {% if booklets[distributionBeneficiary.id].status == 0 %}
-                                        Unassigned
-                                    {% elseif booklets[distributionBeneficiary.id].status == 1 %}
-                                        Distributed
-                                    {% elseif booklets[distributionBeneficiary.id].status == 2 %}
-                                        Used
-                                    {% elseif booklets[distributionBeneficiary.id].status == 3 %}
-                                        Deactivated
+                    {% if not distributionBeneficiary.removed %}
+                        <tr>
+                            <td>{{ distributionBeneficiary.beneficiary.localFamilyName }} </td>
+                            <td>{{ distributionBeneficiary.beneficiary.localGivenName }} </td>
+                            {% if not distribution.validated %}
+                                <td>
+                                    {% if distributionBeneficiary.beneficiary.gender == '0' %}
+                                        Female
+                                    {% elseif distributionBeneficiary.beneficiary.gender == '1' %}
+                                        Male
                                     {% endif %}
-                                {% else %}
-                                    None
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if booklets[distributionBeneficiary.id] is defined and booklets[distributionBeneficiary.id].usedAt %}
-                                    {{ booklets[distributionBeneficiary.id].usedAt | date("m/d/Y") }}
-                                {% else %}
-                                    None
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if booklets[distributionBeneficiary.id] is defined %}
-                                    {{ booklets[distributionBeneficiary.id].value }}{{ booklets[distributionBeneficiary.id].currency }}
-                                {% else %}
-                                    None
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if booklets[distributionBeneficiary.id] is defined and booklets[distributionBeneficiary.id].products|length > 0 %}
-                                    <p>
-                                        {{ booklets[distributionBeneficiary.id].products }}
-                                    </p>
-                                {% else %}
-                                    None
-                                {% endif %}
-                            </td>
-                        {% elseif distribution.commodities[0].modalityType.name == 'Mobile Money' %}
-                            <td>
-                                <p>
-                                    {% if distributionBeneficiary.beneficiary.phones|length == 0 %}
+                                </td>
+                                <td>
+                                    {{ distributionBeneficiary.beneficiary.dateOfBirth | date("m/d/Y") }}
+                                </td>
+                                <td>
+                                    {{ distributionBeneficiary.beneficiary.residencyStatus }}
+                                </td>
+                                <td>
+                                    {% for vulnerability in distributionBeneficiary.beneficiary.vulnerabilityCriteria %}
+                                        <span> {{ vulnerability.fieldString }} </span>
+                                    {% endfor %}
+                                </td>
+                            {% elseif distribution.commodities[0].modalityType.name == 'QR Code Voucher' %}
+                                <td>
+                                    {% if booklets[distributionBeneficiary.id] is defined %}
+                                        {{ booklets[distributionBeneficiary.id].code }}
+                                    {% else %}
                                         None
                                     {% endif %}
-                                    {% for phone in distributionBeneficiary.beneficiary.phones %}
-                                        {{ phone.prefix }}{{ phone.number }} <br>
-                                    {% endfor %}
-                                </p>
-                            </td>
-                            <td>
-                                {% if distributionBeneficiary.transactions|length > 0 %}
-                                    {{ distributionBeneficiary.transactions[0].id }}
-                                {% else %}
-                                    Not Yet Defined
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if distributionBeneficiary.transactions|length > 0 %}
-                                    {% if distributionBeneficiary.transactions[0].transactionStatus == 0 %}
-                                        Failed
-                                    {% elseif distributionBeneficiary.transactions[0].transactionStatus == 1 %}
-                                        Sent
-                                    {% elseif distributionBeneficiary.transactions[0].transactionStatus == 2 %}
-                                        No Phone  
+                                </td>
+                                <td>
+                                    {% if booklets[distributionBeneficiary.id]  is defined %}
+                                        {% if booklets[distributionBeneficiary.id].status == 0 %}
+                                            Unassigned
+                                        {% elseif booklets[distributionBeneficiary.id].status == 1 %}
+                                            Distributed
+                                        {% elseif booklets[distributionBeneficiary.id].status == 2 %}
+                                            Used
+                                        {% elseif booklets[distributionBeneficiary.id].status == 3 %}
+                                            Deactivated
+                                        {% endif %}
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booklets[distributionBeneficiary.id] is defined and booklets[distributionBeneficiary.id].usedAt %}
+                                        {{ booklets[distributionBeneficiary.id].usedAt | date("m/d/Y") }}
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booklets[distributionBeneficiary.id] is defined %}
+                                        {{ booklets[distributionBeneficiary.id].value }}{{ booklets[distributionBeneficiary.id].currency }}
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booklets[distributionBeneficiary.id] is defined and booklets[distributionBeneficiary.id].products|length > 0 %}
+                                        <p>
+                                            {{ booklets[distributionBeneficiary.id].products }}
+                                        </p>
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </td>
+                            {% elseif distribution.commodities[0].modalityType.name == 'Mobile Money' %}
+                                <td>
+                                    <p>
+                                        {% if distributionBeneficiary.beneficiary.phones|length == 0 %}
+                                            None
+                                        {% endif %}
+                                        {% for phone in distributionBeneficiary.beneficiary.phones %}
+                                            {{ phone.prefix }}{{ phone.number }} <br>
+                                        {% endfor %}
+                                    </p>
+                                </td>
+                                <td>
+                                    {% if distributionBeneficiary.transactions|length > 0 %}
+                                        {{ distributionBeneficiary.transactions[0].id }}
+                                    {% else %}
+                                        Not Yet Defined
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if distributionBeneficiary.transactions|length > 0 %}
+                                        {% if distributionBeneficiary.transactions[0].transactionStatus == 0 %}
+                                            Failed
+                                        {% elseif distributionBeneficiary.transactions[0].transactionStatus == 1 %}
+                                            Sent
+                                        {% elseif distributionBeneficiary.transactions[0].transactionStatus == 2 %}
+                                            No Phone  
+                                        {% else %}
+                                            Not Sent
+                                        {% endif %}
                                     {% else %}
                                         Not Sent
                                     {% endif %}
-                                {% else %}
-                                    Not Sent
-                                {% endif %}
-                            </td>
-                            <td>
-                                {{ distribution.commodities[0].value }} {{ distribution.commodities[0].unit }}
-                            </td>
-                        {% else %}
-                            <td>
-                                <p>
-                                    {% if distributionBeneficiary.generalReliefs|length == 0 or not distributionBeneficiary.generalReliefs[0].distributedAt %}
-                                        Not Distributed
-                                    {% else %}
-                                        {{ distributionBeneficiary.generalReliefs[0].distributedAt | date("m/d/Y") }}
-                                    {% endif %}
-                                </p>
-                            </td>
-                            <td>
-                                <p>
-                                    {% for commodity in distribution.commodities %}
-                                        {{ commodity.value }} {{ commodity.unit }} <br>
-                                    {% endfor %}
-                                </p>
-                            </td>
-                        {% endif %}
-                    </tr>
+                                </td>
+                                <td>
+                                    {{ distribution.commodities[0].value }} {{ distribution.commodities[0].unit }}
+                                </td>
+                            {% else %}
+                                <td>
+                                    <p>
+                                        {% if distributionBeneficiary.generalReliefs|length == 0 or not distributionBeneficiary.generalReliefs[0].distributedAt %}
+                                            Not Distributed
+                                        {% else %}
+                                            {{ distributionBeneficiary.generalReliefs[0].distributedAt | date("m/d/Y") }}
+                                        {% endif %}
+                                    </p>
+                                </td>
+                                <td>
+                                    <p>
+                                        {% for commodity in distribution.commodities %}
+                                            {{ commodity.value }} {{ commodity.unit }} <br>
+                                        {% endfor %}
+                                    </p>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endif %}
                 {% endfor %}
             </table>
         </main>
