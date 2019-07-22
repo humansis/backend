@@ -307,10 +307,10 @@ class DistributionCSVService
             }
 
             $nationalIds = [];
-            if ($beneficiaryToCreate['type national ID'] && $beneficiaryToCreate['nationalId']) {
+            if ($beneficiaryToCreate['ID Type'] && $beneficiaryToCreate['ID Number']) {
                 array_push($nationalIds, [
-                    'id_type' => $beneficiaryToCreate['type national ID'],
-                    'id_number' => strval($beneficiaryToCreate['nationalId'])
+                    'id_type' => $beneficiaryToCreate['ID Type'],
+                    'id_number' => strval($beneficiaryToCreate['ID Number'])
                 ]);
             }
 
@@ -476,10 +476,10 @@ class DistributionCSVService
             }
             $toUpdate->setNationalIds(null);
 
-            if (!empty($beneficiaryToUpdate['nationalId']) && !empty($beneficiaryToUpdate['type national ID'])) {
+            if (!empty($beneficiaryToUpdate['ID Number']) && !empty($beneficiaryToUpdate['ID Type'])) {
                 $newNationalId = new NationalId();
-                $newNationalId->setIdNumber($beneficiaryToUpdate['nationalId']);
-                $newNationalId->setIdType($beneficiaryToUpdate['type national ID']);
+                $newNationalId->setIdNumber($beneficiaryToUpdate['ID Number']);
+                $newNationalId->setIdType($beneficiaryToUpdate['ID Type']);
                 $newNationalId->setBeneficiary($toUpdate);
                 $toUpdate->addNationalId($newNationalId);
             }
