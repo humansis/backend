@@ -16,6 +16,8 @@ use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use VoucherBundle\Entity\Booklet;
+use VoucherBundle\Entity\Product;
 
 /**
  * Class DistributionService
@@ -693,22 +695,13 @@ class DistributionService
 
         if ($exportableDistribution->getCommodities()[0]->getModalityType()->getName() === 'QR Code Voucher') {
             foreach ($exportableDistribution->getDistributionBeneficiaries() as $distributionBeneficiary) {
-                if (count($distributionBeneficiary->getBooklets()) > 0) {
-                    $activatedBooklets = array_map(
-                        function($booklet) { return $booklet->getStatus() < 3 ? $booklet : false; },
-                        $distributionBeneficiary->getBooklets()->toArray()
-                    );
+                    $activatedBooklets = $this->em->getRepository(Booklet::class)->getActiveBookletsByDistributionBeneficiary($distributionBeneficiary->getId());
                     if (count($activatedBooklets) > 0) {
-                        $products = [];
-                        $productIds = [];
-                        foreach ($activatedBooklets[0]->getVouchers() as $voucher) {
-                            foreach ($voucher->getProducts() as $product) {
-                                if (!in_array($product->getId(), $productIds)) {
-                                    array_push($productIds, $product->getId());
-                                    array_push($products, $product->getName());
-                                }
-                            }
-                        }
+                        $products = $this->em->getRepository(Product::class)->getNameByBooklet($activatedBooklets[0]->getId());
+                        $products = array_map(
+                            function($product) { return $product['name']; },
+                            $products
+                        );
                         $booklet = [
                             "code" => $activatedBooklets[0]->getCode(),
                             "status" => $activatedBooklets[0]->getStatus(),
@@ -720,7 +713,6 @@ class DistributionService
                         ];
                         $booklets[$distributionBeneficiary->getId()] = $booklet;
                     }
-                }
             }
         }
 
