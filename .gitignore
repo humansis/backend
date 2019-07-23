@@ -34,3 +34,6 @@ phpcs.xml
 
 # Docker
 /docker-compose.yml
+
+#Visual Studio
+.vscode*

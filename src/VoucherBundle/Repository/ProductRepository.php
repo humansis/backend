@@ -10,4 +10,15 @@ namespace VoucherBundle\Repository;
  */
 class ProductRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getNameByBooklet(int $bookletId) {
+        $qb = $this->createQueryBuilder('p');
+        
+        $qb->leftJoin('p.vouchers', 'v')
+            ->leftJoin('v.booklet', 'b')
+            ->where('b.id = :id')
+                ->setParameter('id', $bookletId)
+            ->select('DISTINCT p.name');
+        
+        return $qb->getQuery()->getResult();
+    }
 }
