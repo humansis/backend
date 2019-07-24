@@ -470,8 +470,8 @@ class SyriaFileToTemplateMapper
             'AC' => 'Prefix phone 2',
             'AD' => 'Number phone 2',
             'AE' => 'Proxy phone 2',
-            'AF' => 'Type national ID',
-            'AG' => 'Number national ID',
+            'AF' => 'ID Type',
+            'AG' => 'ID Number',
         ];
         
         $column = self::FIRST_LETTER_NON_STATIC;

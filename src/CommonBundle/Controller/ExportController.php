@@ -41,6 +41,7 @@ class ExportController extends Controller
     public function exportAction(Request $request)
     {
         try {
+            set_time_limit(600);
             // Format of the file (csv, xls, ods, pdf)
             $type = $request->query->get('type');
             // Generate corresponding file depending on request

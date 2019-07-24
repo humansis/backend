@@ -212,8 +212,8 @@ class ExportCSVService
             "Prefix phone 2" => "",
             "Number phone 2" => '#contact+phone',
             "Proxy phone 2" => "",
-            "Type national ID" => '',
-            "Number national ID" => '',
+            "ID Type" => '',
+            "ID Number" => '',
             "  " => '',
             "" => "     -->",
             " " => 'Do not remove this line.'
@@ -237,8 +237,8 @@ class ExportCSVService
             "Prefix phone 2" => "'+855",
             "Number phone 2" => "'223543767",
             "Proxy phone 2" => "N",
-            "Type national ID" => 'IDCard',
-            "Number national ID" => '030617701',
+            "ID Type" => 'IDCard',
+            "ID Number" => '030617701',
             "  " => '[Head]',
             "" => "     -->",
             " " => 'This Example line and the Type Helper line below must not be removed.'
@@ -262,8 +262,8 @@ class ExportCSVService
             "Prefix phone 2" => "'+855",
             "Number phone 2" => "'265348764",
             "Proxy phone 2" => "Y",
-            "Type national ID" => '',
-            "Number national ID" => '',
+            "ID Type" => '',
+            "ID Number" => '',
             "  " => '[Member]',
             "" => "     -->",
             " " => "'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."
@@ -287,8 +287,8 @@ class ExportCSVService
             "Prefix phone 2" => "'+X",
             "Number phone 2" => 'Number',
             "Proxy phone 2" => "Y / N (Proxy)",
-            "Type national ID" => '"TypeAsString"',
-            "Number national ID" => 'Number',
+            "ID Type" => '"TypeAsString"',
+            "ID Number" => 'Number',
             "  " => '',
             "" => "     -->",
             " " => "'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4."

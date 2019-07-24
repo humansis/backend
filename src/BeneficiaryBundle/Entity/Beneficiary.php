@@ -727,8 +727,8 @@ class Beneficiary implements ExportableInterface
             "prefix phone 2" => $prefixphones[1],
             "phone 2" => $valuesphones[1],
             "proxy phone 2" => $proxyphones[1],
-            "type national ID" => $typenationalID,
-            'nationalId' => $valuesnationalID,
+            "ID Type" => $typenationalID,
+            "ID Number" => $valuesnationalID,
         ];
 
         foreach ($valueCountrySpecific as $key => $value) {
