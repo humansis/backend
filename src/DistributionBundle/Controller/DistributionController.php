@@ -209,7 +209,7 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Post("/distributions/{distributionId}/beneficiaries/{beneficiaryId}/delete", name="remove_one_beneficiary_in_distribution")
+     * @Rest\Post("/distributions/{distributionId}/beneficiaries/{beneficiaryId}/remove", name="remove_one_beneficiary_in_distribution")
      * @ParamConverter("distribution", options={"mapping": {"distributionId" : "id"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
      * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
@@ -590,7 +590,7 @@ class DistributionController extends Controller
     /**
      * Import beneficiaries of one distribution.
      *
-     * @Rest\Post("/import/beneficiaries/distribution/{id}", name="import_beneficiaries_distribution")
+     * @Rest\Post("/import/beneficiaries/distributions/{id}", name="import_beneficiaries_distribution")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
