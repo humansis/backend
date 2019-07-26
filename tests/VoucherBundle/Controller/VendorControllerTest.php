@@ -237,7 +237,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->request('POST', '/api/wsse/vendors/' . $vendor['id'] . '/archive');
+        $crawler = $this->request('POST', '/api/wsse/vendors/archive/' . $vendor['id']);
         $newVendorReceived = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 

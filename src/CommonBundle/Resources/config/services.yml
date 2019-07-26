@@ -31,6 +31,16 @@ services:
         public: true
         arguments:
             - "@doctrine.orm.entity_manager"
+            
+    log_service:
+        class: CommonBundle\Utils\LogService
+        public: true
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@request_validator"
+
+
+
 #######################################################################################
 ##                                     LISTENER                                      ##
 #######################################################################################

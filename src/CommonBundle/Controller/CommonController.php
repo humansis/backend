@@ -81,7 +81,7 @@ class CommonController extends Controller
     public function getLogs(Request $request)
     {        
         try {
-            $logs = $this->get('logs.logs_service')->getLogs();
+            $logs = $this->get('log_service')->getLogs();
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

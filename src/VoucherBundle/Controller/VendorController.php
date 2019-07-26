@@ -192,7 +192,7 @@ class VendorController extends Controller
     /**
      * Archive a Vendor using their id
      *
-     * @Rest\Post("/vendors/{id}/archive", name="archive_vendor")
+     * @Rest\Post("/vendors/archive/{id}", name="archive_vendor")
      * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Vendors")
