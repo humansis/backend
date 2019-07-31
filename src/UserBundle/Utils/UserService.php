@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
+use Symfony\Component\HttpClient\HttpClient;
 
 /**
  * Class UserService
@@ -509,4 +510,133 @@ class UserService
     {
         return $this->em->getRepository(User::class)->findBy(['vendor' => null], [], $limit, $offset);
     }
+
+    // /**
+    //  * @param $token
+    //  * @param $userData
+    //  * @return User
+    //  */
+    // public function addHumanitarian(string $token, $userData)
+    // {
+    //     $roles = $userData['roles'];
+    //     $httpClient = HttpClient::create([
+    //         'auth_bearer' => 'b5bd26cec1aeb6da4df3481bcb1995efab1006b8',
+    //     ]);
+    //     $response = $httpClient->request('GET', 'https://auth.staging.humanitarian.id/account.json');
+    //     $statusCode = $response->getStatusCode();
+
+    //     if ($statusCode === 200) {
+    //         $content = $response->toArray();
+    //         $email = $content['email'];
+
+    //         $user = $this->em->getRepository(User::class)->findOneByUsername($email);
+    //         if ($user instanceof User) {
+    //             throw new \Exception("Username already used.", Response::HTTP_BAD_REQUEST);
+    //         }
+
+    //         // Create a random salt and password
+    //         $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+    //         $password = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+    //         $user = new User();
+    //         $user->setSalt($salt)
+    //             ->setEmail($email)
+    //             ->setEmailCanonical($email)
+    //             ->setUsername($email)
+    //             ->setUsernameCanonical($email)
+    //             ->setEnabled(1)
+    //             ->setRoles($roles)
+    //             ->setChangePassword(false);
+
+    //         $user->setPassword($password);
+    //         $this->em->persist($user);
+
+    //         $errors = $this->setUpProjectsAndCountries($user, $userData, $roles);
+    //         if ($errors) {
+    //             return $errors;
+    //         }
+            
+    //         $this->em->flush();
+    //         return $user;
+    //     } else {
+    //         throw new \Exception("There was a problem with the humanitarian ID request"); 
+    //     }
+
+    // }
+
+    /**
+     * @param $token
+     * @return User
+     */
+    public function loginHumanitarian(string $token)
+    {
+        $httpClient = HttpClient::create([
+            'auth_bearer' => 'b5bd26cec1aeb6da4df3481bcb1995efab1006b8',
+        ]);
+        $response = $httpClient->request('GET', 'https://auth.staging.humanitarian.id/account.json');
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode === 200) {
+            $content = $response->toArray();
+            $email = $content['email'];
+
+            $user = $this->em->getRepository(User::class)->findOneByUsername($email);
+            if (!$user instanceof User) {
+               // Create a random salt and password
+                $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+                $password = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+                $user = new User();
+                $user->setSalt($salt)
+                    ->setEmail($email)
+                    ->setEmailCanonical($email)
+                    ->setUsername($email)
+                    ->setUsernameCanonical($email)
+                    ->setEnabled(0)
+                    ->setChangePassword(false);
+
+                $user->setPassword($password);
+                $this->em->persist($user);
+                $this->em->flush();
+            }
+            return $user;
+        } else {
+            throw new \Exception("There was a problem with the humanitarian ID request"); 
+        }
+
+    }
+
+    // public function setUpProjectsAndCountries(User $user, $userData, $roles) {
+    //     if (key_exists('projects', $userData)) {
+    //         foreach ($userData['projects'] as $project) {
+    //             $project = $this->em->getRepository(Project::class)->findOneById($project);
+
+    //             if ($project instanceof Project) {
+    //                 $userProject = new UserProject();
+    //                 $userProject->setRights($roles[0])
+    //                     ->setUser($user)
+    //                     ->setProject($project);
+    //                 $this->em->merge($userProject);
+    //             }
+    //         }
+    //     }
+
+    //     if (key_exists('countries', $userData)) {
+    //         foreach ($userData['countries'] as $country) {
+    //             $userCountry = new UserCountry();
+    //             $userCountry->setUser($user)
+    //                 ->setIso3($country)
+    //                 ->setRights($roles[0]);
+    //             $this->em->merge($userCountry);
+    //         }
+    //     }
+
+    //     $errors = $this->validator->validate($user);
+    //     if (count($errors) > 0) {
+    //         $errorsArray = [];
+    //         foreach ($errors as $error) {
+    //             $errorsArray[] = $error->getMessage();
+    //         }
+    //         return $errorsArray;
+    //     }
+    //     return false;
+    // }
 }

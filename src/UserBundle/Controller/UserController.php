@@ -559,4 +559,66 @@ class UserController extends Controller
 
         return new JsonResponse($attach);
     }
+
+    // /**
+    //  * Add a user via humanitarian ID
+    //  * @Rest\Post("/add-humanitarian", name="add_humanitarian")
+    //  * @Security("is_granted('ROLE_USER_MANAGEMENT_WRITE')")
+    //  *
+    //  * @SWG\Tag(name="Users")
+    //  *
+    //  * @SWG\Response(
+    //  *     response=200,
+    //  *     description="Success or not",
+    //  *     @SWG\Schema(type="boolean")
+    //  * )
+    //  *
+    //  * @return Response
+    //  */
+    // public function addHumanitarian(Request $request)
+    // {
+    //     try {
+    //         $token = $request->request->get('token');
+    //         $userData = $request->request->get('user');
+
+    //         $user = $this->get('user.user_service')->addHumanitarian($token, $userData);
+    //     } catch (\Exception $exception) {
+    //         return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+    //     }
+        
+    //     /** @var Serializer $serializer */
+    //     $serializer = $this->get('jms_serializer');
+    //     $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+    //     return new Response($userJson);
+    // }
+
+     /**
+     * Login a user via humanitarian ID
+     * @Rest\Post("/login-humanitarian", name="login_humanitarian")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @return Response
+     */
+    public function loginHumanitarian(Request $request)
+    {
+        try {
+            $token = $request->request->get('token');
+
+            $user = $this->get('user.user_service')->loginHumanitarian($token);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+        
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        return new Response($userJson);
+    }
 }
