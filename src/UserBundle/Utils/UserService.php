@@ -27,6 +27,26 @@ class UserService
         "SYR",
     ];
 
+    private $HIDEnvironments = [
+        'testing' => [
+            'front_url' => 'https://front-test.bmstaging.info/sso?origin=hid',
+            'client_id' => 'Humsis-stag',
+            'hid_url' => 'https://auth.staging.humanitarian.id'
+        ],
+        'demo' => [
+            'front_url' => 'https://demo.humansis.org/sso?origin=hid',
+            'client_id' => 'Humsis-Demo',
+            'hid_url' => 'https://auth.humanitarian.id'
+        ],
+        'prod' => [
+            'front_url' => 'https://front.bmstaging.info/sso?origin=hid',
+            'client_id' => 'Humsis-Prod',
+            'hid_url' => 'https://auth.humanitarian.id'
+        ]
+    ];
+
+    protected $humanitarianSecret;
+
     /** @var EntityManagerInterface $em */
     private $em;
 
@@ -42,8 +62,9 @@ class UserService
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
     {
+        $this->humanitarianSecret = $humanitarianSecret;
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
@@ -512,24 +533,20 @@ class UserService
     }
 
     /**
-     * @param $token
+     * @param $code
+     * @param $environment
      * @return User
      */
-    public function loginHumanitarian(string $token)
+    public function loginHumanitarian(string $code, string $environment)
     {
-        $httpClient = HttpClient::create([
-            'auth_bearer' => 'b5bd26cec1aeb6da4df3481bcb1995efab1006b8',
-        ]);
-        $response = $httpClient->request('GET', 'https://auth.staging.humanitarian.id/account.json');
-        $statusCode = $response->getStatusCode();
-
-        if ($statusCode === 200) {
-            $content = $response->toArray();
-            $email = $content['email'];
+        try {
+            $parameters = $this->HIDEnvironments[$environment];
+            $token = $this->getHIDToken($code, $parameters);
+            $email = $this->getHIDEmail($token, $parameters);
 
             $user = $this->em->getRepository(User::class)->findOneByUsername($email);
             if (!$user instanceof User) {
-               // Create a random salt and password
+                // Create a random salt and password
                 $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
                 $password = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
                 $user = new User();
@@ -546,9 +563,44 @@ class UserService
                 $this->em->flush();
             }
             return $user;
-        } else {
-            throw new \Exception("There was a problem with the humanitarian ID request"); 
+        } catch (\Exception $e) {
+            throw $e;
         }
 
+    }
+
+    public function getHIDToken(string $code, array $parameters) {
+        $httpClient = HttpClient::create();
+        
+        $response = $httpClient->request('POST', $parameters['hid_url'] . '/oauth/access_token', [
+            'body' => [
+                'grant_type' => 'authorization_code',
+                'code' => $code,
+                'redirect_uri' => 'redirect_uri=' . $parameters['front_url'],
+                'client_id' => $parameters['client_id'],
+                'client_secret' => $this->humanitarianSecret,
+                ]
+            ]
+        );
+        $statusCode = $response->getStatusCode();
+        if ($statusCode === 200) {
+            $content = $response->toArray();
+            return $content['access_token'];
+        } else {
+            throw new \Exception("There was a problem with the HID request: could not get token"); 
+        }
+    }
+
+    public function getHIDEmail(string $token, array $parameters) {
+        $httpClient = HttpClient::create([ 'auth_bearer' => $token ]);
+        $response = $httpClient->request('GET', $parameters['hid_url'] . '/account.json');
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode === 200) {
+            $content = $response->toArray();
+            return $content['email'];
+        }  else {
+            throw new \Exception("There was a problem with the HID request: could not get user email"); 
+        }
     }
 }

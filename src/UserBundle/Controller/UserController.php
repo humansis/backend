@@ -577,9 +577,10 @@ class UserController extends Controller
     public function loginHumanitarian(Request $request)
     {
         try {
-            $token = $request->request->get('token');
+            $code = $request->request->get('code');
+            $environment = $request->request->get('environment');
 
-            $user = $this->get('user.user_service')->loginHumanitarian($token);
+            $user = $this->get('user.user_service')->loginHumanitarian($code, $environment);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
