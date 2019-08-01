@@ -46,6 +46,7 @@ class UserService
     ];
 
     protected $humanitarianSecret;
+    protected $googleClient;
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -62,8 +63,9 @@ class UserService
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
     {
+        $this->googleClient = $googleClient;
         $this->humanitarianSecret = $humanitarianSecret;
         $this->em = $entityManager;
         $this->validator = $validator;
@@ -532,6 +534,22 @@ class UserService
         return $this->em->getRepository(User::class)->findBy(['vendor' => null], [], $limit, $offset);
     }
 
+     /**
+     * @param $code
+     * @return User
+     */
+    public function loginGoogle(string $token)
+    {
+        $client = new \Google_Client(['client_id' => $this->googleClient]);
+        $payload = $client->verifyIdToken($token);
+        if ($payload) {
+            $email = $payload['email'];
+            return $this->loginSSO($email);
+        } else {
+            throw new \Exception('The token could not be verified');
+        }
+    }
+
     /**
      * @param $code
      * @param $environment
@@ -543,30 +561,33 @@ class UserService
             $parameters = $this->HIDEnvironments[$environment];
             $token = $this->getHIDToken($code, $parameters);
             $email = $this->getHIDEmail($token, $parameters);
-
-            $user = $this->em->getRepository(User::class)->findOneByUsername($email);
-            if (!$user instanceof User) {
-                // Create a random salt and password
-                $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
-                $password = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
-                $user = new User();
-                $user->setSalt($salt)
-                    ->setEmail($email)
-                    ->setEmailCanonical($email)
-                    ->setUsername($email)
-                    ->setUsernameCanonical($email)
-                    ->setEnabled(0)
-                    ->setChangePassword(false);
-
-                $user->setPassword($password);
-                $this->em->persist($user);
-                $this->em->flush();
-            }
-            return $user;
+            return $this->loginSSO($email);
+            
         } catch (\Exception $e) {
             throw $e;
         }
+    }
 
+    public function loginSSO($email) {
+        $user = $this->em->getRepository(User::class)->findOneByUsername($email);
+        if (!$user instanceof User) {
+            // Create a random salt and password
+            $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+            $password = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+            $user = new User();
+            $user->setSalt($salt)
+                ->setEmail($email)
+                ->setEmailCanonical($email)
+                ->setUsername($email)
+                ->setUsernameCanonical($email)
+                ->setEnabled(0)
+                ->setChangePassword(false);
+
+            $user->setPassword($password);
+            $this->em->persist($user);
+            $this->em->flush();
+        }
+        return $user;
     }
 
     public function getHIDToken(string $code, array $parameters) {

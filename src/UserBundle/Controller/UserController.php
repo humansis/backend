@@ -590,4 +590,34 @@ class UserController extends Controller
         $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
         return new Response($userJson);
     }
+
+    /**
+     * Login a user via google
+     * @Rest\Post("/login-google", name="login_google")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @return Response
+     */
+    public function loginGoogle(Request $request)
+    {
+        try {
+            $token = $request->request->get('token');
+
+            $user = $this->get('user.user_service')->loginGoogle($token);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+        
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        return new Response($userJson);
+    }
 }
