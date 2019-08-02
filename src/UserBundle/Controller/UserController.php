@@ -620,4 +620,34 @@ class UserController extends Controller
         $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
         return new Response($userJson);
     }
+
+     /**
+     * Login a user via Linked In
+     * @Rest\Post("/login-linkedin", name="login_linkedin")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @return Response
+     */
+    public function loginLinkedIn(Request $request)
+    {
+        try {
+            $code = $request->request->get('code');
+            $environment = $request->request->get('environment');
+            $user = $this->get('user.user_service')->loginLinkedIn($code, $environment);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+        
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        return new Response($userJson);
+    }
 }

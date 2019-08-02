@@ -27,26 +27,47 @@ class UserService
         "SYR",
     ];
 
-    private $HIDEnvironments = [
-        'testing' => [
-            'front_url' => 'https://front-test.bmstaging.info/sso?origin=hid',
-            'client_id' => 'Humsis-stag',
-            'hid_url' => 'https://auth.staging.humanitarian.id'
+    private $environments = [
+        'HID' => [
+            'testing' => [
+                'front_url' => 'redirect_uri=https://front-test.bmstaging.info/sso?origin=hid',
+                'client_id' => 'Humsis-stag',
+                'provider_url' => 'https://auth.staging.humanitarian.id'
+            ],
+            'demo' => [
+                'front_url' => 'redirect_uri=https://demo.humansis.org/sso?origin=hid',
+                'client_id' => 'Humsis-Demo',
+                'provider_url' => 'https://auth.humanitarian.id'
+            ],
+            'prod' => [
+                'front_url' => 'redirect_uri=https://front.bmstaging.info/sso?origin=hid',
+                'client_id' => 'Humsis-Prod',
+                'provider_url' => 'https://auth.humanitarian.id'
+            ]
         ],
-        'demo' => [
-            'front_url' => 'https://demo.humansis.org/sso?origin=hid',
-            'client_id' => 'Humsis-Demo',
-            'hid_url' => 'https://auth.humanitarian.id'
-        ],
-        'prod' => [
-            'front_url' => 'https://front.bmstaging.info/sso?origin=hid',
-            'client_id' => 'Humsis-Prod',
-            'hid_url' => 'https://auth.humanitarian.id'
+    
+       'linkedIn' => [
+            'testing' => [
+                'front_url' => 'https://front-test.bmstaging.info/sso',
+                'client_id' => '77f3bwmwrncdfs',
+                'provider_url' => 'https://www.linkedin.com/oauth/v2/accessToken'
+            ],
+            'demo' => [
+                'front_url' => 'https://demo.humansis.org/sso',
+                'client_id' => '77f3bwmwrncdfs',
+                'provider_url' => 'https://www.linkedin.com/oauth/v2/accessToken'
+            ],
+            'prod' => [
+                'front_url' => 'https://front.bmstaging.info/sso',
+                'client_id' => '77f3bwmwrncdfs',
+                'provider_url' => 'https://www.linkedin.com/oauth/v2/accessToken'
+            ]
         ]
     ];
 
     protected $humanitarianSecret;
     protected $googleClient;
+    protected $linkedInSecret;
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -63,8 +84,9 @@ class UserService
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(string $linkedInSecret, string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
     {
+        $this->linkedInSecret = $linkedInSecret;
         $this->googleClient = $googleClient;
         $this->humanitarianSecret = $humanitarianSecret;
         $this->em = $entityManager;
@@ -535,7 +557,7 @@ class UserService
     }
 
      /**
-     * @param $code
+     * @param $token
      * @return User
      */
     public function loginGoogle(string $token)
@@ -555,10 +577,42 @@ class UserService
      * @param $environment
      * @return User
      */
+    public function loginLinkedIn(string $code, string $environment)
+    {
+        $httpClient = HttpClient::create();
+        $parameters = $this->environments['linkedIn'][$environment];
+        
+        $response = $httpClient->request('POST', $parameters['provider_url'], [
+            'body' => [
+                'grant_type' => 'authorization_code',
+                'code' => $code,
+                'redirect_uri' => $parameters['front_url'],
+                'client_id' => $parameters['client_id'],
+                'client_secret' => $this->linkedInSecret,
+            ],
+            'headers' => [
+                'Content-Type' => 'x-www-form-urlencoded',
+                'Accept' => '*/*',
+            ]
+        ]);
+
+        $statusCode = $response->getStatusCode();
+        if ($statusCode === 200) {
+            $content = $response->toArray();
+        } else {
+            throw new \Exception("There was a problem with the LinkedIn request: could not get token"); 
+        }
+    }
+
+    /**
+     * @param $code
+     * @param $environment
+     * @return User
+     */
     public function loginHumanitarian(string $code, string $environment)
     {
         try {
-            $parameters = $this->HIDEnvironments[$environment];
+            $parameters = $this->environments['HID'][$environment];
             $token = $this->getHIDToken($code, $parameters);
             $email = $this->getHIDEmail($token, $parameters);
             return $this->loginSSO($email);
@@ -593,16 +647,15 @@ class UserService
     public function getHIDToken(string $code, array $parameters) {
         $httpClient = HttpClient::create();
         
-        $response = $httpClient->request('POST', $parameters['hid_url'] . '/oauth/access_token', [
+        $response = $httpClient->request('POST', $parameters['provider_url'] . '/oauth/access_token', [
             'body' => [
                 'grant_type' => 'authorization_code',
                 'code' => $code,
-                'redirect_uri' => 'redirect_uri=' . $parameters['front_url'],
+                'redirect_uri' => $parameters['front_url'],
                 'client_id' => $parameters['client_id'],
                 'client_secret' => $this->humanitarianSecret,
-                ]
             ]
-        );
+        ]);
         $statusCode = $response->getStatusCode();
         if ($statusCode === 200) {
             $content = $response->toArray();
@@ -614,7 +667,7 @@ class UserService
 
     public function getHIDEmail(string $token, array $parameters) {
         $httpClient = HttpClient::create([ 'auth_bearer' => $token ]);
-        $response = $httpClient->request('GET', $parameters['hid_url'] . '/account.json');
+        $response = $httpClient->request('GET', $parameters['provider_url'] . '/account.json');
         $statusCode = $response->getStatusCode();
 
         if ($statusCode === 200) {
