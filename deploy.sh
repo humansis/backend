@@ -12,7 +12,7 @@ if [[ $1 == "master" ]]; then
     if [ -z `ssh-keygen -F $ec2_demo` ]; then
         ssh-keyscan -H $ec2_demo >> ~/.ssh/known_hosts
     fi
-elif [[ $1 == "dev" ]]; then
+elif [[ $1 == "dev" || $1 == "dev-humanitarian-id"]]; then
     ec2_test="ec2-52-57-90-156.eu-central-1.compute.amazonaws.com"
     if [ -z `ssh-keygen -F $ec2_test` ]; then
         ssh-keyscan -H $ec2_test >> ~/.ssh/known_hosts

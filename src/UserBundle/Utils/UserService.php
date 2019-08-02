@@ -591,7 +591,7 @@ class UserService
                 'client_secret' => $this->linkedInSecret,
             ],
             'headers' => [
-                'Content-Type' => 'x-www-form-urlencoded',
+                'Content-Type' => 'application/x-www-form-urlencoded',
                 'Accept' => '*/*',
             ]
         ]);
