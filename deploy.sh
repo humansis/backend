@@ -32,6 +32,6 @@ command="cd /var/www/html/bms_api; \
 if [[ $1 == "master" ]]; then
     ssh -i $2 ubuntu@$ec2_prod $command
     ssh -i $2 ubuntu@$ec2_demo $command
-elif [[ $1 == "dev" ]]; then
+elif [[ $1 == "dev" || $1 == 'dev-humanitarian-id' ]]; then
     ssh -i $2 ubuntu@$ec2_test $command
 fi
