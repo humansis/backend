@@ -80,4 +80,35 @@ class BeneficiaryController extends Controller
         $json = $this->get('jms_serializer')->serialize($newBeneficiary, 'json', SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true));
         return new Response($json);
     }
+
+    /**
+     * @Rest\Get("/beneficiaries/{id}", name="get_one_project", requirements={"id"="\d+"})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Beneficiaries")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="one beneficiary",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Beneficiary::class))
+     *     )
+     * )
+     *
+     * @param Beneficiary $Beneficiary
+     *
+     * @return Response
+     */
+    public function getOneAction(Beneficiary $beneficiary)
+    {
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $beneficiary,
+                'json',
+                SerializationContext::create()->setSerializeNull(true)->setGroups(['FullBeneficiary'])
+            );
+
+        return new Response($json);
+    }
 }
