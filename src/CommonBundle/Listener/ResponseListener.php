@@ -49,17 +49,17 @@ class ResponseListener
         $requestAll = $request->request->all();
 
         //Fake POST urls
-        $isFakePost = preg_match('/.+\/households\/get\/.+/', $url) ||
-            preg_match('/.+\/export/', $url) ||
-            preg_match('/.+\/location.+/', $url) || 
-            preg_match('/.+\/distributions\/criteria\/project\/[\d]\/number/', $url) || 
-            preg_match('/.+\/distributions\/beneficiaries\/project\/[\d+]/', $url) || 
-            preg_match('/.+\/indicators/', $url) || 
-            preg_match('/.+\/login.+/', $url) || 
-            preg_match('/.+\/booklets-print/', $url) ||
+        $isFakePost = preg_match('/.*\/households\/get\/.*/', $url) ||
+            preg_match('/.*\/export/', $url) ||
+            preg_match('/.*\/location\/.+/', $url) || 
+            preg_match('/.*\/distributions\/criteria\/project\/[\d]\/number/', $url) || 
+            preg_match('/.*\/distributions\/beneficiaries\/project\/[\d+]/', $url) || 
+            preg_match('/.*\/indicators/', $url) || 
+            preg_match('/.*\/login.+/', $url) || 
+            preg_match('/.*\/booklets-print/', $url) ||
             // Unused until the App is fixed to not send a request each time it syncs;
-            preg_match('/.+\/vouchers\/scanned/', $url) ||
-            preg_match('/.+\/deactivate-booklets/', $url);
+            preg_match('/.*\/vouchers\/scanned/', $url) ||
+            preg_match('/.*\/deactivate-booklets/', $url);
 
         if ($idUser && $method != 'GET' && explode('\\', $controller)[0] != "ReportingBundle" && (!$isFakePost || $method !== 'POST')) {
             $log = new Logs();

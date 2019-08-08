@@ -76,13 +76,15 @@ class BeneficiaryController extends Controller
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-
-        $json = $this->get('jms_serializer')->serialize($newBeneficiary, 'json', SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true));
+        $json = $this->get('jms_serializer')
+        ->serialize(
+                $newBeneficiary,
+                'json', SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true));
         return new Response($json);
     }
 
     /**
-     * @Rest\Get("/beneficiaries/{id}", name="get_one_project", requirements={"id"="\d+"})
+     * @Rest\Get("/beneficiaries/{id}", name="get_one_beneficiary", requirements={"id"="\d+"})
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Beneficiaries")
@@ -100,15 +102,16 @@ class BeneficiaryController extends Controller
      *
      * @return Response
      */
-    public function getOneAction(Beneficiary $beneficiary)
+    public function getOneAction(Beneficiary $Beneficiary)
     {
+        dump($Beneficiary);
         $json = $this->get('jms_serializer')
-            ->serialize(
-                $beneficiary,
-                'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(['FullBeneficiary'])
-            );
-
+        ->serialize(
+            $Beneficiary,
+            'json',
+            SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true)
+        );
+        dump($json);
         return new Response($json);
     }
 }

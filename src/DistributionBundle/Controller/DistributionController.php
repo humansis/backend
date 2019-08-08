@@ -305,7 +305,6 @@ class DistributionController extends Controller
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
             );
-
         return new Response($json);
     }
 
