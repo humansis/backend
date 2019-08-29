@@ -298,14 +298,32 @@ class DistributionService
     public function complete(DistributionData $distributionData)
     {
         if (!empty($distributionData)) {
-            $distributionData->setCompleted(1)
-                            ->setUpdatedOn(new \DateTime);
+            $distributionBeneficiaries = $distributionData->getDistributionBeneficiaries();
+            $completed = 1;
+            foreach ($distributionBeneficiaries as $distributionBeneficiary) {
+                $generalReliefs = $distributionBeneficiary->getGeneralReliefs();
+                foreach ($generalReliefs as $generalRelief) {
+                    Dump($generalRelief->getDistributedAt());
+                    if ($generalRelief->getDistributedAt() === null) {
+                        $completed = 0;
+                    }
+                }
+            }
+            Dump($completed);
+            if ($completed === 1) {
+                $distributionData->setCompleted(1)
+                                ->setUpdatedOn(new \DateTime);         
+            }
         }
 
         $this->em->persist($distributionData);
         $this->em->flush();
 
-        return "Completed";
+        if ($completed === 1) {
+            return "Completed";
+        } else {
+            return "Not completed";
+        }
     }
 
     /**
