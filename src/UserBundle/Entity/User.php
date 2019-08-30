@@ -93,6 +93,20 @@ class User extends BaseUser implements ExportableInterface
      */
     protected $language;
 
+    /**
+     * @var string
+     *
+     * @Groups({"FullUser"})
+     */
+    protected $phonePrefix;
+
+    /**
+     * @var int
+     *
+     * @Groups({"FullUser"})
+     */
+    protected $phoneNumber;
+
      /**
      * @var boolean
      * @ORM\Column(name="changePassword", type="boolean", options={"default" : 0})
@@ -281,6 +295,50 @@ class User extends BaseUser implements ExportableInterface
     public function getVendor()
     {
         return $this->vendor;
+    }
+
+    /**
+    * Get phonePrefix.
+    *
+    * @return string
+    */
+    public function getPhonePrefix()
+    {
+        return $this->phonePrefix;
+    }
+
+    /**
+    * Set phonePrefix.
+    *
+    * @param boolean $phonePrefix
+    *
+    * @return User
+    */
+    public function setPhonePrefix($phonePrefix)
+    {
+        $this->language = $phonePrefix;
+    }
+
+    /**
+    * Get phoneNumber.
+    *
+    * @return string
+    */
+    public function getPhoneNumber()
+    {
+        return $this->phoneNumber;
+    }
+
+    /**
+    * Set phoneNumber.
+    *
+    * @param boolean $phoneNumber
+    *
+    * @return User
+    */
+    public function setPhoneNumber($phoneNumber)
+    {
+        $this->language = $phoneNumber;
     }
 
     /**
