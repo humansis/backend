@@ -585,7 +585,6 @@ class DistributionService
     {
         $errorArray = array();
         $successArray = array();
-
         foreach ($griIds as $griId) {
             $gri = $this->em->getRepository(GeneralReliefItem::class)->find($griId);
 
@@ -597,30 +596,18 @@ class DistributionService
                 array_push($successArray, $gri);
             }
         }
-
-        // $distributionData = array_pop(array_reverse($griIds))->getDistributionBeneficiary()->getDistributionData();
-        // Debug($distributionData);
-        // $distributionBeneficiaries = $distributionData->getDistributionBeneficiaries();
-        // Debug($distributionBeneficiaries);
-
-        // $completed = 1;
-        // foreach ($distributionBeneficiaries as $distributionBeneficiary) {
-        //     $generalReliefs = $distributionBeneficiary->getGeneralReliefs();
-        //     Debug($generalReliefs);
-        //     foreach ($generalReliefs as $generalRelief) {
-        //         if ($generalRelief->getDistributedAt() === null) {
-        //             $completed = 0;
-        //         }
-        //     }
-        // }
-        // Debug($completed);
-        // if ($completed === 1) {
-        //     $this.complete($distributionData);
-        // }
-
         $this->em->flush();
 
-        return array($errorArray, $successArray);
+        // Checks if the distribution is completed
+        $generalReliefItem = $this->em->getRepository(GeneralReliefItem::class)->find(array_pop($griIds));
+        $distributionData = $generalReliefItem->getDistributionBeneficiary()->getDistributionData();
+        $numberIncomplete = $this->em->getRepository(GeneralReliefItem::class)->countNonDistributed($distributionData);
+
+        if ($numberIncomplete === 0) {
+            $this->complete($distributionData);
+        }
+        
+        return array($successArray, $errorArray, $numberIncomplete);
     }
     
     /**
