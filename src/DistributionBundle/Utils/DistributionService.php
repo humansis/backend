@@ -298,32 +298,14 @@ class DistributionService
     public function complete(DistributionData $distributionData)
     {
         if (!empty($distributionData)) {
-            $distributionBeneficiaries = $distributionData->getDistributionBeneficiaries();
-            $completed = 1;
-            foreach ($distributionBeneficiaries as $distributionBeneficiary) {
-                $generalReliefs = $distributionBeneficiary->getGeneralReliefs();
-                foreach ($generalReliefs as $generalRelief) {
-                    Dump($generalRelief->getDistributedAt());
-                    if ($generalRelief->getDistributedAt() === null) {
-                        $completed = 0;
-                    }
-                }
-            }
-            Dump($completed);
-            if ($completed === 1) {
                 $distributionData->setCompleted(1)
                                 ->setUpdatedOn(new \DateTime);         
-            }
         }
 
         $this->em->persist($distributionData);
         $this->em->flush();
 
-        if ($completed === 1) {
-            return "Completed";
-        } else {
-            return "Not completed";
-        }
+        return "Completed";
     }
 
     /**
@@ -616,6 +598,26 @@ class DistributionService
             }
         }
 
+        // $distributionData = array_pop(array_reverse($griIds))->getDistributionBeneficiary()->getDistributionData();
+        // Debug($distributionData);
+        // $distributionBeneficiaries = $distributionData->getDistributionBeneficiaries();
+        // Debug($distributionBeneficiaries);
+
+        // $completed = 1;
+        // foreach ($distributionBeneficiaries as $distributionBeneficiary) {
+        //     $generalReliefs = $distributionBeneficiary->getGeneralReliefs();
+        //     Debug($generalReliefs);
+        //     foreach ($generalReliefs as $generalRelief) {
+        //         if ($generalRelief->getDistributedAt() === null) {
+        //             $completed = 0;
+        //         }
+        //     }
+        // }
+        // Debug($completed);
+        // if ($completed === 1) {
+        //     $this.complete($distributionData);
+        // }
+
         $this->em->flush();
 
         return array($errorArray, $successArray);
@@ -759,4 +761,6 @@ class DistributionService
             throw new \Exception($e);
         }
     }
+
+
 }
