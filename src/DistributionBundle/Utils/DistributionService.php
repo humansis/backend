@@ -602,8 +602,8 @@ class DistributionService
         $generalReliefItem = $this->em->getRepository(GeneralReliefItem::class)->find(array_pop($griIds));
         $distributionData = $generalReliefItem->getDistributionBeneficiary()->getDistributionData();
         $numberIncomplete = $this->em->getRepository(GeneralReliefItem::class)->countNonDistributed($distributionData);
-
-        if ($numberIncomplete === 0) {
+        
+        if ($numberIncomplete === '0') {
             $this->complete($distributionData);
         }
         
