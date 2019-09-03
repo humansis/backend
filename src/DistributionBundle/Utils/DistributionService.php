@@ -298,8 +298,8 @@ class DistributionService
     public function complete(DistributionData $distributionData)
     {
         if (!empty($distributionData)) {
-            $distributionData->setCompleted(1)
-                            ->setUpdatedOn(new \DateTime);
+                $distributionData->setCompleted(1)
+                                ->setUpdatedOn(new \DateTime);         
         }
 
         $this->em->persist($distributionData);
@@ -585,7 +585,6 @@ class DistributionService
     {
         $errorArray = array();
         $successArray = array();
-
         foreach ($griIds as $griId) {
             $gri = $this->em->getRepository(GeneralReliefItem::class)->find($griId);
 
@@ -597,10 +596,18 @@ class DistributionService
                 array_push($successArray, $gri);
             }
         }
-
         $this->em->flush();
 
-        return array($errorArray, $successArray);
+        // Checks if the distribution is completed
+        $generalReliefItem = $this->em->getRepository(GeneralReliefItem::class)->find(array_pop($griIds));
+        $distributionData = $generalReliefItem->getDistributionBeneficiary()->getDistributionData();
+        $numberIncomplete = $this->em->getRepository(GeneralReliefItem::class)->countNonDistributed($distributionData);
+
+        if ($numberIncomplete === 0) {
+            $this->complete($distributionData);
+        }
+        
+        return array($successArray, $errorArray, $numberIncomplete);
     }
     
     /**
@@ -741,4 +748,6 @@ class DistributionService
             throw new \Exception($e);
         }
     }
+
+
 }
