@@ -320,4 +320,52 @@ class User extends BaseUser implements ExportableInterface
     {
         $this->changePassword = $changePassword;
     }
+
+    /**
+     * Set phonePrefix.
+     *
+     * @param string $phonePrefix
+     *
+     * @return User
+     */
+    public function setPhonePrefix($phonePrefix)
+    {
+        $this->phonePrefix = $phonePrefix;
+
+        return $this;
+    }
+
+    /**
+     * Get phonePrefix.
+     *
+     * @return string
+     */
+    public function getPhonePrefix()
+    {
+        return $this->phonePrefix;
+    }
+
+    /**
+     * Set phoneNumber.
+     *
+     * @param int $phoneNumber
+     *
+     * @return User
+     */
+    public function setPhoneNumber($phoneNumber)
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    /**
+     * Get phoneNumber.
+     *
+     * @return int
+     */
+    public function getPhoneNumber()
+    {
+        return $this->phoneNumber;
+    }
 }

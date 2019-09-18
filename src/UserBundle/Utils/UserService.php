@@ -91,6 +91,17 @@ class UserService
             $user->setPassword($userData['password']);
         }
 
+        if (!empty($userData['change_password'])) {
+            $user->setChangePassword($userData['password']);
+        }
+        
+        if (!empty($userData['phone_prefix'])) {
+            $user->setPhonePrefix($userData['phone_prefix']);
+        }
+
+        if (!empty($userData['phone_number'])) {
+            $user->setPhoneNumber($userData['phone_number']);
+        }
         $this->em->persist($user);
 
         $this->delete($user, false);
