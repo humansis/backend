@@ -93,6 +93,22 @@ class User extends BaseUser implements ExportableInterface
      */
     protected $language;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="phonePrefix", type="string")
+     * @Groups({"FullUser"})
+     */
+    protected $phonePrefix;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="phoneNumber", type="integer")
+     * @Groups({"FullUser"})
+     */
+    protected $phoneNumber;
+
      /**
      * @var boolean
      * @ORM\Column(name="changePassword", type="boolean", options={"default" : 0})
