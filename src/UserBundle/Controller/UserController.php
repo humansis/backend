@@ -150,7 +150,7 @@ class UserController extends Controller
     }
 
     /**
-     * Get user's salt
+     * Initialize user
      *
      * @Rest\Get("/initialize/{username}")
      *
@@ -451,8 +451,6 @@ class UserController extends Controller
         $json = $this->get('jms_serializer')->serialize($userUpdated, 'json', SerializationContext::create()->setGroups(['FullUser']));
         return new Response($json);
     }
-
-
 
     /**
      * Change the password of user {id}. Must send oldPassword and newPassword

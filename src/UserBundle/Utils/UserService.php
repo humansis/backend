@@ -90,18 +90,23 @@ class UserService
         if (!empty($userData['password'])) {
             $user->setPassword($userData['password']);
         }
-
-        if (!empty($userData['change_password'])) {
-            $user->setChangePassword($userData['password']);
-        }
         
         if (!empty($userData['phone_prefix'])) {
             $user->setPhonePrefix($userData['phone_prefix']);
         }
-
+        
         if (!empty($userData['phone_number'])) {
             $user->setPhoneNumber($userData['phone_number']);
         }
+
+        if (!empty($userData['change_password'])) {
+            $user->setChangePassword($userData['change_password']);
+        }
+
+        if (!empty($userData['two_factor_authentication'])) {
+            $user->setTwoFactorAuthentication($userData['two_factor_authentication']);
+        }
+        
         $this->em->persist($user);
 
         $this->delete($user, false);
@@ -156,6 +161,10 @@ class UserService
             ->setSalt($salt)
             ->setPassword("")
             ->setChangePassword(0);
+
+        $user->setPhonePrefix("")
+            ->setPhoneNumber(0)
+            ->setTwoFactorAuthentication(0);
 
         $this->em->persist($user);
 
@@ -272,6 +281,10 @@ class UserService
             ->setEnabled(1)
             ->setRoles($roles)
             ->setChangePassword($userData['change_password']);
+        
+        $user->setPhonePrefix($userData['phone_prefix'])
+            ->setPhoneNumber($userData['phone_number'])
+            ->setTwoFactorAuthentication($userData['two_factor_authentication']);
         
         $user->setPassword($userData['password']);
 
@@ -501,6 +514,12 @@ class UserService
         fclose($fp);
     }
 
+    /**
+     * Update user language
+     * @param User $user
+     * @param  string $language
+     * @return void
+     */
     public function updateLanguage(User $user, string $language)
     {
         $user->setLanguage($language);
