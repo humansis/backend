@@ -57,11 +57,13 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('salt', $return);
 
         $body = [
-            "username" => $this->username,
-            "email" => $this->username,
-            "roles" => ["ROLE_ADMIN"],
-            "password" => "PSWUNITTEST",
+            'username' => $this->username,
+            'email' => $this->username,
+            'roles' => ['ROLE_ADMIN'],
+            'password' => 'PSWUNITTEST',
             'salt' => $return['salt'],
+            'phonePrefix' => '+34',
+            'phoneNumber' => '675383940',
             'change_password' => true,
         ];
 
