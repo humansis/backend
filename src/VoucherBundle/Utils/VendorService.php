@@ -77,9 +77,6 @@ class VendorService
                     'password' => $vendorData['password'],
                     'salt' => $vendorData['salt'],
                     'change_password' => false,
-                    "phone_prefix" => '+33',
-                    "phone_number" => '635343434',
-                    "two_factor_authentication" => 0
                 ]
             );
 
