@@ -79,7 +79,6 @@ class VendorService
                     'change_password' => false,
                     'phone_prefix' => '+34',
                     'phone_number' => '675676767',
-                    'change_password' => true,
                     'two_factor_authentication' => false
                 ]
             );
