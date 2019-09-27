@@ -319,7 +319,7 @@ class ProjectService
     private function checkIfAllDistributionClosed(array $distributionData)
     {
         foreach ($distributionData as $distributionDatum) {
-            if (!$distributionDatum->getArchived() && $distributionDatum->getDateDistribution() > (new DateTime('now'))) {
+            if (!$distributionDatum->getArchived() && !$distributionDatum->getCompleted()) {
                 return false;
             }
         }

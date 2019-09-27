@@ -2,6 +2,8 @@
 
 namespace DistributionBundle\Repository;
 
+use DistributionBundle\Entity\DistributionData;
+
 /**
  * GeneralReliefItemRepository
  *
@@ -10,4 +12,16 @@ namespace DistributionBundle\Repository;
  */
 class GeneralReliefItemRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function countNonDistributed(DistributionData $distributionData)
+    {
+        $qb = $this->createQueryBuilder("gri");
+        $q = $qb->select("COUNT(DISTINCT gri)")
+                ->leftJoin("gri.distributionBeneficiary", "db")
+                ->leftJoin("db.distributionData", "dd")
+                ->where("dd = :distribution")
+                ->setParameter("distribution", $distributionData)
+                ->andWhere("gri.distributedAt is NULL");
+        
+        return $q->getQuery()->getSingleScalarResult();
+    }
 }

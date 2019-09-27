@@ -42,7 +42,7 @@ class WsseListener implements ListenerInterface
             return;
         } catch (AuthenticationException $failed) {
             // ... you might log something here
-
+            dump($failed);
             // To deny the authentication clear the token. This will redirect to the login page.
             // Make sure to only clear your token, not those of other authentication listeners.
             // $token = $this->tokenStorage->getToken();

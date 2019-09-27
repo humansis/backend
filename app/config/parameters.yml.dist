@@ -18,3 +18,6 @@ parameters:
     aws_secret_access_key: %env(AWS_SECRET_KEY)%
     aws_s3_region: eu-central-1
     aws_s3_bucket_name: files-testing.bmstaging.info
+    humanitarian_secret: %env(HID_SECRET)%
+    google_client: %env(GOOGLE_CLIENT)%
+    linked_in_secret: %env(LINKEDIN_SECRET)%
