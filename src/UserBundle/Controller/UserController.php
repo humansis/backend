@@ -245,7 +245,7 @@ class UserController extends Controller
             );
             return new Response($userJson);
         } catch (\Exception $exception) {
-            $this->get('user.user_service')->deleteByUsername($user['username']);
+            $this->get('user.user_service')->deleteByUsername($userData['username']);
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

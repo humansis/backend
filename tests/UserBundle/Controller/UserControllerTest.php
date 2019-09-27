@@ -174,10 +174,9 @@ class UserControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('roles', $user);
             $this->assertArrayHasKey('countries', $user);
             $this->assertArrayHasKey('projects', $user);
-            $this->assertArrayHasKey('phone_prefix', $users);
-            $this->assertArrayHasKey('phone_number', $users);
-            $this->assertArrayHasKey('two_factor_authentication', $users);
-            
+            $this->assertArrayHasKey('phone_prefix', $user);
+            $this->assertArrayHasKey('phone_number', $user);
+            $this->assertArrayHasKey('two_factor_authentication', $user);
         } else {
             $this->markTestIncomplete("You currently don't have any user in your database.");
         }

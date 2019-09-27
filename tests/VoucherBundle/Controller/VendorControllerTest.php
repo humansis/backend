@@ -69,7 +69,7 @@ class VendorControllerTest extends BMSServiceTestCase
             ],
             "phone_prefix" => '+33',
             "phone_number" => '635343434',
-            'two_factor_authentication' => false
+            "two_factor_authentication" => 0
         ];
 
         // Fake connection with a token for the user tester (ADMIN)
@@ -204,6 +204,8 @@ class VendorControllerTest extends BMSServiceTestCase
         $addressNumber = '32';
         $addressPostcode = '28500';
         $password = 'PSWUNITTEST';
+        $phonePrefix = '+33';
+        $phoneNumber = '655545454';
         $body = [
             'address_number' => $addressNumber,
             'address_street' => $addressStreet,
@@ -216,9 +218,8 @@ class VendorControllerTest extends BMSServiceTestCase
                 "adm4" => 4,
                 "country_iso3" => "KHM",
             ],
-            "phone_prefix" => '+33',
-            "phone_number" => '635343434',
-            'two_factor_authentication' => false
+            "phone_prefix" => $phonePrefix,
+            "phone_number" => $phoneNumber,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
