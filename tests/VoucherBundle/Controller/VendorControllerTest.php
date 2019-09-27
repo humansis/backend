@@ -67,6 +67,9 @@ class VendorControllerTest extends BMSServiceTestCase
                 "adm4"=> 1,
                 "country_iso3"=> "KHM"
             ],
+            "phone_prefix" => '+33',
+            "phone_number" => '635343434',
+            'two_factor_authentication' => false
         ];
 
         // Fake connection with a token for the user tester (ADMIN)
@@ -85,6 +88,9 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('user', $vendor);
         $this->assertArrayHasKey('location', $vendor);
         $this->assertArrayHasKey('username', $vendor['user']);
+        $this->assertArrayHasKey('phone_prefix', $vendor);
+        $this->assertArrayHasKey('phone_number', $vendor);
+        $this->assertArrayHasKey('two_factor_authentication', $vendor);
         $this->assertSame($vendor['user']['username'], $this->username);
 
         return $vendor;
@@ -145,6 +151,9 @@ class VendorControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('address_street', $vendor);
             $this->assertArrayHasKey('address_number', $vendor);
             $this->assertArrayHasKey('address_postcode', $vendor);
+            $this->assertArrayHasKey('phone_prefix', $vendor);
+            $this->assertArrayHasKey('phone_number', $vendor);
+            $this->assertArrayHasKey('two_factor_authentication', $vendor);
         } else {
             $this->markTestIncomplete("You currently don't have any vendors in your database.");
         }
@@ -175,6 +184,9 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('address_street', $vendor);
         $this->assertArrayHasKey('address_number', $vendor);
         $this->assertArrayHasKey('address_postcode', $vendor);
+        $this->assertArrayHasKey('phone_prefix', $vendor);
+        $this->assertArrayHasKey('phone_number', $vendor);
+        $this->assertArrayHasKey('two_factor_authentication', $vendor);
     }
 
 
@@ -204,6 +216,9 @@ class VendorControllerTest extends BMSServiceTestCase
                 "adm4" => 4,
                 "country_iso3" => "KHM",
             ],
+            "phone_prefix" => '+33',
+            "phone_number" => '635343434',
+            'two_factor_authentication' => false
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);

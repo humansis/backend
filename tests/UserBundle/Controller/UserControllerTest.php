@@ -62,9 +62,10 @@ class UserControllerTest extends BMSServiceTestCase
             'roles' => ['ROLE_ADMIN'],
             'password' => 'PSWUNITTEST',
             'salt' => $return['salt'],
-            'phonePrefix' => '+34',
-            'phoneNumber' => '675383940',
+            'phone_prefix' => '+34',
+            'phone_number' => '675676767',
             'change_password' => true,
+            'two_factor_authentication' => false
         ];
 
         // Fake connection with a token for the user tester (ADMIN)
@@ -81,6 +82,9 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $user);
         $this->assertArrayHasKey('username', $user);
         $this->assertArrayHasKey('email', $user);
+        $this->assertArrayHasKey('phone_prefix', $user);
+        $this->assertArrayHasKey('phone_number', $user);
+        $this->assertArrayHasKey('two_factor_authentication', $user);
         $this->assertSame($user['email'], $this->username);
 
         return $user;
@@ -140,6 +144,9 @@ class UserControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('roles', $users);
             $this->assertArrayHasKey('countries', $users);
             $this->assertArrayHasKey('projects', $users);
+            $this->assertArrayHasKey('phone_prefix', $users);
+            $this->assertArrayHasKey('phone_number', $users);
+            $this->assertArrayHasKey('two_factor_authentication', $users);
         } else {
             $this->markTestIncomplete("You currently don't have any user in your database.");
         }
@@ -167,6 +174,10 @@ class UserControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('roles', $user);
             $this->assertArrayHasKey('countries', $user);
             $this->assertArrayHasKey('projects', $user);
+            $this->assertArrayHasKey('phone_prefix', $users);
+            $this->assertArrayHasKey('phone_number', $users);
+            $this->assertArrayHasKey('two_factor_authentication', $users);
+            
         } else {
             $this->markTestIncomplete("You currently don't have any user in your database.");
         }
