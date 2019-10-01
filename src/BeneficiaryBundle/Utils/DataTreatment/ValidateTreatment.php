@@ -41,10 +41,12 @@ class ValidateTreatment extends AbstractTreatment
         foreach ($householdsToCreate as $index => $household) {
             $createdHouseholds[] = $this->householdService->createOrEdit($household['new'], [$project], null, false);
 
-            if ($index !== 0 && $index % 300 === 0) {
+            if (is_int($index) && $index !== 0 && $index % 300 === 0) {
                 $this->em->flush();
             }
         }
+
+        $this->em->flush();
 
         return $createdHouseholds;
     }
@@ -92,12 +94,14 @@ class ValidateTreatment extends AbstractTreatment
             }
 
             // Flush every N modifications
-            if ($index !== 0 && $index % 300 === 0) {
+            if (is_int($index) && $index !== 0 && $index % 300 === 0) {
                 $this->em->flush();
             }
 
             $householdsUpdated[] = $household;
         }
+
+        $this->em->flush();
 
         return $householdsUpdated;
     }
