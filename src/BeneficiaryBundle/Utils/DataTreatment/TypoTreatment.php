@@ -34,16 +34,6 @@ class TypoTreatment extends AbstractTreatment
     {
 
         foreach ($householdsArray as $index => $householdArray) {
-            // Get old household
-//            $oldHousehold = $this->em->getRepository(Household::class)->find($householdArray['id_old']);
-//            $oldHousehold = json_decode(
-//                $this->container->get('jms_serializer')->serialize(
-//                        $oldHousehold,
-//                        'json',
-//                        SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
-//                    ),
-//                true
-//            );
 
             // If state is equal to 0, keep the old household
             if ($householdArray['state'] === 0) {
