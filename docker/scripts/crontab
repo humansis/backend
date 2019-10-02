@@ -1,1 +1,2 @@
-00 12 * * * cron-script
+10 0 * * 0 symfony /usr/bin/cron-script
+
