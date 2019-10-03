@@ -52,8 +52,8 @@ class ResponseListener
         $isFakePost = preg_match('/.*\/households\/get\/.*/', $url) ||
             preg_match('/.*\/export/', $url) ||
             preg_match('/.*\/location\/.+/', $url) || 
-            preg_match('/.*\/distributions\/criteria\/project\/[\d]\/number/', $url) || 
-            preg_match('/.*\/distributions\/beneficiaries\/project\/[\d+]/', $url) || 
+            preg_match('/.*\/distributions\/criteria\/project\/\d+\/number/', $url) || 
+            preg_match('/.*\/distributions\/beneficiaries\/project\/\d+/', $url) || 
             preg_match('/.*\/indicators/', $url) || 
             preg_match('/.*\/login.+/', $url) || 
             preg_match('/.*\/booklets-print/', $url) ||
