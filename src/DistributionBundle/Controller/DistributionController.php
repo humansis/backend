@@ -138,7 +138,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function addAction(Request $request)
+    public function createAction(Request $request)
     {
         $distributionArray = $request->request->all();
         $threshold = $distributionArray['threshold'];
@@ -453,7 +453,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function archivedAction(DistributionData $distribution)
+    public function archiveAction(DistributionData $distribution)
     {
         try {
             $archivedDistribution = $this->get('distribution.distribution_service')
@@ -489,7 +489,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function completedAction(DistributionData $distribution)
+    public function completeAction(DistributionData $distribution)
     {
         try {
             $completedDistribution = $this->get('distribution.distribution_service')
@@ -622,7 +622,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function importAction(Request $request, DistributionData $distributionData)
+    public function importBeneficiariesAction(Request $request, DistributionData $distributionData)
     {
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');

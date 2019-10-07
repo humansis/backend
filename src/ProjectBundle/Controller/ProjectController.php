@@ -104,7 +104,7 @@ class ProjectController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function addAction(Request $request)
+    public function createAction(Request $request)
     {
         $projectArray = $request->request->all();
         $country = $projectArray['__country'];

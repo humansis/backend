@@ -52,7 +52,7 @@ class BookletController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createBookletAction(Request $request)
+    public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -280,7 +280,7 @@ class BookletController extends Controller
      *
      * @return Response
      */
-    public function deactivateBooklets(Request $request)
+    public function deactivateBookletsAction(Request $request)
     {
         try {
             $data = $request->request->all();

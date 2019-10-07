@@ -81,6 +81,7 @@ class Logs
      * @var string
      *
      * @ORM\Column(name="controller", type="string", length=255)
+     * @Groups({"FullLogs"})
      */
     private $controller;
 

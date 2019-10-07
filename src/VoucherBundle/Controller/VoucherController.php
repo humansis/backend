@@ -50,7 +50,7 @@ class VoucherController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createVoucherAction(Request $request)
+    public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -162,7 +162,7 @@ class VoucherController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function scannedVouchersAction(Request $request)
+    public function scanAction(Request $request)
     {
         $vouchersData = $request->request->all();
         unset($vouchersData['__country']);
@@ -225,7 +225,7 @@ class VoucherController extends Controller
      * @param Booklet $booklet
      * @return Response
      */
-    public function deleteBatchVouchersAction(Booklet $booklet)
+    public function deleteBatchAction(Booklet $booklet)
     {
         try {
             $isSuccess = $this->get('voucher.voucher_service')->deleteBatchVouchers($booklet);

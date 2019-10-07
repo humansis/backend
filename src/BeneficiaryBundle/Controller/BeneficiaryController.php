@@ -27,7 +27,7 @@ class BeneficiaryController extends Controller
      *
      * @return Response
      */
-    public function getAllVulnerabilityCriteria()
+    public function getAllVulnerabilityCriteriaAction()
     {
         $vulnerabilityCriteria = $this->get('beneficiary.beneficiary_service')->getAllVulnerabilityCriteria();
         $json = $this->get('jms_serializer')
