@@ -434,7 +434,7 @@ class DistributionController extends Controller
     /**
      * Archive a distribution.
      *
-     * @Rest\Post("/distributions/archive/{id}", name="archived_project")
+     * @Rest\Post("/distributions/{id}/archive", name="archived_project")
      * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Distributions")
@@ -470,7 +470,7 @@ class DistributionController extends Controller
      /**
      * Complete a distribution.
      *
-     * @Rest\Post("/distributions/complete/{id}", name="completed_project")
+     * @Rest\Post("/distributions/{id}/complete", name="completed_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")

@@ -419,7 +419,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('POST', '/api/wsse/distributions/archive/'. $distribution['id']);
+        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] . '/archive');
         $archive = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
