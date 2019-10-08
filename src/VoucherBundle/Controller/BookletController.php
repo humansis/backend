@@ -360,7 +360,7 @@ class BookletController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function updatePasswordAction(Request $request)
+    public function postPasswordAction(Request $request)
     {
         $password = $request->request->get('password');
         $code = $request->request->get('code');

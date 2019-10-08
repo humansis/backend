@@ -444,7 +444,7 @@ class UserController extends Controller
      * @param User $user
      * @return Response
      */
-    public function updateLanguageAction(Request $request, User $user)
+    public function postLanguageAction(Request $request, User $user)
     {
         $language = $request->request->get('language');
         $userUpdated = $this->get('user.user_service')->updateLanguage($user, $language);
