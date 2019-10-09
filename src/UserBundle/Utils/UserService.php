@@ -44,30 +44,11 @@ class UserService
                 'client_id' => 'Humsis-Prod',
                 'provider_url' => 'https://auth.humanitarian.id'
             ]
-        ],
-    
-       'linkedIn' => [
-            'testing' => [
-                'front_url' => 'https://front-test.bmstaging.info/sso',
-                'client_id' => '77f3bwmwrncdfs',
-                'provider_url' => 'https://www.linkedin.com/oauth/v2/accessToken'
-            ],
-            'demo' => [
-                'front_url' => 'https://demo.humansis.org/sso',
-                'client_id' => '77f3bwmwrncdfs',
-                'provider_url' => 'https://www.linkedin.com/oauth/v2/accessToken'
-            ],
-            'prod' => [
-                'front_url' => 'https://front.bmstaging.info/sso',
-                'client_id' => '77f3bwmwrncdfs',
-                'provider_url' => 'https://www.linkedin.com/oauth/v2/accessToken'
-            ]
         ]
     ];
 
     protected $humanitarianSecret;
     protected $googleClient;
-    protected $linkedInSecret;
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -84,9 +65,8 @@ class UserService
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(string $linkedInSecret, string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
     {
-        $this->linkedInSecret = $linkedInSecret;
         $this->googleClient = $googleClient;
         $this->humanitarianSecret = $humanitarianSecret;
         $this->em = $entityManager;
@@ -148,13 +128,9 @@ class UserService
         if (!empty($userData['change_password'])) {
             $user->setChangePassword($userData['change_password']);
         }
-
-        if (!empty($userData['two_factor_authentication'])) {
-            $user->setTwoFactorAuthentication($userData['two_factor_authentication']);
-        }
-        
+        $user->setTwoFactorAuthentication($userData['two_factor_authentication']);
         $this->em->persist($user);
-
+        
         $this->delete($user, false);
         
         if (key_exists('projects', $userData)) {
@@ -182,7 +158,6 @@ class UserService
         }
 
         $this->em->flush();
-
         return $user;
     }
 

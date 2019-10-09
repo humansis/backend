@@ -396,5 +396,7 @@ class User extends BaseUser implements ExportableInterface
     public function setTwoFactorAuthentication($twoFactorAuthentication)
     {
         $this->twoFactorAuthentication = $twoFactorAuthentication;
+
+        return $this;
     }
 }
