@@ -15,7 +15,7 @@ final class Version20190919133551 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE user CHANGE phonePrefix phonePrefix VARCHAR(255) DEFAULT \'0\', CHANGE phoneNumber phoneNumber INT DEFAULT 0, CHANGE twoFactorAuthentication twoFactorAuthentication TINYINT(1) DEFAULT \'0\'');
+        $this->addSql('ALTER TABLE user ADD phonePrefix VARCHAR(255) DEFAULT \'0\', ADD phoneNumber INT DEFAULT 0, ADD twoFactorAuthentication TINYINT(1) DEFAULT \'0\'');
     }
 
     public function down(Schema $schema) : void
@@ -23,6 +23,6 @@ final class Version20190919133551 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE `user` CHANGE phonePrefix phonePrefix VARCHAR(10) DEFAULT \'0\' COLLATE utf8_unicode_ci, CHANGE phoneNumber phoneNumber INT DEFAULT 0');
+        $this->addSql('ALTER TABLE `user` DROP phonePrefix, DROP phoneNumber, DROP twoFactorAuthentication');
     }
 }

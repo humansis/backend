@@ -117,18 +117,20 @@ class UserService
             $user->setPassword($userData['password']);
         }
         
-        if (!empty($userData['phone_prefix'])) {
+        if (key_exists('phone_prefix', $userData)) {
             $user->setPhonePrefix($userData['phone_prefix']);
         }
         
-        if (!empty($userData['phone_number'])) {
+        if (key_exists('phone_number', $userData)) {
             $user->setPhoneNumber($userData['phone_number']);
         }
 
-        if (!empty($userData['change_password'])) {
+        if (key_exists('change_password', $userData)) {
             $user->setChangePassword($userData['change_password']);
         }
-        $user->setTwoFactorAuthentication($userData['two_factor_authentication']);
+        if (key_exists('two_factor_authentication', $userData)) {
+            $user->setTwoFactorAuthentication($userData['two_factor_authentication']);
+        }
         $this->em->persist($user);
         
         $this->delete($user, false);

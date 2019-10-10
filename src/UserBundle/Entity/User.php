@@ -117,7 +117,7 @@ class User extends BaseUser implements ExportableInterface
     protected $changePassword;
 
     /**
-     * @var booleantwoFactorAuthentication TINYINT(1) DEFAULT \'0\' NOT NULL'
+     * @var boolean
      * @ORM\Column(name="twoFactorAuthentication", type="boolean", options={"default" : 0})
      * @Groups({"FullUser"})
      */
@@ -396,7 +396,5 @@ class User extends BaseUser implements ExportableInterface
     public function setTwoFactorAuthentication($twoFactorAuthentication)
     {
         $this->twoFactorAuthentication = $twoFactorAuthentication;
-
-        return $this;
     }
 }
