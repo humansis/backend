@@ -440,7 +440,7 @@ class DataFillersProject
                 foreach ($results as $result) {
                     $new_value = new ReportingValue();
                     $new_value->setValue($result['value']/$result['target']*100);
-                    $new_value->setUnity('% beneficiaries');
+                    $new_value->setUnity('percentage of beneficiaries');
                     $new_value->setCreationDate(new \DateTime());
 
                     $this->em->persist($new_value);
