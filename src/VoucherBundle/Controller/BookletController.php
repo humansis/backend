@@ -384,8 +384,8 @@ class BookletController extends Controller
      * @Rest\Post("/booklets/assign/{distributionId}/{beneficiaryId}", name="assign_booklet")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
-     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      * @ParamConverter("distributionData", options={"mapping": {"distributionId": "id"}})
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -400,12 +400,12 @@ class BookletController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      */
-    public function assignAction(Request $request, Beneficiary $beneficiary, DistributionData $distributionData)
+    public function assignAction(Request $request, DistributionData $distributionData, Beneficiary $beneficiary)
     {
         $code = $request->request->get('code');
         $booklet = $this->get('voucher.booklet_service')->getOne($code);
         try {
-            $return = $this->get('voucher.booklet_service')->assign($booklet, $beneficiary, $distributionData);
+            $return = $this->get('voucher.booklet_service')->assign($booklet, $distributionData, $beneficiary);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
