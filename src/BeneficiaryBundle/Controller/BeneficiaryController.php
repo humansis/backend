@@ -104,14 +104,12 @@ class BeneficiaryController extends Controller
      */
     public function getOneAction(Beneficiary $Beneficiary)
     {
-        dump($Beneficiary);
         $json = $this->get('jms_serializer')
         ->serialize(
             $Beneficiary,
             'json',
             SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true)
         );
-        dump($json);
         return new Response($json);
     }
 }
