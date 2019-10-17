@@ -52,7 +52,7 @@ class BookletController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createBookletAction(Request $request)
+    public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -280,7 +280,7 @@ class BookletController extends Controller
      *
      * @return Response
      */
-    public function deactivateBooklets(Request $request)
+    public function deactivateBookletsAction(Request $request)
     {
         try {
             $data = $request->request->all();
@@ -360,7 +360,7 @@ class BookletController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function updatePasswordAction(Request $request)
+    public function postPasswordAction(Request $request)
     {
         $password = $request->request->get('password');
         $code = $request->request->get('code');
@@ -381,11 +381,11 @@ class BookletController extends Controller
 
     /**
      * Assign the booklet to a specific beneficiary
-     * @Rest\Post("/booklets/assign/{beneficiaryId}/{distributionId}", name="assign_booklet")
+     * @Rest\Post("/booklets/assign/{distributionId}/{beneficiaryId}", name="assign_booklet")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
-     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      * @ParamConverter("distributionData", options={"mapping": {"distributionId": "id"}})
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -400,12 +400,12 @@ class BookletController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      */
-    public function assignAction(Request $request, Beneficiary $beneficiary, DistributionData $distributionData)
+    public function assignAction(Request $request, DistributionData $distributionData, Beneficiary $beneficiary)
     {
         $code = $request->request->get('code');
         $booklet = $this->get('voucher.booklet_service')->getOne($code);
         try {
-            $return = $this->get('voucher.booklet_service')->assign($booklet, $beneficiary, $distributionData);
+            $return = $this->get('voucher.booklet_service')->assign($booklet, $distributionData, $beneficiary);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

@@ -138,7 +138,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function addAction(Request $request)
+    public function createAction(Request $request)
     {
         $distributionArray = $request->request->all();
         $threshold = $distributionArray['threshold'];
@@ -209,7 +209,7 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Post("/distributions/{distributionId}/beneficiaries/{beneficiaryId}/delete", name="remove_one_beneficiary_in_distribution")
+     * @Rest\Post("/distributions/{distributionId}/beneficiaries/{beneficiaryId}/remove", name="remove_one_beneficiary_in_distribution")
      * @ParamConverter("distribution", options={"mapping": {"distributionId" : "id"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
      * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
@@ -305,7 +305,6 @@ class DistributionController extends Controller
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
             );
-
         return new Response($json);
     }
 
@@ -435,7 +434,7 @@ class DistributionController extends Controller
     /**
      * Archive a distribution.
      *
-     * @Rest\Post("/distributions/archive/{id}", name="archived_project")
+     * @Rest\Post("/distributions/{id}/archive", name="archived_project")
      * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Distributions")
@@ -454,7 +453,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function archivedAction(DistributionData $distribution)
+    public function archiveAction(DistributionData $distribution)
     {
         try {
             $archivedDistribution = $this->get('distribution.distribution_service')
@@ -471,7 +470,7 @@ class DistributionController extends Controller
      /**
      * Complete a distribution.
      *
-     * @Rest\Post("/distributions/complete/{id}", name="completed_project")
+     * @Rest\Post("/distributions/{id}/complete", name="completed_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
@@ -490,7 +489,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function completedAction(DistributionData $distribution)
+    public function completeAction(DistributionData $distribution)
     {
         try {
             $completedDistribution = $this->get('distribution.distribution_service')
@@ -590,7 +589,7 @@ class DistributionController extends Controller
     /**
      * Import beneficiaries of one distribution.
      *
-     * @Rest\Post("/import/beneficiaries/distribution/{id}", name="import_beneficiaries_distribution")
+     * @Rest\Post("/import/beneficiaries/distributions/{id}", name="import_beneficiaries_distribution")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
@@ -623,7 +622,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function importAction(Request $request, DistributionData $distributionData)
+    public function importBeneficiariesAction(Request $request, DistributionData $distributionData)
     {
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');

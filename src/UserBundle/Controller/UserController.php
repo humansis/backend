@@ -228,7 +228,7 @@ class UserController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function addAction(Request $request)
+    public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -444,7 +444,7 @@ class UserController extends Controller
      * @param User $user
      * @return Response
      */
-    public function updateLanguage(Request $request, User $user)
+    public function postLanguageAction(Request $request, User $user)
     {
         $language = $request->request->get('language');
         $userUpdated = $this->get('user.user_service')->updateLanguage($user, $language);
