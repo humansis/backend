@@ -597,7 +597,7 @@ class UserController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Success or not",
+     *     description="Successful or not",
      *     @SWG\Schema(type="boolean")
      * )
      *
