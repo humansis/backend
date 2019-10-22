@@ -570,12 +570,16 @@ class UserService
     public function loginGoogle(string $token)
     {
         $client = new \Google_Client(['client_id' => $this->googleClient]);
-        $payload = $client->verifyIdToken($token);
-        if ($payload) {
-            $email = $payload['email'];
-            return $this->loginSSO($email);
+        if ($client) {
+            $payload = $client->verifyIdToken($token);
+            if ($payload) {
+                $email = $payload['email'];
+                return $this->loginSSO($email);
+            } else {
+                throw new \Exception('The token could not be verified');
+            }
         } else {
-            throw new \Exception('The token could not be verified');
+            throw new \Exception('The client is not working properly');
         }
     }
 
