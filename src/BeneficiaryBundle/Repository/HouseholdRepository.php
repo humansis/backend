@@ -161,6 +161,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $q = $qb->leftJoin("hh.beneficiaries", "b")
                 ->leftJoin("hh.projects", "p")
                 ->leftJoin("b.vulnerabilityCriteria", "vb")
+                ->leftJoin("b.nationalIds", "ni")
                 ->leftJoin("b.referral", "r")
                 ->leftJoin("hh.beneficiaries", "head")
                 ->andWhere("head.status = 1")
