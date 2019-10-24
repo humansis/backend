@@ -195,6 +195,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
             // If the field is the vulnerabilities, we sort it by the direction sent
             elseif ($value == "vulnerabilities") {
                 $q->addGroupBy("vb")->addOrderBy("vb.fieldString", $direction);
+            } 
+            // If the field is the national ID, we sort it by the direction sent
+            elseif ($value == "nationalId") {
+                $q->addGroupBy("ni")->addOrderBy("ni.idNumber", $direction);
             } elseif ($value == "id") {
                 $q->addOrderBy("hh.id", $direction);
             }
@@ -222,7 +226,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                             COALESCE(adm2.name, ''),
                             COALESCE(adm3.name, ''),
                             COALESCE(adm4.name, ''),
-                            COALESCE(vb.fieldString, '')
+                            COALESCE(vb.fieldString, ''),
+                            COALESCE(ni.idNumber, '')
                         ) LIKE '%" . $filterValue . "%'");
                     }
                 } elseif ($category === "gender") {
@@ -241,6 +246,13 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     foreach ($filterValues as $indexValue => $filterValue) {
                         $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
                         $orStatement->add($q->expr()->eq("vb.id", ":filter" . $indexFilter . $indexValue));
+                    }
+                    $q->andWhere($orStatement);
+                } elseif ($category === "nationalId" && count($filterValues) > 0) {
+                    $orStatement = $q->expr()->orX();
+                    foreach ($filterValues as $indexValue => $filterValue) {
+                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("ni.id", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
                 } elseif ($category === "residency" && count($filterValues) > 0) {
