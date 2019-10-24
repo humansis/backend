@@ -84,7 +84,7 @@ class BookletService
      * @return mixed
      * @throws \Exception
      */
-    public function create(array $bookletData)
+    public function create($countryISO3, array $bookletData)
     {
         $bookletBatch = $this->getBookletBatch();
         $currentBatch = $bookletBatch;
@@ -99,7 +99,8 @@ class BookletService
                 $booklet->setCode($code)
           ->setNumberVouchers($bookletData['number_vouchers'])
           ->setCurrency($bookletData['currency'])
-          ->setStatus(Booklet::UNASSIGNED);
+          ->setStatus(Booklet::UNASSIGNED)
+          ->setCountryISO3($countryISO3);
 
                 if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
                     $booklet->setPassword($bookletData['password']);
@@ -166,9 +167,9 @@ class BookletService
      *
      * @return array
      */
-    public function findAll()
+    public function findAll($countryISO3)
     {
-        return  $this->em->getRepository(Booklet::class)->getActiveBooklets();
+        return  $this->em->getRepository(Booklet::class)->getActiveBooklets($countryISO3);
     }
 
     /**

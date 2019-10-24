@@ -10,19 +10,23 @@ namespace VoucherBundle\Repository;
  */
 class BookletRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getActiveBooklets()
+    public function getActiveBooklets($countryISO3)
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->where('b.status != :status')
-            ->setParameter('status', 3);
-        
+                ->andWhere('b.countryISO3 = :country')
+                ->setParameter('country', $countryISO3)
+                ->setParameter('status', 3);
+
         return $q->getQuery()->getResult();
     }
 
+    // We dont care about this function and probably we should remove it from controller, test, service and repo (it has nothing related in the front)
     public function getProtectedBooklets()
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->where('b.password IS NOT NULL');
+        
         
         return $q->getQuery()->getResult();
     }
