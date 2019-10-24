@@ -189,6 +189,24 @@ class HouseholdService
             ->setCopingStrategiesIndex($householdArray["coping_strategies_index"])
             ->setFoodConsumptionScore($householdArray["food_consumption_score"]);
 
+        // Remove projects if the household is not part of them anymore
+        if ($actualAction === "update") {
+            $oldProjects = $household->getProjects()->toArray();
+            $toRemove = array_udiff(
+                $oldProjects,
+                $projectsArray,
+                function ($oldProject, $newProject) {
+                    if ($oldProject->getId() === $newProject->getId()) {
+                        return 0;
+                    } else {
+                        return -1;
+                    }
+            });
+            foreach ($toRemove as $projectToRemove) {
+                $household->removeProject($projectToRemove);
+            }
+        }
+
         // Add projects
         foreach ($projectsArray as $project) {
             if (! $project instanceof Project) {
