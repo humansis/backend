@@ -32,9 +32,7 @@ class TypoTreatment extends AbstractTreatment
      */
     public function treat(Project $project, array &$householdsArray, string $email)
     {
-
         foreach ($householdsArray as $index => $householdArray) {
-
             // If state is equal to 0, keep the old household
             if ($householdArray['state'] === 0) {
                 // save in update cache new as empty array and old as the existing household
@@ -45,7 +43,6 @@ class TypoTreatment extends AbstractTreatment
             elseif ($householdArray['state'] === 1) {
                 // save in update cache new household and old as the previous existing one
                 $this->saveInCache('to_update', $householdArray['id_tmp_cache'], $householdArray['new'], $email, $householdArray['old']);
-                
             }
             // If state is equal to 2, keep both households
             elseif ($householdArray['state'] === 2) {
