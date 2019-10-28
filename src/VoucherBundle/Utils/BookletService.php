@@ -575,4 +575,24 @@ class BookletService
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'qrVouchers', $type);
     }
+
+    /**
+     * @param string $iso3
+     * @param array $filters
+     * @return mixed
+     */
+    public function getAll(string $iso3, array $filters)
+    {
+        $pageIndex = $filters['pageIndex'];
+        $pageSize = $filters['pageSize'];
+        $filter = $filters['filter'];
+        $sort = $filters['sort'];
+
+        $limitMinimum = $pageIndex * $pageSize;
+
+        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($iso3, $limitMinimum, $pageSize, $sort, $filter);
+        $length = $booklets[0];
+        $booklets = $booklets[1];
+        return [$length, $booklets];
+    }
 }
