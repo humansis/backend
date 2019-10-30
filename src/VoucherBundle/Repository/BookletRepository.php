@@ -119,32 +119,16 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
                         $q->andWhere("CONCAT(
                             COALESCE(b.code, ''),
                             COALESCE(b.currency, ''),
-                            COALESCE(b.numberVouchers, ''),
                             COALESCE(b.status, ''),
                             COALESCE(d.name, ''),
-                            COALESCE(bf.localGivenName, ''),
-                            COALESCE(v.value, ''),
+                            COALESCE(bf.localGivenName, '')
                         ) LIKE '%" . $filterValue . "%'");
                     }
-                } elseif ($category === "code" && count($filterValues) > 0) {
-                    $orStatement = $q->expr()->orX();
-                    foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq("b.code", ":filter" . $indexFilter . $indexValue));
-                    }
-                    $q->andWhere($orStatement);
                 } elseif ($category === "currency" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
                         $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
                         $orStatement->add($q->expr()->eq("b.currency", ":filter" . $indexFilter . $indexValue));
-                    }
-                    $q->andWhere($orStatement);
-                } elseif ($category === "numberVouchers" && count($filterValues) > 0) {
-                    $orStatement = $q->expr()->orX();
-                    foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq("b.numberVouchers", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
                 } elseif ($category === "status" && count($filterValues) > 0) {
@@ -154,25 +138,19 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
                         $orStatement->add($q->expr()->eq("b.status", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
-                } elseif ($category === "value" && count($filterValues) > 0) {
-                    $orStatement = $q->expr()->orX();
-                    foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq("v.value", ":filter" . $indexFilter . $indexValue));
-                    }
-                    $q->andWhere($orStatement);
                 } elseif ($category === "distribution" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
+                        Dump($filterValue);
                         $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq("d.name", ":filter" . $indexFilter . $indexValue));
+                        $orStatement->add($q->expr()->eq("d.id", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
                 } elseif ($category === "beneficiary" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
                         $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq("bf.localGivenName", ":filter" . $indexFilter . $indexValue));
+                        $orStatement->add($q->expr()->eq("bf.id", ":filter" . $indexFilter . $indexValue));
                     }
                     $q->andWhere($orStatement);
                 }  
