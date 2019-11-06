@@ -569,9 +569,9 @@ class UserService
      */
     public function loginGoogle(string $token)
     {
-        $client = new \Google_Client([$this->googleClient]);
+        $client = new \Google_Client(['client_id' => $this->googleClient]);
 
-        $payload = $client->verifyIdToken($token, true);
+        $payload = $client->verifyIdToken($token);
         if ($payload) {
             $email = $payload['email'];
             return $this->loginSSO($email);
