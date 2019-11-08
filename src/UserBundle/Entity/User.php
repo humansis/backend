@@ -93,12 +93,35 @@ class User extends BaseUser implements ExportableInterface
      */
     protected $language;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="phonePrefix", type="string", options={"default" : 0})
+     * @Groups({"FullUser"})
+     */
+    protected $phonePrefix;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="phoneNumber", type="integer", options={"default" : 0})
+     * @Groups({"FullUser"})
+     */
+    protected $phoneNumber;
+
      /**
      * @var boolean
      * @ORM\Column(name="changePassword", type="boolean", options={"default" : 0})
      * @Groups({"FullUser"})
      */
     protected $changePassword;
+
+    /**
+     * @var boolean
+     * @ORM\Column(name="twoFactorAuthentication", type="boolean", options={"default" : 0})
+     * @Groups({"FullUser"})
+     */
+    protected $twoFactorAuthentication;
 
     public function __construct()
     {
@@ -283,6 +306,54 @@ class User extends BaseUser implements ExportableInterface
         return $this->vendor;
     }
 
+        /**
+     * Set phonePrefix.
+     *
+     * @param string $phonePrefix
+     *
+     * @return User
+     */
+    public function setPhonePrefix($phonePrefix)
+    {
+        $this->phonePrefix = $phonePrefix;
+
+        return $this;
+    }
+
+    /**
+     * Get phonePrefix.
+     *
+     * @return string
+     */
+    public function getPhonePrefix()
+    {
+        return $this->phonePrefix;
+    }
+
+    /**
+     * Set phoneNumber.
+     *
+     * @param int $phoneNumber
+     *
+     * @return User
+     */
+    public function setPhoneNumber($phoneNumber)
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    /**
+     * Get phoneNumber.
+     *
+     * @return int
+     */
+    public function getPhoneNumber()
+    {
+        return $this->phoneNumber;
+    }
+
     /**
     * Get changePassword.
     *
@@ -303,5 +374,27 @@ class User extends BaseUser implements ExportableInterface
     public function setChangePassword($changePassword)
     {
         $this->changePassword = $changePassword;
+    }
+
+    /**
+    * Get twoFactorAuthentication.
+    *
+    * @return boolean
+    */
+    public function getTwoFactorAuthentication()
+    {
+        return $this->twoFactorAuthentication;
+    }
+
+    /**
+    * Set twoFactorAuthentication.
+    *
+    * @param boolean $twoFactorAuthentication
+    *
+    * @return User
+    */
+    public function setTwoFactorAuthentication($twoFactorAuthentication)
+    {
+        $this->twoFactorAuthentication = $twoFactorAuthentication;
     }
 }

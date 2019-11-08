@@ -204,6 +204,9 @@ class VendorControllerTest extends BMSServiceTestCase
                 "adm4" => 4,
                 "country_iso3" => "KHM",
             ],
+            'phone_prefix' => '+34',
+            'phone_number' => '675676767',
+            'two_factor_authentication' => false
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);

@@ -150,7 +150,7 @@ class UserController extends Controller
     }
 
     /**
-     * Get user's salt
+     * Initialize user
      *
      * @Rest\Get("/initialize/{username}")
      *
@@ -245,7 +245,7 @@ class UserController extends Controller
             );
             return new Response($userJson);
         } catch (\Exception $exception) {
-            $this->get('user.user_service')->deleteByUsername($user['username']);
+            $this->get('user.user_service')->deleteByUsername($userData['username']);
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -452,8 +452,6 @@ class UserController extends Controller
         return new Response($json);
     }
 
-
-
     /**
      * Change the password of user {id}. Must send oldPassword and newPassword
      *
@@ -599,7 +597,7 @@ class UserController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Success or not",
+     *     description="Successful or not",
      *     @SWG\Schema(type="boolean")
      * )
      *
