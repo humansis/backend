@@ -1,0 +1,23 @@
+---
+
+all:
+  children:
+    build:
+      hosts:
+        localhost:
+          ansible_connection: local
+
+    latest_019_021:
+      hosts:
+        latest:
+          ansible_connection: local
+
+    demo_019_021:
+      hosts:
+        demo:
+          ansible_connection: local
+
+    humansisapi:
+      children:
+        latest_019_021:
+        demo_019_021:

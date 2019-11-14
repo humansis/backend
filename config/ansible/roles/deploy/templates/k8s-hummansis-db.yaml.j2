@@ -1,0 +1,52 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 'db-hum-{{ stage }}'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: 'db-hum-{{ stage }}'
+  template:
+    metadata:
+      labels:
+        app: 'db-hum-{{ stage }}'
+    spec:
+      containers:
+        - name: 'db-hum-{{ stage }}'
+          image: mysql:5.7
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: {{ db_name }}
+            - name: MYSQL_USER
+              value: {{ db_user }}
+            - name: MYSQL_PASSWORD
+              value: {{ db_pass }}
+            - name: MYSQL_ROOT_PASSWORD
+              value: {{ db_root_vault }}
+            - name: MYSQLDATA
+              value: /var/lib/mysql
+          volumeMounts:
+            - name: 'vol-{{ k8s_name }}-{{ stage }}'
+              mountPath: /var/lib/mysql
+              subPath: mysqldata
+      volumes:
+        - name: 'vol-{{ k8s_name }}-{{ stage }}'
+          persistentVolumeClaim:
+            claimName: 'pvc-{{ k8s_name }}-{{ stage }}'
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: 'service-db-{{ k8s_name }}-{{ stage }}'
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: 'db-hum-{{ stage }}'

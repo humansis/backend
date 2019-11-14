@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 'app-{{ k8s_name }}-{{ stage }}'
+spec:
+  replicas: {{ deployment_replica }}
+  selector:
+    matchLabels:
+      app: 'app-{{ k8s_name }}-{{ stage }}'
+  template:
+    metadata:
+      labels:
+        app: 'app-{{ k8s_name }}-{{ stage }}'
+    spec:
+      volumes:
+        - name: {{ k8s_name }}-nginx-config-volume-{{ stage }}
+          configMap:
+            name: {{ k8s_name }}-nginx-config-{{ stage }}
+        - name: {{ k8s_name }}-parameters-config-volume-{{ stage }}
+          configMap:
+            name: {{ k8s_name }}-parameters-config-{{ stage }}
+      containers:
+        - name: {{ k8s_name }}
+          image: {{ image_name }}:build-{{ version }}
+          ports:
+            - containerPort: 80
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          volumeMounts:
+            - name: {{ k8s_name }}-nginx-config-volume-{{ stage }}
+              mountPath: /etc/nginx/sites-enabled/default
+              subPath: nginx.conf
+            - name: {{ k8s_name }}-parameters-config-volume-{{ stage }}
+              mountPath: /var/www/html/app/config/parameters.yml
+              subPath: parameters.yml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: 'sv-{{ k8s_name }}-{{ stage }}'
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: 'app-{{ k8s_name }}-{{ stage }}'
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: 'ingress-{{ k8s_name }}-{{ stage }}'
+spec:
+  rules:
+    - host: '{{ domain }}'
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: 'sv-{{ k8s_name }}-{{ stage }}'
+              servicePort: 80

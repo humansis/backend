@@ -1,0 +1,9 @@
+---
+
+- hosts: build
+  roles:
+    - role: build
+
+- hosts: humansisapi
+  roles:
+    - role: deploy
