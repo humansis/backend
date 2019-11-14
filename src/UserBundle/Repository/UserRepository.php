@@ -30,4 +30,16 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 
         return $builder->getQuery()->execute();
     }
+
+    public function toggleTwoFA(bool $enable) {
+        if ($enable) {
+            return;
+        }
+        $qb = $this->_em->createQueryBuilder();
+        $builder = $qb->update("UserBundle:User", 'u')
+                ->set('u.twoFactorAuthentication', ':enable')
+                ->where('u.twoFactorAuthentication = true')
+                ->setParameter('enable', $enable);
+        $builder->getQuery()->execute();
+    }
 }

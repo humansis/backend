@@ -9,10 +9,10 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use CommonBundle\Entity\Organization;
+use CommonBundle\Entity\OrganizationServices;
 use JMS\Serializer\SerializationContext;
 
 /**
@@ -225,10 +225,9 @@ class OrganizationController extends Controller
      *
      * @return Response
      */
-    public function editOrganizationServicesAction(OrganizationServices $organizationServices, Request $request)
+    public function editOrganizationServicesAction(Request $request, OrganizationServices $organizationServices)
     {
         $data = $request->request->all();
-
         try {
             $response = $this->get('organization_service')->editOrganizationServices($organizationServices, $data);
         } catch (\Exception $exception) {

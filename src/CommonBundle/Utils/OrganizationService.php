@@ -4,6 +4,7 @@ namespace CommonBundle\Utils;
 
 use CommonBundle\Entity\Organization;
 use CommonBundle\Entity\OrganizationServices;
+use UserBundle\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 
@@ -90,9 +91,22 @@ class OrganizationService
         $organizationServices->setEnabled($data["enabled"])
             ->setParametersValue($data["parameters"]);
 
+        $this->toggleService($organizationServices, $data["enabled"]);
         $this->em->merge($organizationServices);
         $this->em->flush();
 
         return $organizationServices;
+    }
+
+    private function toggleService(OrganizationServices $organizationServices, bool $enabled)
+    {
+        switch ($organizationServices->getService()->getName()) {
+            case "Two Factor Authentication": $this->em->getRepository(User::class)->toggleTwoFA($enabled);
+                break;
+            // case "IdPoor API": $this->em->getRepository();
+            //     break;
+            // case "WING Cash Transfer": $this->em->getRepository();
+            //     break;
+        }
     }
 }
