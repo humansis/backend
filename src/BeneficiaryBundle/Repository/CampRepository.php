@@ -22,15 +22,21 @@ class CampRepository extends \Doctrine\ORM\EntityRepository
 
     }
 
+    public function getByAdm1($adm1Id) {
+      $qb = $this->createQueryBuilder('c')
+          ->leftJoin('c.location', 'l');
+
+      $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+      $locationRepository->getAdm1($qb);
+
+      $qb->orWhere('adm1.id = :adm1Id')
+          ->setParameter('adm1Id', $adm1Id);
+
+      return $qb;
+    }
+
     public function findByAdm1($adm1Id) {
-        $qb = $this->createQueryBuilder('c')
-            ->leftJoin('c.location', 'l');
-
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->getAdm1($qb);
-
-        $qb->orWhere('adm1.id = :adm1Id')
-            ->setParameter('adm1Id', $adm1Id);
+        $qb = $this->getByAdm1($adm1Id);
         return $qb->getQuery()->getResult();
     }
 
@@ -65,5 +71,49 @@ class CampRepository extends \Doctrine\ORM\EntityRepository
             ->orWhere('adm4.id = :adm4Id')
             ->setParameter('adm4Id', $adm4Id);
         return $qb->getQuery()->getResult();
+    }
+
+    public function findByNameAndLocation(string $name, array $location) {
+      $qb = $this->createQueryBuilder('c')
+                 ->where('c.name = :name')
+                 ->setParameter('name', $name);
+
+      if ($location["adm4"]) {
+        $qb->leftJoin('c.location', 'l')
+           ->leftJoin('l.adm4', 'adm4')
+           ->andWhere('adm4.id = :adm4Id')
+           ->setParameter('adm4Id', $location["adm4"]);
+
+        return $qb->getQuery()->getOneOrNullResult();
+      }
+
+      if ($location["adm3"]) {
+        $qb->leftJoin('c.location', 'l')
+           ->leftJoin('l.adm3', 'adm3')
+           ->andWhere('adm3.id = :adm3Id')
+           ->setParameter('adm3Id', $location["adm3"]);
+
+        return $qb->getQuery()->getOneOrNullResult();
+      }
+
+      if ($location["adm2"]) {
+        $qb->leftJoin('c.location', 'l')
+           ->leftJoin('l.adm2', 'adm2')
+           ->andWhere('adm2.id = :adm2Id')
+           ->setParameter('adm2Id', $location["adm2"]);
+
+        return $qb->getQuery()->getOneOrNullResult();
+      }
+
+      if ($location["adm1"]) {
+        $qb->leftJoin('c.location', 'l')
+           ->leftJoin('l.adm1', 'adm1')
+           ->andWhere('adm1.id = :adm1Id')
+           ->setParameter('adm1Id', $location["adm1"]);
+
+        return $qb->getQuery()->getOneOrNullResult();
+      }
+
+      return $qb->getQuery()->getOneOrNullResult();
     }
 }
