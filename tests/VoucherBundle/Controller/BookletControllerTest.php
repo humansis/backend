@@ -84,7 +84,7 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testDeactivateBooklets()
     {
-        $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets();
+        $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryISO3);
 
         $body = ['bookletCodes' => [$booklets[0]->getCode()]];
 
