@@ -107,7 +107,7 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testDeactivateBooklet()
     {
-        $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets();
+        $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryISO3);
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
