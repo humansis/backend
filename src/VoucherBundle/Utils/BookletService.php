@@ -361,7 +361,7 @@ class BookletService
      *
      * @return string
      */
-    public function assign(Booklet $booklet, Beneficiary $beneficiary, DistributionData $distributionData)
+    public function assign(Booklet $booklet, DistributionData $distributionData, Beneficiary $beneficiary)
     {
         if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED || $booklet->getStatus() === Booklet::DISTRIBUTED) {
             throw new \Exception("This booklet has already been distributed, used or is actually deactivated");

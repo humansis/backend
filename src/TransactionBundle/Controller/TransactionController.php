@@ -43,7 +43,7 @@ class TransactionController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      */
-    public function postTransactionAction(Request $request, DistributionData $distributionData)
+    public function sendTransactionAction(Request $request, DistributionData $distributionData)
     {
         $countryISO3 = $request->request->get('__country');
         $code = $request->request->get('code');

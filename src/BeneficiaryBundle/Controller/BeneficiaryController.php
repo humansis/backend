@@ -27,7 +27,7 @@ class BeneficiaryController extends Controller
      *
      * @return Response
      */
-    public function getAllVulnerabilityCriteria()
+    public function getAllVulnerabilityCriteriaAction()
     {
         $vulnerabilityCriteria = $this->get('beneficiary.beneficiary_service')->getAllVulnerabilityCriteria();
         $json = $this->get('jms_serializer')
@@ -76,8 +76,40 @@ class BeneficiaryController extends Controller
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+        $json = $this->get('jms_serializer')
+        ->serialize(
+                $newBeneficiary,
+                'json', SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true));
+        return new Response($json);
+    }
 
-        $json = $this->get('jms_serializer')->serialize($newBeneficiary, 'json', SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true));
+    /**
+     * @Rest\Get("/beneficiaries/{id}", name="get_one_beneficiary", requirements={"id"="\d+"})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Beneficiaries")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="one beneficiary",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Beneficiary::class))
+     *     )
+     * )
+     *
+     * @param Beneficiary $Beneficiary
+     *
+     * @return Response
+     */
+    public function getOneAction(Beneficiary $Beneficiary)
+    {
+        $json = $this->get('jms_serializer')
+        ->serialize(
+            $Beneficiary,
+            'json',
+            SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true)
+        );
         return new Response($json);
     }
 }
