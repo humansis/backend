@@ -96,7 +96,7 @@ class User extends BaseUser implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="phonePrefix", type="string", options={"default" : 0})
+     * @ORM\Column(name="phonePrefix", type="string", nullable=true)
      * @Groups({"FullUser"})
      */
     protected $phonePrefix;
@@ -104,7 +104,7 @@ class User extends BaseUser implements ExportableInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="phoneNumber", type="integer", options={"default" : 0})
+     * @ORM\Column(name="phoneNumber", type="integer", nullable=true)
      * @Groups({"FullUser"})
      */
     protected $phoneNumber;

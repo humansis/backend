@@ -113,6 +113,18 @@ class OrganizationServices
     }
 
     /**
+     * Get the value of a specific parameter.
+     *
+     * @param string $parameterName
+     *
+     * @return string
+     */
+    public function getParameterValue(string $parameterName)
+    {
+        return $this->parametersValue[$parameterName];
+    }
+
+    /**
      * Set organization.
      *
      * @param \CommonBundle\Entity\Organization $organization

@@ -3,8 +3,8 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * Organization
@@ -74,6 +74,13 @@ class Organization
      * @Groups({"FullOrganization"})
      */
     private $footerContent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\OrganizationServices", mappedBy="organization", cascade={"remove"})
+     *
+     * @var OrganizationServices $organizationServices
+     */
+    private $organizationServices;
 
 
     /**
@@ -242,5 +249,44 @@ class Organization
     public function getFooterContent()
     {
         return $this->footerContent;
+    }
+
+    /**
+     * Add OrganizationServices.
+     *
+     * @param \CommonBundle\Entity\OrganizationServices $organizationServices
+     *
+     * @return OrganizationServices
+     */
+    public function addOrganizationServices(\CommonBundle\Entity\OrganizationServices $organizationServices)
+    {
+        if (null === $this->organizationServices) {
+            $this->organizationServices = new \Doctrine\Common\Collections\ArrayCollection();
+        }
+        $this->organizationServices[] = $organizationServices;
+
+        return $this;
+    }
+
+    /**
+     * Remove OrganizationServices.
+     *
+     * @param \CommonBundle\Entity\OrganizationServices $organizationServices
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeOrganizationServices(\CommonBundle\Entity\OrganizationServices $organizationServices)
+    {
+        return $this->organizationServices->removeElement($organizationServices);
+    }
+
+    /**
+     * Get OrganizationServices.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getOrganizationServices()
+    {
+        return $this->organizationServices;
     }
 }

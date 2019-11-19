@@ -42,13 +42,13 @@ class Service
     /**
      * @var string
      *
-     * @ORM\Column(name="country", type="string", length=255)
+     * @ORM\Column(name="country", type="string", length=255, nullable=true)
      * @Groups({"FullOrganization"})
      */
     private $country;
 
     /**
-     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\Service", mappedBy="service", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\OrganizationServices", mappedBy="service", cascade={"remove"})
      *
      * @var OrganizationServices $organizationServices
      */

@@ -4,9 +4,9 @@ namespace CommonBundle\Utils;
 
 use CommonBundle\Entity\Organization;
 use CommonBundle\Entity\OrganizationServices;
-use UserBundle\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
+use UserBundle\Entity\User;
 
 class OrganizationService
 {
@@ -44,7 +44,6 @@ class OrganizationService
      */
     public function edit(Organization $organization, array $organizationArray)
     {
-
         $organization->setName($organizationArray["name"])
             ->setFont($organizationArray["font"])
             ->setPrimaryColor($organizationArray["primary_color"])
@@ -100,13 +99,8 @@ class OrganizationService
 
     private function toggleService(OrganizationServices $organizationServices, bool $enabled)
     {
-        switch ($organizationServices->getService()->getName()) {
-            case "Two Factor Authentication": $this->em->getRepository(User::class)->toggleTwoFA($enabled);
-                break;
-            // case "IdPoor API": $this->em->getRepository();
-            //     break;
-            // case "WING Cash Transfer": $this->em->getRepository();
-            //     break;
+        if ($organizationServices->getService()->getName() === "Two Factor Authentication") {
+            $this->em->getRepository(User::class)->toggleTwoFA($enabled);
         }
     }
 }

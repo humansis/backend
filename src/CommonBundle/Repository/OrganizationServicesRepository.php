@@ -10,4 +10,18 @@ namespace CommonBundle\Repository;
  */
 class OrganizationServicesRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Find the organization service by name
+     * @param  string $iso3
+     * @return QueryBuilder
+     */
+    public function findOneByService(string $serviceName)
+    {
+        $qb = $this->createQueryBuilder("os")
+                    ->leftJoin('os.service', 's')
+                    ->where('s.name = :name')
+                    ->setParameter('name', $serviceName);
+        
+        return $qb->getQuery()->getOneOrNullResult();
+    }
 }

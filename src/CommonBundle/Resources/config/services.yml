@@ -101,13 +101,6 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\FinancialProviderFixtures:
-        arguments:
-        - "@fos_user.user_manager"
-        - "@security.encoder_factory"
-        tags:
-        - { name: doctrine.fixture.orm }
-
     CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
         tags:
             - { name: doctrine.fixture.orm }
@@ -132,6 +125,12 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\ServiceFixtures:
+        arguments:
+        - "@fos_user.user_manager"
+        - "@security.encoder_factory"
+        tags:
+        - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\ProductFixtures:
         arguments:

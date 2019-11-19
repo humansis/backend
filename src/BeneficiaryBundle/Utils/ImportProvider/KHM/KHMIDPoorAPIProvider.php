@@ -14,6 +14,8 @@ use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Utils\ImportProvider\DefaultAPIProvider;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use CommonBundle\Entity\OrganizationServices;
+use CommonBundle\Entity\Service;
 use CommonBundle\Utils\LocationService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -99,7 +101,18 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
         $locationCode = $params['locationCode (KHXXXXXX)'];
         $locationCodeNum = substr($locationCode, 2);
 
-        $route = $locationCodeNum . ".json?email=james.happell%40peopleinneed.cz&token=K45nDocxQ5sEFfqSWwDm-2DxskYEDYFe";
+        $organizationIDPoor = $this->em->getRepository(OrganizationServices::class)->findOneByService("IDPoor API");
+
+        if (! $organizationIDPoor->getEnabled()) {
+            throw new \Exception("This service is not enabled for the organization");
+        }
+
+        $email = urlencode($organizationIDPoor->getParameterValue('email'));
+        $token = $organizationIDPoor->getParameterValue('token');
+
+        // $route = $locationCodeNum . ".json?email=james.happell%40peopleinneed.cz&token=K45nDocxQ5sEFfqSWwDm-2DxskYEDYFe";
+
+        $route = $locationCodeNum . ".json?email=" . $email . "&token=" . $token;
 
         try {
             $villages = $this->sendRequest("GET", $route);
