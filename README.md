@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/ReliefApplications/bms_api.svg?branch=dev)](https://travis-ci.org/ReliefApplications/bms_api)
-[![GitHub version](https://badge.fury.io/gh/ReliefApplications%2Fbms_api.svg)](https://badge.fury.io/gh/ReliefApplications%2Fbms_api)
+[![Build Status](https://travis-ci.org/humansis/api.svg?branch=dev)](https://travis-ci.org/humansis/api)
+[![GitHub version](https://badge.fury.io/gh/humansis%2Fapi.svg)](https://badge.fury.io/gh/humansis%2Fapi)
 
 BENEFICIARY MANAGEMENT SYSTEM
 ==============
