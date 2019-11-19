@@ -84,7 +84,7 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testDeactivateBooklets()
     {
-        $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets();
+        $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets('KHM');
 
         $body = ['bookletCodes' => [$booklets[0]->getCode()]];
 
@@ -107,7 +107,7 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testDeactivateBooklet()
     {
-        $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets();
+        $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets('KHM');
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);

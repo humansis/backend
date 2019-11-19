@@ -60,7 +60,7 @@ class BookletController extends Controller
         $bookletData = $request->request->all();
 
         try {
-            $return = $this->get('voucher.booklet_service')->create($bookletData);
+            $return = $this->get('voucher.booklet_service')->create($request->request->get('__country'), $bookletData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -100,7 +100,7 @@ class BookletController extends Controller
     public function getAllAction(Request $request)
     {
         try {
-            $booklets = $this->get('voucher.booklet_service')->findAll();
+            $booklets = $this->get('voucher.booklet_service')->findAll($request->get('__country'));
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -473,5 +473,43 @@ class BookletController extends Controller
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+    }
+
+    /**
+     * @Rest\Post("/booklets/get/all", name="all_booklets")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All booklets",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Booklet::class))
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function allAction(Request $request)
+    {
+        $filters = $request->request->all();
+        /** @var BookletService $bookletService */
+        $bookletService = $this->get('voucher.booklet_service');
+
+        try {
+            $booklets = $bookletService->getAll($filters['__country'], $filters);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $booklets,
+                'json',
+                SerializationContext::create()->setGroups("FullBooklet")->setSerializeNull(true)
+            );
+        return new Response($json);
     }
 }

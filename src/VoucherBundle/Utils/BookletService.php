@@ -84,7 +84,7 @@ class BookletService
      * @return mixed
      * @throws \Exception
      */
-    public function create(array $bookletData)
+    public function create($countryISO3, array $bookletData)
     {
         $bookletBatch = $this->getBookletBatch();
         $currentBatch = $bookletBatch;
@@ -99,7 +99,8 @@ class BookletService
                 $booklet->setCode($code)
           ->setNumberVouchers($bookletData['number_vouchers'])
           ->setCurrency($bookletData['currency'])
-          ->setStatus(Booklet::UNASSIGNED);
+          ->setStatus(Booklet::UNASSIGNED)
+          ->setCountryISO3($countryISO3);
 
                 if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
                     $booklet->setPassword($bookletData['password']);
@@ -166,9 +167,9 @@ class BookletService
      *
      * @return array
      */
-    public function findAll()
+    public function findAll($countryISO3)
     {
-        return  $this->em->getRepository(Booklet::class)->getActiveBooklets();
+        return  $this->em->getRepository(Booklet::class)->getActiveBooklets($countryISO3);
     }
 
     /**
@@ -573,5 +574,25 @@ class BookletService
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'qrVouchers', $type);
+    }
+
+    /**
+     * @param string $iso3
+     * @param array $filters
+     * @return mixed
+     */
+    public function getAll(string $iso3, array $filters)
+    {
+        $pageIndex = $filters['pageIndex'];
+        $pageSize = $filters['pageSize'];
+        $filter = $filters['filter'];
+        $sort = $filters['sort'];
+
+        $limitMinimum = $pageIndex * $pageSize;
+
+        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($iso3, $limitMinimum, $pageSize, $sort, $filter);
+        $length = $booklets[0];
+        $booklets = $booklets[1];
+        return [$length, $booklets];
     }
 }

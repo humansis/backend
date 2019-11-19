@@ -60,12 +60,12 @@ class VoucherService
                 $voucherData = $vouchersData;
                 $voucherData['value'] = $vouchersData['values'][$x];
                 $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
-        
+
                 $voucher->setUsedAt(null)
-          ->setCode('')
-          ->setBooklet($booklet)
-          ->setVendor(null)
-          ->setValue($voucherData['value']);
+                        ->setCode('')
+                        ->setBooklet($booklet)
+                        ->setVendor(null)
+                        ->setValue($voucherData['value']);
 
                 $this->em->persist($voucher);
                 $this->em->flush();
@@ -96,7 +96,7 @@ class VoucherService
         $value = $voucherData['value'];
         $currency = $voucherData['currency'];
         $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
-  
+
         $fullCode = $currency . $value . '*' . $voucherData['bookletCode'] . '-' . $voucherId;
         $fullCode = $booklet->password ? $fullCode . '-' . $booklet->password : $fullCode;
         return $fullCode;
@@ -146,7 +146,7 @@ class VoucherService
             if ($allVouchersUsed === true) {
                 $booklet->setStatus(Booklet::USED);
             }
-  
+
             $this->em->merge($voucher);
             $this->em->flush();
         } catch (\Exception $e) {

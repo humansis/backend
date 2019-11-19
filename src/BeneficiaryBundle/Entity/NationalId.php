@@ -19,7 +19,7 @@ class NationalId
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $id;
 
@@ -27,7 +27,7 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_number", type="string", length=255)
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $idNumber;
 
@@ -35,7 +35,7 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_type", type="string", length=45)
-     * @Groups({"FullHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $idType;
 

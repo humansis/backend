@@ -197,7 +197,7 @@ class CSVToArrayMapper extends AbstractMapper
                     ]
                 ]
             ];
-            $alreadyExistingCamp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $campName]);
+            $alreadyExistingCamp = $this->em->getRepository(Camp::class)->findByNameAndLocation($campName, $formattedHouseholdArray['location']);
             if ($alreadyExistingCamp) {
                 $formattedHouseholdArray['household_locations'][0]['camp_address']['camp']['id'] = $alreadyExistingCamp->getId();
             }
@@ -358,7 +358,7 @@ class CSVToArrayMapper extends AbstractMapper
             array_push($formattedHouseholdArray['beneficiaries']['phones'], ['type' => $phone2_type_string, 'prefix' => $phone2_prefix_string, 'number' => $phone2_number_string, 'proxy' => $phone2_proxy_string]);
         }
     }
-    
+
     /**
      * Reformat the field gender
      *
@@ -472,7 +472,7 @@ class CSVToArrayMapper extends AbstractMapper
 
         // Map adm1
         $adm1 = $this->getAdmByLocation($location, Adm1::class, 'adm1');
-        
+
         if (! $adm1 instanceof Adm1) {
             throw new \Exception('The Adm1 ' . $location['adm1'] . ' was not found in ' . $location['country_iso3']);
         } else {
@@ -485,7 +485,7 @@ class CSVToArrayMapper extends AbstractMapper
 
         // Map adm2
         $adm2 = $this->getAdmByLocation($location, Adm2::class, 'adm2', 'adm1', $adm1);
-        
+
         if (! $adm2 instanceof Adm2) {
             throw new \Exception('The Adm2 ' . $location['adm2'] . ' was not found in ' . $adm1->getName());
         } else {
@@ -498,7 +498,7 @@ class CSVToArrayMapper extends AbstractMapper
 
         // Map adm3
         $adm3 = $this->getAdmByLocation($location, Adm3::class, 'adm3', 'adm2', $adm2);
-        
+
         if (! $adm3 instanceof Adm3) {
             throw new \Exception('The Adm3 ' . $location['adm3'] . ' was not found in ' . $adm2->getName());
         } else {
@@ -511,7 +511,7 @@ class CSVToArrayMapper extends AbstractMapper
 
         // Map adm4
         $adm4 = $this->getAdmByLocation($location, Adm4::class, 'adm4', 'adm3', $adm3);
-        
+
         if (! $adm4 instanceof Adm4) {
             throw new \Exception('The Adm4 ' . $location['adm4'] . ' was not found in ' . $adm3->getName());
         } else {

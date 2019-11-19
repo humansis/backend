@@ -84,6 +84,14 @@ class Booklet implements ExportableInterface
      */
     private $distribution_beneficiary;
 
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="country_iso3", type="string", length=45)
+     * @Groups({"FullBooklet"})
+     */
+    private $countryISO3;
+
     public function __construct()
     {
         $this->vouchers = new ArrayCollection();
@@ -334,5 +342,29 @@ class Booklet implements ExportableInterface
         }
 
         return $date;
+    }
+
+    /**
+     * Set countryISO3.
+     *
+     * @param string $countryISO3
+     *
+     * @return Booklet
+     */
+    public function setCountryISO3($countryISO3)
+    {
+        $this->countryISO3 = $countryISO3;
+
+        return $this;
+    }
+
+    /**
+     * Get countryISO3.
+     *
+     * @return string
+     */
+    public function getCountryISO3()
+    {
+        return $this->countryISO3;
     }
 }
