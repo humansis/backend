@@ -28,6 +28,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->booklet->setCode($randomBookletCode)
             ->setNumberVouchers(0)
             ->setStatus(0)
+            ->setCountryISO3('KHM')
             ->setCurrency('USD');
 
         $this->em->persist($this->booklet);
@@ -59,10 +60,6 @@ class VoucherControllerTest extends BMSServiceTestCase
         // Create the vendor with the email and the salted password. The user should be enable
         $crawler = $this->request('PUT', '/api/wsse/vouchers', $body);
         $voucher = json_decode($this->client->getResponse()->getContent(), true);
-
-        // Delete the booklet that was created for the test
-        // $this->em->remove($booklet);
-        // $this->em->flush();
 
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
