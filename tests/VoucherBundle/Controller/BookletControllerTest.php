@@ -1,11 +1,11 @@
 <?php
 namespace VoucherBundle\Tests\Controller;
 
-use Tests\BMSServiceTestCase;
-use VoucherBundle\Entity\Booklet;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
+use Tests\BMSServiceTestCase;
+use VoucherBundle\Entity\Booklet;
 
 class BookletControllerTest extends BMSServiceTestCase
 {
@@ -62,21 +62,17 @@ class BookletControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->request('GET', '/api/wsse/booklets');
+        $body = [
+            "pageIndex" => 0,
+            "pageSize" => 10,
+            "filter" => [],
+            "sort" => []
+        ];
+        $crawler = $this->request('POST', '/api/wsse/booklets/get/all', $body);
         $booklets = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
 
-        if (!empty($booklets)) {
-            $booklet = $booklets[0];
-
-            $this->assertArrayHasKey('currency', $booklet);
-            $this->assertArrayHasKey('vouchers', $booklet);
-            $this->assertArrayHasKey('distribution_beneficiary', $booklet);
-            $this->assertArrayHasKey('number_vouchers', $booklet);
-        } else {
-            $this->markTestIncomplete("You currently don't have any booklets in your database.");
-        }
-
-        return $booklets[0];
+        return true;
     }
 
     /**
