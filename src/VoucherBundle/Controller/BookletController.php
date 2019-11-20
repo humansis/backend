@@ -3,19 +3,20 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\DistributionData;
+use Doctrine\Common\Collections\Collection;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use FOS\RestBundle\Controller\Annotations as Rest;
-use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Swagger\Annotations as SWG;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Booklet;
-use DistributionBundle\Entity\DistributionData;
-use Doctrine\Common\Collections\Collection;
+use VoucherBundle\Utils\BookletService;
 
 /**
  * Class BookletController
@@ -477,7 +478,6 @@ class BookletController extends Controller
 
     /**
      * @Rest\Post("/booklets/get/all", name="all_booklets")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Booklets")
      *
