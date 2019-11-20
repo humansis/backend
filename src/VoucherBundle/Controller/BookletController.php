@@ -54,6 +54,8 @@ class BookletController extends Controller
      */
     public function createBookletAction(Request $request)
     {
+        set_time_limit(0);
+
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
 

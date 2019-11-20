@@ -72,6 +72,11 @@ class VoucherService
 
                 $code = $this->generateCode($voucherData, $voucher->getId());
 
+                if (empty($code)) {
+                    $this->em->remove($voucher);
+                    throw new \Exception("Could not generate the code");
+                }
+
                 $voucher->setCode($code);
                 $this->em->flush();
             }
@@ -99,6 +104,7 @@ class VoucherService
 
         $fullCode = $currency . $value . '*' . $voucherData['bookletCode'] . '-' . $voucherId;
         $fullCode = $booklet->password ? $fullCode . '-' . $booklet->password : $fullCode;
+        
         return $fullCode;
     }
 

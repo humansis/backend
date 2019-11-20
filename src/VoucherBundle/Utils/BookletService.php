@@ -97,10 +97,10 @@ class BookletService
                 $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
 
                 $booklet->setCode($code)
-          ->setNumberVouchers($bookletData['number_vouchers'])
-          ->setCurrency($bookletData['currency'])
-          ->setStatus(Booklet::UNASSIGNED)
-          ->setCountryISO3($countryISO3);
+                        ->setNumberVouchers($bookletData['number_vouchers'])
+                        ->setCurrency($bookletData['currency'])
+                        ->setStatus(Booklet::UNASSIGNED)
+                        ->setCountryISO3($countryISO3);
 
                 if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
                     $booklet->setPassword($bookletData['password']);
@@ -118,13 +118,13 @@ class BookletService
             //=== creates vouchers ===
             try {
                 $voucherData = [
-          'number_vouchers' => $bookletData['number_vouchers'],
-          'bookletCode' => $code,
-          'currency' => $bookletData['currency'],
-          'bookletID' => $createdBooklet->getId(),
-          'values' => $bookletData['individual_values'],
-        ];
-  
+                    'number_vouchers' => $bookletData['number_vouchers'],
+                    'bookletCode' => $code,
+                    'currency' => $bookletData['currency'],
+                    'bookletID' => $createdBooklet->getId(),
+                    'values' => $bookletData['individual_values'],
+                ];
+            
                 $this->container->get('voucher.voucher_service')->create($voucherData);
             } catch (\Exception $e) {
                 throw $e;
