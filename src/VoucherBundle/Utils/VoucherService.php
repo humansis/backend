@@ -4,21 +4,21 @@ namespace VoucherBundle\Utils;
 
 use CommonBundle\Entity\Logs;
 use Doctrine\ORM\EntityManagerInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Psr\Container\ContainerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use VoucherBundle\Entity\Voucher;
-use Psr\Container\ContainerInterface;
 use VoucherBundle\Entity\Booklet;
-use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Product;
-use Dompdf\Dompdf;
-use Dompdf\Options;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Entity\Voucher;
 
 class VoucherService
 {
@@ -76,7 +76,7 @@ class VoucherService
                 $this->em->flush();
             }
         } catch (\Exception $e) {
-            throw new \Exception('Error creating voucher');
+            throw $e;
         }
 
         return $voucher;

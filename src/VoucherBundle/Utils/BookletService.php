@@ -3,24 +3,24 @@
 namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Logs;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Psr\Container\ContainerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
-use Psr\Container\ContainerInterface;
-use Dompdf\Dompdf;
-use Dompdf\Options;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use DistributionBundle\Entity\DistributionData;
-use BeneficiaryBundle\Entity\Household;
 
 class BookletService
 {
@@ -127,7 +127,7 @@ class BookletService
   
                 $this->container->get('voucher.voucher_service')->create($voucherData);
             } catch (\Exception $e) {
-                throw new \Exception('Error creating vouchers');
+                throw $e;
             }
         }
 
