@@ -75,6 +75,45 @@ class BookletController extends Controller
     }
 
     /**
+     * Get all booklets (paginated).
+     *
+     * @Rest\Post("/booklets/get/all", name="all_booklets")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All booklets",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Booklet::class))
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function allAction(Request $request)
+    {
+        $filters = $request->request->all();
+        /** @var BookletService $bookletService */
+        $bookletService = $this->get('voucher.booklet_service');
+
+        try {
+            $booklets = $bookletService->getAll($filters['__country'], $filters);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        $json = $this->get('jms_serializer')
+            ->serialize(
+                $booklets,
+                'json',
+                SerializationContext::create()->setGroups("FullBooklet")->setSerializeNull(true)
+            );
+        return new Response($json);
+    }
+
+    /**
      * Get all booklets
      *
      * @Rest\Get("/booklets", name="get_all_booklets")
@@ -98,17 +137,17 @@ class BookletController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getAllAction(Request $request)
-    {
-        try {
-            $booklets = $this->get('voucher.booklet_service')->findAll($request->get('__country'));
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+    // public function getAllAction(Request $request)
+    // {
+    //     try {
+    //         $booklets = $this->get('voucher.booklet_service')->findAll($request->get('__country'));
+    //     } catch (\Exception $exception) {
+    //         return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+    //     }
 
-        $json = $this->get('jms_serializer')->serialize($booklets, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
-        return new Response($json);
-    }
+    //     $json = $this->get('jms_serializer')->serialize($booklets, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+    //     return new Response($json);
+    // }
 
     /**
      * Get booklets that have been deactivated
@@ -474,42 +513,5 @@ class BookletController extends Controller
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
-    }
-
-    /**
-     * @Rest\Post("/booklets/get/all", name="all_booklets")
-     *
-     * @SWG\Tag(name="Booklets")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="All booklets",
-     *     @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref=@Model(type=Booklet::class))
-     *     )
-     * )
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function allAction(Request $request)
-    {
-        $filters = $request->request->all();
-        /** @var BookletService $bookletService */
-        $bookletService = $this->get('voucher.booklet_service');
-
-        try {
-            $booklets = $bookletService->getAll($filters['__country'], $filters);
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $booklets,
-                'json',
-                SerializationContext::create()->setGroups("FullBooklet")->setSerializeNull(true)
-            );
-        return new Response($json);
     }
 }
