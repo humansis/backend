@@ -13,7 +13,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Booklet;
@@ -55,44 +54,8 @@ class BookletController extends Controller
      */
     public function createBookletAction(Request $request)
     {
-        $bookletData = $request->request->all();
+        set_time_limit(0);
 
-        $lastBooklet = $this->get('voucher.booklet_service')->backgroundCreate($request->request->get('__country'), $bookletData);
-
-        return new JsonResponse($lastBooklet);
-    }
-
-    /**
-     * Create a new Booklet (synchronous).
-     *
-     * @Rest\Put("/booklets/sync", name="add_booklet_sync")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
-     *
-     * @SWG\Tag(name="Booklets")
-     *
-     * @SWG\Parameter(
-     *     name="booklet",
-     *     in="body",
-     *     required=true,
-     *     @Model(type=Booklet::class, groups={"FullBooklet"})
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Booklet created",
-     *     @Model(type=Booklet::class)
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function createBookletSyncAction(Request $request)
-    {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
 
@@ -109,49 +72,7 @@ class BookletController extends Controller
             'json',
             SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true)
         );
-
         return new Response($bookletJson);
-    }
-
-    /**
-     * Get number of inserted booklets.
-     *
-     * @Rest\Get("/booklets/inserted/{id}", name="inserted_booklets")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
-     *
-     * @SWG\Tag(name="Booklets")
-     *
-     * @SWG\Parameter(
-     *     name="booklet",
-     *     in="body",
-     *     required=true,
-     *     @Model(type=Booklet::class, groups={"FullBooklet"})
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Booklet created",
-     *     @Model(type=Booklet::class)
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function getNumberOfInsertedBooklets(Request $request, Booklet $booklet)
-    {
-        try {
-            $nbBooklets = $this->get('voucher.booklet_service')->getNumberOfInsertedBooklets($request->request->get('__country'), $booklet->getId());
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-
-        return new Response($nbBooklets);
-
     }
 
     /**
@@ -275,7 +196,7 @@ class BookletController extends Controller
      *
      * @Rest\Get("/booklets/{id}", name="get_single_booklet")
      *
-     * @SWG\Tag(name="Booklets")
+     * @SWG\Tag(name="Single Booklet")
      *
      * @SWG\Response(
      *     response=200,

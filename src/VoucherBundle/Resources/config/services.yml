@@ -12,7 +12,7 @@ services:
 
     voucher.booklet_service:
         class: VoucherBundle\Utils\BookletService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container', '@event_dispatcher']
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
         public: true
 
     voucher.voucher_service:

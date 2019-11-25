@@ -11,12 +11,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
@@ -36,21 +34,35 @@ class BookletService
     /** @var ContainerInterface $container */
     private $container;
 
-    /** @var EventDispatcherInterface $eventDispatcher */
-    private $eventDispatcher;
-
     /**
      * UserService constructor.
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, EventDispatcherInterface $eventDispatcher)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
-        $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * Returns the index of the next booklet to be inserted in the database
+     *
+     * @return int
+     */
+    public function getBookletBatch()
+    {
+        $allBooklets = $this->em->getRepository(Booklet::class)->findAll();
+        end($allBooklets);
+
+        if ($allBooklets) {
+            $bookletBatch = $allBooklets[key($allBooklets)]->getId() + 1;
+            return $bookletBatch;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -66,30 +78,6 @@ class BookletService
     }
 
     /**
-     * Create new booklets as a background task.
-     * Returns the last booklet id currently in the database and the number of booklets to create.
-     *
-     * @param string $country
-     * @param array $bookletData
-     * @return int
-     */
-    public function backgroundCreate($country, array $bookletData)
-    {
-        $this->container->get('voucher.voucher_service')->cleanUp();
-        
-        $this->eventDispatcher->addListener(KernelEvents::TERMINATE, function ($event) use ($country, $bookletData) {
-            try {
-                $this->create($country, $bookletData);
-            } catch (\Exception $e) {
-                $this->container->get('logger')->error($e);
-                $this->container->get('voucher.voucher_service')->cleanUp();
-            }
-        });
-
-        return ["lastBooklet" => $this->getLastId(), "expectedNumber" => $bookletData['number_booklets']];
-    }
-
-    /**
      * Creates a new Booklet entity
      *
      * @param array $bookletData
@@ -98,12 +86,12 @@ class BookletService
      */
     public function create($countryISO3, array $bookletData)
     {
-        set_time_limit(0);
         $bookletBatch = $this->getBookletBatch();
-        
         $currentBatch = $bookletBatch;
+
         for ($x = 0; $x < $bookletData['number_booklets']; $x++) {
-            // Create booklet
+
+      // === creates booklet ===
             try {
                 $booklet = new Booklet();
                 $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
@@ -118,79 +106,34 @@ class BookletService
                     $booklet->setPassword($bookletData['password']);
                 }
 
-                $this->em->persist($booklet);
+                $this->em->merge($booklet);
+                $this->em->flush();
 
                 $currentBatch++;
+                $createdBooklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet->getCode());
             } catch (\Exception $e) {
                 throw new \Exception('Error creating Booklet ' . $e->getMessage() . ' ' . $e->getLine());
             }
 
-            // Create vouchers
+            //=== creates vouchers ===
             try {
                 $voucherData = [
                     'number_vouchers' => $bookletData['number_vouchers'],
                     'bookletCode' => $code,
                     'currency' => $bookletData['currency'],
-                    'booklet' => $booklet,
+                    'bookletID' => $createdBooklet->getId(),
                     'values' => $bookletData['individual_values'],
                 ];
             
-                $this->container->get('voucher.voucher_service')->create($voucherData, false);
+                $this->container->get('voucher.voucher_service')->create($voucherData);
             } catch (\Exception $e) {
                 throw $e;
             }
-
-            if ($x%10 === 0 || $x === $bookletData['number_booklets']-1) {
-                $this->em->flush();
-            }
         }
 
-        return $booklet;
+        return $createdBooklet;
     }
 
-    /**
-     * Get the last inserted ID in the Booklet table
-     * 
-     * @return int
-     */
-    public function getLastId()
-    {
-        $lastBooklet = $this->em->getRepository(Booklet::class)->findBy([], ['id' => 'DESC'], 1, 0)[0];
-
-        return $lastBooklet ? $lastBooklet->getId() : 0;
-    }
-
-    /**
-     * Get the number of insterted booklets in a country since an ID.
-     * 
-     * @param string $country
-     * @param int $lastId
-     * 
-     * @return int
-     */
-    public function getNumberOfInsertedBooklets(string $country, int $lastId)
-    {
-        $newBooklets = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => $country], null, null, $lastId);
-
-        return count($newBooklets);
-    }
-
-    /**
-     * Returns the index of the next booklet to be inserted in the database
-     *
-     * @return int
-     */
-    public function getBookletBatch()
-    {
-        $lastBooklet = $this->em->getRepository(Booklet::class)->findBy([], ['id' => 'DESC'], 1, 0)[0];
-
-        if ($lastBooklet) {
-            $bookletBatch = $lastBooklet->getId() + 1;
-            return $bookletBatch;
-        } else {
-            return 0;
-        }
-    }
 
     /**
      * Generates a random code for a booklet
@@ -426,7 +369,7 @@ class BookletService
         }
 
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(
-            ['beneficiary' => $beneficiary, "distributionData" => $distributionData]
+          ['beneficiary' => $beneficiary, "distributionData" => $distributionData]
         );
         $booklet->setDistributionBeneficiary($distributionBeneficiary)
                 ->setStatus(Booklet::DISTRIBUTED);
@@ -437,7 +380,7 @@ class BookletService
         if ($beneficiariesWithoutBooklets === '1') {
             $distributionData->setCompleted(true);
             $this->em->merge($distributionData);
-        }
+        }  
 
         $this->em->flush();
 
@@ -609,7 +552,7 @@ class BookletService
 
             $products = [];
             if ($transactionBooklet) {
-                foreach ($transactionBooklet->getVouchers() as $voucher) {
+                foreach($transactionBooklet->getVouchers() as $voucher) {
                     foreach ($voucher->getProducts() as $product) {
                         array_push($products, $product->getName());
                     }
@@ -617,8 +560,7 @@ class BookletService
             }
             $products = implode(', ', array_unique($products));
 
-            array_push(
-                $exportableTable,
+            array_push($exportableTable,
                 array_merge($commonFields, array(
                 "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
                 "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
