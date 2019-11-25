@@ -39,7 +39,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         // Second step
-        $crawler = $this->request('PUT', '/api/wsse/booklets', $body);
+        $crawler = $this->request('PUT', '/api/wsse/booklets/sync', $body);
         $booklet = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -208,7 +208,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
 
-        $crawler = $this->request('GET', '/api/wsse/booklets/sync' . $newBooklet['id']);
+        $crawler = $this->request('GET', '/api/wsse/booklets' . $newBooklet['id']);
         $booklet = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('id', $booklet);
