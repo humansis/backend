@@ -93,7 +93,6 @@ class BookletController extends Controller
      */
     public function createBookletSyncAction(Request $request)
     {
-        var_dump($request);
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
 

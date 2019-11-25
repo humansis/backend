@@ -103,6 +103,7 @@ class BookletService
         
         $currentBatch = $bookletBatch;
         for ($x = 0; $x < $bookletData['number_booklets']; $x++) {
+            var_dump($currentBatch);
             // Create booklet
             try {
                 $booklet = new Booklet();
