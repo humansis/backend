@@ -118,6 +118,8 @@ class BookletService
                     $booklet->setPassword($bookletData['password']);
                 }
 
+                var_dump($booklet);
+
                 $this->em->persist($booklet);
 
                 $currentBatch++;
