@@ -52,33 +52,30 @@ class VoucherService
      * @return mixed
      * @throws \Exception
      */
-    public function create(array $vouchersData)
+    public function create(array $vouchersData, $flush = true)
     {
         try {
+            $currentId = $this->getLastId() + 1;
             for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
                 $voucher = new Voucher();
                 $voucherData = $vouchersData;
                 $voucherData['value'] = $vouchersData['values'][$x];
-                $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
+                $booklet = $voucherData['booklet'];
+                $code = $this->generateCode($voucherData, $currentId);
 
                 $voucher->setUsedAt(null)
-                        ->setCode('')
+                        ->setCode($code)
                         ->setBooklet($booklet)
                         ->setVendor(null)
                         ->setValue($voucherData['value']);
 
+                $currentId++;
+
                 $this->em->persist($voucher);
-                $this->em->flush();
 
-                $code = $this->generateCode($voucherData, $voucher->getId());
-
-                if (empty($code)) {
-                    $this->em->remove($voucher);
-                    throw new \Exception("Could not generate the code");
+                if ($flush) {
+                    $this->em->flush();
                 }
-
-                $voucher->setCode($code);
-                $this->em->flush();
             }
         } catch (\Exception $e) {
             throw $e;
@@ -100,7 +97,7 @@ class VoucherService
         // CREATE VOUCHER CODE CurrencyValue*BookletBatchNumber-lastBatchNumber-BookletId-VoucherId
         $value = $voucherData['value'];
         $currency = $voucherData['currency'];
-        $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
+        $booklet = $voucherData['booklet'];
 
         $fullCode = $currency . $value . '*' . $voucherData['bookletCode'] . '-' . $voucherId;
         $fullCode = $booklet->password ? $fullCode . '-' . $booklet->password : $fullCode;
@@ -134,7 +131,7 @@ class VoucherService
                 return $voucher;
             }
             $voucher->setVendor($vendor)
-        ->setUsedAt(new \DateTime($voucherData['used_at'])); // TODO : check format
+                    ->setUsedAt(new \DateTime($voucherData['used_at'])); // TODO : check format
 
             foreach ($voucherData['productIds'] as $productId) {
                 $product = $this->em->getRepository(Product::class)->find($productId);
@@ -203,43 +200,64 @@ class VoucherService
          * @param string $type
          * @return mixed
          */
-        public function exportToCsv(string $type, $ids)
-        {
-            if ($ids) {
-                $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
-            } else {
-                $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
-            }
-
-            return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
+    public function exportToCsv(string $type, $ids)
+    {
+        if ($ids) {
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+        } else {
+            $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
         }
 
-        /**
-         * Export all vouchers in a pdf
-         * @return mixed
-         */
-        public function exportToPdf($ids)
-        {
-            if ($ids) {
-                $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
-            } else {
-                $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
-            }
+        return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
+    }
 
-            try {
-                $html =  $this->container->get('templating')->render(
-                    '@Voucher/Pdf/codes.html.twig',
-                    array_merge(
-                        ['vouchers' => $exportableTable],
-                        $this->container->get('pdf_service')->getInformationStyle()
+    /**
+     * Export all vouchers in a pdf
+     * @return mixed
+     */
+    public function exportToPdf($ids)
+    {
+        if ($ids) {
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+        } else {
+            $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
+        }
+
+        try {
+            $html =  $this->container->get('templating')->render(
+                '@Voucher/Pdf/codes.html.twig',
+                array_merge(
+                    ['vouchers' => $exportableTable],
+                    $this->container->get('pdf_service')->getInformationStyle()
                     )
 
                 );
 
-                $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'bookletCodes');
-                return $response;
-            } catch (\Exception $e) {
-                throw new \Exception($e);
-            }
+            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'bookletCodes');
+            return $response;
+        } catch (\Exception $e) {
+            throw new \Exception($e);
         }
+    }
+
+    public function getLastId()
+    {
+        $lastVoucher = $this->em->getRepository(Voucher::class)->findBy([], ['id' => 'DESC'], 1, 0)[0];
+
+        return $lastVoucher ? $lastVoucher->getId() : 0;
+    }
+
+
+    /**
+     * Remove incomplete vouchers in database
+     */
+    public function cleanUp()
+    {
+        $incompleteVoucher = $this->em->getRepository(Voucher::class)->findOneBy(['code' => '']);
+
+        if ($incompleteVoucher) {
+            $this->em->remove($incompleteVoucher);
+            $this->em->flush();
+        }
+    }
 }
