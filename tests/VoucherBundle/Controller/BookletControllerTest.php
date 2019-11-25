@@ -42,6 +42,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/booklets/sync', $body);
         $booklet = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
+        var_dump($booklet);
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertArrayHasKey('currency', $booklet);
         $this->assertArrayHasKey('vouchers', $booklet);
