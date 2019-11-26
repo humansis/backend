@@ -98,12 +98,9 @@ class BookletService
      */
     public function create($countryISO3, array $bookletData)
     {
-        set_time_limit(0);
         $bookletBatch = $this->getBookletBatch();
-        
         $currentBatch = $bookletBatch;
         for ($x = 0; $x < $bookletData['number_booklets']; $x++) {
-            var_dump($currentBatch);
             // Create booklet
             try {
                 $booklet = new Booklet();
@@ -118,8 +115,6 @@ class BookletService
                 if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
                     $booklet->setPassword($bookletData['password']);
                 }
-
-                var_dump($booklet);
 
                 $this->em->persist($booklet);
 
@@ -158,9 +153,9 @@ class BookletService
      */
     public function getLastId()
     {
-        $lastBooklet = $this->em->getRepository(Booklet::class)->findBy([], ['id' => 'DESC'], 1, 0)[0];
+        $lastBooklet = $this->em->getRepository(Booklet::class)->findBy([], ['id' => 'DESC'], 1);
 
-        return $lastBooklet ? $lastBooklet->getId() : 0;
+        return $lastBooklet ? $lastBooklet[0]->getId() : 0;
     }
 
     /**
@@ -185,13 +180,12 @@ class BookletService
      */
     public function getBookletBatch()
     {
-        $lastBooklet = $this->em->getRepository(Booklet::class)->findBy([], ['id' => 'DESC'], 1, 0)[0];
-
+        $lastBooklet = $this->em->getRepository(Booklet::class)->findBy([], ['id' => 'DESC'], 1);
         if ($lastBooklet) {
-            $bookletBatch = $lastBooklet->getId() + 1;
+            $bookletBatch = $lastBooklet[0]->getId() + 1;
             return $bookletBatch;
         } else {
-            return 0;
+            return 1;
         }
     }
 
