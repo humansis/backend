@@ -298,6 +298,7 @@ class BookletService
 
             $this->em->flush();
         } catch (\Exception $e) {
+            dump($e->getMessage());
             throw new \Exception('Error updating Booklet');
         }
         return $booklet;
