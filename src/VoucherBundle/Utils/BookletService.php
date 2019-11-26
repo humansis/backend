@@ -199,19 +199,10 @@ class BookletService
      */
     public function generateCode(array $bookletData, int $currentBatch, int $bookletBatch)
     {
-        // === randomCode*bookletBatchNumber-lastBatchNumber-currentBooklet ===
+        // randomCode*bookletBatchNumber-lastBatchNumber-currentBooklet
         $lastBatchNumber = $bookletBatch + ($bookletData['number_booklets'] - 1);
-
-        if ($bookletBatch > 1) {
-            $bookletBatchNumber = $bookletBatch;
-        } elseif (!$bookletBatch) {
-            $bookletBatchNumber = "0";
-        }
-
-    
-    
-        // === joins all parts together ===
-        $fullCode = $bookletBatchNumber . '-' . $lastBatchNumber . '-' . $currentBatch;
+        $fullCode = $bookletBatch . '-' . $lastBatchNumber . '-' . $currentBatch;
+        
         return $fullCode;
     }
 
