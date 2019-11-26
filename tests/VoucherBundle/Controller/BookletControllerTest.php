@@ -30,7 +30,8 @@ class BookletControllerTest extends BMSServiceTestCase
             "number_booklets" => 5,
             "individual_values" => [10, 3, 5],
             "currency" => 'USD',
-            "number_vouchers" => 3
+            "number_vouchers" => 3,
+            "__country" => 'KHM'
         ];
 
         // Fake connection with a token for the user tester (ADMIN)
