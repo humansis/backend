@@ -2,18 +2,18 @@
 
 namespace CommonBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-
-use FOS\RestBundle\Controller\Annotations as Rest;
-use Swagger\Annotations as SWG;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Entity\OrganizationServices;
+
+use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\SerializationContext;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Swagger\Annotations as SWG;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class OrganizationController
@@ -170,7 +170,6 @@ class OrganizationController extends Controller
 
     /**
      * @Rest\Get("/organization/{id}/service", name="get_organization_service")
-     * @Security("is_granted('ROLE_ADMIN')")
      *
      * @SWG\Tag(name="Organization")
      *
