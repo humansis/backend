@@ -211,7 +211,6 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('GET', '/api/wsse/booklets/' . $newBooklet['id']);
         $booklet = json_decode($this->client->getResponse()->getContent(), true);
-        dump($this->client->getResponse());
 
         $this->assertArrayHasKey('id', $booklet);
         $this->assertArrayHasKey('number_vouchers', $booklet);
@@ -240,6 +239,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('POST', '/api/wsse/booklets/' . $newBooklet['id'], $body);
         $newBookletReceived = json_decode($this->client->getResponse()->getContent(), true);
+        dump($this->client->getResponse());
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
