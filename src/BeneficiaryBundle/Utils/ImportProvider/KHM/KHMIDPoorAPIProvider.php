@@ -110,6 +110,10 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
         $email = urlencode($organizationIDPoor->getParameterValue('email'));
         $token = $organizationIDPoor->getParameterValue('token');
 
+        if (!$email || !$token) {
+            throw new \Exception("This service has no parameters specified");
+        }
+
         // $route = $locationCodeNum . ".json?email=james.happell%40peopleinneed.cz&token=K45nDocxQ5sEFfqSWwDm-2DxskYEDYFe";
 
         $route = $locationCodeNum . ".json?email=" . $email . "&token=" . $token;

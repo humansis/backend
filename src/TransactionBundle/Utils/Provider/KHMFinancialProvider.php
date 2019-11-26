@@ -59,7 +59,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider
 
         $this->password = $organizationWINGCashTransfer->getParameterValue('password');
         $this->username = $organizationWINGCashTransfer->getParameterValue('username');
-        $this->production = $organizationWINGCashTransfer->getParameterValue('production');
+        $this->production = $organizationWINGCashTransfer->getParameterValue('production') ? $organizationWINGCashTransfer->getParameterValue('production') : false;
+
+        if (!$this->password || !$this->username) {
+            throw new \Exception("This service has no parameters specified");
+        }
 
         // $this->username = $FP->getUsername();
         // $this->password = base64_decode($FP->getPassword());
