@@ -264,7 +264,7 @@ class BookletService
               'number_vouchers' => $vouchersToAdd,
               'bookletCode' => $booklet->getCode(),
               'currency' => $bookletData['currency'],
-              'bookletID' => $booklet->getId(),
+              'booklet' => $booklet,
               'values' => $values,
             ];
       
@@ -298,7 +298,6 @@ class BookletService
 
             $this->em->flush();
         } catch (\Exception $e) {
-            dump($e->getMessage());
             throw new \Exception('Error updating Booklet');
         }
         return $booklet;
@@ -445,8 +444,7 @@ class BookletService
     public function deleteBookletFromDatabase(Booklet $booklet, bool $removeBooklet = true)
     {
         // === check if booklet has any vouchers ===
-        $bookletId = $booklet->getId();
-        $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $bookletId]);
+        $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet]);
         if ($removeBooklet && !$vouchers) {
             try {
                 // === if no vouchers then delete ===

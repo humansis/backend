@@ -239,7 +239,6 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('POST', '/api/wsse/booklets/' . $newBooklet['id'], $body);
         $newBookletReceived = json_decode($this->client->getResponse()->getContent(), true);
-        dump($this->client->getResponse());
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
