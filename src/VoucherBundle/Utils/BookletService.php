@@ -11,10 +11,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
@@ -34,17 +36,21 @@ class BookletService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var EventDispatcherInterface $eventDispatcher */
+    private $eventDispatcher;
+
     /**
      * UserService constructor.
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, EventDispatcherInterface $eventDispatcher)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -60,6 +66,30 @@ class BookletService
     }
 
     /**
+     * Create new booklets as a background task.
+     * Returns the last booklet id currently in the database and the number of booklets to create.
+     *
+     * @param string $country
+     * @param array $bookletData
+     * @return int
+     */
+    public function backgroundCreate($country, array $bookletData)
+    {
+        $this->container->get('voucher.voucher_service')->cleanUp();
+        
+        $this->eventDispatcher->addListener(KernelEvents::TERMINATE, function ($event) use ($country, $bookletData) {
+            try {
+                $this->create($country, $bookletData);
+            } catch (\Exception $e) {
+                $this->container->get('logger')->error($e);
+                $this->container->get('voucher.voucher_service')->cleanUp();
+            }
+        });
+
+        return ["lastBooklet" => $this->getLastId(), "expectedNumber" => $bookletData['number_booklets']];
+    }
+
+    /**
      * Creates a new Booklet entity
      *
      * @param array $bookletData
@@ -70,10 +100,8 @@ class BookletService
     {
         $bookletBatch = $this->getBookletBatch();
         $currentBatch = $bookletBatch;
-
         for ($x = 0; $x < $bookletData['number_booklets']; $x++) {
-
-      // === creates booklet ===
+            // Create booklet
             try {
                 $booklet = new Booklet();
                 $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
@@ -88,28 +116,30 @@ class BookletService
                     $booklet->setPassword($bookletData['password']);
                 }
 
-                $this->em->merge($booklet);
-                $this->em->flush();
+                $this->em->persist($booklet);
 
                 $currentBatch++;
-                $createdBooklet = $this->em->getRepository(Booklet::class)->findOneByCode($booklet->getCode());
             } catch (\Exception $e) {
                 throw new \Exception('Error creating Booklet ' . $e->getMessage() . ' ' . $e->getLine());
             }
 
-            //=== creates vouchers ===
+            // Create vouchers
             try {
                 $voucherData = [
                     'number_vouchers' => $bookletData['number_vouchers'],
                     'bookletCode' => $code,
                     'currency' => $bookletData['currency'],
-                    'bookletID' => $createdBooklet->getId(),
+                    'booklet' => $booklet,
                     'values' => $bookletData['individual_values'],
                 ];
             
-                $this->container->get('voucher.voucher_service')->create($voucherData);
+                $this->container->get('voucher.voucher_service')->create($voucherData, false);
             } catch (\Exception $e) {
                 throw $e;
+            }
+
+            if ($x%10 === 0 || $x === $bookletData['number_booklets']-1) {
+                $this->em->flush();
             }
         }
 
@@ -118,7 +148,7 @@ class BookletService
 
     /**
      * Get the last inserted ID in the Booklet table
-     *
+     * 
      * @return int
      */
     public function getLastId()
@@ -130,10 +160,10 @@ class BookletService
 
     /**
      * Get the number of insterted booklets in a country since an ID.
-     *
+     * 
      * @param string $country
      * @param int $lastId
-     *
+     * 
      * @return int
      */
     public function getNumberOfInsertedBooklets(string $country, int $lastId)
