@@ -243,7 +243,6 @@ class VoucherService
     public function getLastId()
     {
         $lastVoucher = $this->em->getRepository(Voucher::class)->findBy([], ['id' => 'DESC'], 1);
-
         return $lastVoucher ? $lastVoucher[0]->getId() : 0;
     }
 
