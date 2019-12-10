@@ -52,33 +52,30 @@ class VoucherService
      * @return mixed
      * @throws \Exception
      */
-    public function create(array $vouchersData)
+    public function create(array $vouchersData, $flush = true)
     {
         try {
+            $currentId = $this->getLastId() + 1;
             for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
                 $voucher = new Voucher();
                 $voucherData = $vouchersData;
                 $voucherData['value'] = $vouchersData['values'][$x];
-                $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
+                $booklet = $voucherData['booklet'];
+                $code = $this->generateCode($voucherData, $currentId);
 
                 $voucher->setUsedAt(null)
-                        ->setCode('')
+                        ->setCode($code)
                         ->setBooklet($booklet)
                         ->setVendor(null)
                         ->setValue($voucherData['value']);
 
+                $currentId++;
+
                 $this->em->persist($voucher);
-                $this->em->flush();
 
-                $code = $this->generateCode($voucherData, $voucher->getId());
-
-                if (empty($code)) {
-                    $this->em->remove($voucher);
-                    throw new \Exception("Could not generate the code");
+                if ($flush) {
+                    $this->em->flush();
                 }
-
-                $voucher->setCode($code);
-                $this->em->flush();
             }
         } catch (\Exception $e) {
             throw $e;
@@ -100,7 +97,7 @@ class VoucherService
         // CREATE VOUCHER CODE CurrencyValue*BookletBatchNumber-lastBatchNumber-BookletId-VoucherId
         $value = $voucherData['value'];
         $currency = $voucherData['currency'];
-        $booklet = $this->em->getRepository(Booklet::class)->find($voucherData['bookletID']);
+        $booklet = $voucherData['booklet'];
 
         $fullCode = $currency . $value . '*' . $voucherData['bookletCode'] . '-' . $voucherId;
         $fullCode = $booklet->password ? $fullCode . '-' . $booklet->password : $fullCode;
@@ -134,7 +131,7 @@ class VoucherService
                 return $voucher;
             }
             $voucher->setVendor($vendor)
-        ->setUsedAt(new \DateTime($voucherData['used_at'])); // TODO : check format
+                    ->setUsedAt(new \DateTime($voucherData['used_at'])); // TODO : check format
 
             foreach ($voucherData['productIds'] as $productId) {
                 $product = $this->em->getRepository(Product::class)->find($productId);
@@ -230,8 +227,8 @@ class VoucherService
             $html =  $this->container->get('templating')->render(
                 '@Voucher/Pdf/codes.html.twig',
                 array_merge(
-                        ['vouchers' => $exportableTable],
-                        $this->container->get('pdf_service')->getInformationStyle()
+                    ['vouchers' => $exportableTable],
+                    $this->container->get('pdf_service')->getInformationStyle()
                     )
 
                 );

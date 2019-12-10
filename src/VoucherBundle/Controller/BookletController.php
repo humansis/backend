@@ -296,9 +296,6 @@ class BookletController extends Controller
      */
     public function getSingleBookletAction(Booklet $booklet)
     {
-        var_dump("\nwtf\n");
-        var_dump($booklet);
-
         $json = $this->get('jms_serializer')->serialize($booklet, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
 
         return new Response($json);

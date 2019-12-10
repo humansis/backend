@@ -50,8 +50,6 @@ class BookletControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('number_vouchers', $booklet);
         // only returns the last booklet in batch
 
-        var_dump("\nyo\n");
-        var_dump($booklet);
         return $booklet;
     }
 
@@ -214,10 +212,6 @@ class BookletControllerTest extends BMSServiceTestCase
         $crawler = $this->request('GET', '/api/wsse/booklets/' . $newBooklet['id']);
         $booklet = json_decode($this->client->getResponse()->getContent(), true);
 
-
-        var_dump("\n1\n");
-        var_dump($booklet);
-
         $this->assertArrayHasKey('id', $booklet);
         $this->assertArrayHasKey('number_vouchers', $booklet);
         $this->assertArrayHasKey('vouchers', $booklet);
@@ -245,9 +239,6 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('POST', '/api/wsse/booklets/' . $newBooklet['id'], $body);
         $newBookletReceived = json_decode($this->client->getResponse()->getContent(), true);
-
-        var_dump("\n2\n");
-        var_dump($this->client->getResponse());
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 

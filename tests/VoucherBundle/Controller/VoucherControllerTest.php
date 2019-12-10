@@ -58,9 +58,6 @@ class VoucherControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/vouchers', $body);
         $voucher = json_decode($this->client->getResponse()->getContent(), true);
 
-        var_dump("\n3\n");
-        var_dump($this->client->getResponse());
-
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $this->assertArrayHasKey('id', $voucher);
