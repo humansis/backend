@@ -203,43 +203,64 @@ class VoucherService
          * @param string $type
          * @return mixed
          */
-        public function exportToCsv(string $type, $ids)
-        {
-            if ($ids) {
-                $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
-            } else {
-                $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
-            }
-
-            return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
+    public function exportToCsv(string $type, $ids)
+    {
+        if ($ids) {
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+        } else {
+            $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
         }
 
-        /**
-         * Export all vouchers in a pdf
-         * @return mixed
-         */
-        public function exportToPdf($ids)
-        {
-            if ($ids) {
-                $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
-            } else {
-                $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
-            }
+        return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
+    }
 
-            try {
-                $html =  $this->container->get('templating')->render(
-                    '@Voucher/Pdf/codes.html.twig',
-                    array_merge(
+    /**
+     * Export all vouchers in a pdf
+     * @return mixed
+     */
+    public function exportToPdf($ids)
+    {
+        if ($ids) {
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+        } else {
+            $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
+        }
+
+        try {
+            $html =  $this->container->get('templating')->render(
+                '@Voucher/Pdf/codes.html.twig',
+                array_merge(
                         ['vouchers' => $exportableTable],
                         $this->container->get('pdf_service')->getInformationStyle()
                     )
 
                 );
 
-                $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'bookletCodes');
-                return $response;
-            } catch (\Exception $e) {
-                throw new \Exception($e);
-            }
+            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'bookletCodes');
+            return $response;
+        } catch (\Exception $e) {
+            throw new \Exception($e);
         }
+    }
+
+    public function getLastId()
+    {
+        $lastVoucher = $this->em->getRepository(Voucher::class)->findBy([], ['id' => 'DESC'], 1);
+
+        return $lastVoucher ? $lastVoucher[0]->getId() : 0;
+    }
+
+
+    /**
+     * Remove incomplete vouchers in database
+     */
+    public function cleanUp()
+    {
+        $incompleteVoucher = $this->em->getRepository(Voucher::class)->findOneBy(['code' => '']);
+
+        if ($incompleteVoucher) {
+            $this->em->remove($incompleteVoucher);
+            $this->em->flush();
+        }
+    }
 }

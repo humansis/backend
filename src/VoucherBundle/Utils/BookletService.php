@@ -48,24 +48,6 @@ class BookletService
     }
 
     /**
-     * Returns the index of the next booklet to be inserted in the database
-     *
-     * @return int
-     */
-    public function getBookletBatch()
-    {
-        $allBooklets = $this->em->getRepository(Booklet::class)->findAll();
-        end($allBooklets);
-
-        if ($allBooklets) {
-            $bookletBatch = $allBooklets[key($allBooklets)]->getId() + 1;
-            return $bookletBatch;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
      * Find one booklet by code
      *
      * @param string $code
@@ -131,9 +113,51 @@ class BookletService
             }
         }
 
-        return $createdBooklet;
+        return $booklet;
     }
 
+    /**
+     * Get the last inserted ID in the Booklet table
+     *
+     * @return int
+     */
+    public function getLastId()
+    {
+        $lastBooklet = $this->em->getRepository(Booklet::class)->findBy([], ['id' => 'DESC'], 1);
+
+        return $lastBooklet ? $lastBooklet[0]->getId() : 0;
+    }
+
+    /**
+     * Get the number of insterted booklets in a country since an ID.
+     *
+     * @param string $country
+     * @param int $lastId
+     *
+     * @return int
+     */
+    public function getNumberOfInsertedBooklets(string $country, int $lastId)
+    {
+        $newBooklets = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => $country], null, null, $lastId);
+
+        return count($newBooklets);
+    }
+
+    /**
+     * Returns the index of the next booklet to be inserted in the database
+     *
+     * @return int
+     */
+    public function getBookletBatch()
+    {
+        $lastBooklet = $this->em->getRepository(Booklet::class)->findBy([], ['id' => 'DESC'], 1);
+        if ($lastBooklet) {
+            $bookletBatch = $lastBooklet[0]->getId() + 1;
+            return $bookletBatch;
+        } else {
+            return 1;
+        }
+    }
 
     /**
      * Generates a random code for a booklet
@@ -145,19 +169,10 @@ class BookletService
      */
     public function generateCode(array $bookletData, int $currentBatch, int $bookletBatch)
     {
-        // === randomCode*bookletBatchNumber-lastBatchNumber-currentBooklet ===
+        // randomCode*bookletBatchNumber-lastBatchNumber-currentBooklet
         $lastBatchNumber = $bookletBatch + ($bookletData['number_booklets'] - 1);
-
-        if ($bookletBatch > 1) {
-            $bookletBatchNumber = $bookletBatch;
-        } elseif (!$bookletBatch) {
-            $bookletBatchNumber = "0";
-        }
-
-    
-    
-        // === joins all parts together ===
-        $fullCode = $bookletBatchNumber . '-' . $lastBatchNumber . '-' . $currentBatch;
+        $fullCode = $bookletBatch . '-' . $lastBatchNumber . '-' . $currentBatch;
+        
         return $fullCode;
     }
 
@@ -219,7 +234,7 @@ class BookletService
               'number_vouchers' => $vouchersToAdd,
               'bookletCode' => $booklet->getCode(),
               'currency' => $bookletData['currency'],
-              'bookletID' => $booklet->getId(),
+              'booklet' => $booklet,
               'values' => $values,
             ];
       
@@ -369,7 +384,7 @@ class BookletService
         }
 
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(
-          ['beneficiary' => $beneficiary, "distributionData" => $distributionData]
+            ['beneficiary' => $beneficiary, "distributionData" => $distributionData]
         );
         $booklet->setDistributionBeneficiary($distributionBeneficiary)
                 ->setStatus(Booklet::DISTRIBUTED);
@@ -380,7 +395,7 @@ class BookletService
         if ($beneficiariesWithoutBooklets === '1') {
             $distributionData->setCompleted(true);
             $this->em->merge($distributionData);
-        }  
+        }
 
         $this->em->flush();
 
@@ -399,8 +414,7 @@ class BookletService
     public function deleteBookletFromDatabase(Booklet $booklet, bool $removeBooklet = true)
     {
         // === check if booklet has any vouchers ===
-        $bookletId = $booklet->getId();
-        $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $bookletId]);
+        $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet]);
         if ($removeBooklet && !$vouchers) {
             try {
                 // === if no vouchers then delete ===
@@ -552,7 +566,7 @@ class BookletService
 
             $products = [];
             if ($transactionBooklet) {
-                foreach($transactionBooklet->getVouchers() as $voucher) {
+                foreach ($transactionBooklet->getVouchers() as $voucher) {
                     foreach ($voucher->getProducts() as $product) {
                         array_push($products, $product->getName());
                     }
@@ -560,7 +574,8 @@ class BookletService
             }
             $products = implode(', ', array_unique($products));
 
-            array_push($exportableTable,
+            array_push(
+                $exportableTable,
                 array_merge($commonFields, array(
                 "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
                 "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,

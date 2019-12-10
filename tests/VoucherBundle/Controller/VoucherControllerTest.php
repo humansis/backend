@@ -3,8 +3,8 @@ namespace VoucherBundle\Tests\Controller;
 
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
-use VoucherBundle\Entity\Voucher;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Entity\Voucher;
 
 class VoucherControllerTest extends BMSServiceTestCase
 {
@@ -44,7 +44,7 @@ class VoucherControllerTest extends BMSServiceTestCase
             'number_vouchers' => 3,
             'bookletCode' => $this->booklet->getCode(),
             'currency' => 'USD',
-            'bookletID' => null,
+            'booklet' => $this->booklet,
             'values' => [1, 2, 3],
         ];
 
@@ -52,9 +52,6 @@ class VoucherControllerTest extends BMSServiceTestCase
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
-
-
-        $body['bookletID'] = $this->booklet->getId();
 
         // Second step
         // Create the vendor with the email and the salted password. The user should be enable
