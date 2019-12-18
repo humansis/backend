@@ -20,9 +20,6 @@ security:
         tester_salt:
             pattern:    ^/api/wsse/salt
             security:   false
-        tester_login:
-            pattern:    ^/api/wsse/login
-            security:   false
 
         #WSSE
         wsse_secured:
