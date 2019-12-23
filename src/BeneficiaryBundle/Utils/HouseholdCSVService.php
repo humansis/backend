@@ -3,6 +3,7 @@
 
 namespace BeneficiaryBundle\Utils;
 
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\DataTreatment\AbstractTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\DuplicateTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\ValidateTreatment;
@@ -14,7 +15,6 @@ use BeneficiaryBundle\Utils\DataVerifier\AbstractVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\ExistingHouseholdVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\LessVerifier;
-use BeneficiaryBundle\Utils\DataVerifier\LevenshteinTypoVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
@@ -88,10 +88,54 @@ class HouseholdCSVService
     {
         // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
         $reader = IOFactory::createReaderForFile($uploadedFile->getRealPath());
-
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data_csv';
+        if (!is_dir($dir_var)) {
+            mkdir($dir_var);
+        }
+        $uploadedFile->move($dir_var);
+
+        $numberRow = $worksheet->getHighestRow() > 10 ? 10 : $worksheet->getHighestRow();
+        $sheetArray = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $numberRow, null, true, true, true);
+
+        $header = $sheetArray[Household::indexRowHeader];
+        for ($row = 1; $row < Household::firstRow; $row++) {
+            unset($sheetArray[$row]);
+        }
+
+        return [
+            'header' => array_slice($header, 0, -3),
+            'data' => array_values($sheetArray),
+            'mapping' => $this->CSVToArrayMapper->getMappingCSVOfCountry($countryIso3),
+            'tmpFile' => $uploadedFile->getFilename()
+        ];
+    }
+
+    /**
+     * Defined the reader and transform CSV to array
+     *
+     * @param $countryIso3
+     * @param Project $project
+     * @param $token
+     * @param string $email
+     * @return array
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    public function saveCSVAndAnalyze($countryIso3, Project $project, $tmpFile, $mappingCSV, $token, string $email)
+    {
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $csvFile = $dir_root . '/../var/data_csv/' . $tmpFile;
+
+        // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
+        $reader = IOFactory::createReaderForFile($csvFile);
+
+        $worksheet = $reader->load($csvFile)->getActiveSheet();
+        // todo: remove file
         $sheetArray = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $worksheet->getHighestRow(), null, true, true, true);
-        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $token, $email);
+        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $mappingCSV, null, $email);
     }
 
     /**
@@ -103,11 +147,11 @@ class HouseholdCSVService
      * @return array|bool
      * @throws \Exception
      */
-    public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, $token, string $email)
+    public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, $mappingCSV, $token, string $email)
     {
         // Get the list of households from csv with their beneficiaries
         if ($token === null) {
-            $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $countryIso3);
+            $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $countryIso3, $mappingCSV);
             return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $token, $email);
         } else {
             return $this->foundErrors($countryIso3, $project, $sheetArray, $token, $email);
@@ -128,7 +172,7 @@ class HouseholdCSVService
         // Clean cache if timestamp is expired
         $this->clearExpiredSessions();
         $this->token = $token;
-        
+
         do {
             // get step
             $this->step = $this->getStepFromCache();
