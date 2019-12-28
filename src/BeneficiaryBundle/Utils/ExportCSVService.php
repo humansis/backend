@@ -109,7 +109,7 @@ class ExportCSVService
     {
         $spreadsheet = $this->buildFile($countryISO3);
         $filename = $this->container->get('export_csv_service')->generateFile($spreadsheet, 'pattern_household_' . $countryISO3, $type);
-        
+
         return $filename;
     }
 
@@ -317,11 +317,72 @@ class ExportCSVService
             $this->MAPPING_DETAILS[$key] = $detail;
         }
 
+        if ($countryISO3 === "UKR") {
+            $tempHxlMember = [
+                "F 0 - 2" => "",
+                "F 2 - 5" => "",
+                "F 6 - 17" => "",
+                "F 18 - 64" => "",
+                "F 65+" => "",
+                "M 0 - 2" => "",
+                "M 2 - 5" => "",
+                "M 6 - 17" => "",
+                "M 18 - 64" => "",
+                "M 65+" => "",
+            ];
+            $tempBenefMember = [
+                "F 0 - 2" => 2,
+                "F 2 - 5" => 0,
+                "F 6 - 17" => 0,
+                "F 18 - 64" => 0,
+                "F 65+" => 1,
+                "M 0 - 2" => 0,
+                "M 2 - 5" => 3,
+                "M 6 - 17" => 0,
+                "M 18 - 64" => 0,
+                "M 65+" => 0,
+            ];
+            $dependentMember = [
+                "F 0 - 2" => "",
+                "F 2 - 5" => "",
+                "F 6 - 17" => "",
+                "F 18 - 64" => "",
+                "F 65+" => "",
+                "M 0 - 2" => "",
+                "M 2 - 5" => "",
+                "M 6 - 17" => "",
+                "M 18 - 64" => "",
+                "M 65+" => "",
+            ];
+            $detailsMember = [
+                "F 0 - 2" => "Number",
+                "F 2 - 5" => "Number",
+                "F 6 - 17" => "Number",
+                "F 18 - 64" => "Number",
+                "F 65+" => "Number",
+                "M 0 - 2" => "Number",
+                "M 2 - 5" => "Number",
+                "M 6 - 17" => "Number",
+                "M 18 - 64" => "Number",
+                "M 65+" => "Number",
+            ];
+
+            $this->MAPPING_HXL = $this->arrayInsert($this->MAPPING_HXL, -3, $tempHxlMember);
+            $this->MAPPING_CSV_EXPORT = $this->arrayInsert($this->MAPPING_CSV_EXPORT, -3, $tempBenefMember);
+            $this->MAPPING_DEPENDENTS = $this->arrayInsert($this->MAPPING_DEPENDENTS, -3, $dependentMember);
+            $this->MAPPING_DETAILS = $this->arrayInsert($this->MAPPING_DETAILS, -3, $detailsMember);
+        }
+
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_HXL);
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_CSV_EXPORT);
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_DEPENDENTS);
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_DETAILS);
 
         return $this->container->get('export_csv_service')->export($MAPPING_CSV_EXPORT, 'pattern_household_'  . $countryISO3, $type);
+    }
+
+    private function arrayInsert($array, $index, $val)
+    {
+        return array_slice($array, 0, $index, true) + $val + array_slice($array, $index, count($array) - 1, true) ;
     }
 }
