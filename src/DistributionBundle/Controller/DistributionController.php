@@ -351,7 +351,7 @@ class DistributionController extends Controller
      * Get beneficiaries of a distribution without booklets.
      *
      * @Rest\Get("/distributions/{id}/assignable-beneficiaries", name="get_assignable_beneficiaries_distribution", requirements={"id"="\d+"})
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
      *
      * @SWG\Tag(name="Distributions")
      *

@@ -384,7 +384,7 @@ class BookletController extends Controller
     /**
      * Assign the booklet to a specific beneficiary
      * @Rest\Post("/booklets/assign/{beneficiaryId}/{distributionId}", name="assign_booklet")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
      * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      * @ParamConverter("distributionData", options={"mapping": {"distributionId": "id"}})
