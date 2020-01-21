@@ -2,18 +2,18 @@
 
 namespace VoucherBundle\Controller;
 
+use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use FOS\RestBundle\Controller\Annotations as Rest;
-use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Swagger\Annotations as SWG;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use VoucherBundle\Entity\Voucher;
 use VoucherBundle\Entity\Booklet;
+use VoucherBundle\Entity\Voucher;
 
 /**
  * Class VoucherController
