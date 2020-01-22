@@ -138,10 +138,13 @@ class BookletService
                 throw $e;
             }
 
-            if ($x%10 === 0 || $x === $bookletData['number_booklets']-1) {
+            if ($x%10 === 0) {
                 $this->em->flush();
+                $this->em->clear();
             }
         }
+        $this->em->flush();
+        $this->em->clear();
 
         return $booklet;
     }
@@ -168,8 +171,7 @@ class BookletService
      */
     public function getNumberOfInsertedBooklets(string $country, int $lastId)
     {
-        $newBooklets = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => $country], null, null, $lastId);
-
+        $newBooklets = $this->em->getRepository(Booklet::class)->getInsertedBooklets($country, $lastId);
         return count($newBooklets);
     }
 

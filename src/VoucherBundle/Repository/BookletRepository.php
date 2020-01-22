@@ -33,7 +33,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getResult();
     }
 
-        public function getActiveBookletsByDistributionBeneficiary(int $distributionBeneficiaryId) {
+    public function getActiveBookletsByDistributionBeneficiary(int $distributionBeneficiaryId) {
         $qb = $this->createQueryBuilder('b');
         
         $qb->andWhere('db.id = :id')
@@ -175,5 +175,15 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         $query->useResultCache(true,3600);
 
         return [count($paginator), $query->getResult()];
+    }
+
+    public function getInsertedBooklets($countryISO3, $lastId) {
+        $qb = $this->createQueryBuilder('b');
+        $q = $qb->where('b.id >= :lastId')
+                ->andWhere('b.countryISO3 = :country')
+                ->setParameter('lastId', $lastId)
+                ->setParameter('country', $countryISO3);
+
+        return $q->getQuery()->getResult();
     }
 }
