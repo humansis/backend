@@ -295,14 +295,6 @@ class ExportCSVService
         ];
 
         $MAPPING_CSV_EXPORT = array();
-        $countrySpecifics = $this->getCountrySpecifics($countryISO3);
-        foreach ($countrySpecifics as $countrySpecific) {
-            $randomNum = rand(0, 100);
-            $this->MAPPING_HXL[$countrySpecific->getFieldString()] = '';
-            $this->MAPPING_CSV_EXPORT[$countrySpecific->getFieldString()] = $randomNum;
-            $this->MAPPING_DEPENDENTS[$countrySpecific->getFieldString()] = '';
-            $this->MAPPING_DETAILS[$countrySpecific->getFieldString()] = $countrySpecific->getType();
-        }
 
         foreach ($tempHxl as $key => $value) {
             $this->MAPPING_HXL[$key] = $value;
@@ -371,6 +363,17 @@ class ExportCSVService
             $this->MAPPING_CSV_EXPORT = $this->arrayInsert($this->MAPPING_CSV_EXPORT, -3, $tempBenefMember);
             $this->MAPPING_DEPENDENTS = $this->arrayInsert($this->MAPPING_DEPENDENTS, -3, $dependentMember);
             $this->MAPPING_DETAILS = $this->arrayInsert($this->MAPPING_DETAILS, -3, $detailsMember);
+        }
+
+        $countrySpecifics = $this->getCountrySpecifics($countryISO3);
+        foreach ($countrySpecifics as $countrySpecific) {
+            $randomNum = rand(0, 100);
+            $countryField = $countrySpecific->getFieldString();
+
+            $this->MAPPING_HXL = $this->arrayInsert($this->MAPPING_HXL, -3, [$countryField => '']);
+            $this->MAPPING_CSV_EXPORT = $this->arrayInsert($this->MAPPING_CSV_EXPORT, -3, [$countryField => $randomNum]);
+            $this->MAPPING_DEPENDENTS = $this->arrayInsert($this->MAPPING_DEPENDENTS, -3, [$countryField => '']);
+            $this->MAPPING_DETAILS = $this->arrayInsert($this->MAPPING_DETAILS, -3, [$countryField => $countrySpecific->getType()]);
         }
 
         array_push($MAPPING_CSV_EXPORT, $this->MAPPING_HXL);
