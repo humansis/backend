@@ -628,7 +628,7 @@ class BookletService
      * @param array $filters
      * @return mixed
      */
-    public function getAll(string $iso3, array $filters)
+    public function getAll(string $countryISO3, array $filters)
     {
         $pageIndex = $filters['pageIndex'];
         $pageSize = $filters['pageSize'];
@@ -637,7 +637,7 @@ class BookletService
 
         $limitMinimum = $pageIndex * $pageSize;
 
-        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($iso3, $limitMinimum, $pageSize, $sort, $filter);
+        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryISO3, $limitMinimum, $pageSize, $sort, $filter);
         $length = $booklets[0];
         $booklets = $booklets[1];
         return [$length, $booklets];

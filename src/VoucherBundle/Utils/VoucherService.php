@@ -200,12 +200,24 @@ class VoucherService
          * @param string $type
          * @return mixed
          */
-    public function exportToCsv(string $type, $ids)
+    public function exportToCsv(string $type, string $countryIso3, $ids, $filters)
     {
+        $booklets = null;
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+        } else if ($filters) {
+            $booklets = $this->container->get('voucher.booklet_service')->getAll($countryIso3, $filters)[1];
         } else {
-            $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
+            $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
+        }
+
+        if ($booklets) {
+            $exportableTable = [];
+            foreach ($booklets as $booklet) {
+                foreach ($booklet->getVouchers() as $voucher) {
+                    array_push($exportableTable, $voucher);
+                }
+            }
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
@@ -215,12 +227,24 @@ class VoucherService
      * Export all vouchers in a pdf
      * @return mixed
      */
-    public function exportToPdf($ids)
+    public function exportToPdf($ids, $countryIso3, $filters)
     {
+        $booklets = null;
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+        } else if ($filters) {
+            $booklets = $this->container->get('voucher.booklet_service')->getAll($countryIso3, $filters)[1];
         } else {
-            $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
+            $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
+        }
+
+        if ($booklets) {
+            $exportableTable = [];
+            foreach ($booklets as $booklet) {
+                foreach ($booklet->getVouchers() as $voucher) {
+                    array_push($exportableTable, $voucher);
+                }
+            }
         }
 
         try {
