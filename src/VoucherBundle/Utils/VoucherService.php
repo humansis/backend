@@ -200,12 +200,20 @@ class VoucherService
          * @param string $type
          * @return mixed
          */
-    public function exportToCsv(string $type, $ids)
+    public function exportToCsv(string $type, string $countryIso3, $ids, $filters)
     {
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+        } else if ($filters) {
+            $booklets = $this->container->get('voucher.booklet_service')->getAll($countryIso3, $filters)[1];
+            $exportableTable = [];
+            foreach ($booklets as $booklet) {
+                foreach ($booklet->getVouchers() as $voucher) {
+                    array_push($exportableTable, $voucher);
+                }
+            }
         } else {
-            $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
+            $exportableTable = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
