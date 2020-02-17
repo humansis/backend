@@ -70,7 +70,7 @@ class ExportService
             $writer->setUseBOM(true);
             $filename = $name.'.csv';
         } elseif ($type == self::FORMAT_XLS) {
-            $writer = IOFactory::createWriter($spreadsheet, 'Xls');
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
             $filename = $name.'.xls';
         } elseif ($type == self::FORMAT_ODS) {
             $writer = IOFactory::createWriter($spreadsheet, 'Ods');
