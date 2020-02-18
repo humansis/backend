@@ -2,23 +2,14 @@
 
 namespace VoucherBundle\Utils;
 
-use CommonBundle\Entity\Logs;
 use Doctrine\ORM\EntityManagerInterface;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class VoucherService
 {
@@ -212,15 +203,9 @@ class VoucherService
         }
 
         if ($booklets) {
-            $exportableTable = [];
-            foreach ($booklets as $booklet) {
-                foreach ($booklet->getVouchers() as $voucher) {
-                    array_push($exportableTable, $voucher);
-                }
-            }
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets);
         }
-
-        return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
+        return $this->export($exportableTable, $type);
     }
 
     /**
@@ -282,5 +267,55 @@ class VoucherService
             $this->em->remove($incompleteVoucher);
             $this->em->flush();
         }
+    }
+
+    /**
+     * Create new booklets as a background task.
+     * Returns the last booklet id currently in the database and the number of booklets to create.
+     *
+     * @param string $country
+     * @param array $bookletData
+     * @return int
+     */
+    public function export($exportableTable, $type)
+    {
+        // Step 1 : Sheet construction
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->createSheet();
+        $spreadsheet->setActiveSheetIndex(0);
+        $worksheet = $spreadsheet->getActiveSheet();
+        $initialIndex = 1;
+        $rowIndex = $initialIndex;
+
+        // Set headers
+        $headers = ['Booklet Number', 'Voucher Codes'];
+        
+        $worksheet->fromArray(
+            $headers,
+            Null,
+            'A' . $rowIndex
+        );
+
+        foreach($exportableTable as $row) {
+            $rowIndex++;
+
+            // Add a line. fromArray sets the data in the cells faster than setCellValue
+            $worksheet->fromArray(
+                $row->getMappedValueForExport(),
+                Null,
+                'A' . $rowIndex
+            );
+
+            // Used to limit the memory consumption (Can only be used with individual entities)
+            $this->em->detach($row);
+        }
+
+        try {
+            $filename = $this->container->get('export_csv_service')->generateFile($spreadsheet, 'bookletCodes', $type);
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+
+        return $filename;
     }
 }

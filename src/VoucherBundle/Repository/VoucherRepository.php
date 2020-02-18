@@ -24,4 +24,14 @@ class VoucherRepository extends \Doctrine\ORM\EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function getAllByBooklets(array $booklets)
+    {
+        $qb = $this->createQueryBuilder("v");
+        $q = $qb->leftJoin("v.booklet", "b")
+            ->where("b IN (:booklets)")
+            ->setParameter("booklets", $booklets);
+
+        return $q->getQuery()->getResult();
+    }
 }
