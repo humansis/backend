@@ -9,6 +9,7 @@ use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class VoucherService
@@ -204,8 +205,11 @@ class VoucherService
 
         if ($booklets) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets);
+            if ($type === 'csv') {
+                return $this->voucherCsvExport($exportableTable);
+            }
         }
-        return $this->export($exportableTable, $type);
+        return $this->voucherExport($exportableTable->getResult(), $type);
     }
 
     /**
@@ -277,8 +281,26 @@ class VoucherService
      * @param array $bookletData
      * @return int
      */
-    public function export($exportableTable, $type)
+    public function voucherCsvExport($exportableTable)
     {
+        $response = new StreamedResponse(function () use ($exportableTable) {
+            $data = $exportableTable->iterate();
+            $csv = fopen('php://output', 'w+');
+            fputcsv($csv, array('Booklet Number', 'Voucher Codes'),';');
+
+            while (false !== ($row = $data->next())) {
+                fputcsv($csv, [$row[0]->getBooklet()->getCode(), $row[0]->getCode()], ';');
+                $this->em->detach($row[0]);
+            }
+            fclose($csv);
+        });
+        $response->setStatusCode(200);
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+        return $response;
+    }
+
+    public function voucherExport($exportableTable, $type) {
         // Step 1 : Sheet construction
         $spreadsheet = new Spreadsheet();
         $spreadsheet->createSheet();

@@ -25,6 +25,11 @@ class VoucherRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * Get queryset for the streamed response
+     * @param array  $booklets
+     * @return mixed
+     */
     public function getAllByBooklets(array $booklets)
     {
         $qb = $this->createQueryBuilder("v");
@@ -32,6 +37,6 @@ class VoucherRepository extends \Doctrine\ORM\EntityRepository
             ->where("b IN (:booklets)")
             ->setParameter("booklets", $booklets);
 
-        return $q->getQuery()->getResult();
+        return $q->getQuery();
     }
 }
