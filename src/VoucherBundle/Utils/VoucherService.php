@@ -206,10 +206,11 @@ class VoucherService
         if ($booklets) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets);
             if ($type === 'csv') {
-                return $this->voucherCsvExport($exportableTable);
+                return $this->csvExport($exportableTable);
             }
+            $exportableTable = $exportableTable->getResult();
         }
-        return $this->voucherExport($exportableTable->getResult(), $type);
+        return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
     }
 
     /**
@@ -281,7 +282,7 @@ class VoucherService
      * @param array $bookletData
      * @return int
      */
-    public function voucherCsvExport($exportableTable)
+    public function csvExport($exportableTable)
     {
         $response = new StreamedResponse(function () use ($exportableTable) {
             $data = $exportableTable->iterate();
@@ -298,46 +299,5 @@ class VoucherService
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
         return $response;
-    }
-
-    public function voucherExport($exportableTable, $type) {
-        // Step 1 : Sheet construction
-        $spreadsheet = new Spreadsheet();
-        $spreadsheet->createSheet();
-        $spreadsheet->setActiveSheetIndex(0);
-        $worksheet = $spreadsheet->getActiveSheet();
-        $initialIndex = 1;
-        $rowIndex = $initialIndex;
-
-        // Set headers
-        $headers = ['Booklet Number', 'Voucher Codes'];
-        
-        $worksheet->fromArray(
-            $headers,
-            Null,
-            'A' . $rowIndex
-        );
-
-        foreach($exportableTable as $row) {
-            $rowIndex++;
-
-            // Add a line. fromArray sets the data in the cells faster than setCellValue
-            $worksheet->fromArray(
-                $row->getMappedValueForExport(),
-                Null,
-                'A' . $rowIndex
-            );
-
-            // Used to limit the memory consumption (Can only be used with individual entities)
-            $this->em->detach($row);
-        }
-
-        try {
-            $filename = $this->container->get('export_csv_service')->generateFile($spreadsheet, 'bookletCodes', $type);
-        } catch (\Exception $e) {
-            throw new \Exception($e);
-        }
-
-        return $filename;
     }
 }
