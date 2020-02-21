@@ -195,6 +195,7 @@ class VoucherService
     public function exportToCsv(string $type, string $countryIso3, $ids, $filters)
     {
         $booklets = null;
+        $maxNonCsvExport = 100000;
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
         } else if ($filters) {
@@ -209,6 +210,9 @@ class VoucherService
                 return $this->csvExport($exportableTable);
             }
             $exportableTable = $exportableTable->getResult();
+        }
+        if (count($exportableTable) >= $maxNonCsvExport) {
+            throw new \Exception("There are too much vouchers for the export (".count($exportableTable)."). We recommend using csv for efficency.");
         }
         return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
     }
@@ -297,7 +301,7 @@ class VoucherService
         });
         $response->setStatusCode(200);
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
-        $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+        $response->headers->set('Content-Disposition', 'attachment; filename="bookletCodes.csv"');
         return $response;
     }
 }
