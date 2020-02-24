@@ -9,7 +9,7 @@ use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class VoucherService
 {
@@ -189,11 +189,17 @@ class VoucherService
     /**
          * Export all vouchers in a CSV file
          * @param string $type
+         * @param string $countryIso3
+         * @param array $ids
+         * @param array $filters
          * @return mixed
          */
     public function exportToCsv(string $type, string $countryIso3, $ids, $filters)
     {
         $booklets = null;
+        $maxExport = 50000;
+        $limit = $type === 'csv' ? null : $maxExport;
+
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
         } else if ($filters) {
@@ -201,22 +207,37 @@ class VoucherService
         } else {
             $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
         }
-
+        
+        // If we only have the booklets, get the vouchers
         if ($booklets) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets);
         }
-        return $this->export($exportableTable, $type);
+
+        // If csv type, return the response
+        if (!$limit) {
+            return $this->csvExport($exportableTable);
+        }
+
+        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
+        if ($total > $limit) {
+            throw new \Exception("Too much vouchers for the export (".$total."). Use csv for large exports. Otherwise, for ".
+            $type." export the data in batches of ".$maxExport." vouchers or less");
+        }
+        return $this->container->get('export_csv_service')->export($exportableTable->getResult(), 'bookletCodes', $type);
     }
 
     /**
      * Export all vouchers in a pdf
+     * @param array $ids
+     * @param string $countryIso3
+     * @param array $filters
      * @return mixed
      */
-    public function exportToPdf($ids, $countryIso3, $filters)
+    public function exportToPdf($ids, string $countryIso3, $filters)
     {
         $booklets = null;
         if ($ids) {
-            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids)->getResult();
         } else if ($filters) {
             $booklets = $this->container->get('voucher.booklet_service')->getAll($countryIso3, $filters)[1];
         } else {
@@ -224,12 +245,7 @@ class VoucherService
         }
 
         if ($booklets) {
-            $exportableTable = [];
-            foreach ($booklets as $booklet) {
-                foreach ($booklet->getVouchers() as $voucher) {
-                    array_push($exportableTable, $voucher);
-                }
-            }
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets)->getResult();
         }
 
         try {
@@ -277,45 +293,22 @@ class VoucherService
      * @param array $bookletData
      * @return int
      */
-    public function export($exportableTable, $type)
+    public function csvExport($exportableTable)
     {
-        // Step 1 : Sheet construction
-        $spreadsheet = new Spreadsheet();
-        $spreadsheet->createSheet();
-        $spreadsheet->setActiveSheetIndex(0);
-        $worksheet = $spreadsheet->getActiveSheet();
-        $initialIndex = 1;
-        $rowIndex = $initialIndex;
+        $response = new StreamedResponse(function () use ($exportableTable) {
+            $data = $exportableTable->iterate();
+            $csv = fopen('php://output', 'w+');
+            fputcsv($csv, array('Booklet Number', 'Voucher Codes'),';');
 
-        // Set headers
-        $headers = ['Booklet Number', 'Voucher Codes'];
-        
-        $worksheet->fromArray(
-            $headers,
-            Null,
-            'A' . $rowIndex
-        );
-
-        foreach($exportableTable as $row) {
-            $rowIndex++;
-
-            // Add a line. fromArray sets the data in the cells faster than setCellValue
-            $worksheet->fromArray(
-                $row->getMappedValueForExport(),
-                Null,
-                'A' . $rowIndex
-            );
-
-            // Used to limit the memory consumption (Can only be used with individual entities)
-            $this->em->detach($row);
-        }
-
-        try {
-            $filename = $this->container->get('export_csv_service')->generateFile($spreadsheet, 'bookletCodes', $type);
-        } catch (\Exception $e) {
-            throw new \Exception($e);
-        }
-
-        return $filename;
+            while (false !== ($row = $data->next())) {
+                fputcsv($csv, [$row[0]->getBooklet()->getCode(), $row[0]->getCode()], ';');
+                $this->em->detach($row[0]);
+            }
+            fclose($csv);
+        });
+        $response->setStatusCode(200);
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="bookletCodes.csv"');
+        return $response;
     }
 }

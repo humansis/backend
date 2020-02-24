@@ -99,6 +99,9 @@ class ExportController extends Controller
                 if ($type === 'pdf') {
                     return $this->get('voucher.voucher_service')->exportToPdf($ids, $countryIso3, $filters);
                 }
+                if ($type === 'csv') {
+                    return $this->get('voucher.voucher_service')->exportToCsv($type, $countryIso3, $ids, $filters);
+                }
                 $filename = $this->get('voucher.voucher_service')->exportToCsv($type, $countryIso3, $ids, $filters);
             } elseif ($request->query->get('reporting')) {
                 $filename = $this->get('reporting.reporting_service')->exportToCsv($request->request, $type);
