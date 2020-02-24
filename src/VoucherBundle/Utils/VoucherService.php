@@ -10,7 +10,6 @@ use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class VoucherService
 {
@@ -190,12 +189,17 @@ class VoucherService
     /**
          * Export all vouchers in a CSV file
          * @param string $type
+         * @param string $countryIso3
+         * @param array $ids
+         * @param array $filters
          * @return mixed
          */
     public function exportToCsv(string $type, string $countryIso3, $ids, $filters)
     {
         $booklets = null;
-        $maxNonCsvExport = 100000;
+        $maxExport = 50000;
+        $limit = $type === 'csv' ? null : $maxExport;
+
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
         } else if ($filters) {
@@ -203,29 +207,37 @@ class VoucherService
         } else {
             $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
         }
-
+        
+        // If we only have the booklets, get the vouchers
         if ($booklets) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets);
-            if ($type === 'csv') {
-                return $this->csvExport($exportableTable);
-            }
-            $exportableTable = $exportableTable->getResult();
         }
-        if (count($exportableTable) >= $maxNonCsvExport) {
-            throw new \Exception("There are too much vouchers for the export (".count($exportableTable)."). We recommend using csv for efficency.");
+
+        // If csv type, return the response
+        if (!$limit) {
+            return $this->csvExport($exportableTable);
         }
-        return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
+
+        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
+        if ($total > $limit) {
+            throw new \Exception("Too much vouchers for the export (".$total."). Use csv for large exports. Otherwise, for ".
+            $type." export the data in batches of ".$maxExport." vouchers or less");
+        }
+        return $this->container->get('export_csv_service')->export($exportableTable->getResult(), 'bookletCodes', $type);
     }
 
     /**
      * Export all vouchers in a pdf
+     * @param array $ids
+     * @param string $countryIso3
+     * @param array $filters
      * @return mixed
      */
-    public function exportToPdf($ids, $countryIso3, $filters)
+    public function exportToPdf($ids, string $countryIso3, $filters)
     {
         $booklets = null;
         if ($ids) {
-            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids)->getResult();
         } else if ($filters) {
             $booklets = $this->container->get('voucher.booklet_service')->getAll($countryIso3, $filters)[1];
         } else {
@@ -233,12 +245,7 @@ class VoucherService
         }
 
         if ($booklets) {
-            $exportableTable = [];
-            foreach ($booklets as $booklet) {
-                foreach ($booklet->getVouchers() as $voucher) {
-                    array_push($exportableTable, $voucher);
-                }
-            }
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets)->getResult();
         }
 
         try {

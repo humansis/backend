@@ -17,12 +17,12 @@ class VoucherRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getAllByBookletIds(array $ids)
     {
-        $qb = $this->createQueryBuilder("v")
-            ->leftJoin('v.booklet', 'b')
+        $qb = $this->createQueryBuilder("v");
+        $q = $qb->leftJoin('v.booklet', 'b')
             ->andWhere('b.id IN (:ids)')
             ->setParameter('ids', $ids);
 
-        return $qb->getQuery()->getResult();
+        return $q->getQuery();
     }
 
     /**
@@ -38,5 +38,25 @@ class VoucherRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter("booklets", $booklets);
 
         return $q->getQuery();
+    }
+
+    public function countByBookletsIds(array $ids) {
+        $qb = $this->createQueryBuilder("v");
+        $q = $qb->leftJoin("v.booklet", "b")
+            ->select('count(v.id)')
+            ->where("b.id IN (:ids)")
+            ->setParameter("ids", $ids);
+
+        return $q->getQuery()->getSingleScalarResult();
+    }
+
+    public function countByBooklets(array $booklets) {
+        $qb = $this->createQueryBuilder("v");
+        $q = $qb->leftJoin("v.booklet", "b")
+            ->select('count(v.id)')
+            ->where("b IN (:booklets)")
+            ->setParameter("booklets", $booklets);
+
+        return $q->getQuery()->getSingleScalarResult();
     }
 }
