@@ -50,7 +50,7 @@ class Household
      * First value with a column in the csv which can move, depends on the number of country specifics
      * @var string
      */
-    const firstColumnNonStatic = 'O';
+    const firstColumnNonStatic = 'Q';
 
     /**
      * The row index of the header (with the name of country specifics)
@@ -76,37 +76,39 @@ class Household
         "tent_number" => "E",
         "livelihood" => "F",
         "income_level" => "G",
-        "notes" => "H",
-        "latitude" => "I",
-        "longitude" => "J",
+        "food_consumption_score" => "H",
+        "coping_strategies_index" => "I",
+        "notes" => "J",
+        "latitude" => "K",
+        "longitude" => "L",
         "location" => [
             // Location
-            "adm1" => "K",
-            "adm2" => "L",
-            "adm3" => "M",
-            "adm4" => "N"
+            "adm1" => "M",
+            "adm2" => "N",
+            "adm3" => "O",
+            "adm4" => "P"
         ],
         // Beneficiary
         "beneficiaries" => [
-            "local_given_name" => "O",
-            "local_family_name" => "P",
-            "en_given_name" => "Q",
-            "en_family_name" => "R",
-            "gender" => "S",
-            "status" => "T",
-            "residency_status" => "U",
-            "date_of_birth" => "V",
-            "vulnerability_criteria" => "W",
-            "phone1_type" => "X",
-            "phone1_prefix" => "Y",
-            "phone1_number" => "Z",
-            "phone1_proxy" => "AA",
-            "phone2_type" => "AB",
-            "phone2_prefix" => "AC",
-            "phone2_number" => "AD",
-            "phone2_proxy" => "AE",
-            "national_id_type" => "AF",
-            "national_id_number" => "AG",
+            "local_given_name" => "Q",
+            "local_family_name" => "R",
+            "en_given_name" => "S",
+            "en_family_name" => "T",
+            "gender" => "U",
+            "status" => "V",
+            "residency_status" => "W",
+            "date_of_birth" => "X",
+            "vulnerability_criteria" => "Y",
+            "phone1_type" => "Z",
+            "phone1_prefix" => "AA",
+            "phone1_number" => "AB",
+            "phone1_proxy" => "AC",
+            "phone2_type" => "AD",
+            "phone2_prefix" => "AE",
+            "phone2_number" => "AF",
+            "phone2_proxy" => "AG",
+            "national_id_type" => "AH",
+            "national_id_number" => "AI",
         ]
     ];
 
