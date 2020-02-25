@@ -69,6 +69,7 @@ class CSVToArrayMapper extends AbstractMapper
                 }
                 $householdArray = $formattedHouseholdArray;
                 $householdArray['beneficiaries'] = [$formattedHouseholdArray['beneficiaries']];
+                $this->generateStaticBeneficiary($householdArray);
             } else {
                 // Add beneficiary to existing household
                 $householdArray['beneficiaries'][] = $formattedHouseholdArray['beneficiaries'];
@@ -266,6 +267,45 @@ class CSVToArrayMapper extends AbstractMapper
                 ];
                 unset($formattedHouseholdArray[$indexFormatted]);
             }
+        }
+    }
+
+    private function generateStaticBeneficiary(&$householdArray)
+    {
+        $staticFields = [
+            'f-0-2', 'f-2-5', 'f-6-17', 'f-18-64', 'f-65-65',
+            'm-0-2', 'm-2-5', 'm-6-17', 'm-18-64', 'm-65-65',
+        ];
+        foreach ($staticFields as $staticField) {
+            $field = 'member_' . $staticField;
+            $headBeneficiary = $householdArray['beneficiaries'][0];
+            if ($headBeneficiary && !empty($householdArray[$field])) {
+                list ($gender, $fromAge, $toAge) = explode('-', $staticField);
+                $gender = $gender === 'f' ? 0 : 1;
+                $birthDate = new \DateTime();
+                $ageInterval = new \DateInterval('P' . ($toAge - $fromAge) * 12 . 'M') ;
+                $birthDate->sub($ageInterval);
+                for ($i = 1; $i <= $householdArray[$field]; $i++) {
+                    $generatedBeneficiary = [
+                        'local_given_name' => 'Member ' . $i,
+                        'local_family_name' => $headBeneficiary['local_family_name'],
+                        'en_given_name' => 'Member ' . $i,
+                        'en_family_name' => $headBeneficiary['en_family_name'],
+                        'date_of_birth' => $birthDate->format('d-m-Y'),
+                        'gender' => $gender,
+                        'status' => 0,
+                        'residency_status' => $headBeneficiary['residency_status'],
+                        'vulnerability_criteria' => [],
+                        'phones' => [],
+                        'national_ids' => [],
+                        'profile' => [
+                            'photo' => '',
+                        ],
+                    ];
+                    $householdArray['beneficiaries'][] = $generatedBeneficiary;
+                }
+            }
+            unset($householdArray[$field]);
         }
     }
 
