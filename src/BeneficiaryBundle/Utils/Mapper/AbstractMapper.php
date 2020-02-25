@@ -43,8 +43,8 @@ abstract class AbstractMapper
             }
         }
 
-        // SUMOfLetter is not correct if it is start from "AG"
-        // Workaround "AA" + 7
+        // SUMOfLetter is not correct if it is start from "AI"
+        // Workaround "AA" + 9
         $lastIndexCSV = 'AA';
         $nbstaticField = 0;
         if ($countryIso3 === 'UKR') {
@@ -53,7 +53,7 @@ abstract class AbstractMapper
                 'm-0-2', 'm-2-5', 'm-6-17', 'm-18-64', 'm-65-65',
             ];
             for ($i = 0; $i < count($staticFields); $i++) {
-                $mappingCSVCountry['member_' . $staticFields[$i]] = $this->SUMOfLetter($lastIndexCSV, $i + 7);
+                $mappingCSVCountry['member_' . $staticFields[$i]] = $this->SUMOfLetter($lastIndexCSV, $i + 9);
             }
 
             $nbstaticField = count($staticFields);
@@ -62,7 +62,7 @@ abstract class AbstractMapper
         // Add each country specific column in the mapping
         for ($i = 0; $i < $nbCountrySpecific; $i++) {
             $mappingCSVCountry["tmp_country_specific" . $i] =
-                $this->SUMOfLetter($lastIndexCSV, $i + $nbstaticField + 7);
+                $this->SUMOfLetter($lastIndexCSV, $i + $nbstaticField + 9);
         }
 
         return $mappingCSVCountry;
