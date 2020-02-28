@@ -20,11 +20,6 @@ class CSVToArrayMapper extends AbstractMapper
 
     private $adms = [];
 
-    public function getMappingCSVOfCountry($countryIso3)
-    {
-        return $this->loadMappingCSVOfCountry($countryIso3);
-    }
-
     /**
      * Get the list of households with their beneficiaries.
      *
@@ -35,9 +30,10 @@ class CSVToArrayMapper extends AbstractMapper
      *
      * @throws \Exception
      */
-    public function fromCSVToArray(array $sheetArray, $countryIso3, $mappingCSV)
+    public function fromCSVToArray(array $sheetArray, $countryIso3)
     {
         // Get the mapping for the current country
+        $mappingCSV = $this->loadMappingCSVOfCountry($countryIso3);
         $listHouseholdArray = [];
         $householdArray = null;
         $rowHeader = [];
