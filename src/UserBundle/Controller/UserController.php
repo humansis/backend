@@ -69,8 +69,7 @@ class UserController extends Controller
     {
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('password');
-        /* TODO: Remove after correct server config
-         * $clientIp = $request->headers->get('x-real-ip');
+        $clientIp = $request->headers->get('x-real-ip');
 
         if ($clientIp) {
             $originRequest = json_decode(file_get_contents('http://www.geoplugin.net/json.gp?ip=' . $clientIp))->geoplugin_countryCode;
@@ -78,9 +77,6 @@ class UserController extends Controller
         } else {
             $originISO3 = null;
         }
-        */
-        $originISO3 = null;
-
         // Users from Syria will most likely have a turkish IP address
         // if ($originISO3 === "TUR") {
         //     $originISO3 = "SYR";
@@ -95,10 +91,10 @@ class UserController extends Controller
         if ($user->getVendor() !== null) {
             return new Response('You cannot connect on this site, please use the app.', Response::HTTP_FORBIDDEN);
         }
-
+        
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
-
+        
         $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
         return new Response($userJson);
     }

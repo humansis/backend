@@ -698,8 +698,6 @@ class Beneficiary implements ExportableInterface
                 "tent number" => "",
                 "livelihood" => "",
                 "incomeLevel" => "",
-                "foodConsumptionScore" => "",
-                "copingStrategiesIndex" => "",
                 "notes" => "",
                 "latitude" => "",
                 "longitude" => "",
@@ -765,7 +763,7 @@ class Beneficiary implements ExportableInterface
 
     public function getCommonHouseholdExportFields()
     {
-
+        
         $householdLocations = $this->getHousehold()->getHouseholdLocations();
         $currentHouseholdLocation = null;
         foreach ($householdLocations as $householdLocation) {
@@ -795,11 +793,9 @@ class Beneficiary implements ExportableInterface
             "addressPostcode" =>  $addressPostcode,
             "camp" => $camp,
             "tent number" => $tentNumber,
-            "livelihood" => $this->getHousehold()->getLivelihood() ?
+            "livelihood" => $this->getHousehold()->getLivelihood() ? 
                 Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()] : null,
             "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
-            "foodConsumptionScore" => $this->getHousehold()->getFoodConsumptionScore(),
-            "copingStrategiesIndex" => $this->getHousehold()->getCopingStrategiesIndex(),
             "notes" => $this->getHousehold()->getNotes(),
             "latitude" => $this->getHousehold()->getLatitude(),
             "longitude" => $this->getHousehold()->getLongitude(),
