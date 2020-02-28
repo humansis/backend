@@ -128,7 +128,7 @@ class HouseholdCSVService
         // Clean cache if timestamp is expired
         $this->clearExpiredSessions();
         $this->token = $token;
-
+        
         do {
             // get step
             $this->step = $this->getStepFromCache();
