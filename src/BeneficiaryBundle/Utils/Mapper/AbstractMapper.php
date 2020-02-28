@@ -49,8 +49,8 @@ abstract class AbstractMapper
         $nbstaticField = 0;
         if ($countryIso3 === 'UKR') {
             $staticFields = [
-                'f-0-2', 'f-2-5', 'f-6-17', 'f-18-64', 'f-65-99',
-                'm-0-2', 'm-2-5', 'm-6-17', 'm-18-64', 'm-65-99',
+                'f-0-2', 'f-2-5', 'f-6-17', 'f-18-64', 'f-65-65',
+                'm-0-2', 'm-2-5', 'm-6-17', 'm-18-64', 'm-65-65',
             ];
             for ($i = 0; $i < count($staticFields); $i++) {
                 $mappingCSVCountry['member_' . $staticFields[$i]] = $this->SUMOfLetter($lastIndexCSV, $i + 9);
