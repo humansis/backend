@@ -3,23 +3,13 @@
 namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use CommonBundle\Entity\Logs;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
@@ -100,6 +90,7 @@ class BookletService
     {
         $bookletBatch = $this->getBookletBatch();
         $currentBatch = $bookletBatch;
+        $lastVoucherId = $this->container->get('voucher.voucher_service')->getLastId();
         for ($x = 0; $x < $bookletData['number_booklets']; $x++) {
             // Create booklet
             try {
@@ -131,9 +122,10 @@ class BookletService
                     'currency' => $bookletData['currency'],
                     'booklet' => $booklet,
                     'values' => $bookletData['individual_values'],
+                    'lastId' => $lastVoucherId
                 ];
             
-                $this->container->get('voucher.voucher_service')->create($voucherData, false);
+                $lastVoucherId = $this->container->get('voucher.voucher_service')->create($voucherData, false);
             } catch (\Exception $e) {
                 throw $e;
             }
