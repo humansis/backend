@@ -3,23 +3,13 @@
 namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use CommonBundle\Entity\Logs;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
@@ -100,6 +90,7 @@ class BookletService
     {
         $bookletBatch = $this->getBookletBatch();
         $currentBatch = $bookletBatch;
+        $lastVoucherId = $this->container->get('voucher.voucher_service')->getLastId();
         for ($x = 0; $x < $bookletData['number_booklets']; $x++) {
             // Create booklet
             try {
@@ -131,9 +122,11 @@ class BookletService
                     'currency' => $bookletData['currency'],
                     'booklet' => $booklet,
                     'values' => $bookletData['individual_values'],
+                    'lastId' => $lastVoucherId
                 ];
             
                 $this->container->get('voucher.voucher_service')->create($voucherData, false);
+                $lastVoucherId += $bookletData['number_vouchers'];
             } catch (\Exception $e) {
                 throw $e;
             }
@@ -172,7 +165,10 @@ class BookletService
     public function getNumberOfInsertedBooklets(string $country, int $lastId)
     {
         $newBooklets = $this->em->getRepository(Booklet::class)->getInsertedBooklets($country, $lastId);
-        return count($newBooklets);
+        if (!empty($newBooklets)) {
+            return count($newBooklets);
+        }
+        return 0;
     }
 
     /**
@@ -263,12 +259,12 @@ class BookletService
                 try {
                     $values = array_fill(0, $vouchersToAdd, 1);
                     $voucherData = [
-              'number_vouchers' => $vouchersToAdd,
-              'bookletCode' => $booklet->getCode(),
-              'currency' => $bookletData['currency'],
-              'booklet' => $booklet,
-              'values' => $values,
-            ];
+                        'number_vouchers' => $vouchersToAdd,
+                        'bookletCode' => $booklet->getCode(),
+                        'currency' => $bookletData['currency'],
+                        'booklet' => $booklet,
+                        'values' => $values,
+                    ];
       
                     $this->container->get('voucher.voucher_service')->create($voucherData);
                 } catch (\Exception $e) {
