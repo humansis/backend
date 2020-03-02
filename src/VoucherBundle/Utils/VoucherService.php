@@ -46,7 +46,7 @@ class VoucherService
     public function create(array $vouchersData, $flush = true)
     {
         try {
-            $currentId = $vouchersData['lastId'] + 1;
+            $currentId = array_key_exists('lastId', $vouchersData) ? $vouchersData['lastId'] + 1 : $this->getLastId() + 1;
             for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
                 $voucher = new Voucher();
                 $voucherData = $vouchersData;
@@ -66,13 +66,12 @@ class VoucherService
 
                 if ($flush) {
                     $this->em->flush();
-                    $this->em->clear();
                 }
             }
         } catch (\Exception $e) {
             throw $e;
         }
-        return $currentId - 1;
+        return $voucher;
     }
 
 

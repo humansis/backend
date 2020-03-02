@@ -125,7 +125,8 @@ class BookletService
                     'lastId' => $lastVoucherId
                 ];
             
-                $lastVoucherId = $this->container->get('voucher.voucher_service')->create($voucherData, false);
+                $this->container->get('voucher.voucher_service')->create($voucherData, false);
+                $lastVoucherId += $bookletData['number_vouchers'];
             } catch (\Exception $e) {
                 throw $e;
             }
@@ -164,7 +165,10 @@ class BookletService
     public function getNumberOfInsertedBooklets(string $country, int $lastId)
     {
         $newBooklets = $this->em->getRepository(Booklet::class)->getInsertedBooklets($country, $lastId);
-        return count($newBooklets);
+        if (!empty($newBooklets)) {
+            return count($newBooklets);
+        }
+        return 0;
     }
 
     /**
@@ -255,12 +259,12 @@ class BookletService
                 try {
                     $values = array_fill(0, $vouchersToAdd, 1);
                     $voucherData = [
-              'number_vouchers' => $vouchersToAdd,
-              'bookletCode' => $booklet->getCode(),
-              'currency' => $bookletData['currency'],
-              'booklet' => $booklet,
-              'values' => $values,
-            ];
+                        'number_vouchers' => $vouchersToAdd,
+                        'bookletCode' => $booklet->getCode(),
+                        'currency' => $bookletData['currency'],
+                        'booklet' => $booklet,
+                        'values' => $values,
+                    ];
       
                     $this->container->get('voucher.voucher_service')->create($voucherData);
                 } catch (\Exception $e) {
