@@ -69,12 +69,10 @@ class CSVToArrayMapper extends AbstractMapper
                 }
                 $householdArray = $formattedHouseholdArray;
                 $householdArray['beneficiaries'] = [$formattedHouseholdArray['beneficiaries']];
-                if ($countryIso3 === 'UKR') {
-                    try {
-                        $this->generateStaticBeneficiary($householdArray);
-                    } catch (\Exception $exception) {
-                        throw $exception;
-                    }
+                try {
+                    $this->generateStaticBeneficiary($householdArray);
+                } catch (\Exception $exception) {
+                    throw $exception;
                 }
             } else {
                 // Add beneficiary to existing household
