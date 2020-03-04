@@ -39,6 +39,15 @@ class Project implements ExportableInterface
     private $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="internalId", type="string", length=255)
+     *
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
+     */
+    private $internalId = '';
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="startDate", type="date")
@@ -190,6 +199,22 @@ class Project implements ExportableInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInternalId(): string
+    {
+        return $this->internalId;
+    }
+
+    /**
+     * @param string $internalId
+     */
+    public function setInternalId($internalId)
+    {
+        $this->internalId = $internalId;
     }
 
     /**
