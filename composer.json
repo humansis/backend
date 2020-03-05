@@ -23,7 +23,7 @@
 		]
 	},
 	"require": {
-		"php": ">=7.0",
+		"php": "^7.3",
 		"ext-Zend-OPcache": "*",
 		"ext-json": "*",
 		"aws/aws-sdk-php": "^3.90",
@@ -83,7 +83,7 @@
 	},
 	"config": {
 		"platform": {
-			"php": "7.2.4"
+			"php": "7.3"
 		},
 		"sort-packages": true
 	},

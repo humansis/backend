@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3269e7a875d305e1d274f0bc014eeb8a",
+    "content-hash": "5bcdd68847fc3fc96bf0b415688f8139",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -5987,6 +5987,7 @@
                 "code",
                 "zf2"
             ],
+            "abandoned": "laminas/laminas-code",
             "time": "2018-08-13T20:36:59+00:00"
         },
         {
@@ -6041,6 +6042,7 @@
                 "events",
                 "zf2"
             ],
+            "abandoned": "laminas/laminas-eventmanager",
             "time": "2018-04-25T15:33:34+00:00"
         },
         {
@@ -7606,12 +7608,12 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.0",
-        "ext-zend-opcache": "*",
-        "ext-json": "*"
+        "php": "^7.3",
+        "ext-json": "*",
+        "ext-zend-opcache": "*"
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "7.2.4"
+        "php": "7.3"
     }
 }
