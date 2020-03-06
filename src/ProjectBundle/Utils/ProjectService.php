@@ -112,6 +112,10 @@ class ProjectService
                 ->setTarget($projectArray["target"])
                 ->setNotes($projectArray["notes"]);
 
+        if (isset($projectArray["internal_id"])) {
+            $project->setInternalId($projectArray["internal_id"]);
+        }
+
         $existingProject = $this->em->getRepository(Project::class)->findBy(
             [
                 'name' => $project->getName(),
@@ -186,6 +190,10 @@ class ProjectService
                 ->setEndDate($endDate)
                 ->setTarget($projectArray['target'])
                 ->setNotes($projectArray["notes"]);
+
+            if (isset($projectArray["internal_id"])) {
+                $project->setInternalId($projectArray["internal_id"]);
+            }
 
             $sectors = $projectArray['sectors'];
             if (null !== $sectors) {
