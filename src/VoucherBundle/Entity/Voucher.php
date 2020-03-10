@@ -73,6 +73,12 @@ class Voucher implements ExportableInterface
      */
     private $records;
 
+    public function __construct(string $code, int $value, Booklet $booklet)
+    {
+        $this->code = $code;
+        $this->value = $value;
+        $this->booklet = $booklet;
+    }
 
     /**
      * Get id.

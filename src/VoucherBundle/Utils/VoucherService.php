@@ -49,18 +49,13 @@ class VoucherService
         try {
             $currentId = array_key_exists('lastId', $vouchersData) ? $vouchersData['lastId'] + 1 : $this->getLastId() + 1;
             for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
-                $voucher = new Voucher();
+
                 $voucherData = $vouchersData;
                 $voucherData['value'] = $vouchersData['values'][$x];
                 $booklet = $voucherData['booklet'];
                 $code = $this->generateCode($voucherData, $currentId);
 
-                $voucher->setUsedAt(null)
-                        ->setCode($code)
-                        ->setBooklet($booklet)
-                        ->setVendor(null)
-                        ->setValue($voucherData['value']);
-
+                $voucher = new Voucher($code, $voucherData['value'], $booklet);
                 $currentId++;
 
                 $this->em->persist($voucher);
