@@ -83,7 +83,7 @@
 
                 {% for voucher in vouchers %}
                     <tr>
-                        <td>{{ voucher.usedAt }}</td>
+                        <td>{{ voucher.usedAt|format('d-m-Y') }}</td>
                         <td>{{ voucher.code }}</td>
                         <td>{{ voucher.value }} {{ voucher.booklet.currency }}</td>
                     </tr>

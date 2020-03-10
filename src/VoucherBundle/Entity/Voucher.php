@@ -2,6 +2,9 @@
 
 namespace VoucherBundle\Entity;
 
+use DateTime;
+use DistributionBundle\Entity\DistributionBeneficiary;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
@@ -27,7 +30,7 @@ class Voucher implements ExportableInterface
     private $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
      * @JMS_Type("DateTime<'d-m-Y'>")
@@ -91,27 +94,18 @@ class Voucher implements ExportableInterface
     }
 
     /**
-     * Set usedAt.
-     *
-     * @param \DateTime $usedAt
-     *
-     * @return Voucher
-     */
-    public function setUsedAt($usedAt)
-    {
-        $this->usedAt = $usedAt;
-
-        return $this;
-    }
-
-    /**
      * Get usedAt.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getUsedAt()
     {
         return $this->usedAt;
+    }
+
+    public function use(User $user, DateTime $when) : void
+    {
+        $this->usedAt = $when;
     }
 
     /**

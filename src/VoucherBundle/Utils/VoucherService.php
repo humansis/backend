@@ -2,9 +2,11 @@
 
 namespace VoucherBundle\Utils;
 
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
@@ -49,7 +51,7 @@ class VoucherService
         try {
             $currentId = array_key_exists('lastId', $vouchersData) ? $vouchersData['lastId'] + 1 : $this->getLastId() + 1;
             for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
-
+                $voucher = new Voucher();
                 $voucherData = $vouchersData;
                 $voucherData['value'] = $vouchersData['values'][$x];
                 $booklet = $voucherData['booklet'];
@@ -104,11 +106,12 @@ class VoucherService
 
     /**
      * @param array $voucherData
+     * @param User $scannedBy
      * @return Voucher
      * @throws \Exception
      * @deprecated Defective/incomplete processing of voucher scan
      */
-    public function scannedDeprecated(array $voucherData)
+    public function scannedDeprecated(array $voucherData, User $scannedBy)
     {
         try {
             $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
@@ -116,8 +119,8 @@ class VoucherService
             if (!$voucher || $voucher->getUsedAt() !== null) {
                 return $voucher;
             }
-            $voucher->setVendor($vendor)
-                    ->setUsedAt(new \DateTime($voucherData['used_at'])); // TODO : check format
+            $voucher->setVendor($vendor);
+            $voucher->use($scannedBy, new DateTime($voucherData['used_at'])); // TODO : check format
 
             foreach ($voucherData['productIds'] as $productId) {
                 $product = $this->em->getRepository(Product::class)->find($productId);
