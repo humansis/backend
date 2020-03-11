@@ -19,6 +19,11 @@ use CommonBundle\Utils\ExportableInterface;
  */
 class Voucher implements ExportableInterface
 {
+    const STATE_UNASSIGNED = 'unassigned';
+    const STATE_DISTRIBUTED = 'distributed';
+    const STATE_USED = 'used';
+    const STATE_REDEEMED = 'redeemed';
+
     /**
      * @var int
      *
@@ -39,12 +44,29 @@ class Voucher implements ExportableInterface
     private $usedAt;
 
     /**
+     * @var DateTime
+     *
+     * @ORM\Column(name="redeemed_at", type="datetime", nullable=true)
+     * @JMS_Type("DateTime<'d-m-Y'>")
+     * @Groups({"FullVoucher", "ValidatedDistribution"})
+     */
+    private $redeemedAt;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
      * @Groups({"FullVoucher"})
      */
     private $code;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="status", type="integer", nullable=false)
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
+     */
+    private $status = self::STATE_UNASSIGNED;
 
     /**
      * @var int
@@ -103,9 +125,29 @@ class Voucher implements ExportableInterface
         return $this->usedAt;
     }
 
+    /**
+     * @return DateTime
+     */
+    public function getRedeemedAt(): DateTime
+    {
+        return $this->redeemedAt;
+    }
+
+    public function distribute(User $user, DateTime $when) : void
+    {
+        $this->status = self::STATE_DISTRIBUTED;
+    }
+
     public function use(User $user, DateTime $when) : void
     {
+        $this->status = self::STATE_USED;
         $this->usedAt = $when;
+    }
+
+    public function redeem(User $user, DateTime $when) : void
+    {
+        $this->status = self::STATE_REDEEMED;
+        $this->redeemedAt = $when;
     }
 
     /**
@@ -209,6 +251,14 @@ class Voucher implements ExportableInterface
     }
 
     /**
+     * @return int
+     */
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+     /**
      * Returns an array representation of this class in order to prepare the export
      * @return array
      */
