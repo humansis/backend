@@ -189,6 +189,7 @@ class HouseholdCSVService
                     // Duplicate verifier returns already an array of duplicates
                     if ($verifier instanceof DuplicateVerifier) {
                         // to preserve values with the same keys
+                        /* TEMPORAL CHANGE TO SKIP THE DUPLICATION STEP */
                         $return = []; //array_unique(array_merge($return, $returnTmp), SORT_REGULAR);
                     } else {
                         $return[] = $returnTmp;
