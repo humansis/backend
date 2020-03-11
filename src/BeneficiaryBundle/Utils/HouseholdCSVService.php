@@ -164,10 +164,10 @@ class HouseholdCSVService
 
             // if no verification needed
             if (! $verifier) {
-                if ($this->step === 6) {
+                if ($this->step === 5) {
                     $this->clearCacheToken($this->token);
                     return $treatReturned;
-                } else if ($this->step === 5) {
+                } else if ($this->step === 4) {
                     // update timestamp (10 minutes) and step
                     $this->updateTokenState();
                     break;
@@ -234,11 +234,12 @@ class HouseholdCSVService
                 return new LessTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
                 break;
             // CASE FOUND DUPLICATED ISSUES
-            case 5:
+            /* case 5:
                 return new DuplicateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
                 break;
+            */
             // CASE VALIDATE
-            case 6:
+            case 5:
                 return new ValidateTreatment($this->em, $this->householdService, $this->beneficiaryService, $this->container, $this->initOrGetToken());
                 break;
             // NOT FOUND CASE
@@ -269,15 +270,16 @@ class HouseholdCSVService
                 return new LessVerifier($this->em);
                 break;
             // CASE FOUND DUPLICATED ISSUES
-            case 4:
+            /* case 4:
                 return new DuplicateVerifier($this->em, $this->container, $this->initOrGetToken());
                 break;
+            */
             // CASE LAST STEP
-            case 5:
+            case 4:
                 return null;
                 break;
             // CASE VALIDATION
-            case 6:
+            case 5:
                 return null;
                 break;
             // NOT FOUND CASE

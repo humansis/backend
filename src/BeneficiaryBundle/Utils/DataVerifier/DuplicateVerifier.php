@@ -34,55 +34,53 @@ class DuplicateVerifier extends AbstractVerifier
         // Initialize the list of potential duplicates
         $listDuplicateBeneficiaries = [];
         
-        /* COMMENT CODE OUT TO DISABLE DUPLICATION CHECK */
-
         // Get the old household the new one corresponds to if it exists
-        // $similarOldHousehold = $householdArray['old'] ?? null;
+        $similarOldHousehold = $householdArray['old'] ?? null;
         
-        // if(empty($householdArray['new']) || empty($householdArray['new']['beneficiaries'])) {
-        //     return $listDuplicateBeneficiaries;
-        // }
+        if(empty($householdArray['new']) || empty($householdArray['new']['beneficiaries'])) {
+            return $listDuplicateBeneficiaries;
+        }
 
-        // foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary) {
+        foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary) {
 
         //     /** @var Beneficiary[] $existingBeneficiaries */
-        //     $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByUnarchived(
-        //         [
-        //             'localGivenName'  => trim($newBeneficiary['local_given_name']),
-        //             'localFamilyName' => trim($newBeneficiary['local_family_name'])
-        //         ]
-        //     );
+            $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByUnarchived(
+                [
+                    'localGivenName'  => trim($newBeneficiary['local_given_name']),
+                    'localFamilyName' => trim($newBeneficiary['local_family_name'])
+                ]
+            );
 
-        //     $match = false;
+            $match = false;
 
-        //     foreach ($existingBeneficiaries as $existingBeneficiary) {
-        //         if ($similarOldHousehold && $existingBeneficiary->getHousehold()->getId() === $similarOldHousehold['id']) {
-        //             $match = true;
-        //         }
-        //     }
+            foreach ($existingBeneficiaries as $existingBeneficiary) {
+                if ($similarOldHousehold && $existingBeneficiary->getHousehold()->getId() === $similarOldHousehold['id']) {
+                    $match = true;
+                }
+            }
 
-        //     if (! $match && ! empty($existingBeneficiaries)) {
-        //         // reset the existing household's beneficiaries to include only the duplicate
-        //         $oldHousehold = json_decode(
-        //             $this->container->get('jms_serializer')->serialize(
-        //                 $existingBeneficiaries[0]->getHousehold(),
-        //                 'json',
-        //                 SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
-        //             ),
-        //             true
-        //         );
+            if (! $match && ! empty($existingBeneficiaries)) {
+                // reset the existing household's beneficiaries to include only the duplicate
+                $oldHousehold = json_decode(
+                    $this->container->get('jms_serializer')->serialize(
+                        $existingBeneficiaries[0]->getHousehold(),
+                        'json',
+                        SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
+                    ),
+                    true
+                );
 
-        //         $arrayTmp = [
-        //             'new'           => $newBeneficiary,
-        //             'old'           => $existingBeneficiaries[0],
-        //             'id_tmp_cache'  => $householdArray['id_tmp_cache'],
-        //             'new_household' => $householdArray['new'],
-        //             'old_household' => $oldHousehold
-        //         ];
+                $arrayTmp = [
+                    'new'           => $newBeneficiary,
+                    'old'           => $existingBeneficiaries[0],
+                    'id_tmp_cache'  => $householdArray['id_tmp_cache'],
+                    'new_household' => $householdArray['new'],
+                    'old_household' => $oldHousehold
+                ];
 
-        //         $listDuplicateBeneficiaries[] = $arrayTmp;
-        //     }
-        // }
+                $listDuplicateBeneficiaries[] = $arrayTmp;
+            }
+        }
 
         return $listDuplicateBeneficiaries;
     }
