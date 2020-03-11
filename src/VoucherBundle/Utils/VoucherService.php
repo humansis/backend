@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
+use VoucherBundle\Builder\VoucherBuilder;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
@@ -48,26 +49,21 @@ class VoucherService
      */
     public function create(array $vouchersData, $flush = true)
     {
-        try {
-            $currentId = array_key_exists('lastId', $vouchersData) ? $vouchersData['lastId'] + 1 : $this->getLastId() + 1;
-            for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
-                $voucher = new Voucher();
-                $voucherData = $vouchersData;
-                $voucherData['value'] = $vouchersData['values'][$x];
-                $booklet = $voucherData['booklet'];
-                $code = $this->generateCode($voucherData, $currentId);
+        $builder = new VoucherBuilder($vouchersData['booklet'], $vouchersData['currency']);
 
-                $voucher = new Voucher($code, $voucherData['value'], $booklet);
-                $currentId++;
+        if (array_key_exists('lastId', $vouchersData)) {
+            $builder->setLastId($vouchersData['lastId'] + 1);
+        } else {
+            $builder->setLastId($this->getLastId() + 1);
+        }
 
-                $this->em->persist($voucher);
+        $voucher = null;
+        foreach ($builder->createByValueList($vouchersData['values']) as $voucher) {
+            $this->em->persist($voucher);
 
-                if ($flush) {
-                    $this->em->flush();
-                }
+            if ($flush) {
+                $this->em->flush();
             }
-        } catch (\Exception $e) {
-            throw $e;
         }
         return $voucher;
     }
