@@ -1,5 +1,5 @@
 language: php
-php: 
+php:
   - '7.2'
 
 # Allows use container-based infrastructure
@@ -38,11 +38,17 @@ jobs:
           script: ./vendor/bin/phpunit
           fast_finish: true
         - stage: deploy
-          if: branch = dev AND NOT type = "pull_request"
+          if: branch = develop AND NOT type = "pull_request"
           install:
               - openssl aes-256-cbc -K $encrypted_659a46d821ef_key -iv $encrypted_659a46d821ef_iv -in ec2_bms.pem.enc -out ec2_bms.pem -d
               - chmod 400 ./ec2_bms.pem
-          script: ./deploy.sh dev ./ec2_bms.pem
+          script: ./deploy.sh testing ./ec2_bms.pem
+        - stage: deploy
+          if: branch = stage AND NOT type = "pull_request"
+          install:
+              - openssl aes-256-cbc -K $encrypted_659a46d821ef_key -iv $encrypted_659a46d821ef_iv -in ec2_bms.pem.enc -out ec2_bms.pem -d
+              - chmod 400 ./ec2_bms.pem
+          script: ./deploy.sh stage ./ec2_bms.pem
         - stage: deploy
           if: branch = master AND NOT type = "pull_request"
           install:
