@@ -2,23 +2,14 @@
 
 namespace VoucherBundle\Utils;
 
-use CommonBundle\Entity\Logs;
 use Doctrine\ORM\EntityManagerInterface;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class VoucherService
 {
@@ -55,7 +46,7 @@ class VoucherService
     public function create(array $vouchersData, $flush = true)
     {
         try {
-            $currentId = $this->getLastId() + 1;
+            $currentId = array_key_exists('lastId', $vouchersData) ? $vouchersData['lastId'] + 1 : $this->getLastId() + 1;
             for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
                 $voucher = new Voucher();
                 $voucherData = $vouchersData;
@@ -80,7 +71,6 @@ class VoucherService
         } catch (\Exception $e) {
             throw $e;
         }
-
         return $voucher;
     }
 
@@ -198,29 +188,63 @@ class VoucherService
     /**
          * Export all vouchers in a CSV file
          * @param string $type
+         * @param string $countryIso3
+         * @param array $ids
+         * @param array $filters
          * @return mixed
          */
-    public function exportToCsv(string $type, $ids)
+    public function exportToCsv(string $type, string $countryIso3, $ids, $filters)
     {
+        $booklets = null;
+        $maxExport = 50000;
+        $limit = $type === 'csv' ? null : $maxExport;
+
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+        } else if ($filters) {
+            $booklets = $this->container->get('voucher.booklet_service')->getAll($countryIso3, $filters)[1];
         } else {
-            $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
+            $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
+        }
+        
+        // If we only have the booklets, get the vouchers
+        if ($booklets) {
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets);
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'bookletCodes', $type);
+        // If csv type, return the response
+        if (!$limit) {
+            return $this->csvExport($exportableTable);
+        }
+
+        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
+        if ($total > $limit) {
+            throw new \Exception("Too much vouchers for the export (".$total."). Use csv for large exports. Otherwise, for ".
+            $type." export the data in batches of ".$maxExport." vouchers or less");
+        }
+        return $this->container->get('export_csv_service')->export($exportableTable->getResult(), 'bookletCodes', $type);
     }
 
     /**
      * Export all vouchers in a pdf
+     * @param array $ids
+     * @param string $countryIso3
+     * @param array $filters
      * @return mixed
      */
-    public function exportToPdf($ids)
+    public function exportToPdf($ids, string $countryIso3, $filters)
     {
+        $booklets = null;
         if ($ids) {
-            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids)->getResult();
+        } else if ($filters) {
+            $booklets = $this->container->get('voucher.booklet_service')->getAll($countryIso3, $filters)[1];
         } else {
-            $exportableTable = $this->em->getRepository(Voucher::class)->findAll();
+            $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
+        }
+
+        if ($booklets) {
+            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets)->getResult();
         }
 
         try {
@@ -258,5 +282,32 @@ class VoucherService
             $this->em->remove($incompleteVoucher);
             $this->em->flush();
         }
+    }
+
+    /**
+     * Create new booklets as a background task.
+     * Returns the last booklet id currently in the database and the number of booklets to create.
+     *
+     * @param string $country
+     * @param array $bookletData
+     * @return int
+     */
+    public function csvExport($exportableTable)
+    {
+        $response = new StreamedResponse(function () use ($exportableTable) {
+            $data = $exportableTable->iterate();
+            $csv = fopen('php://output', 'w+');
+            fputcsv($csv, array('Booklet Number', 'Voucher Codes'),';');
+
+            while (false !== ($row = $data->next())) {
+                fputcsv($csv, [$row[0]->getBooklet()->getCode(), $row[0]->getCode()], ';');
+                $this->em->detach($row[0]);
+            }
+            fclose($csv);
+        });
+        $response->setStatusCode(200);
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="bookletCodes.csv"');
+        return $response;
     }
 }

@@ -2,16 +2,10 @@
 
 namespace CommonBundle\Utils;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\Profile;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -69,7 +63,6 @@ class ExportService
      */
     public function generateFile(Spreadsheet $spreadsheet, string $name, string $type)
     {
-        // step 3 : scanning sheet into csv or excel
         if ($type == self::FORMAT_CSV) {
             $writer = IOFactory::createWriter($spreadsheet, 'Csv');
             $writer->setEnclosure('');
@@ -77,7 +70,7 @@ class ExportService
             $writer->setUseBOM(true);
             $filename = $name.'.csv';
         } elseif ($type == self::FORMAT_XLS) {
-            $writer = IOFactory::createWriter($spreadsheet, 'Xls');
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
             $filename = $name.'.xls';
         } elseif ($type == self::FORMAT_ODS) {
             $writer = IOFactory::createWriter($spreadsheet, 'Ods');
@@ -100,26 +93,38 @@ class ExportService
      */
     public function export($exportableTable, string $name, string $type)
     {
-        $rows = [];
-
-        // step 1 : Convert the mapping as data
-        foreach ($exportableTable as $value) {
-            if (is_object($value)) {
-                if ($value instanceof ExportableInterface) {
-                    array_push($rows, $value->getMappedValueForExport());
-                }
-            } elseif (is_array($value)) {
-                array_push($rows, $value);
-            } else {
-                throw new \Exception("The table to export contains a not allowed content ($value). Allowed content: array, ".ExportableInterface::class."");
-            }
+        // Step 0: Check data
+        if (count($exportableTable) === 0) {
+            throw new \Exception("No data to export", Response::HTTP_NO_CONTENT);
         }
 
-        // step 2 : sheet construction
+        // Step 1 : Sheet construction
         $spreadsheet = new Spreadsheet();
         $spreadsheet->createSheet();
         $spreadsheet->setActiveSheetIndex(0);
         $worksheet = $spreadsheet->getActiveSheet();
+        
+        $rows = [];
+        $headers = [];
+
+        // Step 2 : Convert the mapping as data
+        foreach ($exportableTable as $value) {
+            $row = [];
+            if (is_object($value)) {
+                if ($value instanceof ExportableInterface) {
+                    $row = $value->getMappedValueForExport();
+                }
+            } elseif (is_array($value)) {
+                $row = $value;
+            } else {
+                throw new \Exception("The table to export contains a not allowed content ($value). Allowed content: array, ".ExportableInterface::class."");
+            }
+            array_push($rows, $row);
+
+            // We get all the keys that will become the column names for the csv.
+            // We merge the results because some rows can have more or less columns
+            $headers = array_merge($headers, array_keys($row));
+        }
 
         if (count($rows) === 0) {
             throw new \Exception("No data to export", Response::HTTP_NO_CONTENT);
@@ -129,17 +134,8 @@ class ExportService
         $addKey = false;
         $newKey = '';
 
-        // get table headers titles
-        reset($rows);
-
-        $headers = [];
-        // We get all the keys that will become the column names for the csv
-        foreach($rows as $row) {
-            // We merge the results because some rows can have more or less columns
-            $headers = array_merge($headers, array_keys($row));
-        }
-        // We get the distinct column names and reorder them
-        $tableHeaders = array_values(array_unique($headers));
+        // Step 3: Get the distinct column names and reorder them
+        $tableHeaders = array_keys(array_flip($headers));
 
         foreach ($tableHeaders as $key => $value) {
             if ($key == 26) {
@@ -155,6 +151,7 @@ class ExportService
             $worksheet->setCellValue($index, $value);
         }
 
+        // Step 4: Set the values for each cell
         $rowIndex++;
         foreach ($rows as $key => $value) {
             $addKey = false;
@@ -178,6 +175,7 @@ class ExportService
             $rowIndex++;
         }
 
+        // Step 5: Scan sheet into csv or excel
         try {
             $filename = $this->generateFile($spreadsheet, $name, $type);
         } catch (\Exception $e) {

@@ -389,7 +389,7 @@ class DistributionController extends Controller
      * Edit a distribution.
      *
      * @Rest\Post("/distributions/{id}", name="update_distribution")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -756,7 +756,7 @@ class DistributionController extends Controller
      * Set general relief items as distributed
      *
      * @Rest\Post("/distributions/generalrelief/distributed", name="distribute_general_relief")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
      *
      * @SWG\Tag(name="General Relief")
      *

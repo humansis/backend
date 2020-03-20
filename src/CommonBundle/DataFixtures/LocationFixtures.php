@@ -8,13 +8,14 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\HttpKernel\Kernel;
 
-class LocationFixtures extends Fixture
+class LocationFixtures extends Fixture implements FixtureGroupInterface
 {
 
     /** @var Kernel $kernel */
@@ -40,6 +41,16 @@ class LocationFixtures extends Fixture
         }
     }
 
+    /**
+     * This method must return an array of groups
+     * on which the implementing class belongs to
+     *
+     * @return string[]
+     */
+    public static function getGroups(): array
+    {
+        return ['location'];
+    }
 
     /**
      * @param ObjectManager $manager
@@ -50,7 +61,7 @@ class LocationFixtures extends Fixture
     public function parseDirectory(ObjectManager $manager)
     {
         $manager->getConnection()->getConfiguration()->setSQLLogger(null);
-        
+
         $dir_root = $this->kernel->getRootDir();
         $dir_files = $dir_root . '/../src/CommonBundle/DataFixtures/LocationFiles';
         if (!is_dir($dir_files)) {
@@ -81,11 +92,15 @@ class LocationFixtures extends Fixture
             while (!empty($rowIterator->current()->getCellIterator()->current()->getValue())) {
                 $rowIndex = $rowIterator->current()->getRowIndex();
                 if (!array_key_exists($sheet->getCell('C' . $rowIndex)->getValue(), $adm1List)) {
-                    $adm1 = new Adm1();
-                    $adm1->setCountryISO3($iso3)
-                        ->setName(trim($sheet->getCell('C' . $rowIndex)->getValue()))
-                        ->setCode($sheet->getCell('D' . $rowIndex)->getValue());
-                    $manager->persist($adm1);
+                    $codeAdm1 = $sheet->getCell('D' . $rowIndex)->getValue();
+                    $adm1 = $manager->getRepository(Adm1::class)->findOneByCode($codeAdm1);
+                    if (!$adm1 instanceof Adm1) {
+                        $adm1 = new Adm1();
+                        $adm1->setCountryISO3($iso3)
+                            ->setName(trim($sheet->getCell('C' . $rowIndex)->getValue()))
+                            ->setCode($codeAdm1);
+                        $manager->persist($adm1);
+                    }
                     $adm1List[$sheet->getCell('C' . $rowIndex)->getValue()] = $adm1;
                 }
                 $adm1 = $adm1List[$sheet->getCell('C' . $rowIndex)->getValue()];
@@ -98,11 +113,15 @@ class LocationFixtures extends Fixture
                     continue;
                 }
                 if (!array_key_exists($sheet->getCell('E' . $rowIndex)->getValue(), $adm2List)) {
-                    $adm2 = new Adm2();
-                    $adm2->setName(trim($sheet->getCell('E' . $rowIndex)->getValue()))
-                        ->setAdm1($adm1)
-                        ->setCode($sheet->getCell('F' . $rowIndex)->getValue());
-                    $manager->persist($adm2);
+                    $codeAdm2 = $sheet->getCell('F' . $rowIndex)->getValue();
+                    $adm2 = $manager->getRepository(Adm2::class)->findOneByCode($codeAdm2);
+                    if (!$adm2 instanceof Adm2) {
+                        $adm2 = new Adm2();
+                        $adm2->setName(trim($sheet->getCell('E' . $rowIndex)->getValue()))
+                            ->setAdm1($adm1)
+                            ->setCode($codeAdm2);
+                        $manager->persist($adm2);
+                    }
                     $adm2List[$sheet->getCell('E' . $rowIndex)->getValue()] = $adm2;
                 }
                 $adm2 = $adm2List[$sheet->getCell('E' . $rowIndex)->getValue()];
@@ -114,11 +133,15 @@ class LocationFixtures extends Fixture
                     continue;
                 }
                 if (!array_key_exists($sheet->getCell('G' . $rowIndex)->getValue(), $adm3List)) {
-                    $adm3 = new Adm3();
-                    $adm3->setName(trim($sheet->getCell('G' . $rowIndex)->getValue()))
-                        ->setAdm2($adm2)
-                        ->setCode($sheet->getCell('H' . $rowIndex)->getValue());
-                    $manager->persist($adm3);
+                    $codeAdm3 = $sheet->getCell('H' . $rowIndex)->getValue();
+                    $adm3 = $manager->getRepository(Adm3::class)->findOneByCode($codeAdm3);
+                    if (!$adm3 instanceof Adm3) {
+                        $adm3 = new Adm3();
+                        $adm3->setName(trim($sheet->getCell('G' . $rowIndex)->getValue()))
+                            ->setAdm2($adm2)
+                            ->setCode($codeAdm3);
+                        $manager->persist($adm3);
+                    }
                     $adm3List[$sheet->getCell('G' . $rowIndex)->getValue()] = $adm3;
                 }
                 $adm3 = $adm3List[$sheet->getCell('G' . $rowIndex)->getValue()];
@@ -129,18 +152,22 @@ class LocationFixtures extends Fixture
                     $rowIterator->next();
                     continue;
                 }
-                $adm4 = new Adm4();
-                $adm4->setName(trim($sheet->getCell('I' . $rowIndex)->getValue()))
-                    ->setCode($sheet->getCell('J' . $rowIndex)->getValue())
-                    ->setAdm3($adm3);
-                $manager->persist($adm4);
+                $codeAdm4 = $sheet->getCell('J' . $rowIndex)->getValue();
+                $adm4 = $manager->getRepository(Adm4::class)->findOneByCode($codeAdm4);
+                if (!$adm4 instanceof Adm4) {
+                    $adm4 = new Adm4();
+                    $adm4->setName(trim($sheet->getCell('I' . $rowIndex)->getValue()))
+                        ->setCode($codeAdm4)
+                        ->setAdm3($adm3);
+                    $manager->persist($adm4);
+                }
 
                 $rowIterator->next();
-                
+
                 if ($rowIndex % 1000 == 0) {
                     $manager->flush();
                 }
-                
+
                 $progressBar->advance();
             }
             $progressBar->finish();
