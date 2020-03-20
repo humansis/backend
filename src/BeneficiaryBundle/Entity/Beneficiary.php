@@ -138,7 +138,7 @@ class Beneficiary implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $nationalIds;
 

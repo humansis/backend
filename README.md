@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/ReliefApplications/bms_api.svg?branch=dev)](https://travis-ci.org/ReliefApplications/bms_api)
-[![GitHub version](https://badge.fury.io/gh/ReliefApplications%2Fbms_api.svg)](https://badge.fury.io/gh/ReliefApplications%2Fbms_api)
+[![Build Status](https://travis-ci.org/humansis/api.svg?branch=dev)](https://travis-ci.org/humansis/api)
+[![GitHub version](https://badge.fury.io/gh/humansis%2Fapi.svg)](https://badge.fury.io/gh/humansis%2Fapi)
 
 BENEFICIARY MANAGEMENT SYSTEM
 ==============
@@ -8,11 +8,9 @@ BENEFICIARY MANAGEMENT SYSTEM
 
 A platform that allows humanitarian organisations to manage relief items (Food, Non Food Items, CASH) to people in needs for life-saving humanitarian responses to emergency situations.
 
-BMS is the first fully open-source relief platform for humanitarian actors to efficiently manage relief operations after a disaster, during a war or in response to long term crises. 
+Humansis is the first fully open-source relief platform for humanitarian actors to efficiently manage relief operations after a disaster, during a war or in response to long term crises. 
 
-If you're an experienced dev and you'd like to get involved, contact us on Twitter by DM : @reliefapps https://twitter.com/Reliefapps
-
-The global project documentation is in README.md of the frontend [repository](https://github.com/ReliefApplications/bms_front)
+The global project documentation is in README.md of the frontend [repository](https://github.com/humansis/bms_front)
 
 # Documentation
  

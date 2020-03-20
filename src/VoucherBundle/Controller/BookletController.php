@@ -3,19 +3,20 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\DistributionData;
+use Doctrine\Common\Collections\Collection;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use FOS\RestBundle\Controller\Annotations as Rest;
-use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Swagger\Annotations as SWG;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Booklet;
-use DistributionBundle\Entity\DistributionData;
-use Doctrine\Common\Collections\Collection;
 
 /**
  * Class BookletController
@@ -54,39 +55,32 @@ class BookletController extends Controller
      */
     public function createBookletAction(Request $request)
     {
-        /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
-
         $bookletData = $request->request->all();
 
-        try {
-            $return = $this->get('voucher.booklet_service')->create($bookletData);
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        $lastBooklet = $this->get('voucher.booklet_service')->backgroundCreate($request->request->get('__country'), $bookletData);
 
-        $bookletJson = $serializer->serialize(
-            $return,
-            'json',
-            SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true)
-        );
-        return new Response($bookletJson);
+        return new JsonResponse($lastBooklet);
     }
 
     /**
-     * Get all booklets
+     * Create a new Booklet (synchronous).
      *
-     * @Rest\Get("/booklets", name="get_all_booklets")
+     * @Rest\Put("/booklets/sync", name="add_booklet_sync")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Booklets")
      *
+     * @SWG\Parameter(
+     *     name="booklet",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Booklet::class, groups={"FullBooklet"})
+     * )
+     *
      * @SWG\Response(
      *     response=200,
-     *     description="Booklets delivered",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=Booklet::class, groups={"FullBooklet"}))
-     *     )
+     *     description="Booklet created",
+     *     @Model(type=Booklet::class)
      * )
      *
      * @SWG\Response(
@@ -97,15 +91,102 @@ class BookletController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getAllAction(Request $request)
+    public function createBookletSyncAction(Request $request)
     {
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+
+        $bookletData = $request->request->all();
+
         try {
-            $booklets = $this->get('voucher.booklet_service')->findAll();
+            $return = $this->get('voucher.booklet_service')->create($request->request->get('__country'), $bookletData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($booklets, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+        $bookletJson = $serializer->serialize(
+            $return,
+            'json',
+            SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true)
+        );
+
+        return new Response($bookletJson);
+    }
+
+    /**
+     * Get number of inserted booklets.
+     *
+     * @Rest\Get("/booklets/inserted/{id}", name="inserted_booklets")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Parameter(
+     *     name="booklet",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Booklet::class, groups={"FullBooklet"})
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Booklet created",
+     *     @Model(type=Booklet::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function getNumberOfInsertedBooklets(Request $request, Booklet $booklet)
+    {
+        try {
+            $nbBooklets = $this->get('voucher.booklet_service')->getNumberOfInsertedBooklets($request->request->get('__country'), $booklet->getId());
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return new Response($nbBooklets);
+
+    }
+
+    /**
+     * Get all booklets (paginated).
+     *
+     * @Rest\Post("/booklets/get/all", name="all_booklets")
+     *
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All booklets",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Booklet::class))
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function allAction(Request $request)
+    {
+        $filters = $request->request->all();
+
+        try {
+            $booklets = $this->get('voucher.booklet_service')->getAll($filters['__country'], $filters);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        $json = $this->get('jms_serializer')->serialize(
+            $booklets,
+            'json',
+            SerializationContext::create()->setGroups(["FullBooklet"])->setSerializeNull(true)
+        );
         return new Response($json);
     }
 
@@ -194,7 +275,7 @@ class BookletController extends Controller
      *
      * @Rest\Get("/booklets/{id}", name="get_single_booklet")
      *
-     * @SWG\Tag(name="Single Booklet")
+     * @SWG\Tag(name="Booklets")
      *
      * @SWG\Response(
      *     response=200,
@@ -382,7 +463,7 @@ class BookletController extends Controller
     /**
      * Assign the booklet to a specific beneficiary
      * @Rest\Post("/booklets/assign/{beneficiaryId}/{distributionId}", name="assign_booklet")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
      * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      * @ParamConverter("distributionData", options={"mapping": {"distributionId": "id"}})
