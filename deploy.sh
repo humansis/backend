@@ -12,7 +12,7 @@ if [[ $1 == "master" ]]; then
     if [ -z `ssh-keygen -F $ec2_demo` ]; then
         ssh-keyscan -H $ec2_demo >> ~/.ssh/known_hosts
     fi
-elif [[ $1 == "testing" ]]; then
+elif [[ $1 == "develop" ]]; then
     ec2_test="ec2-35-157-77-79.eu-central-1.compute.amazonaws.com"
     if [ -z `ssh-keygen -F $ec2_test` ]; then
         ssh-keyscan -H $ec2_test >> ~/.ssh/known_hosts
@@ -37,7 +37,7 @@ command="cd /var/www/html/bms_api; \
 if [[ $1 == "master" ]]; then
     ssh -i $2 ubuntu@$ec2_prod $command
     ssh -i $2 ubuntu@$ec2_demo $command
-elif [[ $1 == "testing" ]]; then
+elif [[ $1 == "develop" ]]; then
     ssh -i $2 ubuntu@$ec2_test $command
 elif [[ $1 == "stage" ]]; then
     ssh -i $2 ubuntu@$ec2_stage $command
