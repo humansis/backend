@@ -150,7 +150,7 @@ class UserController extends Controller
     }
 
     /**
-     * Get user's salt
+     * Initialize user
      *
      * @Rest\Get("/initialize/{username}")
      *
@@ -228,7 +228,7 @@ class UserController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function addAction(Request $request)
+    public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -245,7 +245,7 @@ class UserController extends Controller
             );
             return new Response($userJson);
         } catch (\Exception $exception) {
-            $this->get('user.user_service')->deleteByUsername($user['username']);
+            $this->get('user.user_service')->deleteByUsername($userData['username']);
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -444,15 +444,13 @@ class UserController extends Controller
      * @param User $user
      * @return Response
      */
-    public function updateLanguage(Request $request, User $user)
+    public function postLanguageAction(Request $request, User $user)
     {
         $language = $request->request->get('language');
         $userUpdated = $this->get('user.user_service')->updateLanguage($user, $language);
         $json = $this->get('jms_serializer')->serialize($userUpdated, 'json', SerializationContext::create()->setGroups(['FullUser']));
         return new Response($json);
     }
-
-
 
     /**
      * Change the password of user {id}. Must send oldPassword and newPassword
@@ -599,7 +597,7 @@ class UserController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Success or not",
+     *     description="Successful or not",
      *     @SWG\Schema(type="boolean")
      * )
      *

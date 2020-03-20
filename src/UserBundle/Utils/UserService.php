@@ -44,30 +44,11 @@ class UserService
                 'client_id' => 'Humsis-Prod',
                 'provider_url' => 'https://auth.humanitarian.id'
             ]
-        ],
-    
-       'linkedIn' => [
-            'testing' => [
-                'front_url' => 'https://front-test.bmstaging.info/sso',
-                'client_id' => '77f3bwmwrncdfs',
-                'provider_url' => 'https://www.linkedin.com/oauth/v2/accessToken'
-            ],
-            'demo' => [
-                'front_url' => 'https://demo.humansis.org/sso',
-                'client_id' => '77f3bwmwrncdfs',
-                'provider_url' => 'https://www.linkedin.com/oauth/v2/accessToken'
-            ],
-            'prod' => [
-                'front_url' => 'https://front.bmstaging.info/sso',
-                'client_id' => '77f3bwmwrncdfs',
-                'provider_url' => 'https://www.linkedin.com/oauth/v2/accessToken'
-            ]
         ]
     ];
 
     protected $humanitarianSecret;
     protected $googleClient;
-    protected $linkedInSecret;
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -84,9 +65,8 @@ class UserService
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(string $linkedInSecret, string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
     {
-        $this->linkedInSecret = $linkedInSecret;
         $this->googleClient = $googleClient;
         $this->humanitarianSecret = $humanitarianSecret;
         $this->em = $entityManager;
@@ -136,9 +116,23 @@ class UserService
         if (!empty($userData['password'])) {
             $user->setPassword($userData['password']);
         }
+        
+        if (key_exists('phone_prefix', $userData)) {
+            $user->setPhonePrefix($userData['phone_prefix']);
+        }
+        
+        if (key_exists('phone_number', $userData)) {
+            $user->setPhoneNumber($userData['phone_number']);
+        }
 
+        if (key_exists('change_password', $userData)) {
+            $user->setChangePassword($userData['change_password']);
+        }
+        if (key_exists('two_factor_authentication', $userData)) {
+            $user->setTwoFactorAuthentication($userData['two_factor_authentication']);
+        }
         $this->em->persist($user);
-
+        
         $this->delete($user, false);
         
         if (key_exists('projects', $userData)) {
@@ -166,7 +160,6 @@ class UserService
         }
 
         $this->em->flush();
-
         return $user;
     }
 
@@ -191,6 +184,10 @@ class UserService
             ->setSalt($salt)
             ->setPassword("")
             ->setChangePassword(0);
+
+        $user->setPhonePrefix("")
+            ->setPhoneNumber(0)
+            ->setTwoFactorAuthentication(0);
 
         $this->em->persist($user);
 
@@ -307,6 +304,10 @@ class UserService
             ->setEnabled(1)
             ->setRoles($roles)
             ->setChangePassword($userData['change_password']);
+        
+        $user->setPhonePrefix($userData['phone_prefix'])
+            ->setPhoneNumber($userData['phone_number'])
+            ->setTwoFactorAuthentication($userData['two_factor_authentication']);
         
         $user->setPassword($userData['password']);
 
@@ -536,6 +537,12 @@ class UserService
         fclose($fp);
     }
 
+    /**
+     * Update user language
+     * @param User $user
+     * @param  string $language
+     * @return void
+     */
     public function updateLanguage(User $user, string $language)
     {
         $user->setLanguage($language);
@@ -563,6 +570,7 @@ class UserService
     public function loginGoogle(string $token)
     {
         $client = new \Google_Client(['client_id' => $this->googleClient]);
+
         $payload = $client->verifyIdToken($token);
         if ($payload) {
             $email = $payload['email'];

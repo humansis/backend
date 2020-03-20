@@ -25,7 +25,7 @@ class Beneficiary implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "FullBeneficiary"})
      */
     private $id;
 
@@ -33,7 +33,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="enGivenName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
      */
     private $enGivenName;
 
@@ -41,7 +41,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="enFamilyName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $enFamilyName;
 
@@ -49,7 +49,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="localGivenName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
      * @Assert\NotBlank(message="The local given name is required.")
      */
     private $localGivenName;
@@ -58,7 +58,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="localFamilyName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @Assert\NotBlank(message="The local family name is required.")
      */
     private $localFamilyName;
@@ -67,7 +67,7 @@ class Beneficiary implements ExportableInterface
      * @var int
      *
      * @ORM\Column(name="gender", type="smallint")
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @Assert\NotBlank(message="The gender is required.")
      */
     private $gender;
@@ -85,7 +85,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="residency_status", type="string", length=20)
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold", "FullBeneficiary"})
      * @Assert\Regex("/^(refugee|IDP|resident)$/i")
      */
     private $residencyStatus;
@@ -95,7 +95,7 @@ class Beneficiary implements ExportableInterface
      *
      * @ORM\Column(name="dateOfBirth", type="date")
      * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @Assert\NotBlank(message="The date of birth is required.")
      */
     private $dateOfBirth;
@@ -105,13 +105,13 @@ class Beneficiary implements ExportableInterface
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullBeneficiary"})
      */
     private $updatedOn;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullBeneficiary"})
      */
     private $profile;
 
@@ -126,25 +126,25 @@ class Beneficiary implements ExportableInterface
      * @var VulnerabilityCriterion
      *
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $vulnerabilityCriteria;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $phones;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $nationalIds;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
-     * @Groups({"FullReceivers"})
+     * @Groups({"FullReceivers", "FullBeneficiary"})
      *
      * @var DistributionBeneficiary $distributionBeneficiary
      */
@@ -152,7 +152,7 @@ class Beneficiary implements ExportableInterface
 
      /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Referral", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $referral;
 

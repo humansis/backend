@@ -129,7 +129,7 @@ class HouseholdController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function addAction(Request $request)
+    public function createAction(Request $request)
     {
         $requestArray = $request->request->all();
         $projectsArray = $requestArray['projects'];
@@ -181,7 +181,7 @@ class HouseholdController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Household created",
+     *     description="Household edited",
      *     @Model(type=Household::class)
      * )
      *
@@ -195,7 +195,7 @@ class HouseholdController extends Controller
      * @param Household $household
      * @return Response
      */
-    public function editAction(Request $request, Household $household)
+    public function updateAction(Request $request, Household $household)
     {
 
         $requestArray = $request->request->all();
@@ -364,7 +364,7 @@ class HouseholdController extends Controller
      * @param Household $household
      * @return Response
      */
-    public function removeAction(Household $household)
+    public function deleteAction(Household $household)
     {
         /** @var HouseholdService $householdService */
         $householdService = $this->get("beneficiary.household_service");
