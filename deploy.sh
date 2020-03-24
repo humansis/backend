@@ -12,19 +12,21 @@ if [[ $1 == "master" ]]; then
     if [ -z `ssh-keygen -F $ec2_demo` ]; then
         ssh-keyscan -H $ec2_demo >> ~/.ssh/known_hosts
     fi
-elif [[ $1 == "develop" ]]; then
+elif [[ $1 == "dev" ]]; then
     ec2_test="ec2-35-157-77-79.eu-central-1.compute.amazonaws.com"
     if [ -z `ssh-keygen -F $ec2_test` ]; then
         ssh-keyscan -H $ec2_test >> ~/.ssh/known_hosts
     fi
-elif [[ $1 == "stage" ]]; then
-    ec2_stage="ec2-18-184-243-126.eu-central-1.compute.amazonaws.com"
+elif [[ $1 =~ ^release\/.*$ ]]; then
+    ec2_stage="ec2-18-156-21-101.eu-central-1.compute.amazonaws.com"
     if [ -z `ssh-keygen -F $ec2_stage` ]; then
         ssh-keyscan -H $ec2_stage >> ~/.ssh/known_hosts
     fi
 else
-    echo "Unknown environment"
-    exit
+    ec2_dev="ec2-52-57-90-156.eu-central-1.compute.amazonaws.com"
+    if [ -z `ssh-keygen -F $ec2_dev` ]; then
+        ssh-keyscan -H $ec2_dev >> ~/.ssh/known_hosts
+    fi
 fi
 
 command="cd /var/www/html/bms_api; \
@@ -37,8 +39,10 @@ command="cd /var/www/html/bms_api; \
 if [[ $1 == "master" ]]; then
     ssh -i $2 ubuntu@$ec2_prod $command
     ssh -i $2 ubuntu@$ec2_demo $command
-elif [[ $1 == "develop" ]]; then
+elif [[ $1 == "dev" ]]; then
     ssh -i $2 ubuntu@$ec2_test $command
-elif [[ $1 == "stage" ]]; then
+elif [[ $1 =~ ^release\/.*$ ]]; then
     ssh -i $2 ubuntu@$ec2_stage $command
+else
+    ssh -i $2 ubuntu@$ec2_dev $command
 fi
