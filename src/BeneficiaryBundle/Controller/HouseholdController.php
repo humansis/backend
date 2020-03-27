@@ -157,7 +157,6 @@ class HouseholdController extends Controller
     }
 
 
-
     /**
      * @Rest\Post("/households/{id}", name="edit_household", requirements={"id": "\d+"})
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
@@ -280,7 +279,7 @@ class HouseholdController extends Controller
             }
         } else {
             try {
-                if(! $contentJson) {
+                if (!$contentJson) {
                     $contentJson = [];
                 }
                 $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $token, $email);
@@ -325,7 +324,7 @@ class HouseholdController extends Controller
     public function getPatternCSVAction(Request $request)
     {
         $countryIso3 = $request->request->get('__country');
-        
+
         $type = $request->query->get('type') ?: 'csv';
         /** @var ExportCSVService $exportCSVService */
         $exportCSVService = $this->get('beneficiary.household_export_csv_service');
@@ -398,7 +397,7 @@ class HouseholdController extends Controller
             $householdService = $this->get("beneficiary.household_service");
             $ids = $request->request->get('ids');
             $response = $householdService->removeMany($ids);
-        }  catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         return new Response(json_encode($response));
@@ -455,11 +454,12 @@ class HouseholdController extends Controller
      */
     public function importBeneficiariesFromSyriaFileAction(
         Request $request
-    ) : Response {
-        if (! $request->files->has('file')) {
+    ): Response
+    {
+        if (!$request->files->has('file')) {
             return new JsonResponse("You must upload a file.", Response::HTTP_BAD_REQUEST);
         }
-        if (! $request->query->has('adm1')) {
+        if (!$request->query->has('adm1')) {
             return new JsonResponse("A location is required.", Response::HTTP_BAD_REQUEST);
         }
 
@@ -471,7 +471,7 @@ class HouseholdController extends Controller
                 ->get('beneficiary.syria_file_to_template_mapper')
                 ->map([
                     'file' => $request->files->get('file'),
-                    'location' =>  $location,
+                    'location' => $location,
                 ]);
 
             // Create binary file to send
