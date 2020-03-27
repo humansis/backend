@@ -646,6 +646,7 @@ class Project implements ExportableInterface
         return [
             "ID" => $this->getId(),
             "Project name" => $this->getName(),
+            "Internal_id" => $this->getInternalId(),
             "Start date"=> $this->getStartDate()->format('d-m-Y'),
             "End date" => $this->getEndDate()->format('d-m-Y'),
             "Number of households" => $this->getNumberOfHouseholds(),
