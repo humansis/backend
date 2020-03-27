@@ -188,7 +188,21 @@ class HouseholdService
             ->setLatitude($householdArray["latitude"])
             ->setIncomeLevel($householdArray["income_level"])
             ->setCopingStrategiesIndex($householdArray["coping_strategies_index"])
-            ->setFoodConsumptionScore($householdArray["food_consumption_score"]);
+            ->setFoodConsumptionScore($householdArray["food_consumption_score"])
+            ->setAssets($householdArray["assets"] ?? [])
+            ->setShelterStatus($householdArray["shelter_status"] ?? null)
+            ->setDeptLevel($householdArray["dept_level"] ?? null)
+            ->setSupportReceivedTypes($householdArray["support_received_types"] ?? []);
+
+        if (isset($householdArray["support_date_received"]) && $householdArray["support_date_received"]) {
+            try {
+                $household->setSupportDateReceived(new \DateTime($householdArray["support_date_received"]));
+            } catch (\Exception $ex) {
+                throw new \Exception("Value of support_date_received is invalid");
+            }
+        } else {
+            $household->setSupportDateReceived(null);
+        }
 
         // Remove projects if the household is not part of them anymore
         if ($actualAction === "update") {

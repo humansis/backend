@@ -787,18 +787,45 @@ class Beneficiary implements ExportableInterface
             $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
         }
 
+        $livelihood = null;
+        if (null !== $this->getHousehold()->getLivelihood()) {
+            $livelihood = Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()];
+        }
+
+        $assets = array_map(function ($value) {
+            return Household::ASSETS[$value];
+        }, (array) $this->getHousehold()->getAssets());
+
+        $shelterStatus = null;
+        if (null !== $this->getHousehold()->getShelterStatus()) {
+            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
+        }
+
+        $supportReceivedTypes = array_map(function ($value) {
+            return Household::SUPPORT_RECIEVED_TYPES[$value];
+        }, (array) $this->getHousehold()->getSupportReceivedTypes());
+
+        $supportDateReceived = null;
+        if (null !== $this->getHousehold()->getSupportDateReceived()) {
+            $supportDateReceived = $this->getHousehold()->getSupportDateReceived()->format("m/d/Y");
+        }
+
         return [
             "addressStreet" => $addressStreet,
             "addressNumber" => $addressNumber,
             "addressPostcode" => $addressPostcode,
             "camp" => $camp,
             "tent number" => $tentNumber,
-            "livelihood" => $this->getHousehold()->getLivelihood() ?
-                Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()] : null,
+            "livelihood" => $livelihood,
             "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
             "notes" => $this->getHousehold()->getNotes(),
             "latitude" => $this->getHousehold()->getLatitude(),
             "longitude" => $this->getHousehold()->getLongitude(),
+            "Assets" => implode(', ', $assets),
+            "Shelter Status" => $shelterStatus,
+            "Dept Level" => $this->getHousehold()->getDeptLevel(),
+            "Support Received Types" => implode(', ', $supportReceivedTypes),
+            "Support Date Received" => $supportDateReceived,
         ];
     }
 
