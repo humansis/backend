@@ -41,11 +41,11 @@ class Project implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="internalId", type="string", length=255)
+     * @ORM\Column(name="internalId", type="string", length=255, nullable=true)
      *
      * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
      */
-    private $internalId = '';
+    private $internalId;
 
     /**
      * @var \DateTime

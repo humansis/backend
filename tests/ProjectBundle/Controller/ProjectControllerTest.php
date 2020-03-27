@@ -16,7 +16,6 @@ class ProjectControllerTest extends BMSServiceTestCase
 
     private $body = [
         "name" => "TEST_PROJECT_NAME",
-        "internal_id" => "13456",
         "start_date" => "01-02-2019",
         "end_date" => "01-05-2019",
         "target" => 5,
