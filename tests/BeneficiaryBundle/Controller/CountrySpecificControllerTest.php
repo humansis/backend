@@ -6,7 +6,7 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use CommonBundle\Utils\ExportService;
 use Tests\BMSServiceTestCase;
 
-class CountryControllerTest extends BMSServiceTestCase
+class CountrySpecificControllerTest extends BMSServiceTestCase
 {
     public function setUp()
     {

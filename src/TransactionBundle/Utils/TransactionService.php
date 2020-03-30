@@ -4,15 +4,14 @@ namespace TransactionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
+use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
-use TransactionBundle\Entity\FinancialProvider;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Utils\Provider\DefaultFinancialProvider;
-use DistributionBundle\Entity\DistributionData;
-use DistributionBundle\Entity\DistributionBeneficiary;
 use UserBundle\Entity\User;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class TransactionService

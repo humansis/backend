@@ -3,15 +3,15 @@
 namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\SerializationContext;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use FOS\RestBundle\Controller\Annotations as Rest;
-use Swagger\Annotations as SWG;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
-class CountryController extends Controller
+class CountrySpecificController extends Controller
 {
     /**
      * @Rest\Get("/country_specifics", name="all_country_specifics")
