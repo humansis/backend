@@ -4,20 +4,21 @@
 namespace CommonBundle\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use VoucherBundle\Entity\Vendor;
 use UserBundle\Entity\User;
 use CommonBundle\Entity\Location;
 use Symfony\Component\HttpKernel\Kernel;
 
-class VendorFixtures extends Fixture
+class VendorFixtures extends Fixture implements DependentFixtureInterface
 {
 
     /** @var Kernel $kernel */
     private $kernel;
 
     private $data = [
-        ['vendor', 'shop', '1', 'rue de la Paix', '75000', 0, 'vendor', 1]
+        ['vendor@example.org', 'shop', '1', 'rue de la Paix', '75000', 0, 'vendor', 1]
     ];
 
 
@@ -33,22 +34,33 @@ class VendorFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        if ($this->kernel->getEnvironment() === "test" || $this->kernel->getEnvironment() === "dev") {
-            foreach ($this->data as $datum) {
-                $user = $manager->getRepository(User::class)->findOneByUsername($datum[6]);
-                $location = $manager->getRepository(Location::class)->find($datum[7]);
+        if ($this->kernel->getEnvironment() !== "prod") {
+            foreach ($this->data as $vendorData) {
+                $user = $manager->getRepository(User::class)->findOneByUsername($vendorData[6]);
+                $location = $manager->getRepository(Location::class)->find($vendorData[7]);
                 $vendor = new Vendor();
-                $vendor->setName($datum[0])
-                ->setShop($datum[1])
-                ->setAddressNumber($datum[2])
-                ->setAddressStreet($datum[3])
-                ->setAddressPostcode($datum[4])
-                ->setArchived($datum[5])
+                $vendor->setName($vendorData[0])
+                ->setShop($vendorData[1])
+                ->setAddressNumber($vendorData[2])
+                ->setAddressStreet($vendorData[3])
+                ->setAddressPostcode($vendorData[4])
+                ->setArchived($vendorData[5])
                 ->setUser($user)
                 ->setLocation($location);
                 $manager->persist($vendor);
                 $manager->flush();
             }
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDependencies()
+    {
+        return [
+            UserFixtures::class,
+            LocationFixtures::class
+        ];
     }
 }
