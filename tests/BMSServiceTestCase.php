@@ -31,7 +31,7 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var Client $client */
     protected $client;
     const USER_PHPUNIT = 'phpunit';
-    const USER_TESTER = 'reliefapps@yopmail.com';
+    const USER_TESTER = 'test@example.org';
 
     // SERVICES
 
