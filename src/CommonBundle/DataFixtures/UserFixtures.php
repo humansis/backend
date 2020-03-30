@@ -15,6 +15,9 @@ use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
 
+/**
+ * @see VendorFixtures for check vendor username(s) is same
+ */
 class UserFixtures extends Fixture
 {
 
