@@ -5,22 +5,25 @@ namespace BeneficiaryBundle\Form;
 
 use RA\RequestValidatorBundle\RequestValidator\Constraints as RequestValidatorConstraints;
 use Symfony\Component\Validator\Constraints\Collection;
+use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\Constraints\Type;
 
 class HouseholdConstraints extends RequestValidatorConstraints
 {
-    protected function configure() : array
+    protected function configure(): array
     {
         $numeric = new Type('numeric');
         $string = new Type('string');
         $array = new Type('array');
         $null = new Type('null');
         $boolean = new Type('bool');
+        $date = new DateTime();
         $optionalBoolean = new Optional($boolean);
         $optionalNumeric = new Optional($numeric);
         $optionalString = new Optional($string);
         $optionalArray = new Optional($array);
+        $optionalDate = new Optional($date);
 
         $household = [
             "project" => $optionalNumeric,
@@ -35,6 +38,11 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "income_level" => $optionalNumeric,
             "coping_strategies_index" => $optionalNumeric,
             "food_consumption_score" => $optionalNumeric,
+            "assets" => $optionalArray,
+            "shelter_status" => $optionalNumeric,
+            "dept_level" => $optionalNumeric,
+            "support_received_types" => $optionalArray,
+            "support_date_received" => $optionalDate,
         ];
         $householdLocation = [
             "location_group" => $string,
