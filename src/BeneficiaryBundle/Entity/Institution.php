@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 
@@ -34,6 +35,15 @@ class Institution
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $address;
+
+    /**
+     * @var Location
+     *
+     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
+     *
+     * @Groups({"FullDistribution"})
+     */
+    private $location;
 
     /**
      * Get id.
@@ -83,6 +93,30 @@ class Institution
     public function setAddress(Address $address): void
     {
         $this->address = $address;
+    }
+
+    /**
+     * Set location.
+     *
+     * @param \CommonBundle\Entity\Location|null $location
+     *
+     * @return self
+     */
+    public function setLocation(\CommonBundle\Entity\Location $location = null)
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Get location.
+     *
+     * @return \CommonBundle\Entity\Location|null
+     */
+    public function getLocation()
+    {
+        return $this->location;
     }
 
 }
