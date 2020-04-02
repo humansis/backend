@@ -53,6 +53,22 @@ class Institution
     private $location;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
+     * @Groups({"FullHousehold"})
+     */
+    private $latitude;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
+     * @Groups({"FullHousehold"})
+     */
+    private $longitude;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(type="boolean", options={"default" : 0})
@@ -131,6 +147,44 @@ class Institution
     public function getLocation()
     {
         return $this->location;
+    }
+
+    /**
+     * Set lat.
+     *
+     * @param string $latitude
+     *
+     * @return self
+     */
+    public function setLatitude($latitude)
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    /**
+     * Get lat.
+     *
+     * @return string
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * Set long.
+     *
+     * @param string $longitude
+     *
+     * @return self
+     */
+    public function setLongitude($longitude)
+    {
+        $this->longitude = $longitude;
+
+        return $this;
     }
 
     /**
