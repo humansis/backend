@@ -25,6 +25,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Throwable;
 
 class InstitutionController extends Controller
@@ -56,7 +57,7 @@ class InstitutionController extends Controller
 
     /**
      * @Rest\Post("/institutions/get/all", name="all_institutions")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
+     * @ Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Institutions")
      *
@@ -74,7 +75,28 @@ class InstitutionController extends Controller
      */
     public function allAction(Request $request)
     {
-        $filters = $request->request->all();
+        $dataOptionRequirements = new OptionsResolver();
+        $dataOptionRequirements->setRequired([
+            'filter',
+            'sort',
+            'pageIndex',
+            'pageSize',
+            '__country',
+        ]);
+        $dataOptionRequirements->setAllowedTypes('filter', 'array');
+        $dataOptionRequirements->setAllowedTypes('sort', 'array');
+        $dataOptionRequirements->setAllowedTypes('pageIndex', 'int');
+        $dataOptionRequirements->setAllowedTypes('pageSize', 'int');
+        $dataOptionRequirements->setAllowedTypes('__country', 'string');
+        $dataOptionRequirements->setDefaults([
+            'filter' => [],
+            'sort' => [],
+            'pageIndex' => 0,
+            'pageSize' => 10,
+            '__country' => 'KHM',
+        ]);
+
+        $filters = $dataOptionRequirements->resolve($request->request->all());
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get('beneficiary.institution_service');
 
