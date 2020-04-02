@@ -166,6 +166,12 @@ class ExportController extends Controller
      *     description="requested file type (pdf only is support now)"
      * )
      *
+     * @SWG\Parameter(name="locale",
+     *     type="string",
+     *     in="query",
+     *     default="en"
+     * )
+     *
      * @SWG\Response(
      *     response=200,
      *     description="streamed file"
@@ -197,8 +203,14 @@ class ExportController extends Controller
             throw $this->createNotFoundException("Invalid file type requested.");
         }
 
-        $html = $this->get('templating')->render('@Distribution/Pdf/distributionTable.html.twig', [
-            'direction' => 'ltr',
+        $locale = $request->query->get('locale', 'en');
+        $this->get('translator')->setLocale($locale);
+
+        $direction = ('left-to-right' === \Punic\Misc::getCharacterOrder($locale)) ? 'ltr' : 'rtl';
+        $template = ('left-to-right' === \Punic\Misc::getCharacterOrder($locale)) ? '@Distribution/Pdf/distributionTable.html.twig' : '@Distribution/Pdf/distributionTable.rtl.html.twig';
+
+        $html = $this->get('templating')->render($template, [
+            'direction' => $direction,
             'distribution' => $distribution,
         ]);
 

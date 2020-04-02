@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="VLUWEOx" resname="DISTRIBUTION SHEET">
+        <source>DISTRIBUTION SHEET</source>
+        <target>DISTRIBUTION SHEET</target>
+      </trans-unit>
+      <trans-unit id="RZid5J_" resname="Details">
+        <source>Details</source>
+        <target>Details</target>
+      </trans-unit>
+      <trans-unit id="qpQgWsG" resname="Project title">
+        <source>Project title</source>
+        <target>Project title</target>
+      </trans-unit>
+      <trans-unit id="vAxwwF2" resname="Date of distribution">
+        <source>Date of distribution</source>
+        <target>Date of distribution</target>
+      </trans-unit>
+      <trans-unit id="6UY9zPB" resname="Place">
+        <source>Place</source>
+        <target>Place</target>
+      </trans-unit>
+      <trans-unit id="EmCg3MG" resname="Item Description">
+        <source>Item Description</source>
+        <target>Item Description</target>
+      </trans-unit>
+      <trans-unit id="K.w0cVc" resname="Approvals">
+        <source>Approvals</source>
+        <target>Approvals</target>
+      </trans-unit>
+      <trans-unit id="zcz3NLT" resname="On behalf of">
+        <source>On behalf of</source>
+        <target>On behalf of</target>
+      </trans-unit>
+      <trans-unit id="V8kighy" resname="On behalf of People in Need">
+        <source>On behalf of People in Need</source>
+        <target>On behalf of People in Need</target>
+      </trans-unit>
+      <trans-unit id="3NHVIj9" resname="Name">
+        <source>Name</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="bQMa8Q2" resname="Position">
+        <source>Position</source>
+        <target>Position</target>
+      </trans-unit>
+      <trans-unit id="X0.LddB" resname="Signature and Stamp">
+        <source>Signature and Stamp</source>
+        <target>Signature and Stamp</target>
+      </trans-unit>
+      <trans-unit id="dJOqWjY" resname="Household Head">
+        <source>Household Head</source>
+        <target>Household Head</target>
+      </trans-unit>
+      <trans-unit id="QHK6lzx" resname="Household Members">
+        <source>Household Members</source>
+        <target>Household Members</target>
+      </trans-unit>
+      <trans-unit id="oBr_HLy" resname="№">
+        <source>№</source>
+        <target>№</target>
+      </trans-unit>
+      <trans-unit id="J9iM8Zp" resname="FIRST NAME">
+        <source>FIRST NAME</source>
+        <target>FIRST NAME</target>
+      </trans-unit>
+      <trans-unit id="JVXARql" resname="FAMILY NAME">
+        <source>FAMILY NAME</source>
+        <target>FAMILY NAME</target>
+      </trans-unit>
+      <trans-unit id="CJHweCD" resname="DATE OF BIRTH">
+        <source>DATE OF BIRTH</source>
+        <target>DATE OF BIRTH</target>
+      </trans-unit>
+      <trans-unit id="QbuaQ3d" resname="ID No.">
+        <source>ID No.</source>
+        <target>ID No.</target>
+      </trans-unit>
+      <trans-unit id="IiL.etd" resname="PHONE NUMBER">
+        <source>PHONE NUMBER</source>
+        <target>PHONE NUMBER</target>
+      </trans-unit>
+      <trans-unit id="PCHfRb3" resname="STATUS (Resident, IDP or Refugee">
+        <source>STATUS (Resident, IDP or Refugee</source>
+        <target>STATUS (Resident, IDP or Refugee</target>
+      </trans-unit>
+      <trans-unit id="pZ3Qho_" resname="Gender (M/F)">
+        <source>Gender (M/F)</source>
+        <target>Gender (M/F)</target>
+      </trans-unit>
+      <trans-unit id="RafFTIT" resname="SIGNATURE">
+        <source>SIGNATURE</source>
+        <target>SIGNATURE</target>
+      </trans-unit>
+      <trans-unit id="CPJxiHz" resname="M">
+        <source>M</source>
+        <target>M</target>
+      </trans-unit>
+      <trans-unit id="9nqxCtT" resname="F">
+        <source>F</source>
+        <target>F</target>
+      </trans-unit>
+      <trans-unit id="L3..CFH" resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted&#10;the donation of the below specified items from People in Need. The below listed&#10;person agrees that their personal details will be processed by People in Need for the purpose of&#10;implementation of the project.">
+        <source>The below listed person confirm ...</source>
+        <target>The below listed person confirm by their signature of this Distribution List that they obtained and accepted
+the donation of the below specified items from People in Need. The below listed
+person agrees that their personal details will be processed by People in Need for the purpose of
+implementation of the project.</target>
+      </trans-unit>
+      <trans-unit id="hIFv84P" resname="resident">
+        <source>resident</source>
+        <target>resident</target>
+      </trans-unit>
+      <trans-unit id="00vJDlK" resname="IDP">
+        <source>IDP</source>
+        <target>IDP</target>
+      </trans-unit>
+      <trans-unit id="8MkT7PE" resname="refugee">
+        <source>refugee</source>
+        <target>refugee</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

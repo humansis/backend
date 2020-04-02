@@ -44,6 +44,7 @@
 		"nelmio/api-doc-bundle": "^3.0",
 		"nelmio/cors-bundle": "^1.5",
 		"phpoffice/phpspreadsheet": "^1.4",
+		"punic/punic": "^3.5",
 		"relief_applications/symfony-request-validator-bundle": "@dev",
 		"sensio/distribution-bundle": "^5.0.19",
 		"sensio/framework-extra-bundle": "^5.0.0",
