@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d46f2a47af135d88e51026157dc8aee7",
+    "content-hash": "5e6d428b4728eff147e5b9eb0cb4979f",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -4350,6 +4350,80 @@
                 "simple-cache"
             ],
             "time": "2017-10-23T01:57:42+00:00"
+        },
+        {
+            "name": "punic/punic",
+            "version": "3.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/punic/punic.git",
+                "reference": "1b99a1f0d45e2a6109870fde7a3977d9da68940f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/punic/punic/zipball/1b99a1f0d45e2a6109870fde7a3977d9da68940f",
+                "reference": "1b99a1f0d45e2a6109870fde7a3977d9da68940f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "replace": {
+                "punic/calendar": "*",
+                "punic/common": "*"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "2.2.*",
+                "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5 || ^7.4"
+            },
+            "bin": [
+                "bin/punic-data"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Punic\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michele Locati",
+                    "email": "mlocati@gmail.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Remo Laubacher",
+                    "email": "remo.laubacher@gmail.com",
+                    "role": "Collaborator, motivator and perfectionist supporter"
+                },
+                {
+                    "name": "Christian Schmidt",
+                    "email": "github@chsc.dk",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP-Unicode CLDR",
+            "homepage": "https://github.com/punic/punic",
+            "keywords": [
+                "calendar",
+                "cldr",
+                "date",
+                "date-time",
+                "i18n",
+                "internationalization",
+                "l10n",
+                "localization",
+                "php",
+                "time",
+                "translate",
+                "translations",
+                "unicode"
+            ],
+            "time": "2020-01-24T13:04:16+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
