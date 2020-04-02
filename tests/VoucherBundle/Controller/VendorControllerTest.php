@@ -7,7 +7,7 @@ use VoucherBundle\Entity\Vendor;
 class VendorControllerTest extends BMSServiceTestCase
 {
     /** @var string $username */
-    private $username = "VENDOR_PHPUNIT@gmail.com";
+    private $username = "vendor@example.org";
 
     /**
      * @throws \Exception

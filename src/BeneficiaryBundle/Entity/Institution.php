@@ -14,6 +14,13 @@ use JMS\Serializer\Annotation\Groups;
  */
 class Institution
 {
+    const TYPE_SCHOOL = 'school';
+    const TYPE_HEALTH_CENTER = 'health';
+    const TYPE_COMMUNITY_CENTER = 'comunity_center';
+    const TYPE_GOVERNMENT = 'government';
+    const TYPE_PRODUCTION = 'production';
+    const TYPE_COMMERCE = 'commerce';
+
     /**
      * @var int
      *
@@ -44,6 +51,13 @@ class Institution
      * @Groups({"FullDistribution"})
      */
     private $location;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    private $archived = 0;
 
     /**
      * Get id.
@@ -117,6 +131,30 @@ class Institution
     public function getLocation()
     {
         return $this->location;
+    }
+
+    /**
+     * Set archived.
+     *
+     * @param bool $archived
+     *
+     * @return self
+     */
+    public function setArchived($archived)
+    {
+        $this->archived = $archived;
+
+        return $this;
+    }
+
+    /**
+     * Get archived.
+     *
+     * @return bool
+     */
+    public function getArchived()
+    {
+        return $this->archived;
     }
 
 }

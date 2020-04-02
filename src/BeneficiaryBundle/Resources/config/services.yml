@@ -19,6 +19,18 @@ services:
             - "@validator"
             - "@service_container"
         public: true
+
+    beneficiary.institution_service:
+        class: BeneficiaryBundle\Utils\InstitutionService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@jms_serializer"
+            - "@beneficiary.beneficiary_service"
+            - "@request_validator"
+            - "@location_service"
+            - "@validator"
+            - "@service_container"
+        public: true
         
     beneficiary.beneficiary_service:
         class: BeneficiaryBundle\Utils\BeneficiaryService
