@@ -23,7 +23,7 @@
 		]
 	},
 	"require": {
-		"php": ">=7.0",
+		"php": "^7.3",
 		"ext-Zend-OPcache": "*",
 		"ext-json": "*",
 		"aws/aws-sdk-php": "^3.90",
@@ -47,12 +47,12 @@
 		"relief_applications/symfony-request-validator-bundle": "@dev",
 		"sensio/distribution-bundle": "^5.0.19",
 		"sensio/framework-extra-bundle": "^5.0.0",
-		"symfony/cache": "3.4.14",
+		"symfony/cache": "^3.4",
 		"symfony/http-client": "^4.3",
-		"symfony/monolog-bundle": "^3.1.0",
+		"symfony/monolog-bundle": "^3.4",
 		"symfony/polyfill-apcu": "^1.0",
 		"symfony/swiftmailer-bundle": "^2.6.4",
-		"symfony/symfony": "3.4.*",
+		"symfony/symfony": "^3.4",
 		"symfony/templating": "^3.4",
 		"tecnickcom/tcpdf": "^6.2",
 		"twig/twig": "^1.0||^2.0"
@@ -83,7 +83,7 @@
 	},
 	"config": {
 		"platform": {
-			"php": "7.2.4"
+			"php": "7.3"
 		},
 		"sort-packages": true
 	},
