@@ -109,7 +109,7 @@ class InstitutionController extends Controller
             ->serialize(
                 $institutions,
                 'json',
-                SerializationContext::create()->setGroups("SmallInstitution")->setSerializeNull(true)
+                SerializationContext::create()->setGroups("FullInstitution")->setSerializeNull(true)
             );
 
         return new Response($json);
@@ -563,7 +563,7 @@ class InstitutionController extends Controller
             ->serialize(
                 $institutions,
                 'json',
-                SerializationContext::create()->setGroups("SmallInstitution")->setSerializeNull(true)
+                SerializationContext::create()->setGroups("FullInstitution")->setSerializeNull(true)
             );
         return new Response($json);
     }

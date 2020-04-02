@@ -34,12 +34,13 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
+     * @Groups({"FullInstitution"})
      */
     private $type;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullInstitution"})
      */
     private $address;
 
@@ -48,7 +49,7 @@ class Institution
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullInstitution"})
      */
     private $location;
 
@@ -56,7 +57,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullInstitution"})
      */
     private $latitude;
 
@@ -64,7 +65,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullInstitution"})
      */
     private $longitude;
 

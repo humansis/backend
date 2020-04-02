@@ -101,7 +101,6 @@ class InstitutionService
         $limitMinimum = $pageIndex * $pageSize;
 
         $institutions = $this->em->getRepository(Institution::class)->getAllBy($iso3, $limitMinimum, $pageSize, $sort);
-        var_dump($institutions); die(__METHOD__);
         $length = $institutions[0];
         $institutions = $institutions[1];
 
