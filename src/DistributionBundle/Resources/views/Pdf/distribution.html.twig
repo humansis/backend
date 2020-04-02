@@ -61,6 +61,7 @@
             <div class="main-info">
                 <span> Project : <span>
                 {{ distribution.project.name }}
+                {% if distribution.project.internalId is not null %} [{{ distribution.project.internalId }}]{% endif %}
             </div>
             <div class="donors">
                 <span> Project Donors : <span>

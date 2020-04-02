@@ -407,7 +407,7 @@ class DistributionService
             
             
             $row = [
-                "Navi/Elo number" => " ",
+                "Navi/Elo number" => $distribution->getProject()->getInternalId() ?? " ",
                 "DISTR. NO." => $distribution->getId(),
                 "Distributed by" => " ",
                 "Round" => " ",

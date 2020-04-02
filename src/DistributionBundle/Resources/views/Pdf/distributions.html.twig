@@ -35,6 +35,7 @@
             <div class="project">
                 <span> Project : <span>
                 {{ project.name }}
+                {% if project.internalId is not null %} [{{ project.internalId }}]{% endif %}
             </div>
 
             <div class="donors">
