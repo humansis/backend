@@ -104,25 +104,42 @@ class UserFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
+        $countries = ["KHM", "SYR", "IRQ"];
+
+        if ($this->kernel->getEnvironment() === "prod") {
+            echo __CLASS__ . " can't be running at production\n";
+            return;
+        }
+
         foreach ($this->data as $index => $userData) {
-            if ($this->kernel->getEnvironment() !== "prod") {
-                $instance = $manager->getRepository(User::class)->findOneByUsername($userData['email']);
-                if (!$instance instanceof User) {
-                    $instance = $this->manager->createUser();
-                    $instance->setEnabled(1)
-                    ->setEmail($userData['email'])
-                    ->setEmailCanonical($userData['email'])
-                    ->setUsername($userData['email'])
-                    ->setUsernameCanonical($userData['email'])
-                    ->setSalt($userData['salt'])
-                    ->setRoles([$userData['roles']])
-                    ->setChangePassword(0);
-                    $instance->setPassword($userData['passwd']);
-                    $manager->persist($instance);
-                    
-                    $manager->flush();
-                }
+            $instance = $manager->getRepository(User::class)->findOneByUsername($userData['email']);
+            if ($instance instanceof User) {
+                echo "User {$instance->getUsername()} already exists. Ommiting.\n";
+                continue;
             }
+
+            $instance = $this->manager->createUser();
+            $instance->setEnabled(1)
+                ->setEmail($userData['email'])
+                ->setEmailCanonical($userData['email'])
+                ->setUsername($userData['email'])
+                ->setUsernameCanonical($userData['email'])
+                ->setSalt($userData['salt'])
+                ->setRoles([$userData['roles']])
+                ->setChangePassword(0);
+
+            foreach ($countries as $country) {
+                $userCountry = new UserCountry();
+                $userCountry->setUser($instance)
+                    ->setIso3($country)
+                    ->setRights($userData['roles']);
+                $instance->addCountry($userCountry);
+            }
+
+            $instance->setPassword($userData['passwd']);
+            $manager->persist($instance);
+
+            $manager->flush();
         }
     }
 }
