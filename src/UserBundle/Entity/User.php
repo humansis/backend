@@ -374,6 +374,7 @@ class User extends BaseUser implements ExportableInterface
     public function setChangePassword($changePassword)
     {
         $this->changePassword = $changePassword;
+        return $this;
     }
 
     /**
