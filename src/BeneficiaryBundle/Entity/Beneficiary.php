@@ -823,7 +823,7 @@ class Beneficiary implements ExportableInterface
             "longitude" => $this->getHousehold()->getLongitude(),
             "Assets" => implode(', ', $assets),
             "Shelter Status" => $shelterStatus,
-            "Dept Level" => $this->getHousehold()->getDeptLevel(),
+            "Debt Level" => $this->getHousehold()->getDebtLevel(),
             "Support Received Types" => implode(', ', $supportReceivedTypes),
             "Support Date Received" => $supportDateReceived,
         ];

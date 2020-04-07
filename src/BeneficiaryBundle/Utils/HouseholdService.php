@@ -191,7 +191,7 @@ class HouseholdService
             ->setFoodConsumptionScore($householdArray["food_consumption_score"])
             ->setAssets($householdArray["assets"] ?? [])
             ->setShelterStatus($householdArray["shelter_status"] ?? null)
-            ->setDeptLevel($householdArray["dept_level"] ?? null)
+            ->setDebtLevel($householdArray["debt_level"] ?? null)
             ->setSupportReceivedTypes($householdArray["support_received_types"] ?? []);
 
         if (isset($householdArray["support_date_received"]) && $householdArray["support_date_received"]) {
