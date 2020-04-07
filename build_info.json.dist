@@ -1,6 +1,6 @@
 {
   "branch" : "__BRANCH__",
-  "commit" : "__COMMIT__",
-  "ver": "__VERSION__",
-  "version": "__VERSION_SHORT__"
+  "commit" : "__COMMIT_HASH__",
+  "tag": "__TAG__",
+  "app_version": "__APP_VERSION__"
 }
