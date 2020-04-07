@@ -37,6 +37,11 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         if ($this->kernel->getEnvironment() !== "prod") {
             foreach ($this->data as $vendorData) {
                 $user = $manager->getRepository(User::class)->findOneByUsername($vendorData[6]);
+                if (null !== $manager->getRepository(Vendor::class)->findByUser($user)) {
+                    echo "Vendor {$vendorData[0]} already exists. Ommiting.\n";
+                    continue;
+                }
+
                 $location = $manager->getRepository(Location::class)->find($vendorData[7]);
                 $vendor = new Vendor();
                 $vendor->setName($vendorData[0])
