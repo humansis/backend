@@ -40,7 +40,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "food_consumption_score" => $optionalNumeric,
             "assets" => $optionalArray,
             "shelter_status" => $optionalNumeric,
-            "dept_level" => $optionalNumeric,
+            "debt_level" => $optionalNumeric,
             "support_received_types" => $optionalArray,
             "support_date_received" => $optionalDate,
         ];

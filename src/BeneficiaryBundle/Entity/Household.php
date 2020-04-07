@@ -269,10 +269,10 @@ class Household
     /**
      * @var int
      *
-     * @ORM\Column(name="dept_level", type="integer", nullable=true)
+     * @ORM\Column(name="debt_level", type="integer", nullable=true)
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
-    private $deptLevel;
+    private $debtLevel;
 
     /**
      * @var int[]
@@ -774,19 +774,19 @@ class Household
     /**
      * @return int|null
      */
-    public function getDeptLevel(): ?int
+    public function getDebtLevel(): ?int
     {
-        return $this->deptLevel;
+        return $this->debtLevel;
     }
 
     /**
-     * @param int|null $deptLevel
+     * @param int|null $debtLevel
      *
      * @return self
      */
-    public function setDeptLevel(?int $deptLevel): self
+    public function setDebtLevel(?int $debtLevel): self
     {
-        $this->deptLevel = $deptLevel;
+        $this->debtLevel = $debtLevel;
 
         return $this;
     }
