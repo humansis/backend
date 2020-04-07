@@ -18,7 +18,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
         $array = new Type('array');
         $null = new Type('null');
         $boolean = new Type('bool');
-        $date = new DateTime();
+        $date = new DateTime(['format' => 'd-m-Y']);
         $optionalBoolean = new Optional($boolean);
         $optionalNumeric = new Optional($numeric);
         $optionalString = new Optional($string);
