@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
 
 /**
@@ -285,7 +286,8 @@ class Household
     /**
      * @var \DateTimeInterface
      *
-     * @ORM\Column(name="support_date_received", type="datetime", nullable=true)
+     * @ORM\Column(name="support_date_received", type="date", nullable=true)
+     * @JMS_Type("DateTime<'d-m-Y'>")
      * @Groups({"FullHousehold", "SmallHousehold"})
      */
     private $supportDateReceived;

@@ -194,15 +194,14 @@ class HouseholdService
             ->setDebtLevel($householdArray["debt_level"] ?? null)
             ->setSupportReceivedTypes($householdArray["support_received_types"] ?? []);
 
+        $dateReceived = null;
         if (isset($householdArray["support_date_received"]) && $householdArray["support_date_received"]) {
-            try {
-                $household->setSupportDateReceived(new \DateTime($householdArray["support_date_received"]));
-            } catch (\Exception $ex) {
+            $dateReceived = \DateTime::createFromFormat('d-m-Y', $householdArray["support_date_received"]);
+            if (false === $dateReceived) {
                 throw new \Exception("Value of support_date_received is invalid");
             }
-        } else {
-            $household->setSupportDateReceived(null);
         }
+        $household->setSupportDateReceived($dateReceived);
 
         // Remove projects if the household is not part of them anymore
         if ($actualAction === "update") {
