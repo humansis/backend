@@ -204,7 +204,7 @@ class Project implements ExportableInterface
     /**
      * @return string
      */
-    public function getInternalId(): string
+    public function getInternalId(): ?string
     {
         return $this->internalId;
     }
