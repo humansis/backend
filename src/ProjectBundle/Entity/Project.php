@@ -202,7 +202,7 @@ class Project implements ExportableInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getInternalId(): ?string
     {
@@ -210,7 +210,7 @@ class Project implements ExportableInterface
     }
 
     /**
-     * @param string $internalId
+     * @param string|null $internalId
      */
     public function setInternalId($internalId)
     {
