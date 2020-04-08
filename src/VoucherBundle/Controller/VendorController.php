@@ -51,7 +51,7 @@ class VendorController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createVendorAction(Request $request)
+    public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -134,7 +134,7 @@ class VendorController extends Controller
      * @param Vendor $vendor
      * @return Response
      */
-    public function getSingleVendorAction(Vendor $vendor)
+    public function getSingleAction(Vendor $vendor)
     {
         $json = $this->get('jms_serializer')->serialize($vendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
 
@@ -211,7 +211,7 @@ class VendorController extends Controller
      * @param Vendor $vendor
      * @return Response
      */
-    public function archiveVendorAction(Vendor $vendor)
+    public function archiveAction(Vendor $vendor)
     {
         try {
             $archivedVendor = $this->get('voucher.vendor_service')->archiveVendor($vendor);

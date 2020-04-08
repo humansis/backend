@@ -2,14 +2,13 @@
 
 namespace TransactionBundle\Utils\Provider;
 
-use Doctrine\ORM\EntityManagerInterface;
+use DistributionBundle\Entity\DistributionBeneficiary;
 
 use DistributionBundle\Entity\DistributionData;
-use DistributionBundle\Entity\DistributionBeneficiary;
-use TransactionBundle\Entity\FinancialProvider;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\TransactionBundle;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class KHMFinancialProvider
@@ -39,6 +38,10 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      * @var string
      */
     private $password;
+    /**
+     * @var boolean
+     */
+    private $production;
 
     /**
      * Get token to connect to API
@@ -48,9 +51,22 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      */
     public function getToken(DistributionData $distributionData)
     {
-        $FP = $this->em->getRepository(FinancialProvider::class)->findOneByCountry($distributionData->getProject()->getIso3());
-        $this->username = $FP->getUsername();
-        $this->password = base64_decode($FP->getPassword());
+        $organizationWINGCashTransfer = $this->em->getRepository(OrganizationServices::class)->findOneByService("WING Cash Transfer");
+
+        if (! $organizationWINGCashTransfer->getEnabled()) {
+            throw new \Exception("This service is not enabled for the organization");
+        }
+
+        $this->password = $organizationWINGCashTransfer->getParameterValue('password');
+        $this->username = $organizationWINGCashTransfer->getParameterValue('username');
+        $this->production = $organizationWINGCashTransfer->getParameterValue('production') ? $organizationWINGCashTransfer->getParameterValue('production') : false;
+
+        if (!$this->password || !$this->username) {
+            throw new \Exception("This service has no parameters specified");
+        }
+
+        // $this->username = $FP->getUsername();
+        // $this->password = base64_decode($FP->getPassword());
         
         $route = "/oauth/token";
         $body = array(
@@ -210,7 +226,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
                 
         curl_setopt_array($curl, array(
           CURLOPT_PORT           => "8443",
-          CURLOPT_URL            => ($this->username === 'peopleinneed' ? $this->url_prod : $this->url) . $route,
+          CURLOPT_URL            => ($this->production ? $this->url_prod : $this->url) . $route,
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_ENCODING       => "",
           CURLOPT_MAXREDIRS      => 10,

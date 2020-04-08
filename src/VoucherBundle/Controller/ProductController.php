@@ -53,7 +53,7 @@ class ProductController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createProductAction(Request $request)
+    public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -102,7 +102,7 @@ class ProductController extends Controller
      *
      * @return Response
      */
-    public function getProductAction(Request $request)
+    public function getAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -154,7 +154,7 @@ class ProductController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function updateProductAction(Product $product, Request $request)
+    public function updateAction(Product $product, Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -204,7 +204,7 @@ class ProductController extends Controller
      * @param Product $product
      * @return Response
      */
-    public function deleteProductAction(Product $product)
+    public function deleteAction(Product $product)
     {
         try {
             $return = $this->get('voucher.product_service')->archive($product);
