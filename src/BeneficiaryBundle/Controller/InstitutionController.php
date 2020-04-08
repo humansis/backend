@@ -228,17 +228,23 @@ class InstitutionController extends Controller
      */
     public function updateAction(Request $request, Institution $institution)
     {
-
         $requestArray = $request->request->all();
-        $projectsArray = $requestArray['projects'];
+
+        $requestRequirements = new OptionsResolver();
+        $requestRequirements->setRequired('institution');
+        $requestRequirements->setAllowedTypes('institution', 'array');
+        $requestRequirements->setDefaults([
+            '__country' => 'KHM',
+        ]);
+
+        $requestArray = $requestRequirements->resolve($requestArray);
 
         $institutionArray = $requestArray['institution'];
-        $institutionArray['__country'] = $requestArray['__country'];
 
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get('beneficiary.institution_service');
         try {
-            $institution = $institutionService->createOrEdit($institutionArray, $projectsArray, $institution);
+            $institution = $institutionService->update($requestArray['__country'], $institution, $institutionArray);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
@@ -249,7 +255,7 @@ class InstitutionController extends Controller
             ->serialize(
                 $institution,
                 'json',
-                SerializationContext::create()->setGroups("FullInstitution")->setSerializeNull(true)
+                SerializationContext::create()->setGroups(["FullBeneficiary", "FullInstitution"])->setSerializeNull(true)
             );
         return new Response($json);
     }

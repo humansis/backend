@@ -188,4 +188,14 @@ class Address
         return $this->location;
     }
 
+    public function equals(self $address): bool
+    {
+        if ($address->number !== $this->number) return false;
+        if ($address->street !== $this->street) return false;
+        if ($address->postcode !== $this->postalcode) return false;
+        if ($address->location !== $this->location) return false;
+        return true;
+    }
+
+
 }

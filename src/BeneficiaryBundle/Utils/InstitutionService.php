@@ -139,267 +139,6 @@ class InstitutionService
         return $institution;
     }
 
-    /**
-     * @param array $institutionArray
-     * @param bool $flush
-     * @return Institution
-     * @throws ValidationException
-     * @throws \Exception
-     */
-    public function createOrEdit(array $institutionArray, $institution = null, bool $flush = true)
-    {
-        $actualAction = 'update';
-        $this->requestValidator->validate(
-            "institution",
-            InstitutionConstraints::class,
-            $institutionArray,
-            'any'
-        );
-
-        /** @var Institution $institution */
-        if (!$institution) {
-            $actualAction = 'create';
-            $institution = new Institution();
-        }
-
-        if ($institution->getInstitutionLocations()) {
-            foreach ($institution->getInstitutionLocations() as $initialInstitutionLocation) {
-                $this->em->remove($initialInstitutionLocation);
-            }
-        }
-        $this->em->flush();
-
-        foreach ($institutionArray['institution_locations'] as $institutionLocation) {
-            $newInstitutionLocation = new InstitutionLocation();
-            $newInstitutionLocation
-                ->setLocationGroup($institutionLocation['location_group'])
-                ->setType($institutionLocation['type']);
-
-            if ($institutionLocation['type'] === InstitutionLocation::LOCATION_TYPE_CAMP) {
-                // Try to find the camp with the name in the request
-                $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $institutionLocation['camp_address']['camp']['name']]);
-                // Or create a camp with the name in the request
-                if (!$camp instanceof Camp) {
-                    $location = $this->locationService->getLocation($institutionArray['__country'], $institutionLocation['camp_address']['camp']['location']);
-                    if (null === $location) {
-                        throw new \Exception("Location was not found.");
-                    }
-                    $camp = new Camp();
-                    $camp->setName($institutionLocation['camp_address']['camp']['name']);
-                    $camp->setLocation($location);
-                }
-                $campAddress = new CampAddress();
-                $campAddress->setTentNumber($institutionLocation['camp_address']['tent_number'])
-                    ->setCamp($camp);
-                $newInstitutionLocation->setCampAddress($campAddress);
-            } else {
-                $location = $this->locationService->getLocation($institutionArray['__country'], $institutionLocation['address']["location"]);
-                if (null === $location) {
-                    throw new \Exception("Location was not found.");
-                }
-                $address = new Address();
-                $address->setNumber($institutionLocation['address']['number'])
-                    ->setStreet($institutionLocation['address']['street'])
-                    ->setPostcode($institutionLocation['address']['postcode'])
-                    ->setLocation($location);
-                $newInstitutionLocation->setAddress($address);
-            }
-            $institution->addInstitutionLocation($newInstitutionLocation);
-            $this->em->persist($newInstitutionLocation);
-        }
-
-
-        $institution->setNotes($institutionArray["notes"])
-            ->setLivelihood($institutionArray["livelihood"])
-            ->setIncomeLevel($institutionArray["income_level"])
-            ->setCopingStrategiesIndex($institutionArray["coping_strategies_index"])
-            ->setFoodConsumptionScore($institutionArray["food_consumption_score"]);
-        $institution->setLongitude($institutionArray["longitude"]);
-        $institution->setLatitude($institutionArray["latitude"]);
-
-        // Remove projects if the institution is not part of them anymore
-        if ($actualAction === "update") {
-            $oldProjects = $institution->getProjects()->toArray();
-            $toRemove = array_udiff(
-                $oldProjects,
-                $projectsArray,
-                function ($oldProject, $newProject) {
-                    if ($oldProject->getId() === $newProject->getId()) {
-                        return 0;
-                    } else {
-                        return -1;
-                    }
-            });
-            foreach ($toRemove as $projectToRemove) {
-                $institution->removeProject($projectToRemove);
-            }
-        }
-
-        // Add projects
-        foreach ($projectsArray as $project) {
-            if (! $project instanceof Project) {
-                throw new \Exception("The project could not be found.");
-            }
-            if ($actualAction !== 'update' || ! $institution->getProjects()->contains($project)) {
-                $institution->addProject($project);
-            }
-        }
-        
-        $this->em->persist($institution);
-
-        if (!empty($institutionArray["beneficiaries"])) {
-            $hasHead = false;
-            $beneficiariesPersisted = [];
-            if ($actualAction === "update") {
-                $oldBeneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(["institution" => $institution]);
-            }
-            foreach ($institutionArray["beneficiaries"] as $beneficiaryToSave) {
-                try {
-                    if ($beneficiaryToSave['gender'] === 'Male') {
-                        $beneficiaryToSave['gender'] = 1;
-                    } elseif ($beneficiaryToSave['gender'] === 'Female') {
-                        $beneficiaryToSave['gender'] = 0;
-                    }
-
-                    $beneficiary = $this->beneficiaryService->updateOrCreate($institution, $beneficiaryToSave, false);
-                    if (! array_key_exists("id", $beneficiaryToSave)) {
-                        $institution->addBeneficiary($beneficiary);
-                    }
-                    $beneficiariesPersisted[] = $beneficiary;
-                } catch (\Exception $exception) {
-                    throw $exception;
-                }
-                if ($beneficiary->getStatus()) {
-                    if ($hasHead) {
-                        throw new \Exception("You have defined more than 1 head of institution.");
-                    }
-                    $hasHead = true;
-                }
-                $this->em->persist($beneficiary);
-            }
-            
-            // Remove beneficiaries that are not in the institution anymore
-            if ($actualAction === 'update') {
-                $toRemove = array_udiff(
-                    $oldBeneficiaries,
-                    $beneficiariesPersisted,
-                    function ($oldB, $newB) {
-                        if ($oldB->getId() === $newB->getId()) {
-                            return 0;
-                        } else {
-                            return -1;
-                        }
-                    }
-                );
-                foreach ($toRemove as $beneficiaryToRemove) {
-                    $institution->removeBeneficiary($beneficiaryToRemove);
-                    $this->em->remove($beneficiaryToRemove);
-                }
-            }
-        }
-        
-        if (!empty($institutionArray["country_specific_answers"])) {
-            foreach ($institutionArray["country_specific_answers"] as $country_specific_answer) {
-                $this->addOrUpdateCountrySpecific($institution, $country_specific_answer, false);
-            }
-        }
-        
-        if ($flush) {
-            $this->em->flush();
-            $institution = $this->em->getRepository(Institution::class)->find($institution->getId());
-            $country_specific_answers = $this->em->getRepository(CountrySpecificAnswer::class)->findByInstitution($institution);
-            foreach ($country_specific_answers as $country_specific_answer) {
-                $institution->addCountrySpecificAnswer($country_specific_answer);
-            }
-        }
-
-
-        return $institution;
-    }
-
-    /**
-     * @param array $institutionArray
-     * @return array
-     */
-    public function removeBeneficiaries(array $institutionArray)
-    {
-        $institution = $this->em->getRepository(Institution::class)->find($institutionArray['id']);
-        $beneficiaryIds = array_map(function ($beneficiary) {
-            return $beneficiary['id'];
-        }, $institutionArray['beneficiaries']);
-
-        // Remove beneficiaries that are not in the array
-        foreach ($institution->getBeneficiaries() as $beneficiary) {
-            if (! in_array($beneficiary->getId(), $beneficiaryIds)) {
-                $this->em->remove($beneficiary);
-            }
-        }
-
-        return $institutionArray;
-    }
-
-    /**
-     * @param Institution $institution
-     * @param Project $project
-     */
-    public function addToProject(Institution &$institution, Project $project)
-    {
-        if (! $institution->getProjects()->contains($project)) {
-            $institution->addProject($project);
-            $this->em->persist($institution);
-        }
-    }
-
-    /**
-     * @param Institution $institution
-     * @param array $countrySpecificAnswerArray
-     * @return array|CountrySpecificAnswer
-     * @throws \Exception
-     */
-    public function addOrUpdateCountrySpecific(Institution $institution, array $countrySpecificAnswerArray, bool $flush)
-    {
-        $this->requestValidator->validate(
-            "country_specific_answer",
-            InstitutionConstraints::class,
-            $countrySpecificAnswerArray,
-            'any'
-        );
-        $countrySpecific = $this->em->getRepository(CountrySpecific::class)
-            ->find($countrySpecificAnswerArray["country_specific"]["id"]);
-
-        if (!$countrySpecific instanceof CountrySpecific) {
-            throw new \Exception("This country specific is unknown");
-        }
-
-        $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
-            ->findOneBy([
-                "countrySpecific" => $countrySpecific,
-                "institution" => $institution
-            ]);
-
-        if ($countrySpecificAnswerArray["answer"]) {
-            if (!$countrySpecificAnswer instanceof CountrySpecificAnswer) {
-                $countrySpecificAnswer = new CountrySpecificAnswer();
-                $countrySpecificAnswer->setCountrySpecific($countrySpecific)
-                    ->setInstitution($institution);
-            }
-    
-            $countrySpecificAnswer->setAnswer($countrySpecificAnswerArray["answer"]);
-    
-            $this->em->persist($countrySpecificAnswer);
-        } else {
-            if ($countrySpecificAnswer instanceof CountrySpecificAnswer) {
-                $this->em->remove($countrySpecificAnswer);
-            }
-        }
-
-        if ($flush) {
-            $this->em->flush();
-        }
-
-        return $countrySpecificAnswer;
-    }
-
     public function remove(Institution $institution)
     {
         $institution->setArchived(true);
@@ -449,5 +188,45 @@ class InstitutionService
         }
 
         return $institutions;
+    }
+
+    public function update($iso3, Institution $institution, $institutionArray): Institution
+    {
+        if (array_key_exists('longitude', $institutionArray)) {
+            $institution->setLongitude($institutionArray['longitude']);
+        }
+        if (array_key_exists('latitude', $institutionArray)) {
+            $institution->setLatitude($institutionArray['latitude']);
+        }
+        if (array_key_exists('type', $institutionArray)) {
+            $institution->setType($institutionArray['type']);
+        }
+
+        if (array_key_exists('address', $institutionArray)) {
+            $location = null;
+            if (array_key_exists('location', $institutionArray['address'])) {
+                $location = $this->locationService->getLocation($iso3, $institutionArray['address']['location']);
+            }
+            $this->updateAddress($institution, Address::create(
+                $institutionArray['address']['street'],
+                $institutionArray['address']['number'],
+                $institutionArray['address']['postcode'],
+                $location,
+                ));
+        }
+
+        return $institution;
+    }
+
+    private function updateAddress(Institution $institution, Address $newAddress)
+    {
+        if (null === $institution->getAddress()) {
+            $institution->setAddress($newAddress);
+            return;
+        }
+        if (! $institution->getAddress()->equals($newAddress)) {
+            $this->em->remove($institution->getAddress());
+            $institution->setAddress($newAddress);
+        }
     }
 }

@@ -11,6 +11,7 @@ use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use Mpdf\Tag\Ins;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
@@ -20,7 +21,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
     public function getValidInstitutions()
     {
         return [
-            'full input' => [[
+            'fullInput' => [[
                 'institution' => [
                     'type' => Institution::TYPE_GOVERNMENT,
                     'longitude' => '20,254871',
@@ -77,8 +78,6 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $institution = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: " . $this->client->getResponse()->getContent());
 
-        echo $this->client->getResponse()->getContent();
-
         $this->assertArrayHasKey('type', $institution, "Part of answer missing: type");
         $this->assertArrayHasKey('longitude', $institution,"Part of answer missing: longitude");
         $this->assertArrayHasKey('latitude', $institution,"Part of answer missing: latitude");
@@ -128,6 +127,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/institutions/get/all', $body);
         $listInstitution = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
         $this->assertIsArray($listInstitution);
         // list size
         $this->assertIsNumeric($listInstitution[0]);
@@ -159,6 +159,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
             "sort" => []
         ];
         $crawler = $this->request('POST', '/api/wsse/institutions/get/all', $body);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $institutionsArray = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame(1, count($institutionsArray[1]));
         $institutions = $institutionsArray[1];
@@ -178,29 +179,95 @@ class InstitutionControllerTest extends BMSServiceTestCase
      * @depends testCreateInstitution
      * @param $institution
      */
-    public function testEditInstitution($institution)
+    public function testEditInstitutionPosition()
     {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $body['institution'] = $this->bodyInstitution;
-        $body['projects'] = [1];
-    
-         $crawler = $this->request('POST', '/api/wsse/institutions/' . $institution['id'], $body);
-         $institutionsArray = json_decode($this->client->getResponse()->getContent(), true);
+        /** @var Institution $institution */
+        $institution = $this->em->getRepository(Institution::class)->findOneBy([]);
 
-        // $this->assertArrayHasKey('id', $institutionsArray);
-        // $this->assertArrayHasKey('address_postcode', $institutionsArray);
-        // $this->assertArrayHasKey('address_street', $institutionsArray);
-        // $this->assertArrayHasKey('address_number', $institutionsArray);
-        // $this->assertArrayHasKey('latitude', $institutionsArray);
-        // $this->assertArrayHasKey('longitude', $institutionsArray);
-        // $this->assertArrayHasKey('livelihood', $institutionsArray);
-        // $this->assertArrayHasKey('notes', $institutionsArray);
-        // $this->assertArrayHasKey('beneficiaries', $institutionsArray);
-        // $this->assertArrayHasKey('country_specific_answers', $institutionsArray);
-        // $this->assertArrayHasKey('location', $institutionsArray);
-        // $this->assertArrayHasKey('projects', $institutionsArray);
+        $oldLongitude = $institution->getLongitude();
+        $oldLatitude = $institution->getLatitude();
+        $changes = [
+            'institution' => [
+                'longitude' => '1'.$oldLongitude,
+                'latitude' => '1'.$oldLatitude,
+            ],
+        ];
+
+        $crawler = $this->request('POST', '/api/wsse/institutions/' . $institution->getId(), $changes);
+        $institutionsArray = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
+        $this->assertArrayHasKey('longitude', $institutionsArray,"Part of answer missing: longitude");
+        $this->assertArrayHasKey('latitude', $institutionsArray,"Part of answer missing: latitude");
+        $this->assertEquals($institutionsArray['longitude'], $changes['institution']['longitude'], "Longitude wasn't changed");
+        $this->assertEquals($institutionsArray['latitude'], $changes['institution']['latitude'], "Latitude wasn't changed");
+    }
+
+    /**
+     * @depends testCreateInstitution
+     * @param $institution
+     */
+    public function testEditInstitutionType()
+    {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var Institution $institution */
+        $institution = $this->em->getRepository(Institution::class)->findOneBy([]);
+
+        $changes = [
+            'institution' => [
+                'type' => Institution::TYPE_COMMERCE,
+            ],
+        ];
+
+        $crawler = $this->request('POST', '/api/wsse/institutions/' . $institution->getId(), $changes);
+        $institutionsArray = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
+        echo $this->client->getResponse()->getContent();
+
+        $this->assertArrayHasKey('type', $institutionsArray,"Part of answer missing: type");
+        $this->assertEquals($institutionsArray['type'], $changes['institution']['type'], "Type wasn't changed");
+    }
+
+    /**
+     * @depends testCreateInstitution
+     * @param $institution
+     */
+    public function testEditInstitutionAddress()
+    {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var Institution $institution */
+        $institution = $this->em->getRepository(Institution::class)->findOneBy([]);
+
+        $changes = [
+            'institution' => [
+                'address' => [
+                    'street' => 'changed street',
+                    'number' => '123456789',
+                    'postcode' => '987654321',
+                ],
+            ],
+        ];
+
+        $crawler = $this->request('POST', '/api/wsse/institutions/' . $institution->getId(), $changes);
+        $institutionsArray = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
+        echo $this->client->getResponse()->getContent();
+
+        $this->assertArrayHasKey('address', $institutionsArray,"Part of answer missing: address");
+        $this->assertEquals($institutionsArray['address']['street'], $changes['institution']['address']['street'], "Address[street] wasn't changed");
+        $this->assertEquals($institutionsArray['address']['number'], $changes['institution']['address']['number'], "Address[number] wasn't changed");
+        $this->assertEquals($institutionsArray['address']['postcode'], $changes['institution']['address']['postcode'], "Address[postcode] wasn't changed");
     }
 }

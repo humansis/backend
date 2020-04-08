@@ -156,6 +156,14 @@ class Institution
     }
 
     /**
+     * @return string
+     */
+    public function getLongitude(): string
+    {
+        return $this->longitude;
+    }
+
+    /**
      * Set archived.
      *
      * @param bool $archived
