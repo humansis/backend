@@ -107,19 +107,47 @@ class InstitutionService
         return [$length, $institutions];
     }
 
+    public function create(string $iso3, array $institutionArray): Institution
+    {
+//        $this->requestValidator->validate(
+//            "institution",
+//            InstitutionConstraints::class,
+//            $institutionArray,
+//            'any'
+//        );
+
+        $institution = new Institution();
+        $institution->setType($institutionArray['type']);
+        if (isset($institutionArray['latitude'])) {
+            $institution->setLatitude($institutionArray['latitude']);
+        }
+        if (isset($institutionArray['longitude'])) {
+            $institution->setLongitude($institutionArray['longitude']);
+        }
+
+        if (isset($institutionArray['address'])) {
+            $location = $this->locationService->getLocation($iso3, $institutionArray['address']["location"]);
+
+            $institution->setAddress(Address::create(
+                $institutionArray['address']['street'],
+                $institutionArray['address']['number'],
+                $institutionArray['address']['postcode'],
+                $location,
+                ));
+        }
+
+        return $institution;
+    }
+
     /**
      * @param array $institutionArray
-     * @param $projectsArray
      * @param bool $flush
      * @return Institution
      * @throws ValidationException
      * @throws \Exception
      */
-    public function createOrEdit(array $institutionArray, array $projectsArray, $institution = null, bool $flush = true)
+    public function createOrEdit(array $institutionArray, $institution = null, bool $flush = true)
     {
-        if (!empty($projectsArray) && (gettype($projectsArray[0]) === 'string' || gettype($projectsArray[0]) === 'integer')) {
-            $projectsArray = $this->em->getRepository(Project::class)->findBy(["id" => $projectsArray]);
-        }
         $actualAction = 'update';
         $this->requestValidator->validate(
             "institution",

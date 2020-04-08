@@ -34,30 +34,21 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
-     * @Groups({"FullInstitution"})
+     * @Groups({"FullBeneficiary", "FullInstitution"})
      */
     private $type;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
-     * @Groups({"FullInstitution"})
+     * @Groups({"FullBeneficiary", "FullInstitution"})
      */
     private $address;
-
-    /**
-     * @var Location
-     *
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
-     *
-     * @Groups({"FullInstitution"})
-     */
-    private $location;
 
     /**
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @Groups({"FullInstitution"})
+     * @Groups({"FullBeneficiary", "FullInstitution"})
      */
     private $latitude;
 
@@ -65,7 +56,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @Groups({"FullInstitution"})
+     * @Groups({"FullBeneficiary", "FullInstitution"})
      */
     private $longitude;
 
@@ -124,30 +115,6 @@ class Institution
     public function setAddress(Address $address): void
     {
         $this->address = $address;
-    }
-
-    /**
-     * Set location.
-     *
-     * @param \CommonBundle\Entity\Location|null $location
-     *
-     * @return self
-     */
-    public function setLocation(\CommonBundle\Entity\Location $location = null)
-    {
-        $this->location = $location;
-
-        return $this;
-    }
-
-    /**
-     * Get location.
-     *
-     * @return \CommonBundle\Entity\Location|null
-     */
-    public function getLocation()
-    {
-        return $this->location;
     }
 
     /**
