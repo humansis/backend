@@ -141,7 +141,7 @@ class InstitutionService
                 $institutionArray['address']['street'],
                 $institutionArray['address']['number'],
                 $institutionArray['address']['postcode'],
-                $location,
+                $location
                 ));
         }
 
@@ -235,7 +235,7 @@ class InstitutionService
                 $institutionArray['address']['street'],
                 $institutionArray['address']['number'],
                 $institutionArray['address']['postcode'],
-                $location,
+                $location
                 ));
         }
 

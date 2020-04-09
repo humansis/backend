@@ -93,8 +93,6 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('phone_prefix', $institution,"Part of answer missing: phone_prefix");
         $this->assertArrayHasKey('phone_number', $institution,"Part of answer missing: phone_number");
 
-        echo $this->client->getResponse()->getContent();
-
         $this->assertSame($institution['type'], $institutionBody['institution']['type'], "Returned data are different than input: type");
         $this->assertSame($institution['contact_name'], $institutionBody['institution']['contact_name'] ?? null, "Returned data are different than input: contact_name");
         $this->assertSame($institution['id_type'], $institutionBody['institution']['id_type'] ?? null, "Returned data are different than input: id_type");
@@ -239,8 +237,6 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $institutionsArray = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
-        echo $this->client->getResponse()->getContent();
-
         $this->assertArrayHasKey('type', $institutionsArray,"Part of answer missing: type");
         $this->assertEquals($institutionsArray['type'], $changes['institution']['type'], "Type wasn't changed");
     }
@@ -271,8 +267,6 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/institutions/' . $institution->getId(), $changes);
         $institutionsArray = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-
-        echo $this->client->getResponse()->getContent();
 
         $this->assertArrayHasKey('address', $institutionsArray,"Part of answer missing: address");
         $this->assertEquals($institutionsArray['address']['street'], $changes['institution']['address']['street'], "Address[street] wasn't changed");
