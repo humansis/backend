@@ -118,12 +118,14 @@ class InstitutionService
 
         $institution = new Institution();
         $institution->setType($institutionArray['type']);
-        if (isset($institutionArray['latitude'])) {
-            $institution->setLatitude($institutionArray['latitude']);
-        }
-        if (isset($institutionArray['longitude'])) {
-            $institution->setLongitude($institutionArray['longitude']);
-        }
+        $institution->setLongitude($institutionArray['longitude'] ?? null);
+        $institution->setLatitude($institutionArray['latitude'] ?? null);
+        $institution->setType($institutionArray['type'] ?? null);
+        $institution->setIdNumber($institutionArray['id_number'] ?? null);
+        $institution->setIdType($institutionArray['id_type'] ?? null);
+        $institution->setContactName($institutionArray['contact_name'] ?? null);
+        $institution->setPhonePrefix($institutionArray['phone_prefix'] ?? null);
+        $institution->setPhoneNumber($institutionArray['phone_number'] ?? null);
 
         if (isset($institutionArray['address'])) {
             $location = $this->locationService->getLocation($iso3, $institutionArray['address']["location"]);
@@ -200,6 +202,21 @@ class InstitutionService
         }
         if (array_key_exists('type', $institutionArray)) {
             $institution->setType($institutionArray['type']);
+        }
+        if (array_key_exists('id_number', $institutionArray)) {
+            $institution->setIdNumber($institutionArray['id_number']);
+        }
+        if (array_key_exists('id_type', $institutionArray)) {
+            $institution->setIdType($institutionArray['id_type']);
+        }
+        if (array_key_exists('contact_name', $institutionArray)) {
+            $institution->setContactName($institutionArray['contact_name'] ?? null);
+        }
+        if (array_key_exists('phone_prefix', $institutionArray)) {
+            $institution->setPhonePrefix($institutionArray['phone_prefix']);
+        }
+        if (array_key_exists('phone_number', $institutionArray)) {
+            $institution->setPhoneNumber($institutionArray['phone_number']);
         }
 
         if (array_key_exists('address', $institutionArray)) {

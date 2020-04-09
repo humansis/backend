@@ -38,6 +38,11 @@ class InstitutionControllerTest extends BMSServiceTestCase
                             'country_iso3' => 'KHM',
                         ],
                     ],
+                    'id_type' => 'national',
+                    'id_number' => '000-1234-5895-21',
+                    'phone_prefix' => '+4234',
+                    'phone_number' => '123 456 789',
+                    'contact_name' => 'Abdul Mohammad Qousad',
                 ],
                 '__country' => 'KHM'
             ]],
@@ -82,18 +87,22 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('longitude', $institution,"Part of answer missing: longitude");
         $this->assertArrayHasKey('latitude', $institution,"Part of answer missing: latitude");
         $this->assertArrayHasKey('address', $institution,"Part of answer missing: address");
+        $this->assertArrayHasKey('contact_name', $institution,"Part of answer missing: contact_name");
+        $this->assertArrayHasKey('id_type', $institution,"Part of answer missing: id_type");
+        $this->assertArrayHasKey('id_number', $institution,"Part of answer missing: id_number");
+        $this->assertArrayHasKey('phone_prefix', $institution,"Part of answer missing: phone_prefix");
+        $this->assertArrayHasKey('phone_number', $institution,"Part of answer missing: phone_number");
+
+        echo $this->client->getResponse()->getContent();
 
         $this->assertSame($institution['type'], $institutionBody['institution']['type'], "Returned data are different than input: type");
-        if (isset($institutionBody['institution']['longitude'])) {
-            $this->assertSame($institution['longitude'], $institutionBody['institution']['longitude'], "Returned data are different than input: longitude");;
-        } else {
-            $this->assertNull($institution['longitude']);
-        }
-        if (isset($institutionBody['institution']['latitude'])) {
-            $this->assertSame($institution['latitude'], $institutionBody['institution']['latitude'], "Returned data are different than input: latitude");;
-        } else {
-            $this->assertNull($institution['latitude']);
-        }
+        $this->assertSame($institution['contact_name'], $institutionBody['institution']['contact_name'] ?? null, "Returned data are different than input: contact_name");
+        $this->assertSame($institution['id_type'], $institutionBody['institution']['id_type'] ?? null, "Returned data are different than input: id_type");
+        $this->assertSame($institution['id_number'], $institutionBody['institution']['id_number'] ?? null, "Returned data are different than input: id_number");
+        $this->assertSame($institution['phone_prefix'], $institutionBody['institution']['phone_prefix'] ?? null, "Returned data are different than input: phone_prefix");
+        $this->assertSame($institution['phone_number'], $institutionBody['institution']['phone_number'] ?? null, "Returned data are different than input: phone_number");
+        $this->assertSame($institution['longitude'], $institutionBody['institution']['longitude'] ?? null, "Returned data are different than input: longitude");;
+        $this->assertSame($institution['latitude'], $institutionBody['institution']['latitude'] ?? null, "Returned data are different than input: latitude");;
 
         if ($institution['address'] !== null) {
             $this->assertArrayHasKey('street', $institution['address'],"Part of answer missing: address[street]");

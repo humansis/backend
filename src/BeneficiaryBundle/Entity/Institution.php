@@ -39,6 +39,46 @@ class Institution
     private $type;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="contact_name", type="string", length=255, nullable=true)
+     * @Groups({"FullBeneficiary", "FullInstitution"})
+     */
+    private $contactName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="phone_number", type="string", length=45, nullable=true)
+     * @Groups({"FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     */
+    private $phoneNumber;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="phone_prefix", type="string", length=45, nullable=true)
+     * @Groups({"FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     */
+    private $phonePrefix;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="id_number", type="string", length=255, nullable=true)
+     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     */
+    private $idNumber;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="id_type", type="string", length=45, nullable=true)
+     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers"})
+     */
+    private $idType;
+
+    /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
      * @Groups({"FullBeneficiary", "FullInstitution"})
      */
@@ -84,7 +124,7 @@ class Institution
      *
      * @return Institution
      */
-    public function setType($type)
+    public function setType(string $type)
     {
         $this->type = $type;
 
@@ -94,11 +134,91 @@ class Institution
     /**
      * Get type.
      *
-     * @return string
+     * @return string|null
      */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getContactName(): ?string
+    {
+        return $this->contactName;
+    }
+
+    /**
+     * @param string|null $contactName
+     */
+    public function setContactName(?string $contactName): void
+    {
+        $this->contactName = $contactName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    /**
+     * @param string|null $phoneNumber
+     */
+    public function setPhoneNumber(?string $phoneNumber): void
+    {
+        $this->phoneNumber = $phoneNumber;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPhonePrefix(): ?string
+    {
+        return $this->phonePrefix;
+    }
+
+    /**
+     * @param string|null $phonePrefix
+     */
+    public function setPhonePrefix(?string $phonePrefix): void
+    {
+        $this->phonePrefix = $phonePrefix;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getIdNumber(): ?string
+    {
+        return $this->idNumber;
+    }
+
+    /**
+     * @param string|null $idNumber
+     */
+    public function setIdNumber(?string $idNumber): void
+    {
+        $this->idNumber = $idNumber;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getIdType(): ?string
+    {
+        return $this->idType;
+    }
+
+    /**
+     * @param string|null $idType
+     */
+    public function setIdType(?string $idType): void
+    {
+        $this->idType = $idType;
     }
 
     /**
@@ -120,11 +240,11 @@ class Institution
     /**
      * Set lat.
      *
-     * @param string $latitude
+     * @param string|null $latitude
      *
      * @return self
      */
-    public function setLatitude($latitude)
+    public function setLatitude(?string $latitude)
     {
         $this->latitude = $latitude;
 
@@ -134,9 +254,9 @@ class Institution
     /**
      * Get lat.
      *
-     * @return string
+     * @return string|null
      */
-    public function getLatitude()
+    public function getLatitude(): ?string
     {
         return $this->latitude;
     }
@@ -144,11 +264,11 @@ class Institution
     /**
      * Set long.
      *
-     * @param string $longitude
+     * @param string|null $longitude
      *
      * @return self
      */
-    public function setLongitude($longitude)
+    public function setLongitude(?string $longitude)
     {
         $this->longitude = $longitude;
 
@@ -156,9 +276,9 @@ class Institution
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getLongitude(): string
+    public function getLongitude(): ?string
     {
         return $this->longitude;
     }
@@ -170,7 +290,7 @@ class Institution
      *
      * @return self
      */
-    public function setArchived($archived)
+    public function setArchived(bool $archived)
     {
         $this->archived = $archived;
 
@@ -182,7 +302,7 @@ class Institution
      *
      * @return bool
      */
-    public function getArchived()
+    public function getArchived(): bool
     {
         return $this->archived;
     }

@@ -245,6 +245,8 @@ class InstitutionController extends Controller
         $institutionService = $this->get('beneficiary.institution_service');
         try {
             $institution = $institutionService->update($requestArray['__country'], $institution, $institutionArray);
+            $this->getDoctrine()->getManager()->persist($institution);
+            $this->getDoctrine()->getManager()->flush();
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
