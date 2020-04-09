@@ -32,6 +32,18 @@ services:
             - "@service_container"
         public: true
 
+    beneficiary.community_service:
+        class: BeneficiaryBundle\Utils\CommunityService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@jms_serializer"
+            - "@beneficiary.beneficiary_service"
+            - "@request_validator"
+            - "@location_service"
+            - "@validator"
+            - "@service_container"
+        public: true
+
     beneficiary.institution_output_factory:
         class: BeneficiaryBundle\OutputType\Factory\InstitutionTypeFactory
         arguments:
