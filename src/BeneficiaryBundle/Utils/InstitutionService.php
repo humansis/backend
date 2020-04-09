@@ -109,12 +109,12 @@ class InstitutionService
 
     public function create(string $iso3, array $institutionArray): Institution
     {
-//        $this->requestValidator->validate(
-//            "institution",
-//            InstitutionConstraints::class,
-//            $institutionArray,
-//            'any'
-//        );
+        $this->requestValidator->validate(
+            "institution",
+            InstitutionConstraints::class,
+            $institutionArray,
+            'any'
+        );
 
         $institution = new Institution();
         $institution->setType($institutionArray['type']);
@@ -128,6 +128,13 @@ class InstitutionService
         $institution->setPhoneNumber($institutionArray['phone_number'] ?? null);
 
         if (isset($institutionArray['address'])) {
+            $this->requestValidator->validate(
+                "address",
+                InstitutionConstraints::class,
+                $institutionArray['address'],
+                'any'
+            );
+
             $location = $this->locationService->getLocation($iso3, $institutionArray['address']["location"]);
 
             $institution->setAddress(Address::create(
