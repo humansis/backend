@@ -28,6 +28,8 @@
 .php_cs.cache
 phpcs.xml
 
+# generated system version
+/web/build_info.json
 
 # IDE
 /.idea/

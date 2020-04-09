@@ -45,7 +45,7 @@ class Beneficiary implements ExportableInterface
      */
     private $enFamilyName;
 
-     /**
+    /**
      * @var string
      *
      * @ORM\Column(name="localGivenName", type="string", length=255, nullable=true)
@@ -150,7 +150,7 @@ class Beneficiary implements ExportableInterface
      */
     private $distributionBeneficiary;
 
-     /**
+    /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Referral", cascade={"persist", "remove"})
      * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
      */
@@ -227,7 +227,7 @@ class Beneficiary implements ExportableInterface
         return $this->enFamilyName;
     }
 
-     /**
+    /**
      * Set localGivenName.
      *
      * @param string $localGivenName
@@ -618,10 +618,10 @@ class Beneficiary implements ExportableInterface
     public function getMappedValueForExport(): array
     {
         // Recover the phones of the beneficiary
-        $typephones = ["",""];
-        $prefixphones = ["",""];
-        $valuesphones = ["",""];
-        $proxyphones = ["",""];
+        $typephones = ["", ""];
+        $prefixphones = ["", ""];
+        $valuesphones = ["", ""];
+        $proxyphones = ["", ""];
 
         $index = 0;
         foreach ($this->getPhones()->getValues() as $value) {
@@ -684,9 +684,9 @@ class Beneficiary implements ExportableInterface
                 ["household ID" => $this->getHousehold()->getId()],
                 $householdFields,
                 ["adm1" => $adm1,
-                "adm2" =>$adm2,
-                "adm3" =>$adm3,
-                "adm4" =>$adm4]
+                    "adm2" => $adm2,
+                    "adm3" => $adm3,
+                    "adm4" => $adm4]
             );
         } else {
             $finalArray = [
@@ -711,9 +711,9 @@ class Beneficiary implements ExportableInterface
         $tempBenef = [
             "beneficiary ID" => $this->getId(),
             "localGivenName" => $this->getLocalGivenName(),
-            "localFamilyName"=> $this->getLocalFamilyName(),
+            "localFamilyName" => $this->getLocalFamilyName(),
             "enGivenName" => $this->getEnGivenName(),
-            "enFamilyName"=> $this->getEnFamilyName(),
+            "enFamilyName" => $this->getEnFamilyName(),
             "gender" => $valueGender,
             "head" => $this->getStatus() === true ? "true" : "false",
             "residencyStatus" => $this->getResidencyStatus(),
@@ -753,9 +753,9 @@ class Beneficiary implements ExportableInterface
 
         return [
             "Local Given Name" => $this->getLocalGivenName(),
-            "Local Family Name"=> $this->getLocalFamilyName(),
+            "Local Family Name" => $this->getLocalFamilyName(),
             "English Given Name" => $this->getEnGivenName(),
-            "English Family Name"=> $this->getEnFamilyName(),
+            "English Family Name" => $this->getEnFamilyName(),
             "Gender" => $gender,
             "Date Of Birth" => $this->getDateOfBirth()->format('d-m-Y'),
         ];
@@ -763,7 +763,7 @@ class Beneficiary implements ExportableInterface
 
     public function getCommonHouseholdExportFields()
     {
-        
+
         $householdLocations = $this->getHousehold()->getHouseholdLocations();
         $currentHouseholdLocation = null;
         foreach ($householdLocations as $householdLocation) {
@@ -787,18 +787,45 @@ class Beneficiary implements ExportableInterface
             $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
         }
 
+        $livelihood = null;
+        if (null !== $this->getHousehold()->getLivelihood()) {
+            $livelihood = Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()];
+        }
+
+        $assets = array_map(function ($value) {
+            return Household::ASSETS[$value];
+        }, (array) $this->getHousehold()->getAssets());
+
+        $shelterStatus = null;
+        if (null !== $this->getHousehold()->getShelterStatus()) {
+            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
+        }
+
+        $supportReceivedTypes = array_map(function ($value) {
+            return Household::SUPPORT_RECIEVED_TYPES[$value];
+        }, (array) $this->getHousehold()->getSupportReceivedTypes());
+
+        $supportDateReceived = null;
+        if (null !== $this->getHousehold()->getSupportDateReceived()) {
+            $supportDateReceived = $this->getHousehold()->getSupportDateReceived()->format("m/d/Y");
+        }
+
         return [
-            "addressStreet" =>  $addressStreet,
+            "addressStreet" => $addressStreet,
             "addressNumber" => $addressNumber,
-            "addressPostcode" =>  $addressPostcode,
+            "addressPostcode" => $addressPostcode,
             "camp" => $camp,
             "tent number" => $tentNumber,
-            "livelihood" => $this->getHousehold()->getLivelihood() ? 
-                Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()] : null,
+            "livelihood" => $livelihood,
             "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
             "notes" => $this->getHousehold()->getNotes(),
             "latitude" => $this->getHousehold()->getLatitude(),
             "longitude" => $this->getHousehold()->getLongitude(),
+            "Assets" => implode(', ', $assets),
+            "Shelter Status" => $shelterStatus,
+            "Dept Level" => $this->getHousehold()->getDeptLevel(),
+            "Support Received Types" => implode(', ', $supportReceivedTypes),
+            "Support Date Received" => $supportDateReceived,
         ];
     }
 

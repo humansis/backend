@@ -31,7 +31,7 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var Client $client */
     protected $client;
     const USER_PHPUNIT = 'phpunit';
-    const USER_TESTER = 'reliefapps@yopmail.com';
+    const USER_TESTER = 'test@example.org';
 
     // SERVICES
 
@@ -79,20 +79,20 @@ class BMSServiceTestCase extends KernelTestCase
         "food_consumption_score" => "7",
         "household_locations" => array(
             [
-              "location_group" => "current",
-              "type" => "residence",
-              "address" =>  [
-                  "street" => "STREET_TEST",
-                  "number" => "NUMBER_TEST",
-                  "postcode" => "POSTCODE_TEST",
-                  "location" => [
-                      "adm1" => 1,
-                      "adm2" => 1,
-                      "adm3" => 1,
-                      "adm4" => 1,
-                      "country_iso3" => "KHM",
-                  ],
-              ]
+                "location_group" => "current",
+                "type" => "residence",
+                "address" => [
+                    "street" => "STREET_TEST",
+                    "number" => "NUMBER_TEST",
+                    "postcode" => "POSTCODE_TEST",
+                    "location" => [
+                        "adm1" => 1,
+                        "adm2" => 1,
+                        "adm3" => 1,
+                        "adm4" => 1,
+                        "country_iso3" => "KHM",
+                    ],
+                ]
             ]
         ),
         "country_specific_answers" => [
@@ -168,7 +168,11 @@ class BMSServiceTestCase extends KernelTestCase
                     ]
                 ]
             ]
-        ]
+        ],
+        "assets" => [1, 2],
+        "dept_level" => 2,
+        "support_received_types" => null,
+        "support_date_received" => "2020-02-02 03:03:03",
     ];
 
     /**
@@ -245,7 +249,7 @@ class BMSServiceTestCase extends KernelTestCase
 
     /**
      * Mock the EntityManager with the given functions
-     * @param  array $requiredFunctions [names of functions to setup on the mock]
+     * @param array $requiredFunctions [names of functions to setup on the mock]
      * @return EntityManager {[MockClass]       [a mock instance of EntityManager]
      */
     protected function mockEntityManager(array $requiredFunctions)
