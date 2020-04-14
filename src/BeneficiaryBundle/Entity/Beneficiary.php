@@ -847,4 +847,20 @@ class Beneficiary implements ExportableInterface
         return array_merge($this->getCommonHouseholdExportFields(), $this->getCommonBeneficiaryExportFields(), $referralInfo);
     }
 
+    /**
+     * Returns age of beneficiary in years
+     * @return int|null
+     */
+    public function getAge(): ?int
+    {
+        if ($this->getDateOfBirth()) {
+            try {
+                return $this->getDateOfBirth()->diff(new \DateTime('now'))->y;
+            } catch (\Exception $ex) {
+                return null;
+            }
+        }
+
+        return null;
+    }
 }
