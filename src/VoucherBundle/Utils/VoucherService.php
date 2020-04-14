@@ -106,7 +106,6 @@ class VoucherService
         return $this->em->getRepository(Voucher::class)->findAll();
     }
 
-
     /**
      * @param array $voucherData
      * @return Voucher
@@ -132,7 +131,7 @@ class VoucherService
             $vouchers = $booklet->getVouchers();
             $allVouchersUsed = true;
             foreach ($vouchers as $voucher) {
-                if ($voucher->getusedAt() === null) {
+                if ($voucher->getUsedAt() === null) {
                     $allVouchersUsed = false;
                 }
             }

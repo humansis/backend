@@ -94,7 +94,7 @@ class Voucher implements ExportableInterface
      *
      * @return Voucher
      */
-    public function setusedAt($usedAt)
+    public function setUsedAt($usedAt)
     {
         $this->usedAt = $usedAt;
 
@@ -106,7 +106,7 @@ class Voucher implements ExportableInterface
      *
      * @return \DateTime
      */
-    public function getusedAt()
+    public function getUsedAt()
     {
         return $this->usedAt;
     }
