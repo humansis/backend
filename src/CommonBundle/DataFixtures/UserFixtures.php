@@ -104,7 +104,7 @@ class UserFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $countries = ["KHM", "SYR", "IRQ"];
+        $countries = ["KHM", "SYR"];
 
         if ($this->kernel->getEnvironment() === "prod") {
             echo __CLASS__ . " can't be running at production\n";
