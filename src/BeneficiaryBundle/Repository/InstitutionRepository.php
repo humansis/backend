@@ -3,11 +3,7 @@
 namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\InstitutionLocation;
-use CommonBundle\Entity\Location;
-use Doctrine\ORM\Query\Expr\Join;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use ProjectBundle\Entity\Project;
 
 /**
  * InstitutionRepository
@@ -17,83 +13,6 @@ use ProjectBundle\Entity\Project;
  */
 class InstitutionRepository extends \Doctrine\ORM\EntityRepository
 {
-    /**
-    * Find all institutions in country
-    * @param  string $iso3
-    * @return QueryBuilder
-    */
-    public function findAllByCountry(string $iso3)
-    {
-        $qb = $this->createQueryBuilder("inst");
-        $this->whereInstitutionInCountry($qb, $iso3);
-        $qb->andWhere('inst.archived = 0');
-
-        return $qb;
-    }
-
-    public function getUnarchivedByProject(Project $project)
-    {
-        $qb = $this->createQueryBuilder("inst");
-        $q = $qb->leftJoin("inst.projects", "p")
-            ->where("p = :project")
-            ->setParameter("project", $project)
-            ->andWhere("inst.archived = 0");
-
-        return $q;
-    }
-
-    public function countUnarchivedByProject(Project $project)
-    {
-        $qb = $this
-            ->createQueryBuilder("inst")
-            ->select("COUNT(inst)")
-            ->leftJoin("inst.projects", "p")
-            ->where("p = :project")
-            ->setParameter("project", $project)
-            ->andWhere("inst.archived = 0");
-
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    /**
-     * Return institutions which a Levenshtein distance with the stringToSearch under minimumTolerance
-     * @param string $iso3
-     * @param string $stringToSearch
-     * @param int $minimumTolerance
-     * @return mixed
-     */
-    public function foundSimilarAddressLevenshtein(string $iso3, string $stringToSearch, int $minimumTolerance)
-    {
-        $qb = $this->findAllByCountry($iso3);
-        $q = $qb->leftJoin("inst.beneficiaries", "b")
-            // Those leftJoins are already done in findAllByCountry
-            // ->leftJoin("inst.location", "hl")
-            // ->leftJoin("hl.address", "ad")
-            ->select("inst as institution")
-            ->andWhere("inst.archived = 0")
-            ->addSelect(
-                "LEVENSHTEIN(
-                    CONCAT(
-                        COALESCE(ad.street, ''),
-                        COALESCE(ad.number, ''),
-                        COALESCE(ad.postcode, ''),
-                        COALESCE(b.localGivenName, ''),
-                        COALESCE(b.localFamilyName, '')
-                    ),
-                    :stringToSearch
-                ) as levenshtein")
-            ->groupBy("b, ad")
-            ->having("levenshtein <= :minimumTolerance")
-            ->setParameter("stringToSearch", $stringToSearch)
-            ->setParameter("minimumTolerance", $minimumTolerance)
-            ->orderBy("levenshtein", "ASC");
-
-        $query = $q->getQuery();
-        $query->useResultCache(true,3600);
-
-        return $query->getResult();
-    }
-
     /**
      * Get all Institution by country
      * @param $iso3
@@ -129,84 +48,5 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
         $query->useResultCache(true,3600);
 
         return [count($paginator), $query->getResult()];
-    }
-
-    /**
-     * Get all Institution by country and id
-     * @param string $iso3
-     * @param array  $ids
-     * @return mixed
-     */
-    public function getAllByIds(array $ids)
-    {
-        $qb = $this
-            ->createQueryBuilder("inst")
-            ->addSelect(['beneficiaries', 'projects', 'location', 'specificAnswers'])
-            ->leftJoin('inst.beneficiaries', 'beneficiaries')
-            ->leftJoin('inst.projects', 'projects')
-            ->leftJoin('inst.location', 'location')
-            ->leftJoin('inst.countrySpecificAnswers', 'specificAnswers')
-            ->andWhere('inst.archived = 0')
-            ->andWhere('inst.id IN (:ids)')
-            ->setParameter('ids', $ids);
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
-     *
-     */
-    public function getByHeadAndLocation(
-        string $givenName,
-        string $familyName,
-        string $locationType,
-        string $street = null,
-        string $number = null,
-        string $tentNumber = null
-    ) {
-        $qb = $this->createQueryBuilder('inst')
-            ->select('inst')
-            ->innerJoin('inst.beneficiaries', 'b')
-            ->innerJoin('inst.location', 'hl')
-            ->where('inst.archived = 0')
-            ->andWhere('b.localGivenName = :givenName')
-            ->setParameter('givenName', $givenName)
-            ->andWhere('b.localFamilyName = :familyName')
-            ->setParameter('familyName', $familyName)
-        ;
-
-        $qb
-            ->leftJoin('hl.address', 'ad')
-            ->andWhere('ad.street = :street')
-            ->setParameter('street', $street)
-            ->andWhere('ad.number = :number')
-            ->setParameter('number', $number)
-        ;
-
-        return $qb->getQuery()->useResultCache(true, 600)->getOneOrNullResult();
-    }
-
-    /**
-     * Create sub request to get location from institution
-     *
-     * @param QueryBuilder $qb
-     */
-    protected function getInstitutionLocation(QueryBuilder &$qb)
-    {
-        $qb->leftJoin("inst.location", "hl");
-    }
-
-    /**
-     * Create sub request to get institutions in country.
-     * The institution address location must be in the country ($countryISO3).
-     *
-     * @param QueryBuilder $qb
-     * @param $countryISO3
-     */
-    public function whereInstitutionInCountry(QueryBuilder &$qb, $countryISO3)
-    {
-        $this->getInstitutionLocation($qb);
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($qb, $countryISO3);
     }
 }
