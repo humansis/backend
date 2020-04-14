@@ -127,7 +127,11 @@ class VoucherControllerTest extends BMSServiceTestCase
      */
     public function testUseVoucher($newVoucher)
     {
-        $vendor = $this->em->getRepository(Vendor::class)->findOneByName('vendor');
+        $vendorName = 'vendor';
+        $vendor = $this->em->getRepository(Vendor::class)->findOneByName($vendorName);
+        if (null === $vendor) {
+            $this->markTestIncomplete("Expected vendor user account '$vendorName' missing.");
+        }
         $vendorId = $vendor->getId();
         // TODO: Check date format
         $body = [
