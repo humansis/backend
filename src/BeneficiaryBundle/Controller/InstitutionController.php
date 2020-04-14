@@ -159,10 +159,9 @@ class InstitutionController extends Controller
 
         $requestRequirements = new OptionsResolver();
         $requestRequirements->setRequired('institution');
+        $requestRequirements->setRequired('__country');
         $requestRequirements->setAllowedTypes('institution', 'array');
-        $requestRequirements->setDefaults([
-            '__country' => 'KHM',
-        ]);
+        $requestRequirements->setAllowedTypes('__country', 'string');
 
         $requestArray = $requestRequirements->resolve($requestArray);
 
@@ -232,10 +231,9 @@ class InstitutionController extends Controller
 
         $requestRequirements = new OptionsResolver();
         $requestRequirements->setRequired('institution');
+        $requestRequirements->setRequired('__country');
         $requestRequirements->setAllowedTypes('institution', 'array');
-        $requestRequirements->setDefaults([
-            '__country' => 'KHM',
-        ]);
+        $requestRequirements->setAllowedTypes('__country', 'string');
 
         $requestArray = $requestRequirements->resolve($requestArray);
 
