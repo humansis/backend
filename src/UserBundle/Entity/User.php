@@ -3,6 +3,7 @@
 namespace UserBundle\Entity;
 
 use CommonBundle\Utils\ExportableInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 use JMS\Serializer\Annotation\Groups;
@@ -126,6 +127,7 @@ class User extends BaseUser implements ExportableInterface
     public function __construct()
     {
         parent::__construct();
+        $this->countries = new ArrayCollection();
     }
 
     /**
@@ -150,7 +152,7 @@ class User extends BaseUser implements ExportableInterface
      */
     public function addCountry(\UserBundle\Entity\UserCountry $country)
     {
-        $this->countries[] = $country;
+        $this->countries->add($country);
 
         return $this;
     }
