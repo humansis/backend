@@ -125,6 +125,7 @@ class UserFixtures extends Fixture
                     ->setSalt($userData['salt'])
                     ->setRoles([$userData['roles']])
                     ->setChangePassword(0);
+                $instance->setPassword($userData['passwd']);
             }
 
             foreach ($instance->getCountries() as $country) {
