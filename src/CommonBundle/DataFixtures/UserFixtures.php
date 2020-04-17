@@ -114,19 +114,22 @@ class UserFixtures extends Fixture
         foreach ($this->data as $index => $userData) {
             $instance = $manager->getRepository(User::class)->findOneByUsername($userData['email']);
             if ($instance instanceof User) {
-                echo "User {$instance->getUsername()} already exists. Ommiting.\n";
-                continue;
+                echo "User {$instance->getUsername()} already exists. Omit creation, refresh access rights.\n";
+            } else {
+                $instance = $this->manager->createUser();
+                $instance->setEnabled(1)
+                    ->setEmail($userData['email'])
+                    ->setEmailCanonical($userData['email'])
+                    ->setUsername($userData['email'])
+                    ->setUsernameCanonical($userData['email'])
+                    ->setSalt($userData['salt'])
+                    ->setRoles([$userData['roles']])
+                    ->setChangePassword(0);
             }
 
-            $instance = $this->manager->createUser();
-            $instance->setEnabled(1)
-                ->setEmail($userData['email'])
-                ->setEmailCanonical($userData['email'])
-                ->setUsername($userData['email'])
-                ->setUsernameCanonical($userData['email'])
-                ->setSalt($userData['salt'])
-                ->setRoles([$userData['roles']])
-                ->setChangePassword(0);
+            foreach ($instance->getCountries() as $country) {
+                $manager->remove($country);
+            }
 
             foreach ($countries as $country) {
                 $userCountry = new UserCountry();
@@ -135,10 +138,7 @@ class UserFixtures extends Fixture
                     ->setRights($userData['roles']);
                 $instance->addCountry($userCountry);
             }
-
-            $instance->setPassword($userData['passwd']);
             $manager->persist($instance);
-
             $manager->flush();
         }
     }
