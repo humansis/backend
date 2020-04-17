@@ -103,6 +103,7 @@ class UserController extends Controller
      * Get user's salt
      *
      * @Rest\Get("/salt/{username}")
+     * @Rest\Get("/v2/salt/{username}")
      *
      * @SWG\Tag(name="Users")
      *

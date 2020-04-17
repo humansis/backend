@@ -254,6 +254,7 @@ class VendorController extends Controller
     /**
      * Log a vendor with its username and salted password. Create a new one if not in the db (remove this part for prod env)
      * @Rest\Post("/login_app", name="vendor_login")
+     * @Rest\Post("/v2/login_app")
      *
      * @SWG\Tag(name="Vendors")
      *

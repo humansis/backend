@@ -78,6 +78,7 @@ class ProductController extends Controller
      * Get Products.
      *
      * @Rest\Get("/products", name="get_products")
+     * @Rest\Get("/v2/products")
      * @Security("is_granted('ROLE_USER')")
      *
      * @SWG\Tag(name="Product")
