@@ -121,7 +121,7 @@ class User extends BaseUser implements ExportableInterface
      * @ORM\Column(name="twoFactorAuthentication", type="boolean", options={"default" : 0})
      * @Groups({"FullUser"})
      */
-    protected $twoFactorAuthentication;
+    protected $twoFactorAuthentication = false;
 
     public function __construct()
     {

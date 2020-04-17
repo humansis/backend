@@ -13,12 +13,13 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class VendorFixtures extends Fixture implements DependentFixtureInterface
 {
+    const VENDOR_EMAIL = 'vendor@example.org';
 
     /** @var Kernel $kernel */
     private $kernel;
 
     private $data = [
-        ['vendor', 'shop', '1', 'rue de la Paix', '75000', 0, 'vendor@example.org', 1]
+        ['vendor', 'shop', '1', 'rue de la Paix', '75000', 0, self::VENDOR_EMAIL, 1]
     ];
 
 
@@ -37,7 +38,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         if ($this->kernel->getEnvironment() !== "prod") {
             foreach ($this->data as $vendorData) {
                 $user = $manager->getRepository(User::class)->findOneByUsername($vendorData[6]);
-                if (null !== $manager->getRepository(Vendor::class)->findByUser($user)) {
+                if (!empty($manager->getRepository(Vendor::class)->getVendorByUser($user))) {
                     echo "Vendor {$vendorData[0]} already exists. Ommiting.\n";
                     continue;
                 }
