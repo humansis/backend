@@ -41,7 +41,7 @@ class UserFixtures extends Fixture
     // bin/console security:encode-password --no-interaction PASSWORD UserBundle\\Entity\\User
     private $data = [
         [
-            'email' => 'vendor@example.org',
+            'email' => VendorFixtures::VENDOR_EMAIL,
             'passwd' => 'O06QeWJdIK+RGkP65jnCAHtnuShmhZ8YGCAt4kqYcgZZgV2UgcqPfTD4T+/Cut8vibfiBGKJGnNgDfy5hTA0iQ==',
             'salt' => 'xZOz73DpUASslYiAUHS13Ca0289F1Vg0dDWtqxiB',
             'roles' => 'ROLE_VENDOR',
