@@ -95,13 +95,23 @@ class BookletService
             // Create booklet
             try {
                 $booklet = new Booklet();
-                $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
-
-                $booklet->setCode($code)
+                $booklet
                     ->setNumberVouchers($bookletData['number_vouchers'])
                     ->setCurrency($bookletData['currency'])
                     ->setStatus(Booklet::UNASSIGNED)
                     ->setCountryISO3($countryISO3);
+
+                $code = null;
+                if (array_key_exists('project_id', $bookletData) && !empty($bookletData['project_id'])) {
+                    $project = $this->em->getRepository(\ProjectBundle\Entity\Project::class)->find($bookletData['project_id']);
+                    $booklet->setProject($project);
+
+                    $code = $this->generateCode($countryISO3, $project);
+                } else {
+                    $code = $this->generateCodeDeprecated($bookletData, $currentBatch, $bookletBatch);
+                }
+
+                $booklet->setCode($code);
 
                 if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
                     $booklet->setPassword($bookletData['password']);
@@ -194,8 +204,9 @@ class BookletService
      * @param int $currentBatch
      * @param int $bookletBatch
      * @return string
+     * @deprecated Use generateCode() instead.
      */
-    public function generateCode(array $bookletData, int $currentBatch, int $bookletBatch)
+    private function generateCodeDeprecated(array $bookletData, int $currentBatch, int $bookletBatch)
     {
         // randomCode*bookletBatchNumber-lastBatchNumber-currentBooklet
         $lastBatchNumber = $bookletBatch + ($bookletData['number_booklets'] - 1);
@@ -204,6 +215,24 @@ class BookletService
         return $fullCode;
     }
 
+    /**
+     * Generates a random code for a booklet
+     *
+     * @param string $countryCode
+     * @param \ProjectBundle\Entity\Project $project
+     * @return string
+     */
+    protected function generateCode(string $countryCode, \ProjectBundle\Entity\Project $project)
+    {
+        $prefix = $countryCode . '_' . $project->getName() . '_' . date('d-m-Y') . '_batch';
+        $count = 0;
+
+        $booklet = $this->em->getRepository(Booklet::class)->findMaxByCodePrefix($prefix);
+        if ($booklet) {
+            $count = (int) substr($booklet->getCode(), -6);
+        }
+        return sprintf('%s%06d', $prefix, ++$count);
+    }
 
     /**
      * Get all the non-deactivated booklets from the database
