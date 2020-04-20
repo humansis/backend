@@ -7,7 +7,7 @@ use VoucherBundle\Entity\Vendor;
 class VendorControllerTest extends BMSServiceTestCase
 {
     /** @var string $username */
-    private $username = "VENDOR_PHPUNIT@gmail.com";
+    private $username = "vendor-to-create@example.org";
 
     /**
      * @throws \Exception
@@ -79,7 +79,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/vendors', $vendor);
         $vendor = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $vendor);
         $this->assertArrayHasKey('shop', $vendor);
         $this->assertArrayHasKey('user', $vendor);

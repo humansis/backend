@@ -170,12 +170,12 @@ class HouseholdService
                 if (null === $location) {
                     throw new \Exception("Location was not found.");
                 }
-                $address = new Address();
-                $address->setNumber($householdLocation['address']['number'])
-                    ->setStreet($householdLocation['address']['street'])
-                    ->setPostcode($householdLocation['address']['postcode'])
-                    ->setLocation($location);
-                $newHouseholdLocation->setAddress($address);
+                $newHouseholdLocation->setAddress(Address::create(
+                    $householdLocation['address']['street'],
+                    $householdLocation['address']['number'],
+                    $householdLocation['address']['postcode'],
+                    $location
+                    ));
             }
             $household->addHouseholdLocation($newHouseholdLocation);
             $this->em->persist($newHouseholdLocation);
