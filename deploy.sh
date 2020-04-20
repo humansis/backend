@@ -37,18 +37,22 @@ command="cd /var/www/html/bms_api; \
     sudo docker-compose exec -T php bash -c 'php bin/console c:c'; \
     sudo docker-compose exec  -T php bash -c 'php bin/console d:m:m -n'"
 
-fixtures="cd /var/www/html/bms_api; \
+fixtures_test="cd /var/www/html/bms_api; \
     sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=test --append'"
+
+fixtures_dev="cd /var/www/html/bms_api; \
+    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=dev --append'"
 
 if [[ $1 == "master" ]]; then
     ssh -i $2 ubuntu@$ec2_prod $command
     ssh -i $2 ubuntu@$ec2_demo $command
 elif [[ $1 == "dev" ]]; then
     ssh -i $2 ubuntu@$ec2_test $command
-    ssh -i $2 ubuntu@$ec2_test $fixtures
+    ssh -i $2 ubuntu@$ec2_test $fixtures_dev
 elif [[ $1 =~ ^release\/.*$ ]]; then
     ssh -i $2 ubuntu@$ec2_stage $command
+    ssh -i $2 ubuntu@$ec2_stage $fixtures_test
 else
     ssh -i $2 ubuntu@$ec2_dev $command
-    ssh -i $2 ubuntu@$ec2_dev $fixtures
+    ssh -i $2 ubuntu@$ec2_dev $fixtures_dev
 fi
