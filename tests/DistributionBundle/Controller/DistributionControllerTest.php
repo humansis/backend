@@ -116,7 +116,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/distributions', $criteria);
         $return = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->assertArrayHasKey('distribution', $return);
         $this->assertArrayHasKey('data', $return);

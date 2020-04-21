@@ -111,7 +111,7 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
         
         $listDistributionBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         return true;
     }

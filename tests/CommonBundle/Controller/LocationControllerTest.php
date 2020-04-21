@@ -36,7 +36,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $crawler = $this->request('GET', '/api/wsse/location/adm1');
         $adm1 = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->assertTrue(gettype($adm1) == "array");
         $this->assertArrayHasKey('id', $adm1[0]);
@@ -67,7 +67,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/location/adm2', $body);
         $adm2 = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->assertTrue(gettype($adm2) == "array");
         $this->assertArrayHasKey('id', $adm2[0]);
@@ -98,7 +98,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/location/adm3', $body);
         $adm3 = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->assertTrue(gettype($adm3) == "array");
         $this->assertArrayHasKey('id', $adm3[0]);
@@ -129,7 +129,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/location/adm4', $body);
         $adm4 = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->assertTrue(gettype($adm4) == "array");
 
@@ -155,7 +155,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $crawler = $this->request('GET', '/api/wsse/location/upcoming_distribution');
         $upcoming = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue(gettype($upcoming) == "array");
     }
 }

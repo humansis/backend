@@ -115,7 +115,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue(gettype($success) == 'array');
         $this->assertArrayHasKey('id', $success);
         $this->assertArrayHasKey('user', $success);
@@ -216,7 +216,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/vendors/' . $newVendor['id'], $body);
         $newVendorReceived = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $vendorSearch = $this->em->getRepository(Vendor::class)->find($newVendorReceived['id']);
         $this->assertEquals($vendorSearch->getAddressStreet(), $addressStreet);
@@ -242,7 +242,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('POST', '/api/wsse/vendors/' . $vendor['id'] . '/archive');
         $newVendorReceived = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $vendorSearch = $this->em->getRepository(Vendor::class)->find($newVendorReceived['id']);
         $this->assertEquals($vendorSearch->getArchived(), true);
@@ -271,7 +271,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue($success);
     }
 }

@@ -48,7 +48,7 @@ class DonorControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/donors', $this->body);
         $project = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         try {
             $this->assertArrayHasKey('id', $project);
@@ -95,7 +95,7 @@ class DonorControllerTest extends BMSServiceTestCase
         $this->body['fullname'] = $this->namefullname;
 
         $donor = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->em->clear();
         try {

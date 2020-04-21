@@ -228,7 +228,6 @@ class VendorService
             }
             $totalValue = 0;
             foreach ($vouchers as $voucher) {
-                $voucher->setusedAt($voucher->getusedAt()->format('d-m-Y'));
                 $totalValue += $voucher->getValue();
             }
 

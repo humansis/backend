@@ -194,6 +194,7 @@ class BookletController extends Controller
      * Get booklets that have been deactivated
      *
      * @Rest\Get("/deactivated-booklets", name="get_deactivated_booklets")
+     * @Rest\Get("/v2/deactivated-booklets")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -230,6 +231,7 @@ class BookletController extends Controller
      * Get booklets that are protected by a password
      *
      * @Rest\Get("/protected-booklets", name="get_protected_booklets")
+     * @Rest\Get("/v2/protected-booklets")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -350,6 +352,7 @@ class BookletController extends Controller
     /**
      * Deactivate booklets
      * @Rest\Post("/deactivate-booklets", name="deactivate_booklets")
+     * @Rest\Post("/v2/deactivate-booklets")
      * @Security("is_granted('ROLE_USER')")
      * @SWG\Tag(name="Booklets")
      *
