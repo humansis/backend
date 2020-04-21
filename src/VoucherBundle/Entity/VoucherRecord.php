@@ -88,17 +88,17 @@ class VoucherRecord
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getUsedAt(): \DateTime
+    public function getUsedAt(): ?\DateTime
     {
         return $this->usedAt;
     }
 
     /**
-     * @param \DateTime $usedAt
+     * @param \DateTime|null $usedAt
      */
-    public function setUsedAt(\DateTime $usedAt): void
+    public function setUsedAt(?\DateTime $usedAt): void
     {
         $this->usedAt = $usedAt;
     }

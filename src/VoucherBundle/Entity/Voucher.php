@@ -44,6 +44,14 @@ class Voucher implements ExportableInterface
     private $code;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="value", type="integer")
+     * @Groups({"FullVoucher", "FullBooklet", "ValidatedDistribution"})
+     */
+    private $value;
+
+    /**
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Booklet", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"FullVoucher"})
