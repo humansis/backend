@@ -276,6 +276,51 @@ class VoucherController extends Controller
     }
 
     /**
+     * When a voucher is returned to humanitarian
+     *
+     * @Rest\Post("/vouchers/redeemed", name="redeemed_vouchers")
+     * @Security("is_granted('ROLE_VENDOR')")
+     * @SWG\Tag(name="Vouchers")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function redeemAction(Request $request)
+    {
+        $voucherData = $request->request->all();
+        unset($voucherData['__country']);
+
+        if (!isset($voucherData['id'])) {
+            return new Response("Missing parameter 'id'", Response::HTTP_BAD_REQUEST);
+        }
+
+        /** @var Voucher|null $voucher */
+        $voucher = $this->getDoctrine()->getRepository(Voucher::class)->find($voucherData['id']);
+
+        if (!$voucher) {
+            return new Response("There is no voucher with id '{$voucherData['id']}'", Response::HTTP_BAD_REQUEST);
+        }
+        try {
+            $this->get('voucher.voucher_service')->redeem($voucher, $this->getUser());
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $json = $this->get('jms_serializer')->serialize($voucher, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        return new Response($json);
+    }
+
+    /**
      * Delete a booklet
      * @Rest\Delete("/vouchers/{id}", name="delete_voucher")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
