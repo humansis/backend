@@ -34,7 +34,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/beneficiaries/import/api', $body);
         $listHousehold = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue(gettype($listHousehold) == "array");
         $this->assertTrue(key_exists('message', $listHousehold));
         $this->assertTrue($listHousehold['message'] == "Insertion successfull");
@@ -52,7 +52,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $vulnerabilityCriteriaResponse = $this->request('GET', 'api/wsse/vulnerability_criteria');
         $listCriterias = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $listCriterias[0]);
         $this->assertArrayHasKey('field_string', $listCriterias[0]);
         

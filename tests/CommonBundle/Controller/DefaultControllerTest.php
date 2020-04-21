@@ -36,6 +36,6 @@ class DefaultControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('GET', '/api/wsse/version');
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
     }
 }
