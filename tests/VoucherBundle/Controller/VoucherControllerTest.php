@@ -6,7 +6,7 @@ use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
 
-class VoucherControllerTest extends BMSServiceTestCase
+class VoucherCreateTest extends BMSServiceTestCase
 {
     /** @var Booklet */
     protected $booklet;
@@ -33,93 +33,35 @@ class VoucherControllerTest extends BMSServiceTestCase
 
         $this->em->persist($this->booklet);
         $this->em->flush();
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function testCreateVoucher()
-    {
-        $body = [
-            'number_vouchers' => 3,
-            'bookletCode' => $this->booklet->getCode(),
-            'currency' => 'USD',
-            'booklet' => $this->booklet,
-            'values' => [1, 2, 3],
-        ];
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
+    }
 
+    /**
+     * @dataProvider getValidVoucherData
+     * @throws \Exception
+     */
+    public function testSuccessfullyCreateVoucher($voucherData)
+    {
+        $voucherData['booklet'] = $this->booklet;
+        $voucherData['bookletCode'] = $this->booklet->getCode();
         // Second step
         // Create the vendor with the email and the salted password. The user should be enable
-        $crawler = $this->request('PUT', '/api/wsse/vouchers', $body);
+        $crawler = $this->request('PUT', '/api/wsse/vouchers', $voucherData);
         $voucher = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed. " . $this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $voucher);
         $this->assertArrayHasKey('booklet', $voucher);
         return $voucher;
     }
 
     /**
-     * @throws \Exception
-     */
-    public function testGetAllVouchers()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $crawler = $this->request('GET', '/api/wsse/vouchers');
-        $vouchers = json_decode($this->client->getResponse()->getContent(), true);
-
-        if (!empty($vouchers)) {
-            $voucher = $vouchers[0];
-
-            $this->assertArrayHasKey('code', $voucher);
-            $this->assertArrayHasKey('booklet', $voucher);
-            $this->assertArrayHasKey('id', $voucher);
-        } else {
-            $this->markTestIncomplete("You currently don't have any vouchers in your database.");
-        }
-
-        return $vouchers;
-    }
-
-
-    /**
-     * @depends testCreateVoucher
-     * @param $newVoucher
-     * @return mixed
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function testGetVoucher($newVoucher)
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-
-        $crawler = $this->request('GET', '/api/wsse/vouchers/' . $newVoucher['id']);
-        $voucher = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-        $this->assertArrayHasKey('id', $voucher);
-        $this->assertArrayHasKey('code', $voucher);
-        $this->assertArrayHasKey('booklet', $voucher);
-
-        return $voucher;
-    }
-
-    /**
-     * @depends testCreateVoucher
+     * @depends testSuccessfullyCreateVoucher
      * @param $newVoucher
      * @return mixed
      * @throws \Doctrine\ORM\ORMException
@@ -159,55 +101,157 @@ class VoucherControllerTest extends BMSServiceTestCase
         return $newVoucherReceived;
     }
 
-    /**
-     * @depends testGetVoucher
-     *
-     * @param $voucherToDelete
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function testDeleteFromDatabase($voucherToDelete)
+
+    public function getValidVoucherData() : array
     {
-        // Get the previous voucher because the last one was set as used so deletion won't work
-        $voucherToDelete['id']--;
-
-        // Fake connection with a token for the user tester (ADMIN)
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-        // Second step
-        // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('DELETE', '/api/wsse/vouchers/' . $voucherToDelete['id']);
-        $success = json_decode($this->client->getResponse()->getContent(), true);
-
-        // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-        $this->assertTrue($success);
+        return [
+            "standard" => [[
+                'number_vouchers' => 3,
+                'currency' => 'USD',
+                'values' => [1, 2, 3],
+            ]],
+            "reversed order" => [[
+                'number_vouchers' => 3,
+                'currency' => 'USD',
+                'values' => [3, 2, 1],
+            ]],
+            "less values than count" => [[
+                'number_vouchers' => 3,
+                'currency' => 'USD',
+                'values' => [1],
+            ]],
+        ];
     }
 
-
     /**
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @dataProvider getInvalidVoucherData
+     * @throws \Exception
      */
-    public function testDeleteBatchVouchers()
+    public function testFailedCreateVoucher($voucherData)
     {
-        $bookletId = $this->booklet->getId();
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        // Second step
-        // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('DELETE', '/api/wsse/vouchers/delete_batch/' . $bookletId);
-        $success = json_decode($this->client->getResponse()->getContent(), true);
+        $voucherData['booklet'] = $this->booklet;
+        $voucherData['bookletCode'] = $this->booklet->getCode();
 
-        // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-        $this->assertTrue($success);
+        $crawler = $this->request('PUT', '/api/wsse/vouchers', $voucherData);
+        $voucher = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->em->remove($this->booklet);
-        $this->em->flush();
+        $response = $this->client->getResponse()->getContent();
+        $this->assertTrue($this->client->getResponse()->isClientError(), "Wrong HTTP response. ".$this->client->getResponse()->getStatusCode(). " " . $response);
+        $this->assertFalse($this->client->getResponse()->isServerError(), "Wrong HTTP response.". " " . $response);
+        $this->assertFalse($this->client->getResponse()->isSuccessful(), "Request should fail." . $this->client->getResponse()->getContent(). " " . $response);
+    }
+
+    /**
+     * @dataProvider getValidVoucherData
+     * @throws \Exception
+     */
+    public function testFailedCreateVoucherMissingBooklet($voucherData)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $voucherData['bookletCode'] = $this->booklet->getCode();
+
+        $crawler = $this->request('PUT', '/api/wsse/vouchers', $voucherData);
+        $voucher = json_decode($this->client->getResponse()->getContent(), true);
+
+        $response = $this->client->getResponse()->getContent();
+        $this->assertTrue($this->client->getResponse()->isClientError(), "Wrong HTTP response. ".$this->client->getResponse()->getStatusCode(). " " . $response);
+        $this->assertFalse($this->client->getResponse()->isServerError(), "Wrong HTTP response.". " " . $response);
+        $this->assertFalse($this->client->getResponse()->isSuccessful(), "Request should fail." . $this->client->getResponse()->getContent(). " " . $response);
+    }
+
+    /**
+     * @dataProvider getValidVoucherData
+     * @throws \Exception
+     */
+    public function testFailedCreateVoucherMissingBookletCode($voucherData)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $voucherData['booklet'] = $this->booklet;
+
+        $crawler = $this->request('PUT', '/api/wsse/vouchers', $voucherData);
+        $voucher = json_decode($this->client->getResponse()->getContent(), true);
+
+        $response = $this->client->getResponse()->getContent();
+        $this->assertTrue($this->client->getResponse()->isClientError(), "Wrong HTTP response. ".$this->client->getResponse()->getStatusCode(). " " . $response);
+        $this->assertFalse($this->client->getResponse()->isServerError(), "Wrong HTTP response.". " " . $response);
+        $this->assertFalse($this->client->getResponse()->isSuccessful(), "Request should fail." . $this->client->getResponse()->getContent(). " " . $response);
+    }
+
+    public function getInvalidVoucherData() : array
+    {
+        return [
+            "zero count" => [[
+                'number_vouchers' => 0,
+                'currency' => 'USD',
+                'values' => [1, 2, 3],
+            ]],
+            "blank" => [[
+                'number_vouchers' => 0,
+                'currency' => 'USD',
+                'values' => [],
+            ]],
+//            "standard" => [[
+//                'number_vouchers' => 3,
+//                'currency' => 'USD',
+//                'values' => [1, 2, 3],
+//            ]],
+            "currency missing" => [[
+                'number_vouchers' => 3,
+                'values' => [1, 2, 3],
+            ]],
+            "float count" => [[
+                'number_vouchers' => 0.5,
+                'currency' => 'USD',
+                'values' => [1, 2, 3],
+            ]],
+            "negative count" => [[
+                'number_vouchers' => -3,
+                'currency' => 'USD',
+                'values' => [1, 2, 3],
+            ]],
+            "currency rubbish" => [[
+                'number_vouchers' => 3,
+                'currency' => 'AAACCCDDD',
+                'values' => [1, 2, 3],
+            ]],
+            "values missing" => [[
+                'number_vouchers' => 3,
+                'currency' => 'USD',
+            ]],
+            "values are strings" => [[
+                'number_vouchers' => 3,
+                'currency' => 'USD',
+                'values' => ["a", "b", "c"],
+            ]],
+            "count missing" => [[
+                'currency' => 'USD',
+                'values' => [1, 2, 3],
+            ]],
+            "empty" => [[
+            ]],
+            "different currency code than booklet" => [[
+                'number_vouchers' => 3,
+                'currency' => 'CZK',
+                'values' => [1, 2, 3],
+            ]],
+            "empty values" => [[
+                'number_vouchers' => 3,
+                'currency' => 'USD',
+                'values' => [],
+            ]],
+        ];
     }
 }

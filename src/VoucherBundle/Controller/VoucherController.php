@@ -68,6 +68,36 @@ class VoucherController extends Controller
 
         $voucherData = $request->request->all();
 
+        if (!array_key_exists('currency', $voucherData)) {
+            return new Response('Currency missing', Response::HTTP_BAD_REQUEST);
+        } elseif (0 == preg_match('/^[A-Z][A-Z][A-Z]$/', $voucherData['currency'])) {
+            return new Response('Wrong currency format', Response::HTTP_BAD_REQUEST);
+        }
+        if (!array_key_exists('number_vouchers', $voucherData)) {
+            return new Response('Voucher count missing', Response::HTTP_BAD_REQUEST);
+        } elseif (!is_integer($voucherData['number_vouchers']) || $voucherData['number_vouchers'] < 1) {
+            return new Response('Wrong voucher count format', Response::HTTP_BAD_REQUEST);
+        }
+        if (!array_key_exists('booklet', $voucherData)) {
+            return new Response('booklet missing', Response::HTTP_BAD_REQUEST);
+        } elseif ($voucherData['booklet']->getCurrency() !== $voucherData['currency']) {
+            return new Response('Inconsistency in Booklet currency and voucher currency', Response::HTTP_BAD_REQUEST);
+        }
+        if (!array_key_exists('bookletCode', $voucherData)) {
+            return new Response('bookletCode missing', Response::HTTP_BAD_REQUEST);
+        } elseif ($voucherData['booklet']->getCode() !== $voucherData['bookletCode']) {
+            return new Response('Inconsistency in Booklet->code and voucher bookletCode', Response::HTTP_BAD_REQUEST);
+        }
+        if (!array_key_exists('values', $voucherData) || empty($voucherData['values'])) {
+            return new Response('Values missing', Response::HTTP_BAD_REQUEST);
+        } else {
+            foreach ($voucherData['values'] as $value) {
+                if (!is_integer($value)) {
+                    return new Response('Values must be integers', Response::HTTP_BAD_REQUEST);
+                }
+            }
+        }
+
         try {
             $return = $this->get('voucher.voucher_service')->create($voucherData);
         } catch (\Exception $exception) {
