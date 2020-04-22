@@ -194,7 +194,6 @@ class BookletController extends Controller
      * Get booklets that have been deactivated
      *
      * @Rest\Get("/deactivated-booklets", name="get_deactivated_booklets")
-     * @Rest\Get("/v2/deactivated-booklets")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -228,10 +227,38 @@ class BookletController extends Controller
     }
 
     /**
+     * Get booklets that have been deactivated
+     *
+     * @Rest\Get("/vendor-app/v1/deactivated-booklets")
+     *
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Booklets delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Booklet::class, groups={"FullBooklet"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function vendorGetDeactivatedAction(Request $request)
+    {
+        return $this->getDeactivatedAction($request);
+    }
+
+    /**
      * Get booklets that are protected by a password
      *
      * @Rest\Get("/protected-booklets", name="get_protected_booklets")
-     * @Rest\Get("/v2/protected-booklets")
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -270,6 +297,35 @@ class BookletController extends Controller
 
         $json = $this->get('jms_serializer')->serialize($bookletPasswords, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
         return new Response($json);
+    }
+
+    /**
+     * Get booklets that are protected by a password
+     *
+     * @Rest\Get("/vendor-app/v1/protected-booklets")
+     *
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Booklets delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Booklet::class, groups={"FullBooklet"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function vendorGetProtectedAction(Request $request)
+    {
+        return $this->getProtectedAction($request);
     }
 
     /**
@@ -352,7 +408,6 @@ class BookletController extends Controller
     /**
      * Deactivate booklets
      * @Rest\Post("/deactivate-booklets", name="deactivate_booklets")
-     * @Rest\Post("/v2/deactivate-booklets")
      * @Security("is_granted('ROLE_USER')")
      * @SWG\Tag(name="Booklets")
      *
@@ -375,6 +430,28 @@ class BookletController extends Controller
         }
 
         return new Response(json_encode('Booklet successfully deactivated'));
+    }
+
+    /**
+     * Deactivate booklets
+     *
+     * @Rest\Post("/vendor-app/v1/deactivate-booklets")
+     *
+     * @Security("is_granted('ROLE_USER')")
+     *
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @return Response
+     */
+    public function vendorDeactivateBookletsAction(Request $request)
+    {
+        return $this->deactivateBookletsAction($request);
     }
 
     /**
