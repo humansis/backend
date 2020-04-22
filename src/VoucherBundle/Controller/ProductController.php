@@ -78,7 +78,6 @@ class ProductController extends Controller
      * Get Products.
      *
      * @Rest\Get("/products", name="get_products")
-     * @Rest\Get("/v2/products")
      * @Security("is_granted('ROLE_USER')")
      *
      * @SWG\Tag(name="Product")
@@ -123,6 +122,39 @@ class ProductController extends Controller
             SerializationContext::create()->setGroups(['FullProduct'])->setSerializeNull(true)
         );
         return new Response($productJson);
+    }
+
+    /**
+     * Get Products
+     *
+     * @Rest\Get("/vendor-app/v1/products")
+     * @Security("is_granted('ROLE_USER')")
+     *
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Parameter(
+     *     name="product",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Product::class, groups={"FullProduct"})
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Product created",
+     *     @Model(type=Product::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @return Response
+     */
+    public function vendorGetAction(Request $request)
+    {
+        return $this->getAction($request);
     }
 
     /**

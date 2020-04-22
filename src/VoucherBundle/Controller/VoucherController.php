@@ -186,10 +186,10 @@ class VoucherController extends Controller
     /**
      * When a vendor sends their scanned vouchers
      *
-     * @Rest\Post("/v2/vouchers/scanned")
+     * @Rest\Post("/vendor-app/v1/vouchers/scanned")
      * @Security("is_granted('ROLE_VENDOR')")
      *
-     * @SWG\Tag(name="Vouchers")
+     * @SWG\Tag(name="Vendor App")
      * @SWG\Parameter(name="scanned voucher",
      *     in="body",
      *     required=true,

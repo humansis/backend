@@ -91,10 +91,10 @@ class UserController extends Controller
         if ($user->getVendor() !== null) {
             return new Response('You cannot connect on this site, please use the app.', Response::HTTP_FORBIDDEN);
         }
-        
+
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
-        
+
         $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
         return new Response($userJson);
     }
@@ -103,7 +103,6 @@ class UserController extends Controller
      * Get user's salt
      *
      * @Rest\Get("/salt/{username}")
-     * @Rest\Get("/v2/salt/{username}")
      *
      * @SWG\Tag(name="Users")
      *
@@ -148,6 +147,50 @@ class UserController extends Controller
         }
 
         return new JsonResponse($salt);
+    }
+
+    /**
+     * Get user's salt
+     *
+     * @Rest\Get("/vendor-app/v1/salt/{username}")
+     *
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Parameter(
+     *     name="username",
+     *     in="query",
+     *     type="string",
+     *     required=true,
+     *     description="username of the user"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *      examples={
+     *          "application/json": {
+     *              "user_id" = 1,
+     *              "salt" = "fgrgfhjjgh21h5rt"
+     *          }
+     *      }
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @SWG\Response(
+     *     response=423,
+     *     description="LOCKED"
+     * )
+     *
+     * @param $username
+     * @return Response
+     */
+    public function vendorGetSaltAction($username)
+    {
+        return $this->getSaltAction($username);
     }
 
     /**
