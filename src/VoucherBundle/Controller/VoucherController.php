@@ -218,7 +218,7 @@ class VoucherController extends Controller
 
         foreach ($vouchersData as $voucherData) {
             try {
-                $newVoucher = $this->get('voucher.voucher_service')->scannedDeprecated($voucherData);
+                $newVoucher = $this->get('voucher.voucher_service')->scannedDeprecated($voucherData, $this->getUser());
                 $newVouchers[] = $newVoucher;
             } catch (\Exception $exception) {
                 return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);

@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use CommonBundle\Utils\ExportableInterface;
+use UserBundle\Entity\User;
 
 /**
  * Voucher
