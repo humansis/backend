@@ -17,7 +17,7 @@ use VoucherBundle\Entity\Voucher;
 class BookletService
 {
 
-  /** @var EntityManagerInterface $em */
+    /** @var EntityManagerInterface $em */
     private $em;
 
     /** @var ValidatorInterface $validator */
@@ -66,7 +66,7 @@ class BookletService
     public function backgroundCreate($country, array $bookletData)
     {
         $this->container->get('voucher.voucher_service')->cleanUp();
-        
+
         $this->eventDispatcher->addListener(KernelEvents::TERMINATE, function ($event) use ($country, $bookletData) {
             try {
                 $this->create($country, $bookletData);
@@ -95,13 +95,23 @@ class BookletService
             // Create booklet
             try {
                 $booklet = new Booklet();
-                $code = $this->generateCode($bookletData, $currentBatch, $bookletBatch);
+                $booklet
+                    ->setNumberVouchers($bookletData['number_vouchers'])
+                    ->setCurrency($bookletData['currency'])
+                    ->setStatus(Booklet::UNASSIGNED)
+                    ->setCountryISO3($countryISO3);
 
-                $booklet->setCode($code)
-                        ->setNumberVouchers($bookletData['number_vouchers'])
-                        ->setCurrency($bookletData['currency'])
-                        ->setStatus(Booklet::UNASSIGNED)
-                        ->setCountryISO3($countryISO3);
+                $code = null;
+                if (array_key_exists('project_id', $bookletData) && !empty($bookletData['project_id'])) {
+                    $project = $this->em->getRepository(\ProjectBundle\Entity\Project::class)->find($bookletData['project_id']);
+                    $booklet->setProject($project);
+
+                    $code = $this->generateCode($countryISO3, $project);
+                } else {
+                    $code = $this->generateCodeDeprecated($bookletData, $currentBatch, $bookletBatch);
+                }
+
+                $booklet->setCode($code);
 
                 if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
                     $booklet->setPassword($bookletData['password']);
@@ -124,14 +134,14 @@ class BookletService
                     'values' => $bookletData['individual_values'],
                     'lastId' => $lastVoucherId
                 ];
-            
+
                 $this->container->get('voucher.voucher_service')->create($voucherData, false);
                 $lastVoucherId += $bookletData['number_vouchers'];
             } catch (\Exception $e) {
                 throw $e;
             }
 
-            if ($x%10 === 0) {
+            if ($x % 10 === 0) {
                 $this->em->flush();
                 $this->em->clear();
             }
@@ -144,7 +154,7 @@ class BookletService
 
     /**
      * Get the last inserted ID in the Booklet table
-     * 
+     *
      * @return int
      */
     public function getLastId()
@@ -156,10 +166,10 @@ class BookletService
 
     /**
      * Get the number of insterted booklets in a country since an ID.
-     * 
+     *
      * @param string $country
      * @param int $lastId
-     * 
+     *
      * @return int
      */
     public function getNumberOfInsertedBooklets(string $country, int $lastId)
@@ -194,17 +204,36 @@ class BookletService
      * @param int $currentBatch
      * @param int $bookletBatch
      * @return string
+     * @deprecated Use generateCode() instead.
      */
-    public function generateCode(array $bookletData, int $currentBatch, int $bookletBatch)
+    private function generateCodeDeprecated(array $bookletData, int $currentBatch, int $bookletBatch)
     {
         // randomCode*bookletBatchNumber-lastBatchNumber-currentBooklet
         $lastBatchNumber = $bookletBatch + ($bookletData['number_booklets'] - 1);
         $fullCode = $bookletBatch . '-' . $lastBatchNumber . '-' . $currentBatch;
-        
+
         return $fullCode;
     }
 
-  
+    /**
+     * Generates a random code for a booklet
+     *
+     * @param string $countryCode
+     * @param \ProjectBundle\Entity\Project $project
+     * @return string
+     */
+    protected function generateCode(string $countryCode, \ProjectBundle\Entity\Project $project)
+    {
+        $prefix = $countryCode . '_' . $project->getName() . '_' . date('d-m-Y') . '_batch';
+        $count = 0;
+
+        $booklet = $this->em->getRepository(Booklet::class)->findMaxByCodePrefix($prefix);
+        if ($booklet) {
+            $count = (int) substr($booklet->getCode(), -6);
+        }
+        return sprintf('%s%06d', $prefix, ++$count);
+    }
+
     /**
      * Get all the non-deactivated booklets from the database
      *
@@ -212,7 +241,7 @@ class BookletService
      */
     public function findAll($countryISO3)
     {
-        return  $this->em->getRepository(Booklet::class)->getActiveBooklets($countryISO3);
+        return $this->em->getRepository(Booklet::class)->getActiveBooklets($countryISO3);
     }
 
     /**
@@ -222,7 +251,7 @@ class BookletService
      */
     public function findDeactivated()
     {
-        return  $this->em->getRepository(Booklet::class)->findBy(['status' => Booklet::DEACTIVATED]);
+        return $this->em->getRepository(Booklet::class)->findBy(['status' => Booklet::DEACTIVATED]);
     }
 
     /**
@@ -232,7 +261,7 @@ class BookletService
      */
     public function findProtected()
     {
-        return  $this->em->getRepository(Booklet::class)->getProtectedBooklets();
+        return $this->em->getRepository(Booklet::class)->getProtectedBooklets();
     }
 
     /**
@@ -252,7 +281,7 @@ class BookletService
             $newNumberVouchers = $bookletData['number_vouchers'];
             $booklet->setNumberVouchers($newNumberVouchers);
 
-            $vouchersToAdd = (int)$bookletData['number_vouchers'] - $initialNumberVouchers;
+            $vouchersToAdd = (int) $bookletData['number_vouchers'] - $initialNumberVouchers;
 
             // Create vouchers without default value and no password
             if ($vouchersToAdd > 0) {
@@ -265,13 +294,13 @@ class BookletService
                         'booklet' => $booklet,
                         'values' => $values,
                     ];
-      
+
                     $this->container->get('voucher.voucher_service')->create($voucherData);
                 } catch (\Exception $e) {
                     throw new \Exception('Error creating vouchers');
                 }
             } elseif ($vouchersToAdd < 0) {
-                $vouchersToRemove = - $vouchersToAdd;
+                $vouchersToRemove = -$vouchersToAdd;
                 $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
                 foreach ($vouchers as $voucher) {
                     if ($vouchersToRemove > 0) {
@@ -285,7 +314,7 @@ class BookletService
                 $booklet->setPassword($bookletData['password']);
             }
             $this->em->merge($booklet);
-        
+
             $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
             $values = array_key_exists('individual_values', $bookletData) ? $bookletData['individual_values'] : [];
             foreach ($vouchers as $index => $voucher) {
@@ -301,7 +330,7 @@ class BookletService
         return $booklet;
     }
 
-    public function updateVoucherCode(Voucher $voucher, ?string $password='', ?string $value='', ?string $currency='')
+    public function updateVoucherCode(Voucher $voucher, ?string $password = '', ?string $value = '', ?string $currency = '')
     {
         $qrCode = $voucher->getCode();
         // To know if we need to add a new password or replace an existant one
@@ -362,7 +391,7 @@ class BookletService
             $booklet->setStatus(Booklet::DEACTIVATED);
             $this->em->merge($booklet);
         }
-      
+
         $this->em->flush();
 
         return "Booklets have been deactivated";
@@ -374,9 +403,9 @@ class BookletService
      *
      * @param Booklet $booklet
      * @param int $code
+     * @return string
      * @throws \Exception
      *
-     * @return string
      */
     public function updatePassword(Booklet $booklet, $password)
     {
@@ -401,9 +430,9 @@ class BookletService
      * @param Booklet $booklet
      * @param Beneficiary $beneficiary
      * @param DistributionData $distributionData
+     * @return string
      * @throws \Exception
      *
-     * @return string
      */
     public function assign(Booklet $booklet, DistributionData $distributionData, Beneficiary $beneficiary)
     {
@@ -415,11 +444,11 @@ class BookletService
             ['beneficiary' => $beneficiary, "distributionData" => $distributionData]
         );
         $booklet->setDistributionBeneficiary($distributionBeneficiary)
-                ->setStatus(Booklet::DISTRIBUTED);
+            ->setStatus(Booklet::DISTRIBUTED);
         $this->em->merge($booklet);
 
         $beneficiariesWithoutBooklets = $this->em->getRepository(DistributionBeneficiary::class)->countWithoutBooklet($distributionData);
-        
+
         if ($beneficiariesWithoutBooklets === '1') {
             $distributionData->setCompleted(true);
             $this->em->merge($distributionData);
@@ -431,6 +460,7 @@ class BookletService
     }
 
     // =============== DELETE 1 BOOKLET AND ITS VOUCHERS FROM DATABASE ===============
+
     /**
      * Permanently delete the record from the database
      *
@@ -515,7 +545,7 @@ class BookletService
         $vouchers = $booklet->getVouchers();
         $totalValue = 0;
         $numberVouchers = $booklet->getNumberVouchers();
-        
+
         foreach ($vouchers as $voucher) {
             $totalValue += $voucher->getValue();
         }
@@ -524,7 +554,7 @@ class BookletService
             '@Voucher/Pdf/booklet.html.twig',
             array_merge(
                 array(
-                    'name'  => $name,
+                    'name' => $name,
                     'value' => $totalValue,
                     'currency' => $currency,
                     'qrCodeLink' => 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' . $bookletQrCode,
@@ -538,15 +568,15 @@ class BookletService
 
         foreach ($vouchers as $voucher) {
             $voucherQrCode = $voucher->getCode();
-            
+
             $voucherHtml = $this->container->get('templating')->render(
                 '@Voucher/Pdf/voucher.html.twig',
                 array(
-                        'name'  => $name,
-                        'value' => $voucher->getValue(),
-                        'currency' => $currency,
-                        'qrCodeLink' => 'https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=' . $voucherQrCode
-                    )
+                    'name' => $name,
+                    'value' => $voucher->getValue(),
+                    'currency' => $currency,
+                    'qrCodeLink' => 'https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=' . $voucherQrCode
+                )
             );
 
             if ($pageBreak === true) {
@@ -572,7 +602,7 @@ class BookletService
     public function exportVouchersDistributionToCsv(DistributionData $distributionData, string $type)
     {
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
-        
+
         $beneficiaries = array();
         $exportableTable = array();
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
@@ -605,13 +635,13 @@ class BookletService
             array_push(
                 $exportableTable,
                 array_merge($commonFields, array(
-                "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
-                "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
-                "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
-                "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
-                "Purchased items" => $products,
-                "Removed" => $distributionBeneficiary->getRemoved() ? 'Yes' : 'No',
-                "Justification for adding/removing" => $distributionBeneficiary->getJustification(),
+                    "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
+                    "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
+                    "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
+                    "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
+                    "Purchased items" => $products,
+                    "Removed" => $distributionBeneficiary->getRemoved() ? 'Yes' : 'No',
+                    "Justification for adding/removing" => $distributionBeneficiary->getJustification(),
                 ))
             );
         }
