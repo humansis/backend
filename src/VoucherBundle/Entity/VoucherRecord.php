@@ -14,7 +14,7 @@ use JMS\Serializer\Annotation\Type as JMS_Type;
  *         @ORM\UniqueConstraint(columns={"voucher_id", "product_id"})
  *     }
  * )
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherRecordRepository")
  */
 class VoucherRecord
 {

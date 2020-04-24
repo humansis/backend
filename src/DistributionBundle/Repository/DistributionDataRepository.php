@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Repository;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
@@ -168,6 +169,21 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
                 }     
         return $qb->getQuery()->getSingleScalarResult();
     }
-    
 
+    /**
+     * Returns list of distributions distributed to given beneficiary
+     *
+     * @param Beneficiary $beneficiary
+     * @return DistributionData[]
+     */
+    public function findDistributedToBeneficiary(Beneficiary $beneficiary)
+    {
+        $qb = $this->createQueryBuilder('dd')
+            ->join('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.beneficiary = :beneficiary')
+            ->orderBy('dd.dateDistribution', 'DESC');
+
+        $qb->setParameter('beneficiary', $beneficiary);
+
+        return $qb->getQuery()->getResult();
+    }
 }

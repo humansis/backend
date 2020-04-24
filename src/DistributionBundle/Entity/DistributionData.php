@@ -31,7 +31,7 @@ class DistributionData implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "DistributionOverview"})
      */
     private $id;
 
@@ -40,7 +40,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=45)
      *
-     * @Groups({"FullDistribution", "FullBooklet"})
+     * @Groups({"FullDistribution", "FullBooklet", "DistributionOverview"})
      */
     private $name;
 
@@ -60,7 +60,7 @@ class DistributionData implements ExportableInterface
      * @ORM\Column(name="date_distribution", type="date")
      * @JMS_Type("DateTime<'d-m-Y'>")
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "DistributionOverview"})
      */
     private $dateDistribution;
 
@@ -117,13 +117,13 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(type="integer", name="type_distribution")
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "DistributionOverview"})
      */
     private $type;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="distributionData")
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "DistributionOverview"})
      */
     private $commodities;
 

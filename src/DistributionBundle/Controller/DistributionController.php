@@ -8,11 +8,9 @@ use DistributionBundle\Utils\DistributionService;
 use DistributionBundle\Utils\DistributionCsvService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use DistributionBundle\Entity\DistributionData;
-use DistributionBundle\Entity\GeneralReliefItem;
 use BeneficiaryBundle\Entity\Beneficiary;
 use ProjectBundle\Entity\Project;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -20,6 +18,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class DistributionController
@@ -27,6 +26,42 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  */
 class DistributionController extends Controller
 {
+    /**
+     * All distributed transactions by parameters
+     *
+     * @Rest\Get("/distributions/beneficiary/{beneficiaryId}")
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Distributions")
+     * @SWG\Parameter(name="beneficiaryId",
+     *     in="path",
+     *     type="integer",
+     *     required=true
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="List of distributed items to beneficiary",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=DistributionData::class, groups={"DistributionOverview"}))
+     *     )
+     * )
+     * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
+     *
+     * @param Beneficiary $beneficiary
+     * @return Response
+     */
+    public function distributionsToBeneficiary(Beneficiary $beneficiary)
+    {
+        $distributions = $this->getDoctrine()->getRepository(DistributionData::class)->findDistributedToBeneficiary($beneficiary);
+
+        $json = $this->get('jms_serializer')
+            ->serialize($distributions, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["DistributionOverview"]));
+
+        return new Response($json);
+    }
+
     /**
      * @Rest\Get("/distributions/{id}/random")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")

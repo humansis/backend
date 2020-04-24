@@ -2,11 +2,13 @@
 
 namespace VoucherBundle\Controller;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
+use VoucherBundle\Entity\VoucherRecord;
 use VoucherBundle\Exception\FixedValidationException;
 
 /**
@@ -106,6 +109,42 @@ class VoucherController extends Controller
         }
 
         $json = $this->get('jms_serializer')->serialize($vouchers, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        return new Response($json);
+    }
+
+    /**
+     * Get purchased vouchers by beneficiary
+     *
+     * @Rest\Get("/vouchers/purchased/{beneficiaryId}")
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Vouchers")
+     * @SWG\Parameter(name="beneficiaryId",
+     *     in="path",
+     *     type="integer",
+     *     required=true
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="List of purchased vouchers",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=VoucherRecord::class, groups={"ValidatedDistribution"}))
+     *     )
+     * )
+     * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
+     *
+     * @param Beneficiary $beneficiary
+     * @return Response
+     */
+    public function purchasedVoucherRecords(Beneficiary $beneficiary)
+    {
+        $vouchers = $this->getDoctrine()->getRepository(VoucherRecord::class)->findPurchasedByBeneficiary($beneficiary);
+
+        $json = $this->get('jms_serializer')
+            ->serialize($vouchers, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["ValidatedDistribution"]));
+
         return new Response($json);
     }
 
