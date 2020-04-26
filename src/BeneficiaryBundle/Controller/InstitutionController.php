@@ -523,7 +523,7 @@ class InstitutionController extends Controller
     }
 
     /**
-     * @Rest\Get("/import/api/institutions/list", name="get_all_api_available_for_country")
+     * @Rest\Get("/import/api/institutions/list")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Beneficiary")
      * @SWG\Response(
