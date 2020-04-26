@@ -18,6 +18,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 /**
  * Class CriteriaDistributionController
  * @package DistributionBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class CriteriaDistributionController extends Controller
 {

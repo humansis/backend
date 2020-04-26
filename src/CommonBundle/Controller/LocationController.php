@@ -20,6 +20,13 @@ use JMS\Serializer\SerializationContext;
 /**
  * Class LocationController
  * @package CommonBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class LocationController extends Controller
 {

@@ -11,6 +11,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @SWG\Parameter(
+ *      name="country",
+ *      in="header",
+ *      type="string",
+ *      required=true
+ * )
+ */
 class CountrySpecificController extends Controller
 {
     /**

@@ -20,6 +20,13 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 /**
  * Class ProductController
  * @package VoucherBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class ProductController extends Controller
 {

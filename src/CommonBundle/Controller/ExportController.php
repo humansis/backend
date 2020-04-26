@@ -16,6 +16,13 @@ use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 /**
  * Class ExportController
  * @package CommonBundle\Controller
+ *
+ * @SWG\Parameter(
+ *      name="country",
+ *      in="header",
+ *      type="string",
+ *      required=true
+ * )
  */
 class ExportController extends Controller
 {
