@@ -6,23 +6,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 class DataTableFilterType implements InputTypeInterface
 {
     /**
-     * @var int
+     * @var string
      * @Assert\NotBlank()
-     * @Assert\GreaterThanOrEqual(0)
      */
-    public $pageIndex;
+    public $category;
     /**
-     * @var int
+     * @var string
      * @Assert\NotBlank()
-     * @Assert\GreaterThan(0)
-     */
-    public $pageSize;
-    /**
-     * @var mixed[]
      */
     public $filter;
-    /**
-     * @var DataTableSorterType
-     */
-    public $sort;
 }
