@@ -652,14 +652,14 @@ class BookletService
 
     /**
      * @param InputType\Country $countryISO3
-     * @param InputType\DataTableFilterType $filter
+     * @param InputType\DataTableType $filter
      * @return mixed
      */
-    public function getAll(InputType\Country $countryISO3, InputType\DataTableFilterType $filter)
+    public function getAll(InputType\Country $countryISO3, InputType\DataTableType $filter)
     {
         $limitMinimum = $filter->pageIndex * $filter->pageSize;
 
-        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryISO3, $limitMinimum, $filter->pageSize, $filter->sort, $filter->filter);
+        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryISO3, $limitMinimum, $filter->pageSize, $filter->getSort(), $filter->getFilter());
         $length = $booklets[0];
         $booklets = $booklets[1];
         return [$length, $booklets];

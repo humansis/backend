@@ -68,9 +68,9 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-        /**
+    /**
      * Get all Household by country
-     * @param $iso3
+     * @param $countryISO3
      * @param $begin
      * @param $pageSize
      * @param $sort
@@ -94,8 +94,8 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
           
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
         if (array_key_exists("sort", $sort) && array_key_exists("direction", $sort)) {
-            $value = $sort["sort"];
-            $direction = $sort["direction"];
+            $value = $sort->sort;
+            $direction = $sort->direction;
 
             // If the field is the code, we sort it by the direction sent
             if ($value == "code") {

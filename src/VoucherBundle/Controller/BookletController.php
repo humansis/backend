@@ -172,10 +172,10 @@ class BookletController extends Controller
      * )
      *
      * @param InputType\Country $country
-     * @param InputType\DataTableFilterType $filterType
+     * @param InputType\DataTableType $filterType
      * @return Response
      */
-    public function allAction(InputType\Country $country, InputType\DataTableFilterType $filterType)
+    public function allAction(InputType\Country $country, InputType\DataTableType $filterType)
     {
 
         try {

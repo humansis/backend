@@ -66,8 +66,11 @@ class BookletControllerTest extends BMSServiceTestCase
         $body = [
             "pageIndex" => 0,
             "pageSize" => 10,
-            "filter" => [],
-            "sort" => []
+            "filter" => [
+                ['category' => 'aaa', 'filter' => "asdfg"],
+                ['category' => 'bbb', 'filter' => "asdfg"],
+            ],
+            "sort" => ["sort"=>'adasd','direction'=>'ASC']
         ];
         $crawler = $this->request('POST', '/api/wsse/booklets/get/all', $body);
         $booklets = json_decode($this->client->getResponse()->getContent(), true);

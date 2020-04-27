@@ -6,6 +6,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -39,7 +41,7 @@ class RequestConverter implements ParamConverterInterface
             $requestData = $request->request->all();
             unset($requestData['__country']);
 
-            $serializer = new Serializer([new ObjectNormalizer()]);
+            $serializer = new Serializer([new ObjectNormalizer(null, null, null, new ReflectionExtractor())]);
             $inputType = $serializer->denormalize($requestData, $configuration->getClass());
             $errors = $this->validator->validate($inputType);
             $request->attributes->set($configuration->getName(), $inputType);
@@ -56,6 +58,6 @@ class RequestConverter implements ParamConverterInterface
 
     public function supports(ParamConverter $configuration)
     {
-        return in_array(InputTypeInterface::class, class_implements($configuration->getClass()));
+        return $configuration->getClass() !== null && in_array(InputTypeInterface::class, class_implements($configuration->getClass()));
     }
 }
