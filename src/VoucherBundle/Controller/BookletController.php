@@ -3,6 +3,7 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use CommonBundle\InputType;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\Common\Collections\Collection;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -177,15 +178,15 @@ class BookletController extends Controller
      *     )
      * )
      *
-     * @param Request $request
+     * @param InputType\Country $country
+     * @param InputType\DataTableFilterType $filterType
      * @return Response
      */
-    public function allAction(Request $request)
+    public function allAction(InputType\Country $country, InputType\DataTableFilterType $filterType)
     {
-        $filters = $request->request->all();
 
         try {
-            $booklets = $this->get('voucher.booklet_service')->getAll($filters['__country'], $filters);
+            $booklets = $this->get('voucher.booklet_service')->getAll($country, $filterType);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
