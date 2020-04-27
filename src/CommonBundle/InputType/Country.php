@@ -1,9 +1,15 @@
 <?php
 namespace CommonBundle\InputType;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 class Country implements InputTypeInterface
 {
-    /** @var string */
+    /**
+     * @var string
+     * @Assert\NotBlank()
+     * @Assert\Regex("/^[A-Z][A-Z][A-Z]$/i")
+     */
     private $iso3Code;
 
     /**
