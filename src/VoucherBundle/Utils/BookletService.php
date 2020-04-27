@@ -13,6 +13,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
+use CommonBundle\InputType;
 
 class BookletService
 {
@@ -650,20 +651,15 @@ class BookletService
     }
 
     /**
-     * @param string $iso3
-     * @param array $filters
+     * @param InputType\Country $countryISO3
+     * @param InputType\DataTableFilterType $filter
      * @return mixed
      */
-    public function getAll(string $countryISO3, array $filters)
+    public function getAll(InputType\Country $countryISO3, InputType\DataTableFilterType $filter)
     {
-        $pageIndex = $filters['pageIndex'];
-        $pageSize = $filters['pageSize'];
-        $filter = $filters['filter'];
-        $sort = $filters['sort'];
+        $limitMinimum = $filter->pageIndex * $filter->pageSize;
 
-        $limitMinimum = $pageIndex * $pageSize;
-
-        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryISO3, $limitMinimum, $pageSize, $sort, $filter);
+        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryISO3, $limitMinimum, $filter->pageSize, $filter->sort, $filter->filter);
         $length = $booklets[0];
         $booklets = $booklets[1];
         return [$length, $booklets];

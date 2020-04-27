@@ -58,6 +58,9 @@ services:
         tags:
         - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
+    CommonBundle\InputType\RequestConverter:
+        tags:
+            - { name: request.param_converter, converter: input_types_converter }
 
 #######################################################################################
 ##                                      FIXTURE                                      ##
