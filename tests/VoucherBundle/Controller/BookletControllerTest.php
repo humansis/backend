@@ -250,14 +250,23 @@ class BookletControllerTest extends BMSServiceTestCase
 
 
     /**
-     * @depends testEditBooklet
-     *
      * @param $bookletToDelete
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testDeleteFromDatabase($bookletToDelete)
+    public function testDeleteFromDatabase()
     {
+        $code = uniqid();
+        $booklet = new Booklet();
+        $booklet
+            ->setNumberVouchers(0)
+            ->setCurrency('CZK')
+            ->setStatus(Booklet::UNASSIGNED)
+            ->setCountryISO3('KHM');
+        $booklet->setCode($code);
+        $this->em->persist($booklet);
+        $this->em->flush();
+
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -265,11 +274,13 @@ class BookletControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('DELETE', '/api/wsse/booklets/' . $bookletToDelete['id']);
+        $crawler = $this->request('DELETE', '/api/wsse/booklets/' . $booklet->getId());
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $foundBooklet = $this->em->getRepository(Booklet::class)->findOneBy(['code'=>$code]);
+        $this->assertNull($foundBooklet, "Deleted booklet still exists");
     }
 
     /**
