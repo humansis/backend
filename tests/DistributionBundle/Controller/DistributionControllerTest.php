@@ -47,7 +47,7 @@ class DistributionControllerTest extends BMSServiceTestCase
      */
     public function testCreateDistribution()
     {
-        $this->removeHousehold($this->namefullnameHousehold);
+//        $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
 
         $criteria = array(
