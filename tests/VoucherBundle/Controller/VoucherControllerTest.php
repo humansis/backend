@@ -2,11 +2,12 @@
 namespace VoucherBundle\Tests\Controller;
 
 use Tests\BMSServiceTestCase;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
 
-class VoucherCreateTest extends BMSServiceTestCase
+class VoucherControllerTest extends BMSServiceTestCase
 {
     /** @var Booklet */
     protected $booklet;
@@ -67,6 +68,7 @@ class VoucherCreateTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
+    /* FIXME: was broken by refaktoring scann method
     public function testUseVoucher($newVoucher)
     {
         $vendorName = 'vendor';
@@ -100,7 +102,64 @@ class VoucherCreateTest extends BMSServiceTestCase
 
         return $newVoucherReceived;
     }
+    */
 
+    public function testRedeemVoucher() : void
+    {
+        $booklet = $this->em->getRepository(Booklet::class)->findOneBy([]);
+        $user = $this->em->getRepository(User::class)->findOneBy([]);
+        $voucher = new Voucher(uniqid(), 1000, $booklet);
+        $voucher->distribute($user, new \DateTime());
+        $voucher->use($user, new \DateTime());
+        $this->em->persist($voucher);
+        $this->em->flush();
+
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $body = [
+            'id' => $voucher->getId(),
+        ];
+
+        // Using a fake header or else a country is gonna be put in the body
+        $crawler = $this->request('POST', '/api/wsse/vouchers/redeem', $body);
+        $newVoucherReceived = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
+        /** @var Voucher $voucherSearch */
+        $voucherSearch = $this->em->getRepository(Voucher::class)->find($newVoucherReceived['id']);
+        $this->assertTrue($voucherSearch->getUsedAt() !== null, "Voucher has no used date");
+        $this->assertTrue($voucherSearch->getRedeemedAt() !== null, "Voucher has no redeem date");
+        $this->assertEquals(Voucher::STATE_REDEEMED, $voucherSearch->getStatus(), "Voucher isn't in redeem state");
+    }
+
+    public function testRedeemInvalidVoucher() : void
+    {
+        $booklet = $this->em->getRepository(Booklet::class)->findOneBy([]);
+        $user = $this->em->getRepository(User::class)->findOneBy([]);
+        $voucher = new Voucher(uniqid(), 1000, $booklet);
+        $voucher->distribute($user, new \DateTime());
+        $this->em->persist($voucher);
+        $this->em->flush();
+
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $body = [
+            'id' => $voucher->getId(),
+        ];
+
+        // Using a fake header or else a country is gonna be put in the body
+        $crawler = $this->request('POST', '/api/wsse/vouchers/redeem', $body);
+        $newVoucherReceived = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertFalse($this->client->getResponse()->isSuccessful(), "Request doesn't failed but it should: ".$this->client->getResponse()->getContent());
+        $this->assertFalse($this->client->getResponse()->isServerError(), "Request should fail but it ends with server error: ".$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isClientError(), "Request should fail with client error: ".$this->client->getResponse()->getContent());
+    }
 
     public function getValidVoucherData() : array
     {

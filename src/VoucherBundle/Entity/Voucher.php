@@ -252,9 +252,9 @@ class Voucher implements ExportableInterface
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getStatus(): int
+    public function getStatus(): string
     {
         return $this->status;
     }

@@ -112,7 +112,7 @@ class VoucherService
         try {
             $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
             $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendorId']);
-            if (!$voucher || $voucher->getUsedAt() !== null) {
+            if (!$voucher || $voucher->getStatus() !== Voucher::STATE_UNASSIGNED) {
                 return $voucher;
             }
             $voucher->setVendor($vendor);
@@ -151,7 +151,18 @@ class VoucherService
         return $voucher;
     }
 
+    public function redeem(Voucher $voucher, User $scannedBy): void
+    {
+        if ($voucher->getStatus() !== Voucher::STATE_USED) {
+            throw new \InvalidArgumentException("Reddemed voucher must be used.");
+        }
+        $voucher->redeem($scannedBy, new DateTime());
+        $this->em->persist($voucher);
+        $this->em->flush();
+    }
+
     /**
+     * @param User $scannedBy
      * @param array $voucherData
      * @return Voucher
      * @throws \Exception
@@ -205,13 +216,12 @@ class VoucherService
      * Deletes a voucher from the database
      *
      * @param Voucher $voucher
-     * @param bool $removeVoucher
      * @return bool
      * @throws \Exception
      */
-    public function deleteOneFromDatabase(Voucher $voucher, bool $removeVoucher = true)
+    public function deleteOneFromDatabase(Voucher $voucher)
     {
-        if ($removeVoucher && $voucher->getUsedAt() === null) {
+        if ($voucher->getStatus() === Voucher::STATE_UNASSIGNED) {
             $this->em->remove($voucher);
             $this->em->flush();
         } else {

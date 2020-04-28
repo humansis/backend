@@ -308,7 +308,7 @@ class VoucherController extends Controller
     /**
      * When a voucher is returned to humanitarian
      *
-     * @Rest\Post("/vouchers/redeemed", name="redeemed_vouchers")
+     * @Rest\Post("/vouchers/redeem", name="redeemed_vouchers")
      * @Security("is_granted('ROLE_VENDOR')")
      * @SWG\Tag(name="Vouchers")
      *
