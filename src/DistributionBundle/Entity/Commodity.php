@@ -31,14 +31,14 @@ class Commodity
 
     /**
      * @var string
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "DistributionOverview"})
      * @ORM\Column(name="unit", type="string", length=45)
      */
     private $unit;
 
     /**
      * @var float
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "DistributionOverview"})
      * @ORM\Column(name="value", type="float")
      */
     private $value;
@@ -51,7 +51,7 @@ class Commodity
 
     /**
      * @var string
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "DistributionOverview"})
      * @ORM\Column(name="description", type="string",length=511, nullable=true)
      */
     private $description;
