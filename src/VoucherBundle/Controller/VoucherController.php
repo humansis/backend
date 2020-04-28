@@ -19,6 +19,13 @@ use VoucherBundle\Exception\FixedValidationException;
 /**
  * Class VoucherController
  * @package VoucherBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class VoucherController extends Controller
 {

@@ -18,6 +18,13 @@ use DistributionBundle\Entity\DistributionData;
 /**
  * Class TransactionController
  * @package TransactionBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class TransactionController extends Controller
 {

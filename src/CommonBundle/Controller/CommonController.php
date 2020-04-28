@@ -17,6 +17,13 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Class CommonController
  * @package CommonBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class CommonController extends Controller
 {

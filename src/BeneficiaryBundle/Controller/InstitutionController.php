@@ -28,6 +28,14 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Throwable;
 
+/**
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
+ */
 class InstitutionController extends Controller
 {
     /**

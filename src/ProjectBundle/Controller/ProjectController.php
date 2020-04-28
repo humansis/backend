@@ -16,6 +16,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 /**
  * Class ProjectController
  * @package ProjectBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class ProjectController extends Controller
 {

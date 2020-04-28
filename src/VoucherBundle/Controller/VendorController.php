@@ -19,6 +19,13 @@ use UserBundle\Entity\User;
 /**
  * Class VendorController
  * @package VoucherBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class VendorController extends Controller
 {

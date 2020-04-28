@@ -41,22 +41,26 @@ class UserController extends Controller
      * )
      *
      * @SWG\Parameter(
-     *     name="username",
+     *     name="body",
      *     in="body",
-     *     type="string",
+     *     type="json",
      *     required=true,
-     *     description="username of the user",
-     *     @SWG\Schema()
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="username",
+     *             example="admin@example.org",
+     *             type="string",
+     *             description="username of the user",
+     *         ),
+     *         @SWG\Property(
+     *             property="salted_password",
+     *             example="123456789abcdefg",
+     *             type="string",
+     *             description="salted password of the user",
+     *         )
+     *     )
      * )
-     * @SWG\Parameter(
-     *     name="salted_password",
-     *     in="body",
-     *     type="string",
-     *     required=true,
-     *     description="salted password of the user",
-     *     @SWG\Schema()
-     * )
-     *
      * @SWG\Response(
      *     response=400,
      *     description="Bad credentials (username: myUsername)"
@@ -105,14 +109,6 @@ class UserController extends Controller
      * @Rest\Get("/salt/{username}")
      *
      * @SWG\Tag(name="Users")
-     *
-     * @SWG\Parameter(
-     *     name="username",
-     *     in="query",
-     *     type="string",
-     *     required=true,
-     *     description="username of the user"
-     * )
      *
      * @SWG\Response(
      *     response=200,
@@ -199,14 +195,6 @@ class UserController extends Controller
      * @Rest\Get("/initialize/{username}")
      *
      * @SWG\Tag(name="Users")
-     *
-     * @SWG\Parameter(
-     *     name="username",
-     *     in="query",
-     *     type="string",
-     *     required=true,
-     *     description="username of the user"
-     * )
      *
      * @SWG\Response(
      *     response=200,

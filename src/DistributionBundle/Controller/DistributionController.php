@@ -24,6 +24,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 /**
  * Class DistributionController
  * @package DistributionBundle\Controller
+ *
+ * @SWG\Parameter(
+ *      name="country",
+ *      in="header",
+ *      type="string",
+ *      required=true
+ * )
  */
 class DistributionController extends Controller
 {
