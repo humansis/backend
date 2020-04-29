@@ -532,7 +532,7 @@ class DistributionService
 
     /**
      * @param $country
-     * @return string
+     * @return DistributionData[]
      */
     public function getActiveDistributions($country)
     {

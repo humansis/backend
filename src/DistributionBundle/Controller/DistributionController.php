@@ -302,6 +302,7 @@ class DistributionController extends Controller
      */
     public function getAllAction(Request $request)
     {
+        $distributionBNFsRepo = $this->getDoctrine()->getRepository(DistributionBeneficiary::class);
         $country = $request->request->get('__country');
         try {
             $distributions = $this->get('distribution.distribution_service')->getActiveDistributions($country);
@@ -309,9 +310,20 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
+        $data = [];
+        foreach ($distributions as $distributionData) {
+            $distributionArray = $this->get('jms_serializer')
+                ->toArray(
+                    $distributionData,
+                    SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
+                );
+            $distributionArray['beneficiaries_count'] = $distributionBNFsRepo->countActive($distributionData);
+            $data[] = $distributionArray;
+        }
+
         $json = $this->get('jms_serializer')
             ->serialize(
-                $distributions,
+                $data,
                 'json',
                 SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
             );
@@ -335,15 +347,22 @@ class DistributionController extends Controller
      *     )
      * )
      *
-     * @param DistributionData $DistributionData
+     * @param DistributionData $distributionData
      *
      * @return Response
      */
-    public function getOneAction(DistributionData $DistributionData)
+    public function getOneAction(DistributionData $distributionData)
     {
+        $distributionBNFsRepo = $this->getDoctrine()->getRepository(DistributionBeneficiary::class);
+        $data = $this->get('jms_serializer')
+            ->toArray(
+                $distributionData,
+                SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
+            );
+        $data['beneficiaries_count'] = $distributionBNFsRepo->countActive($distributionData);
         $json = $this->get('jms_serializer')
             ->serialize(
-                $DistributionData,
+                $data,
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
             );
