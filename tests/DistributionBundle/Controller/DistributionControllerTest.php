@@ -345,10 +345,10 @@ class DistributionControllerTest extends BMSServiceTestCase
         $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue(gettype($beneficiaries) == "array");
-        $this->assertArrayHasKey('id', $beneficiaries[0]);
-        $this->assertArrayHasKey('beneficiary', $beneficiaries[0]);
-        $this->assertArrayHasKey('transactions', $beneficiaries[0]);
+        $this->assertTrue(gettype($beneficiaries['beneficiaries']) == "array");
+        $this->assertArrayHasKey('id', $beneficiaries['beneficiaries'][0]);
+        $this->assertArrayHasKey('beneficiary', $beneficiaries['beneficiaries'][0]);
+        $this->assertArrayHasKey('transactions', $beneficiaries['beneficiaries'][0]);
     }
 
     /**

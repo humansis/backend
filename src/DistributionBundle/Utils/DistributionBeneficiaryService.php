@@ -69,7 +69,7 @@ class DistributionBeneficiaryService
      */
     public function getDistributionBeneficiaries(DistributionData $distributionData)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(["distributionData" => $distributionData]);
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
         return $distributionBeneficiaries;
     }
 
