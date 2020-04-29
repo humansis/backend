@@ -13,6 +13,15 @@ use JMS\Serializer\Annotation\Groups;
  */
 class NationalId
 {
+    const TYPE_NATIONAL_ID = 'national_id';
+    const TYPE_PASSPORT = 'passport';
+    const TYPE_FAMILY = 'family_registration';
+    const TYPE_BIRTH_CERTIFICATE = 'birth_certificate';
+    const TYPE_DRIVERS_LICENSE = 'drivers_license';
+    const TYPE_CAMP_ID = 'camp_id';
+    const TYPE_SOCIAL_SERVICE_ID = 'social_service_card';
+    const TYPE_OTHER = 'other';
+
     /**
      * @var int
      *
