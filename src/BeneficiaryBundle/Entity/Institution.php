@@ -16,7 +16,7 @@ class Institution
 {
     const TYPE_SCHOOL = 'school';
     const TYPE_HEALTH_CENTER = 'health';
-    const TYPE_COMMUNITY_CENTER = 'comunity_center';
+    const TYPE_COMMUNITY_CENTER = 'community_center';
     const TYPE_GOVERNMENT = 'government';
     const TYPE_PRODUCTION = 'production';
     const TYPE_COMMERCE = 'commerce';
