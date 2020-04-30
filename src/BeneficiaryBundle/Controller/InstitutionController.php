@@ -3,7 +3,6 @@
 namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Utils\ExportCSVService;
-use BeneficiaryBundle\Utils\InstitutionCSVService;
 use BeneficiaryBundle\Utils\InstitutionService;
 use BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper;
 use CommonBundle\Response\CommonBinaryFileResponse;
@@ -16,6 +15,7 @@ use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use BeneficiaryBundle\Entity\Institution;
+use CommonBundle\InputType as GlobalInputType;
 
 //Annotations
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -78,38 +78,17 @@ class InstitutionController extends Controller
      *     )
      * )
      *
-     * @param Request $request
+     * @param GlobalInputType\Country $country
+     * @param GlobalInputType\DataTableType $dataTableType
      * @return Response
      */
-    public function allAction(Request $request)
+    public function allAction(GlobalInputType\Country $country, GlobalInputType\DataTableType $dataTableType)
     {
-        $dataOptionRequirements = new OptionsResolver();
-        $dataOptionRequirements->setRequired([
-            'filter',
-            'sort',
-            'pageIndex',
-            'pageSize',
-            '__country',
-        ]);
-        $dataOptionRequirements->setAllowedTypes('filter', 'array');
-        $dataOptionRequirements->setAllowedTypes('sort', 'array');
-        $dataOptionRequirements->setAllowedTypes('pageIndex', 'int');
-        $dataOptionRequirements->setAllowedTypes('pageSize', 'int');
-        $dataOptionRequirements->setAllowedTypes('__country', 'string');
-        $dataOptionRequirements->setDefaults([
-            'filter' => [],
-            'sort' => [],
-            'pageIndex' => 0,
-            'pageSize' => 10,
-            '__country' => 'KHM',
-        ]);
-
-        $filters = $dataOptionRequirements->resolve($request->request->all());
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get('beneficiary.institution_service');
 
         try {
-            $institutions = $institutionService->getAll($filters['__country'], $filters);
+            $institutions = $institutionService->getAll($country, $dataTableType);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

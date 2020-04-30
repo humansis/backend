@@ -29,6 +29,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use CommonBundle\InputType as GlobalInputType;
 
 /**
  * Class InstitutionService
@@ -87,20 +88,15 @@ class InstitutionService
     }
 
     /**
-     * @param string $iso3
-     * @param array $filters
+     * @param GlobalInputType\Country $country
+     * @param GlobalInputType\DataTableType $dataTableType
      * @return mixed
      */
-    public function getAll(string $iso3, array $filters)
+    public function getAll(GlobalInputType\Country $country, GlobalInputType\DataTableType $dataTableType)
     {
-        $pageIndex = $filters['pageIndex'];
-        $pageSize = $filters['pageSize'];
-        $filter = $filters['filter'];
-        $sort = $filters['sort'];
+        $limitMinimum = $dataTableType->pageIndex * $dataTableType->pageSize;
 
-        $limitMinimum = $pageIndex * $pageSize;
-
-        $institutions = $this->em->getRepository(Institution::class)->getAllBy($iso3, $limitMinimum, $pageSize, $sort);
+        $institutions = $this->em->getRepository(Institution::class)->getAllBy($country, $limitMinimum, $dataTableType->pageSize, $dataTableType->getSort());
         $length = $institutions[0];
         $institutions = $institutions[1];
 

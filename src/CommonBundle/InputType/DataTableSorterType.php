@@ -7,12 +7,13 @@ class DataTableSorterType implements InputTypeInterface
 {
     /**
      * @var string
-     * @Assert\NotBlank()
+     * FIXME: all or nothing
+     * @ Assert\NotBlank()
      */
     public $sort;
     /**
      * @var string
-     * @Assert\NotBlank()
+     * @ Assert\NotBlank()
      */
     public $direction;
 }

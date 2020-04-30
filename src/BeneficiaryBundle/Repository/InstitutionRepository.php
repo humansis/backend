@@ -3,6 +3,9 @@
 namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\InstitutionLocation;
+use CommonBundle\InputType\Country;
+use CommonBundle\InputType\DataTableFilterType;
+use CommonBundle\InputType\DataTableSorterType;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
@@ -18,11 +21,11 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
      * @param $iso3
      * @param $begin
      * @param $pageSize
-     * @param $sort
-     * @param array $filters
+     * @param DataTableSorterType $sort
+     * @param DataTableFilterType $filterType
      * @return mixed
      */
-    public function getAllBy($iso3, $begin, $pageSize, $sort, $filters = [])
+    public function getAllBy(Country $iso3, $begin, $pageSize, DataTableSorterType $sort = null, DataTableFilterType $filterType = null)
     {
         // Recover global information for the page
         $qb = $this->createQueryBuilder("inst");
