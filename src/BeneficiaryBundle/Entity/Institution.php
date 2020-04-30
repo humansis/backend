@@ -49,6 +49,14 @@ class Institution
     /**
      * @var string
      *
+     * @ORM\Column(name="contact_family_name", type="string", length=255, nullable=true)
+     * @Groups({"FullBeneficiary", "FullInstitution"})
+     */
+    private $contactFamilyName;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="phone_number", type="string", length=45, nullable=true)
      * @Groups({"FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
@@ -155,6 +163,22 @@ class Institution
     public function setContactName(?string $contactName): void
     {
         $this->contactName = $contactName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactFamilyName(): string
+    {
+        return $this->contactFamilyName;
+    }
+
+    /**
+     * @param string $contactFamilyName
+     */
+    public function setContactFamilyName(string $contactFamilyName): void
+    {
+        $this->contactFamilyName = $contactFamilyName;
     }
 
     /**

@@ -42,7 +42,8 @@ class InstitutionControllerTest extends BMSServiceTestCase
                     'id_number' => '000-1234-5895-21',
                     'phone_prefix' => '+4234',
                     'phone_number' => '123 456 789',
-                    'contact_name' => 'Abdul Mohammad Qousad',
+                    'contact_name' => 'Abdul Mohammad',
+                    'contact_family_name' => 'Qousad',
                 ],
                 '__country' => 'KHM'
             ]],
