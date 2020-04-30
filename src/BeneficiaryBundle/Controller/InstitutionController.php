@@ -65,7 +65,7 @@ class InstitutionController extends Controller
 
     /**
      * @Rest\Post("/institutions/get/all", name="all_institutions")
-     * @ Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Institutions")
      *
