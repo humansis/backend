@@ -192,13 +192,14 @@ class InstitutionControllerTest extends BMSServiceTestCase
         /** @var Institution $institution */
         $institution = $this->em->getRepository(Institution::class)->findOneBy([]);
 
-        $oldLongitude = $institution->getLongitude();
-        $oldLatitude = $institution->getLatitude();
+        $institution->setLatitude("10.123");
+        $institution->setLongitude("20.123");
+        $this->em->persist($institution);
+        $this->em->flush();
+
         $changes = [
-            'institution' => [
-                'longitude' => '1'.$oldLongitude,
-                'latitude' => '1'.$oldLatitude,
-            ],
+            'longitude' => '123.10',
+            'latitude' => '321.20',
         ];
 
         $crawler = $this->request('POST', '/api/wsse/institutions/' . $institution->getId(), $changes);
@@ -207,8 +208,8 @@ class InstitutionControllerTest extends BMSServiceTestCase
 
         $this->assertArrayHasKey('longitude', $institutionsArray,"Part of answer missing: longitude");
         $this->assertArrayHasKey('latitude', $institutionsArray,"Part of answer missing: latitude");
-        $this->assertEquals($institutionsArray['longitude'], $changes['institution']['longitude'], "Longitude wasn't changed");
-        $this->assertEquals($institutionsArray['latitude'], $changes['institution']['latitude'], "Latitude wasn't changed");
+        $this->assertEquals($institutionsArray['longitude'], $changes['longitude'], "Longitude wasn't changed");
+        $this->assertEquals($institutionsArray['latitude'], $changes['latitude'], "Latitude wasn't changed");
     }
 
     /**

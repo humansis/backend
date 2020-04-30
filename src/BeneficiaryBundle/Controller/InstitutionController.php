@@ -163,7 +163,6 @@ class InstitutionController extends Controller
     }
 
 
-
     /**
      * @Rest\Post("/institutions/{id}", name="edit_institution", requirements={"id": "\d+"})
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
@@ -174,7 +173,7 @@ class InstitutionController extends Controller
      *     name="institution",
      *     in="body",
      *     required=true,
-     *     @Model(type=Institution::class, groups={"FullInstitution"})
+     *     @Model(type=InputType\UpdateInstitutionType::class, groups={"FullInstitution"})
      * )
      *
      * @SWG\Parameter(
@@ -197,28 +196,17 @@ class InstitutionController extends Controller
      * )
      *
      *
-     * @param Request $request
+     * @param GlobalInputType\Country $country
+     * @param InputType\NewInstitutionType $institutionType
      * @param Institution $institution
      * @return Response
      */
-    public function updateAction(Request $request, Institution $institution)
+    public function updateAction(GlobalInputType\Country $country, InputType\UpdateInstitutionType $institutionType, Institution $institution)
     {
-        $requestArray = $request->request->all();
-
-        $requestRequirements = new OptionsResolver();
-        $requestRequirements->setRequired('institution');
-        $requestRequirements->setRequired('__country');
-        $requestRequirements->setAllowedTypes('institution', 'array');
-        $requestRequirements->setAllowedTypes('__country', 'string');
-
-        $requestArray = $requestRequirements->resolve($requestArray);
-
-        $institutionArray = $requestArray['institution'];
-
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get('beneficiary.institution_service');
         try {
-            $institution = $institutionService->update($requestArray['__country'], $institution, $institutionArray);
+            $institution = $institutionService->update($country, $institution, $institutionType);
             $this->getDoctrine()->getManager()->persist($institution);
             $this->getDoctrine()->getManager()->flush();
         } catch (ValidationException $exception) {

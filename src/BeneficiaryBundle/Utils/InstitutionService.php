@@ -171,42 +171,53 @@ class InstitutionService
         return $institutions;
     }
 
-    public function update($iso3, Institution $institution, $institutionArray): Institution
+    /**
+     * @param GlobalInputType\Country $iso3
+     * @param Institution $institution
+     * @param InputType\UpdateInstitutionType $institutionType
+     * @return Institution
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     */
+    public function update(GlobalInputType\Country $iso3, Institution $institution, InputType\UpdateInstitutionType $institutionType): Institution
     {
-        if (array_key_exists('longitude', $institutionArray)) {
-            $institution->setLongitude($institutionArray['longitude']);
+        if (null !== $newValue = $institutionType->getLongitude()) {
+            $institution->setLongitude($newValue);
         }
-        if (array_key_exists('latitude', $institutionArray)) {
-            $institution->setLatitude($institutionArray['latitude']);
+        if (null !== $newValue = $institutionType->getLatitude()) {
+            $institution->setLatitude($newValue);
         }
-        if (array_key_exists('type', $institutionArray)) {
-            $institution->setType($institutionArray['type']);
+        if (null !== $newValue = $institutionType->getType()) {
+            $institution->setType($newValue);
         }
-        if (array_key_exists('id_number', $institutionArray)) {
-            $institution->setIdNumber($institutionArray['id_number']);
+        if (null !== $newValue = $institutionType->getIdType()) {
+            $institution->setIdNumber($newValue);
         }
-        if (array_key_exists('id_type', $institutionArray)) {
-            $institution->setIdType($institutionArray['id_type']);
+        if (null !== $newValue = $institutionType->getIdNumber()) {
+            $institution->setIdNumber($newValue);
         }
-        if (array_key_exists('contact_name', $institutionArray)) {
-            $institution->setContactName($institutionArray['contact_name'] ?? null);
+        if (null !== $newValue = $institutionType->getContactName()) {
+            $institution->setContactName($newValue);
         }
-        if (array_key_exists('phone_prefix', $institutionArray)) {
-            $institution->setPhonePrefix($institutionArray['phone_prefix']);
+        if (null !== $newValue = $institutionType->getContactFamilyName()) {
+            $institution->setContactName($newValue);
         }
-        if (array_key_exists('phone_number', $institutionArray)) {
-            $institution->setPhoneNumber($institutionArray['phone_number']);
+        if (null !== $newValue = $institutionType->getPhonePrefix()) {
+            $institution->setPhonePrefix($newValue);
+        }
+        if (null !== $newValue = $institutionType->getPhoneNumber()) {
+            $institution->setPhoneNumber($newValue);
         }
 
-        if (array_key_exists('address', $institutionArray)) {
+        /** @var InputType\BeneficiaryAddressType $address */
+        if ($address = $institutionType->getAddress() !== null) {
             $location = null;
-            if (array_key_exists('location', $institutionArray['address'])) {
-                $location = $this->locationService->getLocation($iso3, $institutionArray['address']['location']);
+            if ($address->getLocation() !== null) {
+                $location = $this->locationService->getLocationByInputType($iso3, $address->getLocation());
             }
             $this->updateAddress($institution, Address::create(
-                $institutionArray['address']['street'],
-                $institutionArray['address']['number'],
-                $institutionArray['address']['postcode'],
+                $address->getStreet(),
+                $address->getNumber(),
+                $address->getPostcode(),
                 $location
                 ));
         }
