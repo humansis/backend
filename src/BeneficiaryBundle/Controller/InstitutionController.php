@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\InputType as GlobalInputType;
+use BeneficiaryBundle\InputType;
 
 //Annotations
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -101,7 +102,6 @@ class InstitutionController extends Controller
     }
 
 
-
     /**
      * @Rest\Put("/institutions", name="add_institution_projects")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
@@ -112,7 +112,7 @@ class InstitutionController extends Controller
      *     name="institution",
      *     in="body",
      *     required=true,
-     *     @Model(type=Institution::class, groups={"FullInstitution"})
+     *     @Model(type=InputType\NewInstitutionType::class, groups={"FullInstitution"})
      * )
      *
      * @SWG\Parameter(
@@ -135,25 +135,16 @@ class InstitutionController extends Controller
      * )
      *
      *
-     * @param Request $request
+     * @param GlobalInputType\Country $country
+     * @param InputType\NewInstitutionType $newInstitution
      * @return Response
      */
-    public function createAction(Request $request)
+    public function createAction(GlobalInputType\Country $country, InputType\NewInstitutionType $newInstitution)
     {
-        $requestArray = $request->request->all();
-
-        $requestRequirements = new OptionsResolver();
-        $requestRequirements->setRequired('institution');
-        $requestRequirements->setRequired('__country');
-        $requestRequirements->setAllowedTypes('institution', 'array');
-        $requestRequirements->setAllowedTypes('__country', 'string');
-
-        $requestArray = $requestRequirements->resolve($requestArray);
-
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get('beneficiary.institution_service');
         try {
-            $institution = $institutionService->create($requestArray['__country'], $requestArray['institution']);
+            $institution = $institutionService->create($country, $newInstitution);
             $this->getDoctrine()->getManager()->persist($institution);
             $this->getDoctrine()->getManager()->flush();
         } catch (ValidationException $exception) {

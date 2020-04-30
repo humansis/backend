@@ -5,6 +5,7 @@ namespace CommonBundle\Utils;
 
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Form\HouseholdConstraints;
+use BeneficiaryBundle\InputType\LocationType;
 use BeneficiaryBundle\Utils\HouseholdService;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
@@ -12,6 +13,7 @@ use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use BeneficiaryBundle\Entity\Camp;
+use CommonBundle\InputType\Country;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
@@ -46,6 +48,7 @@ class LocationService
      * @param array $locationArray
      * @return Location|null|object
      * @throws ValidationException
+     * @deprecated use getLocationByInputType
      */
     public function getLocation($countryISO3, array $locationArray)
     {
@@ -70,6 +73,45 @@ class LocationService
         }
         if (array_key_exists("adm4", $locationArray) && $locationArray["adm4"]) {
             $adm4 = $this->em->getRepository(Adm4::class)->find($locationArray['adm4']);
+        }
+
+        if ($adm4 instanceof Adm4) {
+            return $adm4->getLocation();
+        }
+        if ($adm3 instanceof Adm3) {
+            return $adm3->getLocation();
+        }
+        if ($adm2 instanceof Adm2) {
+            return $adm2->getLocation();
+        }
+        if ($adm1 instanceof Adm1) {
+            return $adm1->getLocation();
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Country $country
+     * @param LocationType $locationType
+     * @return Location|null
+     */
+    public function getLocationByInputType(Country $country, LocationType $locationType)
+    {
+        // Define location array
+        $adm1 = $this->em->getRepository(Adm1::class)->find($locationType->getAdm1());
+        $adm2 = null;
+        $adm3 = null;
+        $adm4 = null;
+
+        if ($locationType->getAdm2() !== null) {
+            $adm2 = $this->em->getRepository(Adm2::class)->find($locationType->getAdm2());
+        }
+        if ($locationType->getAdm3() !== null) {
+            $adm3 = $this->em->getRepository(Adm3::class)->find($locationType->getAdm3());
+        }
+        if ($locationType->getAdm4() !== null) {
+            $adm4 = $this->em->getRepository(Adm4::class)->find($locationType->getAdm4());
         }
 
         if ($adm4 instanceof Adm4) {

@@ -2,9 +2,9 @@
 
 namespace BeneficiaryBundle\Entity;
 
-use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Institution
@@ -21,6 +21,15 @@ class Institution
     const TYPE_PRODUCTION = 'production';
     const TYPE_COMMERCE = 'commerce';
 
+    const TYPE_ALL = [
+        self::TYPE_SCHOOL,
+        self::TYPE_HEALTH_CENTER,
+        self::TYPE_COMMUNITY_CENTER,
+        self::TYPE_GOVERNMENT,
+        self::TYPE_PRODUCTION,
+        self::TYPE_COMMERCE,
+    ];
+
     /**
      * @var int
      *
@@ -35,6 +44,7 @@ class Institution
      *
      * @ORM\Column(name="type", type="string", length=255)
      * @Groups({"FullBeneficiary", "FullInstitution"})
+     * @Assert\Choice(callback="TYPE_ALL")
      */
     private $type;
 
@@ -166,17 +176,17 @@ class Institution
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getContactFamilyName(): string
+    public function getContactFamilyName(): ?string
     {
         return $this->contactFamilyName;
     }
 
     /**
-     * @param string $contactFamilyName
+     * @param string|null $contactFamilyName
      */
-    public function setContactFamilyName(string $contactFamilyName): void
+    public function setContactFamilyName(?string $contactFamilyName): void
     {
         $this->contactFamilyName = $contactFamilyName;
     }

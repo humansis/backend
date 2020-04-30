@@ -5,7 +5,6 @@ namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\Address;
 use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Entity\InstitutionLocation;
 use BeneficiaryBundle\Form\InstitutionConstraints;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,6 +13,7 @@ use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use CommonBundle\InputType as GlobalInputType;
+use BeneficiaryBundle\InputType;
 
 /**
  * Class InstitutionService
@@ -87,40 +87,32 @@ class InstitutionService
         return [$length, $institutions];
     }
 
-    public function create(string $iso3, array $institutionArray): Institution
+    /**
+     * @param GlobalInputType\Country $country
+     * @param InputType\NewInstitutionType $institutionType
+     * @return Institution
+     */
+    public function create(GlobalInputType\Country $country, InputType\NewInstitutionType $institutionType): Institution
     {
-        $this->requestValidator->validate(
-            "institution",
-            InstitutionConstraints::class,
-            $institutionArray,
-            'any'
-        );
-
         $institution = new Institution();
-        $institution->setType($institutionArray['type']);
-        $institution->setLongitude($institutionArray['longitude'] ?? null);
-        $institution->setLatitude($institutionArray['latitude'] ?? null);
-        $institution->setType($institutionArray['type'] ?? null);
-        $institution->setIdNumber($institutionArray['id_number'] ?? null);
-        $institution->setIdType($institutionArray['id_type'] ?? null);
-        $institution->setContactName($institutionArray['contact_name'] ?? null);
-        $institution->setPhonePrefix($institutionArray['phone_prefix'] ?? null);
-        $institution->setPhoneNumber($institutionArray['phone_number'] ?? null);
+        $institution->setType($institutionType->getType());
+        $institution->setLongitude($institutionType->getLongitude());
+        $institution->setLatitude($institutionType->getLatitude());
+        $institution->setIdNumber($institutionType->getIdNumber());
+        $institution->setIdType($institutionType->getIdType());
+        $institution->setContactName($institutionType->getContactName());
+        $institution->setContactFamilyName($institutionType->getContactFamilyName());
+        $institution->setPhonePrefix($institutionType->getPhonePrefix());
+        $institution->setPhoneNumber($institutionType->getPhoneNumber());
 
-        if (isset($institutionArray['address'])) {
-            $this->requestValidator->validate(
-                "address",
-                InstitutionConstraints::class,
-                $institutionArray['address'],
-                'any'
-            );
-
-            $location = $this->locationService->getLocation($iso3, $institutionArray['address']["location"]);
+        if ($institutionType->getAddress() !== null) {
+            $addressType = $institutionType->getAddress();
+            $location = $this->locationService->getLocationByInputType($country, $addressType->getLocation());
 
             $institution->setAddress(Address::create(
-                $institutionArray['address']['street'],
-                $institutionArray['address']['number'],
-                $institutionArray['address']['postcode'],
+                $addressType->getStreet(),
+                $addressType->getNumber(),
+                $addressType->getPostcode(),
                 $location
                 ));
         }
