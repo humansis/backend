@@ -4,30 +4,14 @@
 namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Camp;
-use BeneficiaryBundle\Entity\CampAddress;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\InstitutionLocation;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\InstitutionConstraints;
-use CommonBundle\Entity\Location;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
-use PhpOffice\PhpSpreadsheet\Reader\Csv;
-use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Component\Cache\Simple\FilesystemCache;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use CommonBundle\InputType as GlobalInputType;
 

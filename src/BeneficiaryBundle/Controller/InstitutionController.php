@@ -4,7 +4,6 @@ namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\InstitutionService;
-use BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper;
 use CommonBundle\Response\CommonBinaryFileResponse;
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
@@ -21,7 +20,6 @@ use CommonBundle\InputType as GlobalInputType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
