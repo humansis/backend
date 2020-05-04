@@ -31,15 +31,15 @@ class RequestConverter implements ParamConverterInterface
     {
         $errors = [];
         if ($configuration->getClass() === Country::class) {
-            if (!$request->request->has('__country')) {
-                throw new \InvalidArgumentException("Missing __country in request body.");
+            if (!$request->request->has(Country::REQUEST_KEY)) {
+                throw new \InvalidArgumentException("Missing ".Country::REQUEST_KEY." in request body.");
             }
-            $country = new Country($request->request->get('__country'));
+            $country = new Country($request->request->get(Country::REQUEST_KEY));
             $errors = $this->validator->validate($country);
             $request->attributes->set($configuration->getName(), $country);
         } else {
             $requestData = $request->request->all();
-            unset($requestData['__country']);
+            unset($requestData[Country::REQUEST_KEY]);
 
             $inputType = self::normalizeInputType($requestData, $configuration->getClass());
             $errors = $this->validator->validate($inputType);
