@@ -134,18 +134,18 @@ class Voucher implements ExportableInterface
         return $this->redeemedAt;
     }
 
-    public function distribute(User $user, DateTime $when) : void
+    public function distribute() : void
     {
         $this->status = self::STATE_DISTRIBUTED;
     }
 
-    public function use(User $user, DateTime $when) : void
+    public function use(DateTime $when) : void
     {
         $this->status = self::STATE_USED;
         $this->usedAt = $when;
     }
 
-    public function redeem(User $user, DateTime $when) : void
+    public function redeem(DateTime $when) : void
     {
         $this->status = self::STATE_REDEEMED;
         $this->redeemedAt = $when;

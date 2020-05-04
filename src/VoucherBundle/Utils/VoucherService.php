@@ -102,12 +102,11 @@ class VoucherService
 
     /**
      * @param array $voucherData
-     * @param User $scannedBy
      * @return Voucher
      * @throws \Exception
      * @deprecated Defective/incomplete processing of voucher scan
      */
-    public function scannedDeprecated(array $voucherData, User $scannedBy)
+    public function scannedDeprecated(array $voucherData)
     {
         try {
             $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
@@ -116,7 +115,7 @@ class VoucherService
                 return $voucher;
             }
             $voucher->setVendor($vendor);
-            $voucher->use($scannedBy, new DateTime($voucherData['used_at'])); // TODO : check format
+            $voucher->use(new DateTime($voucherData['used_at'])); // TODO : check format
 
             foreach ($voucherData['productIds'] as $productId) {
                 $product = $this->em->getRepository(Product::class)->find($productId);
@@ -151,12 +150,12 @@ class VoucherService
         return $voucher;
     }
 
-    public function redeem(Voucher $voucher, User $scannedBy): void
+    public function redeem(Voucher $voucher): void
     {
         if ($voucher->getStatus() !== Voucher::STATE_USED) {
             throw new \InvalidArgumentException("Reddemed voucher must be used.");
         }
-        $voucher->redeem($scannedBy, new DateTime());
+        $voucher->redeem(new DateTime());
         $this->em->persist($voucher);
         $this->em->flush();
     }

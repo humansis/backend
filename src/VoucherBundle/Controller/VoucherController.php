@@ -248,7 +248,7 @@ class VoucherController extends Controller
 
         foreach ($vouchersData as $voucherData) {
             try {
-                $newVoucher = $this->get('voucher.voucher_service')->scannedDeprecated($voucherData, $this->getUser());
+                $newVoucher = $this->get('voucher.voucher_service')->scannedDeprecated($voucherData);
                 $newVouchers[] = $newVoucher;
             } catch (\Exception $exception) {
                 return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
@@ -341,7 +341,7 @@ class VoucherController extends Controller
             return new Response("There is no voucher with id '{$voucherData['id']}'", Response::HTTP_BAD_REQUEST);
         }
         try {
-            $this->get('voucher.voucher_service')->redeem($voucher, $this->getUser());
+            $this->get('voucher.voucher_service')->redeem($voucher);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

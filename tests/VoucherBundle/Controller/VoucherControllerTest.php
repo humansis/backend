@@ -107,10 +107,9 @@ class VoucherControllerTest extends BMSServiceTestCase
     public function testRedeemVoucher() : void
     {
         $booklet = $this->em->getRepository(Booklet::class)->findOneBy([]);
-        $user = $this->em->getRepository(User::class)->findOneBy([]);
         $voucher = new Voucher(uniqid(), 1000, $booklet);
-        $voucher->distribute($user, new \DateTime());
-        $voucher->use($user, new \DateTime());
+        $voucher->distribute();
+        $voucher->use(new \DateTime());
         $this->em->persist($voucher);
         $this->em->flush();
 
