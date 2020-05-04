@@ -104,7 +104,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\BeneficiaryFixtures:
+    CommonBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures:
         arguments:
             - "@kernel"
             - "@beneficiary.household_service"
