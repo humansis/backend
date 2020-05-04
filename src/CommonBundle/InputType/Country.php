@@ -5,6 +5,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class Country implements InputTypeInterface
 {
+    const HEADER_KEY = 'country';
+    const REQUEST_KEY = '__country';
+
     /**
      * @var string
      * @Assert\NotBlank()

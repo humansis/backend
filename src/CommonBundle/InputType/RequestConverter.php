@@ -41,8 +41,7 @@ class RequestConverter implements ParamConverterInterface
             $requestData = $request->request->all();
             unset($requestData['__country']);
 
-            $serializer = new Serializer([new ObjectNormalizer(null, null, null, new ReflectionExtractor())]);
-            $inputType = $serializer->denormalize($requestData, $configuration->getClass());
+            $inputType = self::normalizeInputType($requestData, $configuration->getClass());
             $errors = $this->validator->validate($inputType);
             $request->attributes->set($configuration->getName(), $inputType);
         }
@@ -54,6 +53,12 @@ class RequestConverter implements ParamConverterInterface
             }
             throw new BadRequestDataException("Bad request body: ".implode(' | ', $messages));
         }
+    }
+
+    public static function normalizeInputType($data, $class): object
+    {
+        $serializer = new Serializer([new ObjectNormalizer(null, null, null, new ReflectionExtractor())]);
+        return $serializer->denormalize($data, $class);
     }
 
     public function supports(ParamConverter $configuration)

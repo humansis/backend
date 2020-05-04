@@ -111,6 +111,13 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\Beneficiaries\InstitutionFixture:
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@beneficiary.institution_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\DistributionFixtures:
         arguments:
             - "@kernel"
