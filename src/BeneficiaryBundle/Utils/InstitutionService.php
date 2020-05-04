@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\Address;
 use BeneficiaryBundle\Entity\Institution;
+use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Form\InstitutionConstraints;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -98,12 +99,16 @@ class InstitutionService
         $institution->setType($institutionType->getType());
         $institution->setLongitude($institutionType->getLongitude());
         $institution->setLatitude($institutionType->getLatitude());
-        $institution->setIdNumber($institutionType->getIdNumber());
-        $institution->setIdType($institutionType->getIdType());
         $institution->setContactName($institutionType->getContactName());
         $institution->setContactFamilyName($institutionType->getContactFamilyName());
         $institution->setPhonePrefix($institutionType->getPhonePrefix());
         $institution->setPhoneNumber($institutionType->getPhoneNumber());
+
+        if ($institutionType->getIdType() || $institutionType->getIdNumber()) {
+            $institution->setNationalId(new NationalId());
+            $institution->getNationalId()->setIdNumber($institutionType->getIdNumber());
+            $institution->getNationalId()->setIdType($institutionType->getIdType());
+        }
 
         if ($institutionType->getAddress() !== null) {
             $addressType = $institutionType->getAddress();
@@ -189,11 +194,14 @@ class InstitutionService
         if (null !== $newValue = $institutionType->getType()) {
             $institution->setType($newValue);
         }
-        if (null !== $newValue = $institutionType->getIdType()) {
-            $institution->setIdNumber($newValue);
-        }
-        if (null !== $newValue = $institutionType->getIdNumber()) {
-            $institution->setIdNumber($newValue);
+        if (null !== $institutionType->getIdType()
+            || null !== $institutionType->getIdNumber())
+        {
+            if ($institution->getNationalId() == null) {
+                $institution->setNationalId(new NationalId());
+            }
+            $institution->getNationalId()->setIdType($institutionType->getIdType());
+            $institution->getNationalId()->setIdNumber($institutionType->getIdNumber());
         }
         if (null !== $newValue = $institutionType->getContactName()) {
             $institution->setContactName($newValue);
