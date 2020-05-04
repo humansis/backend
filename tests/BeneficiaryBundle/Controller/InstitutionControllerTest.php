@@ -225,9 +225,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $institution = $this->em->getRepository(Institution::class)->findOneBy([]);
 
         $changes = [
-            'institution' => [
-                'type' => Institution::TYPE_COMMERCE,
-            ],
+            'type' => Institution::TYPE_COMMERCE,
         ];
 
         $crawler = $this->request('POST', '/api/wsse/institutions/' . $institution->getId(), $changes);
@@ -235,7 +233,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->assertArrayHasKey('type', $institutionsArray,"Part of answer missing: type");
-        $this->assertEquals($institutionsArray['type'], $changes['institution']['type'], "Type wasn't changed");
+        $this->assertEquals($institutionsArray['type'], $changes['type'], "Type wasn't changed");
     }
 
     /**
@@ -252,12 +250,10 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $institution = $this->em->getRepository(Institution::class)->findOneBy([]);
 
         $changes = [
-            'institution' => [
-                'address' => [
-                    'street' => 'changed street',
-                    'number' => '123456789',
-                    'postcode' => '987654321',
-                ],
+            'address' => [
+                'street' => 'changed street',
+                'number' => '123456789',
+                'postcode' => '987654321',
             ],
         ];
 
@@ -266,8 +262,8 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->assertArrayHasKey('address', $institutionsArray,"Part of answer missing: address");
-        $this->assertEquals($institutionsArray['address']['street'], $changes['institution']['address']['street'], "Address[street] wasn't changed");
-        $this->assertEquals($institutionsArray['address']['number'], $changes['institution']['address']['number'], "Address[number] wasn't changed");
-        $this->assertEquals($institutionsArray['address']['postcode'], $changes['institution']['address']['postcode'], "Address[postcode] wasn't changed");
+        $this->assertEquals($institutionsArray['address']['street'], $changes['address']['street'], "Address[street] wasn't changed");
+        $this->assertEquals($institutionsArray['address']['number'], $changes['address']['number'], "Address[number] wasn't changed");
+        $this->assertEquals($institutionsArray['address']['postcode'], $changes['address']['postcode'], "Address[postcode] wasn't changed");
     }
 }

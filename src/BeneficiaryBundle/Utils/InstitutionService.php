@@ -181,7 +181,6 @@ class InstitutionService
      * @param Institution $institution
      * @param InputType\UpdateInstitutionType $institutionType
      * @return Institution
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
     public function update(GlobalInputType\Country $iso3, Institution $institution, InputType\UpdateInstitutionType $institutionType): Institution
     {
@@ -217,7 +216,7 @@ class InstitutionService
         }
 
         /** @var InputType\BeneficiaryAddressType $address */
-        if ($address = $institutionType->getAddress() !== null) {
+        if (null !== $address = $institutionType->getAddress()) {
             $location = null;
             if ($address->getLocation() !== null) {
                 $location = $this->locationService->getLocationByInputType($iso3, $address->getLocation());

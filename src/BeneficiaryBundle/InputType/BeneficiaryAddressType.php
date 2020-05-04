@@ -22,7 +22,7 @@ class BeneficiaryAddressType implements InputTypeInterface
      */
     private $postcode;
     /**
-     * @var LocationType
+     * @var LocationType|null
      * @Assert\Valid()
      */
     private $location;
@@ -76,17 +76,17 @@ class BeneficiaryAddressType implements InputTypeInterface
     }
 
     /**
-     * @return LocationType
+     * @return LocationType|null
      */
-    public function getLocation(): LocationType
+    public function getLocation(): ?LocationType
     {
         return $this->location;
     }
 
     /**
-     * @param LocationType $location
+     * @param LocationType|null $location
      */
-    public function setLocation(LocationType $location): void
+    public function setLocation(?LocationType $location): void
     {
         $this->location = $location;
     }

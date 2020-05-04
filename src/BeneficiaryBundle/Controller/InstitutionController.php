@@ -197,7 +197,7 @@ class InstitutionController extends Controller
      *
      *
      * @param GlobalInputType\Country $country
-     * @param InputType\NewInstitutionType $institutionType
+     * @param InputType\UpdateInstitutionType $institutionType
      * @param Institution $institution
      * @return Response
      */

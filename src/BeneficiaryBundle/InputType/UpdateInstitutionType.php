@@ -30,6 +30,7 @@ class UpdateInstitutionType implements InputTypeInterface
     /**
      * @var string|null
      * @Assert\Length(max="255")
+     * @Assert\Choice(choices=BeneficiaryBundle\Entity\NationalId::TYPE_ALL)
      */
     private $id_type;
     /**
