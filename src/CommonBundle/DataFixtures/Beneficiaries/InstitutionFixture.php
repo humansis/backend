@@ -19,6 +19,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
     const COUNTRIES = ['KHM', 'SYR', 'UKR'];
     const INSTITUTIONS = [
         [
+            'name' => 'Local mayor office',
             'type' => Institution::TYPE_GOVERNMENT,
             'longitude' => '20,254871',
             'latitude' => '45,47854425',
@@ -42,6 +43,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             'contact_family_name' => 'Qousad',
          ],
         [
+            'name' => 'Food stores inc.',
             'type' => Institution::TYPE_COMMERCE,
             'longitude' => '120,254871',
             'latitude' => '145,47854425',
@@ -65,6 +67,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             'contact_family_name' => 'Roubin',
         ],
         [
+            'name' => 'Best CISCO school LTD.',
             'type' => Institution::TYPE_SCHOOL,
             'longitude' => '10,254871',
             'latitude' => '15,47854425',
