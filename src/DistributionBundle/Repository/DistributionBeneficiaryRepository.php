@@ -62,14 +62,16 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getSingleScalarResult();
     }
 
+    /**
+     * @param DistributionData $distributionData
+     * @return int
+     */
     public function countActive(DistributionData $distributionData)
     {
-        $qb = $this->createQueryBuilder("db");
-        $q = $qb->select("COUNT(DISTINCT b)")
-            ->leftJoin("db.beneficiary", "b");
-        $q->where("db.removed = false");
-        $q->where("db.distributionData = :data");
-        $q->setParameter('data', $distributionData);
-        return $q->getQuery()->getSingleScalarResult();
+        $result = $this->count([
+            'distributionData' => $distributionData,
+            'removed' => false,
+        ]);
+        return (int) $result;
     }
 }

@@ -596,9 +596,21 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
+        $distributionBNFsRepo = $this->getDoctrine()->getRepository(DistributionBeneficiary::class);
+        $data = [];
+        foreach ($filtered as $distributionData) {
+            $distributionArray = $this->get('jms_serializer')
+                ->toArray(
+                    $distributionData,
+                    SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
+                );
+            $distributionArray['beneficiaries_count'] = $distributionBNFsRepo->countActive($distributionData);
+            $data[] = $distributionArray;
+        }
+
         $json = $this->get('jms_serializer')
             ->serialize(
-                $filtered,
+                $data,
                 'json',
                 SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
             );

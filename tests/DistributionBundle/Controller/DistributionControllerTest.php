@@ -457,6 +457,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('type', $distributions[0]);
         $this->assertArrayHasKey('commodities', $distributions[0]);
         $this->assertArrayHasKey('distribution_beneficiaries', $distributions[0]);
+        $this->assertArrayHasKey('beneficiaries_count', $distributions[0]);
     }
 
     /**

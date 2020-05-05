@@ -492,13 +492,14 @@ class DistributionService
     }
 
     /**
-     * @param $distributions
-     * @return string
+     * @param DistributionData[] $distributions
+     * @return DistributionData[]
      */
     public function filterDistributions($distributions)
     {
         $distributionArray = $distributions->getValues();
         $filteredArray = array();
+        /** @var DistributionData $key */
         foreach ($distributionArray as $key) {
             if (!$key->getArchived()) {
                 $filteredArray[] = $key;
