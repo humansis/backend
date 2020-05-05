@@ -10,8 +10,13 @@ class NewInstitutionType extends UpdateInstitutionType implements InputTypeInter
      * @var string
      * @Assert\Length(max="255")
      * @Assert\NotBlank()
+     */
+    protected $name;
+    /**
+     * @var string
+     * @Assert\Length(max="255")
+     * @Assert\NotBlank()
      * @Assert\Choice(choices=BeneficiaryBundle\Entity\Institution::TYPE_ALL)
      */
     protected $type;
-
 }

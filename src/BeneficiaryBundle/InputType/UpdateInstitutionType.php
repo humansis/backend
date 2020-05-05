@@ -7,6 +7,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class UpdateInstitutionType implements InputTypeInterface
 {
     /**
+     * @var string
+     * @Assert\Length(max="255")
+     */
+    protected $name;
+    /**
      * @var string|null
      * @Assert\Length(max="255")
      * @Assert\Choice(choices=BeneficiaryBundle\Entity\Institution::TYPE_ALL)
@@ -58,6 +63,22 @@ class UpdateInstitutionType implements InputTypeInterface
      * @Assert\Length(max="255")
      */
     private $contact_family_name;
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string|null $name
+     */
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
+    }
 
     /**
      * @return string|null

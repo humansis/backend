@@ -48,7 +48,7 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_number", type="string", length=255)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullInstitution"})
      */
     private $idNumber;
 
@@ -56,7 +56,7 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_type", type="string", length=45)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "FullInstitution"})
      * @Assert\Choice(choices=BeneficiaryBundle\Entity\NationalId::TYPE_ALL)
      */
     private $idType;

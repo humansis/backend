@@ -42,6 +42,14 @@ class Institution
     /**
      * @var string
      *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @Groups({"FullBeneficiary", "FullInstitution"})
+     */
+    private $name;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="type", type="string", length=255)
      * @Groups({"FullBeneficiary", "FullInstitution"})
      * @Assert\Choice(callback="TYPE_ALL")
@@ -128,17 +136,29 @@ class Institution
     }
 
     /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
      * Set type.
      *
      * @param string $type
-     *
-     * @return Institution
      */
-    public function setType(string $type)
+    public function setType(string $type): void
     {
         $this->type = $type;
-
-        return $this;
     }
 
     /**

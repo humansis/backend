@@ -96,6 +96,7 @@ class InstitutionService
     public function create(GlobalInputType\Country $country, InputType\NewInstitutionType $institutionType): Institution
     {
         $institution = new Institution();
+        $institution->setName($institutionType->getName());
         $institution->setType($institutionType->getType());
         $institution->setLongitude($institutionType->getLongitude());
         $institution->setLatitude($institutionType->getLatitude());
@@ -184,6 +185,9 @@ class InstitutionService
      */
     public function update(GlobalInputType\Country $iso3, Institution $institution, InputType\UpdateInstitutionType $institutionType): Institution
     {
+        if (null !== $newValue = $institutionType->getName()) {
+            $institution->setName($newValue);
+        }
         if (null !== $newValue = $institutionType->getLongitude()) {
             $institution->setLongitude($newValue);
         }
