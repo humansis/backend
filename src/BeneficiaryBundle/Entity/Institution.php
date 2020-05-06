@@ -76,7 +76,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="phone_number", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $phoneNumber;
 
@@ -84,7 +84,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="phone_prefix", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $phonePrefix;
 
@@ -92,7 +92,7 @@ class Institution
      * @var NationalId
      *
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\NationalId", cascade={"persist", "remove"})
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $nationalId;
 

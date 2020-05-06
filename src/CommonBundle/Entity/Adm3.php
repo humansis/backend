@@ -21,7 +21,7 @@ class Adm3
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullVendor"})
+     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "FullVendor"})
      */
     private $id;
 
@@ -29,7 +29,7 @@ class Adm3
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullVendor"})
+     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "FullVendor"})
      */
     private $name;
 
