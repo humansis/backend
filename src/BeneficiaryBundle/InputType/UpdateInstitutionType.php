@@ -33,16 +33,10 @@ class UpdateInstitutionType implements InputTypeInterface
      */
     private $longitude;
     /**
-     * @var string|null
-     * @Assert\Length(max="255")
-     * @Assert\Choice(choices=BeneficiaryBundle\Entity\NationalId::TYPE_ALL)
+     * @var NationalIdType|null
+     * @Assert\Valid()
      */
-    private $id_type;
-    /**
-     * @var string|null
-     * @Assert\Length(max="255")
-     */
-    private $id_number;
+    private $national_id;
     /**
      * @var string|null
      * @Assert\Length(max="255")
@@ -145,35 +139,19 @@ class UpdateInstitutionType implements InputTypeInterface
     }
 
     /**
-     * @return string|null
+     * @return NationalIdType|null
      */
-    public function getIdType(): ?string
+    public function getNationalId(): ?NationalIdType
     {
-        return $this->id_type;
+        return $this->national_id;
     }
 
     /**
-     * @param string|null $id_type
+     * @param NationalIdType|null $national_id
      */
-    public function setIdType(?string $id_type): void
+    public function setNational_id(?NationalIdType $national_id): void
     {
-        $this->id_type = $id_type;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getIdNumber(): ?string
-    {
-        return $this->id_number;
-    }
-
-    /**
-     * @param string|null $id_number
-     */
-    public function setIdNumber(?string $id_number): void
-    {
-        $this->id_number = $id_number;
+        $this->national_id = $national_id;
     }
 
     /**
