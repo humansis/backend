@@ -36,6 +36,7 @@ class Institution
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullBeneficiary", "FullInstitution"})
      */
     private $id;
 
