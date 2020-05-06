@@ -302,7 +302,6 @@ class DistributionController extends Controller
      */
     public function getAllAction(Request $request)
     {
-        $distributionBNFsRepo = $this->getDoctrine()->getRepository(DistributionBeneficiary::class);
         $country = $request->request->get('__country');
         try {
             $distributions = $this->get('distribution.distribution_service')->getActiveDistributions($country);
@@ -310,15 +309,10 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
+        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
         $data = [];
         foreach ($distributions as $distributionData) {
-            $distributionArray = $this->get('jms_serializer')
-                ->toArray(
-                    $distributionData,
-                    SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
-                );
-            $distributionArray['beneficiaries_count'] = $distributionBNFsRepo->countActive($distributionData);
-            $data[] = $distributionArray;
+            $data[] = $distributionDataFactory->build($distributionData);
         }
 
         $json = $this->get('jms_serializer')
@@ -596,16 +590,10 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $distributionBNFsRepo = $this->getDoctrine()->getRepository(DistributionBeneficiary::class);
+        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
         $data = [];
         foreach ($filtered as $distributionData) {
-            $distributionArray = $this->get('jms_serializer')
-                ->toArray(
-                    $distributionData,
-                    SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
-                );
-            $distributionArray['beneficiaries_count'] = $distributionBNFsRepo->countActive($distributionData);
-            $data[] = $distributionArray;
+            $data[] = $distributionDataFactory->build($distributionData);
         }
 
         $json = $this->get('jms_serializer')
