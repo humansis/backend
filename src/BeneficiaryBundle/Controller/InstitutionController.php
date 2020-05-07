@@ -93,7 +93,7 @@ class InstitutionController extends Controller
         }
         $json = $this->get('jms_serializer')
             ->serialize(
-                $institutions,
+                $this->get('beneficiary.institution_output_factory')->buildList($institutions),
                 'json',
                 SerializationContext::create()->setGroups("FullInstitution")->setSerializeNull(true)
             );

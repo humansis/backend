@@ -19,12 +19,12 @@ class DataTableType implements InputTypeInterface
     public $pageSize;
     /**
      * @var DataTableFilterType[]
-     * @Assert\Valid(traverse=true)
+     * @ Assert\Valid(traverse=true)
      */
     public $filter;
     /**
      * @var DataTableSorterType
-     * @Assert\Valid()
+     * @ Assert\Valid()
      */
     private $sort;
 
@@ -49,7 +49,7 @@ class DataTableType implements InputTypeInterface
     /**
      * @return DataTableSorterType
      */
-    public function getSort(): DataTableSorterType
+    public function getSort(): ?DataTableSorterType
     {
         return $this->sort;
     }
@@ -57,7 +57,7 @@ class DataTableType implements InputTypeInterface
     /**
      * @param DataTableSorterType $sort
      */
-    public function setSort(DataTableSorterType $sort): void
+    public function setSort(?DataTableSorterType $sort): void
     {
         $this->sort = $sort;
     }

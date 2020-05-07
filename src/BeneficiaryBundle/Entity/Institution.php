@@ -237,17 +237,17 @@ class Institution
     }
 
     /**
-     * @return NationalId
+     * @return NationalId|null
      */
-    public function getNationalId(): NationalId
+    public function getNationalId(): ?NationalId
     {
         return $this->nationalId;
     }
 
     /**
-     * @param NationalId $nationalId
+     * @param NationalId|null $nationalId
      */
-    public function setNationalId(NationalId $nationalId): void
+    public function setNationalId(?NationalId $nationalId): void
     {
         $this->nationalId = $nationalId;
     }
