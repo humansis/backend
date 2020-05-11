@@ -55,7 +55,7 @@ class InstitutionController extends Controller
     {
         $json = $this->get('jms_serializer')
             ->serialize(
-                $institution,
+                $this->get('beneficiary.institution_output_factory')->build($institution),
                 'json',
                 SerializationContext::create()->setGroups("FullInstitution")->setSerializeNull(true)
             );
@@ -155,7 +155,7 @@ class InstitutionController extends Controller
 
         $json = $this->get('jms_serializer')
             ->serialize(
-                $institution,
+                $this->get('beneficiary.institution_output_factory')->build($institution),
                 'json',
                 SerializationContext::create()->setGroups(["FullBeneficiary", "FullInstitution"])->setSerializeNull(true)
             );
@@ -217,7 +217,7 @@ class InstitutionController extends Controller
 
         $json = $this->get('jms_serializer')
             ->serialize(
-                $institution,
+                $this->get('beneficiary.institution_output_factory')->build($institution),
                 'json',
                 SerializationContext::create()->setGroups(["FullBeneficiary", "FullInstitution"])->setSerializeNull(true)
             );
@@ -245,7 +245,7 @@ class InstitutionController extends Controller
         $institution = $institutionService->remove($institution);
         $json = $this->get('jms_serializer')
             ->serialize(
-                $institution,
+                $this->get('beneficiary.institution_output_factory')->build($institution),
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups(["FullInstitution"])
             );
