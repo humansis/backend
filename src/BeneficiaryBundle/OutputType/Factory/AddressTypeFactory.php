@@ -69,7 +69,7 @@ class AddressTypeFactory
 
     public function build(Address $address): array
     {
-        $array = $this->serializer->toArray($address, SerializationContext::create()->setGroups("Address")->setSerializeNull(true));
+        $array = $this->serializer->toArray($address, SerializationContext::create()->setGroups("FullBeneficiary")->setSerializeNull(true));
         if ($address->getLocation() !== null) {
             $array['location'] = $this->expandLocation($address->getLocation());
         }
