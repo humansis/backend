@@ -53,7 +53,7 @@ class Institution
      *
      * @ORM\Column(name="type", type="string", length=255)
      * @Groups({"FullBeneficiary", "FullInstitution"})
-     * @Assert\Choice(callback="TYPE_ALL")
+     * @Assert\Choice(choices=BeneficiaryBundle\Entity\Institution::TYPE_ALL)
      */
     private $type;
 
