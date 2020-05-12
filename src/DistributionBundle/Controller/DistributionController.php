@@ -347,16 +347,10 @@ class DistributionController extends Controller
      */
     public function getOneAction(DistributionData $distributionData)
     {
-        $distributionBNFsRepo = $this->getDoctrine()->getRepository(DistributionBeneficiary::class);
-        $data = $this->get('jms_serializer')
-            ->toArray(
-                $distributionData,
-                SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
-            );
-        $data['beneficiaries_count'] = $distributionBNFsRepo->countActive($distributionData);
+        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
         $json = $this->get('jms_serializer')
             ->serialize(
-                $data,
+                $distributionDataFactory->build($distributionData),
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
             );

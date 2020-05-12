@@ -288,7 +288,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('validated', $all[0]);
         $this->assertArrayHasKey('type', $all[0]);
         $this->assertArrayHasKey('commodities', $all[0]);
-        $this->assertArrayHasKey('distribution_beneficiaries', $all[0]);
+//        $this->assertArrayHasKey('distribution_beneficiaries', $all[0]);
     }
 
 
@@ -322,7 +322,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('validated', $one);
         $this->assertArrayHasKey('type', $one);
         $this->assertArrayHasKey('commodities', $one);
-        $this->assertArrayHasKey('distribution_beneficiaries', $one);
+//        $this->assertArrayHasKey('distribution_beneficiaries', $one);
     }
 
 
@@ -456,7 +456,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('validated', $distributions[0]);
         $this->assertArrayHasKey('type', $distributions[0]);
         $this->assertArrayHasKey('commodities', $distributions[0]);
-        $this->assertArrayHasKey('distribution_beneficiaries', $distributions[0]);
+//        $this->assertArrayHasKey('distribution_beneficiaries', $distributions[0]);
         $this->assertArrayHasKey('beneficiaries_count', $distributions[0]);
     }
 

@@ -33,6 +33,7 @@ class DistributionDataFactory
                 SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
             );
         $distributionArray['beneficiaries_count'] = $this->distributionBNFRepo->countActive($distributionData);
+        unset($distributionArray['distribution_beneficiaries']);
         return $distributionArray;
     }
 }
