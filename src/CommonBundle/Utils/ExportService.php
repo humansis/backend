@@ -71,7 +71,7 @@ class ExportService
             $filename = $name.'.csv';
         } elseif ($type == self::FORMAT_XLS) {
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-            $filename = $name.'.xls';
+            $filename = $name.'.xlsx';
         } elseif ($type == self::FORMAT_ODS) {
             $writer = IOFactory::createWriter($spreadsheet, 'Ods');
             $filename = $name.'.ods';
