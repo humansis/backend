@@ -23,6 +23,12 @@ security:
         tester_login_app:
             pattern:    ^/api/wsse/login
             security:   false
+        tester_vendor_salt:
+            pattern:    ^/api/wsse/vendor-app/v1/salt
+            security:   false
+        tester_vendor_login_app:
+            pattern:    ^/api/wsse/vendor-app/v1/login
+            security:   false
 
         #WSSE
         wsse_secured:
