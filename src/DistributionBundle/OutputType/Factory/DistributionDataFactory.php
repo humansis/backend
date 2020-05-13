@@ -25,15 +25,14 @@ class DistributionDataFactory
     }
 
 
-    public function build(DistributionData $distributionData): array
+    public function build(DistributionData $distributionData, array $distributionGroups): array
     {
         $distributionArray = $this->serializer
             ->toArray(
                 $distributionData,
-                SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
+                SerializationContext::create()->setSerializeNull(true)->setGroups($distributionGroups)
             );
         $distributionArray['beneficiaries_count'] = $this->distributionBNFRepo->countActive($distributionData);
-        unset($distributionArray['distribution_beneficiaries']);
         return $distributionArray;
     }
 }
