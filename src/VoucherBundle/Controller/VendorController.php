@@ -148,6 +148,37 @@ class VendorController extends Controller
         return new Response($json);
     }
 
+    /**
+     * Get single vendor.
+     *
+     * @Rest\Get("/vendor-app/v1/vendors/{id}")
+     * @Security("is_granted('ROLE_USER')")
+     *
+     * @SWG\Tag(name="Single Vendor")
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Vendor delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Vendor::class, groups={"FullVendor"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Vendor $vendor
+     *
+     * @return Response
+     */
+    public function getSingleActionVendor(Vendor $vendor)
+    {
+        return $this->getSingleAction($vendor);
+    }
 
     /**
      * Edit a vendor {id} with data in the body
