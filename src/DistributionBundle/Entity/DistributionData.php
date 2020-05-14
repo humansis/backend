@@ -31,7 +31,7 @@ class DistributionData implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullDistribution", "DistributionOverview"})
+     * @Groups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $id;
 
@@ -40,7 +40,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=45)
      *
-     * @Groups({"FullDistribution", "FullBooklet", "DistributionOverview"})
+     * @Groups({"FullDistribution", "SmallDistribution", "FullBooklet", "DistributionOverview"})
      */
     private $name;
 
@@ -50,7 +50,7 @@ class DistributionData implements ExportableInterface
      * @ORM\Column(name="UpdatedOn", type="datetime")
      * @JMS_Type("DateTime<'d-m-Y H:i:s'>")
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $updatedOn;
 
@@ -60,7 +60,7 @@ class DistributionData implements ExportableInterface
      * @ORM\Column(name="date_distribution", type="date")
      * @JMS_Type("DateTime<'d-m-Y'>")
      *
-     * @Groups({"FullDistribution", "DistributionOverview"})
+     * @Groups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $dateDistribution;
 
@@ -69,7 +69,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $location;
 
@@ -78,14 +78,14 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="distributions")
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $project;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\SelectionCriteria", mappedBy="distributionData")
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $selectionCriteria;
 
@@ -94,7 +94,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $archived = 0;
 
@@ -103,7 +103,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(name="validated", type="boolean", options={"default" : 0})
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $validated = 0;
 
@@ -117,13 +117,13 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(type="integer", name="type_distribution")
      *
-     * @Groups({"FullDistribution", "DistributionOverview"})
+     * @Groups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $type;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="distributionData")
-     * @Groups({"FullDistribution", "DistributionOverview"})
+     * @Groups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $commodities;
 
@@ -139,7 +139,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(name="completed", type="boolean", options={"default" : 0})
      *
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $completed = 0;
 

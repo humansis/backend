@@ -19,7 +19,7 @@ class SelectionCriteria
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $id;
 
@@ -34,7 +34,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="table_string", type="string", length=255)
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $tableString;
 
@@ -42,7 +42,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="target", type="string", length=255, nullable=true)
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $target;
 
@@ -50,7 +50,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="field_string", type="string", length=255, nullable=true)
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $fieldString;
 
@@ -58,7 +58,7 @@ class SelectionCriteria
      * @var int
      *
      * @ORM\Column(name="field_id", type="integer", nullable=true)
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $idField;
 
@@ -66,7 +66,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="condition_string", type="string", length=255, nullable=true)
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $conditionString;
 
@@ -74,7 +74,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="value_string", type="string", length=255, nullable=true)
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $valueString;
 
@@ -82,7 +82,7 @@ class SelectionCriteria
      * @var int
      *
      * @ORM\Column(name="weight", type="integer")
-     * @Groups({"FullDistribution"})
+     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $weight;
 
