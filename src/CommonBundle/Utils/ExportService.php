@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ExportService
 {
     const FORMAT_CSV = 'csv';
-    const FORMAT_XLS = 'xls';
+    const FORMAT_XLSX = 'xlsx';
     const FORMAT_ODS = 'ods';
 
     /** @var EntityManagerInterface $em */
@@ -69,7 +69,7 @@ class ExportService
             $writer->setDelimiter(';');
             $writer->setUseBOM(true);
             $filename = $name.'.csv';
-        } elseif ($type == self::FORMAT_XLS) {
+        } elseif ($type == self::FORMAT_XLSX) {
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
             $filename = $name.'.xlsx';
         } elseif ($type == self::FORMAT_ODS) {
@@ -84,7 +84,7 @@ class ExportService
     }
 
     /**
-     * Export data to file (csv, xls, ods)
+     * Export data to file (csv, xlsx, ods)
      * @param  $exportableTable
      * @param  string $name
      * @param  string $type
@@ -187,7 +187,7 @@ class ExportService
 
 
     /**
-     * Export two-dimension array to file (csv, xls, ods)
+     * Export two-dimension array to file (csv, xlsx, ods)
      * @param  array[] $exportTable
      * @param  string $name
      * @param  string $type
