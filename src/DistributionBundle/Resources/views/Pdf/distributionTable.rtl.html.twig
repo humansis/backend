@@ -223,19 +223,30 @@
         </tr>
     </table>
 
+    {% set modalities = [] %}
+    {% set descriptions = [] %}
+    {% for commodity in distribution.commodities %}
+        {% set desc = '' %}
+        {% if commodity.modalityType.name != commodity.modalityType.modality.name %}
+            {% set desc = commodity.modalityType.modality.name %}
+        {% endif %}
+        {% set desc = desc ~ ' ' ~ commodity.modalityType.name ~ ' ' ~ commodity.unit ~ ' ' ~ commodity.value %}
+        {% set descriptions = descriptions|merge([desc]) %}
+        {% set modalities = modalities|merge([commodity.modalityType.name]) %}
+    {% endfor %}
     <div class="main-info">
         <table>
             <tr>
-                <td></td>
+                <td>{{ modalities|join(', ') }} — {{ distribution.name }}</td>
                 <td class="label">:{{ 'Details'|trans }}</td>
             </tr>
             <tr>
                 <td>{{ distribution.project.name }}</td>
-                <td class="label">:{{ 'Project title'|trans }}</td>
+                <td class="label">:{{ 'Project Name'|trans }}</td>
             </tr>
             <tr>
                 <td>{{ distribution.dateDistribution | date("m/d/Y") }}</td>
-                <td class="label">:{{ 'Date of distribution'|trans }}</td>
+                <td class="label">:{{ 'Distribution Date'|trans }}</td>
             </tr>
             <tr>
                 <td>
@@ -250,14 +261,6 @@
             </tr>
             <tr>
                 <td>
-                    {% set descriptions = [] %}
-                    {% for commodity in distribution.commodities %}
-                        {% set desc = commodity.value ~ ' ' ~ commodity.unit ~ ' ' ~ commodity.modalityType.name %}
-                        {% if commodity.modalityType.name != commodity.modalityType.modality.name %}
-                            {% set desc = desc ~ ' ' ~ commodity.modalityType.modality.name %}
-                        {% endif %}
-                        {% set descriptions = descriptions|merge([desc]) %}
-                    {% endfor %}
                     {{ descriptions|join(', ') }}
                 </td>
                 <td class="label">:{{ 'Item Description'|trans }}</td>

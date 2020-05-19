@@ -13,12 +13,12 @@
         <source>Details</source>
         <target>تفاصيل</target>
       </trans-unit>
-      <trans-unit id="qpQgWsG" resname="Project title">
-        <source>Project title</source>
+      <trans-unit id="qpQgWsG" resname="Project Name">
+        <source>Project Name</source>
         <target>عنوان المشروع</target>
       </trans-unit>
-      <trans-unit id="vAxwwF2" resname="Date of distribution">
-        <source>Date of distribution</source>
+      <trans-unit id="vAxwwF2" resname="Distribution Date">
+        <source>Distribution Date</source>
         <target>تاريخ التوزيع</target>
       </trans-unit>
       <trans-unit id="6UY9zPB" resname="Place">
