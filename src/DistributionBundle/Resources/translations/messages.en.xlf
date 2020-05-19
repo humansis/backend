@@ -13,13 +13,13 @@
         <source>Details</source>
         <target>Details</target>
       </trans-unit>
-      <trans-unit id="qpQgWsG" resname="Project title">
-        <source>Project title</source>
-        <target>Project title</target>
+      <trans-unit id="qpQgWsG" resname="Project Name">
+        <source>Project Name</source>
+        <target>Project Name</target>
       </trans-unit>
-      <trans-unit id="vAxwwF2" resname="Date of distribution">
-        <source>Date of distribution</source>
-        <target>Date of distribution</target>
+      <trans-unit id="vAxwwF2" resname="Distribution Date">
+        <source>Distribution Date</source>
+        <target>Distribution Date</target>
       </trans-unit>
       <trans-unit id="6UY9zPB" resname="Place">
         <source>Place</source>
