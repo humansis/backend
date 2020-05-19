@@ -252,10 +252,11 @@
                 <td>
                     {% set descriptions = [] %}
                     {% for commodity in distribution.commodities %}
-                        {% set descriptions = descriptions|merge([commodity.value ~ ' ' ~
-                            commodity.unit ~ ' ' ~
-                            commodity.modalityType.name ~ ' ' ~
-                            commodity.modalityType.modality.name]) %}
+                        {% set desc = commodity.value ~ ' ' ~ commodity.unit ~ ' ' ~ commodity.modalityType.name %}
+                        {% if commodity.modalityType.name != commodity.modalityType.modality.name %}
+                            {% set desc = desc ~ ' ' ~ commodity.modalityType.modality.name %}
+                        {% endif %}
+                        {% set descriptions = descriptions|merge([desc]) %}
                     {% endfor %}
                     {{ descriptions|join(', ') }}
                 </td>
