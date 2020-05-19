@@ -249,7 +249,16 @@
                 <td class="label">:{{ 'Place'|trans }}</td>
             </tr>
             <tr>
-                <td></td>
+                <td>
+                    {% set descriptions = [] %}
+                    {% for commodity in distribution.commodities %}
+                        {% set descriptions = descriptions|merge([commodity.value ~ ' ' ~
+                            commodity.unit ~ ' ' ~
+                            commodity.modalityType.name ~ ' ' ~
+                            commodity.modalityType.modality.name]) %}
+                    {% endfor %}
+                    {{ descriptions|join(', ') }}
+                </td>
                 <td class="label">:{{ 'Item Description'|trans }}</td>
             </tr>
         </table>
