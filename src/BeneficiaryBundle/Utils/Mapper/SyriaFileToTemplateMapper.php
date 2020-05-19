@@ -152,7 +152,7 @@ class SyriaFileToTemplateMapper
             $filename  = $this->defaultExportService->generateFile(
                 $spreadsheet,
                 'syriaToStandard' . (new DateTime())->getTimestamp(),
-                ExportService::FORMAT_XLS
+                ExportService::FORMAT_XLSX
             );
             $writeTime = microtime(true) - $time;
 
