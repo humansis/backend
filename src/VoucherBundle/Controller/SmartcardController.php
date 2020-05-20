@@ -295,12 +295,12 @@ class SmartcardController extends Controller
     /**
      * Purchase goods from smartcard.
      *
-     * @Rest\Post("/offline-app/v1/smartcards/{id}/purchase")
+     * @Rest\Post("/vendor-app/v1/smartcards/{id}/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
      * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
-     * @SWG\Tag(name="Offline App")
+     * @SWG\Tag(name="Vendor App")
      *
      * @SWG\Parameter(
      *     name="id",

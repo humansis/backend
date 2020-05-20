@@ -132,7 +132,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->persist($smartcard);
         $this->em->flush();
 
-        $this->request('POST', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getId().'/purchase', [
+        $this->request('POST', '/api/wsse/vendor-app/v1/smartcards/'.$smartcard->getId().'/purchase', [
             'value' => 300.25,
             'productId' => 1, // @todo replace for fixture
             'createdAt' => '2020-02-02T12:00:00Z',
@@ -156,7 +156,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->persist($smartcard);
         $this->em->flush();
 
-        $this->request('POST', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getId().'/purchase', [
+        $this->request('POST', '/api/wsse/vendor-app/v1/smartcards/'.$smartcard->getId().'/purchase', [
             'value' => 400,
             'productId' => 1, // @todo replace for fixture
             'createdAt' => '2020-02-02T12:00:00Z',
