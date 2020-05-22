@@ -4,17 +4,20 @@
 namespace CommonBundle\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use FOS\UserBundle\Doctrine\UserManager;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use Doctrine\Persistence\ObjectManager;
+use UserBundle\Entity\UserProject;
 
 /**
  * @see VendorFixtures for check vendor username(s) is same
  */
-class UserFixtures extends Fixture
+class UserFixtures extends Fixture implements DependentFixtureInterface
 {
 
     /** @var Kernel $kernel */
@@ -142,6 +145,7 @@ class UserFixtures extends Fixture
         }
 
         $this->makeAccessRights($manager, $instance, $countries);
+        $this->makeProjectConnections($manager, $instance, $countries);
         $manager->persist($instance);
         $manager->flush();
     }
@@ -180,5 +184,41 @@ class UserFixtures extends Fixture
                 $currentAccess->setRights($instance->getRoles()[0]);
             }
         }
+    }
+
+    /**
+     * @param ObjectManager $manager
+     * @param User $user
+     * @param array $countries
+     */
+    private function makeProjectConnections(ObjectManager $manager, User $user, array $countries): void
+    {
+        $countryProjects = $manager->getRepository(Project::class)->findBy([
+            'iso3' => $countries,
+        ]);
+        foreach ($countryProjects as $countryProject) {
+            $userProject = $manager->getRepository(UserProject::class)->findOneBy([
+                'user' => $user,
+                'project' => $countryProject,
+            ]);
+            if ($userProject instanceof UserProject) {
+                echo "User {$user->getUsername()} access to {$countryProject->getName()} project already exists. Ommit creation.\n";
+                continue;
+            }
+
+            $userProject = new UserProject();
+            $userProject->setProject($countryProject);
+            $userProject->setUser($user);
+            $userProject->setRights($user->getRoles()[0]);
+            $manager->persist($userProject);
+        }
+        $manager->flush();
+    }
+
+    public function getDependencies()
+    {
+        return [
+            ProjectFixtures::class,
+        ];
     }
 }
