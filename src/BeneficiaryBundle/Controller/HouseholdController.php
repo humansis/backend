@@ -2,6 +2,8 @@
 
 namespace BeneficiaryBundle\Controller;
 
+use BeneficiaryBundle\Entity\HouseholdActivity;
+use BeneficiaryBundle\Model\Household\HouseholdActivityChangesCollection;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
@@ -550,6 +552,42 @@ class HouseholdController extends Controller
                 SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
             );
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Get("/household/changes/{householdId}")
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Get list of changes in household",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=HouseholdActivityChange::class, groups={"HouseholdChanges"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(response=404, description="Household does not exists")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function householdChanges(Request $request)
+    {
+        /** @var Household|null $household */
+        $household = $this->getDoctrine()->getRepository(Household::class)->find($request->get('householdId'));
+        if (!$household) {
+            throw $this->createNotFoundException('Household does not exists.');
+        }
+
+        $activities = $this->getDoctrine()->getRepository(HouseholdActivity::class)->findByHousehold($household);
+
+        $changes = new HouseholdActivityChangesCollection($activities);
+        $changes = $this->get('serializer')->serialize($changes, 'json', ['groups' => ['HouseholdChanges']]);
+
+        return new Response($changes);
     }
 
 }

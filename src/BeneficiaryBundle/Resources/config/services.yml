@@ -31,7 +31,7 @@ services:
             - "@validator"
             - "@service_container"
         public: true
-        
+
     beneficiary.beneficiary_service:
         class: BeneficiaryBundle\Utils\BeneficiaryService
         arguments:
@@ -105,3 +105,9 @@ services:
         class: BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper
         autowire: true
         public: true
+
+    household.activity_listerer:
+        class: BeneficiaryBundle\Listener\HouseholdActivitySubscriber
+        autowire: true
+        tags:
+            - { name: 'doctrine.event_subscriber', priority: 500 }

@@ -164,7 +164,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="livelihood", type="integer", nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $livelihood;
 
@@ -172,7 +172,7 @@ class Household
      * @var int[]
      *
      * @ORM\Column(name="assets", type="array", nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $assets;
 
@@ -180,7 +180,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="shelter_status", type="integer", nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $shelterStatus;
 
@@ -188,7 +188,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $notes;
 
@@ -196,7 +196,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $latitude;
 
@@ -204,7 +204,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $longitude;
 
@@ -234,6 +234,7 @@ class Household
      * @var boolean
      *
      * @ORM\Column(type="boolean", options={"default" : 0})
+     * @Groups({"Activity"})
      */
     private $archived = 0;
 
@@ -241,7 +242,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $incomeLevel;
 
@@ -249,7 +250,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="foodConsumptionScore", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $foodConsumptionScore;
 
@@ -257,7 +258,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="copingStrategiesIndex", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $copingStrategiesIndex;
 
@@ -271,7 +272,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="debt_level", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $debtLevel;
 
@@ -279,7 +280,7 @@ class Household
      * @var int[]
      *
      * @ORM\Column(name="support_received_types", type="array", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $supportReceivedTypes;
 
@@ -288,7 +289,7 @@ class Household
      *
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
      * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $supportDateReceived;
 
