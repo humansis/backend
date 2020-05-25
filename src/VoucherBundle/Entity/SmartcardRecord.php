@@ -41,7 +41,7 @@ class SmartcardRecord
     /**
      * @var float|null
      *
-     * @ORM\Column(name="quantity", type="decimal", precision=10, scale=2)
+     * @ORM\Column(name="quantity", type="decimal", precision=10, scale=2, nullable=true)
      */
     private $quantity;
 

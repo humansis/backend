@@ -14,7 +14,7 @@ final class Version20200525074106 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE smartcard_record ADD quantity NUMERIC(10, 2) NOT NULL');
+        $this->addSql('ALTER TABLE smartcard_record ADD quantity NUMERIC(10, 2) DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
