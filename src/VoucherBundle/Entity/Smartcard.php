@@ -191,16 +191,16 @@ class Smartcard
     {
         $value = abs($value); // deposit must be always positive
 
-        $this->records->add(new SmartcardRecord($this, null, $value, $createdAt));
+        $this->records->add(new SmartcardRecord($this, null, null, $value, $createdAt));
 
         return $this;
     }
 
-    public function addPurchase(float $value, Product $product, \DateTimeInterface $createdAt): self
+    public function addPurchase(float $value, Product $product, float $quantity, \DateTimeInterface $createdAt): self
     {
         $value = -1 * abs($value); // payment must be always negative
 
-        $this->records->add(new SmartcardRecord($this, $product, $value, $createdAt));
+        $this->records->add(new SmartcardRecord($this, $product, $quantity, $value, $createdAt));
 
         return $this;
     }

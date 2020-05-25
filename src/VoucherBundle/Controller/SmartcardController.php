@@ -295,12 +295,12 @@ class SmartcardController extends Controller
     /**
      * Purchase goods from smartcard.
      *
-     * @Rest\Post("/offline-app/v1/smartcards/{id}/purchase")
+     * @Rest\Post("/vendor-app/v1/smartcards/{id}/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
      * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
-     * @SWG\Tag(name="Offline App")
+     * @SWG\Tag(name="Vendor App")
      *
      * @SWG\Parameter(
      *     name="id",
@@ -320,6 +320,11 @@ class SmartcardController extends Controller
      *             property="productId",
      *             type="integer",
      *             description="ID of purchased product"
+     *         ),
+     *         @SWG\Property(
+     *             property="quantity",
+     *             type="number",
+     *             description="Product quantity"
      *         ),
      *         @SWG\Property(
      *             property="value",
@@ -362,7 +367,12 @@ class SmartcardController extends Controller
             throw $this->createNotFoundException('Product does not exists.');
         }
 
-        $smartcard->addPurchase($value, $product, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
+        $quantity = $request->request->get('quantity');
+        if (!is_numeric($quantity)) {
+            throw new BadRequestHttpException('Quantity is not valid');
+        }
+
+        $smartcard->addPurchase($value, $product, $quantity, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
 
         $this->getDoctrine()->getManager()->persist($smartcard);
         $this->getDoctrine()->getManager()->flush();

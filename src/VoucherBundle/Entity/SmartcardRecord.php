@@ -41,6 +41,13 @@ class SmartcardRecord
     /**
      * @var float|null
      *
+     * @ORM\Column(name="quantity", type="decimal", precision=10, scale=2, nullable=true)
+     */
+    private $quantity;
+
+    /**
+     * @var float|null
+     *
      * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=false)
      */
     private $value;
@@ -56,17 +63,24 @@ class SmartcardRecord
     /**
      * @param Smartcard          $smartcard
      * @param Product|null       $product   purchased product
+     * @param float|null         $quantity  quantity of product
      * @param float              $value     amount of money
      * @param \DateTimeInterface $createdAt
      */
-    public function __construct(Smartcard $smartcard, ?Product $product, float $value, \DateTimeInterface $createdAt)
-    {
+    public function __construct(
+        Smartcard $smartcard,
+        ?Product $product,
+        ?float $quantity,
+        float $value,
+        \DateTimeInterface $createdAt
+    ) {
         if ($value < 0 && null === $product) {
             throw new \InvalidArgumentException('Product is required for record of purchase.');
         }
 
         $this->smartcard = $smartcard;
         $this->product = $product;
+        $this->quantity = $quantity;
         $this->value = $value;
         $this->createdAt = $createdAt;
     }
@@ -81,6 +95,14 @@ class SmartcardRecord
 
     /**
      * @return float|null
+     */
+    public function getQuantity(): ?float
+    {
+        return $this->quantity;
+    }
+
+    /**
+     * @return float
      */
     public function getValue(): float
     {
