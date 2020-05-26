@@ -24,9 +24,6 @@ class HouseholdActivitySubscriber implements EventSubscriber
     /** @var SerializerInterface */
     private $serializer;
 
-    /** @var SerializationContext */
-    private $serializationContext;
-
     /**
      * Constuctor.
      *
@@ -42,7 +39,6 @@ class HouseholdActivitySubscriber implements EventSubscriber
         $this->tokenStorage = $tokenStorage;
         $this->em = $em;
         $this->serializer = $serializer;
-        $this->serializationContext = SerializationContext::create()->setGroups('Activity')->setSerializeNull(true);
     }
 
     public function getSubscribedEvents()
@@ -71,14 +67,16 @@ class HouseholdActivitySubscriber implements EventSubscriber
 
         /** @var User|null $user */
         $user = null;
-        if (!$this->tokenStorage->getToken()) {
+        if ($this->tokenStorage->getToken()) {
             $user = $this->tokenStorage->getToken()->getUser();
         }
 
         /** @var Household $household */
         $household = $args->getObject();
 
-        $json = $this->serializer->serialize($household, 'json', $this->serializationContext);
+        $json = $this->serializer->serialize($household, 'json',
+            SerializationContext::create()->setGroups('Activity')->setSerializeNull(true)
+        );
 
         $activity = new HouseholdActivity($household, $user, $json);
         $this->em->persist($activity);
