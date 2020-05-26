@@ -4,8 +4,7 @@ namespace Tests\BeneficiaryBundle\Model\Household;
 
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdActivity;
-use BeneficiaryBundle\Model\Household\Exception\NoChangesException;
-use BeneficiaryBundle\Model\Household\HouseholdActivityChange;
+use BeneficiaryBundle\Model\Household\HouseholdChange\SimpleHouseholdChange;
 use PHPUnit\Framework\TestCase;
 use UserBundle\Entity\User;
 
@@ -20,23 +19,9 @@ class HouseholdActivityChangeTest extends TestCase
      */
     public function testChangesAreCreatedCorrectly($old, $new, $expectedChanges)
     {
-        $object = new HouseholdActivityChange($new, $old);
+        $object = new SimpleHouseholdChange($new, $old);
 
         $this->assertEquals($expectedChanges, $object->getChanges());
-    }
-
-    public function testNoChangesShouldThrownException()
-    {
-        $household = new Household();
-        $author = new User();
-
-        $old = new HouseholdActivity($household, $author, '{"livelihood": 0, "notes": "aaa"}');
-        $new = new HouseholdActivity($household, $author, '{"livelihood": 0, "notes": "aaa"}');
-
-        $this->expectException(NoChangesException::class);
-
-        $object = new HouseholdActivityChange($new, $old);
-        $object->getChanges();
     }
 
     public function providerChanges()
@@ -45,6 +30,11 @@ class HouseholdActivityChangeTest extends TestCase
         $author = new User();
 
         return [
+            'no change' => [
+                new HouseholdActivity($household, $author, '{"livelihood": 0, "notes": "aaa"}'),
+                new HouseholdActivity($household, $author, '{"livelihood": 0, "notes": "aaa"}'),
+                [],
+            ],
             'simple change' => [
                 new HouseholdActivity($household, $author, '{"livelihood": 0, "notes": "aaa"}'),
                 new HouseholdActivity($household, $author, '{"livelihood": 1, "notes": "aaa"}'),

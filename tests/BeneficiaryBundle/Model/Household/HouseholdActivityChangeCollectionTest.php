@@ -5,7 +5,7 @@ namespace Tests\BeneficiaryBundle\Model\Household;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdActivity;
 use BeneficiaryBundle\Model\Household\HouseholdActivityChangesCollection;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use UserBundle\Entity\User;
 
 class HouseholdActivityChangeCollectionTest extends TestCase
@@ -19,12 +19,11 @@ class HouseholdActivityChangeCollectionTest extends TestCase
             new HouseholdActivity(new Household(), new User(), '{"livelihood": 2, "notes": "yyy"}'),
         ]);
 
-        $result = json_decode(json_encode($collection), true);
-
         // we want to check only changes in collection
-        $resultChanges = array_map(function ($value) {
-            return $value['changes'];
-        }, $result);
+        $resultChanges = [];
+        foreach ($collection as $item) {
+            $resultChanges[] = $item->getChanges();
+        }
 
         $this->assertSame([
             ['livelihood' => 2, 'notes' => 'xxx'],

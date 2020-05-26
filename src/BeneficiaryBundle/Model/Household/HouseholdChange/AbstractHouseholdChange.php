@@ -1,12 +1,12 @@
 <?php
 
-namespace BeneficiaryBundle\Model\Household;
+namespace BeneficiaryBundle\Model\Household\HouseholdChange;
 
 use BeneficiaryBundle\Entity\HouseholdActivity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use UserBundle\Entity\User;
 
-class HouseholdActivityChange
+abstract class AbstractHouseholdChange
 {
     private $activity;
 
@@ -42,7 +42,7 @@ class HouseholdActivityChange
         $new = json_decode($this->activity->getContent(), true);
         $old = json_decode($this->previousActivity->getContent(), true);
 
-        $diff = $this->diff($new, $old);
+        return $this->diff($new, $old);
 
         $result = [];
 
@@ -57,7 +57,7 @@ class HouseholdActivityChange
         return $result;
     }
 
-    private function diff($array1, $array2)
+    protected final function diff($array1, $array2)
     {
         if (!is_array($array1) || !is_array($array2)) {
             return $array1;

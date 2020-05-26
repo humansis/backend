@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\HouseholdActivity;
 use BeneficiaryBundle\Model\Household\HouseholdActivityChangesCollection;
+use BeneficiaryBundle\Model\Household\HouseholdChange\Factory\FilteredHouseholdChangeFactory;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
@@ -584,7 +585,7 @@ class HouseholdController extends Controller
 
         $activities = $this->getDoctrine()->getRepository(HouseholdActivity::class)->findByHousehold($household);
 
-        $changes = new HouseholdActivityChangesCollection($activities);
+        $changes = new HouseholdActivityChangesCollection($activities, new FilteredHouseholdChangeFactory());
         $changes = $this->get('serializer')->serialize($changes, 'json', ['groups' => ['HouseholdChanges']]);
 
         return new Response($changes);
