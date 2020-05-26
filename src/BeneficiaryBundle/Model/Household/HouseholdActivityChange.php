@@ -21,7 +21,7 @@ class HouseholdActivityChange
     /**
      * @SymfonyGroups({"HouseholdChanges"})
      */
-    public function getAuthor(): User
+    public function getAuthor(): ?User
     {
         return $this->activity->getAuthor();
     }

@@ -69,11 +69,14 @@ class HouseholdActivitySubscriber implements EventSubscriber
             return;
         }
 
+        /** @var User|null $user */
+        $user = null;
+        if (!$this->tokenStorage->getToken()) {
+            $user = $this->tokenStorage->getToken()->getUser();
+        }
+
         /** @var Household $household */
         $household = $args->getObject();
-
-        /** @var User $user */
-        $user = $this->tokenStorage->getToken()->getUser();
 
         $json = $this->serializer->serialize($household, 'json', $this->serializationContext);
 

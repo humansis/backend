@@ -18,7 +18,8 @@ final class Version20200522143904 extends AbstractMigration
             CREATE TABLE household_activity (
                 id INT AUTO_INCREMENT NOT NULL,
                 household_id INT DEFAULT NULL,
-                author_id INT DEFAULT NULL, content JSON NOT NULL,
+                author_id INT DEFAULT NULL,
+                content JSON NOT NULL,
                 created_at DATETIME NOT NULL,
                 INDEX IDX_70CFF07FE79FF843 (household_id),
                 INDEX IDX_70CFF07FF675F31B (author_id),

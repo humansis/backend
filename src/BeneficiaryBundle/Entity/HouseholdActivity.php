@@ -50,7 +50,7 @@ class HouseholdActivity
      */
     private $createdAt;
 
-    public function __construct(Household $household, User $author, string $content)
+    public function __construct(Household $household, ?User $author, string $content)
     {
         $this->household = $household;
         $this->author = $author;
@@ -75,9 +75,9 @@ class HouseholdActivity
     }
 
     /**
-     * @return User
+     * @return User|null
      */
-    public function getAuthor(): User
+    public function getAuthor(): ?User
     {
         return $this->author;
     }
