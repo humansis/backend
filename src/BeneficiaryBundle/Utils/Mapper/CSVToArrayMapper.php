@@ -69,6 +69,11 @@ class CSVToArrayMapper extends AbstractMapper
                 }
                 $householdArray = $formattedHouseholdArray;
                 $householdArray['beneficiaries'] = [$formattedHouseholdArray['beneficiaries']];
+                try {
+                    $this->generateStaticBeneficiary($householdArray);
+                } catch (\Exception $exception) {
+                    throw $exception;
+                }
             } else {
                 // Add beneficiary to existing household
                 $householdArray['beneficiaries'][] = $formattedHouseholdArray['beneficiaries'];
@@ -236,8 +241,6 @@ class CSVToArrayMapper extends AbstractMapper
             $this->mapProfile($formattedHouseholdArray);
             $this->mapStatus($formattedHouseholdArray);
             $this->mapLivelihood($formattedHouseholdArray);
-            $formattedHouseholdArray['coping_strategies_index'] = null;
-            $formattedHouseholdArray['food_consumption_score'] = null;
         } catch (\Exception $exception) {
             throw $exception;
         }
@@ -266,6 +269,70 @@ class CSVToArrayMapper extends AbstractMapper
                 ];
                 unset($formattedHouseholdArray[$indexFormatted]);
             }
+        }
+    }
+
+    /**
+     * @param $householdArray
+     *
+     * @throws \Exception
+     */
+    private function generateStaticBeneficiary(&$householdArray)
+    {
+        $headBeneficiary = $householdArray['beneficiaries'][0];
+        $hhBirthDate = $headBeneficiary['date_of_birth'];
+        if (empty($hhBirthDate)) {
+            throw new \Exception('Date of birth is required for Head');
+        }
+
+        $hhAge = \DateTime::createFromFormat('d-m-Y', $hhBirthDate)->diff(new \DateTime())->y;
+        $hhGender = $headBeneficiary['gender'];
+        $hasIncludedHHMember = false;
+
+        $staticFields = [
+            'f-0-2', 'f-2-5', 'f-6-17', 'f-18-64', 'f-65-99',
+            'm-0-2', 'm-2-5', 'm-6-17', 'm-18-64', 'm-65-99',
+        ];
+        foreach ($staticFields as $staticField) {
+            $field = 'member_' . $staticField;
+            if ($headBeneficiary && !empty($householdArray[$field])) {
+                list ($gender, $fromAge, $toAge) = explode('-', $staticField);
+                $gender = $gender === 'f' ? 0 : 1;
+
+                // Deduction of the household head in the total number of household members
+                if (!$hasIncludedHHMember && $hhGender === $gender && $fromAge <= $hhAge && $hhAge <= $toAge) {
+                    $hasIncludedHHMember = true;
+                    $householdArray[$field] -= 1;
+                }
+
+                $birthDate = new \DateTime();
+                $ageInterval = new \DateInterval('P' . ($toAge - $fromAge) * 12 . 'M');
+                $birthDate->sub($ageInterval);
+                for ($i = 1; $i <= $householdArray[$field]; $i++) {
+                    $generatedBeneficiary = [
+                        'local_given_name' => 'Member ' . $i,
+                        'local_family_name' => $headBeneficiary['local_family_name'],
+                        'en_given_name' => 'Member ' . $i,
+                        'en_family_name' => $headBeneficiary['en_family_name'],
+                        'date_of_birth' => $birthDate->format('d-m-Y'),
+                        'gender' => $gender,
+                        'status' => 0,
+                        'residency_status' => $headBeneficiary['residency_status'],
+                        'vulnerability_criteria' => [],
+                        'phones' => [],
+                        'national_ids' => [],
+                        'profile' => [
+                            'photo' => '',
+                        ],
+                    ];
+                    $householdArray['beneficiaries'][] = $generatedBeneficiary;
+                }
+            }
+            unset($householdArray[$field]);
+        }
+
+        if (!$hasIncludedHHMember) {
+            throw new \Exception('Member field must be included Head member');
         }
     }
 
