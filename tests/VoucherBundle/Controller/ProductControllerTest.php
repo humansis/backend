@@ -38,7 +38,7 @@ class ProductControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/products', $body);
         $product = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('image', $product);
         $this->assertArrayHasKey('name', $product);
         $this->assertArrayHasKey('unit', $product);
@@ -93,7 +93,7 @@ class ProductControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/products/' . $newProduct['id'], $body);
         $newProductReceived = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $productSearch = $this->em->getRepository(Product::class)->find($newProductReceived['id']);
         $this->assertEquals($productSearch->getUnit(), $unit);
@@ -120,7 +120,7 @@ class ProductControllerTest extends BMSServiceTestCase
     //     $success = json_decode($this->client->getResponse()->getContent(), true);
 
     //     // Check if the second step succeed
-    //     $this->assertTrue($this->client->getResponse()->isSuccessful());
+    //     $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
     //     return $success;
     // }

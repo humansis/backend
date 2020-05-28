@@ -41,22 +41,26 @@ class UserController extends Controller
      * )
      *
      * @SWG\Parameter(
-     *     name="username",
+     *     name="body",
      *     in="body",
-     *     type="string",
+     *     type="json",
      *     required=true,
-     *     description="username of the user",
-     *     @SWG\Schema()
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="username",
+     *             example="admin@example.org",
+     *             type="string",
+     *             description="username of the user",
+     *         ),
+     *         @SWG\Property(
+     *             property="password",
+     *             example="123456789abcdefg",
+     *             type="string",
+     *             description="salted password of the user",
+     *         )
+     *     )
      * )
-     * @SWG\Parameter(
-     *     name="salted_password",
-     *     in="body",
-     *     type="string",
-     *     required=true,
-     *     description="salted password of the user",
-     *     @SWG\Schema()
-     * )
-     *
      * @SWG\Response(
      *     response=400,
      *     description="Bad credentials (username: myUsername)"
@@ -91,10 +95,10 @@ class UserController extends Controller
         if ($user->getVendor() !== null) {
             return new Response('You cannot connect on this site, please use the app.', Response::HTTP_FORBIDDEN);
         }
-        
+
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
-        
+
         $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
         return new Response($userJson);
     }
@@ -105,14 +109,6 @@ class UserController extends Controller
      * @Rest\Get("/salt/{username}")
      *
      * @SWG\Tag(name="Users")
-     *
-     * @SWG\Parameter(
-     *     name="username",
-     *     in="query",
-     *     type="string",
-     *     required=true,
-     *     description="username of the user"
-     * )
      *
      * @SWG\Response(
      *     response=200,
@@ -152,9 +148,9 @@ class UserController extends Controller
     /**
      * Get user's salt
      *
-     * @Rest\Get("/initialize/{username}")
+     * @Rest\Get("/vendor-app/v1/salt/{username}")
      *
-     * @SWG\Tag(name="Users")
+     * @SWG\Tag(name="Vendor App")
      *
      * @SWG\Parameter(
      *     name="username",
@@ -163,6 +159,42 @@ class UserController extends Controller
      *     required=true,
      *     description="username of the user"
      * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *      examples={
+     *          "application/json": {
+     *              "user_id" = 1,
+     *              "salt" = "fgrgfhjjgh21h5rt"
+     *          }
+     *      }
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @SWG\Response(
+     *     response=423,
+     *     description="LOCKED"
+     * )
+     *
+     * @param $username
+     * @return Response
+     */
+    public function vendorGetSaltAction($username)
+    {
+        return $this->getSaltAction($username);
+    }
+
+    /**
+     * Initialize user
+     *
+     * @Rest\Get("/initialize/{username}")
+     *
+     * @SWG\Tag(name="Users")
      *
      * @SWG\Response(
      *     response=200,
@@ -228,7 +260,7 @@ class UserController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function addAction(Request $request)
+    public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -245,7 +277,7 @@ class UserController extends Controller
             );
             return new Response($userJson);
         } catch (\Exception $exception) {
-            $this->get('user.user_service')->deleteByUsername($user['username']);
+            $this->get('user.user_service')->deleteByUsername($userData['username']);
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -444,15 +476,13 @@ class UserController extends Controller
      * @param User $user
      * @return Response
      */
-    public function updateLanguage(Request $request, User $user)
+    public function postLanguageAction(Request $request, User $user)
     {
         $language = $request->request->get('language');
         $userUpdated = $this->get('user.user_service')->updateLanguage($user, $language);
         $json = $this->get('jms_serializer')->serialize($userUpdated, 'json', SerializationContext::create()->setGroups(['FullUser']));
         return new Response($json);
     }
-
-
 
     /**
      * Change the password of user {id}. Must send oldPassword and newPassword
@@ -558,5 +588,96 @@ class UserController extends Controller
         $attach = $this->get('user.user_service')->getLog($user, $userConnected);
 
         return new JsonResponse($attach);
+    }
+
+     /**
+     * Login a user via humanitarian ID
+     * @Rest\Post("/login-humanitarian", name="login_humanitarian")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @return Response
+     */
+    public function loginHumanitarian(Request $request)
+    {
+        try {
+            $code = $request->request->get('code');
+            $environment = $request->request->get('environment');
+
+            $user = $this->get('user.user_service')->loginHumanitarian($code, $environment);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+        
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        return new Response($userJson);
+    }
+
+    /**
+     * Login a user via google
+     * @Rest\Post("/login-google", name="login_google")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Successful or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @return Response
+     */
+    public function loginGoogle(Request $request)
+    {
+        try {
+            $token = $request->request->get('token');
+
+            $user = $this->get('user.user_service')->loginGoogle($token);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+        
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        return new Response($userJson);
+    }
+
+     /**
+     * Login a user via Linked In
+     * @Rest\Post("/login-linkedin", name="login_linkedin")
+     *
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @return Response
+     */
+    public function loginLinkedIn(Request $request)
+    {
+        try {
+            $code = $request->request->get('code');
+            $environment = $request->request->get('environment');
+            $user = $this->get('user.user_service')->loginLinkedIn($code, $environment);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+        
+        /** @var Serializer $serializer */
+        $serializer = $this->get('jms_serializer');
+        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        return new Response($userJson);
     }
 }

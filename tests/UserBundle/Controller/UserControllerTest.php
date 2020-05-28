@@ -57,12 +57,15 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('salt', $return);
 
         $body = [
-            "username" => $this->username,
-            "email" => $this->username,
-            "roles" => ["ROLE_ADMIN"],
-            "password" => "PSWUNITTEST",
+            'username' => $this->username,
+            'email' => $this->username,
+            'roles' => ['ROLE_ADMIN'],
+            'password' => 'PSWUNITTEST',
             'salt' => $return['salt'],
+            'phone_prefix' => '+34',
+            'phone_number' => '675676767',
             'change_password' => true,
+            'two_factor_authentication' => false
         ];
 
         // Fake connection with a token for the user tester (ADMIN)
@@ -75,10 +78,13 @@ class UserControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/users', $body);
         $user = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $user);
         $this->assertArrayHasKey('username', $user);
         $this->assertArrayHasKey('email', $user);
+        $this->assertArrayHasKey('phone_prefix', $user);
+        $this->assertArrayHasKey('phone_number', $user);
+        $this->assertArrayHasKey('two_factor_authentication', $user);
         $this->assertSame($user['email'], $this->username);
 
         return $user;
@@ -109,7 +115,7 @@ class UserControllerTest extends BMSServiceTestCase
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue(gettype($success) == 'array');
         $this->assertArrayHasKey('id', $success);
         $this->assertArrayHasKey('username', $success);
@@ -138,6 +144,9 @@ class UserControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('roles', $users);
             $this->assertArrayHasKey('countries', $users);
             $this->assertArrayHasKey('projects', $users);
+            $this->assertArrayHasKey('phone_prefix', $users);
+            $this->assertArrayHasKey('phone_number', $users);
+            $this->assertArrayHasKey('two_factor_authentication', $users);
         } else {
             $this->markTestIncomplete("You currently don't have any user in your database.");
         }
@@ -165,6 +174,9 @@ class UserControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('roles', $user);
             $this->assertArrayHasKey('countries', $user);
             $this->assertArrayHasKey('projects', $user);
+            $this->assertArrayHasKey('phone_prefix', $user);
+            $this->assertArrayHasKey('phone_number', $user);
+            $this->assertArrayHasKey('two_factor_authentication', $user);
         } else {
             $this->markTestIncomplete("You currently don't have any user in your database.");
         }
@@ -186,7 +198,7 @@ class UserControllerTest extends BMSServiceTestCase
         $crawler = $this->request('GET', '/api/wsse/users/'. $newuser['id'] .'/projects');
         $projectsUser = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue(gettype($projectsUser) == 'array');
     }
 
@@ -211,7 +223,7 @@ class UserControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/users/' . $newuser['id'], $body);
         $newUserReceived = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->em->clear();
 
@@ -240,7 +252,7 @@ class UserControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/users/' . $userToChange['id'] . '/password', $body);
         $newUserReceived = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->em->clear();
 
@@ -270,7 +282,7 @@ class UserControllerTest extends BMSServiceTestCase
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue($success);
     }
 }

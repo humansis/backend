@@ -47,7 +47,7 @@ class DistributionControllerTest extends BMSServiceTestCase
      */
     public function testCreateDistribution()
     {
-        $this->removeHousehold($this->namefullnameHousehold);
+//        $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
 
         $criteria = array(
@@ -116,7 +116,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/distributions', $criteria);
         $return = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->assertArrayHasKey('distribution', $return);
         $this->assertArrayHasKey('data', $return);
@@ -253,7 +253,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiaries/11/delete' , $body);
+        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiaries/11/remove' , $body);
         $remove = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -288,7 +288,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('validated', $all[0]);
         $this->assertArrayHasKey('type', $all[0]);
         $this->assertArrayHasKey('commodities', $all[0]);
-        $this->assertArrayHasKey('distribution_beneficiaries', $all[0]);
+//        $this->assertArrayHasKey('distribution_beneficiaries', $all[0]);
     }
 
 
@@ -322,7 +322,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('validated', $one);
         $this->assertArrayHasKey('type', $one);
         $this->assertArrayHasKey('commodities', $one);
-        $this->assertArrayHasKey('distribution_beneficiaries', $one);
+//        $this->assertArrayHasKey('distribution_beneficiaries', $one);
     }
 
 
@@ -419,7 +419,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('POST', '/api/wsse/distributions/archive/'. $distribution['id']);
+        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] . '/archive');
         $archive = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -456,7 +456,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('validated', $distributions[0]);
         $this->assertArrayHasKey('type', $distributions[0]);
         $this->assertArrayHasKey('commodities', $distributions[0]);
-        $this->assertArrayHasKey('distribution_beneficiaries', $distributions[0]);
+        $this->assertArrayHasKey('beneficiaries_count', $distributions[0]);
     }
 
     /**

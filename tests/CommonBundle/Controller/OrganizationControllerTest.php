@@ -70,7 +70,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/organization/1', $body);
         $newOrganization = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $initialOrganization = $this->em->getRepository(Organization::class)->findOneBy([]);
         $this->assertEquals($initialOrganization->getName(), 'AKEZI');

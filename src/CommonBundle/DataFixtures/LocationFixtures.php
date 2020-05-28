@@ -17,6 +17,10 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class LocationFixtures extends Fixture implements FixtureGroupInterface
 {
+    private $devData = [ // countryIso3, adm1, adm2, adm3, adm4
+        ['KHM', 'Rhone-Alpes', 'Savoie', 'Chambery', 'Sainte Hélène sur Isère'],
+        ['KHM', 'Banteay Meanchey', 'Mongkol Borei', 'Banteay Neang', 'Trang']
+    ];
 
     /** @var Kernel $kernel */
     private $kernel;
@@ -35,7 +39,10 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
      */
     public function load(ObjectManager $manager)
     {
-        if ($this->kernel->getEnvironment() !== "test") {
+        if ($this->kernel->getEnvironment() === "dev") {
+            $locations = $this->loadSimplyData($manager);
+            print_r("\n\n $locations location(s) loaded.\n\n");
+        } else {
             $nbFilesLoaded = $this->parseDirectory($manager);
             print_r("\n\n $nbFilesLoaded file(s) loaded.\n\n");
         }
@@ -50,6 +57,39 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
     public static function getGroups(): array
     {
         return ['location'];
+    }
+
+    private function loadSimplyData(ObjectManager $manager)
+    {
+        $count = 0;
+        foreach ($this->devData as $adms) {
+            list($countryIso3, $adm1name, $adm2name, $adm3name, $adm4name) = $adms;
+
+            $adm1 = new Adm1();
+            $adm1->setCountryISO3($countryIso3)
+                ->setName($adm1name);
+            $manager->persist($adm1);
+
+            $adm2 = new Adm2();
+            $adm2->setAdm1($adm1)
+                ->setName($adm2name);
+            $manager->persist($adm2);
+
+            $adm3 = new Adm3();
+            $adm3->setAdm2($adm2)
+                ->setName($adm3name);
+            $manager->persist($adm3);
+
+            $adm4 = new Adm4();
+            $adm4->setAdm3($adm3)
+                ->setName($adm4name);
+            $manager->persist($adm4);
+
+            $manager->flush();
+
+            $count++;
+        }
+        return $count;
     }
 
     /**

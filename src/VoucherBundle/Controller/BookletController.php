@@ -21,6 +21,13 @@ use VoucherBundle\Entity\Booklet;
 /**
  * Class BookletController
  * @package VoucherBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class BookletController extends Controller
 {
@@ -53,7 +60,7 @@ class BookletController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createBookletAction(Request $request)
+    public function createAction(Request $request)
     {
         $bookletData = $request->request->all();
 
@@ -227,6 +234,35 @@ class BookletController extends Controller
     }
 
     /**
+     * Get booklets that have been deactivated
+     *
+     * @Rest\Get("/vendor-app/v1/deactivated-booklets")
+     *
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Booklets delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Booklet::class, groups={"FullBooklet"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function vendorGetDeactivatedAction(Request $request)
+    {
+        return $this->getDeactivatedAction($request);
+    }
+
+    /**
      * Get booklets that are protected by a password
      *
      * @Rest\Get("/protected-booklets", name="get_protected_booklets")
@@ -268,6 +304,35 @@ class BookletController extends Controller
 
         $json = $this->get('jms_serializer')->serialize($bookletPasswords, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
         return new Response($json);
+    }
+
+    /**
+     * Get booklets that are protected by a password
+     *
+     * @Rest\Get("/vendor-app/v1/protected-booklets")
+     *
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Booklets delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Booklet::class, groups={"FullBooklet"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function vendorGetProtectedAction(Request $request)
+    {
+        return $this->getProtectedAction($request);
     }
 
     /**
@@ -361,7 +426,7 @@ class BookletController extends Controller
      *
      * @return Response
      */
-    public function deactivateBooklets(Request $request)
+    public function deactivateBookletsAction(Request $request)
     {
         try {
             $data = $request->request->all();
@@ -372,6 +437,28 @@ class BookletController extends Controller
         }
 
         return new Response(json_encode('Booklet successfully deactivated'));
+    }
+
+    /**
+     * Deactivate booklets
+     *
+     * @Rest\Post("/vendor-app/v1/deactivate-booklets")
+     *
+     * @Security("is_granted('ROLE_USER')")
+     *
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success or not",
+     *     @SWG\Schema(type="boolean")
+     * )
+     *
+     * @return Response
+     */
+    public function vendorDeactivateBookletsAction(Request $request)
+    {
+        return $this->deactivateBookletsAction($request);
     }
 
     /**
@@ -441,7 +528,7 @@ class BookletController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function updatePasswordAction(Request $request)
+    public function postPasswordAction(Request $request)
     {
         $password = $request->request->get('password');
         $code = $request->request->get('code');
@@ -462,11 +549,11 @@ class BookletController extends Controller
 
     /**
      * Assign the booklet to a specific beneficiary
-     * @Rest\Post("/booklets/assign/{beneficiaryId}/{distributionId}", name="assign_booklet")
+     * @Rest\Post("/booklets/assign/{distributionId}/{beneficiaryId}", name="assign_booklet")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
      * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
-     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      * @ParamConverter("distributionData", options={"mapping": {"distributionId": "id"}})
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      *
      * @SWG\Tag(name="Booklets")
      *
@@ -481,12 +568,12 @@ class BookletController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      */
-    public function assignAction(Request $request, Beneficiary $beneficiary, DistributionData $distributionData)
+    public function assignAction(Request $request, DistributionData $distributionData, Beneficiary $beneficiary)
     {
         $code = $request->request->get('code');
         $booklet = $this->get('voucher.booklet_service')->getOne($code);
         try {
-            $return = $this->get('voucher.booklet_service')->assign($booklet, $beneficiary, $distributionData);
+            $return = $this->get('voucher.booklet_service')->assign($booklet, $distributionData, $beneficiary);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

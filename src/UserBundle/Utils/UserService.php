@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
+use Symfony\Component\HttpClient\HttpClient;
 
 /**
  * Class UserService
@@ -25,6 +26,29 @@ class UserService
         "KHM",
         "SYR",
     ];
+
+    private $environments = [
+        'HID' => [
+            'testing' => [
+                'front_url' => 'redirect_uri=https://front-test.bmstaging.info/sso?origin=hid',
+                'client_id' => 'Humsis-stag',
+                'provider_url' => 'https://auth.staging.humanitarian.id'
+            ],
+            'demo' => [
+                'front_url' => 'redirect_uri=https://demo.humansis.org/sso?origin=hid',
+                'client_id' => 'Humsis-Demo',
+                'provider_url' => 'https://auth.humanitarian.id'
+            ],
+            'prod' => [
+                'front_url' => 'redirect_uri=https://front.bmstaging.info/sso?origin=hid',
+                'client_id' => 'Humsis-Prod',
+                'provider_url' => 'https://auth.humanitarian.id'
+            ]
+        ]
+    ];
+
+    protected $humanitarianSecret;
+    protected $googleClient;
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -41,8 +65,10 @@ class UserService
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
     {
+        $this->googleClient = $googleClient;
+        $this->humanitarianSecret = $humanitarianSecret;
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
@@ -90,9 +116,23 @@ class UserService
         if (!empty($userData['password'])) {
             $user->setPassword($userData['password']);
         }
+        
+        if (key_exists('phone_prefix', $userData)) {
+            $user->setPhonePrefix($userData['phone_prefix']);
+        }
+        
+        if (key_exists('phone_number', $userData)) {
+            $user->setPhoneNumber($userData['phone_number']);
+        }
 
+        if (key_exists('change_password', $userData)) {
+            $user->setChangePassword($userData['change_password']);
+        }
+        if (key_exists('two_factor_authentication', $userData)) {
+            $user->setTwoFactorAuthentication($userData['two_factor_authentication']);
+        }
         $this->em->persist($user);
-
+        
         $this->delete($user, false);
         
         if (key_exists('projects', $userData)) {
@@ -120,7 +160,6 @@ class UserService
         }
 
         $this->em->flush();
-
         return $user;
     }
 
@@ -145,6 +184,10 @@ class UserService
             ->setSalt($salt)
             ->setPassword("")
             ->setChangePassword(0);
+
+        $user->setPhonePrefix("")
+            ->setPhoneNumber(0)
+            ->setTwoFactorAuthentication(0);
 
         $this->em->persist($user);
 
@@ -261,6 +304,10 @@ class UserService
             ->setEnabled(1)
             ->setRoles($roles)
             ->setChangePassword($userData['change_password']);
+        
+        $user->setPhonePrefix($userData['phone_prefix'])
+            ->setPhoneNumber($userData['phone_number'])
+            ->setTwoFactorAuthentication($userData['two_factor_authentication']);
         
         $user->setPassword($userData['password']);
 
@@ -490,6 +537,12 @@ class UserService
         fclose($fp);
     }
 
+    /**
+     * Update user language
+     * @param User $user
+     * @param  string $language
+     * @return void
+     */
     public function updateLanguage(User $user, string $language)
     {
         $user->setLanguage($language);
@@ -508,5 +561,128 @@ class UserService
     public function findWebUsers($limit, $offset)
     {
         return $this->em->getRepository(User::class)->findBy(['vendor' => null], [], $limit, $offset);
+    }
+
+     /**
+     * @param $token
+     * @return User
+     */
+    public function loginGoogle(string $token)
+    {
+        $client = new \Google_Client(['client_id' => $this->googleClient]);
+
+        $payload = $client->verifyIdToken($token);
+        if ($payload) {
+            $email = $payload['email'];
+            return $this->loginSSO($email);
+        } else {
+            throw new \Exception('The token could not be verified');
+        }
+    }
+
+    /**
+     * @param $code
+     * @param $environment
+     * @return User
+     */
+    public function loginLinkedIn(string $code, string $environment)
+    {
+        $httpClient = HttpClient::create();
+        $parameters = $this->environments['linkedIn'][$environment];
+        
+        $response = $httpClient->request('POST', $parameters['provider_url'], [
+            'body' => [
+                'grant_type' => 'authorization_code',
+                'code' => $code,
+                'redirect_uri' => $parameters['front_url'],
+                'client_id' => $parameters['client_id'],
+                'client_secret' => $this->linkedInSecret,
+            ],
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+                'Accept' => '*/*',
+            ]
+        ]);
+
+        $statusCode = $response->getStatusCode();
+        if ($statusCode === 200) {
+            $content = $response->toArray();
+        } else {
+            throw new \Exception("There was a problem with the LinkedIn request: could not get token"); 
+        }
+    }
+
+    /**
+     * @param $code
+     * @param $environment
+     * @return User
+     */
+    public function loginHumanitarian(string $code, string $environment)
+    {
+        try {
+            $parameters = $this->environments['HID'][$environment];
+            $token = $this->getHIDToken($code, $parameters);
+            $email = $this->getHIDEmail($token, $parameters);
+            return $this->loginSSO($email);
+            
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function loginSSO($email) {
+        $user = $this->em->getRepository(User::class)->findOneByUsername($email);
+        if (!$user instanceof User) {
+            // Create a random salt and password
+            $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+            $password = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+            $user = new User();
+            $user->setSalt($salt)
+                ->setEmail($email)
+                ->setEmailCanonical($email)
+                ->setUsername($email)
+                ->setUsernameCanonical($email)
+                ->setEnabled(0)
+                ->setChangePassword(false);
+
+            $user->setPassword($password);
+            $this->em->persist($user);
+            $this->em->flush();
+        }
+        return $user;
+    }
+
+    public function getHIDToken(string $code, array $parameters) {
+        $httpClient = HttpClient::create();
+        
+        $response = $httpClient->request('POST', $parameters['provider_url'] . '/oauth/access_token', [
+            'body' => [
+                'grant_type' => 'authorization_code',
+                'code' => $code,
+                'redirect_uri' => $parameters['front_url'],
+                'client_id' => $parameters['client_id'],
+                'client_secret' => $this->humanitarianSecret,
+            ]
+        ]);
+        $statusCode = $response->getStatusCode();
+        if ($statusCode === 200) {
+            $content = $response->toArray();
+            return $content['access_token'];
+        } else {
+            throw new \Exception("There was a problem with the HID request: could not get token"); 
+        }
+    }
+
+    public function getHIDEmail(string $token, array $parameters) {
+        $httpClient = HttpClient::create([ 'auth_bearer' => $token ]);
+        $response = $httpClient->request('GET', $parameters['provider_url'] . '/account.json');
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode === 200) {
+            $content = $response->toArray();
+            return $content['email'];
+        }  else {
+            throw new \Exception("There was a problem with the HID request: could not get user email"); 
+        }
     }
 }

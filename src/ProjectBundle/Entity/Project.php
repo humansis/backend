@@ -25,7 +25,7 @@ class Project implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
      */
     private $id;
 
@@ -34,9 +34,18 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
      */
     private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="internalId", type="string", length=255, nullable=true)
+     *
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
+     */
+    private $internalId;
 
     /**
      * @var \DateTime
@@ -102,7 +111,7 @@ class Project implements ExportableInterface
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects", cascade={"persist"})
      *
-     * @Groups({"FullProject", "FullDistribution"})
+     * @Groups({"FullProject", "FullDistribution", "SmallDistribution"})
      */
     private $sectors;
 
@@ -190,6 +199,22 @@ class Project implements ExportableInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getInternalId(): ?string
+    {
+        return $this->internalId;
+    }
+
+    /**
+     * @param string|null $internalId
+     */
+    public function setInternalId($internalId)
+    {
+        $this->internalId = $internalId;
     }
 
     /**
@@ -621,6 +646,7 @@ class Project implements ExportableInterface
         return [
             "ID" => $this->getId(),
             "Project name" => $this->getName(),
+            "Internal ID" => $this->getInternalId(),
             "Start date"=> $this->getStartDate()->format('d-m-Y'),
             "End date" => $this->getEndDate()->format('d-m-Y'),
             "Number of households" => $this->getNumberOfHouseholds(),

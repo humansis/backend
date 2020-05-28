@@ -61,4 +61,17 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         
         return $q->getQuery()->getSingleScalarResult();
     }
+
+    /**
+     * @param DistributionData $distributionData
+     * @return int
+     */
+    public function countActive(DistributionData $distributionData)
+    {
+        $result = $this->count([
+            'distributionData' => $distributionData,
+            'removed' => false,
+        ]);
+        return (int) $result;
+    }
 }

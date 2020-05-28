@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="ru" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="VLUWEOx" resname="DISTRIBUTION SHEET">
+        <source>DISTRIBUTION SHEET</source>
+        <target>ورقة التوزيع</target>
+      </trans-unit>
+      <trans-unit id="RZid5J_" resname="Details">
+        <source>Details</source>
+        <target>تفاصيل</target>
+      </trans-unit>
+      <trans-unit id="qpQgWsG" resname="Project Name">
+        <source>Project Name</source>
+        <target>عنوان المشروع</target>
+      </trans-unit>
+      <trans-unit id="vAxwwF2" resname="Distribution Date">
+        <source>Distribution Date</source>
+        <target>تاريخ التوزيع</target>
+      </trans-unit>
+      <trans-unit id="6UY9zPB" resname="Place">
+        <source>Place</source>
+        <target>مكان</target>
+      </trans-unit>
+      <trans-unit id="EmCg3MG" resname="Item Description">
+        <source>Item Description</source>
+        <target>وصف السلعة</target>
+      </trans-unit>
+      <trans-unit id="K.w0cVc" resname="Approvals">
+        <source>Approvals</source>
+        <target>الموافقات</target>
+      </trans-unit>
+      <trans-unit id="zcz3NLT" resname="On behalf of">
+        <source>On behalf of</source>
+        <target>نيابة عن</target>
+      </trans-unit>
+      <trans-unit id="V8kighy" resname="On behalf of People in Need">
+        <source>On behalf of People in Need</source>
+        <target>نيابة عن منطمة الناس في حاجة</target>
+      </trans-unit>
+      <trans-unit id="3NHVIj9" resname="Name">
+        <source>Name</source>
+        <target>اسم</target>
+      </trans-unit>
+      <trans-unit id="bQMa8Q2" resname="Position">
+        <source>Position</source>
+        <target>المنصب</target>
+      </trans-unit>
+      <trans-unit id="X0.LddB" resname="Signature and Stamp">
+        <source>Signature and Stamp</source>
+        <target>توقيع وختم</target>
+      </trans-unit>
+      <trans-unit id="QHK6lzx" resname="Household Members">
+        <source>Household Members</source>
+        <target>أفراد الأسرة</target>
+      </trans-unit>
+      <trans-unit id="oBr_HLy" resname="№">
+        <source>№</source>
+        <target>الرقم</target>
+      </trans-unit>
+      <trans-unit id="J9iM8Zp" resname="FIRST NAME">
+        <source>FIRST NAME</source>
+        <target>الاسم الاول</target>
+      </trans-unit>
+      <trans-unit id="JVXARql" resname="FAMILY NAME">
+        <source>FAMILY NAME</source>
+        <target>اسم العائلة</target>
+      </trans-unit>
+      <trans-unit id="CJHweCD" resname="DATE OF BIRTH">
+        <source>DATE OF BIRTH</source>
+        <target>تاريخ الولادة</target>
+      </trans-unit>
+      <trans-unit id="QbuaQ3d" resname="ID No.">
+        <source>ID No.</source>
+        <target>رقم بطاقة الهوية</target>
+      </trans-unit>
+      <trans-unit id="IiL.etd" resname="PHONE NUMBER">
+        <source>PHONE NUMBER</source>
+        <target>رقم الهاتف</target>
+      </trans-unit>
+      <trans-unit id="PCHfRb3" resname="STATUS (Resident, IDP or Refugee">
+        <source>STATUS (Resident, IDP or Refugee</source>
+        <target>الحالة (المقيم ، النازح أو اللاجئ)</target>
+      </trans-unit>
+      <trans-unit id="pZ3Qho_" resname="Gender (M/F)">
+        <source>Gender (M/F)</source>
+        <target>الجنس (مذكر / مؤنث)</target>
+      </trans-unit>
+      <trans-unit id="RafFTIT" resname="SIGNATURE">
+        <source>SIGNATURE</source>
+        <target>التوقيع</target>
+      </trans-unit>
+      <trans-unit id="CPJxiHz" resname="M">
+        <source>M</source>
+        <target>مذكر</target>
+      </trans-unit>
+      <trans-unit id="9nqxCtT" resname="F">
+        <source>F</source>
+        <target>مؤنث</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

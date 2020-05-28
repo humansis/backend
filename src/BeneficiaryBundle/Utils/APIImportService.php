@@ -4,6 +4,7 @@
 namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Utils\ImportProvider\DefaultApiProvider;
+use CommonBundle\Entity\OrganizationServices;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -68,7 +69,7 @@ class APIImportService
         $provider = $this->container->get('beneficiary.' . strtolower($countryISO3) . '_api_provider_' . $provider);
 
         if (! ($provider instanceof DefaultApiProvider)) {
-            throw new \Exception("The API provider for " . $countryISO3 . "is not properly defined");
+            throw new \Exception("The API provider " . $provider . " for " . $countryISO3 . "is not properly defined");
         }
         return $provider;
     }
@@ -82,19 +83,24 @@ class APIImportService
         $countryISO3 = strtoupper($countryISO3);
 
         $listAPI = array();
+
         foreach (glob('../src/BeneficiaryBundle/Utils/ImportProvider/'.$countryISO3.'/*.*') as $file) {
-            $beginFile = explode('API', $file);
-            $providerKey = explode($countryISO3, $beginFile[0]);
+            $providerKey = explode($countryISO3, explode('API', $file)[0]);
+            
+            $provider = $this->getApiProviderForCountry($countryISO3, strtolower($providerKey[2]));
+            $providerName = $providerKey[2] . ' API';
 
-            $provider = $this->container->get('beneficiary.' . strtolower($countryISO3) . '_api_provider_' . strtolower($providerKey[2]));
-            $params = $provider->getParams();
+            /** @var OrganizationServices $organizationService */
+            $organizationService = $this->em->getRepository(OrganizationServices::class)->findOneByService($providerName);
 
-            /** @var object $api */
-            $api = (object) array();
-            $api->APIName = $providerKey[2];
-            $api->params = $params;
-
-            array_push($listAPI, $api);
+            if ($organizationService->getEnabled()) {
+                /** @var object $api */
+                $api = (object) array();
+                $api->APIName = $providerKey[2];
+                $api->params = $provider->getParams();
+    
+                array_push($listAPI, $api);
+            }
         }
 
         return array('listAPI' => $listAPI);

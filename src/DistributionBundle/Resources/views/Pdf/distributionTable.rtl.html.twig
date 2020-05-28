@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+{% macro calcBeneficiaries(list, min, max, gender) %}
+    {% set count = 0 %}
+    {% for beneficiary in list %}
+        {% if beneficiary.age >= min and beneficiary.age <= max and beneficiary.gender == gender %}
+            {% set count = count + 1 %}
+        {% endif %}
+    {% endfor %}
+    {{ count }}
+{%- endmacro %}
+
+<html dir="{{ direction }}">
+<head>
+    <meta charset="utf-8">
+    <style>
+        * {
+            font-family: "DejaVu Sans", SansSerif;
+            font-size: 7px;
+            text-align: right;
+        }
+
+        @page {
+            margin: 5mm;
+            padding: 0;
+        }
+
+        body, main {
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 130%;
+            margin: 0;
+            padding: 0;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        table {
+            border: 1px solid black;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            white-space: nowrap;
+        }
+
+        td.title {
+            font-weight: bold;
+            padding: .2em 0;
+            width: 15%;
+        }
+
+        td.label {
+            font-weight: bold;
+            padding: .2em;
+            width: 15%;
+        }
+
+        main > div {
+            margin: 12px 0;
+        }
+
+        table.title {
+            border: 0 none;
+        }
+
+        table.title td {
+            border: 0 none;
+        }
+
+        .logos img {
+            height: 50px;
+            margin-right: 5px;
+            float: left;
+        }
+
+        .logos span {
+            height: 48px;
+            width: 48px;
+            border: .2px solid black;
+            display: inline-block;
+            float: left;
+            line-height: 40px;
+            text-align: center;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .main-info {
+            clear: both;
+        }
+
+        .main-info td.label {
+            text-align: left;
+        }
+
+        .approvals {
+            border: 1px solid black;
+            padding: 5px 5px 10px;
+            position: relative;
+            right: 0;
+            width: 66%;
+        }
+
+        .approvals td span {
+            float: right;
+        }
+
+        .approvals td.line {
+            border-bottom: 1px solid black;
+            padding: .2em;
+            height: 20px;
+            width: 100%;
+        }
+
+        .approvals table {
+            border: 0 none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .approvals table.inner td {
+            margin: 0;
+            padding: 0;
+        }
+
+        .approvals table.inner td.label {
+            width: auto;
+        }
+
+        .list table {
+            border-collapse: collapse;
+            margin: 0 10px 0 0;
+        }
+
+        .list td {
+            border-bottom: .5px solid black;
+            border-left: .5px solid black;
+            border-right: .5px solid black;
+            border-top: .5px solid black;
+            font-size: 90%;
+            text-align: center;
+            white-space: normal;
+            margin: 0;
+            padding: 2px;
+        }
+
+        .list tr.header td {
+            border: 1px solid black;
+        }
+
+        .list td.number {
+            width: 3mm;
+        }
+
+        .list td.firstname {
+            width: 13.1mm;
+        }
+
+        .list td.familyname {
+            width: 13.1mm;
+        }
+
+        .list td.dateofbirth {
+            width: 7.2mm;
+        }
+
+        .list td.id {
+            width: 9.3mm;
+        }
+
+        .list td.phone {
+            width: 9.3mm;
+        }
+
+        .list td.status {
+            width: 6.9mm;
+        }
+
+        .list td.gender {
+            border-right: 1px solid black;
+            width: 5.7mm;
+        }
+
+        .list td.member {
+            border-top: 0 none;
+            border-bottom: 3px double black;
+            width: 3.9mm;
+        }
+
+        .list tr.header.sex td.member {
+            border-top: 0 none;
+            border-bottom: 1px solid black;
+        }
+
+        .list td.signature {
+            border-left: 1px solid black;
+            width: 23.5mm;
+        }
+    </style>
+</head>
+<body dir="{{ direction }}">
+<main>
+    <table class="title">
+        <tr>
+            <td class="logos" align="left">
+                <img src=".{{ asset('bundles/distribution/pin.png') }}">
+
+                {% for donor in distribution.project.donors %}
+                    {% if donor.logo %}
+                        <img src="{{ donor.logo }}"/>
+                    {% endif %}
+                    <span>{{ donor.shortname }} </span>
+                {% endfor %}
+            </td>
+            <td><h1>{{ 'DISTRIBUTION SHEET'|trans }}</h1></td>
+        </tr>
+    </table>
+
+    {% set modalities = [] %}
+    {% set descriptions = [] %}
+    {% for commodity in distribution.commodities %}
+        {% set desc = '' %}
+        {% if commodity.modalityType.name != commodity.modalityType.modality.name %}
+            {% set desc = commodity.modalityType.modality.name %}
+        {% endif %}
+        {% set desc = desc ~ ' ' ~ commodity.modalityType.name ~ ' ' ~ commodity.unit ~ ' ' ~ commodity.value %}
+        {% set descriptions = descriptions|merge([desc]) %}
+        {% set modalities = modalities|merge([commodity.modalityType.name]) %}
+    {% endfor %}
+    <div class="main-info">
+        <table>
+            <tr>
+                <td>{{ modalities|join(', ') }} — {{ distribution.name }}</td>
+                <td class="label">:{{ 'Details'|trans }}</td>
+            </tr>
+            <tr>
+                <td>{{ distribution.project.name }}</td>
+                <td class="label">:{{ 'Project Name'|trans }}</td>
+            </tr>
+            <tr>
+                <td>{{ distribution.dateDistribution | date("m/d/Y") }}</td>
+                <td class="label">:{{ 'Distribution Date'|trans }}</td>
+            </tr>
+            <tr>
+                <td>
+                    {% set address = [] %}
+                    {% if distribution.location.adm4 %}{% set address = address|merge([distribution.location.adm4.name])%}{% endif %}
+                    {% if distribution.location.adm3 %}{% set address = address|merge([distribution.location.adm3.name])%}{% endif %}
+                    {% if distribution.location.adm2 %}{% set address = address|merge([distribution.location.adm2.name])%}{% endif %}
+                    {% if distribution.location.adm1 %}{% set address = address|merge([distribution.location.adm1.name])%}{% endif %}
+                    {{ address|join(', ') }}
+                </td>
+                <td class="label">:{{ 'Place'|trans }}</td>
+            </tr>
+            <tr>
+                <td>
+                    {{ descriptions|join(', ') }}
+                </td>
+                <td class="label">:{{ 'Item Description'|trans }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="approvals">
+        <table class="outer">
+            <tr>
+                <td class="title" colspan="2">{{ 'Approvals'|trans }}</td>
+            </tr>
+            <tr>
+                <td>
+                    <table class="inner">
+                        <tr>
+                            <td class="line"></td>
+                            <td class="label">:{{ 'On behalf of'|trans }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="inner">
+                        <tr>
+                            <td class="label">{{ 'On behalf of People in Need'|trans }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table class="inner">
+                        <tr>
+                            <td class="line"></td>
+                            <td class="label">:{{ 'Name'|trans }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="inner">
+                        <tr>
+                            <td class="line"></td>
+                            <td class="label">:{{ 'Name'|trans }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table class="inner">
+                        <tr>
+                            <td class="line"></td>
+                            <td class="label">:{{ 'Position'|trans }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="inner">
+                        <tr>
+                            <td class="line"></td>
+                            <td class="label">:{{ 'Position'|trans }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table class="inner">
+                        <tr>
+                            <td class="line"></td>
+                        </tr>
+                        <tr>
+                            <td class="label">:{{ 'Signature and Stamp'|trans }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="inner">
+                        <tr>
+                            <td class="line"></td>
+                        </tr>
+                        <tr>
+                            <td class="label">:{{ 'Signature and Stamp'|trans }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="confirmation">
+        <p>{{ 'The below listed person confirm by their signature of this Distribution List that they obtained and accepted
+the donation of the below specified items from People in Need. The below listed
+person agrees that their personal details will be processed by People in Need for the purpose of
+implementation of the project.'|trans }}
+        </p>
+    </div>
+
+    <div class="list">
+        <table>
+            <tr class="header">
+                <td></td>
+                <td class="label" colspan="10">{{ 'Household Members'|trans }}</td>
+                <td class="label" colspan="8">{{ 'Household Head'|trans }}</td>
+            </tr>
+            <tr class="header">
+                <td class="label signature" rowspan="2">{{ 'SIGNATURE'|trans }}</td>
+                <td class="label member">65+</td>
+                <td class="label member">65+</td>
+                <td class="label member">18-64</td>
+                <td class="label member">18-64</td>
+                <td class="label member">5-17</td>
+                <td class="label member">5-17</td>
+                <td class="label member">2-4</td>
+                <td class="label member">2-4</td>
+                <td class="label member">0-1</td>
+                <td class="label member">0-1</td>
+                <td class="label gender" rowspan="2">{{ 'Gender (M/F)'|trans }}</td>
+                <td class="label status" rowspan="2">{{ 'STATUS (Resident, IDP or Refugee'|trans }}</td>
+                <td class="label phone" rowspan="2">{{ 'PHONE NUMBER'|trans }}</td>
+                <td class="label id" rowspan="2">{{ 'ID No.'|trans }}</td>
+                <td class="label dateofbirth" rowspan="2">{{ 'DATE OF BIRTH'|trans }}</td>
+                <td class="label familyname" rowspan="2">{{ 'FAMILY NAME'|trans }}</td>
+                <td class="label firstname" rowspan="2">{{ 'FIRST NAME'|trans }}</td>
+                <td class="label number" rowspan="2">{{ '№'|trans }}</td>
+            </tr>
+            <tr class="header sex">
+                <td class="label member">{{ 'F'|trans }}</td>
+                <td class="label member">{{ 'M'|trans }}</td>
+                <td class="label member">{{ 'F'|trans }}</td>
+                <td class="label member">{{ 'M'|trans }}</td>
+                <td class="label member">{{ 'F'|trans }}</td>
+                <td class="label member">{{ 'M'|trans }}</td>
+                <td class="label member">{{ 'F'|trans }}</td>
+                <td class="label member">{{ 'M'|trans }}</td>
+                <td class="label member">{{ 'F'|trans }}</td>
+                <td class="label member">{{ 'M'|trans }}</td>
+            </tr>
+
+            {% for distributionBeneficiary in distribution.distributionBeneficiaries %}
+                <tr>
+                    <td class="signature"></td>
+                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 65, 1000, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 65, 1000, 0) }}</td>
+                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 18, 64, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 18, 64, 0) }}</td>
+                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 5, 17, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 5, 17, 0) }}</td>
+                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 2, 4, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 2, 4, 0) }}</td>
+                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 0, 1, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 0, 1, 0) }}</td>
+                    <td class="gender">
+                        {% if distributionBeneficiary.beneficiary.gender == '0' %}
+                            {{ 'F'|trans }}
+                        {% elseif distributionBeneficiary.beneficiary.gender == '1' %}
+                            {{ 'M'|trans }}
+                        {% endif %}
+                    </td>
+                    <td>{{ distributionBeneficiary.beneficiary.residencyStatus |trans }}</td>
+                    <td>
+                        {% for phone in distributionBeneficiary.beneficiary.phones %}
+                            {{ phone.prefix }}{{ phone.number }} <br>
+                        {% endfor %}
+                    </td>
+                    <td>{{ distributionBeneficiary.beneficiary.id }}</td>
+                    <td>{{ distributionBeneficiary.beneficiary.dateOfBirth | date("m/d/Y") }}</td>
+                    <td>{{ distributionBeneficiary.beneficiary.localFamilyName }}</td>
+                    <td>{{ distributionBeneficiary.beneficiary.localGivenName }}</td>
+                    <td>{{ loop.index }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</main>
+</body>
+</html>

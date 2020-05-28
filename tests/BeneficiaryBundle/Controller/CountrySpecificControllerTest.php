@@ -6,7 +6,7 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use CommonBundle\Utils\ExportService;
 use Tests\BMSServiceTestCase;
 
-class CountryControllerTest extends BMSServiceTestCase
+class CountrySpecificControllerTest extends BMSServiceTestCase
 {
     public function setUp()
     {
@@ -38,7 +38,7 @@ class CountryControllerTest extends BMSServiceTestCase
         $countryResponse = $this->request('PUT', 'api/wsse/country_specifics', $body);
         $listCountry = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $listCountry);
         $this->assertArrayHasKey('field_string', $listCountry);
         $this->assertArrayHasKey('country_iso3', $listCountry);
@@ -56,7 +56,7 @@ class CountryControllerTest extends BMSServiceTestCase
         $countryResponse = $this->request('GET', 'api/wsse/country_specifics');
         $listCountry = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $listCountry[0]);
         $this->assertArrayHasKey('field_string', $listCountry[0]);
         $this->assertArrayHasKey('country_iso3', $listCountry[0]);
@@ -85,7 +85,7 @@ class CountryControllerTest extends BMSServiceTestCase
         $countryResponse = $this->request('POST', 'api/wsse/country_specifics/' . $objectCountry['id'], $body);
         $listCountry = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $listCountry);
         $this->assertArrayHasKey('field_string', $listCountry);
         $this->assertArrayHasKey('country_iso3', $listCountry);
@@ -108,7 +108,7 @@ class CountryControllerTest extends BMSServiceTestCase
         $countryResponse = $this->request("DELETE", 'api/wsse/country_specifics/' . $objectCountry['id']);
         $listCountry = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         return true;
     }

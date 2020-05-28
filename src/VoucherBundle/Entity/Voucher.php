@@ -2,13 +2,8 @@
 
 namespace VoucherBundle\Entity;
 
-use DistributionBundle\Entity\DistributionBeneficiary;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use \VoucherBundle\Entity\Product;
-use \VoucherBundle\Entity\Booklet;
-use \VoucherBundle\Entity\Vendor;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use CommonBundle\Utils\ExportableInterface;
@@ -49,12 +44,6 @@ class Voucher implements ExportableInterface
     private $code;
 
     /**
-     * @ORM\ManyToMany(targetEntity="\VoucherBundle\Entity\Product", inversedBy="vouchers")
-     * @Groups({"FullVoucher", "ValidatedDistribution"})
-     */
-    private $products;
-
-    /**
      * @var int
      *
      * @ORM\Column(name="value", type="integer")
@@ -76,6 +65,14 @@ class Voucher implements ExportableInterface
      */
     private $vendor;
 
+    /**
+     * @var Collection|VoucherRecord[]
+     *
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\VoucherRecord", mappedBy="voucher", cascade={"persist"}, orphanRemoval=true)
+     * @Groups({"FullVoucher", "ValidatedDistribution"})
+     */
+    private $records;
+
 
     /**
      * Get id.
@@ -94,7 +91,7 @@ class Voucher implements ExportableInterface
      *
      * @return Voucher
      */
-    public function setusedAt($usedAt)
+    public function setUsedAt($usedAt)
     {
         $this->usedAt = $usedAt;
 
@@ -106,7 +103,7 @@ class Voucher implements ExportableInterface
      *
      * @return \DateTime
      */
-    public function getusedAt()
+    public function getUsedAt()
     {
         return $this->usedAt;
     }
@@ -134,7 +131,7 @@ class Voucher implements ExportableInterface
     {
         return $this->value;
     }
-    
+
     /**
      * Set code.
      *
@@ -157,32 +154,6 @@ class Voucher implements ExportableInterface
     public function getCode()
     {
         return $this->code;
-    }
-
-    /**
-     * @return Collection|Product[]
-     */
-    public function getProducts(): Collection
-    {
-        return $this->products;
-    }
-
-    public function addProduct(Product $product): self
-    {
-        if (!$this->products->contains($product)) {
-            $this->products[] = $product;
-        }
-
-        return $this;
-    }
-
-    public function removeProduct(Product $product): self
-    {
-        if ($this->products->contains($product)) {
-            $this->products->removeElement($product);
-        }
-
-        return $this;
     }
 
     public function getBooklet(): Booklet
@@ -209,7 +180,35 @@ class Voucher implements ExportableInterface
         return $this;
     }
 
-     /**
+    /**
+     * @return Collection|VoucherRecord[]
+     */
+    public function getRecords()
+    {
+        return $this->records;
+    }
+
+    /**
+     * @param VoucherRecord $voucherRecord
+     * @return $this
+     */
+    public function addRecord(VoucherRecord $voucherRecord): self
+    {
+        foreach ($this->records as $record) {
+            if ($record->getProduct()->getId() === $voucherRecord->getProduct()->getId()) {
+                $record->setQuantity($record->getQuantity() + $voucherRecord->getQuantity() ?: null);
+                $record->setValue($record->getValue() + $voucherRecord->getValue() ?: null);
+                return $this;
+            }
+        }
+
+        $voucherRecord->setVoucher($this);
+        $this->records->add($voucherRecord);
+
+        return $this;
+    }
+
+    /**
      * Returns an array representation of this class in order to prepare the export
      * @return array
      */

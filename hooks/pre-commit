@@ -75,14 +75,13 @@ else
 fi
 
 function find_disallowed_file() {
-	for FILE in $1 ; do
-		# Check if the file contains one of the words in LIST
-		if grep -w $LIST $FILE; then
-		echo $FILE." has one of the word you don't want to commit. Please remove it"
-		exit 1
-		fi
-		done
-	exit 
+    for FILE in $1 ; do
+        # Check if the file contains one of the words in LIST
+        if grep -w $LIST $FILE; then
+            echo $FILE." has one of the word you don't want to commit. Please remove it"
+            exit 1
+        fi
+    done
 }
 
 find_disallowed_file "`tree -if --noreport src | grep '.php'`"

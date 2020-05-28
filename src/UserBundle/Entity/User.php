@@ -3,6 +3,7 @@
 namespace UserBundle\Entity;
 
 use CommonBundle\Utils\ExportableInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 use JMS\Serializer\Annotation\Groups;
@@ -93,6 +94,22 @@ class User extends BaseUser implements ExportableInterface
      */
     protected $language;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="phonePrefix", type="string", nullable=true)
+     * @Groups({"FullUser"})
+     */
+    protected $phonePrefix;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="phoneNumber", type="integer", nullable=true)
+     * @Groups({"FullUser"})
+     */
+    protected $phoneNumber;
+
      /**
      * @var boolean
      * @ORM\Column(name="changePassword", type="boolean", options={"default" : 0})
@@ -100,9 +117,17 @@ class User extends BaseUser implements ExportableInterface
      */
     protected $changePassword;
 
+    /**
+     * @var boolean
+     * @ORM\Column(name="twoFactorAuthentication", type="boolean", options={"default" : 0})
+     * @Groups({"FullUser"})
+     */
+    protected $twoFactorAuthentication = false;
+
     public function __construct()
     {
         parent::__construct();
+        $this->countries = new ArrayCollection();
     }
 
     /**
@@ -127,7 +152,7 @@ class User extends BaseUser implements ExportableInterface
      */
     public function addCountry(\UserBundle\Entity\UserCountry $country)
     {
-        $this->countries[] = $country;
+        $this->countries->add($country);
 
         return $this;
     }
@@ -283,6 +308,54 @@ class User extends BaseUser implements ExportableInterface
         return $this->vendor;
     }
 
+        /**
+     * Set phonePrefix.
+     *
+     * @param string $phonePrefix
+     *
+     * @return User
+     */
+    public function setPhonePrefix($phonePrefix)
+    {
+        $this->phonePrefix = $phonePrefix;
+
+        return $this;
+    }
+
+    /**
+     * Get phonePrefix.
+     *
+     * @return string
+     */
+    public function getPhonePrefix()
+    {
+        return $this->phonePrefix;
+    }
+
+    /**
+     * Set phoneNumber.
+     *
+     * @param int $phoneNumber
+     *
+     * @return User
+     */
+    public function setPhoneNumber($phoneNumber)
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    /**
+     * Get phoneNumber.
+     *
+     * @return int
+     */
+    public function getPhoneNumber()
+    {
+        return $this->phoneNumber;
+    }
+
     /**
     * Get changePassword.
     *
@@ -303,5 +376,28 @@ class User extends BaseUser implements ExportableInterface
     public function setChangePassword($changePassword)
     {
         $this->changePassword = $changePassword;
+        return $this;
+    }
+
+    /**
+    * Get twoFactorAuthentication.
+    *
+    * @return boolean
+    */
+    public function getTwoFactorAuthentication()
+    {
+        return $this->twoFactorAuthentication;
+    }
+
+    /**
+    * Set twoFactorAuthentication.
+    *
+    * @param boolean $twoFactorAuthentication
+    *
+    * @return User
+    */
+    public function setTwoFactorAuthentication($twoFactorAuthentication)
+    {
+        $this->twoFactorAuthentication = $twoFactorAuthentication;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 
@@ -26,7 +27,7 @@ class Address
      * @var string|null
      *
      * @ORM\Column(name="number", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullBeneficiary", "FullHousehold"})
      */
     private $number;
 
@@ -34,7 +35,7 @@ class Address
      * @var string
      *
      * @ORM\Column(name="street", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullBeneficiary", "FullHousehold"})
      */
     private $street;
 
@@ -42,16 +43,43 @@ class Address
      * @var string
      *
      * @ORM\Column(name="postcode", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullBeneficiary", "FullHousehold"})
      */
     private $postcode;
 
     /**
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold"})
      */
     private $location;
 
+
+    /**
+     * @param string $street
+     * @param string $number
+     * @param string $postCode
+     * @param Location $location
+     * @return self
+     */
+    public static function create(string $street, string $number, string $postCode, Location $location = null): self
+    {
+        $address = new Address();
+        $address->setNumber($number)
+            ->setStreet($street)
+            ->setPostcode($postCode)
+            ->setLocation($location);
+        return $address;
+    }
+
+    public static function createFromArray(array $addressArray, Location $location): self
+    {
+        $address = new Address();
+        $address->setNumber($addressArray['number'])
+            ->setStreet($addressArray['street'])
+            ->setPostcode($addressArray['postcode'])
+            ->setLocation($location);
+        return $address;
+    }
 
     /**
      * Get id.
@@ -159,5 +187,15 @@ class Address
     {
         return $this->location;
     }
+
+    public function equals(self $address): bool
+    {
+        if ($address->number !== $this->number) return false;
+        if ($address->street !== $this->street) return false;
+        if ($address->postcode !== $this->postcode) return false;
+        if ($address->location !== $this->location) return false;
+        return true;
+    }
+
 
 }

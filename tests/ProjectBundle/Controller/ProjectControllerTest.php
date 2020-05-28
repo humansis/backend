@@ -51,7 +51,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/projects', $this->body);
 
         $project = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         try {
             $this->assertArrayHasKey('id', $project);
             $this->assertArrayHasKey('iso3', $project);
@@ -92,7 +92,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->body['name'] = $this->name;
         $newproject = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->em->clear();
         try {
@@ -172,7 +172,7 @@ class ProjectControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('POST', '/api/wsse/projects/' . $project['id'] . '/beneficiaries/add', $body);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
     }
 
     /**
@@ -190,7 +190,7 @@ class ProjectControllerTest extends BMSServiceTestCase
 
         $this->request('DELETE', '/api/wsse/projects/' . $project['id']);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->remove($this->name . '(u)');
     }
