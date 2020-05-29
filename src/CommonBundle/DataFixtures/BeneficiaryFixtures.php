@@ -5,11 +5,12 @@ namespace CommonBundle\DataFixtures;
 
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
-class BeneficiaryFixtures extends Fixture
+class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
 {
     private $householdArray = [
         [
@@ -288,5 +289,12 @@ class BeneficiaryFixtures extends Fixture
                 $this->householdService->createOrEdit($household, $projects);
             }
         }
+    }
+
+    public function getDependencies()
+    {
+        return [
+            LocationFixtures::class,
+        ];
     }
 }
