@@ -4,12 +4,13 @@
 namespace CommonBundle\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
-class ProjectFixtures extends Fixture
+class ProjectFixtures extends Fixture implements FixtureGroupInterface
 {
     private $countries = ["KHM", "UKR", "SYR"];
 
@@ -84,5 +85,10 @@ class ProjectFixtures extends Fixture
             $manager->flush();
 
         }
+    }
+
+    public static function getGroups(): array
+    {
+        return ['test'];
     }
 }
