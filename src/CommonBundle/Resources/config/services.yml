@@ -112,6 +112,13 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\BeneficiaryTestFixtures:
+        arguments:
+            - "@kernel"
+            - "@beneficiary.household_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\DistributionFixtures:
         arguments:
             - "@kernel"
