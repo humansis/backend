@@ -356,15 +356,17 @@ class Booklet implements ExportableInterface
         return $value;
     }
 
+    /**
+     * @return \DateTimeInterface|null Datetime last purchased voucher
+     */
     public function getUsedAt()
     {
         $date = null;
-        if ($this->getStatus() === 2 || $this->getStatus() === 3) {
-            $vouchers = $this->getVouchers();
-
-            foreach ($vouchers as $voucher) {
-                if ($date === null || $date < $voucher->getUsedAt()) {
-                    $date = $voucher->getUsedAt();
+        if (in_array($this->getStatus(), [self::USED, self::DEACTIVATED])) {
+            foreach ($this->getVouchers() as $voucher) {
+                $purchase = $voucher->getVoucherPurchase();
+                if (null !== $purchase && (null === $date || 0 === $purchase->getCreatedAt()->diff($date)->invert)) {
+                    $date = $purchase->getCreatedAt();
                 }
             }
         }

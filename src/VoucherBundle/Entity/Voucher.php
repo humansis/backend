@@ -27,15 +27,6 @@ class Voucher implements ExportableInterface
     private $id;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="used_at", type="datetime", nullable=true)
-     * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullVoucher", "ValidatedDistribution"})
-     */
-    private $usedAt;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
@@ -59,20 +50,11 @@ class Voucher implements ExportableInterface
     private $booklet;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor", inversedBy="vouchers")
+     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\VoucherPurchase", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"FullVoucher"})
      */
-    private $vendor;
-
-    /**
-     * @var Collection|VoucherRecord[]
-     *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\VoucherRecord", mappedBy="voucher", cascade={"persist"}, orphanRemoval=true)
-     * @Groups({"FullVoucher", "ValidatedDistribution"})
-     */
-    private $records;
-
+    private $voucherPurchase;
 
     /**
      * Get id.
@@ -82,30 +64,6 @@ class Voucher implements ExportableInterface
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set usedAt.
-     *
-     * @param \DateTime $usedAt
-     *
-     * @return Voucher
-     */
-    public function setUsedAt($usedAt)
-    {
-        $this->usedAt = $usedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get usedAt.
-     *
-     * @return \DateTime
-     */
-    public function getUsedAt()
-    {
-        return $this->usedAt;
     }
 
     /**
@@ -168,44 +126,12 @@ class Voucher implements ExportableInterface
         return $this;
     }
 
-    public function getVendor(): Vendor
-    {
-        return $this->vendor;
-    }
-
-    public function setVendor(Vendor $vendor = null): self
-    {
-        $this->vendor = $vendor;
-
-        return $this;
-    }
-
     /**
-     * @return Collection|VoucherRecord[]
+     * @return VoucherPurchase|null
      */
-    public function getRecords()
+    public function getVoucherPurchase(): ?VoucherPurchase
     {
-        return $this->records;
-    }
-
-    /**
-     * @param VoucherRecord $voucherRecord
-     * @return $this
-     */
-    public function addRecord(VoucherRecord $voucherRecord): self
-    {
-        foreach ($this->records as $record) {
-            if ($record->getProduct()->getId() === $voucherRecord->getProduct()->getId()) {
-                $record->setQuantity($record->getQuantity() + $voucherRecord->getQuantity() ?: null);
-                $record->setValue($record->getValue() + $voucherRecord->getValue() ?: null);
-                return $this;
-            }
-        }
-
-        $voucherRecord->setVoucher($this);
-        $this->records->add($voucherRecord);
-
-        return $this;
+        return $this->voucherPurchase;
     }
 
     /**
