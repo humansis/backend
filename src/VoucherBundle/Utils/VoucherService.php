@@ -131,7 +131,7 @@ class VoucherService
                     $product,
                     $voucherData['value'] ?? null,
                     $voucherData['quantity'] ?? null,
-                    isset($voucherData['usedAt']) ? \DateTime::createFromFormat('d-m-Y H:i:s', $voucherData['usedAt']) : null
+                    isset($voucherData['used_at']) ? new \DateTime($voucherData['used_at']) : null
                 );
 
                 $voucher->addRecord($record);
