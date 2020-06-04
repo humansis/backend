@@ -114,6 +114,7 @@ class VoucherPurchase
     public function addVoucher(Voucher $voucher): void
     {
         if (!$this->vouchers->contains($voucher)) {
+            $voucher->setVoucherPurchase($this);
             $this->vouchers->add($voucher);
         }
     }

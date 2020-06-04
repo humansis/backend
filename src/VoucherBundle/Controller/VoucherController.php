@@ -233,7 +233,7 @@ class VoucherController extends Controller
                 $productData = [];
                 foreach ($voucherData['productIds'] as $id) {
                     if (false === $value) {
-                        $value = $voucherData['value'];
+                        $value = $voucherData['value'] ?? 0;
                     }
 
                     $productData[] = [
@@ -248,9 +248,12 @@ class VoucherController extends Controller
 
                 $input = new VoucherPurchase();
                 $input->setProducts($productData);
-                $input->setCreatedAt(\DateTime::createFromFormat('d-m-Y H:i:s', $voucherData['used_at']));
                 $input->setVouchers([$voucherData['id']]);
                 $input->setVendorId($voucherData['vendorId']);
+
+                if (isset($voucherData['used_at'])) {
+                    $input->setCreatedAt(new \DateTime($voucherData['used_at']));
+                }
 
                 $voucherPurchase = $this->get('voucher.purchase_service')->purchase($input);
 

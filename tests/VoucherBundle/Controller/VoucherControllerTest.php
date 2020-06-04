@@ -154,7 +154,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $voucherSearch = $this->em->getRepository(Voucher::class)->find($newVoucherReceived[0]['id']);
-        $this->assertTrue($voucherSearch->getUsedAt() !== null);
+        $this->assertTrue($voucherSearch->getVoucherPurchase()->getCreatedAt() !== null);
 
         return $newVoucherReceived;
     }

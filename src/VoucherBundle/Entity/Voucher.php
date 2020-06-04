@@ -135,6 +135,17 @@ class Voucher implements ExportableInterface
     }
 
     /**
+     * @param VoucherPurchase $purchase
+     * @return $this
+     */
+    public function setVoucherPurchase(VoucherPurchase $purchase): self
+    {
+        $this->voucherPurchase = $purchase;
+
+        return $this;
+    }
+
+    /**
      * Returns an array representation of this class in order to prepare the export
      * @return array
      */
