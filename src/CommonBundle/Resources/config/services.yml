@@ -105,13 +105,6 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\BeneficiaryFixtures:
-        arguments:
-            - "@kernel"
-            - "@beneficiary.household_service"
-        tags:
-            - { name: doctrine.fixture.orm }
-
     CommonBundle\DataFixtures\BeneficiaryTestFixtures:
         arguments:
             - "@kernel"
