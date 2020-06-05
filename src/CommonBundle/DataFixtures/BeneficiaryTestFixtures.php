@@ -197,6 +197,8 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             $manager->persist($householdLocation);
             $household->addHouseholdLocation($householdLocation);
 
+            $project->addHousehold($household);
+
             $manager->persist($household);
             echo ".";
         }
