@@ -225,12 +225,11 @@ class SmartcardController extends Controller
     /**
      * Put money to smartcard.
      *
-     * @Rest\Post("/offline-app/v1/smartcards/{id}/deposit")
+     * @Rest\Post("/smartcards/{id}/deposit")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
-     * @SWG\Tag(name="Offline App")
      *
      * @SWG\Parameter(
      *     name="id",
