@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Model\Household\HouseholdChange;
 
 use BeneficiaryBundle\Entity\HouseholdActivity;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Class FilteredHouseholdChange allowes only defined fields to be shown as changed.
@@ -21,9 +22,12 @@ class FilteredHouseholdChange extends AbstractHouseholdChange
         parent::__construct($activity, $previousActivity);
     }
 
+    /**
+     * @SymfonyGroups({"HouseholdChanges"})
+     */
     public function getChanges(): array
     {
-        $diff = $this->getChanges();
+        $diff = parent::getChanges();
 
         $result = [];
 
