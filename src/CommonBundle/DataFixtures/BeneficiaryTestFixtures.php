@@ -11,6 +11,9 @@ use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Utils\HouseholdService;
 use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Adm3;
+use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -99,16 +102,49 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         }
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
-            $locations = $manager->getRepository(Location::class)->getByCountry($project->getIso3());
-            $locationCount = count($locations);
-            echo "Project {$project->getName()}/{$project->getIso3()} in {$locationCount}";
+            echo "Project {$project->getName()}/{$project->getIso3()}";
             $locationIndex = 0;
-            foreach ($locations as $location) {
+            foreach ($this->getTestingLocations($manager, (string)$project->getIso3()) as $location) {
                 $locationIndex++;
                 $this->createHousehold($manager, $location, $project);
+                if (($locationIndex % 200) == 0) {
+                    $manager->flush();
+                }
             }
             echo "\n";
             $manager->flush();
+        }
+    }
+
+    private function getTestingLocations(ObjectManager $manager, string $iso3)
+    {
+        $adm1s = $manager->getRepository(Adm1::class)->findBy([
+            'countryISO3' => $iso3,
+            'name' => [LocationTestFixtures::ADM1_1.$iso3, LocationTestFixtures::ADM1_2.$iso3]
+        ]);
+        foreach ($adm1s as $adm1) {
+            yield $adm1->getLocation();
+        }
+        $adm2s = $manager->getRepository(Adm2::class)->findBy([
+            'adm1' => $adm1s,
+            'name' => [LocationTestFixtures::ADM2_1.$iso3, LocationTestFixtures::ADM2_2.$iso3]
+        ]);
+        foreach ($adm2s as $adm2) {
+            yield $adm2->getLocation();
+        }
+        $adm3s = $manager->getRepository(Adm3::class)->findBy([
+            'adm2' => $adm2s,
+            'name' => [LocationTestFixtures::ADM3_1.$iso3, LocationTestFixtures::ADM3_2.$iso3]
+        ]);
+        foreach ($adm3s as $adm3) {
+            yield $adm3->getLocation();
+        }
+        $adm4s = $manager->getRepository(Adm4::class)->findBy([
+            'adm3' => $adm3s,
+            'name' => [LocationTestFixtures::ADM4_1.$iso3, LocationTestFixtures::ADM4_2.$iso3]
+        ]);
+        foreach ($adm4s as $adm4) {
+            yield $adm4->getLocation();
         }
     }
 
