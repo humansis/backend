@@ -29,8 +29,6 @@ class FilteredHouseholdChange extends AbstractHouseholdChange
     {
         $diff = parent::getChanges();
 
-        $result = [];
-
         // only allowed fields can be shown
         foreach ($diff as $field => $value) {
             if (!in_array($field, self::ALLOWED_FIELDS)) {
@@ -38,6 +36,6 @@ class FilteredHouseholdChange extends AbstractHouseholdChange
             }
         }
 
-        return $result;
+        return $diff;
     }
 }
