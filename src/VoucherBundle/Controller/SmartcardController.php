@@ -104,7 +104,7 @@ class SmartcardController extends Controller
     /**
      * Info about smartcard.
      *
-     * @Rest\Get("/offline-app/v1/smartcards/{id}")
+     * @Rest\Get("/offline-app/v1/smartcards/{serialNumber}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_VENDOR')")
      * @ParamConverter("smartcard")
      *
@@ -112,11 +112,11 @@ class SmartcardController extends Controller
      * @SWG\Tag(name="Offline App")
      *
      * @SWG\Parameter(
-     *     name="id",
+     *     name="serialNumber",
      *     in="path",
-     *     type="integer",
+     *     type="string",
      *     required=true,
-     *     description="ID of smartcard"
+     *     description="Serial number (GUID) of smartcard"
      * )
      *
      * @SWG\Response(
@@ -142,7 +142,7 @@ class SmartcardController extends Controller
     /**
      * Update smartcard.
      *
-     * @Rest\Put("/offline-app/v1/smartcards/{id}")
+     * @Rest\Put("/offline-app/v1/smartcards/{serialNumber}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @ParamConverter("smartcard")
      *
@@ -150,11 +150,11 @@ class SmartcardController extends Controller
      * @SWG\Tag(name="Offline App")
      *
      * @SWG\Parameter(
-     *     name="id",
+     *     name="serialNumber",
      *     in="path",
-     *     type="integer",
+     *     type="string",
      *     required=true,
-     *     description="ID of smartcard"
+     *     description="Serial number (GUID) of smartcard"
      * )
      *
      * @SWG\Parameter(
@@ -225,18 +225,18 @@ class SmartcardController extends Controller
     /**
      * Put money to smartcard.
      *
-     * @Rest\Post("/smartcards/{id}/deposit")
+     * @Rest\Post("/smartcards/{serialNumber}/deposit")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
      *
      * @SWG\Parameter(
-     *     name="id",
+     *     name="serialNumber",
      *     in="path",
-     *     type="integer",
+     *     type="string",
      *     required=true,
-     *     description="ID of smartcard"
+     *     description="Serial number (GUID) of smartcard"
      * )
      *
      * @SWG\Parameter(
@@ -294,7 +294,7 @@ class SmartcardController extends Controller
     /**
      * Purchase goods from smartcard.
      *
-     * @Rest\Post("/vendor-app/v1/smartcards/{id}/purchase")
+     * @Rest\Post("/vendor-app/v1/smartcards/{serialNumber}/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
      * @ParamConverter("smartcard")
      *
@@ -302,11 +302,11 @@ class SmartcardController extends Controller
      * @SWG\Tag(name="Vendor App")
      *
      * @SWG\Parameter(
-     *     name="id",
+     *     name="serialNumber",
      *     in="path",
-     *     type="integer",
+     *     type="string",
      *     required=true,
-     *     description="ID of smartcard"
+     *     description="Serial number (GUID) of smartcard"
      * )
      *
      * @SWG\Parameter(
