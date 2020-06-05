@@ -43,21 +43,9 @@ abstract class AbstractHouseholdChange
         $old = json_decode($this->previousActivity->getContent(), true);
 
         return $this->diff($new, $old);
-
-        $result = [];
-
-        // only allowed fields can be shown
-        $allowedFields = ['incomeLevel', 'debtLevel', 'foodConsumptionScore', 'supportDateReceived'];
-        foreach ($diff as $field => $value) {
-            if (!in_array($field, $allowedFields)) {
-                unset($diff[$field]);
-            }
-        }
-
-        return $result;
     }
 
-    protected final function diff($array1, $array2)
+    final protected function diff($array1, $array2)
     {
         if (!is_array($array1) || !is_array($array2)) {
             return $array1;
