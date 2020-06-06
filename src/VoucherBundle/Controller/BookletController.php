@@ -582,6 +582,30 @@ class BookletController extends Controller
     }
 
     /**
+     * Assign the booklet to a specific beneficiary.
+     *
+     * @Rest\Post("/offline-app/v1/booklets/assign/{distributionId}/{beneficiaryId}")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
+     * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
+     * @ParamConverter("distributionData", options={"mapping": {"distributionId": "id"}})
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
+     *
+     * @SWG\Tag(name="Offline App")
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(response=200, description="SUCCESS", @SWG\Schema(type="string"))
+     *
+     * @param Request          $request
+     * @param DistributionData $distributionData
+     * @param Beneficiary      $beneficiary
+     * @return Response
+     */
+    public function offlineAssignAction(Request $request, DistributionData $distributionData, Beneficiary $beneficiary)
+    {
+        return $this->assignAction($request, $distributionData, $beneficiary);
+    }
+
+    /**
      * To print a batch of booklets
      *
      * @Rest\Post("/booklets-print", name="print_booklets")

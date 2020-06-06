@@ -56,6 +56,32 @@ class ProjectController extends Controller
     }
 
     /**
+     * Get projects.
+     *
+     * @Rest\Get("/offline-app/v1/projects")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Projects")
+     * @SWG\Tag(name="Offline App")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All Projects",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Project::class))
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function offlineGetAllAction(Request $request)
+    {
+        return $this->getAllAction($request);
+    }
+
+    /**
      * @Rest\Get("/projects/{id}", name="get_one_project", requirements={"id"="\d+"})
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *

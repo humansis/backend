@@ -393,6 +393,32 @@ class DistributionController extends Controller
     }
 
     /**
+     * Get all beneficiaries of a distribution.
+     *
+     * @Rest\Get("/offline-app/v1/distributions/{id}/beneficiaries")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Offline App")
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="beneficiaries for one distribution",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Beneficiary::class))
+     *     )
+     * )
+     *
+     * @param DistributionData $distributionData
+     * @return Response
+     */
+    public function offlineGetDistributionBeneficiariesAction(DistributionData $distributionData)
+    {
+        return $this->getDistributionBeneficiariesAction($distributionData);
+    }
+
+    /**
      * Get beneficiaries of a distribution without booklets.
      *
      * @Rest\Get("/distributions/{id}/assignable-beneficiaries", name="get_assignable_beneficiaries_distribution", requirements={"id"="\d+"})
@@ -599,6 +625,35 @@ class DistributionController extends Controller
             );
 
         return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
+     * Get distributions of one project.
+     *
+     * @Rest\Get("/offline-app/v1/projects/{id}/distributions")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
+     *
+     * @SWG\Tag(name="Distributions")
+     * @SWG\Tag(name="Offline App")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=DistributionData::class, groups={"SmallDistribution"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(response=400, description="BAD_REQUEST")
+     *
+     * @param Project $project
+     *
+     * @return Response
+     */
+    public function offlineGetDistributionsAction(Project $project)
+    {
+        return $this->getDistributionsAction($project);
     }
 
     /**
@@ -847,5 +902,25 @@ class DistributionController extends Controller
             );
 
         return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
+     * Set general relief items as distributed.
+     *
+     * @Rest\Post("/offline-app/v1/distributions/generalrelief/distributed")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
+     *
+     * @SWG\Tag(name="Offline App")
+     * @SWG\Tag(name="General Relief")
+     *
+     * @SWG\Response(response=200, description="OK")
+     * @SWG\Response(response=400, description="BAD_REQUEST")
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    public function offlineSetGeneralReliefItemsAsDistributedAction(Request $request)
+    {
+        return $this->setGeneralReliefItemsAsDistributedAction($request);
     }
 }
