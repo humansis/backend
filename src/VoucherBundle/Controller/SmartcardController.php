@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -137,6 +138,47 @@ class SmartcardController extends Controller
         $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
+    }
+
+    /**
+     * List of blocked smardcards.
+     * Blocked smartcards are not allowed to pay with.
+     *
+     * @Rest\Get("/vendor-app/v1/smartcards/blocked")
+     * @Security("is_granted('ROLE_VENDOR')")
+     *
+     * @SWG\Tag(name="Smartcards")
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Parameter(
+     *     name="country",
+     *     in="header",
+     *     type="string",
+     *     required=true
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="List of blocked smartcards",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string",
+     *             description="serial number of blocked smartcard"
+     *         )
+     *     )
+     * )
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function listOfBlocked(Request $request): Response
+    {
+        $country = $request->headers->get('country');
+        $smartcards = $this->getDoctrine()->getRepository(Smartcard::class)->findBlocked($country);
+
+        return new JsonResponse($smartcards);
     }
 
     /**

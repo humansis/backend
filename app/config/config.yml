@@ -75,6 +75,8 @@ doctrine:
             type: apcu
         query_cache_driver:
             type: apcu
+        hydrators:
+            plain_values_hydrator: CommonBundle\Hydration\PlainValuesHydrator
 
 # Swiftmailer Configuration
 swiftmailer:
