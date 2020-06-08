@@ -32,6 +32,19 @@ services:
             - "@service_container"
         public: true
 
+    beneficiary.institution_output_factory:
+        class: BeneficiaryBundle\OutputType\Factory\InstitutionTypeFactory
+        arguments:
+            - '@jms_serializer'
+            - '@beneficiary.address_output_factory'
+        public: true
+
+    beneficiary.address_output_factory:
+        class: BeneficiaryBundle\OutputType\Factory\AddressTypeFactory
+        arguments:
+            - '@jms_serializer'
+        public: true
+
     beneficiary.beneficiary_service:
         class: BeneficiaryBundle\Utils\BeneficiaryService
         arguments:

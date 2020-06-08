@@ -1,7 +1,7 @@
 <?php
 
 
-namespace CommonBundle\DataFixtures;
+namespace CommonBundle\DataFixtures\Beneficiaries;
 
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Bundle\FixturesBundle\Fixture;

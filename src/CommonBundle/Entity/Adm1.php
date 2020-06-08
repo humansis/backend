@@ -27,7 +27,7 @@ class Adm1
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "FullVendor"})
+     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
      */
     private $id;
 
@@ -35,7 +35,7 @@ class Adm1
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "FullVendor"})
+     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
      */
     private $name;
 
@@ -43,7 +43,7 @@ class Adm1
      * @var string
      *
      * @ORM\Column(name="countryISO3", type="string", length=3)
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "FullVendor"})
+     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
      */
     private $countryISO3;
 

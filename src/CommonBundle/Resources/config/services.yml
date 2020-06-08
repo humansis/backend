@@ -58,6 +58,11 @@ services:
         tags:
         - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
+    CommonBundle\InputType\RequestConverter:
+        arguments:
+            - '@validator'
+        tags:
+            - { name: request.param_converter, converter: input_types_converter }
 
 #######################################################################################
 ##                                      FIXTURE                                      ##
@@ -99,10 +104,17 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\BeneficiaryFixtures:
+    CommonBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures:
         arguments:
             - "@kernel"
             - "@beneficiary.household_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\Beneficiaries\InstitutionFixture:
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@beneficiary.institution_service"
         tags:
             - { name: doctrine.fixture.orm }
 
