@@ -182,9 +182,9 @@ class SmartcardController extends Controller
     }
 
     /**
-     * Update smartcard.
+     * Update smartcard, typically its' state.
      *
-     * @Rest\Put("/offline-app/v1/smartcards/{serialNumber}")
+     * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @ParamConverter("smartcard")
      *
@@ -267,7 +267,7 @@ class SmartcardController extends Controller
     /**
      * Put money to smartcard.
      *
-     * @Rest\Post("/smartcards/{serialNumber}/deposit")
+     * @Rest\Patch("/smartcards/{serialNumber}/deposit")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @ParamConverter("smartcard")
      *
@@ -336,7 +336,7 @@ class SmartcardController extends Controller
     /**
      * Purchase goods from smartcard.
      *
-     * @Rest\Post("/vendor-app/v1/smartcards/{serialNumber}/purchase")
+     * @Rest\Patch("/vendor-app/v1/smartcards/{serialNumber}/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
      * @ParamConverter("smartcard")
      *
