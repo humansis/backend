@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use TransactionBundle\Entity\Transaction;
 
 /**
@@ -31,6 +32,7 @@ class User extends BaseUser implements ExportableInterface
     /**
      * @var string
      * @Groups({"FullUser", "FullVendor"})
+     * @SymfonyGroups({"HouseholdChanges"})
      * @Assert\NotBlank(message="Username can't be empty")
      * @Assert\Length(
      *      min = 2,
@@ -62,6 +64,7 @@ class User extends BaseUser implements ExportableInterface
     /**
      * @var string
      * @Groups({"FullUser"})
+     * @SymfonyGroups({"HouseholdChanges"})
      * @Assert\NotBlank(message="Email can't be empty")
      */
     protected $email;

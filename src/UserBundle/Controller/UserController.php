@@ -104,6 +104,60 @@ class UserController extends Controller
     }
 
     /**
+     * Log a user with its username and salted password.
+     *
+     * @Rest\Post("/offline-app/v1/login")
+     *
+     * @SWG\Tag(name="Offline App")
+     * @SWG\Tag(name="Users")
+     *
+     * @SWG\Response(
+     *      response=200,
+     *      description="SUCCESS",
+     *      examples={
+     *          "application/json": {
+     *              "at"="2018-01-12 12:11:05",
+     *              "registered"="true",
+     *              "user"="username"
+     *          }
+     *      }
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     type="json",
+     *     required=true,
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="username",
+     *             example="admin@example.org",
+     *             type="string",
+     *             description="username of the user",
+     *         ),
+     *         @SWG\Property(
+     *             property="password",
+     *             example="123456789abcdefg",
+     *             type="string",
+     *             description="salted password of the user",
+     *         )
+     *     )
+     * )
+     * @SWG\Response(
+     *     response=400,
+     *     description="Bad credentials (username: myUsername)"
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function offlineLoginAction(Request $request)
+    {
+        return $this->loginAction($request);
+    }
+
+    /**
      * Get user's salt
      *
      * @Rest\Get("/salt/{username}")
@@ -185,6 +239,43 @@ class UserController extends Controller
      * @return Response
      */
     public function vendorGetSaltAction($username)
+    {
+        return $this->getSaltAction($username);
+    }
+
+    /**
+     * Get user's salt.
+     *
+     * @Rest\Get("/offline-app/v1/salt/{username}")
+     *
+     * @SWG\Tag(name="Offline App")
+     *
+     * @SWG\Parameter(
+     *     name="username",
+     *     in="query",
+     *     type="string",
+     *     required=true,
+     *     description="username of the user"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *      examples={
+     *          "application/json": {
+     *              "user_id" = 1,
+     *              "salt" = "fgrgfhjjgh21h5rt"
+     *          }
+     *      }
+     * )
+     *
+     * @SWG\Response(response=400, description="BAD_REQUEST")
+     * @SWG\Response(response=423, description="LOCKED")
+     *
+     * @param $username
+     * @return Response
+     */
+    public function offlineGetSaltAction($username)
     {
         return $this->getSaltAction($username);
     }

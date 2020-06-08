@@ -84,6 +84,44 @@ class BeneficiaryController extends Controller
     }
 
     /**
+     * Edit a beneficiary {id} with data in the body.
+     *
+     * @Rest\Post("/offline-app/v1/beneficiaries/{id}")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Offline App")
+     * @SWG\Tag(name="Beneficiaries")
+     *
+     * @SWG\Parameter(
+     *     name="beneficiary",
+     *     in="body",
+     *     type="string",
+     *     required=true,
+     *     description="fields of the beneficiary which must be updated",
+     *     @Model(type=Beneficiary::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     *     @Model(type=Beneficiary::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Beneficiary $beneficiary
+     * @return Response
+     */
+    public function offlineUpdateAction(Request $request, Beneficiary $beneficiary)
+    {
+        return $this->updateAction($request, $beneficiary);
+    }
+
+    /**
      * @Rest\Get("/beneficiaries/{id}", name="get_one_beneficiary", requirements={"id"="\d+"})
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
