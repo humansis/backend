@@ -16,6 +16,8 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\CommunityConstraints;
 use CommonBundle\Entity\Location;
+use CommonBundle\InputType\Country;
+use CommonBundle\InputType\DataTableType;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
@@ -87,24 +89,23 @@ class CommunityService
     }
 
     /**
-     * @param string $iso3
-     * @param array $filters
+     * @param Country $country
+     * @param DataTableType $filters
      * @return mixed
      */
-    public function getAll(string $iso3, array $filters)
+    public function getAll(Country $country, DataTableType $filters)
     {
-        $pageIndex = $filters['pageIndex'];
-        $pageSize = $filters['pageSize'];
-        $filter = $filters['filter'];
-        $sort = $filters['sort'];
+        $communities = $this->em->getRepository(Community::class)->getAllBy(
+            $country->getIso3(),
+            $filters->getLimitMinimum(),
+            $filters->getPageSize(),
+            $filters->getFilter(),
+            $filters->getSort()
+        );
+        $length = $communities[0];
+        $communities = $communities[1];
 
-        $limitMinimum = $pageIndex * $pageSize;
-
-        $communitys = $this->em->getRepository(Community::class)->getAllBy($iso3, $limitMinimum, $pageSize, $sort);
-        $length = $communitys[0];
-        $communitys = $communitys[1];
-
-        return [$length, $communitys];
+        return [$length, $communities];
     }
 
     public function create(string $iso3, array $communityArray): Community

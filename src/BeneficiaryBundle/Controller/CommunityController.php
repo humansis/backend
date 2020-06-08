@@ -2,10 +2,13 @@
 
 namespace BeneficiaryBundle\Controller;
 
+use BeneficiaryBundle\InputType\CommunityType;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\CommunityCSVService;
 use BeneficiaryBundle\Utils\CommunityService;
 use BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper;
+use CommonBundle\InputType\Country;
+use CommonBundle\InputType\DataTableType;
 use CommonBundle\Response\CommonBinaryFileResponse;
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
@@ -56,52 +59,31 @@ class CommunityController extends Controller
     }
 
     /**
-     * @Rest\Post("/communitys/get/all", name="all_communitys")
-     * @ Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
+     * @Rest\Post("/communities/get/all", name="all_communities")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
      *
-     * @SWG\Tag(name="Communitys")
+     * @SWG\Tag(name="Communities")
      *
      * @SWG\Response(
      *     response=200,
-     *     description="All communitys",
+     *     description="All communities",
      *     @SWG\Schema(
      *          type="array",
      *          @SWG\Items(ref=@Model(type=Community::class))
      *     )
      * )
      *
-     * @param Request $request
+     * @param Country $country
+     * @param DataTableType $dataTableType
      * @return Response
      */
-    public function allAction(Request $request)
+    public function allAction(Country $country, DataTableType $dataTableType)
     {
-        $dataOptionRequirements = new OptionsResolver();
-        $dataOptionRequirements->setRequired([
-            'filter',
-            'sort',
-            'pageIndex',
-            'pageSize',
-            '__country',
-        ]);
-        $dataOptionRequirements->setAllowedTypes('filter', 'array');
-        $dataOptionRequirements->setAllowedTypes('sort', 'array');
-        $dataOptionRequirements->setAllowedTypes('pageIndex', 'int');
-        $dataOptionRequirements->setAllowedTypes('pageSize', 'int');
-        $dataOptionRequirements->setAllowedTypes('__country', 'string');
-        $dataOptionRequirements->setDefaults([
-            'filter' => [],
-            'sort' => [],
-            'pageIndex' => 0,
-            'pageSize' => 10,
-            '__country' => 'KHM',
-        ]);
-
-        $filters = $dataOptionRequirements->resolve($request->request->all());
         /** @var CommunityService $communityService */
         $communityService = $this->get('beneficiary.community_service');
 
         try {
-            $communitys = $communityService->getAll($filters['__country'], $filters);
+            $communitys = $communityService->getAll($country, $dataTableType);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
