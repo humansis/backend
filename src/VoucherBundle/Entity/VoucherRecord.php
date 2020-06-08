@@ -40,7 +40,7 @@ class VoucherRecord
     /**
      * @var Voucher
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Voucher")
+     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Voucher", inversedBy="records")
      */
     private $voucher;
 

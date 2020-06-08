@@ -6,6 +6,7 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use CommonBundle\Utils\ExportableInterface;
 use BeneficiaryBundle\Entity\Referral;
@@ -25,7 +26,8 @@ class Beneficiary implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "FullBeneficiary"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
+     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
     private $id;
 
@@ -698,6 +700,8 @@ class Beneficiary implements ExportableInterface
                 "tent number" => "",
                 "livelihood" => "",
                 "incomeLevel" => "",
+                "foodConsumptionScore" => "",
+                "copingStrategiesIndex" => "",
                 "notes" => "",
                 "latitude" => "",
                 "longitude" => "",
@@ -818,6 +822,8 @@ class Beneficiary implements ExportableInterface
             "tent number" => $tentNumber,
             "livelihood" => $livelihood,
             "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
+            "foodConsumptionScore" => $this->getHousehold()->getFoodConsumptionScore(),
+            "copingStrategiesIndex" => $this->getHousehold()->getCopingStrategiesIndex(),
             "notes" => $this->getHousehold()->getNotes(),
             "latitude" => $this->getHousehold()->getLatitude(),
             "longitude" => $this->getHousehold()->getLongitude(),

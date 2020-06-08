@@ -220,27 +220,46 @@
         </tr>
     </table>
 
+    {% set descriptions = [] %}
+    {% set modalities = [] %}
+    {% for commodity in distribution.commodities %}
+        {% set desc = commodity.value ~ ' ' ~ commodity.unit ~ ' ' ~ commodity.modalityType.name %}
+        {% if commodity.modalityType.name != commodity.modalityType.modality.name %}
+            {% set desc = desc ~ ' ' ~ commodity.modalityType.modality.name %}
+        {% endif %}
+        {% set descriptions = descriptions|merge([desc]) %}
+        {% set modalities = modalities|merge([commodity.modalityType.name]) %}
+    {% endfor %}
     <div class="main-info">
         <table>
             <tr>
                 <td class="label">{{ 'Details'|trans }}:</td>
-                <td></td>
+                <td>{{ distribution.name }} — {{ modalities|join(', ') }}</td>
             </tr>
             <tr>
-                <td class="label">{{ 'Project title'|trans }}:</td>
-                <td></td>
+                <td class="label">{{ 'Project Name'|trans }}:</td>
+                <td>{{ distribution.project.name }}</td>
             </tr>
             <tr>
-                <td class="label">{{ 'Date of distribution'|trans }}:</td>
-                <td></td>
+                <td class="label">{{ 'Distribution Date'|trans }}:</td>
+                <td>{{ distribution.dateDistribution | date("m/d/Y") }}</td>
             </tr>
             <tr>
                 <td class="label">{{ 'Place'|trans }}:</td>
-                <td></td>
+                <td>
+                    {% set address = [] %}
+                    {% if distribution.location.adm1 %}{% set address = address|merge([distribution.location.adm1.name])%}{% endif %}
+                    {% if distribution.location.adm2 %}{% set address = address|merge([distribution.location.adm2.name])%}{% endif %}
+                    {% if distribution.location.adm3 %}{% set address = address|merge([distribution.location.adm3.name])%}{% endif %}
+                    {% if distribution.location.adm4 %}{% set address = address|merge([distribution.location.adm4.name])%}{% endif %}
+                    {{ address|join(', ') }}
+                </td>
             </tr>
             <tr>
                 <td class="label">{{ 'Item Description'|trans }}:</td>
-                <td></td>
+                <td>
+                    {{ descriptions|join(', ') }}
+                </td>
             </tr>
         </table>
     </div>

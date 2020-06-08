@@ -269,6 +269,8 @@ class HouseholdController extends Controller
         $token = empty($request->query->get('token')) ? null : $request->query->get('token');
 
         $contentJson = $request->request->get('errors');
+        $tmpFile = $request->request->get('tmpFile');
+        $mapping = $request->request->get('mapping');
 
         $email = $request->query->get('email');
         $countryIso3 = $request->request->get('__country');
@@ -276,12 +278,18 @@ class HouseholdController extends Controller
         /** @var HouseholdCSVService $householdService */
         $householdService = $this->get('beneficiary.household_csv_service');
 
-        if ($token === null) {
+        if ($token === null && empty($mapping)) {
             if (!$request->files->has('file')) {
                 return new Response('You must upload a file.', Response::HTTP_BAD_REQUEST);
             }
             try {
                 $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $token, $email);
+            } catch (\Exception $e) {
+                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+        } elseif ($mapping) {
+            try {
+                $return = $householdService->saveCSVAndAnalyze($countryIso3, $project, $tmpFile, $mapping, $token, $email);
             } catch (\Exception $e) {
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }

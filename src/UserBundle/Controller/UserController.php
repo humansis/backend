@@ -54,7 +54,7 @@ class UserController extends Controller
      *             description="username of the user",
      *         ),
      *         @SWG\Property(
-     *             property="salted_password",
+     *             property="password",
      *             example="123456789abcdefg",
      *             type="string",
      *             description="salted password of the user",

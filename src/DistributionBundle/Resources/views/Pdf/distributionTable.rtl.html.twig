@@ -223,26 +223,46 @@
         </tr>
     </table>
 
+    {% set modalities = [] %}
+    {% set descriptions = [] %}
+    {% for commodity in distribution.commodities %}
+        {% set desc = '' %}
+        {% if commodity.modalityType.name != commodity.modalityType.modality.name %}
+            {% set desc = commodity.modalityType.modality.name %}
+        {% endif %}
+        {% set desc = desc ~ ' ' ~ commodity.modalityType.name ~ ' ' ~ commodity.unit ~ ' ' ~ commodity.value %}
+        {% set descriptions = descriptions|merge([desc]) %}
+        {% set modalities = modalities|merge([commodity.modalityType.name]) %}
+    {% endfor %}
     <div class="main-info">
         <table>
             <tr>
-                <td></td>
+                <td>{{ modalities|join(', ') }} — {{ distribution.name }}</td>
                 <td class="label">:{{ 'Details'|trans }}</td>
             </tr>
             <tr>
-                <td></td>
-                <td class="label">:{{ 'Project title'|trans }}</td>
+                <td>{{ distribution.project.name }}</td>
+                <td class="label">:{{ 'Project Name'|trans }}</td>
             </tr>
             <tr>
-                <td></td>
-                <td class="label">:{{ 'Date of distribution'|trans }}</td>
+                <td>{{ distribution.dateDistribution | date("m/d/Y") }}</td>
+                <td class="label">:{{ 'Distribution Date'|trans }}</td>
             </tr>
             <tr>
-                <td></td>
+                <td>
+                    {% set address = [] %}
+                    {% if distribution.location.adm4 %}{% set address = address|merge([distribution.location.adm4.name])%}{% endif %}
+                    {% if distribution.location.adm3 %}{% set address = address|merge([distribution.location.adm3.name])%}{% endif %}
+                    {% if distribution.location.adm2 %}{% set address = address|merge([distribution.location.adm2.name])%}{% endif %}
+                    {% if distribution.location.adm1 %}{% set address = address|merge([distribution.location.adm1.name])%}{% endif %}
+                    {{ address|join(', ') }}
+                </td>
                 <td class="label">:{{ 'Place'|trans }}</td>
             </tr>
             <tr>
-                <td></td>
+                <td>
+                    {{ descriptions|join(', ') }}
+                </td>
                 <td class="label">:{{ 'Item Description'|trans }}</td>
             </tr>
         </table>

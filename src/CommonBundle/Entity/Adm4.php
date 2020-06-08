@@ -21,7 +21,7 @@ class Adm4
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "FullVendor"})
+     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
      */
     private $id;
 
@@ -29,7 +29,7 @@ class Adm4
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "FullVendor"})
+     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
      */
     private $name;
 
@@ -37,7 +37,7 @@ class Adm4
      * @var Adm3
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Adm3")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "FullVendor"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "FullVendor"})
      */
     private $adm3;
 
@@ -52,7 +52,7 @@ class Adm4
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullVendor"})
+     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "FullVendor"})
      */
     private $code;
 

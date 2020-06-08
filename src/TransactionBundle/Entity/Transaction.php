@@ -68,7 +68,7 @@ class Transaction
      *
      * @ORM\Column(name="transaction_status", type="smallint")
      *
-     * @Groups({"ValidatedDistribution", "FullReceivers", "FullDistribution"})
+     * @Groups({"ValidatedDistribution", "FullReceivers", "FullDistribution", "SmallDistribution"})
      */
     private $transactionStatus;
 

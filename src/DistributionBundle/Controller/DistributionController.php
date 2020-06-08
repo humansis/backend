@@ -293,7 +293,7 @@ class DistributionController extends Controller
      *     description="Filtered distributions",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=DistributionData::class))
+     *          @SWG\Items(ref=@Model(type=DistributionData::class, groups={"SmallDistribution"}))
      *     )
      * )
      *
@@ -309,11 +309,17 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
+        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
+        $data = [];
+        foreach ($distributions as $distributionData) {
+            $data[] = $distributionDataFactory->build($distributionData, ['SmallDistribution']);
+        }
+
         $json = $this->get('jms_serializer')
             ->serialize(
-                $distributions,
+                $data,
                 'json',
-                SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
+                SerializationContext::create()->setGroups(['SmallDistribution'])->setSerializeNull(true)
             );
 
         return new Response($json);
@@ -329,21 +335,19 @@ class DistributionController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="one distribution",
-     *     @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref=@Model(type=DistributionData::class))
-     *     )
+     *     @Model(type=DistributionData::class, groups={"SmallDistribution"})
      * )
      *
-     * @param DistributionData $DistributionData
+     * @param DistributionData $distributionData
      *
      * @return Response
      */
-    public function getOneAction(DistributionData $DistributionData)
+    public function getOneAction(DistributionData $distributionData)
     {
+        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
         $json = $this->get('jms_serializer')
             ->serialize(
-                $DistributionData,
+                $distributionDataFactory->build($distributionData, ['FullDistribution']),
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
             );
@@ -556,7 +560,11 @@ class DistributionController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="OK"
+     *     description="OK",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=DistributionData::class, groups={"SmallDistribution"}))
+     *     )
      * )
      *
      * @SWG\Response(
@@ -577,11 +585,17 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
+        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
+        $data = [];
+        foreach ($filtered as $distributionData) {
+            $data[] = $distributionDataFactory->build($distributionData, ['SmallDistribution']);
+        }
+
         $json = $this->get('jms_serializer')
             ->serialize(
-                $filtered,
+                $data,
                 'json',
-                SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
+                SerializationContext::create()->setGroups(['SmallDistribution'])->setSerializeNull(true)
             );
 
         return new Response($json, Response::HTTP_OK);

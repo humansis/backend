@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
+use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -119,6 +120,7 @@ class BookletService
                 }
 
                 $this->em->persist($booklet);
+                $this->em->flush();
 
                 $currentBatch++;
             } catch (\Exception $e) {

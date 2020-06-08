@@ -51,7 +51,7 @@ class ExportController extends Controller
     {
         try {
             set_time_limit(600);
-            // Format of the file (csv, xls, ods, pdf)
+            // Format of the file (csv, xlsx, ods, pdf)
             $type = $request->query->get('type');
             // Generate corresponding file depending on request
             if ($request->query->get('distributions')) {

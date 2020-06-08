@@ -25,7 +25,7 @@ class Project implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
      */
     private $id;
 
@@ -34,7 +34,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
      */
     private $name;
 
@@ -43,7 +43,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="internalId", type="string", length=255, nullable=true)
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
+     * @Groups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
      */
     private $internalId;
 
@@ -111,7 +111,7 @@ class Project implements ExportableInterface
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects", cascade={"persist"})
      *
-     * @Groups({"FullProject", "FullDistribution"})
+     * @Groups({"FullProject", "FullDistribution", "SmallDistribution"})
      */
     private $sectors;
 
