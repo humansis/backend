@@ -84,12 +84,6 @@ class Vendor implements ExportableInterface
     private $archived;
 
     /**
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="vendor", orphanRemoval=true)
-     * @ORM\OrderBy({"usedAt" = "DESC"})
-     */
-    private $vouchers;
-
-    /**
      * @ORM\OneToOne(targetEntity="\UserBundle\Entity\User", inversedBy="vendor", cascade={"persist","remove"})
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @Groups({"FullVendor"})
@@ -279,37 +273,6 @@ class Vendor implements ExportableInterface
     public function getArchived()
     {
         return $this->archived;
-    }
-
-    /**
-     * @return Collection|Voucher[]
-     */
-    public function getVouchers() : Collection
-    {
-        return $this->vouchers;
-    }
-
-    public function addVoucher(Voucher $voucher) : self
-    {
-        if (!$this->vouchers->contains($voucher)) {
-            $this->vouchers[] = $voucher;
-            $voucher->setVendor($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVoucher(Voucher $voucher) : self
-    {
-        if ($this->vouchers->contains($voucher)) {
-            $this->vouchers->removeElement($voucher);
-            // set the owning side to null (unless already changed)
-            if ($voucher->getVendor() === $this) {
-                $voucher->setVendor(null);
-            }
-        }
-
-        return $this;
     }
 
     /**

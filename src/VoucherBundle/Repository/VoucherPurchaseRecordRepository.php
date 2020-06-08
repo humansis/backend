@@ -1,32 +1,33 @@
-<?php declare(strict_types = 1);
+<?php
 
 namespace VoucherBundle\Repository;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
+use VoucherBundle\Entity\Voucher;
 
-class VoucherRecordRepository extends EntityRepository
+class VoucherPurchaseRecordRepository extends EntityRepository
 {
-
     /**
-     * Returns list of vouchers that was purchased by given beneficiary
+     * Returns list of purchases provided by given beneficiary.
      *
-     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
-     * @return \VoucherBundle\Entity\VoucherRecord[]
+     * @param Beneficiary $beneficiary
+     *
+     * @return Voucher[]
      */
     public function findPurchasedByBeneficiary(Beneficiary $beneficiary)
     {
-        $qb = $this->createQueryBuilder('vr')
-            ->join('vr.voucher', 'v')
+        $qb = $this->createQueryBuilder('vpr')
+            ->join('vpr.voucherPurchase', 'vp')
+            ->join('vp.vouchers', 'v')
             ->join('v.booklet', 'bkl')
             ->join('bkl.distribution_beneficiary', 'db')
             ->join('db.beneficiary', 'b')
             ->where('b.id = :beneficiary')
-            ->orderBy('vr.usedAt', 'DESC');
+            ->orderBy('vp.createdAt', 'DESC');
 
         $qb->setParameter('beneficiary', $beneficiary);
 
         return $qb->getQuery()->getResult();
     }
-
 }
