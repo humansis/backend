@@ -13,8 +13,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use VoucherBundle\Entity\Product;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Entity\SmartcardDeposit;
+use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 
 /**
  * @SWG\Parameter(
@@ -293,6 +295,11 @@ class SmartcardController extends Controller
      *             description="Value of money deposit to smartcard"
      *         ),
      *         @SWG\Property(
+     *             property="depositorId",
+     *             type="int",
+     *             description="ID of user which is responsible for deposit money to smartcard"
+     *         ),
+     *         @SWG\Property(
      *             property="createdAt",
      *             type="string",
      *             description="ISO 8601 time of deposit in UTC",
@@ -321,9 +328,19 @@ class SmartcardController extends Controller
             throw new BadRequestHttpException('Smartcard is blocked.');
         }
 
-        $value = $request->request->get('value');
+        $depositor = $this->getDoctrine()->getRepository(User::class)->find($request->request->getInt('depositorId'));
+        if (!$depositor) {
+            throw new BadRequestHttpException('Depositor does not exists.');
+        }
 
-        $smartcard->addDeposit($value, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
+        $deposit = SmartcardDeposit::create(
+            $smartcard,
+            $depositor,
+            (float) $request->request->get('value'),
+            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))
+        );
+
+        $smartcard->addDeposit($deposit);
 
         $this->getDoctrine()->getManager()->persist($smartcard);
         $this->getDoctrine()->getManager()->flush();
@@ -351,34 +368,11 @@ class SmartcardController extends Controller
      *     description="Serial number (GUID) of smartcard"
      * )
      *
-     * @SWG\Parameter(
-     *     name="body",
+     * @SWG\Parameter(name="purchase from smartcard",
      *     in="body",
      *     required=true,
-     *     @SWG\Schema(
-     *         type="object",
-     *         @SWG\Property(
-     *             property="productId",
-     *             type="integer",
-     *             description="ID of purchased product"
-     *         ),
-     *         @SWG\Property(
-     *             property="quantity",
-     *             type="number",
-     *             description="Product quantity"
-     *         ),
-     *         @SWG\Property(
-     *             property="value",
-     *             type="number",
-     *             description="Product price"
-     *         ),
-     *         @SWG\Property(
-     *             property="createdAt",
-     *             type="string",
-     *             description="ISO 8601 time of purchase in UTC",
-     *             example="2020-02-02T12:00:00+0200"
-     *         )
-     *     )
+     *     type="object",
+     *     @Model(type=SmartcardPurchaseInput::class)
      * )
      *
      * @SWG\Response(
@@ -397,26 +391,20 @@ class SmartcardController extends Controller
      */
     public function purchase(Smartcard $smartcard, Request $request): Response
     {
-        $value = $request->request->get('value');
-        if (!is_numeric($value)) {
-            throw new BadRequestHttpException('Value is not valid');
+        $x = $request->getContent();
+        /** @var SmartcardPurchaseInput $data */
+        $data = $this->get('serializer')->deserialize($x, SmartcardPurchaseInput::class, 'json');
+
+        $errors = $this->get('validator')->validate($data);
+        if (count($errors) > 0) {
+            return new Response((string) $errors, Response::HTTP_BAD_REQUEST);
         }
 
-        /** @var Product $product */
-        $product = $this->getDoctrine()->getRepository(Product::class)->find($request->request->get('productId'));
-        if (!$product) {
-            throw $this->createNotFoundException('Product does not exists.');
+        try {
+            $this->get('voucher.purchase_service')->purchaseSmartcard($smartcard, $data);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-
-        $quantity = $request->request->get('quantity');
-        if (!is_numeric($quantity)) {
-            throw new BadRequestHttpException('Quantity is not valid');
-        }
-
-        $smartcard->addPurchase($value, $product, $quantity, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
-
-        $this->getDoctrine()->getManager()->persist($smartcard);
-        $this->getDoctrine()->getManager()->flush();
 
         $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
 
