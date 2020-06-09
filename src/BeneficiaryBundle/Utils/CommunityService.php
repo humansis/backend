@@ -4,32 +4,18 @@
 namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Camp;
-use BeneficiaryBundle\Entity\CampAddress;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\CommunityLocation;
+use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\InputType;
+use CommonBundle\InputType as GeneralInputType;
 use BeneficiaryBundle\Form\CommunityConstraints;
-use CommonBundle\Entity\Location;
-use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableType;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
-use PhpOffice\PhpSpreadsheet\Reader\Csv;
-use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Component\Cache\Simple\FilesystemCache;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -89,11 +75,11 @@ class CommunityService
     }
 
     /**
-     * @param Country $country
+     * @param GeneralInputType\Country $country
      * @param DataTableType $filters
      * @return mixed
      */
-    public function getAll(Country $country, DataTableType $filters)
+    public function getAll(GeneralInputType\Country $country, DataTableType $filters)
     {
         $communities = $this->em->getRepository(Community::class)->getAllBy(
             $country->getIso3(),
@@ -108,40 +94,32 @@ class CommunityService
         return [$length, $communities];
     }
 
-    public function create(string $iso3, array $communityArray): Community
+    public function create(GeneralInputType\Country $country, InputType\UpdateCommunityType $communityType): Community
     {
-        $this->requestValidator->validate(
-            "community",
-            CommunityConstraints::class,
-            $communityArray,
-            'any'
-        );
-
         $community = new Community();
-        $community->setLongitude($communityArray['longitude'] ?? null);
-        $community->setLatitude($communityArray['latitude'] ?? null);
-        $community->setIdNumber($communityArray['id_number'] ?? null);
-        $community->setIdType($communityArray['id_type'] ?? null);
-        $community->setContactName($communityArray['contact_name'] ?? null);
-        $community->setPhonePrefix($communityArray['phone_prefix'] ?? null);
-        $community->setPhoneNumber($communityArray['phone_number'] ?? null);
+        $community->setLongitude($communityType->getLongitude() ?? '');
+        $community->setLatitude($communityType->getLatitude() ?? '');
+        $community->setContactName($communityType->getContactName() ?? '');
+        $community->setContactFamilyName($communityType->getContactFamilyName() ?? '');
+        $community->setPhonePrefix($communityType->getPhonePrefix() ?? '');
+        $community->setPhoneNumber($communityType->getPhoneNumber() ?? '');
 
-        if (isset($communityArray['address'])) {
-            $this->requestValidator->validate(
-                "address",
-                CommunityConstraints::class,
-                $communityArray['address'],
-                'any'
-            );
+        if ($communityType->getNationalId() !== null) {
+            $community->setNationalId(new NationalId());
+            $community->getNationalId()->setIdNumber($communityType->getNationalId()->getIdNumber());
+            $community->getNationalId()->setIdType($communityType->getNationalId()->getIdType());
+        }
 
-            $location = $this->locationService->getLocation($iso3, $communityArray['address']["location"]);
+        if ($communityType->getAddress() !== null) {
+            $addressType = $communityType->getAddress();
+            $location = $this->locationService->getLocationByInputType($country, $addressType->getLocation());
 
             $community->setAddress(Address::create(
-                $communityArray['address']['street'],
-                $communityArray['address']['number'],
-                $communityArray['address']['postcode'],
+                $addressType->getStreet(),
+                $addressType->getNumber(),
+                $addressType->getPostcode(),
                 $location
-                ));
+            ));
         }
 
         return $community;
@@ -167,41 +145,47 @@ class CommunityService
         return "Communitys have been archived";
     }
 
-    public function update($iso3, Community $community, $communityArray): Community
+    public function update(GeneralInputType\Country $country, Community $community, InputType\UpdateCommunityType $communityType): Community
     {
-        if (array_key_exists('longitude', $communityArray)) {
-            $community->setLongitude($communityArray['longitude']);
+        if (null !== $newValue = $communityType->getLongitude()) {
+            $community->setLongitude($newValue);
         }
-        if (array_key_exists('latitude', $communityArray)) {
-            $community->setLatitude($communityArray['latitude']);
-        }
-        if (array_key_exists('id_number', $communityArray)) {
-            $community->setIdNumber($communityArray['id_number']);
-        }
-        if (array_key_exists('id_type', $communityArray)) {
-            $community->setIdType($communityArray['id_type']);
-        }
-        if (array_key_exists('contact_name', $communityArray)) {
-            $community->setContactName($communityArray['contact_name'] ?? null);
-        }
-        if (array_key_exists('phone_prefix', $communityArray)) {
-            $community->setPhonePrefix($communityArray['phone_prefix']);
-        }
-        if (array_key_exists('phone_number', $communityArray)) {
-            $community->setPhoneNumber($communityArray['phone_number']);
+        if (null !== $newValue = $communityType->getLatitude()) {
+            $community->setLatitude($newValue);
         }
 
-        if (array_key_exists('address', $communityArray)) {
+        if ($communityType->getNationalId() !== null) {
+            if ($community->getNationalId() == null) {
+                $community->setNationalId(new NationalId());
+            }
+            $community->getNationalId()->setIdType($communityType->getNationalId()->getIdType());
+            $community->getNationalId()->setIdNumber($communityType->getNationalId()->getIdNumber());
+        }
+        if (null !== $newValue = $communityType->getContactName()) {
+            $community->setContactName($newValue);
+        }
+        if (null !== $newValue = $communityType->getContactFamilyName()) {
+            $community->setContactFamilyName($newValue);
+        }
+        if (null !== $newValue = $communityType->getPhonePrefix()) {
+            $community->setPhonePrefix($newValue);
+        }
+        if (null !== $newValue = $communityType->getPhoneNumber()) {
+            $community->setPhoneNumber($newValue);
+        }
+
+        /** @var InputType\BeneficiaryAddressType $address */
+        if (null !== $address = $communityType->getAddress()) {
             $location = null;
-            if (array_key_exists('location', $communityArray['address'])) {
-                $location = $this->locationService->getLocation($iso3, $communityArray['address']['location']);
+            if ($address->getLocation() !== null) {
+                $location = $this->locationService->getLocationByInputType($country->getIso3(), $address->getLocation());
             }
             $this->updateAddress($community, Address::create(
-                $communityArray['address']['street'],
-                $communityArray['address']['number'],
-                $communityArray['address']['postcode'],
+                $address->getStreet(),
+                $address->getNumber(),
+                $address->getPostcode(),
                 $location
-                ));
+            ));
         }
 
         return $community;

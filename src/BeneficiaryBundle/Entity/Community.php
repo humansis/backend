@@ -43,7 +43,7 @@ class Community
      * @var string
      *
      * @ORM\Column(name="phone_number", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullBeneficiary", "FullCommunity", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $phoneNumber;
 
@@ -51,25 +51,17 @@ class Community
      * @var string
      *
      * @ORM\Column(name="phone_prefix", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullBeneficiary", "FullCommunity", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $phonePrefix;
 
     /**
-     * @var string
+     * @var NationalId
      *
-     * @ORM\Column(name="id_number", type="string", length=255, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\NationalId", cascade={"persist", "remove"})
+     * @Groups({"FullInstitution", "FullBeneficiary", "FullCommunity", "FullHousehold", "SmallHousehold", "FullReceivers"})
      */
-    private $idNumber;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="id_type", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers"})
-     */
-    private $idType;
+    private $nationalId;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
@@ -175,35 +167,19 @@ class Community
     }
 
     /**
-     * @return string|null
+     * @return NationalId
      */
-    public function getIdNumber(): ?string
+    public function getNationalId(): NationalId
     {
-        return $this->idNumber;
+        return $this->nationalId;
     }
 
     /**
-     * @param string|null $idNumber
+     * @param NationalId $nationalId
      */
-    public function setIdNumber(?string $idNumber): void
+    public function setNationalId(NationalId $nationalId): void
     {
-        $this->idNumber = $idNumber;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getIdType(): ?string
-    {
-        return $this->idType;
-    }
-
-    /**
-     * @param string|null $idType
-     */
-    public function setIdType(?string $idType): void
-    {
-        $this->idType = $idType;
+        $this->nationalId = $nationalId;
     }
 
     /**

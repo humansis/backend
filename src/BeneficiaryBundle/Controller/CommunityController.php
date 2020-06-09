@@ -2,20 +2,13 @@
 
 namespace BeneficiaryBundle\Controller;
 
-use BeneficiaryBundle\InputType\CommunityType;
-use BeneficiaryBundle\Utils\ExportCSVService;
-use BeneficiaryBundle\Utils\CommunityCSVService;
+use BeneficiaryBundle\InputType\UpdateCommunityType;
 use BeneficiaryBundle\Utils\CommunityService;
-use BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper;
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableType;
-use CommonBundle\Response\CommonBinaryFileResponse;
 use JMS\Serializer\SerializationContext;
-use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use BeneficiaryBundle\Entity\Community;
@@ -34,10 +27,10 @@ use Throwable;
 class CommunityController extends Controller
 {
     /**
-     * @Rest\Get("/communitys/{id}")
+     * @Rest\Get("/communities/{id}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
      *
-     * @SWG\Tag(name="Communitys")
+     * @SWG\Tag(name="Communities")
      *
      * @SWG\Response(
      *     response=200,
@@ -83,13 +76,13 @@ class CommunityController extends Controller
         $communityService = $this->get('beneficiary.community_service');
 
         try {
-            $communitys = $communityService->getAll($country, $dataTableType);
+            $communities = $communityService->getAll($country, $dataTableType);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         $json = $this->get('jms_serializer')
             ->serialize(
-                $communitys,
+                $communities,
                 'json',
                 SerializationContext::create()->setGroups("FullCommunity")->setSerializeNull(true)
             );
@@ -98,12 +91,11 @@ class CommunityController extends Controller
     }
 
 
-
     /**
-     * @Rest\Put("/communitys", name="add_community_projects")
+     * @Rest\Put("/communities", name="add_community_projects")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
-     * @SWG\Tag(name="Communitys")
+     * @SWG\Tag(name="Communities")
      *
      * @SWG\Parameter(
      *     name="community",
@@ -132,26 +124,16 @@ class CommunityController extends Controller
      * )
      *
      *
-     * @param Request $request
+     * @param Country $country
+     * @param UpdateCommunityType $communityType
      * @return Response
      */
-    public function createAction(Request $request)
+    public function createAction(Country $country, UpdateCommunityType $communityType)
     {
-        $requestArray = $request->request->all();
-
-        $requestRequirements = new OptionsResolver();
-        $requestRequirements->setRequired('community');
-        $requestRequirements->setAllowedTypes('community', 'array');
-        $requestRequirements->setDefaults([
-            '__country' => 'KHM',
-        ]);
-
-        $requestArray = $requestRequirements->resolve($requestArray);
-
         /** @var CommunityService $communityService */
         $communityService = $this->get('beneficiary.community_service');
         try {
-            $community = $communityService->create($requestArray['__country'], $requestArray['community']);
+            $community = $communityService->create($country, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
             $this->getDoctrine()->getManager()->flush();
         } catch (ValidationException $exception) {
@@ -170,12 +152,11 @@ class CommunityController extends Controller
     }
 
 
-
     /**
-     * @Rest\Post("/communitys/{id}", name="edit_community", requirements={"id": "\d+"})
+     * @Rest\Post("/communities/{id}", name="edit_community", requirements={"id": "\d+"})
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
-     * @SWG\Tag(name="Communitys")
+     * @SWG\Tag(name="Communities")
      *
      * @SWG\Parameter(
      *     name="community",
@@ -204,29 +185,17 @@ class CommunityController extends Controller
      * )
      *
      *
-     * @param Request $request
+     * @param Country $country
      * @param Community $community
+     * @param UpdateCommunityType $communityType
      * @return Response
      */
-    public function updateAction(Request $request, Community $community)
+    public function updateAction(Country $country, Community $community, UpdateCommunityType $communityType)
     {
-        $requestArray = $request->request->all();
-
-        $requestRequirements = new OptionsResolver();
-        $requestRequirements->setRequired('community');
-        $requestRequirements->setAllowedTypes('community', 'array');
-        $requestRequirements->setDefaults([
-            '__country' => 'KHM',
-        ]);
-
-        $requestArray = $requestRequirements->resolve($requestArray);
-
-        $communityArray = $requestArray['community'];
-
         /** @var CommunityService $communityService */
         $communityService = $this->get('beneficiary.community_service');
         try {
-            $community = $communityService->update($requestArray['__country'], $community, $communityArray);
+            $community = $communityService->update($country, $community, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
             $this->getDoctrine()->getManager()->flush();
         } catch (ValidationException $exception) {
@@ -245,10 +214,10 @@ class CommunityController extends Controller
     }
 
     /**
-     * @Rest\Delete("/communitys/{id}")
+     * @Rest\Delete("/communities/{id}")
      * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
-     * @SWG\Tag(name="Communitys")
+     * @SWG\Tag(name="Communities")
      *
      * @SWG\Response(
      *     response=200,
