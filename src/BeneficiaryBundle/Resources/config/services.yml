@@ -44,17 +44,24 @@ services:
             - "@service_container"
         public: true
 
-    beneficiary.institution_output_factory:
-        class: BeneficiaryBundle\OutputType\Factory\InstitutionTypeFactory
+    BeneficiaryBundle\Mapper\CommunityMapper:
         arguments:
-            - '@jms_serializer'
-            - '@beneficiary.address_output_factory'
+            - '@BeneficiaryBundle\Mapper\AddressMapper'
+            - '@BeneficiaryBundle\Mapper\NationalIdMapper'
         public: true
 
-    beneficiary.address_output_factory:
-        class: BeneficiaryBundle\OutputType\Factory\AddressTypeFactory
+    BeneficiaryBundle\Mapper\InstitutionMapper:
         arguments:
-            - '@jms_serializer'
+            - '@BeneficiaryBundle\Mapper\AddressMapper'
+            - '@BeneficiaryBundle\Mapper\NationalIdMapper'
+        public: true
+
+    BeneficiaryBundle\Mapper\AddressMapper:
+        arguments:
+            - '@CommonBundle\Mapper\LocationMapper'
+        public: true
+
+    BeneficiaryBundle\Mapper\NationalIdMapper:
         public: true
 
     beneficiary.beneficiary_service:
@@ -73,7 +80,6 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@service_container"
-
         public: true
 
 

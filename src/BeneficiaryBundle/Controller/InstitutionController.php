@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Controller;
 
+use BeneficiaryBundle\Mapper\InstitutionMapper;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\InstitutionService;
 use CommonBundle\Response\CommonBinaryFileResponse;
@@ -53,11 +54,12 @@ class InstitutionController extends Controller
      */
     public function showAction(Institution $institution)
     {
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $this->get('beneficiary.institution_output_factory')->build($institution),
-                'json',
-                SerializationContext::create()->setGroups("FullInstitution")->setSerializeNull(true)
+        /** @var InstitutionMapper $institutionMapper */
+        $institutionMapper = $this->get(InstitutionMapper::class);
+
+        $json = $this->get('serializer')->serialize(
+                $institutionMapper->toFullArray($institution),
+                'json'
             );
         return new Response($json);
     }
@@ -85,17 +87,20 @@ class InstitutionController extends Controller
     {
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get('beneficiary.institution_service');
+        /** @var InstitutionMapper $institutionMapper */
+        $institutionMapper = $this->get(InstitutionMapper::class);
 
         try {
             $institutions = $institutionService->getAll($country, $dataTableType);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $this->get('beneficiary.institution_output_factory')->buildList($institutions),
-                'json',
-                SerializationContext::create()->setGroups("FullInstitution")->setSerializeNull(true)
+        $json = $this->get('serializer')->serialize(
+                [
+                    0 => $institutions[0],
+                    1 => $institutionMapper->toFullArrays($institutions[1]),
+                ],
+                'json'
             );
 
         return new Response($json);
@@ -143,6 +148,8 @@ class InstitutionController extends Controller
     {
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get('beneficiary.institution_service');
+        /** @var InstitutionMapper $institutionMapper */
+        $institutionMapper = $this->get(InstitutionMapper::class);
         try {
             $institution = $institutionService->create($country, $newInstitution);
             $this->getDoctrine()->getManager()->persist($institution);
@@ -153,11 +160,9 @@ class InstitutionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $this->get('beneficiary.institution_output_factory')->build($institution),
-                'json',
-                SerializationContext::create()->setGroups(["FullBeneficiary", "FullInstitution"])->setSerializeNull(true)
+        $json = $this->get('serializer')->serialize(
+                $institutionMapper->toFullArray($institution),
+                'json'
             );
         return new Response($json);
     }
@@ -205,6 +210,8 @@ class InstitutionController extends Controller
     {
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get('beneficiary.institution_service');
+        /** @var InstitutionMapper $institutionMapper */
+        $institutionMapper = $this->get(InstitutionMapper::class);
         try {
             $institution = $institutionService->update($country, $institution, $institutionType);
             $this->getDoctrine()->getManager()->persist($institution);
@@ -215,11 +222,9 @@ class InstitutionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $this->get('beneficiary.institution_output_factory')->build($institution),
-                'json',
-                SerializationContext::create()->setGroups(["FullBeneficiary", "FullInstitution"])->setSerializeNull(true)
+        $json = $this->get('serializer')->serialize(
+                $institutionMapper->toFullArray($institution),
+                'json'
             );
         return new Response($json);
     }
@@ -242,12 +247,13 @@ class InstitutionController extends Controller
     {
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get("beneficiary.institution_service");
+        /** @var InstitutionMapper $institutionMapper */
+        $institutionMapper = $this->get(InstitutionMapper::class);
+
         $institution = $institutionService->remove($institution);
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $this->get('beneficiary.institution_output_factory')->build($institution),
-                'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullInstitution"])
+        $json = $this->get('serializer')->serialize(
+                $institutionMapper->toFullArray($institution),
+                'json'
             );
         return new Response($json);
     }

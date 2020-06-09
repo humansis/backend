@@ -39,7 +39,8 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@request_validator"
 
-
+    CommonBundle\Mapper\LocationMapper:
+        public: true
 
 #######################################################################################
 ##                                     LISTENER                                      ##

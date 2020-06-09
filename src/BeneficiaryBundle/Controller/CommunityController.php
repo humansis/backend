@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\InputType\UpdateCommunityType;
+use BeneficiaryBundle\Mapper\CommunityMapper;
 use BeneficiaryBundle\Utils\CommunityService;
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableType;
@@ -42,11 +43,12 @@ class CommunityController extends Controller
      */
     public function showAction(Community $community)
     {
-        $json = $this->get('jms_serializer')
+        /** @var CommunityMapper $communityMapper */
+        $communityMapper = $this->get(CommunityMapper::class);
+        $json = $this->get('serializer')
             ->serialize(
-                $community,
-                'json',
-                SerializationContext::create()->setGroups("FullCommunity")->setSerializeNull(true)
+                $communityMapper->toFullArray($community),
+                'json'
             );
         return new Response($json);
     }
@@ -74,17 +76,20 @@ class CommunityController extends Controller
     {
         /** @var CommunityService $communityService */
         $communityService = $this->get('beneficiary.community_service');
+        /** @var CommunityMapper $communityMapper */
+        $communityMapper = $this->get(CommunityMapper::class);
 
         try {
             $communities = $communityService->getAll($country, $dataTableType);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $communities,
-                'json',
-                SerializationContext::create()->setGroups("FullCommunity")->setSerializeNull(true)
+        $json = $this->get('serializer')->serialize(
+                [
+                    0 => $communities[0],
+                    1 => $communityMapper->toFullArrays($communities[1])
+                ],
+                'json'
             );
 
         return new Response($json);
@@ -132,6 +137,8 @@ class CommunityController extends Controller
     {
         /** @var CommunityService $communityService */
         $communityService = $this->get('beneficiary.community_service');
+        /** @var CommunityMapper $communityMapper */
+        $communityMapper = $this->get(CommunityMapper::class);
         try {
             $community = $communityService->create($country, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
@@ -142,11 +149,10 @@ class CommunityController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
-                $community,
-                'json',
-                SerializationContext::create()->setGroups(["FullBeneficiary", "FullCommunity"])->setSerializeNull(true)
+                $communityMapper->toFullArray($community),
+                'json'
             );
         return new Response($json);
     }
@@ -194,6 +200,8 @@ class CommunityController extends Controller
     {
         /** @var CommunityService $communityService */
         $communityService = $this->get('beneficiary.community_service');
+        /** @var CommunityMapper $communityMapper */
+        $communityMapper = $this->get(CommunityMapper::class);
         try {
             $community = $communityService->update($country, $community, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
@@ -204,12 +212,10 @@ class CommunityController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $community,
-                'json',
-                SerializationContext::create()->setGroups(["FullBeneficiary", "FullCommunity"])->setSerializeNull(true)
-            );
+        $json = $this->get('serializer')->serialize(
+            $communityMapper->toFullArray($community),
+            'json'
+        );
         return new Response($json);
     }
 
@@ -231,12 +237,12 @@ class CommunityController extends Controller
     {
         /** @var CommunityService $communityService */
         $communityService = $this->get("beneficiary.community_service");
+        /** @var CommunityMapper $communityMapper */
+        $communityMapper = $this->get(CommunityMapper::class);
         $community = $communityService->remove($community);
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $community,
-                'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullCommunity"])
+        $json = $this->get('serializer')->serialize(
+                $communityMapper->toFullArray($community),
+                'json'
             );
         return new Response($json);
     }
