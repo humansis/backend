@@ -93,16 +93,6 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertSame($community['longitude'], $communityBody['longitude'] ?? '', "Returned data are different than input: longitude");;
         $this->assertSame($community['latitude'], $communityBody['latitude'] ?? '', "Returned data are different than input: latitude");;
 
-        if ($community['address'] !== null) {
-            $this->assertArrayHasKey('street', $community['address'],"Part of answer missing: address[street]");
-            $this->assertArrayHasKey('number', $community['address'],"Part of answer missing: address[number]");
-            $this->assertArrayHasKey('postcode', $community['address'],"Part of answer missing: address[postcode]");
-
-            $this->assertSame($community['address']['street'], $communityBody['address']['street'], "Returned data are different than input: address");
-            $this->assertSame($community['address']['number'], $communityBody['address']['number'], "Returned data are different than input: address");
-            $this->assertSame($community['address']['postcode'], $communityBody['address']['postcode'], "Returned data are different than input: address");
-        }
-
         return $community;
     }
 
