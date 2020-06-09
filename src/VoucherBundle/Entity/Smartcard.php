@@ -45,7 +45,7 @@ class Smartcard
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="smartcards")
      * @ORM\JoinColumn(nullable=false)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      * @Serializer\Groups({"SmartcardOverview", "FullSmartcard"})
@@ -53,13 +53,22 @@ class Smartcard
     private $beneficiary;
 
     /**
-     * @var Collection|SmartcardRecord[]
+     * @var Collection|SmartcardDeposit[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardRecord", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
      * @SymfonyGroups({"FullSmartcard"})
      * @Serializer\Groups({"FullSmartcard"})
      */
-    private $records;
+    private $deposites;
+
+    /**
+     * @var Collection|SmartcardPurchase[]
+     *
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
+     * @SymfonyGroups({"FullSmartcard"})
+     * @Serializer\Groups({"FullSmartcard"})
+     */
+    private $purchases;
 
     /**
      * @var string one of self::STATE_*
@@ -82,7 +91,9 @@ class Smartcard
         $this->serialNumber = $serialNumber;
         $this->beneficiary = $beneficiary;
         $this->createdAt = $createdAt;
-        $this->records = new ArrayCollection();
+        $this->deposites = new ArrayCollection();
+        $this->purchases = new ArrayCollection();
+
         $this->state = self::STATE_UNASSIGNED;
     }
 
@@ -122,23 +133,11 @@ class Smartcard
     }
 
     /**
-     * @param Beneficiary $beneficiary
-     *
-     * @return $this
-     */
-    public function setBeneficiary(Beneficiary $beneficiary): self
-    {
-        $this->beneficiary = $beneficiary;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|SmartcardRecord[]
+     * @return Collection|SmartcardPurchaseRecord[]
      */
     public function getRecords(): iterable
     {
-        return $this->records;
+        return $this->purchases;
     }
 
     /**
@@ -175,8 +174,14 @@ class Smartcard
     public function getValue(): float
     {
         $sum = 0.0;
-        foreach ($this->records as $record) {
-            $sum += $record->getValue();
+        foreach ($this->deposites as $deposit) {
+            $sum += $deposit->getValue();
+        }
+
+        foreach ($this->purchases as $purchase) {
+            foreach ($purchase->getRecords() as $record) {
+                $sum -= $record->getValue();
+            }
         }
 
         return $sum;
@@ -187,20 +192,19 @@ class Smartcard
         return $this->createdAt;
     }
 
-    public function addDeposit(float $value, \DateTimeInterface $createdAt): self
+    public function addDeposit(SmartcardDeposit $deposit): self
     {
-        $value = abs($value); // deposit must be always positive
-
-        $this->records->add(new SmartcardRecord($this, null, null, $value, $createdAt));
-
+        if (!$this->deposites->contains($deposit)) {
+            $this->deposites->add($deposit);
+        }
         return $this;
     }
 
-    public function addPurchase(float $value, Product $product, float $quantity, \DateTimeInterface $createdAt): self
+    public function addPurchase(SmartcardPurchase $purchase): self
     {
-        $value = -1 * abs($value); // payment must be always negative
-
-        $this->records->add(new SmartcardRecord($this, $product, $quantity, $value, $createdAt));
+        if (!$this->purchases->contains($purchase)) {
+            $this->purchases->add($purchase);
+        }
 
         return $this;
     }

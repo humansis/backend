@@ -6,9 +6,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
+use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
 use VoucherBundle\Entity\VoucherPurchase;
+use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\VoucherPurchase as VoucherPurchaseInput;
 
 class PurchaseService
@@ -51,6 +54,31 @@ class PurchaseService
         $this->markAsUsed($voucherPurchase);
 
         return $voucherPurchase;
+    }
+
+    /**
+     * @param Smartcard              $smartcard
+     * @param SmartcardPurchaseInput $input
+     *
+     * @return SmartcardPurchase
+     *
+     * @throws EntityNotFoundException
+     */
+    public function purchaseSmartcard(Smartcard $smartcard, SmartcardPurchaseInput $input): SmartcardPurchase
+    {
+        $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt());
+
+        foreach ($input->getProducts() as $item) {
+            $product = $this->getProduct($item['id']);
+            $purchase->addRecord($product, $item['quantity'], $item['value']);
+        }
+
+        $smartcard->addPurchase($purchase);
+
+        $this->em->persist($purchase);
+        $this->em->flush();
+
+        return $purchase;
     }
 
     /**
