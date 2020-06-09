@@ -2,15 +2,15 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
-use CommonBundle\Utils\ExportableInterface;
-use BeneficiaryBundle\Entity\Referral;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use VoucherBundle\Entity\Smartcard;
 
 /**
  * Beneficiary
@@ -159,7 +159,14 @@ class Beneficiary implements ExportableInterface
     private $referral;
 
     /**
-     * Constructor
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Smartcard", mappedBy="beneficiary")
+     *
+     * @var Collection|Smartcard[]
+     */
+    private $smartcards;
+
+    /**
+     * Constructor.
      */
     public function __construct()
     {
@@ -868,5 +875,13 @@ class Beneficiary implements ExportableInterface
         }
 
         return null;
+    }
+
+    /**
+     * @return Collection|Smartcard[]
+     */
+    public function getSmartcards()
+    {
+        return $this->smartcards;
     }
 }
