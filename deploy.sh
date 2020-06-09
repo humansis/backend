@@ -34,25 +34,40 @@ command="cd /var/www/html/bms_api; \
     git checkout $1; \
     ./hooks/post-checkout; \
     sudo docker-compose exec -T php bash -c 'composer install';\
-    sudo docker-compose exec -T php bash -c 'php bin/console c:c'; \
-    sudo docker-compose exec  -T php bash -c 'php bin/console d:m:m -n'"
+    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'; \
+    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
+
+command_clean_db="cd /var/www/html/bms_api; \
+    git pull origin-bis $1; \
+    git checkout $1; \
+    ./hooks/post-checkout; \
+    sudo docker-compose exec -T php bash -c 'composer install'; \
+    sudo docker-compose exec -T php bash -c 'php bin/console doctrine:database:drop --force'; \
+    sudo docker-compose exec -T php bash -c 'rm -rf var/cache/*'; \
+    sudo docker-compose exec -T php bash -c 'php bin/console doctrine:database:create'; \
+    sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'; \
+    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'; \
+    sudo docker-compose exec -T php bash -c 'php bin/console ra:cacheimport:clear'; \
+    sudo docker-compose exec -T php bash -c 'php bin/console reporting:code-indicator:add'"
 
 fixtures_test="cd /var/www/html/bms_api; \
-    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=test --append'"
+    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=test --append';\
+    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'"
 
 fixtures_dev="cd /var/www/html/bms_api; \
-    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=dev --append'"
+    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=dev --append';\
+    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'"
 
 if [[ $1 == "master" ]]; then
     ssh -i $2 ubuntu@$ec2_prod $command
     ssh -i $2 ubuntu@$ec2_demo $command
 elif [[ $1 == "dev" ]]; then
-    ssh -i $2 ubuntu@$ec2_test $command
+    ssh -i $2 ubuntu@$ec2_test $command_clean_db
     ssh -i $2 ubuntu@$ec2_test $fixtures_dev
 elif [[ $1 =~ ^release\/.*$ ]]; then
-    ssh -i $2 ubuntu@$ec2_stage $command
+    ssh -i $2 ubuntu@$ec2_stage $command_clean_db
     ssh -i $2 ubuntu@$ec2_stage $fixtures_test
 else
-    ssh -i $2 ubuntu@$ec2_dev $command
+    ssh -i $2 ubuntu@$ec2_dev $command_clean_db
     ssh -i $2 ubuntu@$ec2_dev $fixtures_dev
 fi
