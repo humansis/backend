@@ -170,10 +170,8 @@ class CommunityControllerTest extends BMSServiceTestCase
         $oldLongitude = $community->getLongitude();
         $oldLatitude = $community->getLatitude();
         $changes = [
-            'community' => [
-                'longitude' => '1'.$oldLongitude,
-                'latitude' => '1'.$oldLatitude,
-            ],
+            'longitude' => '1'.$oldLongitude,
+            'latitude' => '1'.$oldLatitude,
         ];
 
         $crawler = $this->request('POST', '/api/wsse/communities/' . $community->getId(), $changes);
@@ -200,12 +198,10 @@ class CommunityControllerTest extends BMSServiceTestCase
         $community = $this->em->getRepository(Community::class)->findOneBy([]);
 
         $changes = [
-            'community' => [
-                'address' => [
-                    'street' => 'changed street',
-                    'number' => '123456789',
-                    'postcode' => '987654321',
-                ],
+            'address' => [
+                'street' => 'changed street',
+                'number' => '123456789',
+                'postcode' => '987654321',
             ],
         ];
 
