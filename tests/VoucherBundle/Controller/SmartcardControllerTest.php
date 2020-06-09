@@ -4,7 +4,9 @@ namespace VoucherBundle\Tests\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Tests\BMSServiceTestCase;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Entity\SmartcardDeposit;
 
 class SmartcardControllerTest extends BMSServiceTestCase
 {
@@ -83,6 +85,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $this->request('PATCH', '/api/wsse/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'value' => 255.25,
+            'depositorId' => 1, // todo change to fixtures
             'createdAt' => '2020-02-02T12:00:00Z',
         ]);
 
@@ -95,14 +98,18 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testDepositToFrozenSmartcard()
     {
+        $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
         $smartcard->setState(Smartcard::STATE_FROZEN);
-        $smartcard->addDeposit(1000, new \DateTime('now'));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, 1000, new \DateTime('now')));
+
         $this->em->persist($smartcard);
         $this->em->flush();
 
         $this->request('PATCH', '/api/wsse/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'value' => 500,
+            'depositorId' => 1, // todo change to fixtures
             'createdAt' => '2020-02-02T12:00:00+0200',
         ]);
 
@@ -111,14 +118,18 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testDepositToInactiveSmartcard()
     {
+        $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
         $smartcard->setState(Smartcard::STATE_INACTIVE);
-        $smartcard->addDeposit(1000, new \DateTime('now'));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, 1000, new \DateTime('now')));
+
         $this->em->persist($smartcard);
         $this->em->flush();
 
         $this->request('PATCH', '/api/wsse/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'value' => 500,
+            'depositorId' => 1, // todo change to fixtures
             'createdAt' => '2020-02-02T12:00:00+0200',
         ]);
 
@@ -127,17 +138,28 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testPurchase()
     {
+        $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
-        $smartcard->addDeposit(600, new \DateTime('now'));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, 600, new \DateTime('now')));
+
         $this->em->persist($smartcard);
         $this->em->flush();
 
-        $this->request('PATCH', '/api/wsse/vendor-app/v1/smartcards/'.$smartcard->getSerialNumber().'/purchase', [
-            'value' => 300.25,
-            'quantity' => 1.2,
-            'productId' => 1, // @todo replace for fixture
+        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $content = json_encode([
+            'products' => [
+                [
+                    'id' => 1, // @todo replace for fixture
+                    'value' => 300.25,
+                    'quantity' => 1.2,
+                ],
+            ],
+            'vendorId' => 1,
             'createdAt' => '2020-02-02T12:00:00Z',
         ]);
+
+        $this->client->request('PATCH', '/api/wsse/vendor-app/v1/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
 
         $smartcard = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -151,18 +173,29 @@ class SmartcardControllerTest extends BMSServiceTestCase
      */
     public function testPurchaseFromEmptySmartcard()
     {
+        $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
         $smartcard->setState(Smartcard::STATE_INACTIVE);
-        $smartcard->addDeposit(100, new \DateTime('now'));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, 100, new \DateTime('now')));
+
         $this->em->persist($smartcard);
         $this->em->flush();
 
-        $this->request('PATCH', '/api/wsse/vendor-app/v1/smartcards/'.$smartcard->getSerialNumber().'/purchase', [
-            'value' => 400,
-            'quantity' => 1.2,
-            'productId' => 1, // @todo replace for fixture
+        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $content = json_encode([
+            'products' => [
+                [
+                    'id' => 1, // @todo replace for fixture
+                    'value' => 400,
+                    'quantity' => 1.2,
+                ],
+            ],
+            'vendorId' => 1,
             'createdAt' => '2020-02-02T12:00:00Z',
         ]);
+
+        $this->client->request('PATCH', '/api/wsse/vendor-app/v1/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
     }
