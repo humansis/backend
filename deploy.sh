@@ -35,7 +35,7 @@ command="cd /var/www/html/bms_api; \
     ./hooks/post-checkout; \
     sudo docker-compose exec -T php bash -c 'composer install';\
     sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'; \
-    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
+    sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
 
 command_clean_db="cd /var/www/html/bms_api; \
     git pull origin-bis $1; \
