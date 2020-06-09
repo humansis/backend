@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 use JMS\Serializer\SerializationContext;
 use ProjectBundle\Entity\Project;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +15,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use VoucherBundle\Entity\Smartcard;
 
 class BeneficiaryController extends Controller
 {
@@ -148,6 +150,44 @@ class BeneficiaryController extends Controller
             'json',
             SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true)
         );
+        return new Response($json);
+    }
+
+    /**
+     * Beneficiary by its smartcard.
+     *
+     * @Rest\Get("/offline-app/v1/smartcards/{serialNumber}/beneficiary")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @ParamConverter("smartcard")
+     *
+     * @SWG\Tag(name="Smartcards")
+     * @SWG\Tag(name="Offline App")
+     *
+     * @SWG\Parameter(
+     *     name="serialNumber",
+     *     in="path",
+     *     type="string",
+     *     required=true,
+     *     description="Serial number (GUID) of smartcard"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Beneficiary - owner of given smartcard",
+     *     @Model(type=Beneficiary::class, groups={"FullBeneficiary"})
+     * )
+     *
+     * @SWG\Response(response=404, description="Smartcard does not exists.")
+     *
+     * @param Smartcard $smartcard
+     *
+     * @return Response
+     */
+    public function beneficiary(Smartcard $smartcard): Response
+    {
+        $json = $this->get('jms_serializer')
+            ->serialize($smartcard->getBeneficiary(), 'json', SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true));
+
         return new Response($json);
     }
 }
