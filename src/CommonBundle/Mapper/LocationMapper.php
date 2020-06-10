@@ -1,28 +1,14 @@
 <?php
-namespace BeneficiaryBundle\OutputType\Factory;
+namespace CommonBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Utils\InstitutionService;
 use CommonBundle\Entity\Location;
-use JMS\Serializer\ArrayTransformerInterface;
-use JMS\Serializer\SerializationContext;
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
-class AddressTypeFactory
+class LocationMapper
 {
-    /** @var ArrayTransformerInterface $serializer */
-    private $serializer;
-
-    /**
-     * InstitutionTypeFactory constructor.
-     * @param ArrayTransformerInterface $serializer
-     */
-    public function __construct(ArrayTransformerInterface $serializer)
+    public function toFlatArray(?Location $location): ?array
     {
-        $this->serializer = $serializer;
+        if (!$location) return null;
+        return $this->expandLocation($location);
     }
 
     private function expandLocation(Location $location): array
@@ -65,14 +51,5 @@ class AddressTypeFactory
             'adm3' => null,
             'adm4' => null,
         ];
-    }
-
-    public function build(Address $address): array
-    {
-        $array = $this->serializer->toArray($address, SerializationContext::create()->setGroups("FullBeneficiary")->setSerializeNull(true));
-        if ($address->getLocation() !== null) {
-            $array['location'] = $this->expandLocation($address->getLocation());
-        }
-        return $array;
     }
 }

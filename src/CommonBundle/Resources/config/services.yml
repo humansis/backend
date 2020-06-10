@@ -39,7 +39,8 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@request_validator"
 
-
+    CommonBundle\Mapper\LocationMapper:
+        public: true
 
 #######################################################################################
 ##                                     LISTENER                                      ##
@@ -115,6 +116,13 @@ services:
         arguments:
             - "@=service('kernel').getEnvironment()"
             - "@beneficiary.institution_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\Beneficiaries\CommunityFixture:
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@beneficiary.community_service"
         tags:
             - { name: doctrine.fixture.orm }
 
