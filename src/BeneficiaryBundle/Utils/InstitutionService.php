@@ -4,31 +4,17 @@
 namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Camp;
-use BeneficiaryBundle\Entity\CampAddress;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Entity\InstitutionLocation;
 use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\InstitutionConstraints;
-use CommonBundle\Entity\Location;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
-use PhpOffice\PhpSpreadsheet\Reader\Csv;
-use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Component\Cache\Simple\FilesystemCache;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use CommonBundle\InputType as GlobalInputType;
+use BeneficiaryBundle\InputType;
 
 /**
  * Class InstitutionService
@@ -87,60 +73,52 @@ class InstitutionService
     }
 
     /**
-     * @param string $iso3
-     * @param array $filters
+     * @param GlobalInputType\Country $country
+     * @param GlobalInputType\DataTableType $dataTableType
      * @return mixed
      */
-    public function getAll(string $iso3, array $filters)
+    public function getAll(GlobalInputType\Country $country, GlobalInputType\DataTableType $dataTableType)
     {
-        $pageIndex = $filters['pageIndex'];
-        $pageSize = $filters['pageSize'];
-        $filter = $filters['filter'];
-        $sort = $filters['sort'];
+        $limitMinimum = $dataTableType->pageIndex * $dataTableType->pageSize;
 
-        $limitMinimum = $pageIndex * $pageSize;
-
-        $institutions = $this->em->getRepository(Institution::class)->getAllBy($iso3, $limitMinimum, $pageSize, $sort);
+        $institutions = $this->em->getRepository(Institution::class)->getAllBy($country, $limitMinimum, $dataTableType->pageSize, $dataTableType->getSort());
         $length = $institutions[0];
         $institutions = $institutions[1];
 
         return [$length, $institutions];
     }
 
-    public function create(string $iso3, array $institutionArray): Institution
+    /**
+     * @param GlobalInputType\Country $country
+     * @param InputType\NewInstitutionType $institutionType
+     * @return Institution
+     */
+    public function create(GlobalInputType\Country $country, InputType\NewInstitutionType $institutionType): Institution
     {
-        $this->requestValidator->validate(
-            "institution",
-            InstitutionConstraints::class,
-            $institutionArray,
-            'any'
-        );
-
         $institution = new Institution();
-        $institution->setType($institutionArray['type']);
-        $institution->setLongitude($institutionArray['longitude'] ?? null);
-        $institution->setLatitude($institutionArray['latitude'] ?? null);
-        $institution->setType($institutionArray['type'] ?? null);
-        $institution->setIdNumber($institutionArray['id_number'] ?? null);
-        $institution->setIdType($institutionArray['id_type'] ?? null);
-        $institution->setContactName($institutionArray['contact_name'] ?? null);
-        $institution->setPhonePrefix($institutionArray['phone_prefix'] ?? null);
-        $institution->setPhoneNumber($institutionArray['phone_number'] ?? null);
+        $institution->setName($institutionType->getName());
+        $institution->setType($institutionType->getType());
+        $institution->setLongitude($institutionType->getLongitude());
+        $institution->setLatitude($institutionType->getLatitude());
+        $institution->setContactName($institutionType->getContactName());
+        $institution->setContactFamilyName($institutionType->getContactFamilyName());
+        $institution->setPhonePrefix($institutionType->getPhonePrefix());
+        $institution->setPhoneNumber($institutionType->getPhoneNumber());
 
-        if (isset($institutionArray['address'])) {
-            $this->requestValidator->validate(
-                "address",
-                InstitutionConstraints::class,
-                $institutionArray['address'],
-                'any'
-            );
+        if ($institutionType->getNationalId() !== null) {
+            $institution->setNationalId(new NationalId());
+            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getIdNumber());
+            $institution->getNationalId()->setIdType($institutionType->getNationalId()->getIdType());
+        }
 
-            $location = $this->locationService->getLocation($iso3, $institutionArray['address']["location"]);
+        if ($institutionType->getAddress() !== null) {
+            $addressType = $institutionType->getAddress();
+            $location = $this->locationService->getLocationByInputType($country, $addressType->getLocation());
 
             $institution->setAddress(Address::create(
-                $institutionArray['address']['street'],
-                $institutionArray['address']['number'],
-                $institutionArray['address']['postcode'],
+                $addressType->getStreet(),
+                $addressType->getNumber(),
+                $addressType->getPostcode(),
                 $location
                 ));
         }
@@ -199,42 +177,57 @@ class InstitutionService
         return $institutions;
     }
 
-    public function update($iso3, Institution $institution, $institutionArray): Institution
+    /**
+     * @param GlobalInputType\Country $iso3
+     * @param Institution $institution
+     * @param InputType\UpdateInstitutionType $institutionType
+     * @return Institution
+     */
+    public function update(GlobalInputType\Country $iso3, Institution $institution, InputType\UpdateInstitutionType $institutionType): Institution
     {
-        if (array_key_exists('longitude', $institutionArray)) {
-            $institution->setLongitude($institutionArray['longitude']);
+        if (null !== $newValue = $institutionType->getName()) {
+            $institution->setName($newValue);
         }
-        if (array_key_exists('latitude', $institutionArray)) {
-            $institution->setLatitude($institutionArray['latitude']);
+        if (null !== $newValue = $institutionType->getLongitude()) {
+            $institution->setLongitude($newValue);
         }
-        if (array_key_exists('type', $institutionArray)) {
-            $institution->setType($institutionArray['type']);
+        if (null !== $newValue = $institutionType->getLatitude()) {
+            $institution->setLatitude($newValue);
         }
-        if (array_key_exists('id_number', $institutionArray)) {
-            $institution->setIdNumber($institutionArray['id_number']);
-        }
-        if (array_key_exists('id_type', $institutionArray)) {
-            $institution->setIdType($institutionArray['id_type']);
-        }
-        if (array_key_exists('contact_name', $institutionArray)) {
-            $institution->setContactName($institutionArray['contact_name'] ?? null);
-        }
-        if (array_key_exists('phone_prefix', $institutionArray)) {
-            $institution->setPhonePrefix($institutionArray['phone_prefix']);
-        }
-        if (array_key_exists('phone_number', $institutionArray)) {
-            $institution->setPhoneNumber($institutionArray['phone_number']);
+        if (null !== $newValue = $institutionType->getType()) {
+            $institution->setType($newValue);
         }
 
-        if (array_key_exists('address', $institutionArray)) {
+        if ($institutionType->getNationalId() !== null) {
+            if ($institution->getNationalId() == null) {
+                $institution->setNationalId(new NationalId());
+            }
+            $institution->getNationalId()->setIdType($institutionType->getNationalId()->getIdType());
+            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getIdNumber());
+        }
+        if (null !== $newValue = $institutionType->getContactName()) {
+            $institution->setContactName($newValue);
+        }
+        if (null !== $newValue = $institutionType->getContactFamilyName()) {
+            $institution->setContactName($newValue);
+        }
+        if (null !== $newValue = $institutionType->getPhonePrefix()) {
+            $institution->setPhonePrefix($newValue);
+        }
+        if (null !== $newValue = $institutionType->getPhoneNumber()) {
+            $institution->setPhoneNumber($newValue);
+        }
+
+        /** @var InputType\BeneficiaryAddressType $address */
+        if (null !== $address = $institutionType->getAddress()) {
             $location = null;
-            if (array_key_exists('location', $institutionArray['address'])) {
-                $location = $this->locationService->getLocation($iso3, $institutionArray['address']['location']);
+            if ($address->getLocation() !== null) {
+                $location = $this->locationService->getLocationByInputType($iso3, $address->getLocation());
             }
             $this->updateAddress($institution, Address::create(
-                $institutionArray['address']['street'],
-                $institutionArray['address']['number'],
-                $institutionArray['address']['postcode'],
+                $address->getStreet(),
+                $address->getNumber(),
+                $address->getPostcode(),
                 $location
                 ));
         }

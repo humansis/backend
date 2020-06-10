@@ -22,7 +22,7 @@ class Product implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullProduct", "ValidatedDistribution"})
+     * @Groups({"FullProduct", "ValidatedDistribution", "FullVoucher"})
      */
     private $id;
 
@@ -59,23 +59,12 @@ class Product implements ExportableInterface
     private $archived;
 
     /**
-     * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="products")
-     */
-    private $vouchers;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="countryISO3", type="string", length=3)
      * @Groups({"FullProduct"})
      */
     private $countryISO3;
-
-    public function __construct()
-    {
-        $this->vouchers = new ArrayCollection();
-    }
-
 
     /**
      * Get id.
@@ -181,35 +170,6 @@ class Product implements ExportableInterface
     public function getImage()
     {
         return $this->image;
-    }
-
-
-    /**
-     * @return Collection|Voucher[]
-     */
-    public function getVouchers(): Collection
-    {
-        return $this->vouchers;
-    }
-
-    public function addVoucher(Voucher $voucher): self
-    {
-        if (!$this->vouchers->contains($voucher)) {
-            $this->vouchers[] = $voucher;
-            $voucher->addProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVoucher(Voucher $voucher): self
-    {
-        if ($this->vouchers->contains($voucher)) {
-            $this->vouchers->removeElement($voucher);
-            $voucher->removeProduct($this);
-        }
-
-        return $this;
     }
 
     /**

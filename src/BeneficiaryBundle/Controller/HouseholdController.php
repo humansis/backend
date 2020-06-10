@@ -2,6 +2,9 @@
 
 namespace BeneficiaryBundle\Controller;
 
+use BeneficiaryBundle\Entity\HouseholdActivity;
+use BeneficiaryBundle\Model\Household\HouseholdActivityChangesCollection;
+use BeneficiaryBundle\Model\Household\HouseholdChange\Factory\FilteredHouseholdChangeFactory;
 use BeneficiaryBundle\Utils\ExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
@@ -269,6 +272,8 @@ class HouseholdController extends Controller
         $token = empty($request->query->get('token')) ? null : $request->query->get('token');
 
         $contentJson = $request->request->get('errors');
+        $tmpFile = $request->request->get('tmpFile');
+        $mapping = $request->request->get('mapping');
 
         $email = $request->query->get('email');
         $countryIso3 = $request->request->get('__country');
@@ -276,12 +281,18 @@ class HouseholdController extends Controller
         /** @var HouseholdCSVService $householdService */
         $householdService = $this->get('beneficiary.household_csv_service');
 
-        if ($token === null) {
+        if ($token === null && empty($mapping)) {
             if (!$request->files->has('file')) {
                 return new Response('You must upload a file.', Response::HTTP_BAD_REQUEST);
             }
             try {
                 $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $token, $email);
+            } catch (\Exception $e) {
+                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+        } elseif ($mapping) {
+            try {
+                $return = $householdService->saveCSVAndAnalyze($countryIso3, $project, $tmpFile, $mapping, $token, $email);
             } catch (\Exception $e) {
                 return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
             }
@@ -550,6 +561,42 @@ class HouseholdController extends Controller
                 SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
             );
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Get("/household/{householdId}/changes")
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Get list of changes in household",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=HouseholdActivityChange::class, groups={"HouseholdChanges"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(response=404, description="Household does not exists")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function householdChanges(Request $request)
+    {
+        /** @var Household|null $household */
+        $household = $this->getDoctrine()->getRepository(Household::class)->find($request->get('householdId'));
+        if (!$household) {
+            throw $this->createNotFoundException('Household does not exists.');
+        }
+
+        $activities = $this->getDoctrine()->getRepository(HouseholdActivity::class)->findByHousehold($household);
+
+        $changes = new HouseholdActivityChangesCollection($activities, new FilteredHouseholdChangeFactory());
+        $changes = $this->get('serializer')->serialize($changes, 'json', ['groups' => ['HouseholdChanges']]);
+
+        return new Response($changes);
     }
 
 }

@@ -31,7 +31,39 @@ services:
             - "@validator"
             - "@service_container"
         public: true
-        
+
+    beneficiary.community_service:
+        class: BeneficiaryBundle\Utils\CommunityService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@jms_serializer"
+            - "@beneficiary.beneficiary_service"
+            - "@request_validator"
+            - "@location_service"
+            - "@validator"
+            - "@service_container"
+        public: true
+
+    BeneficiaryBundle\Mapper\CommunityMapper:
+        arguments:
+            - '@BeneficiaryBundle\Mapper\AddressMapper'
+            - '@BeneficiaryBundle\Mapper\NationalIdMapper'
+        public: true
+
+    BeneficiaryBundle\Mapper\InstitutionMapper:
+        arguments:
+            - '@BeneficiaryBundle\Mapper\AddressMapper'
+            - '@BeneficiaryBundle\Mapper\NationalIdMapper'
+        public: true
+
+    BeneficiaryBundle\Mapper\AddressMapper:
+        arguments:
+            - '@CommonBundle\Mapper\LocationMapper'
+        public: true
+
+    BeneficiaryBundle\Mapper\NationalIdMapper:
+        public: true
+
     beneficiary.beneficiary_service:
         class: BeneficiaryBundle\Utils\BeneficiaryService
         arguments:
@@ -48,7 +80,6 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@service_container"
-
         public: true
 
 
@@ -105,3 +136,9 @@ services:
         class: BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper
         autowire: true
         public: true
+
+    household.activity_listerer:
+        class: BeneficiaryBundle\Listener\HouseholdActivitySubscriber
+        autowire: true
+        tags:
+            - { name: 'doctrine.event_subscriber', priority: 500 }

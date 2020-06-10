@@ -3,6 +3,7 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use CommonBundle\InputType;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\Common\Collections\Collection;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -177,15 +178,15 @@ class BookletController extends Controller
      *     )
      * )
      *
-     * @param Request $request
+     * @param InputType\Country $country
+     * @param InputType\DataTableType $filterType
      * @return Response
      */
-    public function allAction(Request $request)
+    public function allAction(InputType\Country $country, InputType\DataTableType $filterType)
     {
-        $filters = $request->request->all();
 
         try {
-            $booklets = $this->get('voucher.booklet_service')->getAll($filters['__country'], $filters);
+            $booklets = $this->get('voucher.booklet_service')->getAll($country, $filterType);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -579,6 +580,30 @@ class BookletController extends Controller
         }
 
         return new Response(json_encode($return));
+    }
+
+    /**
+     * Assign the booklet to a specific beneficiary.
+     *
+     * @Rest\Post("/offline-app/v1/booklets/assign/{distributionId}/{beneficiaryId}")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
+     * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
+     * @ParamConverter("distributionData", options={"mapping": {"distributionId": "id"}})
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
+     *
+     * @SWG\Tag(name="Offline App")
+     * @SWG\Tag(name="Booklets")
+     *
+     * @SWG\Response(response=200, description="SUCCESS", @SWG\Schema(type="string"))
+     *
+     * @param Request          $request
+     * @param DistributionData $distributionData
+     * @param Beneficiary      $beneficiary
+     * @return Response
+     */
+    public function offlineAssignAction(Request $request, DistributionData $distributionData, Beneficiary $beneficiary)
+    {
+        return $this->assignAction($request, $distributionData, $beneficiary);
     }
 
     /**
