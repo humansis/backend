@@ -184,7 +184,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
                 $bnf->setEnGivenName($bnfData['en_given_name']);
                 $bnf->setLocalFamilyName($bnfData['local_family_name']);
                 $bnf->setLocalGivenName($bnfData['local_given_name']);
-                $bnf->setGender($bnfData['gender']);
+                $bnf->setGender($gender === 'F'? 0 : 1);
                 $bnf->setStatus($household->getBeneficiaries()->count() == 0);
                 $bnf->setResidencyStatus($bnfData['residency_status']);
 
