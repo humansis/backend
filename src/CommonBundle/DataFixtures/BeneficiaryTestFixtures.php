@@ -198,10 +198,12 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             $household->addHouseholdLocation($householdLocation);
 
             $project->addHousehold($household);
+            $household->addProject($project);
 
             $manager->persist($household);
             echo ".";
         }
+        $manager->persist($project);
     }
 
     private function replacePlaceholders(array $data, array $replaces) {
