@@ -29,6 +29,8 @@ class CommunityMapper
     {
         if (!$community) return null;
         return [
+            "id" => $community->getId(),
+            "name" => $community->getName(),
             "contact_name" => $community->getContactName(),
             "contact_family_name" => $community->getContactFamilyName(),
             "phone_number" => $community->getPhoneNumber(),
