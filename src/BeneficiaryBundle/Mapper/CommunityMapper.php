@@ -2,6 +2,7 @@
 namespace BeneficiaryBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Community;
+use CommonBundle\Mapper\LocationMapper;
 
 class CommunityMapper
 {
@@ -9,16 +10,20 @@ class CommunityMapper
     private $addressMapper;
     /** @var NationalIdMapper */
     private $nationalIdMapper;
+    /** @var LocationMapper */
+    private $locationMapper;
 
     /**
      * CommunityMapper constructor.
      * @param AddressMapper $addressMapper
      * @param NationalIdMapper $nationalIdMapper
+     * @param LocationMapper $locationMapper
      */
-    public function __construct(AddressMapper $addressMapper, NationalIdMapper $nationalIdMapper)
+    public function __construct(AddressMapper $addressMapper, NationalIdMapper $nationalIdMapper, \CommonBundle\Mapper\LocationMapper $locationMapper)
     {
         $this->addressMapper = $addressMapper;
         $this->nationalIdMapper = $nationalIdMapper;
+        $this->locationMapper = $locationMapper;
     }
 
     /**
@@ -30,7 +35,7 @@ class CommunityMapper
         if (!$community) return null;
         return [
             "id" => $community->getId(),
-            "name" => $community->getName(),
+            "name" => $this->getName($community),
             "contact_name" => $community->getContactName(),
             "contact_family_name" => $community->getContactFamilyName(),
             "phone_number" => $community->getPhoneNumber(),
@@ -40,6 +45,14 @@ class CommunityMapper
             "latitude" => $community->getLatitude(),
             "longitude" => $community->getLongitude(),
         ];
+    }
+
+    private function getName(Community $community): string
+    {
+        if (!$community->getAddress() || !$community->getAddress()->getLocation()) {
+            return "global community";
+        }
+        return $this->locationMapper->toName($community->getAddress()->getLocation());
     }
 
     public function toFullArrays(array $communities)

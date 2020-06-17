@@ -48,6 +48,7 @@ services:
         arguments:
             - '@BeneficiaryBundle\Mapper\AddressMapper'
             - '@BeneficiaryBundle\Mapper\NationalIdMapper'
+            - '@CommonBundle\Mapper\LocationMapper'
         public: true
 
     BeneficiaryBundle\Mapper\InstitutionMapper:

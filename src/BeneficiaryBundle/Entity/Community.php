@@ -103,38 +103,6 @@ class Community
     }
 
     /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        $names = [];
-        if (!$this->getAddress()
-            || !$this->getAddress()->getLocation()
-            || !$this->getAddress()->getLocation()->getAdm1()) {
-            return "global community";
-        }
-        $names[] = $this->getAddress()->getLocation()->getAdm1()->getName();
-        if ($this->getAddress()->getLocation()->getAdm2())
-        {
-            $names[] = $this->getAddress()->getLocation()->getAdm2()->getName();
-        }
-        if ($this->getAddress()->getLocation()->getAdm3())
-        {
-            $names[] = $this->getAddress()->getLocation()->getAdm3()->getName();
-        }
-        if ($this->getAddress()->getLocation()->getAdm3())
-        {
-            $names[] = $this->getAddress()->getLocation()->getAdm3()->getName();
-        }
-        if ($this->getAddress()->getLocation()->getAdm4())
-        {
-            $names[] = $this->getAddress()->getLocation()->getAdm4()->getName();
-        }
-
-        return implode(' ', $names);
-    }
-
-    /**
      * @return string|null
      */
     public function getContactName(): ?string
