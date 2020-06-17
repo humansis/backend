@@ -52,4 +52,36 @@ class LocationMapper
             'adm4' => null,
         ];
     }
+
+    public function toName(Location $location): string
+    {
+        $delimiter = ', ';
+        if ($location->getAdm4()) {
+            return implode($delimiter, [
+                $location->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getName(),
+                $location->getAdm4()->getAdm3()->getAdm2()->getName(),
+                $location->getAdm4()->getAdm3()->getName(),
+                $location->getAdm4()->getName(),
+            ]);
+        }
+        if ($location->getAdm3()) {
+            return implode($delimiter, [
+                $location->getAdm3()->getAdm2()->getAdm1()->getName(),
+                $location->getAdm3()->getAdm2()->getName(),
+                $location->getAdm3()->getName(),
+            ]);
+        }
+        if ($location->getAdm2()) {
+            return implode($delimiter, [
+                $location->getAdm2()->getAdm1()->getName(),
+                $location->getAdm2()->getName(),
+            ]);
+        }
+        if ($location->getAdm1()) {
+            return $location->getAdm1()->getName();
+        }
+        return "";
+    }
+
+
 }
