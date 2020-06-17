@@ -39,8 +39,8 @@ class InstitutionControllerTest extends BMSServiceTestCase
                     ],
                 ],
                 'national_id' => [
-                    'id_type' => NationalId::TYPE_NATIONAL_ID,
-                    'id_number' => '000-1234-5895-21',
+                    'type' => NationalId::TYPE_NATIONAL_ID,
+                    'number' => '000-1234-5895-21',
                 ],
                 'phone_prefix' => '+4234',
                 'phone_number' => '123 456 789',
@@ -97,8 +97,10 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertSame($institution['name'], $institutionBody['name'], "Returned data are different than input: type");
         $this->assertSame($institution['type'], $institutionBody['type'], "Returned data are different than input: type");
         $this->assertSame($institution['contact_name'], $institutionBody['contact_name'] ?? null, "Returned data are different than input: contact_name");
-        $this->assertSame($institution['national_id']['id_type'], $institutionBody['nationalId']['id_type'] ?? null, "Returned data are different than input: id_type");
-        $this->assertSame($institution['national_id']['id_number'], $institutionBody['nationalId']['id_number'] ?? null, "Returned data are different than input: id_number");
+        if (isset($institution['national_id'])) {
+            $this->assertSame($institution['national_id']['type'], $institutionBody['nationalId']['type'] ?? null, "Returned data are different than input: type");
+            $this->assertSame($institution['national_id']['number'], $institutionBody['nationalId']['number'] ?? null, "Returned data are different than input: number");
+        }
         $this->assertSame($institution['phone_prefix'], $institutionBody['phone_prefix'] ?? null, "Returned data are different than input: phone_prefix");
         $this->assertSame($institution['phone_number'], $institutionBody['phone_number'] ?? null, "Returned data are different than input: phone_number");
         $this->assertSame($institution['longitude'], $institutionBody['longitude'] ?? null, "Returned data are different than input: longitude");;

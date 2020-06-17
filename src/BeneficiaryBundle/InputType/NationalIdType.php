@@ -11,42 +11,42 @@ class NationalIdType implements InputTypeInterface
      * @Assert\Length(max="255")
      * @Assert\Choice(choices=BeneficiaryBundle\Entity\NationalId::TYPE_ALL)
      */
-    private $id_type;
+    private $type;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
-    private $id_number;
+    private $number;
 
     /**
      * @return string|null
      */
-    public function getIdType(): ?string
+    public function getType(): ?string
     {
-        return $this->id_type;
+        return $this->type;
     }
 
     /**
-     * @param string|null $id_type
+     * @param string|null $type
      */
-    public function setIdType(?string $id_type): void
+    public function setType(?string $type): void
     {
-        $this->id_type = $id_type;
+        $this->type = $type;
     }
 
     /**
      * @return string|null
      */
-    public function getIdNumber(): ?string
+    public function getNumber(): ?string
     {
-        return $this->id_number;
+        return $this->number;
     }
 
     /**
-     * @param string|null $id_number
+     * @param string|null $number
      */
-    public function setIdNumber(?string $id_number): void
+    public function setNumber(?string $number): void
     {
-        $this->id_number = $id_number;
+        $this->number = $number;
     }
 }

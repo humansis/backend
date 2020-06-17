@@ -36,8 +36,8 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
                 ],
             ],
             'national_id' => [
-                'id_type' => NationalId::TYPE_NATIONAL_ID,
-                'id_number' => 'ID: 000-1234-5895-21',
+                'type' => NationalId::TYPE_NATIONAL_ID,
+                'number' => 'ID: 000-1234-5895-21',
             ],
             'phone_prefix' => '+4234',
             'phone_number' => '123 456 789',
@@ -60,8 +60,8 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
                 ],
             ],
             'national_id' => [
-                'id_type' => NationalId::TYPE_FAMILY,
-                'id_number' => 'FML: 000-1234-5895-21',
+                'type' => NationalId::TYPE_FAMILY,
+                'number' => 'FML: 000-1234-5895-21',
             ],
             'phone_prefix' => '+4234',
             'phone_number' => '123 456 789',
@@ -84,8 +84,8 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
                 ],
             ],
             'national_id' => [
-                'id_type' => NationalId::TYPE_CAMP_ID,
-                'id_number' => 'CMP: 000-1234-5895-21',
+                'type' => NationalId::TYPE_CAMP_ID,
+                'number' => 'CMP: 000-1234-5895-21',
             ],
             'phone_prefix' => '+4234',
             'phone_number' => '123 456 789',

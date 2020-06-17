@@ -106,8 +106,8 @@ class CommunityService
 
         if ($communityType->getNationalId() !== null) {
             $community->setNationalId(new NationalId());
-            $community->getNationalId()->setIdNumber($communityType->getNationalId()->getIdNumber());
-            $community->getNationalId()->setIdType($communityType->getNationalId()->getIdType());
+            $community->getNationalId()->setIdNumber($communityType->getNationalId()->getNumber());
+            $community->getNationalId()->setIdType($communityType->getNationalId()->getType());
         }
 
         if ($communityType->getAddress() !== null) {
@@ -158,8 +158,8 @@ class CommunityService
             if ($community->getNationalId() == null) {
                 $community->setNationalId(new NationalId());
             }
-            $community->getNationalId()->setIdType($communityType->getNationalId()->getIdType());
-            $community->getNationalId()->setIdNumber($communityType->getNationalId()->getIdNumber());
+            $community->getNationalId()->setIdType($communityType->getNationalId()->getType());
+            $community->getNationalId()->setIdNumber($communityType->getNationalId()->getNumber());
         }
         if (null !== $newValue = $communityType->getContactName()) {
             $community->setContactName($newValue);
