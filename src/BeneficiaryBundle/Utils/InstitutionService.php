@@ -107,8 +107,8 @@ class InstitutionService
 
         if ($institutionType->getNationalId() !== null) {
             $institution->setNationalId(new NationalId());
-            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getIdNumber());
-            $institution->getNationalId()->setIdType($institutionType->getNationalId()->getIdType());
+            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getNumber());
+            $institution->getNationalId()->setIdType($institutionType->getNationalId()->getType());
         }
 
         if ($institutionType->getAddress() !== null) {
@@ -202,8 +202,8 @@ class InstitutionService
             if ($institution->getNationalId() == null) {
                 $institution->setNationalId(new NationalId());
             }
-            $institution->getNationalId()->setIdType($institutionType->getNationalId()->getIdType());
-            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getIdNumber());
+            $institution->getNationalId()->setIdType($institutionType->getNationalId()->getType());
+            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getNumber());
         }
         if (null !== $newValue = $institutionType->getContactName()) {
             $institution->setContactName($newValue);

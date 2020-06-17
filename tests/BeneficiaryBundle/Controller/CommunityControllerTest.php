@@ -36,8 +36,10 @@ class CommunityControllerTest extends BMSServiceTestCase
                         'country_iso3' => 'KHM',
                     ],
                 ],
-                'id_type' => 'national',
-                'id_number' => '000-1234-5895-21',
+                'national_id' => [
+                    'type' => NationalId::TYPE_NATIONAL_ID,
+                    'number' => '000-1234-5895-21',
+                ],
                 'phone_prefix' => '+4234',
                 'phone_number' => '123 456 789',
                 'contact_name' => 'Abdul Mohammad',
@@ -92,6 +94,11 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertSame($community['phone_number'], $communityBody['phone_number'] ?? '', "Returned data are different than input: phone_number");
         $this->assertSame($community['longitude'], $communityBody['longitude'] ?? '', "Returned data are different than input: longitude");;
         $this->assertSame($community['latitude'], $communityBody['latitude'] ?? '', "Returned data are different than input: latitude");;
+
+        if (isset($community['national_id'])) {
+            $this->assertSame($community['national_id']['type'], $communityBody['national_id']['type'] ?? null, "Returned data are different than input: type");
+            $this->assertSame($community['national_id']['number'], $communityBody['national_id']['number'] ?? null, "Returned data are different than input: number");
+        }
 
         return $community;
     }
