@@ -221,4 +221,42 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertEquals($communitiesArray['address']['number'], $changes['address']['number'], "Address[number] wasn't changed");
         $this->assertEquals($communitiesArray['address']['postcode'], $changes['address']['postcode'], "Address[postcode] wasn't changed");
     }
+
+    /**
+     * @depends testCreateCommunity
+     * @param $community
+     */
+    public function testEditCommunityLocation()
+    {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var Community $community */
+        $community = $this->em->getRepository(Community::class)->findOneBy([]);
+
+        $changes = [
+            'address' => [
+                'street' => 'changed street',
+                'number' => '123456789',
+                'postcode' => '987654321',
+                'location' => [
+                    'adm1' => 2,
+                    'adm2' => 2,
+                    'adm3' => 2,
+                    'adm4' => 2,
+                ]
+            ],
+        ];
+
+        $crawler = $this->request('POST', '/api/wsse/communities/' . $community->getId(), $changes);
+        $communitiesArray = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
+        $this->assertArrayHasKey('address', $communitiesArray,"Part of answer missing: address");
+        $this->assertEquals($communitiesArray['address']['location']['adm1'], $changes['address']['location']['adm1'], "Address[location][adm1] wasn't changed");
+        $this->assertEquals($communitiesArray['address']['location']['adm2'], $changes['address']['location']['adm2'], "Address[location][adm2] wasn't changed");
+        $this->assertEquals($communitiesArray['address']['location']['adm3'], $changes['address']['location']['adm3'], "Address[location][adm3] wasn't changed");
+        $this->assertEquals($communitiesArray['address']['location']['adm4'], $changes['address']['location']['adm4'], "Address[location][adm4] wasn't changed");
+    }
 }
