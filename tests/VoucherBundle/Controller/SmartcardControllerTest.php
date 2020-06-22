@@ -96,26 +96,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertEquals(255.25, $smartcard['value'], 0.0001);
     }
 
-    public function testDepositToFrozenSmartcard()
-    {
-        $depositor = $this->em->getRepository(User::class)->findOneBy([]);
-
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
-        $smartcard->setState(Smartcard::STATE_FROZEN);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, 1000, new \DateTime('now')));
-
-        $this->em->persist($smartcard);
-        $this->em->flush();
-
-        $this->request('PATCH', '/api/wsse/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
-            'value' => 500,
-            'depositorId' => 1, // todo change to fixtures
-            'createdAt' => '2020-02-02T12:00:00+0200',
-        ]);
-
-        $this->assertTrue($this->client->getResponse()->isClientError(), 'Request failed: '.$this->client->getResponse()->getContent());
-    }
-
     public function testDepositToInactiveSmartcard()
     {
         $depositor = $this->em->getRepository(User::class)->findOneBy([]);
@@ -198,41 +178,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->client->request('PATCH', '/api/wsse/vendor-app/v1/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-    }
-
-    public function testChangeStateToFrozen()
-    {
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
-
-        $this->request('PATCH', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getSerialNumber(), [
-            'state' => Smartcard::STATE_FROZEN,
-            'createdAt' => '2020-02-02T12:00:00Z',
-        ]);
-
-        $smartcard = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-        $this->assertArrayHasKey('state', $smartcard);
-        $this->assertEquals(Smartcard::STATE_FROZEN, $smartcard['state']);
-    }
-
-    public function testChangeStateBackToActive()
-    {
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
-        $smartcard->setState(Smartcard::STATE_FROZEN);
-        $this->em->persist($smartcard);
-        $this->em->flush();
-
-        $this->request('PATCH', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getSerialNumber(), [
-            'state' => Smartcard::STATE_ACTIVE,
-            'createdAt' => '2020-02-02T12:00:00Z',
-        ]);
-
-        $smartcard = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-        $this->assertArrayHasKey('state', $smartcard);
-        $this->assertEquals(Smartcard::STATE_ACTIVE, $smartcard['state']);
     }
 
     public function testChangeStateToInactive()
