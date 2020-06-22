@@ -153,6 +153,7 @@ class Project implements ExportableInterface
         $this->usersProject = new \Doctrine\Common\Collections\ArrayCollection();
         $this->donors = new \Doctrine\Common\Collections\ArrayCollection();
         $this->sectors = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->households = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -561,7 +562,7 @@ class Project implements ExportableInterface
      */
     public function addHousehold(\BeneficiaryBundle\Entity\Household $household)
     {
-        $this->households[] = $household;
+        $this->households->add($household);
         return $this;
     }
 

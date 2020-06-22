@@ -79,6 +79,12 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\LocationTestFixtures:
+        arguments:
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\ModalityFixtures:
         tags:
             - { name: doctrine.fixture.orm }
@@ -105,7 +111,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures:
+    CommonBundle\DataFixtures\BeneficiaryTestFixtures:
         arguments:
             - "@kernel"
             - "@beneficiary.household_service"
