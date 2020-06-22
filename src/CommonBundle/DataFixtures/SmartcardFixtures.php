@@ -38,6 +38,9 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             return;
         }
 
+        // set up seed will make random values will be same for each run of fixtures
+        srand(42);
+
         for ($i = 0; $i < 20; ++$i) {
             $smartcard = new Smartcard(self::generateSerialNumber($i), $this->randomEntity(Beneficiary::class, $manager), new DateTimeImmutable('now'));
             $smartcard->setState(self::generateState());
