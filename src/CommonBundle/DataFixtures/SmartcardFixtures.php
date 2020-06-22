@@ -106,7 +106,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies()
     {
         return [
-            BeneficiaryFixtures::class,
+            BeneficiaryTestFixtures::class,
             VendorFixtures::class,
         ];
     }
