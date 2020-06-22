@@ -20,7 +20,6 @@ class Smartcard
     const STATE_UNASSIGNED = 'unassigned';
     const STATE_ACTIVE = 'active';
     const STATE_INACTIVE = 'inactive';
-    const STATE_FROZEN = 'frozen';
     const STATE_CANCELLED = 'cancelled';
 
     /**
@@ -103,7 +102,6 @@ class Smartcard
             self::STATE_UNASSIGNED,
             self::STATE_ACTIVE,
             self::STATE_INACTIVE,
-            self::STATE_FROZEN,
             self::STATE_CANCELLED,
         ];
     }

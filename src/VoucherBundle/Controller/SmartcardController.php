@@ -245,8 +245,7 @@ class SmartcardController extends Controller
 
         $possibleFlow = [
             Smartcard::STATE_UNASSIGNED => Smartcard::STATE_ACTIVE,
-            Smartcard::STATE_ACTIVE => [Smartcard::STATE_INACTIVE, Smartcard::STATE_FROZEN, Smartcard::STATE_CANCELLED],
-            Smartcard::STATE_FROZEN => [Smartcard::STATE_ACTIVE, Smartcard::STATE_CANCELLED],
+            Smartcard::STATE_ACTIVE => [Smartcard::STATE_INACTIVE, Smartcard::STATE_CANCELLED],
             Smartcard::STATE_INACTIVE => Smartcard::STATE_CANCELLED,
         ];
 
