@@ -107,7 +107,7 @@ class CriteriaDistributionControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/distributions/criteria/project/'.$projectId.'/number', $criteria);
         $listDistributionBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->assertTrue(gettype($listDistributionBeneficiary) == "array");
 

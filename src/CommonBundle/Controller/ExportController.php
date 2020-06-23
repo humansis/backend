@@ -16,6 +16,13 @@ use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 /**
  * Class ExportController
  * @package CommonBundle\Controller
+ *
+ * @SWG\Parameter(
+ *      name="country",
+ *      in="header",
+ *      type="string",
+ *      required=true
+ * )
  */
 class ExportController extends Controller
 {
@@ -37,12 +44,14 @@ class ExportController extends Controller
      * @param Request $request
      *
      * @return Response
+     *
+     * @deprecated export action must be refactorized. Please make own export action instead.
      */
     public function exportAction(Request $request)
     {
         try {
             set_time_limit(600);
-            // Format of the file (csv, xls, ods, pdf)
+            // Format of the file (csv, xlsx, ods, pdf)
             $type = $request->query->get('type');
             // Generate corresponding file depending on request
             if ($request->query->get('distributions')) {
@@ -129,7 +138,7 @@ class ExportController extends Controller
 
             // Create binary file to send
             $response = new BinaryFileResponse(getcwd() . '/' . $filename);
-            
+
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
             $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
             if ($mimeTypeGuesser->isSupported()) {
@@ -138,10 +147,80 @@ class ExportController extends Controller
                 $response->headers->set('Content-Type', 'text/plain');
             }
             $response->deleteFileAfterSend(true);
-            
+
             return $response;
         } catch (\Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    /**
+     * @Rest\Get("/export/distribution", name="export_distribution")
+     *
+     * @SWG\Tag(name="Export")
+     *
+     * @SWG\Parameter(name="id",
+     *     type="string",
+     *     in="query",
+     *     required=true,
+     *     description="ID of distribution to export"
+     * )
+     *
+     * @SWG\Parameter(name="type",
+     *     type="string",
+     *     in="query",
+     *     required=true,
+     *     description="requested file type (pdf only is support now)"
+     * )
+     *
+     * @SWG\Parameter(name="locale",
+     *     type="string",
+     *     in="query",
+     *     default="en"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="streamed file"
+     * )
+     *
+     * @SWG\Response(
+     *     response=404,
+     *     description="invalid query parameters"
+     * )
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * @throws
+     */
+    public function exportDistributionToPdf(Request $request): Response
+    {
+        if (!$request->query->has('id')) {
+            throw $this->createNotFoundException("Missing distribution ID.");
+        }
+
+        $distribution = $this->getDoctrine()->getRepository(DistributionData::class)->find($request->query->get('id'));
+        if (null == $distribution) {
+            throw $this->createNotFoundException("Invalid distribution requested.");
+        }
+
+        if (!$request->query->has('type') || 'pdf' !== $request->query->get('type')) {
+            throw $this->createNotFoundException("Invalid file type requested.");
+        }
+
+        $locale = $request->query->get('locale', 'en');
+        $this->get('translator')->setLocale($locale);
+
+        $direction = ('left-to-right' === \Punic\Misc::getCharacterOrder($locale)) ? 'ltr' : 'rtl';
+        $template = ('left-to-right' === \Punic\Misc::getCharacterOrder($locale)) ? '@Distribution/Pdf/distributionTable.html.twig' : '@Distribution/Pdf/distributionTable.rtl.html.twig';
+
+        $html = $this->get('templating')->render($template, [
+            'direction' => $direction,
+            'distribution' => $distribution,
+        ]);
+
+        return $this->container->get('pdf_service')->printPdf($html, 'portrait', 'distribution');
     }
 }

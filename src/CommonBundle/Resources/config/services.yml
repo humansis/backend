@@ -31,6 +31,16 @@ services:
         public: true
         arguments:
             - "@doctrine.orm.entity_manager"
+            
+    log_service:
+        class: CommonBundle\Utils\LogService
+        public: true
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@request_validator"
+
+
+
 #######################################################################################
 ##                                     LISTENER                                      ##
 #######################################################################################
@@ -63,7 +73,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\LocationUnitTestFixtures:
+    CommonBundle\DataFixtures\LocationTestFixtures:
         arguments:
             - "@kernel"
         tags:
@@ -91,18 +101,11 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\FinancialProviderFixtures:
-        arguments:
-        - "@fos_user.user_manager"
-        - "@security.encoder_factory"
-        tags:
-        - { name: doctrine.fixture.orm }
-
     CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\BeneficiaryFixtures:
+    CommonBundle\DataFixtures\BeneficiaryTestFixtures:
         arguments:
             - "@kernel"
             - "@beneficiary.household_service"
@@ -122,6 +125,12 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\ServiceFixtures:
+        arguments:
+        - "@fos_user.user_manager"
+        - "@security.encoder_factory"
+        tags:
+        - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\ProductFixtures:
         arguments:

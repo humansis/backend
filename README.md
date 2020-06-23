@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/humansis/api.svg?branch=dev)](https://travis-ci.org/humansis/api)
+[![Build Status](https://travis-ci.com/humansis/api.svg?branch=dev)](https://travis-ci.com/humansis/api)
 [![GitHub version](https://badge.fury.io/gh/humansis%2Fapi.svg)](https://badge.fury.io/gh/humansis%2Fapi)
 
 BENEFICIARY MANAGEMENT SYSTEM
@@ -8,12 +8,12 @@ BENEFICIARY MANAGEMENT SYSTEM
 
 A platform that allows humanitarian organisations to manage relief items (Food, Non Food Items, CASH) to people in needs for life-saving humanitarian responses to emergency situations.
 
-Humansis is the first fully open-source relief platform for humanitarian actors to efficiently manage relief operations after a disaster, during a war or in response to long term crises. 
+Humansis is the first fully open-source relief platform for humanitarian actors to efficiently manage relief operations after a disaster, during a war or in response to long term crises.
 
 The global project documentation is in README.md of the frontend [repository](https://github.com/humansis/bms_front)
 
 # Documentation
- 
+
 #### Infos
 
 Set the header `country` of your request, with ISO3 code, if you need something which depends on a specific country.

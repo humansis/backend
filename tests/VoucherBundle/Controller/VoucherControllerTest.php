@@ -59,7 +59,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $voucher = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $voucher);
         $this->assertArrayHasKey('booklet', $voucher);
         return $voucher;
@@ -110,7 +110,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $crawler = $this->request('GET', '/api/wsse/vouchers/' . $newVoucher['id']);
         $voucher = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $voucher);
         $this->assertArrayHasKey('code', $voucher);
         $this->assertArrayHasKey('booklet', $voucher);
@@ -127,7 +127,11 @@ class VoucherControllerTest extends BMSServiceTestCase
      */
     public function testUseVoucher($newVoucher)
     {
-        $vendor = $this->em->getRepository(Vendor::class)->findOneByName('vendor');
+        $vendorName = 'vendor';
+        $vendor = $this->em->getRepository(Vendor::class)->findOneByName($vendorName);
+        if (null === $vendor) {
+            $this->markTestIncomplete("Expected vendor user account '$vendorName' missing.");
+        }
         $vendorId = $vendor->getId();
         // TODO: Check date format
         $body = [
@@ -147,7 +151,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/vouchers/scanned', $body);
         $newVoucherReceived = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $voucherSearch = $this->em->getRepository(Voucher::class)->find($newVoucherReceived[0]['id']);
         $this->assertTrue($voucherSearch->getUsedAt() !== null);
@@ -177,7 +181,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue($success);
     }
 
@@ -200,7 +204,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue($success);
 
         $this->em->remove($this->booklet);

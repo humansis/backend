@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
 
 /**
@@ -44,6 +45,44 @@ class Household
         22 => 'Security Industry',
         23 => 'Service Industry and Other Professionals',
         24 => 'Other'
+    ];
+
+    const ASSETS = [
+        0 => 'A/C',
+        1 => 'Agricultural Land',
+        2 => 'Car',
+        3 => 'Flatscreen TV',
+        4 => 'Livestock',
+        5 => 'Motorbike',
+        6 => 'Washing Machine',
+    ];
+
+    const SHELTER_STATUSES = [
+        0 => 'Values',
+        1 => 'Tent',
+        2 => 'Makeshift Shelter',
+        3 => 'Transitional Shelter',
+        4 => 'House/Apartment - Severely Damaged',
+        5 => 'House/Apartment - Moderately Damaged',
+        6 => 'House/Apartment - Good Condition',
+        7 => 'Room or Space in Public Building',
+        8 => 'Room or Space in Unfinished Building',
+        9 => 'Other',
+    ];
+
+    const SUPPORT_RECIEVED_TYPES = [
+        0 => 'MPCA',
+        1 => 'Cash for Work',
+        2 => 'Food Kit',
+        3 => 'Food Voucher',
+        4 => 'Hygiene Kit',
+        5 => 'Shelter Kit',
+        6 => 'Shelter Reconstruction Support',
+        7 => 'Non Food Items',
+        8 => 'Livelihoods Support',
+        9 => 'Vocational Training',
+        10 => 'None',
+        11 => 'Other',
     ];
 
     /**
@@ -130,6 +169,22 @@ class Household
     private $livelihood;
 
     /**
+     * @var int[]
+     *
+     * @ORM\Column(name="assets", type="array", nullable=true)
+     * @Groups({"FullHousehold"})
+     */
+    private $assets;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="shelter_status", type="integer", nullable=true)
+     * @Groups({"FullHousehold"})
+     */
+    private $shelterStatus;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
@@ -212,6 +267,31 @@ class Household
      */
     private $householdLocations;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="debt_level", type="integer", nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold"})
+     */
+    private $debtLevel;
+
+    /**
+     * @var int[]
+     *
+     * @ORM\Column(name="support_received_types", type="array", nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold"})
+     */
+    private $supportReceivedTypes;
+
+    /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(name="support_date_received", type="date", nullable=true)
+     * @JMS_Type("DateTime<'d-m-Y'>")
+     * @Groups({"FullHousehold", "SmallHousehold"})
+     */
+    private $supportDateReceived;
+
 
     /**
      * Constructor
@@ -222,6 +302,9 @@ class Household
         $this->beneficiaries = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->householdLocations = new ArrayCollection();
+
+        $this->assets = [];
+        $this->supportReceivedTypes = [];
     }
 
 
@@ -270,6 +353,56 @@ class Household
     public function getLivelihood()
     {
         return $this->livelihood;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getAssets(): array
+    {
+        return (array) $this->assets;
+    }
+
+    /**
+     * @param int[] $assets
+     *
+     * @return self
+     */
+    public function setAssets($assets): self
+    {
+        foreach ((array) $assets as $asset) {
+            if (!isset(self::ASSETS[$asset])) {
+                throw new \InvalidArgumentException(sprintf('Argument 1 contain invalid asset key %d.', $asset));
+            }
+        }
+
+        $this->assets = (array) $assets;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getShelterStatus(): ?int
+    {
+        return $this->shelterStatus;
+    }
+
+    /**
+     * @param int|null $shelterStatus
+     *
+     * @return self
+     */
+    public function setShelterStatus(?int $shelterStatus): self
+    {
+        if (null !== $shelterStatus && !isset(self::SHELTER_STATUSES[$shelterStatus])) {
+            throw new \InvalidArgumentException(sprintf('Argument 1 is not valid shelter status key.'));
+        }
+
+        $this->shelterStatus = $shelterStatus;
+
+        return $this;
     }
 
     /**
@@ -567,6 +700,7 @@ class Household
     {
         $this->foodConsumptionScore = $foodConsumptionScore;
 
+        return $this;
     }
 
     /**
@@ -639,4 +773,70 @@ class Household
         return $this->householdLocations;
     }
 
+    /**
+     * @return int|null
+     */
+    public function getDebtLevel(): ?int
+    {
+        return $this->debtLevel;
+    }
+
+    /**
+     * @param int|null $debtLevel
+     *
+     * @return self
+     */
+    public function setDebtLevel(?int $debtLevel): self
+    {
+        $this->debtLevel = $debtLevel;
+
+        return $this;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getSupportReceivedTypes(): array
+    {
+        return (array) $this->supportReceivedTypes;
+    }
+
+    /**
+     * @param int[] $supportReceivedTypes
+     *
+     * @return self
+     */
+    public function setSupportReceivedTypes($supportReceivedTypes): self
+    {
+        foreach ((array) $supportReceivedTypes as $type) {
+            if (!isset(self::SUPPORT_RECIEVED_TYPES[$type])) {
+                throw new \InvalidArgumentException(sprintf('Argument 1 contain invalid received type key %d.', $type));
+            }
+        }
+
+        $this->supportReceivedTypes = (array) $supportReceivedTypes;
+
+        return $this;
+    }
+
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getSupportDateReceived(): ?\DateTimeInterface
+    {
+        return $this->supportDateReceived;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $supportDateReceived
+     *
+     * @return self
+     */
+    public function setSupportDateReceived(?\DateTimeInterface $supportDateReceived): self
+    {
+        $this->supportDateReceived = $supportDateReceived;
+
+        return $this;
+    }
 }

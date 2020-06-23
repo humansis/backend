@@ -35,6 +35,6 @@ class ExportControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('POST', '/api/wsse/export?type=csv&users=true');
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
     }
 }

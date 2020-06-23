@@ -19,6 +19,13 @@ use UserBundle\Entity\User;
 /**
  * Class VendorController
  * @package VoucherBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class VendorController extends Controller
 {
@@ -51,7 +58,7 @@ class VendorController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createVendorAction(Request $request)
+    public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -134,13 +141,44 @@ class VendorController extends Controller
      * @param Vendor $vendor
      * @return Response
      */
-    public function getSingleVendorAction(Vendor $vendor)
+    public function getSingleAction(Vendor $vendor)
     {
         $json = $this->get('jms_serializer')->serialize($vendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
 
         return new Response($json);
     }
 
+    /**
+     * Get single vendor.
+     *
+     * @Rest\Get("/vendor-app/v1/vendors/{id}")
+     * @Security("is_granted('ROLE_USER')")
+     *
+     * @SWG\Tag(name="Single Vendor")
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Vendor delivered",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Vendor::class, groups={"FullVendor"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Vendor $vendor
+     *
+     * @return Response
+     */
+    public function getSingleActionVendor(Vendor $vendor)
+    {
+        return $this->getSingleAction($vendor);
+    }
 
     /**
      * Edit a vendor {id} with data in the body
@@ -211,7 +249,7 @@ class VendorController extends Controller
      * @param Vendor $vendor
      * @return Response
      */
-    public function archiveVendorAction(Vendor $vendor)
+    public function archiveAction(Vendor $vendor)
     {
         try {
             $archivedVendor = $this->get('voucher.vendor_service')->archiveVendor($vendor);
@@ -253,9 +291,11 @@ class VendorController extends Controller
 
     /**
      * Log a vendor with its username and salted password. Create a new one if not in the db (remove this part for prod env)
-     * @Rest\Post("/login_app", name="vendor_login")
      *
-     * @SWG\Tag(name="Vendors")
+     * @Rest\Post("/login_app", name="vendor_login")
+     * @Rest\Post("/vendor-app/v1/login")
+     *
+     * @SWG\Tag(name="Vendor App")
      *
      * @SWG\Response(
      *      response=200,
@@ -294,7 +334,7 @@ class VendorController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function loginAction(Request $request)
+    public function vendorLoginAction(Request $request)
     {
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('salted_password');

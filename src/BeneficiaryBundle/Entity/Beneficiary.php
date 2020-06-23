@@ -6,6 +6,7 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use CommonBundle\Utils\ExportableInterface;
 use BeneficiaryBundle\Entity\Referral;
@@ -25,7 +26,8 @@ class Beneficiary implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
+     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
     private $id;
 
@@ -33,7 +35,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="enGivenName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
      */
     private $enGivenName;
 
@@ -41,15 +43,15 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="enFamilyName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $enFamilyName;
 
-     /**
+    /**
      * @var string
      *
      * @ORM\Column(name="localGivenName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
      * @Assert\NotBlank(message="The local given name is required.")
      */
     private $localGivenName;
@@ -58,7 +60,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="localFamilyName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @Assert\NotBlank(message="The local family name is required.")
      */
     private $localFamilyName;
@@ -67,7 +69,7 @@ class Beneficiary implements ExportableInterface
      * @var int
      *
      * @ORM\Column(name="gender", type="smallint")
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @Assert\NotBlank(message="The gender is required.")
      */
     private $gender;
@@ -85,7 +87,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="residency_status", type="string", length=20)
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold", "FullBeneficiary"})
      * @Assert\Regex("/^(refugee|IDP|resident)$/i")
      */
     private $residencyStatus;
@@ -95,7 +97,7 @@ class Beneficiary implements ExportableInterface
      *
      * @ORM\Column(name="dateOfBirth", type="date")
      * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @Assert\NotBlank(message="The date of birth is required.")
      */
     private $dateOfBirth;
@@ -105,13 +107,13 @@ class Beneficiary implements ExportableInterface
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullBeneficiary"})
      */
     private $updatedOn;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "FullBeneficiary"})
      */
     private $profile;
 
@@ -126,33 +128,33 @@ class Beneficiary implements ExportableInterface
      * @var VulnerabilityCriterion
      *
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $vulnerabilityCriteria;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $phones;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $nationalIds;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
-     * @Groups({"FullReceivers"})
+     * @Groups({"FullReceivers", "FullBeneficiary"})
      *
      * @var DistributionBeneficiary $distributionBeneficiary
      */
     private $distributionBeneficiary;
 
-     /**
+    /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Referral", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $referral;
 
@@ -227,7 +229,7 @@ class Beneficiary implements ExportableInterface
         return $this->enFamilyName;
     }
 
-     /**
+    /**
      * Set localGivenName.
      *
      * @param string $localGivenName
@@ -618,10 +620,10 @@ class Beneficiary implements ExportableInterface
     public function getMappedValueForExport(): array
     {
         // Recover the phones of the beneficiary
-        $typephones = ["",""];
-        $prefixphones = ["",""];
-        $valuesphones = ["",""];
-        $proxyphones = ["",""];
+        $typephones = ["", ""];
+        $prefixphones = ["", ""];
+        $valuesphones = ["", ""];
+        $proxyphones = ["", ""];
 
         $index = 0;
         foreach ($this->getPhones()->getValues() as $value) {
@@ -684,9 +686,9 @@ class Beneficiary implements ExportableInterface
                 ["household ID" => $this->getHousehold()->getId()],
                 $householdFields,
                 ["adm1" => $adm1,
-                "adm2" =>$adm2,
-                "adm3" =>$adm3,
-                "adm4" =>$adm4]
+                    "adm2" => $adm2,
+                    "adm3" => $adm3,
+                    "adm4" => $adm4]
             );
         } else {
             $finalArray = [
@@ -711,9 +713,9 @@ class Beneficiary implements ExportableInterface
         $tempBenef = [
             "beneficiary ID" => $this->getId(),
             "localGivenName" => $this->getLocalGivenName(),
-            "localFamilyName"=> $this->getLocalFamilyName(),
+            "localFamilyName" => $this->getLocalFamilyName(),
             "enGivenName" => $this->getEnGivenName(),
-            "enFamilyName"=> $this->getEnFamilyName(),
+            "enFamilyName" => $this->getEnFamilyName(),
             "gender" => $valueGender,
             "head" => $this->getStatus() === true ? "true" : "false",
             "residencyStatus" => $this->getResidencyStatus(),
@@ -753,9 +755,9 @@ class Beneficiary implements ExportableInterface
 
         return [
             "Local Given Name" => $this->getLocalGivenName(),
-            "Local Family Name"=> $this->getLocalFamilyName(),
+            "Local Family Name" => $this->getLocalFamilyName(),
             "English Given Name" => $this->getEnGivenName(),
-            "English Family Name"=> $this->getEnFamilyName(),
+            "English Family Name" => $this->getEnFamilyName(),
             "Gender" => $gender,
             "Date Of Birth" => $this->getDateOfBirth()->format('d-m-Y'),
         ];
@@ -763,7 +765,7 @@ class Beneficiary implements ExportableInterface
 
     public function getCommonHouseholdExportFields()
     {
-        
+
         $householdLocations = $this->getHousehold()->getHouseholdLocations();
         $currentHouseholdLocation = null;
         foreach ($householdLocations as $householdLocation) {
@@ -787,18 +789,45 @@ class Beneficiary implements ExportableInterface
             $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
         }
 
+        $livelihood = null;
+        if (null !== $this->getHousehold()->getLivelihood()) {
+            $livelihood = Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()];
+        }
+
+        $assets = array_map(function ($value) {
+            return Household::ASSETS[$value];
+        }, (array) $this->getHousehold()->getAssets());
+
+        $shelterStatus = null;
+        if (null !== $this->getHousehold()->getShelterStatus()) {
+            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
+        }
+
+        $supportReceivedTypes = array_map(function ($value) {
+            return Household::SUPPORT_RECIEVED_TYPES[$value];
+        }, (array) $this->getHousehold()->getSupportReceivedTypes());
+
+        $supportDateReceived = null;
+        if (null !== $this->getHousehold()->getSupportDateReceived()) {
+            $supportDateReceived = $this->getHousehold()->getSupportDateReceived()->format("m/d/Y");
+        }
+
         return [
-            "addressStreet" =>  $addressStreet,
+            "addressStreet" => $addressStreet,
             "addressNumber" => $addressNumber,
-            "addressPostcode" =>  $addressPostcode,
+            "addressPostcode" => $addressPostcode,
             "camp" => $camp,
             "tent number" => $tentNumber,
-            "livelihood" => $this->getHousehold()->getLivelihood() ? 
-                Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()] : null,
+            "livelihood" => $livelihood,
             "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
             "notes" => $this->getHousehold()->getNotes(),
             "latitude" => $this->getHousehold()->getLatitude(),
             "longitude" => $this->getHousehold()->getLongitude(),
+            "Assets" => implode(', ', $assets),
+            "Shelter Status" => $shelterStatus,
+            "Debt Level" => $this->getHousehold()->getDebtLevel(),
+            "Support Received Types" => implode(', ', $supportReceivedTypes),
+            "Support Date Received" => $supportDateReceived,
         ];
     }
 
@@ -820,4 +849,20 @@ class Beneficiary implements ExportableInterface
         return array_merge($this->getCommonHouseholdExportFields(), $this->getCommonBeneficiaryExportFields(), $referralInfo);
     }
 
+    /**
+     * Returns age of beneficiary in years
+     * @return int|null
+     */
+    public function getAge(): ?int
+    {
+        if ($this->getDateOfBirth()) {
+            try {
+                return $this->getDateOfBirth()->diff(new \DateTime('now'))->y;
+            } catch (\Exception $ex) {
+                return null;
+            }
+        }
+
+        return null;
+    }
 }

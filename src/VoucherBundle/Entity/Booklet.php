@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use CommonBundle\Utils\ExportableInterface;
+use ProjectBundle\Entity\Project;
 
 /**
  * Booklet
@@ -31,6 +32,14 @@ class Booklet implements ExportableInterface
      * @Groups({"FullBooklet", "ValidatedDistribution"})
      */
     private $id;
+
+    /**
+     * @var Project|null
+     *
+     * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
+     * @Groups({"FullBooklet", "ValidatedDistribution"})
+     */
+    private $project;
 
     /**
      * @var string
@@ -106,6 +115,25 @@ class Booklet implements ExportableInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return Project|null
+     */
+    public function getProject(): ?Project
+    {
+        return $this->project;
+    }
+
+    /**
+     * @param Project|null $project
+     * @return $this
+     */
+    public function setProject(?Project $project): self
+    {
+        $this->project = $project;
+
+        return $this;
     }
 
     /**

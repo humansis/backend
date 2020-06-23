@@ -2,11 +2,13 @@
 
 namespace VoucherBundle\Controller;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use RA\RequestValidatorBundle\RequestValidator\ValidationException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,10 +16,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
+use VoucherBundle\Entity\VoucherRecord;
+use VoucherBundle\Exception\FixedValidationException;
 
 /**
  * Class VoucherController
  * @package VoucherBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class VoucherController extends Controller
 {
@@ -50,7 +61,7 @@ class VoucherController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createVoucherAction(Request $request)
+    public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -108,6 +119,42 @@ class VoucherController extends Controller
         return new Response($json);
     }
 
+    /**
+     * Get purchased vouchers by beneficiary
+     *
+     * @Rest\Get("/vouchers/purchased/{beneficiaryId}")
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Vouchers")
+     * @SWG\Parameter(name="beneficiaryId",
+     *     in="path",
+     *     type="integer",
+     *     required=true
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="List of purchased vouchers",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=VoucherRecord::class, groups={"ValidatedDistribution"}))
+     *     )
+     * )
+     * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
+     *
+     * @param Beneficiary $beneficiary
+     * @return Response
+     */
+    public function purchasedVoucherRecords(Beneficiary $beneficiary)
+    {
+        $vouchers = $this->getDoctrine()->getRepository(VoucherRecord::class)->findPurchasedByBeneficiary($beneficiary);
+
+        $json = $this->get('jms_serializer')
+            ->serialize($vouchers, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["ValidatedDistribution"]));
+
+        return new Response($json);
+    }
+
 
     /**
      * Get single voucher
@@ -161,8 +208,9 @@ class VoucherController extends Controller
      *
      * @param Request $request
      * @return Response
+     * @deprecated endpoint does not support quantity
      */
-    public function scannedVouchersAction(Request $request)
+    public function scanDeprecated(Request $request)
     {
         $vouchersData = $request->request->all();
         unset($vouchersData['__country']);
@@ -170,7 +218,7 @@ class VoucherController extends Controller
 
         foreach ($vouchersData as $voucherData) {
             try {
-                $newVoucher = $this->get('voucher.voucher_service')->scanned($voucherData);
+                $newVoucher = $this->get('voucher.voucher_service')->scannedDeprecated($voucherData);
                 $newVouchers[] = $newVoucher;
             } catch (\Exception $exception) {
                 return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
@@ -181,6 +229,51 @@ class VoucherController extends Controller
         return new Response($json);
     }
 
+    /**
+     * When a vendor sends their scanned vouchers
+     *
+     * @Rest\Post("/vendor-app/v1/vouchers/scanned")
+     * @Security("is_granted('ROLE_VENDOR')")
+     *
+     * @SWG\Tag(name="Vendor App")
+     * @SWG\Parameter(name="scanned voucher",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=\VoucherBundle\Annotation\VoucherScanned::class)
+     * )
+     * @SWG\Response(response=200, description="SUCCESS")
+     * @SWG\Response(response=400, description="BAD_REQUEST")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function scan(Request $request)
+    {
+        try {
+            $vouchersData = $request->request->all();
+            unset($vouchersData['__country']);
+
+            $newVouchers = [];
+            foreach ($vouchersData as $voucherData) {
+                try {
+                    $this->get('request_validator')->validate(
+                        "voucher_scanned",
+                        \VoucherBundle\Constraints\VoucherScannedConstraints::class,
+                        $voucherData
+                    );
+                } catch (ValidationException $exception) {
+                    throw new FixedValidationException($exception);
+                }
+
+                $newVouchers[] = $this->get('voucher.voucher_service')->scanned($voucherData);
+            }
+
+            $json = $this->get('jms_serializer')->serialize($newVouchers, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+            return new Response($json);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
 
     /**
      * Delete a booklet
@@ -225,7 +318,7 @@ class VoucherController extends Controller
      * @param Booklet $booklet
      * @return Response
      */
-    public function deleteBatchVouchersAction(Booklet $booklet)
+    public function deleteBatchAction(Booklet $booklet)
     {
         try {
             $isSuccess = $this->get('voucher.voucher_service')->deleteBatchVouchers($booklet);

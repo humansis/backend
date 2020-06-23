@@ -8,11 +8,9 @@ use DistributionBundle\Utils\DistributionService;
 use DistributionBundle\Utils\DistributionCsvService;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use DistributionBundle\Entity\DistributionData;
-use DistributionBundle\Entity\GeneralReliefItem;
 use BeneficiaryBundle\Entity\Beneficiary;
 use ProjectBundle\Entity\Project;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -20,13 +18,57 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class DistributionController
  * @package DistributionBundle\Controller
+ *
+ * @SWG\Parameter(
+ *      name="country",
+ *      in="header",
+ *      type="string",
+ *      required=true
+ * )
  */
 class DistributionController extends Controller
 {
+    /**
+     * All distributed transactions by parameters
+     *
+     * @Rest\Get("/distributions/beneficiary/{beneficiaryId}")
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Distributions")
+     * @SWG\Parameter(name="beneficiaryId",
+     *     in="path",
+     *     type="integer",
+     *     required=true
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="List of distributed items to beneficiary",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=DistributionData::class, groups={"DistributionOverview"}))
+     *     )
+     * )
+     * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
+     *
+     * @param Beneficiary $beneficiary
+     * @return Response
+     */
+    public function distributionsToBeneficiary(Beneficiary $beneficiary)
+    {
+        $distributions = $this->getDoctrine()->getRepository(DistributionData::class)->findDistributedToBeneficiary($beneficiary);
+
+        $json = $this->get('jms_serializer')
+            ->serialize($distributions, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["DistributionOverview"]));
+
+        return new Response($json);
+    }
+
     /**
      * @Rest\Get("/distributions/{id}/random")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
@@ -138,7 +180,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function addAction(Request $request)
+    public function createAction(Request $request)
     {
         $distributionArray = $request->request->all();
         $threshold = $distributionArray['threshold'];
@@ -209,7 +251,7 @@ class DistributionController extends Controller
     }
 
     /**
-     * @Rest\Post("/distributions/{distributionId}/beneficiaries/{beneficiaryId}/delete", name="remove_one_beneficiary_in_distribution")
+     * @Rest\Post("/distributions/{distributionId}/beneficiaries/{beneficiaryId}/remove", name="remove_one_beneficiary_in_distribution")
      * @ParamConverter("distribution", options={"mapping": {"distributionId" : "id"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
      * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
@@ -251,7 +293,7 @@ class DistributionController extends Controller
      *     description="Filtered distributions",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=DistributionData::class))
+     *          @SWG\Items(ref=@Model(type=DistributionData::class, groups={"SmallDistribution"}))
      *     )
      * )
      *
@@ -267,11 +309,17 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
+        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
+        $data = [];
+        foreach ($distributions as $distributionData) {
+            $data[] = $distributionDataFactory->build($distributionData, ['SmallDistribution']);
+        }
+
         $json = $this->get('jms_serializer')
             ->serialize(
-                $distributions,
+                $data,
                 'json',
-                SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
+                SerializationContext::create()->setGroups(['SmallDistribution'])->setSerializeNull(true)
             );
 
         return new Response($json);
@@ -287,25 +335,22 @@ class DistributionController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="one distribution",
-     *     @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref=@Model(type=DistributionData::class))
-     *     )
+     *     @Model(type=DistributionData::class, groups={"SmallDistribution"})
      * )
      *
-     * @param DistributionData $DistributionData
+     * @param DistributionData $distributionData
      *
      * @return Response
      */
-    public function getOneAction(DistributionData $DistributionData)
+    public function getOneAction(DistributionData $distributionData)
     {
+        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
         $json = $this->get('jms_serializer')
             ->serialize(
-                $DistributionData,
+                $distributionDataFactory->build($distributionData, ['FullDistribution']),
                 'json',
                 SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
             );
-
         return new Response($json);
     }
 
@@ -435,7 +480,7 @@ class DistributionController extends Controller
     /**
      * Archive a distribution.
      *
-     * @Rest\Post("/distributions/archive/{id}", name="archived_project")
+     * @Rest\Post("/distributions/{id}/archive", name="archived_project")
      * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
      *
      * @SWG\Tag(name="Distributions")
@@ -454,7 +499,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function archivedAction(DistributionData $distribution)
+    public function archiveAction(DistributionData $distribution)
     {
         try {
             $archivedDistribution = $this->get('distribution.distribution_service')
@@ -471,7 +516,7 @@ class DistributionController extends Controller
      /**
      * Complete a distribution.
      *
-     * @Rest\Post("/distributions/complete/{id}", name="completed_project")
+     * @Rest\Post("/distributions/{id}/complete", name="completed_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
@@ -490,7 +535,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function completedAction(DistributionData $distribution)
+    public function completeAction(DistributionData $distribution)
     {
         try {
             $completedDistribution = $this->get('distribution.distribution_service')
@@ -515,7 +560,11 @@ class DistributionController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="OK"
+     *     description="OK",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=DistributionData::class, groups={"SmallDistribution"}))
+     *     )
      * )
      *
      * @SWG\Response(
@@ -536,11 +585,17 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
+        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
+        $data = [];
+        foreach ($filtered as $distributionData) {
+            $data[] = $distributionDataFactory->build($distributionData, ['SmallDistribution']);
+        }
+
         $json = $this->get('jms_serializer')
             ->serialize(
-                $filtered,
+                $data,
                 'json',
-                SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
+                SerializationContext::create()->setGroups(['SmallDistribution'])->setSerializeNull(true)
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -590,7 +645,7 @@ class DistributionController extends Controller
     /**
      * Import beneficiaries of one distribution.
      *
-     * @Rest\Post("/import/beneficiaries/distribution/{id}", name="import_beneficiaries_distribution")
+     * @Rest\Post("/import/beneficiaries/distributions/{id}", name="import_beneficiaries_distribution")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Distributions")
@@ -623,7 +678,7 @@ class DistributionController extends Controller
      *
      * @return Response
      */
-    public function importAction(Request $request, DistributionData $distributionData)
+    public function importBeneficiariesAction(Request $request, DistributionData $distributionData)
     {
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');

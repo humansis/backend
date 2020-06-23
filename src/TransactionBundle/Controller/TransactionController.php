@@ -18,6 +18,13 @@ use DistributionBundle\Entity\DistributionData;
 /**
  * Class TransactionController
  * @package TransactionBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class TransactionController extends Controller
 {
@@ -43,7 +50,7 @@ class TransactionController extends Controller
      * @param DistributionData $distributionData
      * @return Response
      */
-    public function postTransactionAction(Request $request, DistributionData $distributionData)
+    public function sendTransactionAction(Request $request, DistributionData $distributionData)
     {
         $countryISO3 = $request->request->get('__country');
         $code = $request->request->get('code');

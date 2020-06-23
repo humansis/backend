@@ -25,7 +25,7 @@ class DistributionBeneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "ValidatedDistribution", "FullBooklet"})
+     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet"})
      */
     private $id;
 
@@ -41,7 +41,7 @@ class DistributionBeneficiary
      * @var Beneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="distributionBeneficiary")
-     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
+     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
      */
     private $beneficiary;
     
@@ -49,7 +49,7 @@ class DistributionBeneficiary
      * @var Transaction
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
      */
     private $transactions;
 
@@ -57,7 +57,7 @@ class DistributionBeneficiary
      * @var Booklet
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
      */
     private $booklets;
 
@@ -65,7 +65,7 @@ class DistributionBeneficiary
      * @var GeneralReliefItem
      *
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
      */
     private $generalReliefs;
 
@@ -79,7 +79,7 @@ class DistributionBeneficiary
      *
      * @ORM\Column(name="justification", type="string", length=511, nullable=true)
      *
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
      */
     private $justification;
 
@@ -88,7 +88,7 @@ class DistributionBeneficiary
      *
      * @ORM\Column(name="removed", type="boolean", options={"default" : 0})
      *
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
      */
     private $removed;
 

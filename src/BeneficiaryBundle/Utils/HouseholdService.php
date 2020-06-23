@@ -76,14 +76,15 @@ class HouseholdService
         LocationService $locationService,
         ValidatorInterface $validator,
         ContainerInterface $container
-    ) {
+    )
+    {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->beneficiaryService = $beneficiaryService;
         $this->requestValidator = $requestValidator;
         $this->locationService = $locationService;
         $this->validator = $validator;
-        $this->container= $container;
+        $this->container = $container;
     }
 
     /**
@@ -169,12 +170,12 @@ class HouseholdService
                 if (null === $location) {
                     throw new \Exception("Location was not found.");
                 }
-                $address = new Address();
-                $address->setNumber($householdLocation['address']['number'])
-                    ->setStreet($householdLocation['address']['street'])
-                    ->setPostcode($householdLocation['address']['postcode'])
-                    ->setLocation($location);
-                $newHouseholdLocation->setAddress($address);
+                $newHouseholdLocation->setAddress(Address::create(
+                    $householdLocation['address']['street'],
+                    $householdLocation['address']['number'],
+                    $householdLocation['address']['postcode'],
+                    $location
+                    ));
             }
             $household->addHouseholdLocation($newHouseholdLocation);
             $this->em->persist($newHouseholdLocation);
@@ -187,7 +188,20 @@ class HouseholdService
             ->setLatitude($householdArray["latitude"])
             ->setIncomeLevel($householdArray["income_level"])
             ->setCopingStrategiesIndex($householdArray["coping_strategies_index"])
-            ->setFoodConsumptionScore($householdArray["food_consumption_score"]);
+            ->setFoodConsumptionScore($householdArray["food_consumption_score"])
+            ->setAssets($householdArray["assets"] ?? [])
+            ->setShelterStatus($householdArray["shelter_status"] ?? null)
+            ->setDebtLevel($householdArray["debt_level"] ?? null)
+            ->setSupportReceivedTypes($householdArray["support_received_types"] ?? []);
+
+        $dateReceived = null;
+        if (isset($householdArray["support_date_received"]) && $householdArray["support_date_received"]) {
+            $dateReceived = \DateTime::createFromFormat('d-m-Y', $householdArray["support_date_received"]);
+            if (false === $dateReceived) {
+                throw new \Exception("Value of support_date_received is invalid");
+            }
+        }
+        $household->setSupportDateReceived($dateReceived);
 
         // Remove projects if the household is not part of them anymore
         if ($actualAction === "update") {
@@ -201,7 +215,7 @@ class HouseholdService
                     } else {
                         return -1;
                     }
-            });
+                });
             foreach ($toRemove as $projectToRemove) {
                 $household->removeProject($projectToRemove);
             }
@@ -209,14 +223,14 @@ class HouseholdService
 
         // Add projects
         foreach ($projectsArray as $project) {
-            if (! $project instanceof Project) {
+            if (!$project instanceof Project) {
                 throw new \Exception("The project could not be found.");
             }
-            if ($actualAction !== 'update' || ! $household->getProjects()->contains($project)) {
+            if ($actualAction !== 'update' || !$household->getProjects()->contains($project)) {
                 $household->addProject($project);
             }
         }
-        
+
         $this->em->persist($household);
 
         if (!empty($householdArray["beneficiaries"])) {
@@ -234,7 +248,7 @@ class HouseholdService
                     }
 
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
-                    if (! array_key_exists("id", $beneficiaryToSave)) {
+                    if (!array_key_exists("id", $beneficiaryToSave)) {
                         $household->addBeneficiary($beneficiary);
                     }
                     $beneficiariesPersisted[] = $beneficiary;
@@ -249,7 +263,7 @@ class HouseholdService
                 }
                 $this->em->persist($beneficiary);
             }
-            
+
             // Remove beneficiaries that are not in the household anymore
             if ($actualAction === 'update') {
                 $toRemove = array_udiff(
@@ -269,13 +283,13 @@ class HouseholdService
                 }
             }
         }
-        
+
         if (!empty($householdArray["country_specific_answers"])) {
             foreach ($householdArray["country_specific_answers"] as $country_specific_answer) {
                 $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
             }
         }
-        
+
         if ($flush) {
             $this->em->flush();
             $household = $this->em->getRepository(Household::class)->find($household->getId());
@@ -302,7 +316,7 @@ class HouseholdService
 
         // Remove beneficiaries that are not in the array
         foreach ($household->getBeneficiaries() as $beneficiary) {
-            if (! in_array($beneficiary->getId(), $beneficiaryIds)) {
+            if (!in_array($beneficiary->getId(), $beneficiaryIds)) {
                 $this->em->remove($beneficiary);
             }
         }
@@ -316,7 +330,7 @@ class HouseholdService
      */
     public function addToProject(Household &$household, Project $project)
     {
-        if (! $household->getProjects()->contains($project)) {
+        if (!$household->getProjects()->contains($project)) {
             $household->addProject($project);
             $this->em->persist($household);
         }
@@ -355,9 +369,9 @@ class HouseholdService
                 $countrySpecificAnswer->setCountrySpecific($countrySpecific)
                     ->setHousehold($household);
             }
-    
+
             $countrySpecificAnswer->setAnswer($countrySpecificAnswerArray["answer"]);
-    
+
             $this->em->persist($countrySpecificAnswer);
         } else {
             if ($countrySpecificAnswer instanceof CountrySpecificAnswer) {
@@ -399,7 +413,7 @@ class HouseholdService
     public function exportToCsv()
     {
         $exportableTable = $this->em->getRepository(Household::class)->findAll();
-        return  $this->container->get('export_csv_service')->export($exportableTable);
+        return $this->container->get('export_csv_service')->export($exportableTable);
     }
 
     /**

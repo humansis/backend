@@ -20,6 +20,13 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 /**
  * Class ProductController
  * @package VoucherBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class ProductController extends Controller
 {
@@ -53,7 +60,7 @@ class ProductController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function createProductAction(Request $request)
+    public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -102,7 +109,7 @@ class ProductController extends Controller
      *
      * @return Response
      */
-    public function getProductAction(Request $request)
+    public function getAction(Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -122,6 +129,39 @@ class ProductController extends Controller
             SerializationContext::create()->setGroups(['FullProduct'])->setSerializeNull(true)
         );
         return new Response($productJson);
+    }
+
+    /**
+     * Get Products
+     *
+     * @Rest\Get("/vendor-app/v1/products")
+     * @Security("is_granted('ROLE_USER')")
+     *
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Parameter(
+     *     name="product",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=Product::class, groups={"FullProduct"})
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Product created",
+     *     @Model(type=Product::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @return Response
+     */
+    public function vendorGetAction(Request $request)
+    {
+        return $this->getAction($request);
     }
 
     /**
@@ -154,7 +194,7 @@ class ProductController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function updateProductAction(Product $product, Request $request)
+    public function updateAction(Product $product, Request $request)
     {
         /** @var Serializer $serializer */
         $serializer = $this->get('jms_serializer');
@@ -204,7 +244,7 @@ class ProductController extends Controller
      * @param Product $product
      * @return Response
      */
-    public function deleteProductAction(Product $product)
+    public function deleteAction(Product $product)
     {
         try {
             $return = $this->get('voucher.product_service')->archive($product);

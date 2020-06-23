@@ -87,7 +87,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('POST', '/api/wsse/households/get/all', $body);
         $listHousehold = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         return true;
     }
@@ -105,7 +105,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
-        
+
         $body = [
             "pageIndex" => 0,
             "pageSize" => 10,
@@ -129,12 +129,12 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 $this->assertArrayHasKey('local_family_name', $beneficiary);
                 $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
                 $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
-                $this->assertArrayHasKey('id', $vulnerability_criterion);
-                $this->assertArrayHasKey('field_string', $vulnerability_criterion);
-            } catch (\Exception $exception) {
+                if (is_array($vulnerability_criterion)) {
+                    $this->assertArrayHasKey('id', $vulnerability_criterion);
+                    $this->assertArrayHasKey('field_string', $vulnerability_criterion);
+                }
+            } finally {
                 $this->removeHousehold($this->namefullnameHousehold . '(u)');
-                $this->fail("\nThe mapping of fields of Household entity is not correct (3).\n");
-                return false;
             }
         } else {
             $this->removeHousehold($this->namefullnameHousehold);
@@ -155,7 +155,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
-        
+
         $body;
         $body['household'] = $this->bodyHousehold;
         $body['projects'] = [1];
@@ -194,7 +194,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $body;
         $body['household'] = $this->bodyHousehold;
         $body['projects'] = [1];
-    
+
         // $crawler = $this->request('POST', '/api/wsse/households/' . $hh['id'], $body);
         // $householdsArray = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -211,7 +211,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         // $this->assertArrayHasKey('location', $householdsArray);
         // $this->assertArrayHasKey('projects', $householdsArray);
 
-        $this->assertTrue(true===true);
+        $this->assertTrue(true === true);
 
         return true;
     }

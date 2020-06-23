@@ -7,7 +7,7 @@ use VoucherBundle\Entity\Vendor;
 class VendorControllerTest extends BMSServiceTestCase
 {
     /** @var string $username */
-    private $username = "VENDOR_PHPUNIT@gmail.com";
+    private $username = "vendor-to-create@example.org";
 
     /**
      * @throws \Exception
@@ -79,7 +79,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/vendors', $vendor);
         $vendor = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $vendor);
         $this->assertArrayHasKey('shop', $vendor);
         $this->assertArrayHasKey('user', $vendor);
@@ -111,11 +111,11 @@ class VendorControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('POST', '/api/wsse/login_app', $body);
+        $crawler = $this->request('POST', '/api/wsse/vendor-app/v1/login', $body);
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue(gettype($success) == 'array');
         $this->assertArrayHasKey('id', $success);
         $this->assertArrayHasKey('user', $success);
@@ -204,6 +204,9 @@ class VendorControllerTest extends BMSServiceTestCase
                 "adm4" => 4,
                 "country_iso3" => "KHM",
             ],
+            'phone_prefix' => '+34',
+            'phone_number' => '675676767',
+            'two_factor_authentication' => false
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
@@ -213,7 +216,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/vendors/' . $newVendor['id'], $body);
         $newVendorReceived = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $vendorSearch = $this->em->getRepository(Vendor::class)->find($newVendorReceived['id']);
         $this->assertEquals($vendorSearch->getAddressStreet(), $addressStreet);
@@ -239,7 +242,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('POST', '/api/wsse/vendors/' . $vendor['id'] . '/archive');
         $newVendorReceived = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $vendorSearch = $this->em->getRepository(Vendor::class)->find($newVendorReceived['id']);
         $this->assertEquals($vendorSearch->getArchived(), true);
@@ -268,7 +271,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue($success);
     }
 }

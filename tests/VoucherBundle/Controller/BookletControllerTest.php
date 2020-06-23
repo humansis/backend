@@ -43,7 +43,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $crawler = $this->request('PUT', '/api/wsse/booklets/sync', $body);
         $booklet = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('currency', $booklet);
         $this->assertArrayHasKey('vouchers', $booklet);
         $this->assertArrayHasKey('distribution_beneficiary', $booklet);
@@ -71,7 +71,7 @@ class BookletControllerTest extends BMSServiceTestCase
         ];
         $crawler = $this->request('POST', '/api/wsse/booklets/get/all', $body);
         $booklets = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         return true;
     }
@@ -94,7 +94,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/deactivate-booklets', $body);
         $reponse = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         return $reponse;
     }
@@ -115,7 +115,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $crawler = $this->request('DELETE', '/api/wsse/deactivate-booklets/'.$booklets[0]->getId());
         $response = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         return $response;
     }
@@ -167,7 +167,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/booklets/update/password', $body);
         $response = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         return $response;
     }
@@ -240,7 +240,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/booklets/' . $newBooklet['id'], $body);
         $newBookletReceived = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $bookletSearch = $this->em->getRepository(Booklet::class)->find($newBookletReceived['id']);
         $this->assertEquals($bookletSearch->getCurrency(), $currency);
@@ -269,7 +269,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
     }
 
     /**
@@ -294,7 +294,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/booklets/assign/'.$beneficiary->getId().'/'.$distribution->getId(), $body);
         $response = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         return $response;
     }

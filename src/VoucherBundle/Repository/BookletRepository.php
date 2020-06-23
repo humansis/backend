@@ -2,7 +2,10 @@
 
 namespace VoucherBundle\Repository;
 
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use VoucherBundle\Entity\Booklet;
 
 /**
  * BookletRepository
@@ -12,6 +15,26 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
  */
 class BookletRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Finds booklets with same code prefix and return latest
+     *
+     * @param string $prefix
+     * @return Booklet|null
+     */
+    public function findMaxByCodePrefix(string $prefix): ?Booklet
+    {
+        try {
+            $qb = $this->createQueryBuilder('b')
+                ->andWhere('b.code LIKE :prefix')
+                ->setParameter('prefix', $prefix . '%')
+                ->orderBy('b.code', 'DESC');
+
+            return $qb->getQuery()->setMaxResults(1)->getSingleResult();
+        } catch (NonUniqueResultException | NoResultException $ex) {
+            return null;
+        }
+    }
+
     public function getActiveBooklets($countryISO3)
     {
         $qb = $this->createQueryBuilder('b');

@@ -2,18 +2,18 @@
 
 namespace CommonBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use CommonBundle\Entity\Organization;
+use CommonBundle\Entity\OrganizationServices;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Swagger\Annotations as SWG;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use CommonBundle\Entity\Organization;
 use JMS\Serializer\SerializationContext;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Swagger\Annotations as SWG;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class OrganizationController
@@ -166,5 +166,76 @@ class OrganizationController extends Controller
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    /**
+     * @Rest\Get("/organization/{id}/service", name="get_organization_service")
+     *
+     * @SWG\Tag(name="Organization")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @return Response
+     */
+    public function getOrganizationServicesAction(Organization $organization)
+    {
+        try {
+            $response = $this->get('organization_service')->getOrganizationServices($organization);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $responseJson = $this->get('jms_serializer')
+            ->serialize($response, 'json', SerializationContext::create()->setGroups(['FullOrganization'])->setSerializeNull(true));
+
+        return new Response($responseJson);
+    }
+
+    /**
+     * @Rest\Post("/organization/service/{id}", name="update_organization_service")
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @SWG\Tag(name="Organization")
+     *
+     * @SWG\Parameter(
+     *     name="organizationServices",
+     *     in="body",
+     *     required=true,
+     *     @Model(type=OrganizationServices::class, groups={"FullOrganization"})
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @return Response
+     */
+    public function editOrganizationServicesAction(Request $request, OrganizationServices $organizationServices)
+    {
+        $data = $request->request->all();
+        try {
+            $response = $this->get('organization_service')->editOrganizationServices($organizationServices, $data);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $responseJson = $this->get('jms_serializer')
+            ->serialize($response, 'json', SerializationContext::create()->setGroups(['FullOrganization'])->setSerializeNull(true));
+
+        return new Response($responseJson);
     }
 }

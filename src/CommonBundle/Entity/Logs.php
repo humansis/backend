@@ -3,6 +3,8 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * Logs
@@ -18,6 +20,8 @@ class Logs
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * 
+     * @Groups({"FullLogs"})
      */
     private $id;
 
@@ -25,6 +29,8 @@ class Logs
      * @var string
      *
      * @ORM\Column(name="url", type="string", length=255)
+     * 
+     * @Groups({"FullLogs"})
      */
     private $url;
 
@@ -39,6 +45,8 @@ class Logs
      * @var string
      *
      * @ORM\Column(name="mailUser", type="string", length=255)
+     * 
+     * @Groups({"FullLogs"})
      */
     private $mailUser;
 
@@ -46,6 +54,8 @@ class Logs
      * @var string
      *
      * @ORM\Column(name="method", type="string", length=255)
+     * 
+     * @Groups({"FullLogs"})
      */
     private $method;
 
@@ -53,6 +63,8 @@ class Logs
      * @var \DateTime
      *
      * @ORM\Column(name="date", type="datetime")
+     * @JMS_Type("DateTime<'d-m-Y H:m'>")
+     * @Groups({"FullLogs"})
      */
     private $date;
 
@@ -60,6 +72,8 @@ class Logs
      * @var int
      *
      * @ORM\Column(name="httpStatus", type="integer")
+     * 
+     * @Groups({"FullLogs"})
      */
     private $httpStatus;
 
@@ -67,6 +81,7 @@ class Logs
      * @var string
      *
      * @ORM\Column(name="controller", type="string", length=255)
+     * @Groups({"FullLogs"})
      */
     private $controller;
 
@@ -74,6 +89,8 @@ class Logs
      * @var array
      *
      * @ORM\Column(name="request", type="text")
+     * 
+     * @Groups({"FullLogs"})
      */
     protected $request;
 

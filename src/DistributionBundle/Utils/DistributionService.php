@@ -407,7 +407,7 @@ class DistributionService
             
             
             $row = [
-                "Navi/Elo number" => " ",
+                "Navi/Elo number" => $distribution->getProject()->getInternalId() ?? " ",
                 "DISTR. NO." => $distribution->getId(),
                 "Distributed by" => " ",
                 "Round" => " ",
@@ -492,13 +492,14 @@ class DistributionService
     }
 
     /**
-     * @param $distributions
-     * @return string
+     * @param DistributionData[] $distributions
+     * @return DistributionData[]
      */
     public function filterDistributions($distributions)
     {
         $distributionArray = $distributions->getValues();
         $filteredArray = array();
+        /** @var DistributionData $key */
         foreach ($distributionArray as $key) {
             if (!$key->getArchived()) {
                 $filteredArray[] = $key;
@@ -532,7 +533,7 @@ class DistributionService
 
     /**
      * @param $country
-     * @return string
+     * @return DistributionData[]
      */
     public function getActiveDistributions($country)
     {

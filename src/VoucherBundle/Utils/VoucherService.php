@@ -10,6 +10,7 @@ use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use VoucherBundle\Entity\VoucherRecord;
 
 class VoucherService
 {
@@ -106,13 +107,13 @@ class VoucherService
         return $this->em->getRepository(Voucher::class)->findAll();
     }
 
-
     /**
      * @param array $voucherData
      * @return Voucher
      * @throws \Exception
+     * @deprecated Defective/incomplete processing of voucher scan
      */
-    public function scanned(array $voucherData)
+    public function scannedDeprecated(array $voucherData)
     {
         try {
             $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
@@ -125,14 +126,22 @@ class VoucherService
 
             foreach ($voucherData['productIds'] as $productId) {
                 $product = $this->em->getRepository(Product::class)->find($productId);
-                $voucher = $voucher->addProduct($product);
+
+                $record = VoucherRecord::create(
+                    $product,
+                    $voucherData['value'] ?? null,
+                    $voucherData['quantity'] ?? null,
+                    isset($voucherData['used_at']) ? new \DateTime($voucherData['used_at']) : null
+                );
+
+                $voucher->addRecord($record);
             }
 
             $booklet = $voucher->getBooklet();
             $vouchers = $booklet->getVouchers();
             $allVouchersUsed = true;
             foreach ($vouchers as $voucher) {
-                if ($voucher->getusedAt() === null) {
+                if ($voucher->getUsedAt() === null) {
                     $allVouchersUsed = false;
                 }
             }
@@ -141,6 +150,56 @@ class VoucherService
             }
 
             $this->em->merge($voucher);
+            $this->em->flush();
+        } catch (\Exception $e) {
+            throw new \Exception('Error setting Vendor or changing used status');
+        }
+        return $voucher;
+    }
+
+    /**
+     * @param array $voucherData
+     * @return Voucher
+     * @throws \Exception
+     */
+    public function scanned(array $voucherData)
+    {
+        try {
+            $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendorId']);
+            $product = $this->em->getRepository(Product::class)->find($voucherData['productId']);
+
+            $record = VoucherRecord::create(
+                $product,
+                $voucherData['value'] ?? null,
+                $voucherData['quantity'] ?? null,
+                isset($voucherData['usedAt']) ? \DateTime::createFromFormat('d-m-Y H:i:s', $voucherData['usedAt']) : null
+            );
+
+            /** @var Voucher $voucher */
+            $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
+            if (!$voucher || $voucher->getUsedAt() !== null) {
+                return $voucher;
+            }
+
+            $voucher
+                ->setVendor($vendor)
+                ->addRecord($record);
+
+
+            $booklet = $voucher->getBooklet();
+            $vouchers = $booklet->getVouchers();
+
+            $allVouchersUsed = true;
+            foreach ($vouchers as $voucher) {
+                if ($voucher->getUsedAt() === null) {
+                    $allVouchersUsed = false;
+                }
+            }
+            if ($allVouchersUsed === true) {
+                $booklet->setStatus(Booklet::USED);
+            }
+
+            $this->em->persist($voucher);
             $this->em->flush();
         } catch (\Exception $e) {
             throw new \Exception('Error setting Vendor or changing used status');

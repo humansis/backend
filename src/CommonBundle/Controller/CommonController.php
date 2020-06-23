@@ -5,6 +5,7 @@ namespace CommonBundle\Controller;
 use DistributionBundle\Entity\DistributionData;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use JMS\Serializer\SerializationContext;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
@@ -16,6 +17,13 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Class CommonController
  * @package CommonBundle\Controller
+ *
+ * @SWG\Parameter(
+ *     name="country",
+ *     in="header",
+ *     type="string",
+ *     required=true
+ * )
  */
 class CommonController extends Controller
 {
@@ -56,6 +64,36 @@ class CommonController extends Controller
         }
         
         $json = $this->get('jms_serializer')->serialize($result, 'json', null);
+        
+        return new Response($json);
+    }
+
+        /**
+     * @Rest\Get("/logs", name="get_logs")
+     *
+     * @SWG\Tag(name="Common")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="HTTP_BAD_REQUEST"
+     * )
+     * @param Request $request
+     * @return Response
+     */
+    public function getLogs(Request $request)
+    {        
+        try {
+            $logs = $this->get('log_service')->getLogs();
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        
+        $json = $this->get('jms_serializer')->serialize($logs, 'json', SerializationContext::create()->setGroups(['FullLogs'])->setSerializeNull(true));
         
         return new Response($json);
     }
