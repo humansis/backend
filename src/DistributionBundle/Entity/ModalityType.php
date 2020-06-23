@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 
 /**
- * ModalityType
- *
  * @ORM\Table(name="modality_type")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\ModalityTypeRepository")
  */
@@ -38,7 +36,6 @@ class ModalityType
      * @Groups({"FullModalityType", "FullDistribution", "SmallDistribution"})
      */
     private $modality;
-
 
     /**
      * Get id.
@@ -77,11 +74,11 @@ class ModalityType
     /**
      * Set modality.
      *
-     * @param \DistributionBundle\Entity\Modality|null $modality
+     * @param Modality|null $modality
      *
      * @return ModalityType
      */
-    public function setModality(\DistributionBundle\Entity\Modality $modality = null)
+    public function setModality(Modality $modality = null)
     {
         $this->modality = $modality;
 
@@ -91,10 +88,18 @@ class ModalityType
     /**
      * Get modality.
      *
-     * @return \DistributionBundle\Entity\Modality|null
+     * @return Modality|null
      */
     public function getModality()
     {
         return $this->modality;
+    }
+
+    public function isGeneralRelief(): bool
+    {
+        $grModalities = ['In Kind', 'Other'];
+        $grTypes = ['Paper Voucher', 'Cash'];
+
+        return in_array($this->getModality()->getName(), $grModalities) || in_array($this->getName(), $grTypes);
     }
 }
