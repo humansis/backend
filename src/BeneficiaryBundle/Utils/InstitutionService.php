@@ -138,9 +138,9 @@ class InstitutionService
             $location = $this->locationService->getLocation($iso3, $institutionArray['address']["location"]);
 
             $institution->setAddress(Address::create(
-                $institutionArray['address']['street'],
-                $institutionArray['address']['number'],
-                $institutionArray['address']['postcode'],
+                $institutionArray['address']['street'] ?? null,
+                $institutionArray['address']['number'] ?? null,
+                $institutionArray['address']['postcode'] ?? null,
                 $location
                 ));
         }
@@ -232,9 +232,9 @@ class InstitutionService
                 $location = $this->locationService->getLocation($iso3, $institutionArray['address']['location']);
             }
             $this->updateAddress($institution, Address::create(
-                $institutionArray['address']['street'],
-                $institutionArray['address']['number'],
-                $institutionArray['address']['postcode'],
+                $institutionArray['address']['street'] ?? null,
+                $institutionArray['address']['number'] ?? null,
+                $institutionArray['address']['postcode'] ?? null,
                 $location
                 ));
         }
