@@ -3,6 +3,7 @@
 namespace VoucherBundle\Tests\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\DistributionData;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
@@ -86,6 +87,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->request('PATCH', '/api/wsse/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'value' => 255.25,
             'depositorId' => 1, // todo change to fixtures
+            'distributionId' => 1, // todo change to fixtures
             'createdAt' => '2020-02-02T12:00:00Z',
         ]);
 
@@ -99,10 +101,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testDepositToInactiveSmartcard()
     {
         $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+        $distribution = $this->em->getRepository(DistributionData::class)->findOneBy([]);
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
         $smartcard->setState(Smartcard::STATE_INACTIVE);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, 1000, new \DateTime('now')));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $distribution, 1000, new \DateTime('now')));
 
         $this->em->persist($smartcard);
         $this->em->flush();
@@ -119,9 +122,10 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testPurchase()
     {
         $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+        $distribution = $this->em->getRepository(DistributionData::class)->findOneBy([]);
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, 600, new \DateTime('now')));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $distribution, 600, new \DateTime('now')));
 
         $this->em->persist($smartcard);
         $this->em->flush();
@@ -154,10 +158,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testPurchaseFromEmptySmartcard()
     {
         $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+        $distribution = $this->em->getRepository(DistributionData::class)->findOneBy([]);
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
         $smartcard->setState(Smartcard::STATE_INACTIVE);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, 100, new \DateTime('now')));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $distribution, 100, new \DateTime('now')));
 
         $this->em->persist($smartcard);
         $this->em->flush();
