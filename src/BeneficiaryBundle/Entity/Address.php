@@ -53,15 +53,14 @@ class Address
      */
     private $location;
 
-
     /**
-     * @param string $street
-     * @param string $number
-     * @param string $postCode
-     * @param Location $location
-     * @return self
+     * @param string|null $street
+     * @param string|null $number
+     * @param string|null $postCode
+     * @param Location|null $location
+     * @return static
      */
-    public static function create(string $street, string $number, string $postCode, Location $location = null): self
+    public static function create(?string $street, ?string $number, ?string $postCode, ?Location $location = null): self
     {
         $address = new Address();
         $address->setNumber($number)
