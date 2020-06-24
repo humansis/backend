@@ -3,6 +3,7 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\DistributionData;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -299,6 +300,11 @@ class SmartcardController extends Controller
      *             description="ID of user which is responsible for deposit money to smartcard"
      *         ),
      *         @SWG\Property(
+     *             property="distributionId",
+     *             type="int",
+     *             description="ID of distribution from which are money deposited"
+     *         ),
+     *         @SWG\Property(
      *             property="createdAt",
      *             type="string",
      *             description="ISO 8601 time of deposit in UTC",
@@ -332,9 +338,15 @@ class SmartcardController extends Controller
             throw new BadRequestHttpException('Depositor does not exists.');
         }
 
+        $distribution = $this->getDoctrine()->getRepository(DistributionData::class)->find($request->request->getInt('distributionId'));
+        if (!$distribution) {
+            throw new BadRequestHttpException('Distribution does not exists.');
+        }
+
         $deposit = SmartcardDeposit::create(
             $smartcard,
             $depositor,
+            $distribution,
             (float) $request->request->get('value'),
             \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))
         );
