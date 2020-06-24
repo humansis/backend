@@ -171,9 +171,9 @@ class HouseholdService
                     throw new \Exception("Location was not found.");
                 }
                 $newHouseholdLocation->setAddress(Address::create(
-                    $householdLocation['address']['street'],
-                    $householdLocation['address']['number'],
-                    $householdLocation['address']['postcode'],
+                    $householdLocation['address']['street'] ?? '',
+                    $householdLocation['address']['number'] ?? '',
+                    $householdLocation['address']['postcode'] ?? '',
                     $location
                     ));
             }
