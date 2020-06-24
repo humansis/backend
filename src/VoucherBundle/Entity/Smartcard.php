@@ -35,7 +35,7 @@ class Smartcard
     /**
      * @var string serial number / UID
      *
-     * @ORM\Column(name="code", type="string", length=7, unique=true, nullable=false)
+     * @ORM\Column(name="code", type="string", length=14, unique=true, nullable=false)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      * @Serializer\Groups({"SmartcardOverview", "FullSmartcard"})
      */
