@@ -107,12 +107,14 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             foreach ($this->getTestingLocations($manager, (string)$project->getIso3()) as $location) {
                 $locationIndex++;
                 $this->createHousehold($manager, $location, $project);
-                if (($locationIndex % 200) == 0) {
+                if (($locationIndex % 50) == 0) {
                     $manager->flush();
+                    $manager->clear();
                 }
             }
             echo "\n";
             $manager->flush();
+            $manager->clear();
         }
     }
 
