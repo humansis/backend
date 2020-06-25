@@ -5,10 +5,11 @@ namespace CommonBundle\DataFixtures;
 
 use DistributionBundle\Utils\DistributionService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpKernel\Kernel;
 
-class DistributionFixtures extends Fixture
+class DistributionFixtures extends Fixture implements DependentFixtureInterface
 {
     private $distributionArray = [
         'adm1' => '',
@@ -80,5 +81,12 @@ class DistributionFixtures extends Fixture
         if ($this->kernel->getEnvironment() !== "prod") {
             $this->distributionService->create("KHM", $this->distributionArray, 1);
         }
+    }
+
+    public function getDependencies()
+    {
+        return [
+            ProjectFixtures::class,
+        ];
     }
 }

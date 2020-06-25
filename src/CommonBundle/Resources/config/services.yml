@@ -152,6 +152,12 @@ services:
         tags:
         - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\SmartcardFixtures:
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\ProductFixtures:
         arguments:
             - "@kernel"

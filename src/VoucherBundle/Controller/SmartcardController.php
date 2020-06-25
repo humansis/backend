@@ -3,17 +3,21 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\DistributionData;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use VoucherBundle\Entity\Product;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Entity\SmartcardDeposit;
+use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 
 /**
  * @SWG\Parameter(
@@ -104,7 +108,7 @@ class SmartcardController extends Controller
     /**
      * Info about smartcard.
      *
-     * @Rest\Get("/offline-app/v1/smartcards/{id}")
+     * @Rest\Get("/offline-app/v1/smartcards/{serialNumber}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_VENDOR')")
      * @ParamConverter("smartcard")
      *
@@ -112,11 +116,11 @@ class SmartcardController extends Controller
      * @SWG\Tag(name="Offline App")
      *
      * @SWG\Parameter(
-     *     name="id",
+     *     name="serialNumber",
      *     in="path",
-     *     type="integer",
+     *     type="string",
      *     required=true,
-     *     description="ID of smartcard"
+     *     description="Serial number (GUID) of smartcard"
      * )
      *
      * @SWG\Response(
@@ -140,9 +144,50 @@ class SmartcardController extends Controller
     }
 
     /**
-     * Update smartcard.
+     * List of blocked smardcards.
+     * Blocked smartcards are not allowed to pay with.
      *
-     * @Rest\Put("/offline-app/v1/smartcards/{id}")
+     * @Rest\Get("/vendor-app/v1/smartcards/blocked")
+     * @Security("is_granted('ROLE_VENDOR')")
+     *
+     * @SWG\Tag(name="Smartcards")
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Parameter(
+     *     name="country",
+     *     in="header",
+     *     type="string",
+     *     required=true
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="List of blocked smartcards",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string",
+     *             description="serial number of blocked smartcard"
+     *         )
+     *     )
+     * )
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function listOfBlocked(Request $request): Response
+    {
+        $country = $request->headers->get('country');
+        $smartcards = $this->getDoctrine()->getRepository(Smartcard::class)->findBlocked($country);
+
+        return new JsonResponse($smartcards);
+    }
+
+    /**
+     * Update smartcard, typically its' state.
+     *
+     * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @ParamConverter("smartcard")
      *
@@ -150,11 +195,11 @@ class SmartcardController extends Controller
      * @SWG\Tag(name="Offline App")
      *
      * @SWG\Parameter(
-     *     name="id",
+     *     name="serialNumber",
      *     in="path",
-     *     type="integer",
+     *     type="string",
      *     required=true,
-     *     description="ID of smartcard"
+     *     description="Serial number (GUID) of smartcard"
      * )
      *
      * @SWG\Parameter(
@@ -201,8 +246,7 @@ class SmartcardController extends Controller
 
         $possibleFlow = [
             Smartcard::STATE_UNASSIGNED => Smartcard::STATE_ACTIVE,
-            Smartcard::STATE_ACTIVE => [Smartcard::STATE_INACTIVE, Smartcard::STATE_FROZEN, Smartcard::STATE_CANCELLED],
-            Smartcard::STATE_FROZEN => [Smartcard::STATE_ACTIVE, Smartcard::STATE_CANCELLED],
+            Smartcard::STATE_ACTIVE => [Smartcard::STATE_INACTIVE, Smartcard::STATE_CANCELLED],
             Smartcard::STATE_INACTIVE => Smartcard::STATE_CANCELLED,
         ];
 
@@ -225,19 +269,18 @@ class SmartcardController extends Controller
     /**
      * Put money to smartcard.
      *
-     * @Rest\Post("/offline-app/v1/smartcards/{id}/deposit")
+     * @Rest\Patch("/smartcards/{serialNumber}/deposit")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
-     * @SWG\Tag(name="Offline App")
      *
      * @SWG\Parameter(
-     *     name="id",
+     *     name="serialNumber",
      *     in="path",
-     *     type="integer",
+     *     type="string",
      *     required=true,
-     *     description="ID of smartcard"
+     *     description="Serial number (GUID) of smartcard"
      * )
      *
      * @SWG\Parameter(
@@ -250,6 +293,16 @@ class SmartcardController extends Controller
      *             property="value",
      *             type="number",
      *             description="Value of money deposit to smartcard"
+     *         ),
+     *         @SWG\Property(
+     *             property="depositorId",
+     *             type="int",
+     *             description="ID of user which is responsible for deposit money to smartcard"
+     *         ),
+     *         @SWG\Property(
+     *             property="distributionId",
+     *             type="int",
+     *             description="ID of distribution from which are money deposited"
      *         ),
      *         @SWG\Property(
      *             property="createdAt",
@@ -280,9 +333,25 @@ class SmartcardController extends Controller
             throw new BadRequestHttpException('Smartcard is blocked.');
         }
 
-        $value = $request->request->get('value');
+        $depositor = $this->getDoctrine()->getRepository(User::class)->find($request->request->getInt('depositorId'));
+        if (!$depositor) {
+            throw new BadRequestHttpException('Depositor does not exists.');
+        }
 
-        $smartcard->addDeposit($value, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
+        $distribution = $this->getDoctrine()->getRepository(DistributionData::class)->find($request->request->getInt('distributionId'));
+        if (!$distribution) {
+            throw new BadRequestHttpException('Distribution does not exists.');
+        }
+
+        $deposit = SmartcardDeposit::create(
+            $smartcard,
+            $depositor,
+            $distribution,
+            (float) $request->request->get('value'),
+            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))
+        );
+
+        $smartcard->addDeposit($deposit);
 
         $this->getDoctrine()->getManager()->persist($smartcard);
         $this->getDoctrine()->getManager()->flush();
@@ -295,7 +364,7 @@ class SmartcardController extends Controller
     /**
      * Purchase goods from smartcard.
      *
-     * @Rest\Post("/vendor-app/v1/smartcards/{id}/purchase")
+     * @Rest\Patch("/vendor-app/v1/smartcards/{serialNumber}/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
      * @ParamConverter("smartcard")
      *
@@ -303,41 +372,18 @@ class SmartcardController extends Controller
      * @SWG\Tag(name="Vendor App")
      *
      * @SWG\Parameter(
-     *     name="id",
+     *     name="serialNumber",
      *     in="path",
-     *     type="integer",
+     *     type="string",
      *     required=true,
-     *     description="ID of smartcard"
+     *     description="Serial number (GUID) of smartcard"
      * )
      *
-     * @SWG\Parameter(
-     *     name="body",
+     * @SWG\Parameter(name="purchase from smartcard",
      *     in="body",
      *     required=true,
-     *     @SWG\Schema(
-     *         type="object",
-     *         @SWG\Property(
-     *             property="productId",
-     *             type="integer",
-     *             description="ID of purchased product"
-     *         ),
-     *         @SWG\Property(
-     *             property="quantity",
-     *             type="number",
-     *             description="Product quantity"
-     *         ),
-     *         @SWG\Property(
-     *             property="value",
-     *             type="number",
-     *             description="Product price"
-     *         ),
-     *         @SWG\Property(
-     *             property="createdAt",
-     *             type="string",
-     *             description="ISO 8601 time of purchase in UTC",
-     *             example="2020-02-02T12:00:00+0200"
-     *         )
-     *     )
+     *     type="object",
+     *     @Model(type=SmartcardPurchaseInput::class)
      * )
      *
      * @SWG\Response(
@@ -356,26 +402,20 @@ class SmartcardController extends Controller
      */
     public function purchase(Smartcard $smartcard, Request $request): Response
     {
-        $value = $request->request->get('value');
-        if (!is_numeric($value)) {
-            throw new BadRequestHttpException('Value is not valid');
+        $x = $request->getContent();
+        /** @var SmartcardPurchaseInput $data */
+        $data = $this->get('serializer')->deserialize($x, SmartcardPurchaseInput::class, 'json');
+
+        $errors = $this->get('validator')->validate($data);
+        if (count($errors) > 0) {
+            return new Response((string) $errors, Response::HTTP_BAD_REQUEST);
         }
 
-        /** @var Product $product */
-        $product = $this->getDoctrine()->getRepository(Product::class)->find($request->request->get('productId'));
-        if (!$product) {
-            throw $this->createNotFoundException('Product does not exists.');
+        try {
+            $this->get('voucher.purchase_service')->purchaseSmartcard($smartcard, $data);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-
-        $quantity = $request->request->get('quantity');
-        if (!is_numeric($quantity)) {
-            throw new BadRequestHttpException('Quantity is not valid');
-        }
-
-        $smartcard->addPurchase($value, $product, $quantity, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
-
-        $this->getDoctrine()->getManager()->persist($smartcard);
-        $this->getDoctrine()->getManager()->flush();
 
         $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
 
