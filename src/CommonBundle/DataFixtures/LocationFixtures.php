@@ -10,9 +10,13 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\HttpKernel\Kernel;
 
 class LocationFixtures extends Fixture implements FixtureGroupInterface
 {
+    // maximum imported lines per file (due to performace on dev env)
+    const LIMIT = 100;
+
     // array keys for each level of adm
     const ADM_NAME_0 = 0;
     const ADM_NAME_1 = 2;
@@ -26,12 +30,26 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
     const ADM_CODE_3 = 7;
     const ADM_CODE_4 = 9;
 
+    /** @var string */
+    private $env;
+
+    public function __construct(Kernel $kernel)
+    {
+        $this->env = $kernel->getEnvironment();
+    }
+
     /**
      * {@inheritdoc}
      */
     public function load(ObjectManager $manager)
     {
         $manager->getConnection()->getConfiguration()->setSQLLogger(null);
+
+        if ('prod' !== $this->env) {
+            $limit = self::LIMIT;
+        } else {
+            $limit = 0;
+        }
 
         $directory = __DIR__.'/../Resources/locations';
 
@@ -43,7 +61,7 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
             $filepath = realpath($directory.'/'.$file);
 
             echo "FILE : $filepath \n";
-            $this->processFile($filepath, $manager);
+            $this->processFile($filepath, $manager, $limit);
         }
     }
 
@@ -58,7 +76,7 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
         return ['location'];
     }
 
-    protected function processFile(string $file, ObjectManager $manager)
+    protected function processFile(string $file, ObjectManager $manager, int $limit = 0)
     {
         $adm1List = [];
         $adm2List = [];
@@ -76,6 +94,10 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
 
         $i = 0;
         while (false !== ($item = fgetcsv($handler))) {
+            if ($limit > 0 && $i > $limit) {
+                continue;
+            }
+
             if (!array_key_exists($item[self::ADM_NAME_1], $adm1List)) {
                 $adm1 = $manager->getRepository(Adm1::class)->findOneByCode($item[self::ADM_CODE_1]);
                 if (!$adm1) {
@@ -107,7 +129,7 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
                 $adm2List[$item[self::ADM_NAME_2]] = $adm2;
             }
 
-            if (isset($item[self::ADM_NAME_3])) {
+            if (!isset($item[self::ADM_NAME_3])) {
                 continue;
             }
 
@@ -124,7 +146,7 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
                 $adm3List[$item[self::ADM_NAME_3]] = $adm3;
             }
 
-            if (isset($item[self::ADM_NAME_4])) {
+            if (!isset($item[self::ADM_NAME_4])) {
                 continue;
             }
 
@@ -137,8 +159,9 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
                 $manager->persist($adm4);
             }
 
-            if (0 === ++$i % 1000) {
+            if (0 === (++$i % 1000)) {
                 $manager->flush();
+                $manager->clear();
             }
         }
 

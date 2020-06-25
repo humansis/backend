@@ -48,8 +48,7 @@ services:
     CommonBundle\Listener\RequestListener:
         arguments:
         - "@doctrine.orm.entity_manager"
-        - "@security.token_storage"
-        - "@security.authorization_checker"
+        - "@service_container"
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
@@ -75,6 +74,8 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\LocationFixtures:
+        arguments:
+            - "@kernel"
         tags:
             - { name: doctrine.fixture.orm }
 
