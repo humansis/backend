@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
@@ -295,11 +294,6 @@ class SmartcardController extends Controller
      *             description="Value of money deposit to smartcard"
      *         ),
      *         @SWG\Property(
-     *             property="depositorId",
-     *             type="int",
-     *             description="ID of user which is responsible for deposit money to smartcard"
-     *         ),
-     *         @SWG\Property(
      *             property="distributionId",
      *             type="int",
      *             description="ID of distribution from which are money deposited"
@@ -333,11 +327,6 @@ class SmartcardController extends Controller
             throw new BadRequestHttpException('Smartcard is blocked.');
         }
 
-        $depositor = $this->getDoctrine()->getRepository(User::class)->find($request->request->getInt('depositorId'));
-        if (!$depositor) {
-            throw new BadRequestHttpException('Depositor does not exists.');
-        }
-
         $distribution = $this->getDoctrine()->getRepository(DistributionData::class)->find($request->request->getInt('distributionId'));
         if (!$distribution) {
             throw new BadRequestHttpException('Distribution does not exists.');
@@ -345,7 +334,7 @@ class SmartcardController extends Controller
 
         $deposit = SmartcardDeposit::create(
             $smartcard,
-            $depositor,
+            $this->getUser(),
             $distribution,
             (float) $request->request->get('value'),
             \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))

@@ -86,7 +86,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $this->request('PATCH', '/api/wsse/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'value' => 255.25,
-            'depositorId' => 1, // todo change to fixtures
             'distributionId' => 1, // todo change to fixtures
             'createdAt' => '2020-02-02T12:00:00Z',
         ]);
@@ -112,7 +111,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $this->request('PATCH', '/api/wsse/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'value' => 500,
-            'depositorId' => 1, // todo change to fixtures
             'createdAt' => '2020-02-02T12:00:00+0200',
         ]);
 
