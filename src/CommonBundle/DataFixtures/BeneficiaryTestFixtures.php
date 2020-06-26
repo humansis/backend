@@ -109,7 +109,6 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
                 $this->createHousehold($manager, $location, $project);
                 if (($locationIndex % 50) == 0) {
                     $manager->flush();
-                    $manager->clear();
                 }
             }
             echo "\n";
