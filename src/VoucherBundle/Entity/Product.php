@@ -59,9 +59,9 @@ class Product implements ExportableInterface
     private $archived;
 
     /**
-     * @ORM\ManyToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="products")
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\VoucherRecord", mappedBy="product")
      */
-    private $vouchers;
+    private $voucherRecords;
 
     /**
      * @var string
@@ -73,7 +73,7 @@ class Product implements ExportableInterface
 
     public function __construct()
     {
-        $this->vouchers = new ArrayCollection();
+        $this->voucherRecords = new ArrayCollection();
     }
 
 
@@ -183,31 +183,23 @@ class Product implements ExportableInterface
         return $this->image;
     }
 
+    /**
+     * @return Collection|VoucherRecord[]
+     */
+    public function getVoucherRecords(): Collection
+    {
+        return $this->voucherRecords;
+    }
 
     /**
-     * @return Collection|Voucher[]
+     * @param $records Collection|VoucherRecord[]
+     *
+     * @return self
      */
-    public function getVouchers(): Collection
+    public function setVoucherRecords($records): self
     {
-        return $this->vouchers;
-    }
-
-    public function addVoucher(Voucher $voucher): self
-    {
-        if (!$this->vouchers->contains($voucher)) {
-            $this->vouchers[] = $voucher;
-            $voucher->addProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVoucher(Voucher $voucher): self
-    {
-        if ($this->vouchers->contains($voucher)) {
-            $this->vouchers->removeElement($voucher);
-            $voucher->removeProduct($this);
-        }
+        $this->voucherRecords->clear();
+        $this->voucherRecords = new ArrayCollection($records);
 
         return $this;
     }
