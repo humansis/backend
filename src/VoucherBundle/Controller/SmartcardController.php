@@ -268,7 +268,7 @@ class SmartcardController extends Controller
     /**
      * Put money to smartcard.
      *
-     * @Rest\Patch("/smartcards/{serialNumber}/deposit")
+     * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}/deposit")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @ParamConverter("smartcard")
      *
