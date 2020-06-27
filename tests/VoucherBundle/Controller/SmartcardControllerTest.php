@@ -84,7 +84,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     {
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
 
-        $this->request('PATCH', '/api/wsse/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
+        $this->request('PATCH', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'value' => 255.25,
             'distributionId' => 1, // todo change to fixtures
             'createdAt' => '2020-02-02T12:00:00Z',
@@ -109,7 +109,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->persist($smartcard);
         $this->em->flush();
 
-        $this->request('PATCH', '/api/wsse/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
+        $this->request('PATCH', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'value' => 500,
             'createdAt' => '2020-02-02T12:00:00+0200',
         ]);
