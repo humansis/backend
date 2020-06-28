@@ -38,10 +38,10 @@ command="cd /var/www/html/bms_api; \
     sudo docker-compose exec  -T php bash -c 'php bin/console d:m:m -n'"
 
 fixtures_test="cd /var/www/html/bms_api; \
-    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=test --append'"
+    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=test'"
 
 fixtures_dev="cd /var/www/html/bms_api; \
-    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=dev --append'"
+    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=dev'"
 
 if [[ $1 == "master" ]]; then
     ssh -i $2 ubuntu@$ec2_prod $command
