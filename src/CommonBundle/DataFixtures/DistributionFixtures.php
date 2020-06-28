@@ -7,6 +7,7 @@ use DistributionBundle\Utils\DistributionService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
 class DistributionFixtures extends Fixture implements DependentFixtureInterface
@@ -41,7 +42,7 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface
         'project' => [
             'donors' => [],
             'donors_name' => [],
-            'id' => '1',
+            'id' => '?',
             'name' => '',
             'sectors' => [],
             'sectors_name' => [],
@@ -79,6 +80,9 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager)
     {
         if ($this->kernel->getEnvironment() !== "prod") {
+            $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => 'KHM']);
+            $this->distributionArray['project']['id'] = $project->getId();
+
             $this->distributionService->create("KHM", $this->distributionArray, 1);
         }
     }
