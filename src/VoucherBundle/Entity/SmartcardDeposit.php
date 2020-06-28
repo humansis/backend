@@ -32,7 +32,7 @@ class SmartcardDeposit
     /**
      * @var Smartcard
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Smartcard")
+     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Smartcard", inversedBy="deposites")
      * @ORM\JoinColumn(nullable=false)
      *
      * @Groups({"FullSmartcard"})

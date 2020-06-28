@@ -32,7 +32,7 @@ class SmartcardPurchase
     /**
      * @var Smartcard
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Smartcard")
+     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Smartcard", inversedBy="purchases")
      * @ORM\JoinColumn(nullable=false)
      *
      * @Groups({"FullSmartcard"})
@@ -52,7 +52,7 @@ class SmartcardPurchase
     /**
      * @var Collection|SmartcardPurchaseRecord[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchaseRecord", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchaseRecord", mappedBy="smartcardPurchase", cascade={"persist"}, orphanRemoval=true)
      *
      * @Groups({"FullSmartcard"})
      */
