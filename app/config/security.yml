@@ -42,7 +42,7 @@ security:
             stateless:  true
             wsse:       true
             anonymous:  false
-            methods:    [GET, PUT, POST, DELETE, OPTIONS]
+            methods:    [GET, PUT, POST, PATCH, DELETE, OPTIONS]
             provider:   our_db_provider
 
     access_control:
