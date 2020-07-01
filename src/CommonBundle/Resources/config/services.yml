@@ -48,7 +48,8 @@ services:
     CommonBundle\Listener\RequestListener:
         arguments:
         - "@doctrine.orm.entity_manager"
-        - "@service_container"
+        - "@security.token_storage"
+        - "@security.authorization_checker"
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 

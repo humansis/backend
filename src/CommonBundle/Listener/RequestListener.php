@@ -1,41 +1,45 @@
 <?php
 
-
 namespace CommonBundle\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Container\ContainerInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 
 class RequestListener
 {
-    /** @var EntityManagerInterface $em */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /** @var ContainerInterface $container */
-    private $container;
+    /** @var TokenStorageInterface */
+    private $tokenStorage;
 
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
-    {
+    /** @var AuthorizationCheckerInterface */
+    private $authChecker;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        TokenStorageInterface $tokenStorage,
+        AuthorizationCheckerInterface $authChecker
+    ) {
         $this->em = $entityManager;
-        $this->container = $container;
+        $this->tokenStorage = $tokenStorage;
+        $this->authChecker = $authChecker;
     }
 
     /**
      * @param GetResponseEvent $event
-     * @throws \Exception
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
         if ($event->getRequest()->headers->has('country')) {
             $countryISO3 = $event->getRequest()->headers->get('country');
-            
-            if ($this->getUser()) {
-                $user = $this->em->getRepository(User::class)->find($this->getUser());
 
+            if ($user = $this->getUser()) {
                 $countries = $user->getCountries()->getValues();
                 $projects = $user->getProjects()->getValues();
                 $hasCountry = false;
@@ -54,7 +58,7 @@ class RequestListener
                     }
                 }
 
-                if ($user->getRoles()[0] === "ROLE_VENDOR") {
+                if ($this->authChecker->isGranted('ROLE_VENDOR')) {
                     $country = $this->em->getRepository(Vendor::class)->getVendorCountry($user);
 
                     if ($countryISO3 === $country) {
@@ -62,42 +66,40 @@ class RequestListener
                     }
                 }
 
-                if ($user->getRoles()[0] == "ROLE_ADMIN" || $hasCountry) {
-                    $event->getRequest()->request->add(["__country" => $countryISO3]);
+                if ($this->authChecker->isGranted('ROLE_ADMIN') || $hasCountry) {
+                    $event->getRequest()->request->add(['__country' => $countryISO3]);
                 } else {
-                    $response = new Response("You are not allowed to acces data for this country", Response::HTTP_FORBIDDEN);
+                    $response = new Response('You are not allowed to acces data for this country', Response::HTTP_FORBIDDEN);
                     $event->setResponse($response);
                 }
             } else {
-                $event->getRequest()->request->add(["__country" => $countryISO3]);
+                $event->getRequest()->request->add(['__country' => $countryISO3]);
             }
-        }
-        // return error response if api request (i.e. not profiler or doc) or login routes (for api tester)
+        } // return error response if api request (i.e. not profiler or doc) or login routes (for api tester)
         elseif (preg_match('/api/', $event->getRequest()->getPathInfo()) &&
-                !preg_match('/api\/wsse\/(login|salt)/', $event->getRequest()->getPathInfo())) {
+            !preg_match('/api\/wsse\/(login|salt)/', $event->getRequest()->getPathInfo())) {
             $response = new Response("'country' header missing from request (iso3 code).", Response::HTTP_BAD_REQUEST);
             $event->setResponse($response);
         }
     }
 
     /**
-     * Get the user
+     * Get the user.
      */
-    protected function getUser()
+    protected function getUser(): ?User
     {
-        if (!$this->container->has('security.token_storage')) {
-            throw new \LogicException('The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".');
+        if (null === $token = $this->tokenStorage->getToken()) {
+            return null;
         }
 
-        if (null === $token = $this->container->get('security.token_storage')->getToken()) {
-            return;
-        }
+        /* @var User $user */
+        $user = $token->getUser();
 
-        if (!\is_object($user = $token->getUser())) {
+        if (!$user instanceof User) {
             // e.g. anonymous authentication
-            return;
+            return null;
         }
 
-        return $user->getId();
+        return $user;
     }
 }
