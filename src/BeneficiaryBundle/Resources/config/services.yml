@@ -111,10 +111,10 @@ services:
 #######################################################################################
 
     beneficiary.household_export_csv_service:
-        class: BeneficiaryBundle\Utils\ExportCSVService
+        class: BeneficiaryBundle\Utils\HouseholdExportCSVService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@service_container"
+            - "@export_csv_service"
         public: true
 
     beneficiary.household_csv_service:
