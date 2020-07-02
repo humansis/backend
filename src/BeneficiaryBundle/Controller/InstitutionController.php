@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Mapper\InstitutionMapper;
-use BeneficiaryBundle\Utils\ExportCSVService;
+use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\InstitutionService;
 use CommonBundle\Response\CommonBinaryFileResponse;
 use JMS\Serializer\SerializationContext;

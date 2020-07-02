@@ -5,7 +5,7 @@ namespace BeneficiaryBundle\Controller;
 use BeneficiaryBundle\Entity\HouseholdActivity;
 use BeneficiaryBundle\Model\Household\HouseholdActivityChangesCollection;
 use BeneficiaryBundle\Model\Household\HouseholdChange\Factory\FilteredHouseholdChangeFactory;
-use BeneficiaryBundle\Utils\ExportCSVService;
+use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper;
@@ -311,61 +311,6 @@ class HouseholdController extends Controller
         $json = $this->get('jms_serializer')
             ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
         return new Response($json);
-    }
-
-    /**
-     * @Rest\Get("/csv/households/export", name="get_pattern_csv_household")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
-     *
-     * @SWG\Tag(name="Households")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Return Household (old and new) if similarity founded",
-     *      examples={
-     *          "application/json": {
-     *              {
-     *                  "'Household','','','','','','','','','','','Beneficiary','','','','','',''\n'Address street','Address number','Address postcode','Livelihood','Notes','Latitude','Longitude','Adm1','Adm2','Adm3','Adm4','Family name','Gender','Status','Date of birth','Vulnerability criteria','Phones','National IDs'\n",
-     *                  "pattern_household_fra.csv"
-     *              }
-     *          }
-     *      }
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function getPatternCSVAction(Request $request)
-    {
-        $countryIso3 = $request->request->get('__country');
-
-        $type = $request->query->get('type') ?: 'csv';
-        /** @var ExportCSVService $exportCSVService */
-        $exportCSVService = $this->get('beneficiary.household_export_csv_service');
-        try {
-            $filename = $exportCSVService->generate($countryIso3, $type);
-
-            // Create binary file to send
-            $response = new BinaryFileResponse(getcwd() . '/' . $filename);
-
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
-            $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
-            if ($mimeTypeGuesser->isSupported()) {
-                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
-            } else {
-                $response->headers->set('Content-Type', 'text/plain');
-            }
-            $response->deleteFileAfterSend(true);
-
-            return $response;
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
     }
 
     /**
