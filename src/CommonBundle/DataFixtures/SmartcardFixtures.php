@@ -4,7 +4,7 @@ namespace CommonBundle\DataFixtures;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use DateTimeImmutable;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -97,7 +97,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         return SmartcardDeposit::create(
             $smartcard,
             $this->randomEntity(User::class, $manager),
-            $this->randomEntity(DistributionData::class, $manager),
+            $this->randomEntity(DistributionBeneficiary::class, $manager),
             $value,
             new DateTimeImmutable('now')
         );
