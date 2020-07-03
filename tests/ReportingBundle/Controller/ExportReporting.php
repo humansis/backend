@@ -48,7 +48,7 @@ class ExportReporting extends BMSServiceTestCase
         $datacomputed = $computer->compute($indicator, $filters);
         $dataFormatted = $format->format(Formatter::CsvFormat, $datacomputed, 'line');
 
-        $csv = $exportservice->setHeaders($header)->export($dataFormatted, 'actual');
+        $csv = $exportservice->export($dataFormatted, 'actual');
 
         $this->assertEquals(file_get_contents('expectedReporting.csv'), $csv['content']);
     }

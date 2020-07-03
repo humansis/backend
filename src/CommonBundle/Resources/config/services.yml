@@ -21,9 +21,6 @@ services:
 
     export_csv_service:
         class: CommonBundle\Utils\ExportService
-        arguments:
-        - "@doctrine.orm.entity_manager"
-        - "@service_container"
         public: true
 
     pdf_service:
