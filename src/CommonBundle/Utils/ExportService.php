@@ -2,10 +2,8 @@
 
 namespace CommonBundle\Utils;
 
-use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class ExportService.
@@ -15,39 +13,6 @@ class ExportService
     const FORMAT_CSV = 'csv';
     const FORMAT_XLSX = 'xlsx';
     const FORMAT_ODS = 'ods';
-
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /** @var ContainerInterface */
-    private $container;
-
-    /** @var array An array that follows the csv format */
-    private $headers;
-
-    /**
-     * ExportService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface     $container
-     */
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
-    {
-        $this->em = $entityManager;
-        $this->container = $container;
-    }
-
-    /**
-     * @param array $headers This array should follow the csv format
-     *
-     * @return ExportService
-     */
-    public function setHeaders(array $headers)
-    {
-        $this->headers = $headers;
-
-        return $this;
-    }
 
     /**
      * Generate file.
