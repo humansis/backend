@@ -60,6 +60,11 @@ class HouseholdExportCSVService
         'M 6 - 17' => '',
         'M 18 - 64' => '',
         'M 65+' => '',
+        'Shelter status' => '',
+        'Assets' => '',
+        'Dept Level' => '',
+        'Support Received Types' => '',
+        'Support Date Received' => '',
     ];
 
     private const MAPPING_HOUSEHOLD_HEAD = [
@@ -108,6 +113,11 @@ class HouseholdExportCSVService
         'M 6 - 17' => 0,
         'M 18 - 64' => 0,
         'M 65+' => 0,
+        'Shelter status' => '',
+        'Assets' => '',
+        'Dept Level' => '',
+        'Support Received Types' => '',
+        'Support Date Received' => '',
     ];
 
     private const MAPPING_HOUSEHOLD_MEMBER = [
@@ -156,6 +166,11 @@ class HouseholdExportCSVService
         'M 6 - 17' => '',
         'M 18 - 64' => '',
         'M 65+' => '',
+        'Shelter status' => '',
+        'Assets' => '',
+        'Dept Level' => '',
+        'Support Received Types' => '',
+        'Support Date Received' => '',
     ];
 
     private const MAPPING_DETAILS = [
@@ -204,6 +219,11 @@ class HouseholdExportCSVService
         'M 6 - 17' => 'Number',
         'M 18 - 64' => 'Number',
         'M 65+' => 'Number',
+        'Shelter status' => 'String',
+        'Assets' => 'Comma separated strings',
+        'Dept Level' => 'Number',
+        'Support Received Types' => 'Comma separated strings',
+        'Support Date Received' => 'DD-MM-YYYY',
     ];
 
     private const MAPPING_HELP_HXL = [
