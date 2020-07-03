@@ -3,6 +3,7 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -332,10 +333,15 @@ class SmartcardController extends Controller
             throw new BadRequestHttpException('Distribution does not exists.');
         }
 
+        $distributionBeneficiary = $this->getDoctrine()->getRepository(DistributionBeneficiary::class)->findByDistributionAndBeneficiary(
+            $distribution,
+            $smartcard->getBeneficiary()
+        );
+
         $deposit = SmartcardDeposit::create(
             $smartcard,
             $this->getUser(),
-            $distribution,
+            $distributionBeneficiary,
             (float) $request->request->get('value'),
             \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))
         );

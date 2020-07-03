@@ -4,7 +4,7 @@ namespace VoucherBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Type as JMS_Type;
@@ -50,14 +50,14 @@ class SmartcardDeposit
     private $depositor;
 
     /**
-     * @var DistributionData
+     * @var DistributionBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary")
      * @ORM\JoinColumn(nullable=false)
      *
      * @Groups({"FullSmartcard"})
      */
-    private $distribution;
+    private $distributionBeneficiary;
 
     /**
      * @var float
@@ -81,11 +81,16 @@ class SmartcardDeposit
     {
     }
 
-    public static function create(Smartcard $smartcard, User $depositor, DistributionData $distribution, $value, DateTimeInterface $createdAt)
-    {
+    public static function create(
+        Smartcard $smartcard,
+        User $depositor,
+        DistributionBeneficiary $distributionBeneficiary,
+        $value,
+        DateTimeInterface $createdAt
+    ) {
         $entity = new self();
         $entity->depositor = $depositor;
-        $entity->distribution = $distribution;
+        $entity->distributionBeneficiary = $distributionBeneficiary;
         $entity->value = $value;
         $entity->createdAt = $createdAt;
         $entity->smartcard = $smartcard;
@@ -122,11 +127,11 @@ class SmartcardDeposit
     }
 
     /**
-     * @return DistributionData
+     * @return DistributionBeneficiary
      */
-    public function getDistribution(): DistributionData
+    public function getDistributionBeneficiary(): DistributionBeneficiary
     {
-        return $this->distribution;
+        return $this->distributionBeneficiary;
     }
 
     public function getValue(): float

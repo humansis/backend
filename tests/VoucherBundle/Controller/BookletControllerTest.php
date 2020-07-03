@@ -294,7 +294,7 @@ class BookletControllerTest extends BMSServiceTestCase
         ];
 
         // Second step
-        $crawler = $this->request('POST', '/api/wsse/booklets/assign/'.$beneficiary->getId().'/'.$distribution->getId(), $body);
+        $crawler = $this->request('POST', '/api/wsse/booklets/assign/'.$distribution->getId().'/'.$beneficiary->getId(), $body);
         $response = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
