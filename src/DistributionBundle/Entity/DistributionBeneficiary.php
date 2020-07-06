@@ -127,7 +127,7 @@ class DistributionBeneficiary
     {
         foreach ($this->getDistributionData()->getCommodities() as $commodity) {
             /** @var Commodity $commodity */
-            if ('Smartcard' === $commodity->getModalityType()) {
+            if ('Smartcard' === $commodity->getModalityType()->getName()) {
                 return count($this->smartcardDeposits) > 0;
             }
         }
