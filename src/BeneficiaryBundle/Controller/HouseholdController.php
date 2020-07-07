@@ -269,42 +269,27 @@ class HouseholdController extends Controller
     public function importAction(Request $request, Project $project)
     {
         set_time_limit(0); // 0 = no limits
-        $token = empty($request->query->get('token')) ? null : $request->query->get('token');
-
-        $contentJson = $request->request->get('errors');
+        $token = $request->query->get('token');
         $tmpFile = $request->request->get('tmpFile');
         $mapping = $request->request->get('mapping');
-
         $email = $request->query->get('email');
         $countryIso3 = $request->request->get('__country');
 
         /** @var HouseholdCSVService $householdService */
         $householdService = $this->get('beneficiary.household_csv_service');
 
-        if ($token === null && empty($mapping)) {
+        if (empty($token) && empty($mapping)) {
             if (!$request->files->has('file')) {
                 return new Response('You must upload a file.', Response::HTTP_BAD_REQUEST);
             }
-            try {
-                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $token, $email);
-            } catch (\Exception $e) {
-                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
+            $return = $householdService->createPreview($countryIso3, $request->files->get('file'));
         } elseif ($mapping) {
-            try {
-                $return = $householdService->saveCSVAndAnalyze($countryIso3, $project, $tmpFile, $mapping, $token, $email);
-            } catch (\Exception $e) {
-                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
+            $return = $householdService->saveCSVAndAnalyze($countryIso3, $project, $tmpFile, $mapping, $token, $email);
         } else {
-            try {
-                if (!$contentJson) {
-                    $contentJson = [];
-                }
-                $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $token, $email);
-            } catch (\Exception $e) {
-                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            if (!($contentJson = $request->request->get('errors'))) {
+                $contentJson = [];
             }
+            $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $token, $email);
         }
 
 
