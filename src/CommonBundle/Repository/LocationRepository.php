@@ -2,6 +2,7 @@
 
 namespace CommonBundle\Repository;
 
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\QueryBuilder;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm2;
@@ -16,6 +17,18 @@ use Doctrine\ORM\Query\Expr\Join;
  */
 class LocationRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    /**
+     * @param $country
+     * @return Location[]
+     */
+    public function getByCountry($country)
+    {
+        $qb = $this->createQueryBuilder('l');
+        $qb->leftJoin('l.adm1', 'amd1');
+        $this->whereCountry($qb, $country);
+        return $qb->getQuery()->getResult();
+    }
 
     /**
      * Create sub request to get the adm1 of a location

@@ -564,8 +564,7 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Get("/household/{householdId}/changes")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Rest\Get("/households/{householdId}/changes")
      *
      * @SWG\Tag(name="Households")
      *

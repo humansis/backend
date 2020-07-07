@@ -129,12 +129,12 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 $this->assertArrayHasKey('local_family_name', $beneficiary);
                 $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
                 $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
-                $this->assertArrayHasKey('id', $vulnerability_criterion);
-                $this->assertArrayHasKey('field_string', $vulnerability_criterion);
-            } catch (\Exception $exception) {
+                if (is_array($vulnerability_criterion)) {
+                    $this->assertArrayHasKey('id', $vulnerability_criterion);
+                    $this->assertArrayHasKey('field_string', $vulnerability_criterion);
+                }
+            } finally {
                 $this->removeHousehold($this->namefullnameHousehold . '(u)');
-                $this->fail("\nThe mapping of fields of Household entity is not correct (3).\n");
-                return false;
             }
         } else {
             $this->removeHousehold($this->namefullnameHousehold);

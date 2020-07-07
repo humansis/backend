@@ -2,15 +2,16 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
-use CommonBundle\Utils\ExportableInterface;
-use BeneficiaryBundle\Entity\Referral;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use VoucherBundle\Entity\Smartcard;
 
 /**
  * Beneficiary
@@ -159,13 +160,28 @@ class Beneficiary implements ExportableInterface
     private $referral;
 
     /**
-     * Constructor
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Smartcard", mappedBy="beneficiary")
+     *
+     * @var Collection|Smartcard[]
+     */
+    private $smartcards;
+
+    /**
+     * @var string
+     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
+     * @Serializer\Accessor(getter="getSmartcard")
+     */
+    private $smartcard;
+
+    /**
+     * Constructor.
      */
     public function __construct()
     {
         $this->vulnerabilityCriteria = new \Doctrine\Common\Collections\ArrayCollection();
         $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nationalIds = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->smartcards = new \Doctrine\Common\Collections\ArrayCollection();
         $this->setUpdatedOn(new \DateTime());
 
         //TODO check if updatedOn everytime
@@ -864,6 +880,21 @@ class Beneficiary implements ExportableInterface
                 return $this->getDateOfBirth()->diff(new \DateTime('now'))->y;
             } catch (\Exception $ex) {
                 return null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSmartcard()
+    {
+        foreach ($this->smartcards as $smartcard) {
+            if ($smartcard->isActive()) {
+                $this->smartcard = $smartcard->getSerialNumber();
+                return $this->smartcard;
             }
         }
 

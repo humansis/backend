@@ -20,4 +20,27 @@ class SmartcardRepository extends EntityRepository
 
         return $qb->getQuery()->getOneOrNullResult();
     }
+
+    /**
+     * Returns list of blocked smardcards.
+     *
+     * @param string $countryCode
+     *
+     * @return string[] list of smartcard serial numbers
+     */
+    public function findBlocked(string $countryCode)
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->distinct(true)
+            ->select(['s.serialNumber'])
+            ->join('s.beneficiary', 'b')
+            ->join('b.household', 'h')
+            ->join('h.projects', 'p')
+            ->andWhere('p.iso3 = :countryCode')
+            ->andWhere('s.state != :smartcardState')
+            ->setParameter('countryCode', $countryCode)
+            ->setParameter('smartcardState', Smartcard::STATE_ACTIVE);
+
+        return $qb->getQuery()->getResult('plain_values_hydrator');
+    }
 }
