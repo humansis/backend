@@ -48,6 +48,7 @@ class HouseholdCSVService
     /** @var int $step */
     private $step;
 
+    private const NUMBER_OF_ROWS_FOR_PREVIEW  = 10;
 
     /**
      * HouseholdCSVService constructor.
@@ -71,22 +72,17 @@ class HouseholdCSVService
         $this->container = $container;
     }
 
-
     /**
-     * Defined the reader and transform CSV to array
+     * Build structure for show preview on FE.
      *
-     * @param $countryIso3
-     * @param Project $project
+     * @param string       $countryIso3
      * @param UploadedFile $uploadedFile
-     * @param $token
-     * @param string $email
-     * @return array
+     *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, $token, string $email)
+    public function createPreview($countryIso3, UploadedFile $uploadedFile)
     {
-        // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
         $reader = IOFactory::createReaderForFile($uploadedFile->getRealPath());
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
 
@@ -97,19 +93,25 @@ class HouseholdCSVService
         }
         $uploadedFile->move($dir_var);
 
-        $numberRow = $worksheet->getHighestRow() > 10 ? 10 : $worksheet->getHighestRow();
-        $sheetArray = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $numberRow, null, true, true, true);
+        $headers = $this->container->get('beneficiary.household_export_csv_service')->getHeaders($countryIso3);
+        $header = reset($headers);
+        $header = array_keys($header);
+        $header = array_filter($header, 'trim');    // some header cells are empty (due to help messages). We need to strip them.
+        $keys = $this->container->get('export_csv_service')->generateColumnIndexes(count($header));
+        $header = array_combine($keys, $header);
 
-        $header = $sheetArray[Household::indexRowHeader];
-        for ($row = 1; $row < Household::firstRow; $row++) {
-            unset($sheetArray[$row]);
-        }
+        $dataRange = sprintf('A%s:%s%s',            // for example: A2:AB1000
+            count($headers) + 1 + 1,                // number of header rows - we want to removed it from data
+            $worksheet->getHighestColumn(),
+            self::NUMBER_OF_ROWS_FOR_PREVIEW
+        );
+        $data = $worksheet->rangeToArray($dataRange, null, false, true, true);
 
         return [
-            'header' => array_slice($header, 0, -3),
-            'data' => array_values($sheetArray),
+            'header' => $header,
+            'data' => array_values($data),
             'mapping' => $this->CSVToArrayMapper->getMappingCSVOfCountry($countryIso3),
-            'tmpFile' => $uploadedFile->getFilename()
+            'tmpFile' => $uploadedFile->getFilename(),
         ];
     }
 
