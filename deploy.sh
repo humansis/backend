@@ -51,11 +51,11 @@ command_clean_db="cd /var/www/html/bms_api; \
     sudo docker-compose exec -T php bash -c 'php bin/console reporting:code-indicator:add'"
 
 fixtures_test="cd /var/www/html/bms_api; \
-    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=test --append';\
+    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=test';\
     sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'"
 
 fixtures_dev="cd /var/www/html/bms_api; \
-    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=dev --append';\
+    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=dev';\
     sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'"
 
 if [[ $1 == "master" ]]; then
