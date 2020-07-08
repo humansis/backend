@@ -1,38 +1,45 @@
 <?php
 
-namespace Tests\CommonBundle\Utils;
+namespace Tests\BeneficiaryBundle\Utils;
 
-use CommonBundle\Utils\ExportService;
-use Doctrine\ORM\EntityManagerInterface;
+use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ExportServiceTest extends TestCase
+class ExcelColumnsGeneratorTest extends TestCase
 {
     /**
-     * @param int   $arg
+     * @param int   $arg            number of iterations
      * @param array $expectedResult
      *
      * @dataProvider providerGenerateCells
-     *
-     * @throws \ReflectionException
      */
     public function testGenerateCells($arg, $expectedResult)
     {
-        $exportService = new ExportService(
-            $this->createMock(EntityManagerInterface::class),
-            $this->createMock(ContainerInterface::class)
-        );
-
-        $method = new \ReflectionMethod($exportService, 'generateCells');
-        $method->setAccessible(true);
+        $generator = new ExcelColumnsGenerator();
 
         $actualResult = [];
-        foreach ($method->invoke($exportService, $arg) as $item) {
-            $actualResult[] = $item;
+        for ($i = 0; $i < $arg; ++$i) {
+            $actualResult[] = $generator->getNext();
         }
 
         $this->assertSame($expectedResult, $actualResult);
+    }
+
+    public function testReset()
+    {
+        $generator = new ExcelColumnsGenerator();
+
+        $actualResult = [];
+        $actualResult[] = $generator->getNext();
+        $actualResult[] = $generator->getNext();
+        $actualResult[] = $generator->getNext();
+
+        $generator->reset();
+
+        $actualResult[] = $generator->getNext();
+        $actualResult[] = $generator->getNext();
+
+        $this->assertSame(['A', 'B', 'C', 'A', 'B'], $actualResult);
     }
 
     public function providerGenerateCells()
@@ -44,4 +51,3 @@ class ExportServiceTest extends TestCase
         ];
     }
 }
-

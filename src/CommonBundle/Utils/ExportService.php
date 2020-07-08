@@ -2,6 +2,7 @@
 
 namespace CommonBundle\Utils;
 
+use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -76,16 +77,18 @@ class ExportService
         $worksheet = $spreadsheet->getActiveSheet();
 
         $tableHeaders = $this->getHeaders($rows);
-        $collumnIndexes = $this->generateColumnIndexes(count($tableHeaders));
+
+        $generator = new ExcelColumnsGenerator();
 
         foreach ($tableHeaders as $i => $value) {
-            $worksheet->setCellValue($collumnIndexes[$i].$rowIndex, $value);
+            $worksheet->setCellValue($generator->getNext().$rowIndex, $value);
         }
 
         foreach ($rows as $key => $value) {
             ++$rowIndex;
+            $generator->reset();
             foreach ($tableHeaders as $i => $header) {
-                $worksheet->setCellValue($collumnIndexes[$i].$rowIndex, $value[$header]);
+                $worksheet->setCellValue($generator->getNext().$rowIndex, $value[$header]);
             }
         }
 
@@ -156,35 +159,5 @@ class ExportService
         }
 
         return array_keys($headers);
-    }
-
-    /**
-     * Returns list of excel columns index, eg. A, B, C, ..., AA, AB ...
-     *
-     * @param int $number
-     *
-     * @return string[]
-     */
-    public function generateColumnIndexes(int $number)
-    {
-        $result = [];
-
-        $alphabetCount = ord('Z') - ord('A') + 1;
-        $prefix = '';
-
-        for ($i = 0; $i < $number; ++$i) {
-            $it = floor($i / $alphabetCount);
-            if ($it > 0) {
-                $prefixChar = ord('A') + $it - 1;
-                $prefix = chr($prefixChar);
-            }
-
-            $pos = $i % $alphabetCount;
-            $char = ord('A') + $pos;
-
-            $result[] = $prefix.chr($char);
-        }
-
-        return $result;
     }
 }

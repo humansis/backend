@@ -94,11 +94,14 @@ class HouseholdCSVService
         $uploadedFile->move($dir_var);
 
         $headers = $this->container->get('beneficiary.household_export_csv_service')->getHeaders($countryIso3);
-        $header = reset($headers);
-        $header = array_keys($header);
-        $header = array_filter($header, 'trim');    // some header cells are empty (due to help messages). We need to strip them.
-        $keys = $this->container->get('export_csv_service')->generateColumnIndexes(count($header));
-        $header = array_combine($keys, $header);
+        $headers = reset($headers);
+        $headers = array_keys($headers);
+        $headers = array_filter($headers, 'trim');    // some header cells are empty (due to help messages). We need to strip them.
+
+        $generator = new ExcelColumnsGenerator();
+        foreach ($headers as $item) {
+            $header[$generator->getNext()] = $item;
+        }
 
         $dataRange = sprintf('A%s:%s%s',            // for example: A2:AB1000
             count($headers) + 1 + 1,                // number of header rows - we want to removed it from data
