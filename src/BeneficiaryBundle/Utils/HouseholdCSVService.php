@@ -119,48 +119,45 @@ class HouseholdCSVService
     }
 
     /**
-     * Defined the reader and transform CSV to array
+     * Defined the reader and transform CSV to array.
      *
-     * @param $countryIso3
+     * @param         $countryIso3
      * @param Project $project
-     * @param $token
-     * @param string $email
+     * @param string  $email
+     *
      * @return array
+     *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function saveCSVAndAnalyze($countryIso3, Project $project, $tmpFile, $mappingCSV, $token, string $email)
+    public function saveCSVAndAnalyze($countryIso3, Project $project, $tmpFile, $mappingCSV, string $email)
     {
         $dir_root = $this->container->get('kernel')->getRootDir();
-        $csvFile = $dir_root . '/../var/data_csv/' . $tmpFile;
+        $csvFile = $dir_root.'/../var/data_csv/'.$tmpFile;
 
-        // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
-        $reader = IOFactory::createReaderForFile($csvFile);
+        $sheetArray = $this->loadSheet($csvFile);
 
-        $worksheet = $reader->load($csvFile)->getActiveSheet();
-        // todo: remove file
-        $sheetArray = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $worksheet->getHighestRow(), null, true, true, true);
-        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $mappingCSV, null, $email);
+        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $mappingCSV, $email);
     }
 
     /**
-     * @param $countryIso3
+     * @param         $countryIso3
      * @param Project $project
-     * @param array $sheetArray
-     * @param $token
-     * @param string $email
+     * @param array   $sheetArray
+     * @param string  $email
+     *
      * @return array|bool
+     *
      * @throws \Exception
      */
-    public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, $mappingCSV, $token, string $email)
+    protected function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, $mappingCSV, string $email)
     {
-        // Get the list of households from csv with their beneficiaries
-        if ($token === null) {
-            $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $countryIso3, $mappingCSV);
-            return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $token, $email);
-        } else {
-            return $this->foundErrors($countryIso3, $project, $sheetArray, $token, $email);
-        }
+        $headers = $this->container->get('beneficiary.household_export_csv_service')->getHeaders($countryIso3);
+        $sheetArray = array_slice($sheetArray, count($headers) + 1);
+
+        $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $countryIso3, $mappingCSV);
+
+        return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, null, $email);
     }
 
     /**
@@ -505,5 +502,29 @@ class HouseholdCSVService
         }
         closedir($dir);
         rmdir($src);
+    }
+
+    private function loadSheet(string $filename): array
+    {
+        $reader = IOFactory::createReaderForFile($filename);
+        $worksheet = $reader->load($filename)->getActiveSheet();
+
+        $sheetArray = $worksheet->rangeToArray('A1:'.$worksheet->getHighestColumn().$worksheet->getHighestRow(), null, false, true, true);
+
+        // search for null columns from end to start
+        foreach (array_reverse($sheetArray[1], true) as $c => $cell) {
+            foreach ($sheetArray as $r => $row) {
+                if (null !== $sheetArray[$r][$c]) {
+                    // stop searching for null values if some found
+                    break 2;
+                }
+            }
+
+            foreach ($sheetArray as $r => $row) {
+                unset($sheetArray[$r][$c]);
+            }
+        }
+
+        return $sheetArray;
     }
 }

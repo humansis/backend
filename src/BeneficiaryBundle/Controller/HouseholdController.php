@@ -284,7 +284,7 @@ class HouseholdController extends Controller
             }
             $return = $householdService->createPreview($countryIso3, $request->files->get('file'));
         } elseif ($mapping) {
-            $return = $householdService->saveCSVAndAnalyze($countryIso3, $project, $tmpFile, $mapping, $token, $email);
+            $return = $householdService->saveCSVAndAnalyze($countryIso3, $project, $tmpFile, $mapping, $email);
         } else {
             if (!($contentJson = $request->request->get('errors'))) {
                 $contentJson = [];
