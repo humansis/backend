@@ -13,7 +13,8 @@ class FilteredHouseholdChange extends AbstractHouseholdChange
     const ALLOWED_FIELDS = [
         'income_level',
         'debt_level',
-        'foodConsumption_score',
+        'food_consumption_score',
+        'coping_strategies_index',
         'support_date_received',
     ];
 
