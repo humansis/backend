@@ -291,7 +291,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             $andStatement->add('cs'.$i . '.fieldString = :csName'.$i);
             $andStatement->add('csa'.$i . '.answer ' . $condition . ' :parameter'.$i);
             $orStatement->add($andStatement);
-            $qb->addSelect('cs'.$i . '.fieldString AS ' . $field.$i);
+            $qb->addSelect('cs'.$i . '.fieldString');
         }
 
         // The selection criteria is directly a field in the Household table
