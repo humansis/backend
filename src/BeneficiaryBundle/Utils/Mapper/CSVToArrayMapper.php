@@ -72,6 +72,11 @@ class CSVToArrayMapper
         'member_m-6-17' => 'AQ',
         'member_m-18-64' => 'AR',
         'member_m-65-99' => 'AS',
+        'shelter_status' => 'AT',
+        'assets' => 'AU',
+        'dept_level' => 'AV',
+        'support_received_types' => 'AW',
+        'support_date_received' => 'AX',
     ];
 
     private $countrySpecificIds = [];
@@ -318,6 +323,11 @@ class CSVToArrayMapper
             $this->mapProfile($formattedHouseholdArray);
             $this->mapStatus($formattedHouseholdArray);
             $this->mapLivelihood($formattedHouseholdArray);
+            $this->mapShelterStatus($formattedHouseholdArray);
+            $this->mapAssets($formattedHouseholdArray);
+            $this->mapDeptLevel($formattedHouseholdArray);
+            $this->mapSupportReceivedTypes($formattedHouseholdArray);
+            $this->mapSupportDateReceived($formattedHouseholdArray);
         } catch (\Exception $exception) {
             throw $exception;
         }
@@ -685,6 +695,80 @@ class CSVToArrayMapper
         }
     }
 
+    private function mapShelterStatus(&$formattedHouseholdArray)
+    {
+        if (isset($formattedHouseholdArray['shelter_status'])) {
+            foreach (Household::SHELTER_STATUSES as $id => $status) {
+                if (0 === strcasecmp(trim($formattedHouseholdArray['shelter_status']), $status)) {
+                    $formattedHouseholdArray['shelter_status'] = $id;
+                    return;
+                }
+            }
+
+            throw new \InvalidArgumentException("'{$formattedHouseholdArray['shelter_status']}' is not valid shelter status.");
+        }
+    }
+
+    private function mapAssets(&$formattedHouseholdArray)
+    {
+        if (isset($formattedHouseholdArray['assets'])) {
+            $assets = [];
+            foreach (explode(',', $formattedHouseholdArray['assets']) as $value) {
+                foreach (Household::ASSETS as $id => $asset) {
+                    if (0 === strcasecmp(trim($value), $asset)) {
+                        $assets[] = $id;
+                        continue 2;
+                    }
+                }
+
+                throw new \InvalidArgumentException("'$value' is not valid asset.");
+            }
+
+            $formattedHouseholdArray['assets'] = $assets;
+        }
+    }
+
+    private function mapDeptLevel(&$formattedHouseholdArray)
+    {
+        if (isset($formattedHouseholdArray['dept_level'])) {
+            if (!is_numeric($formattedHouseholdArray['dept_level'])) {
+                throw new \InvalidArgumentException("'{$formattedHouseholdArray['dept_level']}' is not valid dept level.");
+            }
+
+            $formattedHouseholdArray['dept_level'] = intval($formattedHouseholdArray['dept_level']);
+        }
+    }
+
+    private function mapSupportReceivedTypes(&$formattedHouseholdArray)
+    {
+        if (isset($formattedHouseholdArray['support_received_types'])) {
+            $types = [];
+            foreach (explode(',', $formattedHouseholdArray['support_received_types']) as $value) {
+                foreach (Household::SUPPORT_RECIEVED_TYPES as $id => $type) {
+                    if (0 === strcasecmp(trim($value), $type)) {
+                        $types[] = $id;
+                        continue 2;
+                    }
+                }
+
+                throw new \InvalidArgumentException("'$value' is not valid support received type.");
+            }
+
+            $formattedHouseholdArray['support_received_types'] = $types;
+        }
+    }
+
+    private function mapSupportDateReceived(&$formattedHouseholdArray)
+    {
+        if (isset($formattedHouseholdArray['support_date_received'])) {
+            $date = \DateTime::createFromFormat('d-m-Y', $formattedHouseholdArray['support_date_received']);
+            if (false === $date) {
+                throw new \InvalidArgumentException("'{$formattedHouseholdArray['support_date_received']}' is not valid support date received.");
+            }
+
+            $formattedHouseholdArray['support_date_received'] = $date;
+        }
+    }
     /**
      * @param array $values
      *
