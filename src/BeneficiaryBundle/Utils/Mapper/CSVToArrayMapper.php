@@ -74,7 +74,7 @@ class CSVToArrayMapper
         'member_m-65-99' => 'AS',
         'shelter_status' => 'AT',
         'assets' => 'AU',
-        'dept_level' => 'AV',
+        'debt_level' => 'AV',
         'support_received_types' => 'AW',
         'support_date_received' => 'AX',
     ];
@@ -325,7 +325,7 @@ class CSVToArrayMapper
             $this->mapLivelihood($formattedHouseholdArray);
             $this->mapShelterStatus($formattedHouseholdArray);
             $this->mapAssets($formattedHouseholdArray);
-            $this->mapDeptLevel($formattedHouseholdArray);
+            $this->mapDebtLevel($formattedHouseholdArray);
             $this->mapSupportReceivedTypes($formattedHouseholdArray);
             $this->mapSupportDateReceived($formattedHouseholdArray);
         } catch (\Exception $exception) {
@@ -728,14 +728,14 @@ class CSVToArrayMapper
         }
     }
 
-    private function mapDeptLevel(&$formattedHouseholdArray)
+    private function mapDebtLevel(&$formattedHouseholdArray)
     {
-        if (isset($formattedHouseholdArray['dept_level'])) {
-            if (!is_numeric($formattedHouseholdArray['dept_level'])) {
-                throw new \InvalidArgumentException("'{$formattedHouseholdArray['dept_level']}' is not valid dept level.");
+        if (isset($formattedHouseholdArray['debt_level'])) {
+            if (!is_numeric($formattedHouseholdArray['debt_level'])) {
+                throw new \InvalidArgumentException("'{$formattedHouseholdArray['debt_level']}' is not valid debt level.");
             }
 
-            $formattedHouseholdArray['dept_level'] = intval($formattedHouseholdArray['dept_level']);
+            $formattedHouseholdArray['debt_level'] = intval($formattedHouseholdArray['debt_level']);
         }
     }
 

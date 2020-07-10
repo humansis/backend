@@ -62,7 +62,7 @@ class HouseholdExportCSVService
         'M 65+' => '',
         'Shelter status' => '',
         'Assets' => '',
-        'Dept Level' => '',
+        'Debt Level' => '',
         'Support Received Types' => '',
         'Support Date Received' => '',
     ];
@@ -115,7 +115,7 @@ class HouseholdExportCSVService
         'M 65+' => 0,
         'Shelter status' => '',
         'Assets' => '',
-        'Dept Level' => '',
+        'Debt Level' => '',
         'Support Received Types' => '',
         'Support Date Received' => '',
     ];
@@ -168,7 +168,7 @@ class HouseholdExportCSVService
         'M 65+' => '',
         'Shelter status' => '',
         'Assets' => '',
-        'Dept Level' => '',
+        'Debt Level' => '',
         'Support Received Types' => '',
         'Support Date Received' => '',
     ];
@@ -221,7 +221,7 @@ class HouseholdExportCSVService
         'M 65+' => 'Number',
         'Shelter status' => 'String',
         'Assets' => 'Comma separated strings',
-        'Dept Level' => 'Number',
+        'Debt Level' => 'Number',
         'Support Received Types' => 'Comma separated strings',
         'Support Date Received' => 'DD-MM-YYYY',
     ];
