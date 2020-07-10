@@ -94,13 +94,14 @@ class HouseholdCSVService
         $uploadedFile->move($dir_var);
 
         $headers = $this->container->get('beneficiary.household_export_csv_service')->getHeaders($countryIso3);
-        $headers = reset($headers);
-        $headers = array_keys($headers);
-        $headers = array_filter($headers, 'trim');    // some header cells are empty (due to help messages). We need to strip them.
+        $header = reset($headers);
+        $header = array_keys($header);
+        $header = array_filter($header, 'trim');    // some header cells are empty (due to help messages). We need to strip them.
 
+        $headerResult = [];
         $generator = new ExcelColumnsGenerator();
-        foreach ($headers as $item) {
-            $header[$generator->getNext()] = $item;
+        foreach ($header as $item) {
+            $headerResult[$generator->getNext()] = $item;
         }
 
         $dataRange = sprintf('A%s:%s%s',            // for example: A2:AB1000
@@ -111,7 +112,7 @@ class HouseholdCSVService
         $data = $worksheet->rangeToArray($dataRange, null, false, true, true);
 
         return [
-            'header' => $header,
+            'header' => $headerResult,
             'data' => array_values($data),
             'mapping' => $this->CSVToArrayMapper->getMappingCSVOfCountry($countryIso3),
             'tmpFile' => $uploadedFile->getFilename(),
