@@ -56,6 +56,15 @@ class Voucher implements ExportableInterface
      */
     private $voucherPurchase;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="redeemed_at", type="datetime", nullable=true)
+     * @JMS_Type("DateTime<'d-m-Y'>")
+     * @Groups({"FullVoucher", "ValidatedDistribution"})
+     */
+    private $redeemedAt;
+
     public function __construct(string $code, int $value, Booklet $booklet)
     {
         $this->code = $code;
@@ -72,6 +81,8 @@ class Voucher implements ExportableInterface
     {
         return $this->id;
     }
+
+
 
     /**
      * Set value.
@@ -95,6 +106,16 @@ class Voucher implements ExportableInterface
     public function getValue()
     {
         return $this->value;
+    }
+
+    public function redeem(?\DateTimeInterface $when = null) : void
+    {
+        $this->redeemedAt = $when ?? new \DateTime('now');
+    }
+
+    public function getRedeemedAt(): \DateTimeInterface
+    {
+        return $this->redeemedAt;
     }
 
     /**

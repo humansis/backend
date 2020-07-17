@@ -5,6 +5,7 @@ use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
+use VoucherBundle\Entity\VoucherPurchase;
 
 class VoucherControllerTest extends BMSServiceTestCase
 {
@@ -157,6 +158,59 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->assertTrue($voucherSearch->getVoucherPurchase()->getCreatedAt() !== null);
 
         return $newVoucherReceived;
+    }
+
+    public function testRedeemVoucher() : void
+    {
+        $booklet = $this->em->getRepository(Booklet::class)->findOneBy([]);
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([]);
+        $voucher = new Voucher(uniqid(), 1000, $booklet);
+        $voucher->setVoucherPurchase(VoucherPurchase::create($vendor, new \DateTime('now')));
+        $this->em->persist($voucher->getVoucherPurchase());
+        $this->em->persist($voucher);
+        $this->em->flush();
+
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $body = [
+            'id' => $voucher->getId(),
+        ];
+
+        // Using a fake header or else a country is gonna be put in the body
+        $crawler = $this->request('POST', '/api/wsse/vouchers/redeem', $body);
+        $newVoucherReceived = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
+        /** @var Voucher $voucherSearch */
+        $voucherSearch = $this->em->getRepository(Voucher::class)->find($newVoucherReceived['id']);
+        $this->assertTrue($voucherSearch->getRedeemedAt() !== null, "Voucher has no redeem date");
+    }
+
+    public function testRedeemInvalidVoucher() : void
+    {
+        $booklet = $this->em->getRepository(Booklet::class)->findOneBy([]);
+        $voucher = new Voucher(uniqid(), 1000, $booklet);
+        $this->em->persist($voucher);
+        $this->em->flush();
+
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $body = [
+            'id' => $voucher->getId(),
+        ];
+
+        // Using a fake header or else a country is gonna be put in the body
+        $crawler = $this->request('POST', '/api/wsse/vouchers/redeem', $body);
+        $newVoucherReceived = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertFalse($this->client->getResponse()->isSuccessful(), "Request doesn't failed but it should: ".$this->client->getResponse()->getContent());
+        $this->assertFalse($this->client->getResponse()->isServerError(), "Request should fail but it ends with server error: ".$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isClientError(), "Request should fail with client error: ".$this->client->getResponse()->getContent());
     }
 
     /**

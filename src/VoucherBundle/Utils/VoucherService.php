@@ -102,6 +102,16 @@ class VoucherService
         return $this->em->getRepository(Voucher::class)->findAll();
     }
 
+    public function redeem(Voucher $voucher): void
+    {
+        if ($voucher->getVoucherPurchase() == null) {
+            throw new \InvalidArgumentException("Reddemed voucher must be used.");
+        }
+        $voucher->redeem();
+        $this->em->persist($voucher);
+        $this->em->flush();
+    }
+
     /**
      * Deletes a voucher from the database
      *
