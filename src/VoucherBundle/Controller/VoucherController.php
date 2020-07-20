@@ -22,6 +22,7 @@ use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
 use VoucherBundle\Entity\VoucherPurchaseRecord;
 use VoucherBundle\InputType\VoucherPurchase;
+use VoucherBundle\Repository\VoucherRepository;
 
 /**
  * Class VoucherController
@@ -312,6 +313,54 @@ class VoucherController extends Controller
         } catch (EntityNotFoundException $ex) {
             return new Response($ex->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    /**
+     * When a voucher is returned to humanitarian
+     *
+     * @Rest\Post("/vouchers/redeem", name="redeem_vouchers")
+     * @ Security("is_granted('ROLE_VENDOR')")
+     * @SWG\Tag(name="Vouchers")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request           $request
+     *
+     * @return Response
+     */
+    public function redeemAction(Request $request)
+    {
+        $voucherRepository = $this->getDoctrine()->getRepository(Voucher::class);
+
+        $voucherData = $request->request->all();
+        unset($voucherData['__country']);
+
+        if (!isset($voucherData['id'])) {
+            return new Response("Missing parameter 'id'", Response::HTTP_BAD_REQUEST);
+        }
+
+        /** @var Voucher|null $voucher */
+        $voucher = $voucherRepository->find($voucherData['id']);
+
+        if (!$voucher) {
+            return new Response("There is no voucher with id '{$voucherData['id']}'", Response::HTTP_BAD_REQUEST);
+        }
+        try {
+            $this->get('voucher.voucher_service')->redeem($voucher);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $json = $this->get('jms_serializer')->serialize($voucher, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        return new Response($json);
     }
 
     /**

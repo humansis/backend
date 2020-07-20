@@ -49,16 +49,13 @@ class VoucherService
         try {
             $currentId = array_key_exists('lastId', $vouchersData) ? $vouchersData['lastId'] + 1 : $this->getLastId() + 1;
             for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
-                $voucher = new Voucher();
+
                 $voucherData = $vouchersData;
                 $voucherData['value'] = $vouchersData['values'][$x];
                 $booklet = $voucherData['booklet'];
                 $code = $this->generateCode($voucherData, $currentId);
 
-                $voucher->setCode($code)
-                        ->setBooklet($booklet)
-                        ->setValue($voucherData['value']);
-
+                $voucher = new Voucher($code, $voucherData['value'], $booklet);
                 $currentId++;
 
                 $this->em->persist($voucher);
@@ -103,6 +100,16 @@ class VoucherService
     public function findAll()
     {
         return $this->em->getRepository(Voucher::class)->findAll();
+    }
+
+    public function redeem(Voucher $voucher): void
+    {
+        if ($voucher->getVoucherPurchase() == null) {
+            throw new \InvalidArgumentException("Reddemed voucher must be used.");
+        }
+        $voucher->redeem();
+        $this->em->persist($voucher);
+        $this->em->flush();
     }
 
     /**
