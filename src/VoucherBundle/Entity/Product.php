@@ -35,9 +35,9 @@ class Product implements ExportableInterface
     private $name;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(name="unit", type="string", length=255)
+     * @ORM\Column(name="unit", type="string", length=255, nullable=true)
      * @Groups({"FullProduct"})
      */
     private $unit;
@@ -127,11 +127,11 @@ class Product implements ExportableInterface
     /**
      * Set unit.
      *
-     * @param string $unit
+     * @param string|null $unit
      *
      * @return Product
      */
-    public function setUnit($unit)
+    public function setUnit(?string $unit)
     {
         $this->unit = $unit;
 
@@ -141,9 +141,9 @@ class Product implements ExportableInterface
     /**
      * Get unit.
      *
-     * @return string
+     * @return string|null
      */
-    public function getUnit()
+    public function getUnit(): ?string
     {
         return $this->unit;
     }
