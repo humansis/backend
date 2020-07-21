@@ -43,6 +43,39 @@ class ProductControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $product);
         $this->assertArrayHasKey('unit', $product);
 
+        $this->assertEquals($body['image'], $product['image']);
+        $this->assertEquals($body['name'], $product['name']);
+        $this->assertEquals($body['unit'], $product['unit']);
+
+        return $product;
+    }
+
+    public function testCreateProductWithoutUnit()
+    {
+        $body = [
+            "image" => 'image.png',
+            "name" => 'test',
+            "unit" => null
+        ];
+
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        $crawler = $this->request('PUT', '/api/wsse/products', $body);
+        $product = json_decode($this->client->getResponse()->getContent(), true);
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $this->assertArrayHasKey('image', $product);
+        $this->assertArrayHasKey('name', $product);
+        $this->assertArrayHasKey('unit', $product);
+
+        $this->assertEquals($body['image'], $product['image']);
+        $this->assertEquals($body['name'], $product['name']);
+        $this->assertNull($product['unit']);
+
         return $product;
     }
 
