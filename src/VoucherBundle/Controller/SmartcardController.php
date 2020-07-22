@@ -79,23 +79,24 @@ class SmartcardController extends Controller
      */
     public function register(Request $request): Response
     {
+        $serialNumber = strtoupper($request->get('serialNumber'));
+
+        /** @var Smartcard $smartcard */
+        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        if ($smartcard) {
+            $smartcard->setSuspicious(false);
+        } else {
+            $smartcard = new Smartcard($serialNumber, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
+            $smartcard->setState(Smartcard::STATE_ACTIVE);
+        }
+
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->getDoctrine()->getRepository(Beneficiary::class)->find($request->get('beneficiaryId'));
-        if (!$beneficiary) {
-            throw $this->createNotFoundException('Beneficiary does not exists.');
+        if ($beneficiary) {
+            $smartcard->setBeneficiary($beneficiary);
+        } else {
+            $smartcard->setSuspicious(true, '');
         }
-
-        $serialNumber = strtoupper($request->get('serialNumber'));
-        if (!preg_match('~^[A-F0-9]+$~', $serialNumber)) {
-            throw new BadRequestHttpException('Smartcards\' serial number is invalid.');
-        }
-
-        if ($this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber)) {
-            throw new BadRequestHttpException('Smartcard with this serial number is already exist.');
-        }
-
-        $smartcard = new Smartcard($serialNumber, $beneficiary, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
-        $smartcard->setState(Smartcard::STATE_ACTIVE);
 
         $this->getDoctrine()->getManager()->persist($smartcard);
         $this->getDoctrine()->getManager()->flush();
@@ -267,11 +268,10 @@ class SmartcardController extends Controller
     }
 
     /**
-     * Put money to smartcard.
+     * Put money to smartcard. If smartcard does not exists, it will be created.
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}/deposit")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
-     * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
      *
@@ -314,18 +314,23 @@ class SmartcardController extends Controller
      *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
      * )
      *
-     * @SWG\Response(response=404, description="Smartcard does not exists.")
-     * @SWG\Response(response=400, description="Smartcard is blocked.")
-     *
-     * @param Smartcard $smartcard
-     * @param Request   $request
+     * @param Request $request
      *
      * @return Response
      */
-    public function deposit(Smartcard $smartcard, Request $request): Response
+    public function deposit(Request $request): Response
     {
+        $serialNumber = $request->get('serialNumber');
+
+        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        if (!$smartcard) {
+            $smartcard = new Smartcard($serialNumber, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
+            $smartcard->setState(Smartcard::STATE_ACTIVE);
+            $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
+        }
+
         if (!$smartcard->isActive()) {
-            throw new BadRequestHttpException('Smartcard is blocked.');
+            $smartcard->setSuspicious(true, 'Smartcard is in '.$smartcard->getState().' state');
         }
 
         $distribution = $this->getDoctrine()->getRepository(DistributionData::class)->find($request->request->getInt('distributionId'));
@@ -357,11 +362,10 @@ class SmartcardController extends Controller
     }
 
     /**
-     * Purchase goods from smartcard.
+     * Purchase goods from smartcard. If smartcard does not exists, it will be created.
      *
      * @Rest\Patch("/vendor-app/v1/smartcards/{serialNumber}/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
-     * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Vendor App")
@@ -387,30 +391,35 @@ class SmartcardController extends Controller
      *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
      * )
      *
-     * @SWG\Response(response=404, description="Smartcard does not exists.")
      * @SWG\Response(response=400, description="Product does not exists.")
      *
-     * @param Smartcard $smartcard
-     * @param Request   $request
+     * @param Request $request
      *
      * @return Response
      */
-    public function purchase(Smartcard $smartcard, Request $request): Response
+    public function purchase(Request $request): Response
     {
-        $x = $request->getContent();
         /** @var SmartcardPurchaseInput $data */
-        $data = $this->get('serializer')->deserialize($x, SmartcardPurchaseInput::class, 'json');
+        $data = $this->get('serializer')->deserialize($request->getContent(), SmartcardPurchaseInput::class, 'json');
 
         $errors = $this->get('validator')->validate($data);
         if (count($errors) > 0) {
-            return new Response((string) $errors, Response::HTTP_BAD_REQUEST);
+            throw new \RuntimeException((string) $errors);
         }
 
-        try {
-            $this->get('voucher.purchase_service')->purchaseSmartcard($smartcard, $data);
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        $serialNumber = $request->get('serialNumber');
+
+        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        if (!$smartcard) {
+            $smartcard = new Smartcard($serialNumber, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
+            $smartcard->setState(Smartcard::STATE_ACTIVE);
+            $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
+
+            $this->getDoctrine()->getManager()->persist($smartcard);
+            $this->getDoctrine()->getManager()->flush();
         }
+
+        $this->get('voucher.purchase_service')->purchaseSmartcard($smartcard, $data);
 
         $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
 

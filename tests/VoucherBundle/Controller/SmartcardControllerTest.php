@@ -4,7 +4,6 @@ namespace VoucherBundle\Tests\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
@@ -25,8 +24,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
         if (!$smartcard) {
-            $beneficiary = $this->em->getRepository(Beneficiary::class)->find(1);
-            $smartcard = new Smartcard('1234ABC', $beneficiary, new \DateTime('now'));
+            $smartcard = new Smartcard('1234ABC', new \DateTime('now'));
+            $smartcard->setBeneficiary($this->em->getRepository(Beneficiary::class)->find(1));
             $smartcard->setState(Smartcard::STATE_ACTIVE);
             $this->em->persist($smartcard);
             $this->em->flush();
@@ -78,7 +77,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'createdAt' => '2020-02-02T12:00:00Z',
         ]);
 
-        $this->assertTrue($this->client->getResponse()->isClientError(), 'Request should failed: '.$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request should failed: '.$this->client->getResponse()->getContent());
     }
 
     public function testDepositToSmartcard()
@@ -182,6 +181,34 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->client->request('PATCH', '/api/wsse/vendor-app/v1/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+    }
+
+    public function testPurchaseShouldBeAllowedForNonexistentSmartcard()
+    {
+        $nonexistentSmarcard = '0123456789';
+
+        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $content = json_encode([
+            'products' => [
+                [
+                    'id' => 1, // @todo replace for fixture
+                    'value' => 400,
+                    'quantity' => 1.2,
+                ],
+            ],
+            'vendorId' => 1,
+            'createdAt' => '2020-02-02T12:00:00Z',
+        ]);
+
+        $this->client->request('PATCH', '/api/wsse/vendor-app/v1/smartcards/'.$nonexistentSmarcard.'/purchase', [], [], $headers, $content);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        /** @var Smartcard $smartcard */
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($nonexistentSmarcard);
+
+        $this->assertNotNull($smartcard, 'Smartcard must be registered to system');
+        $this->assertTrue($smartcard->isSuspicious(), 'Smartcard registered by purchase must be suspected');
     }
 
     public function testChangeStateToInactive()
