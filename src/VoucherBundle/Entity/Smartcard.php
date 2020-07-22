@@ -45,7 +45,6 @@ class Smartcard
      * @var Beneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="smartcards")
-     * @ORM\JoinColumn(nullable=false)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      * @Serializer\Groups({"SmartcardOverview", "FullSmartcard"})
      */
@@ -85,10 +84,27 @@ class Smartcard
      */
     private $createdAt;
 
-    public function __construct(string $serialNumber, Beneficiary $beneficiary, \DateTimeInterface $createdAt)
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="suspicious", type="boolean", nullable=false)
+     */
+    private $suspicious = false;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="suspicious_reason", type="string", nullable=true)
+     */
+    private $suspiciousReason;
+
+    public function __construct(string $serialNumber, \DateTimeInterface $createdAt)
     {
-        $this->serialNumber = $serialNumber;
-        $this->beneficiary = $beneficiary;
+        if (!self::check($serialNumber)) {
+            throw new \InvalidArgumentException('Smartcard serial number '.$serialNumber.'is not valid');
+        }
+
+        $this->serialNumber = strtoupper($serialNumber);
         $this->createdAt = $createdAt;
         $this->deposites = new ArrayCollection();
         $this->purchases = new ArrayCollection();
@@ -104,6 +120,11 @@ class Smartcard
             self::STATE_INACTIVE,
             self::STATE_CANCELLED,
         ];
+    }
+
+    public static function check(string $serialNumber): bool
+    {
+        return preg_match('~^[A-F0-9]+$~i', $serialNumber);
     }
 
     /**
@@ -123,7 +144,19 @@ class Smartcard
     }
 
     /**
-     * @return mixed
+     * @param Beneficiary $beneficiary
+     *
+     * @return self
+     */
+    public function setBeneficiary(Beneficiary $beneficiary): self
+    {
+        $this->beneficiary = $beneficiary;
+
+        return $this;
+    }
+
+    /**
+     * @return Beneficiary|null
      */
     public function getBeneficiary()
     {
@@ -164,6 +197,28 @@ class Smartcard
         return $this;
     }
 
+    public function isSuspicious(): bool
+    {
+        return $this->suspicious;
+    }
+
+    public function setSuspicious(bool $suspicious, ?string $reason = null): self
+    {
+        if (true === $suspicious && true === $this->suspicious) {
+            $reason = trim($this->suspiciousReason.', '.$reason);
+        }
+
+        $this->suspicious = $suspicious;
+        $this->suspiciousReason = $reason;
+
+        return $this;
+    }
+
+    public function getSuspiciousReason(): ?string
+    {
+        return $this->suspiciousReason;
+    }
+
     /**
      * @return float
      *
@@ -195,6 +250,7 @@ class Smartcard
         if (!$this->deposites->contains($deposit)) {
             $this->deposites->add($deposit);
         }
+
         return $this;
     }
 
