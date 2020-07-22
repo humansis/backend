@@ -90,10 +90,10 @@ class APIImportService
             $provider = $this->getApiProviderForCountry($countryISO3, strtolower($providerKey[2]));
             $providerName = $providerKey[2] . ' API';
 
-            /** @var OrganizationServices $organizationService */
+            /** @var OrganizationServices|null $organizationService */
             $organizationService = $this->em->getRepository(OrganizationServices::class)->findOneByService($providerName);
 
-            if ($organizationService->getEnabled()) {
+            if ($organizationService && $organizationService->getEnabled()) {
                 /** @var object $api */
                 $api = (object) array();
                 $api->APIName = $providerKey[2];
