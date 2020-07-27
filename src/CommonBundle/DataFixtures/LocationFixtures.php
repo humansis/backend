@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Kernel;
 class LocationFixtures extends Fixture implements FixtureGroupInterface
 {
     // maximum imported lines per file (due to performace on dev env)
-    const LIMIT = 100;
+    const LIMIT = 10;
 
     // array keys for each level of adm
     const ADM_NAME_0 = 0;

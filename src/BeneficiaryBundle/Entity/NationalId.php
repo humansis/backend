@@ -62,11 +62,11 @@ class NationalId
     private $idType;
 
     /**
-     * @var Beneficiary
+     * @var Person
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="nationalIds")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Person", inversedBy="nationalIds")
      */
-    private $beneficiary;
+    private $person;
 
     /**
      * Get id.
@@ -129,13 +129,13 @@ class NationalId
     /**
      * Set beneficiary.
      *
-     * @param \BeneficiaryBundle\Entity\Beneficiary|null $beneficiary
+     * @param \BeneficiaryBundle\Entity\Person|null $person
      *
      * @return NationalId
      */
-    public function setBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary = null)
+    public function setPerson(\BeneficiaryBundle\Entity\Person $person = null)
     {
-        $this->beneficiary = $beneficiary;
+        $this->person = $person;
 
         return $this;
     }
@@ -143,10 +143,10 @@ class NationalId
     /**
      * Get beneficiary.
      *
-     * @return \BeneficiaryBundle\Entity\Beneficiary|null
+     * @return \BeneficiaryBundle\Entity\Person|null
      */
-    public function getBeneficiary()
+    public function getPerson()
     {
-        return $this->beneficiary;
+        return $this->person;
     }
 }

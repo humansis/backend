@@ -452,7 +452,7 @@ class DistributionCSVService
                 }
             }
             
-            $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($toUpdate);
+            $phones = $this->em->getRepository(Phone::class)->findByPerson($toUpdate->getPerson());
             foreach ($phones as $phone) {
                 $this->em->remove($phone);
             }
@@ -465,12 +465,12 @@ class DistributionCSVService
                     $phone->setType($beneficiaryToUpdate['type phone ' . $phoneIndex]);
                     $phone->setPrefix($beneficiaryToUpdate['prefix phone ' . $phoneIndex]);
                     $phone->setProxy($beneficiaryToUpdate['proxy phone ' . $phoneIndex] === 1 ? true : false);
-                    $phone->setBeneficiary($toUpdate);
+                    $phone->setPerson($toUpdate);
                     $toUpdate->addPhone($phone);
                 }
             }
 
-            $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($toUpdate);
+            $nationalIds = $this->em->getRepository(NationalId::class)->findByPerson($toUpdate->getPerson());
             foreach ($nationalIds as $nationalId) {
                 $this->em->remove($nationalId);
             }
@@ -480,7 +480,7 @@ class DistributionCSVService
                 $newNationalId = new NationalId();
                 $newNationalId->setIdNumber($beneficiaryToUpdate['ID Number']);
                 $newNationalId->setIdType($beneficiaryToUpdate['ID Type']);
-                $newNationalId->setBeneficiary($toUpdate);
+                $newNationalId->setPerson($toUpdate);
                 $toUpdate->addNationalId($newNationalId);
             }
 
