@@ -401,8 +401,8 @@ class BMSServiceTestCase extends KernelTestCase
             if (!empty($beneficiaries)) {
                 /** @var Beneficiary $beneficiary */
                 foreach ($beneficiaries as $beneficiary) {
-                    $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
-                    $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+                    $phones = $this->em->getRepository(Phone::class)->findByPerson($beneficiary->getPerson());
+                    $nationalIds = $this->em->getRepository(NationalId::class)->findByPerson($beneficiary->getPerson());
                     $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
                     if ($profile instanceof Profile) {
                         $this->em->remove($profile);
