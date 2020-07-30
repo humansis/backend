@@ -15,7 +15,7 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use BeneficiaryBundle\Entity\Camp;
-use JMS\Serializer\SerializationContext;
+
 
 /**
  * Class LocationController
@@ -54,11 +54,11 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $adm1 = $locationService->getAllAdm1($filters['__country']);
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $adm1,
                 'json',
-                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+                ['groups' => ["SmallHousehold"]]
             );
         return new Response($json);
     }
@@ -86,11 +86,11 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $adm2 = $locationService->getAllAdm2($filters['adm1']);
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $adm2,
                 'json',
-                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+                ['groups' => ["SmallHousehold"]]
             );
         return new Response($json);
     }
@@ -118,11 +118,11 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $adm3 = $locationService->getAllAdm3($filters['adm2']);
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $adm3,
                 'json',
-                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+                ['groups' => ["SmallHousehold"]]
             );
         return new Response($json);
     }
@@ -150,11 +150,11 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $adm4 = $locationService->getAllAdm4($filters['adm3']);
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $adm4,
                 'json',
-                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+                ['groups' => ["SmallHousehold"]]
             );
         return new Response($json);
     }
@@ -182,11 +182,11 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $camps = $locationService->getAllCamps($filters);
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $camps,
                 'json',
-                SerializationContext::create()->setGroups("FullCamp")->setSerializeNull(true)
+                ['groups' => ["FullCamp"]]
             );
         return new Response($json);
     }
@@ -212,11 +212,11 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $location = $locationService->getCodeOfUpcomingDistribution($filters['__country']);
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $location,
                 'json',
-                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+                ['groups' => ["SmallHousehold"]]
             );
         return new Response($json);
     }

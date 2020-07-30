@@ -6,7 +6,7 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 use ProjectBundle\Entity\Project;
 
@@ -29,7 +29,7 @@ class Booklet implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
      */
     private $id;
 
@@ -37,7 +37,7 @@ class Booklet implements ExportableInterface
      * @var Project|null
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
-     * @Groups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
      */
     private $project;
 
@@ -45,7 +45,7 @@ class Booklet implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
-     * @Groups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
      */
     private $code;
 
@@ -53,7 +53,7 @@ class Booklet implements ExportableInterface
      * @var int
      *
      * @ORM\Column(name="number_vouchers", type="integer")
-     * @Groups({"FullBooklet"})
+     * @SymfonyGroups({"FullBooklet"})
      */
     private $numberVouchers;
 
@@ -61,7 +61,7 @@ class Booklet implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="currency", type="string", length=255)
-     * @Groups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
      */
     private $currency;
 
@@ -69,7 +69,7 @@ class Booklet implements ExportableInterface
      * @var int|null
      *
      * @ORM\Column(name="status", type="integer", nullable=true)
-     * @Groups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
      */
     private $status;
 
@@ -77,19 +77,19 @@ class Booklet implements ExportableInterface
      * @var string|null
      *
      * @ORM\Column(name="password", type="string", length=255, nullable=true)
-     * @Groups({"FullBooklet"})
+     * @SymfonyGroups({"FullBooklet"})
      */
     public $password;
 
     /**
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", orphanRemoval=true)
-     * @Groups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
      */
     private $vouchers;
 
     /**
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="booklets")
-     * @Groups({"FullBooklet"})
+     * @SymfonyGroups({"FullBooklet"})
      */
     private $distribution_beneficiary;
 
@@ -97,7 +97,7 @@ class Booklet implements ExportableInterface
      * @var string|null
      *
      * @ORM\Column(name="country_iso3", type="string", length=45)
-     * @Groups({"FullBooklet"})
+     * @SymfonyGroups({"FullBooklet"})
      */
     private $countryISO3;
 

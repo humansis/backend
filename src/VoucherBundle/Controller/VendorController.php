@@ -2,8 +2,8 @@
 
 namespace VoucherBundle\Controller;
 
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
+
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -61,7 +61,7 @@ class VendorController extends Controller
     public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
+        $serializer = $this->get('serializer');
 
         $vendorData = $request->request->all();
 
@@ -74,7 +74,7 @@ class VendorController extends Controller
         $vendorJson = $serializer->serialize(
             $return,
             'json',
-            SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true)
+            ['groups' => ['FullVendor']]
         );
         return new Response($vendorJson);
     }
@@ -112,7 +112,7 @@ class VendorController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($vendors, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($vendors, 'json', ['groups' => ['FullVendor']]);
         return new Response($json);
     }
 
@@ -143,7 +143,7 @@ class VendorController extends Controller
      */
     public function getSingleAction(Vendor $vendor)
     {
-        $json = $this->get('jms_serializer')->serialize($vendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($vendor, 'json', ['groups' => ['FullVendor']]);
 
         return new Response($json);
     }
@@ -222,7 +222,7 @@ class VendorController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($newVendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($newVendor, 'json', ['groups' => ['FullVendor']]);
         return new Response($json);
     }
 
@@ -257,7 +257,7 @@ class VendorController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($archivedVendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($archivedVendor, 'json', ['groups' => ['FullVendor']]);
         return new Response($json);
     }
 
@@ -347,9 +347,9 @@ class VendorController extends Controller
         }
         
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
+        $serializer = $this->get('serializer');
         
-        $vendorJson = $serializer->serialize($vendor, 'json', SerializationContext::create()->setGroups(['FullVendor'])->setSerializeNull(true));
+        $vendorJson = $serializer->serialize($vendor, 'json', ['groups' => ['FullVendor']]);
         return new Response($vendorJson);
     }
 

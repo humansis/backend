@@ -7,7 +7,7 @@ use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use dateTime;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Donor;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\Sector;

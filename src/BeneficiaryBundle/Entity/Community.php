@@ -4,7 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Community
@@ -27,7 +27,7 @@ class Community
      * @var string
      *
      * @ORM\Column(name="contact_name", type="string", length=255, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity"})
+     * @SymfonyGroups({"FullBeneficiary", "FullCommunity"})
      */
     private $contactName;
 
@@ -35,7 +35,7 @@ class Community
      * @var string
      *
      * @ORM\Column(name="contact_family_name", type="string", length=255, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity"})
+     * @SymfonyGroups({"FullBeneficiary", "FullCommunity"})
      */
     private $contactFamilyName;
 
@@ -43,7 +43,7 @@ class Community
      * @var string
      *
      * @ORM\Column(name="phone_number", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBeneficiary", "FullCommunity", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $phoneNumber;
 
@@ -51,7 +51,7 @@ class Community
      * @var string
      *
      * @ORM\Column(name="phone_prefix", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBeneficiary", "FullCommunity", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $phonePrefix;
 
@@ -59,13 +59,13 @@ class Community
      * @var NationalId
      *
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\NationalId", cascade={"persist", "remove"})
-     * @Groups({"FullInstitution", "FullBeneficiary", "FullCommunity", "FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullCommunity", "FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $nationalId;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
-     * @Groups({"FullBeneficiary", "FullCommunity"})
+     * @SymfonyGroups({"FullBeneficiary", "FullCommunity"})
      */
     private $address;
 
@@ -73,7 +73,7 @@ class Community
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity"})
+     * @SymfonyGroups({"FullBeneficiary", "FullCommunity"})
      */
     private $latitude;
 
@@ -81,7 +81,7 @@ class Community
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity"})
+     * @SymfonyGroups({"FullBeneficiary", "FullCommunity"})
      */
     private $longitude;
 

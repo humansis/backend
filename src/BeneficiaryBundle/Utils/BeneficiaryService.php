@@ -11,7 +11,7 @@ use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use PhpOption\Tests\PhpOptionRepo;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;

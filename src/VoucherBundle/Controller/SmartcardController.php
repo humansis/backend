@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
+use VoucherBundle\Mapper\SmartcardMapper;
 
 /**
  * @SWG\Parameter(
@@ -100,9 +101,8 @@ class SmartcardController extends Controller
         $this->getDoctrine()->getManager()->persist($smartcard);
         $this->getDoctrine()->getManager()->flush();
 
-        $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
-
-        return new Response($json);
+        $mapper = $this->get(SmartcardMapper::class);
+        return $this->json($mapper->toFullArray($smartcard));
     }
 
     /**

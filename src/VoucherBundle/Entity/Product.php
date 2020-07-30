@@ -5,7 +5,7 @@ namespace VoucherBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 
 /**
@@ -22,7 +22,7 @@ class Product implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullProduct", "ValidatedDistribution", "FullVoucher"})
+     * @SymfonyGroups({"FullProduct", "ValidatedDistribution", "FullVoucher"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Product implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"FullProduct", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullProduct", "ValidatedDistribution"})
      */
     private $name;
 
@@ -38,7 +38,7 @@ class Product implements ExportableInterface
      * @var string|null
      *
      * @ORM\Column(name="unit", type="string", length=255, nullable=true)
-     * @Groups({"FullProduct"})
+     * @SymfonyGroups({"FullProduct"})
      */
     private $unit;
 
@@ -46,7 +46,7 @@ class Product implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="image", type="string", length=255)
-     * @Groups({"FullProduct", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullProduct", "ValidatedDistribution"})
      */
     private $image;
 
@@ -54,7 +54,7 @@ class Product implements ExportableInterface
      * @var bool
      *
      * @ORM\Column(name="archived", type="boolean")
-     * @Groups({"FullProduct"})
+     * @SymfonyGroups({"FullProduct"})
      */
     private $archived;
 
@@ -62,7 +62,7 @@ class Product implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="countryISO3", type="string", length=3)
-     * @Groups({"FullProduct"})
+     * @SymfonyGroups({"FullProduct"})
      */
     private $countryISO3;
 

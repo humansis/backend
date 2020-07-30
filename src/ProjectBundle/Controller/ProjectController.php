@@ -2,7 +2,7 @@
 
 namespace ProjectBundle\Controller;
 
-use JMS\Serializer\SerializationContext;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,8 +49,8 @@ class ProjectController extends Controller
     {
         $user = $this->getUser();
         $projects = $this->get('project.project_service')->findAll($request->request->get('__country'), $user);
-        $json = $this->get('jms_serializer')
-            ->serialize($projects, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
+        $json = $this->get('serializer')
+            ->serialize($projects, 'json', ['groups' => ['FullProject']]);
 
         return new Response($json, Response::HTTP_OK);
     }
@@ -102,11 +102,11 @@ class ProjectController extends Controller
      */
     public function getOneAction(Project $project)
     {
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $project,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(['FullProject'])
+                ['groups' => ['FullProject']]
             );
 
         return new Response($json);
@@ -149,8 +149,8 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('jms_serializer')
-            ->serialize($project, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
+        $json = $this->get('serializer')
+            ->serialize($project, 'json', ['groups' => ['FullProject']]);
         return new Response($json, Response::HTTP_OK);
     }
 
@@ -192,8 +192,8 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('jms_serializer')
-            ->serialize($project, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
+        $json = $this->get('serializer')
+            ->serialize($project, 'json', ['groups' => ['FullProject']]);
         return new Response($json, Response::HTTP_OK);
     }
 

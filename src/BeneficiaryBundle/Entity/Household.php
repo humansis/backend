@@ -4,8 +4,8 @@ namespace BeneficiaryBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Type as JMS_Type;
-use JMS\Serializer\Annotation\Groups;
+// use Symfony\Component\Serializer\Annotation\ as JMS_Type;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Household
@@ -92,7 +92,7 @@ class Household
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $id;
 
@@ -100,7 +100,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="livelihood", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $livelihood;
 
@@ -108,7 +108,7 @@ class Household
      * @var int[]
      *
      * @ORM\Column(name="assets", type="array", nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $assets;
 
@@ -116,7 +116,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="shelter_status", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $shelterStatus;
 
@@ -124,7 +124,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $notes;
 
@@ -132,7 +132,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $latitude;
 
@@ -140,7 +140,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $longitude;
 
@@ -148,7 +148,7 @@ class Household
      * @var CountrySpecificAnswer
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="household", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold"})
+     * @SymfonyGroups({"FullHousehold"})
      */
     private $countrySpecificAnswers;
 
@@ -156,13 +156,13 @@ class Household
      * @var Beneficiary
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $beneficiaries;
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households")
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $projects;
 
@@ -170,7 +170,7 @@ class Household
      * @var boolean
      *
      * @ORM\Column(type="boolean", options={"default" : 0})
-     * @Groups({"Activity"})
+     * @SymfonyGroups({"Activity"})
      */
     private $archived = 0;
 
@@ -178,7 +178,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $incomeLevel;
 
@@ -186,7 +186,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="foodConsumptionScore", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $foodConsumptionScore;
 
@@ -194,13 +194,13 @@ class Household
      * @var int
      *
      * @ORM\Column(name="copingStrategiesIndex", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $copingStrategiesIndex;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $householdLocations;
 
@@ -208,7 +208,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="debt_level", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $debtLevel;
 
@@ -216,7 +216,7 @@ class Household
      * @var int[]
      *
      * @ORM\Column(name="support_received_types", type="array", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $supportReceivedTypes;
 
@@ -224,8 +224,8 @@ class Household
      * @var \DateTimeInterface
      *
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
-     * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * @ JMS_Type("DateTime<'d-m-Y'>")
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $supportDateReceived;
 

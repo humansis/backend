@@ -3,8 +3,8 @@
 namespace VoucherBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\Type as JMS_Type;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * Smartcard purchase record.
@@ -38,7 +38,7 @@ class SmartcardPurchaseRecord
      * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Product")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @Groups({"FullSmartcard"})
+     * @SymfonyGroups({"FullSmartcard"})
      */
     private $product;
 
@@ -46,7 +46,7 @@ class SmartcardPurchaseRecord
      * @var mixed
      *
      * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
-     * @Groups({"FullSmartcard"})
+     * @SymfonyGroups({"FullSmartcard"})
      */
     private $value;
 
@@ -54,7 +54,7 @@ class SmartcardPurchaseRecord
      * @var mixed
      *
      * @ORM\Column(name="quantity", type="decimal", precision=10, scale=2, nullable=true)
-     * @Groups({"FullSmartcard"})
+     * @SymfonyGroups({"FullSmartcard"})
      */
     private $quantity;
 

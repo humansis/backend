@@ -34,7 +34,7 @@ class DistributionControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("jms_serializer");
+        $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
@@ -150,6 +150,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/random?size=2');
         $randomBenef = json_decode($this->client->getResponse()->getContent(), true);
 
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
         // Check if the second step succeed
         $this->assertTrue(gettype($randomBenef[0]) == 'array');
         $this->assertTrue(gettype($randomBenef[1]) == 'array');
@@ -172,6 +174,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] .'/validate', array());
         $validate = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         // Check if the second step succeed
         $this->assertArrayHasKey('id', $validate);

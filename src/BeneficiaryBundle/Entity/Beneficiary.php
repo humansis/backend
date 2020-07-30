@@ -9,9 +9,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
-use JMS\Serializer\Annotation as Serializer;
-use JMS\Serializer\Annotation\Type as JMS_Type;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation as Serializer;
+//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use VoucherBundle\Entity\Smartcard;
@@ -30,14 +29,12 @@ class Beneficiary implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
      */
     private $id;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "FullBeneficiary"})
      */
     private $person;
 
@@ -45,7 +42,7 @@ class Beneficiary implements ExportableInterface
      * @var boolean
      *
      * @ORM\Column(name="status", type="boolean")
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold"})
      * @Assert\NotBlank(message="The status is required.")
      */
     private $status;
@@ -54,7 +51,7 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="residency_status", type="string", length=20)
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold", "FullBeneficiary"})
      * @Assert\Regex("/^(refugee|IDP|resident)$/i")
      */
     private $residencyStatus;
@@ -63,8 +60,8 @@ class Beneficiary implements ExportableInterface
      * @var DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
-     * @Groups({"FullHousehold", "FullBeneficiary"})
+     * @ JMS_Type("DateTime<'d-m-Y H:m:i'>")
+     * @SymfonyGroups({"FullHousehold", "FullBeneficiary"})
      */
     private $updatedOn;
 
@@ -79,17 +76,25 @@ class Beneficiary implements ExportableInterface
      * @var VulnerabilityCriterion
      *
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $vulnerabilityCriteria;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
-     * @Groups({"FullReceivers", "FullBeneficiary"})
+     * @SymfonyGroups({"FullReceivers", "FullBeneficiary"})
      *
      * @var DistributionBeneficiary $distributionBeneficiary
      */
     private $distributionBeneficiary;
+
+    /**
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
+     * @ SymfonyGroups({"FullReceivers", "FullBeneficiary"})
+     *
+     * @var DistributionBeneficiary[] $distributionBeneficiary
+     */
+    private $distributionBeneficiaries;
 
     /**
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Smartcard", mappedBy="beneficiary")
@@ -100,8 +105,7 @@ class Beneficiary implements ExportableInterface
 
     /**
      * @var string
-     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
-     * @Serializer\Accessor(getter="getSmartcard")
+     * @ SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $smartcard;
 
@@ -111,6 +115,7 @@ class Beneficiary implements ExportableInterface
     public function __construct()
     {
         $this->vulnerabilityCriteria = new ArrayCollection();
+        $this->distributionBeneficiaries = new ArrayCollection();
         $this->person = new Person();
         $this->smartcards = new ArrayCollection();
         $this->setUpdatedOn(new DateTime());
@@ -152,6 +157,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get enGivenName.
      * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return string
      */
     public function getEnGivenName(): string
@@ -176,6 +182,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get enFamilyName.
      * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return string
      */
     public function getEnFamilyName(): ?string
@@ -199,6 +206,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get localGivenName.
      * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return string
      */
     public function getLocalGivenName(): ?string
@@ -223,6 +231,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get localFamilyName.
      * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return string
      */
     public function getLocalFamilyName(): ?string
@@ -246,6 +255,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get gender.
      * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return int
      */
     public function getGender(): int
@@ -270,6 +280,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get dateOfBirth.
      * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return DateTime
      */
     public function getDateOfBirth(): ?\DateTimeInterface
@@ -352,6 +363,30 @@ class Beneficiary implements ExportableInterface
     }
 
     /**
+     * @return DistributionBeneficiary
+     */
+    public function getDistributionBeneficiary(): DistributionBeneficiary
+    {
+        return $this->distributionBeneficiaries->getIterator()->current();
+    }
+
+    /**
+     * @return DistributionBeneficiary[]|Collection
+     */
+    public function getDistributionBeneficiaries(): Collection
+    {
+        return $this->distributionBeneficiaries;
+    }
+
+    /**
+     * @param DistributionBeneficiary[]|Collection $distributionBeneficiaries
+     */
+    public function setDistributionBeneficiaries(array $distributionBeneficiaries): Collection
+    {
+        $this->distributionBeneficiaries = $distributionBeneficiaries;
+    }
+
+    /**
      * Get vulnerabilityCriterion.
      *
      * @return Collection
@@ -402,6 +437,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get phones.
      * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return Collection
      */
     public function getPhones(): Collection
@@ -466,6 +502,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get nationalIds.
      * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return Collection
      */
     public function getNationalIds(): Collection
@@ -533,6 +570,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get profile.
      * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return Profile|null
      */
     public function getProfile(): ?Profile
@@ -557,6 +595,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get referral.
      * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return Referral|null
      */
     public function getReferral(): ?Referral
@@ -823,6 +862,7 @@ class Beneficiary implements ExportableInterface
     }
 
     /**
+     * @SymfonyGroups({"FullHousehold"})
      * @return string
      */
     public function getSmartcard()

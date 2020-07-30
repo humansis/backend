@@ -7,8 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
-use JMS\Serializer\Annotation\Type as JMS_Type;
-use JMS\Serializer\Annotation\Groups;
+//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -26,8 +25,7 @@ class Person
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "Fullself", "SmartcardOverview", "FullSmartcard"})
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "Fullself", "SmartcardOverview", "FullSmartcard"})
      */
     private $id;
 
@@ -35,7 +33,7 @@ class Person
      * @var string|null
      *
      * @ORM\Column(name="enGivenName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "Fullself"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "Fullself"})
      */
     private $enGivenName;
 
@@ -43,7 +41,7 @@ class Person
      * @var string|null
      *
      * @ORM\Column(name="enFamilyName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
      */
     private $enFamilyName;
 
@@ -51,7 +49,7 @@ class Person
      * @var string|null
      *
      * @ORM\Column(name="localGivenName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "Fullself"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "Fullself"})
      * @Assert\NotBlank(message="The local given name is required.")
      */
     private $localGivenName;
@@ -60,7 +58,7 @@ class Person
      * @var string|null
      *
      * @ORM\Column(name="localFamilyName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
      * @Assert\NotBlank(message="The local family name is required.")
      */
     private $localFamilyName;
@@ -69,7 +67,7 @@ class Person
      * @var int|null
      *
      * @ORM\Column(name="gender", type="smallint", nullable=true)
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
      * @Assert\NotBlank(message="The gender is required.")
      */
     private $gender;
@@ -78,8 +76,8 @@ class Person
      * @var DateTime|null
      *
      * @ORM\Column(name="dateOfBirth", type="date", nullable=true)
-     * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
+     * @ JMS_Type("DateTime<'d-m-Y'>")
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
      * @Assert\NotBlank(message="The date of birth is required.")
      */
     private $dateOfBirth;
@@ -88,36 +86,36 @@ class Person
      * @var DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
-     * @Groups({"FullHousehold", "Fullself"})
+     * @ JMS_Type("DateTime<'d-m-Y H:m:i'>")
+     * @SymfonyGroups({"FullHousehold", "Fullself"})
      */
     private $updatedOn;
 
     /**
      * @var Profile|null
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "Fullself"})
+     * @SymfonyGroups({"FullHousehold", "Fullself"})
      */
     private $profile;
 
     /**
      * @var Phone[]|Collection
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="person", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
      */
     private $phones;
 
     /**
      * @var NationalId[]|Collection
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="person", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
      */
     private $nationalIds;
 
     /**
      * @var Referral|null
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Referral", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "Fullself"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "Fullself"})
      */
     private $referral;
 
@@ -265,11 +263,11 @@ class Person
     /**
      * Set dateOfBirth.
      *
-     * @param \DateTimeInterface $dateOfBirth
+     * @param \DateTimeInterface|null $dateOfBirth
      *
      * @return self
      */
-    public function setDateOfBirth(\DateTimeInterface $dateOfBirth)
+    public function setDateOfBirth(?\DateTimeInterface $dateOfBirth)
     {
         $this->dateOfBirth = $dateOfBirth;
 
@@ -593,113 +591,113 @@ class Person
     //
     //     return $finalArray;
     // }
-
-    public function getCommonselfExportFields()
-    {
-        $gender = '';
-        if ($this->getGender() == 0) {
-            $gender = 'Female';
-        } else {
-            $gender = 'Male';
-        }
-
-        return [
-            "Local Given Name" => $this->getLocalGivenName(),
-            "Local Family Name" => $this->getLocalFamilyName(),
-            "English Given Name" => $this->getEnGivenName(),
-            "English Family Name" => $this->getEnFamilyName(),
-            "Gender" => $gender,
-            "Date Of Birth" => $this->getDateOfBirth()->format('d-m-Y'),
-        ];
-    }
-
-    public function getCommonHouseholdExportFields()
-    {
-
-        $householdLocations = $this->getHousehold()->getHouseholdLocations();
-        $currentHouseholdLocation = null;
-        foreach ($householdLocations as $householdLocation) {
-            if ($householdLocation->getLocationGroup() === HouseholdLocation::LOCATION_GROUP_CURRENT) {
-                $currentHouseholdLocation = $householdLocation;
-            }
-        }
-
-        $camp = null;
-        $tentNumber = null;
-        $addressNumber = null;
-        $addressStreet = null;
-        $addressPostcode = null;
-
-        if ($currentHouseholdLocation->getType() === HouseholdLocation::LOCATION_TYPE_CAMP) {
-            $camp = $currentHouseholdLocation->getCampAddress()->getCamp()->getName();
-            $tentNumber = $currentHouseholdLocation->getCampAddress()->getTentNumber();
-        } else {
-            $addressNumber = $currentHouseholdLocation->getAddress()->getNumber();
-            $addressStreet = $currentHouseholdLocation->getAddress()->getStreet();
-            $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
-        }
-
-        $livelihood = null;
-        if (null !== $this->getHousehold()->getLivelihood()) {
-            $livelihood = Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()];
-        }
-
-        $assets = array_map(function ($value) {
-            return Household::ASSETS[$value];
-        }, (array) $this->getHousehold()->getAssets());
-
-        $shelterStatus = null;
-        if (null !== $this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
-        }
-
-        $supportReceivedTypes = array_map(function ($value) {
-            return Household::SUPPORT_RECIEVED_TYPES[$value];
-        }, (array) $this->getHousehold()->getSupportReceivedTypes());
-
-        $supportDateReceived = null;
-        if (null !== $this->getHousehold()->getSupportDateReceived()) {
-            $supportDateReceived = $this->getHousehold()->getSupportDateReceived()->format("m/d/Y");
-        }
-
-        return [
-            "addressStreet" => $addressStreet,
-            "addressNumber" => $addressNumber,
-            "addressPostcode" => $addressPostcode,
-            "camp" => $camp,
-            "tent number" => $tentNumber,
-            "livelihood" => $livelihood,
-            "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
-            "foodConsumptionScore" => $this->getHousehold()->getFoodConsumptionScore(),
-            "copingStrategiesIndex" => $this->getHousehold()->getCopingStrategiesIndex(),
-            "notes" => $this->getHousehold()->getNotes(),
-            "latitude" => $this->getHousehold()->getLatitude(),
-            "longitude" => $this->getHousehold()->getLongitude(),
-            "Assets" => implode(', ', $assets),
-            "Shelter Status" => $shelterStatus,
-            "Debt Level" => $this->getHousehold()->getDebtLevel(),
-            "Support Received Types" => implode(', ', $supportReceivedTypes),
-            "Support Date Received" => $supportDateReceived,
-        ];
-    }
-
-    public function getCommonExportFields()
-    {
-
-        $referral_type = null;
-        $referral_comment = null;
-        if ($this->getReferral()) {
-            $referral_type = $this->getReferral()->getType();
-            $referral_comment = $this->getReferral()->getComment();
-        }
-
-        $referralInfo = [
-            "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
-            "Referral Comment" => $referral_comment
-        ];
-
-        return array_merge($this->getCommonHouseholdExportFields(), $this->getCommonselfExportFields(), $referralInfo);
-    }
+    //
+    // public function getCommonselfExportFields()
+    // {
+    //     $gender = '';
+    //     if ($this->getGender() == 0) {
+    //         $gender = 'Female';
+    //     } else {
+    //         $gender = 'Male';
+    //     }
+    //
+    //     return [
+    //         "Local Given Name" => $this->getLocalGivenName(),
+    //         "Local Family Name" => $this->getLocalFamilyName(),
+    //         "English Given Name" => $this->getEnGivenName(),
+    //         "English Family Name" => $this->getEnFamilyName(),
+    //         "Gender" => $gender,
+    //         "Date Of Birth" => $this->getDateOfBirth()->format('d-m-Y'),
+    //     ];
+    // }
+    //
+    // public function getCommonHouseholdExportFields()
+    // {
+    //
+    //     $householdLocations = $this->getHousehold()->getHouseholdLocations();
+    //     $currentHouseholdLocation = null;
+    //     foreach ($householdLocations as $householdLocation) {
+    //         if ($householdLocation->getLocationGroup() === HouseholdLocation::LOCATION_GROUP_CURRENT) {
+    //             $currentHouseholdLocation = $householdLocation;
+    //         }
+    //     }
+    //
+    //     $camp = null;
+    //     $tentNumber = null;
+    //     $addressNumber = null;
+    //     $addressStreet = null;
+    //     $addressPostcode = null;
+    //
+    //     if ($currentHouseholdLocation->getType() === HouseholdLocation::LOCATION_TYPE_CAMP) {
+    //         $camp = $currentHouseholdLocation->getCampAddress()->getCamp()->getName();
+    //         $tentNumber = $currentHouseholdLocation->getCampAddress()->getTentNumber();
+    //     } else {
+    //         $addressNumber = $currentHouseholdLocation->getAddress()->getNumber();
+    //         $addressStreet = $currentHouseholdLocation->getAddress()->getStreet();
+    //         $addressPostcode = $currentHouseholdLocation->getAddress()->getPostcode();
+    //     }
+    //
+    //     $livelihood = null;
+    //     if (null !== $this->getHousehold()->getLivelihood()) {
+    //         $livelihood = Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()];
+    //     }
+    //
+    //     $assets = array_map(function ($value) {
+    //         return Household::ASSETS[$value];
+    //     }, (array) $this->getHousehold()->getAssets());
+    //
+    //     $shelterStatus = null;
+    //     if (null !== $this->getHousehold()->getShelterStatus()) {
+    //         $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
+    //     }
+    //
+    //     $supportReceivedTypes = array_map(function ($value) {
+    //         return Household::SUPPORT_RECIEVED_TYPES[$value];
+    //     }, (array) $this->getHousehold()->getSupportReceivedTypes());
+    //
+    //     $supportDateReceived = null;
+    //     if (null !== $this->getHousehold()->getSupportDateReceived()) {
+    //         $supportDateReceived = $this->getHousehold()->getSupportDateReceived()->format("m/d/Y");
+    //     }
+    //
+    //     return [
+    //         "addressStreet" => $addressStreet,
+    //         "addressNumber" => $addressNumber,
+    //         "addressPostcode" => $addressPostcode,
+    //         "camp" => $camp,
+    //         "tent number" => $tentNumber,
+    //         "livelihood" => $livelihood,
+    //         "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
+    //         "foodConsumptionScore" => $this->getHousehold()->getFoodConsumptionScore(),
+    //         "copingStrategiesIndex" => $this->getHousehold()->getCopingStrategiesIndex(),
+    //         "notes" => $this->getHousehold()->getNotes(),
+    //         "latitude" => $this->getHousehold()->getLatitude(),
+    //         "longitude" => $this->getHousehold()->getLongitude(),
+    //         "Assets" => implode(', ', $assets),
+    //         "Shelter Status" => $shelterStatus,
+    //         "Debt Level" => $this->getHousehold()->getDebtLevel(),
+    //         "Support Received Types" => implode(', ', $supportReceivedTypes),
+    //         "Support Date Received" => $supportDateReceived,
+    //     ];
+    // }
+    //
+    // public function getCommonExportFields()
+    // {
+    //
+    //     $referral_type = null;
+    //     $referral_comment = null;
+    //     if ($this->getReferral()) {
+    //         $referral_type = $this->getReferral()->getType();
+    //         $referral_comment = $this->getReferral()->getComment();
+    //     }
+    //
+    //     $referralInfo = [
+    //         "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
+    //         "Referral Comment" => $referral_comment
+    //     ];
+    //
+    //     return array_merge($this->getCommonHouseholdExportFields(), $this->getCommonselfExportFields(), $referralInfo);
+    // }
 
     /**
      * Returns age of self in years

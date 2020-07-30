@@ -4,8 +4,8 @@ namespace VoucherBundle\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\Type as JMS_Type;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
 use CommonBundle\Utils\ExportableInterface;
 
 /**
@@ -22,7 +22,7 @@ class Voucher implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullVoucher"})
+     * @SymfonyGroups({"FullVoucher"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Voucher implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
-     * @Groups({"FullVoucher"})
+     * @SymfonyGroups({"FullVoucher"})
      */
     private $code;
 
@@ -38,30 +38,30 @@ class Voucher implements ExportableInterface
      * @var int
      *
      * @ORM\Column(name="value", type="integer")
-     * @Groups({"FullVoucher", "FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedDistribution"})
      */
     private $value;
 
     /**
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Booklet", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"FullVoucher"})
+     * @SymfonyGroups({"FullVoucher"})
      */
     private $booklet;
 
     /**
      * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\VoucherPurchase", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=true)
-     * @Groups({"FullVoucher"})
+     * @SymfonyGroups({"FullVoucher"})
      */
     private $voucherPurchase;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      *
      * @ORM\Column(name="redeemed_at", type="datetime", nullable=true)
-     * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullVoucher", "ValidatedDistribution"})
+     * @ JMS_Type("DateTime<'d-m-Y'>")
+     * @SymfonyGroups({"FullVoucher", "ValidatedDistribution"})
      */
     private $redeemedAt;
 
@@ -113,7 +113,7 @@ class Voucher implements ExportableInterface
         $this->redeemedAt = $when ?? new \DateTime('now');
     }
 
-    public function getRedeemedAt(): \DateTimeInterface
+    public function getRedeemedAt(): ?\DateTimeInterface
     {
         return $this->redeemedAt;
     }

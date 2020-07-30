@@ -3,8 +3,8 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\Type as JMS_Type;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * Organization
@@ -21,7 +21,7 @@ class Organization
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullOrganization"})
+     * @SymfonyGroups({"FullOrganization"})
      */
     private $id;
 
@@ -31,7 +31,7 @@ class Organization
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @Groups({"FullOrganization"})
+     * @SymfonyGroups({"FullOrganization"})
      */
     private $name;
 
@@ -39,7 +39,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(name="logo", type="string", length=255, nullable=true)
-     * @Groups({"FullOrganization"})
+     * @SymfonyGroups({"FullOrganization"})
      */
     private $logo;
 
@@ -47,7 +47,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(name="font", type="string", length=255)
-     * @Groups({"FullOrganization"})
+     * @SymfonyGroups({"FullOrganization"})
      */
     private $font;
 
@@ -55,7 +55,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(name="primaryColor", type="string", length=255)
-     * @Groups({"FullOrganization"})
+     * @SymfonyGroups({"FullOrganization"})
      */
     private $primaryColor;
 
@@ -63,7 +63,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(name="secondaryColor", type="string", length=255)
-     * @Groups({"FullOrganization"})
+     * @SymfonyGroups({"FullOrganization"})
      */
     private $secondaryColor;
 
@@ -71,7 +71,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(name="footerContent", type="string", length=255)
-     * @Groups({"FullOrganization"})
+     * @SymfonyGroups({"FullOrganization"})
      */
     private $footerContent;
 

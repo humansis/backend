@@ -3,21 +3,21 @@
 
 namespace DistributionBundle\Model;
 
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 class Criteria
 {
 
     /**
      * @var string $tableString
-     * @Groups({"Criteria"})
+     * @SymfonyGroups({"Criteria"})
      *
      */
     protected $tableString;
 
     /**
     * @var string $target
-    * @Groups({"Criteria"})
+    * @SymfonyGroups({"Criteria"})
     *
     */
     protected $target;
@@ -25,7 +25,7 @@ class Criteria
     /**
      * @return string
      */
-    public function getTableString(): string
+    public function getTableString(): ?string
     {
         return $this->tableString;
     }
@@ -45,7 +45,7 @@ class Criteria
     /**
      * @return string
      */
-    public function getTarget(): string
+    public function getTarget(): ?string
     {
         return $this->target;
     }

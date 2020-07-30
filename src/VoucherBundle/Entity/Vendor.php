@@ -5,7 +5,7 @@ namespace VoucherBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 
 /**
@@ -22,7 +22,7 @@ class Vendor implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullVendor"})
+     * @SymfonyGroups({"FullVendor"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Vendor implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"FullVendor"})
+     * @SymfonyGroups({"FullVendor"})
      */
     private $name;
 
@@ -38,7 +38,7 @@ class Vendor implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="shop", type="string", length=255, nullable=true)
-     * @Groups({"FullVendor"})
+     * @SymfonyGroups({"FullVendor"})
      */
     private $shop;
 
@@ -46,7 +46,7 @@ class Vendor implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="address_street", type="string", length=255, nullable=true)
-     * @Groups({"FullVendor"})
+     * @SymfonyGroups({"FullVendor"})
      */
     private $addressStreet;
 
@@ -54,7 +54,7 @@ class Vendor implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="address_number", type="string", length=255, nullable=true)
-     * @Groups({"FullVendor"})
+     * @SymfonyGroups({"FullVendor"})
      */
     private $addressNumber;
 
@@ -62,7 +62,7 @@ class Vendor implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="address_postcode", type="string", length=255, nullable=true)
-     * @Groups({"FullVendor"})
+     * @SymfonyGroups({"FullVendor"})
      */
     private $addressPostcode;
 
@@ -71,7 +71,7 @@ class Vendor implements ExportableInterface
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
      *
-     * @Groups({"FullVendor"})
+     * @SymfonyGroups({"FullVendor"})
      */
     private $location;
 
@@ -79,14 +79,14 @@ class Vendor implements ExportableInterface
      * @var bool
      *
      * @ORM\Column(name="archived", type="boolean")
-     * @Groups({"FullVendor"})
+     * @SymfonyGroups({"FullVendor"})
      */
     private $archived;
 
     /**
      * @ORM\OneToOne(targetEntity="\UserBundle\Entity\User", inversedBy="vendor", cascade={"persist","remove"})
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     * @Groups({"FullVendor"})
+     * @SymfonyGroups({"FullVendor"})
      */
     private $user;
 

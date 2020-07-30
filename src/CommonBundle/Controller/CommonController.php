@@ -5,7 +5,7 @@ namespace CommonBundle\Controller;
 use DistributionBundle\Entity\DistributionData;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use JMS\Serializer\SerializationContext;
+
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
@@ -63,7 +63,7 @@ class CommonController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('jms_serializer')->serialize($result, 'json', null);
+        $json = $this->get('serializer')->serialize($result, 'json');
         
         return new Response($json);
     }
@@ -93,7 +93,7 @@ class CommonController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('jms_serializer')->serialize($logs, 'json', SerializationContext::create()->setGroups(['FullLogs'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($logs, 'json', ['groups' => ['FullLogs']]);
         
         return new Response($json);
     }
