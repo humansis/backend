@@ -3,8 +3,8 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\Type as JMS_Type;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * Logs
@@ -21,7 +21,7 @@ class Logs
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * 
-     * @Groups({"FullLogs"})
+     * @SymfonyGroups({"FullLogs"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Logs
      *
      * @ORM\Column(name="url", type="string", length=255)
      * 
-     * @Groups({"FullLogs"})
+     * @SymfonyGroups({"FullLogs"})
      */
     private $url;
 
@@ -46,7 +46,7 @@ class Logs
      *
      * @ORM\Column(name="mailUser", type="string", length=255)
      * 
-     * @Groups({"FullLogs"})
+     * @SymfonyGroups({"FullLogs"})
      */
     private $mailUser;
 
@@ -55,7 +55,7 @@ class Logs
      *
      * @ORM\Column(name="method", type="string", length=255)
      * 
-     * @Groups({"FullLogs"})
+     * @SymfonyGroups({"FullLogs"})
      */
     private $method;
 
@@ -63,8 +63,8 @@ class Logs
      * @var \DateTime
      *
      * @ORM\Column(name="date", type="datetime")
-     * @JMS_Type("DateTime<'d-m-Y H:m'>")
-     * @Groups({"FullLogs"})
+     * @ JMS_Type("DateTime<'d-m-Y H:m'>")
+     * @SymfonyGroups({"FullLogs"})
      */
     private $date;
 
@@ -73,7 +73,7 @@ class Logs
      *
      * @ORM\Column(name="httpStatus", type="integer")
      * 
-     * @Groups({"FullLogs"})
+     * @SymfonyGroups({"FullLogs"})
      */
     private $httpStatus;
 
@@ -81,7 +81,7 @@ class Logs
      * @var string
      *
      * @ORM\Column(name="controller", type="string", length=255)
-     * @Groups({"FullLogs"})
+     * @SymfonyGroups({"FullLogs"})
      */
     private $controller;
 
@@ -90,7 +90,7 @@ class Logs
      *
      * @ORM\Column(name="request", type="text")
      * 
-     * @Groups({"FullLogs"})
+     * @SymfonyGroups({"FullLogs"})
      */
     protected $request;
 

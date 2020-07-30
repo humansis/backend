@@ -6,7 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -36,7 +36,7 @@ class Smartcard
      * @var string serial number / UID
      *
      * @ORM\Column(name="code", type="string", length=14, unique=true, nullable=false)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard", "ValidatedDistribution"})
      * @Serializer\Groups({"SmartcardOverview", "FullSmartcard", "ValidatedDistribution"})
      */
     private $serialNumber;

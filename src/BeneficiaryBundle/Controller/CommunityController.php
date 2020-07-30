@@ -7,7 +7,7 @@ use BeneficiaryBundle\Mapper\CommunityMapper;
 use BeneficiaryBundle\Utils\CommunityService;
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableType;
-use JMS\Serializer\SerializationContext;
+
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;

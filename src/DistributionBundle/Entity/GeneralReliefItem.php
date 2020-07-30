@@ -4,8 +4,8 @@ namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\Type as JMS_Type;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * GeneralReliefItem
@@ -22,7 +22,7 @@ class GeneralReliefItem
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedDistribution"})
      */
     private $id;
 
@@ -30,8 +30,8 @@ class GeneralReliefItem
      * @var \DateTime|null
      *
      * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
-     * @JMS_Type("DateTime<'d-m-Y H:m'>")
-     * @Groups({"ValidatedDistribution"})
+     * @ JMS_Type("DateTime<'d-m-Y H:m'>")
+     * @SymfonyGroups({"ValidatedDistribution"})
      */
     private $distributedAt;
 
@@ -40,7 +40,7 @@ class GeneralReliefItem
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      *
-     * @Groups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedDistribution"})
      */
     private $notes;
     

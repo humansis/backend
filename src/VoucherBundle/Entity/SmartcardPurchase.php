@@ -7,8 +7,8 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\Type as JMS_Type;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
 
 /**
  * Smartcard purchase.
@@ -25,7 +25,7 @@ class SmartcardPurchase
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullSmartcard"})
+     * @SymfonyGroups({"FullSmartcard"})
      */
     private $id;
 
@@ -35,7 +35,7 @@ class SmartcardPurchase
      * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Smartcard", inversedBy="purchases")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @Groups({"FullSmartcard"})
+     * @SymfonyGroups({"FullSmartcard"})
      */
     private $smartcard;
 
@@ -45,7 +45,7 @@ class SmartcardPurchase
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @Groups({"FullSmartcard"})
+     * @SymfonyGroups({"FullSmartcard"})
      */
     private $vendor;
 
@@ -54,7 +54,7 @@ class SmartcardPurchase
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchaseRecord", mappedBy="smartcardPurchase", cascade={"persist"}, orphanRemoval=true)
      *
-     * @Groups({"FullSmartcard"})
+     * @SymfonyGroups({"FullSmartcard"})
      */
     private $records;
 
@@ -63,8 +63,8 @@ class SmartcardPurchase
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
      *
-     * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullSmartcard"})
+     * @ JMS_Type("DateTime<'d-m-Y'>")
+     * @SymfonyGroups({"FullSmartcard"})
      */
     private $createdAt;
 

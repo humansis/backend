@@ -13,7 +13,7 @@ use BeneficiaryBundle\Form\CommunityConstraints;
 use CommonBundle\InputType\DataTableType;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

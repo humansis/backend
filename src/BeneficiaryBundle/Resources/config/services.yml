@@ -12,7 +12,7 @@ services:
         class: BeneficiaryBundle\Utils\HouseholdService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@jms_serializer"
+            - "@serializer"
             - "@beneficiary.beneficiary_service"
             - "@request_validator"
             - "@location_service"
@@ -24,7 +24,7 @@ services:
         class: BeneficiaryBundle\Utils\InstitutionService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@jms_serializer"
+            - "@serializer"
             - "@beneficiary.beneficiary_service"
             - "@request_validator"
             - "@location_service"
@@ -36,7 +36,7 @@ services:
         class: BeneficiaryBundle\Utils\CommunityService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@jms_serializer"
+            - "@serializer"
             - "@beneficiary.beneficiary_service"
             - "@request_validator"
             - "@location_service"
@@ -69,7 +69,7 @@ services:
         class: BeneficiaryBundle\Utils\BeneficiaryService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@jms_serializer"
+            - "@serializer"
             - "@request_validator"
             - "@validator"
             - "@service_container"

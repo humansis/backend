@@ -37,7 +37,6 @@
 		"friendsofsymfony/user-bundle": "^2.1",
 		"google/apiclient": "^2.2",
 		"incenteev/composer-parameter-handler": "^2.0",
-		"jms/serializer-bundle": "^2.4",
 		"jrk/levenshtein-bundle": "dev-master",
 		"knplabs/knp-gaufrette-bundle": "^0.5.3",
 		"mpdf/mpdf": "^7.1",

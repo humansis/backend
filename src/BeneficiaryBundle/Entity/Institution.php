@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -36,7 +36,7 @@ class Institution
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullBeneficiary", "FullInstitution"})
+     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
      */
     private $id;
 
@@ -44,7 +44,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @Groups({"FullBeneficiary", "FullInstitution"})
+     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
      */
     private $name;
 
@@ -52,7 +52,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
-     * @Groups({"FullBeneficiary", "FullInstitution"})
+     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
      * @Assert\Choice(choices=BeneficiaryBundle\Entity\Institution::TYPE_ALL)
      */
     private $type;
@@ -61,7 +61,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="contact_name", type="string", length=255, nullable=true)
-     * @Groups({"FullBeneficiary", "FullInstitution"})
+     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
      */
     private $contactName;
 
@@ -69,7 +69,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="contact_family_name", type="string", length=255, nullable=true)
-     * @Groups({"FullBeneficiary", "FullInstitution"})
+     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
      */
     private $contactFamilyName;
 
@@ -77,7 +77,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="phone_number", type="string", length=45, nullable=true)
-     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $phoneNumber;
 
@@ -85,7 +85,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="phone_prefix", type="string", length=45, nullable=true)
-     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $phonePrefix;
 
@@ -93,13 +93,13 @@ class Institution
      * @var NationalId
      *
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\NationalId", cascade={"persist", "remove"})
-     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $nationalId;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
-     * @Groups({"FullBeneficiary", "FullInstitution"})
+     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
      */
     private $address;
 
@@ -107,7 +107,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullInstitution"})
+     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
      */
     private $latitude;
 
@@ -115,7 +115,7 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullInstitution"})
+     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
      */
     private $longitude;
 

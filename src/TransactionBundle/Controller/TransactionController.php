@@ -4,7 +4,7 @@ namespace TransactionBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use JMS\Serializer\SerializationContext;
+
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -69,8 +69,8 @@ class TransactionController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('jms_serializer')
-            ->serialize($response, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["ValidatedDistribution"]));
+        $json = $this->get('serializer')
+            ->serialize($response, 'json', ['groups' => ["ValidatedDistribution"]]);
         return new Response($json);
     }
     
@@ -122,7 +122,7 @@ class TransactionController extends Controller
         $countryISO3 = $request->request->get('__country');
         try {
             $beneficiaries = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $distributionData);
-            $json = $this->get('jms_serializer')
+            $json = $this->get('serializer')
             ->serialize($beneficiaries, 'json');
             return new Response($json);
         } catch (\Exception $e) {
@@ -236,7 +236,7 @@ class TransactionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize($response, 'json');
 
         return new Response($json);
@@ -267,7 +267,7 @@ class TransactionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize($response, 'json');
 
         return new Response($json);
