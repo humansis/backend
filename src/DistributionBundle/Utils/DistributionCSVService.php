@@ -120,9 +120,9 @@ class DistributionCSVService
             foreach ($headers as $index => $key) {
                 if ($key == "gender") {
                     if (strcasecmp(trim($beneficiaryArray[$index]), 'Male') === 0 || strcasecmp(trim($beneficiaryArray[$index]), 'M') === 0) {
-                        $beneficiaryArray[$index] = 1;
+                        $beneficiaryArray[$index] = Person::GENDER_MALE;
                     } else {
-                        $beneficiaryArray[$index] = 0;
+                        $beneficiaryArray[$index] = Person::GENDER_FEMALE;
                     }
                 }
 
