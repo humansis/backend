@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -58,44 +59,11 @@ class Institution
     private $type;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="contact_name", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
+     * @var Person|null
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="contact_person_id", referencedColumnName="id", nullable=true)
      */
-    private $contactName;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="contact_family_name", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
-     */
-    private $contactFamilyName;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="phone_number", type="string", length=45, nullable=true)
-     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
-     */
-    private $phoneNumber;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="phone_prefix", type="string", length=45, nullable=true)
-     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
-     */
-    private $phonePrefix;
-
-    /**
-     * @var NationalId
-     *
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\NationalId", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers"})
-     */
-    private $nationalId;
+    private $contact;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
@@ -125,6 +93,14 @@ class Institution
      * @ORM\Column(type="boolean", options={"default" : 0})
      */
     private $archived = 0;
+
+    /**
+     * Institution constructor.
+     */
+    public function __construct()
+    {
+        $this->contact = new Person();
+    }
 
     /**
      * Get id.
@@ -173,11 +149,27 @@ class Institution
     }
 
     /**
+     * @return Person|null
+     */
+    public function getContact(): ?Person
+    {
+        return $this->contact;
+    }
+
+    /**
+     * @param Person|null $contact
+     */
+    public function setContact(?Person $contact): void
+    {
+        $this->contact = $contact;
+    }
+
+    /**
      * @return string|null
      */
     public function getContactName(): ?string
     {
-        return $this->contactName;
+        return $this->contact->getEnGivenName();
     }
 
     /**
@@ -185,7 +177,7 @@ class Institution
      */
     public function setContactName(?string $contactName): void
     {
-        $this->contactName = $contactName;
+        $this->contact->setEnGivenName($contactName);
     }
 
     /**
@@ -193,7 +185,7 @@ class Institution
      */
     public function getContactFamilyName(): ?string
     {
-        return $this->contactFamilyName;
+        return $this->contact->getEnFamilyName();
     }
 
     /**
@@ -201,7 +193,29 @@ class Institution
      */
     public function setContactFamilyName(?string $contactFamilyName): void
     {
-        $this->contactFamilyName = $contactFamilyName;
+        $this->contact->setEnFamilyName($contactFamilyName);
+    }
+
+    /**
+     * @return Phone|null
+     */
+    public function getPhone(): ?Phone
+    {
+        if ($this->contact->getPhones()->count() === 0) return null;
+        return $this->contact->getPhones()->current();
+    }
+
+    /**
+     * @param Phone|null $phone
+     */
+    public function setPhone(?Phone $phone): void
+    {
+        if ($phone) {
+            $phone->setPerson($this->getContact());
+            $this->contact->setPhones(new ArrayCollection([$phone]));
+        } else {
+            $this->contact->setPhones(new ArrayCollection());
+        }
     }
 
     /**
@@ -209,15 +223,10 @@ class Institution
      */
     public function getPhoneNumber(): ?string
     {
-        return $this->phoneNumber;
-    }
-
-    /**
-     * @param string|null $phoneNumber
-     */
-    public function setPhoneNumber(?string $phoneNumber): void
-    {
-        $this->phoneNumber = $phoneNumber;
+        if ($this->getPhone()) {
+            return $this->getPhone()->getNumber();
+        }
+        return null;
     }
 
     /**
@@ -225,15 +234,10 @@ class Institution
      */
     public function getPhonePrefix(): ?string
     {
-        return $this->phonePrefix;
-    }
-
-    /**
-     * @param string|null $phonePrefix
-     */
-    public function setPhonePrefix(?string $phonePrefix): void
-    {
-        $this->phonePrefix = $phonePrefix;
+        if (!$this->getPhone()) {
+            return null;
+        }
+        return $this->getPhone()->getPrefix();
     }
 
     /**
@@ -241,7 +245,8 @@ class Institution
      */
     public function getNationalId(): ?NationalId
     {
-        return $this->nationalId;
+        if ($this->contact->getNationalIds()->count() === 0) return null;
+        return $this->contact->getNationalIds()->current();
     }
 
     /**
@@ -249,7 +254,12 @@ class Institution
      */
     public function setNationalId(?NationalId $nationalId): void
     {
-        $this->nationalId = $nationalId;
+        if ($nationalId) {
+            $nationalId->setPerson($this->getContact());
+            $this->contact->setNationalIds(new ArrayCollection([$nationalId]));
+        } else {
+            $this->contact->setNationalIds(new ArrayCollection());
+        }
     }
 
     /**

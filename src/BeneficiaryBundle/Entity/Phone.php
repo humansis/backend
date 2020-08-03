@@ -53,7 +53,7 @@ class Phone
      * @ORM\Column(name="proxy", type="boolean")
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
-    private $proxy;
+    private $proxy = false;
 
     /**
      * @var Person
@@ -175,7 +175,7 @@ class Phone
      *
      * @return Phone
      */
-    public function setPerson(Person $person = null)
+    public function setPerson(?Person $person = null)
     {
         $this->person = $person;
 
