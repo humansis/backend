@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Address;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\InputType;
 use CommonBundle\InputType as GeneralInputType;
 use BeneficiaryBundle\Form\CommunityConstraints;
@@ -101,8 +102,12 @@ class CommunityService
         $community->setLatitude($communityType->getLatitude() ?? '');
         $community->setContactName($communityType->getContactName() ?? '');
         $community->setContactFamilyName($communityType->getContactFamilyName() ?? '');
-        $community->setPhonePrefix($communityType->getPhonePrefix() ?? '');
-        $community->setPhoneNumber($communityType->getPhoneNumber() ?? '');
+        if ($communityType->getPhoneNumber()) {
+            $community->setPhone(new Phone());
+            $community->getPhone()->setType('Community contact');
+            $community->getPhone()->setPrefix($communityType->getPhonePrefix() ?? '');
+            $community->getPhone()->setNumber($communityType->getPhoneNumber());
+        }
 
         if ($communityType->getNationalId() !== null) {
             $community->setNationalId(new NationalId());
@@ -167,11 +172,13 @@ class CommunityService
         if (null !== $newValue = $communityType->getContactFamilyName()) {
             $community->setContactFamilyName($newValue);
         }
-        if (null !== $newValue = $communityType->getPhonePrefix()) {
-            $community->setPhonePrefix($newValue);
-        }
-        if (null !== $newValue = $communityType->getPhoneNumber()) {
-            $community->setPhoneNumber($newValue);
+        if (null !== $newNumber = $communityType->getPhoneNumber()) {
+            $newPrefix = $communityType->getPhonePrefix();
+            if ($community->getPhone() === null) {
+                $community->setPhone(new Phone());
+            }
+            $community->getPhone()->setPrefix($newPrefix);
+            $community->getPhone()->setNumber($newNumber);
         }
 
         /** @var InputType\BeneficiaryAddressType $address */
