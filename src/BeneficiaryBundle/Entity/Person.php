@@ -253,9 +253,9 @@ class Person
     /**
      * Get gender.
      *
-     * @return int
+     * @return int|null
      */
-    public function getGender(): int
+    public function getGender(): ?int
     {
         return $this->gender;
     }

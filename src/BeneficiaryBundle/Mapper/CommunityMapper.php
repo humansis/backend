@@ -12,27 +12,40 @@ class CommunityMapper
     private $nationalIdMapper;
     /** @var LocationMapper */
     private $locationMapper;
+    /** @var PersonMapper */
+    private $personMapper;
 
     /**
      * CommunityMapper constructor.
+     *
      * @param AddressMapper $addressMapper
      * @param NationalIdMapper $nationalIdMapper
      * @param LocationMapper $locationMapper
+     * @param PersonMapper $personMapper
      */
-    public function __construct(AddressMapper $addressMapper, NationalIdMapper $nationalIdMapper, \CommonBundle\Mapper\LocationMapper $locationMapper)
+    public function __construct(
+        AddressMapper $addressMapper,
+        NationalIdMapper $nationalIdMapper,
+        LocationMapper $locationMapper,
+        PersonMapper $personMapper
+    )
     {
         $this->addressMapper = $addressMapper;
         $this->nationalIdMapper = $nationalIdMapper;
         $this->locationMapper = $locationMapper;
+        $this->personMapper = $personMapper;
     }
 
     /**
-     * @param Community $community
+     * @param Community|null $community
+     *
      * @return array
      */
     public function toFullArray(?Community $community): ?array
     {
-        if (!$community) return null;
+        if (!$community) {
+            return null;
+        }
         return [
             "id" => $community->getId(),
             "name" => $this->getName($community),
@@ -44,6 +57,7 @@ class CommunityMapper
             "address" => $this->addressMapper->toFlatArray($community->getAddress()),
             "latitude" => $community->getLatitude(),
             "longitude" => $community->getLongitude(),
+            "contact" => $this->personMapper->toFullArray($community->getContact()),
         ];
     }
 
