@@ -5,7 +5,7 @@ namespace VoucherBundle\Entity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
+
 use CommonBundle\Utils\ExportableInterface;
 
 /**
@@ -60,7 +60,7 @@ class Voucher implements ExportableInterface
      * @var \DateTime|null
      *
      * @ORM\Column(name="redeemed_at", type="datetime", nullable=true)
-     * @ JMS_Type("DateTime<'d-m-Y'>")
+     * DateTime<'d-m-Y'>
      * @SymfonyGroups({"FullVoucher", "ValidatedDistribution"})
      */
     private $redeemedAt;

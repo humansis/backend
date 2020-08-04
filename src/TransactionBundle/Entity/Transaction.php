@@ -110,7 +110,7 @@ class Transaction
      * @var \DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     * @ JMS_Type("DateTime<'d-m-Y H:m:i'>")
+     * DateTime<'d-m-Y H:m:i'>
      *
      * @SymfonyGroups({"ValidatedDistribution"})
      */

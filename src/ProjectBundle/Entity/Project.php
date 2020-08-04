@@ -4,7 +4,7 @@ namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
+
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 use BeneficiaryBundle\Entity\Household;
@@ -51,7 +51,7 @@ class Project implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="startDate", type="date")
-     * @ JMS_Type("DateTime<'d-m-Y'>")
+     * DateTime<'d-m-Y'>
      *
      * @SymfonyGroups({"FullProject"})
      */
@@ -61,7 +61,7 @@ class Project implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="endDate", type="date")
-     * @ JMS_Type("DateTime<'d-m-Y'>")
+     * DateTime<'d-m-Y'>
      *
      * @SymfonyGroups({"FullProject"})
      */

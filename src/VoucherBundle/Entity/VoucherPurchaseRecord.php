@@ -4,7 +4,7 @@ namespace VoucherBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
+
 
 /**
  * Voucher Purchase Record.
