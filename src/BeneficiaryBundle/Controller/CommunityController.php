@@ -45,12 +45,7 @@ class CommunityController extends Controller
     {
         /** @var CommunityMapper $communityMapper */
         $communityMapper = $this->get(CommunityMapper::class);
-        $json = $this->get('serializer')
-            ->serialize(
-                $communityMapper->toFullArray($community),
-                'json'
-            );
-        return new Response($json);
+        return $this->json($communityMapper->toFullArray($community));
     }
 
     /**
@@ -84,15 +79,11 @@ class CommunityController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $json = $this->get('serializer')->serialize(
-                [
-                    0 => $communities[0],
-                    1 => $communityMapper->toFullArrays($communities[1])
-                ],
-                'json'
-            );
 
-        return new Response($json);
+        return $this->json([
+            0 => $communities[0],
+            1 => $communityMapper->toFullArrays($communities[1])
+        ]);
     }
 
 
@@ -149,12 +140,7 @@ class CommunityController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('serializer')
-            ->serialize(
-                $communityMapper->toFullArray($community),
-                'json'
-            );
-        return new Response($json);
+        return $this->json($communityMapper->toFullArray($community));
     }
 
 
@@ -212,11 +198,7 @@ class CommunityController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('serializer')->serialize(
-            $communityMapper->toFullArray($community),
-            'json'
-        );
-        return new Response($json);
+        return $this->json($communityMapper->toFullArray($community));
     }
 
     /**
@@ -240,10 +222,6 @@ class CommunityController extends Controller
         /** @var CommunityMapper $communityMapper */
         $communityMapper = $this->get(CommunityMapper::class);
         $community = $communityService->remove($community);
-        $json = $this->get('serializer')->serialize(
-                $communityMapper->toFullArray($community),
-                'json'
-            );
-        return new Response($json);
+        return $this->json($communityMapper->toFullArray($community));
     }
 }

@@ -221,8 +221,8 @@ class InstitutionService
         if (null !== $newValue = $institutionType->getContactFamilyName()) {
             $institution->setContactFamilyName($newValue);
         }
-        if (null !== $newPrefix = $institutionType->getPhonePrefix()
-        || null !== $newNumber = $institutionType->getPhoneNumber()) {
+        if (null !== $newNumber = $institutionType->getPhoneNumber()) {
+            $newPrefix = $institutionType->getPhonePrefix();
             if ($institution->getPhone() == null) {
                 $institution->setPhone(new Phone());
             }
