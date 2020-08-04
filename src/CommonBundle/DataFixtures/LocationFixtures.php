@@ -42,7 +42,7 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
             $filepath = realpath($directory.'/'.$file);
 
             echo "FILE : $filepath \n";
-            $this->processFile($filepath, $manager, $limit);
+            $this->processFile($filepath, $manager);
         }
     }
 
