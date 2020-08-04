@@ -50,6 +50,10 @@ command_clean_db="cd /var/www/html/bms_api; \
     sudo docker-compose exec -T php bash -c 'php bin/console ra:cacheimport:clear'; \
     sudo docker-compose exec -T php bash -c 'php bin/console reporting:code-indicator:add'"
 
+fixtures_stage="cd /var/www/html/bms_api; \
+    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=prod';\
+    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'"
+
 fixtures_test="cd /var/www/html/bms_api; \
     sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=test';\
     sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'"
@@ -66,7 +70,7 @@ elif [[ $1 == "dev" ]]; then
     ssh -i $2 ubuntu@$ec2_test $fixtures_dev
 elif [[ $1 =~ ^release\/.*$ ]]; then
     ssh -i $2 ubuntu@$ec2_stage $command_clean_db
-    ssh -i $2 ubuntu@$ec2_stage $fixtures_test
+    ssh -i $2 ubuntu@$ec2_stage $fixtures_stage
 else
     ssh -i $2 ubuntu@$ec2_dev $command_clean_db
     ssh -i $2 ubuntu@$ec2_dev $fixtures_dev
