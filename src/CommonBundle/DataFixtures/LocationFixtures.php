@@ -32,12 +32,6 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
     {
         $manager->getConnection()->getConfiguration()->setSQLLogger(null);
 
-        if ('prod' === $this->env) {
-            $limit = 0;
-        } else {
-            $limit = self::LIMIT;
-        }
-
         $directory = __DIR__.'/../Resources/locations';
 
         foreach (scandir($directory) as $file) {
@@ -63,7 +57,7 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
         return ['location'];
     }
 
-    protected function processFile(string $file, ObjectManager $manager, int $limit = 0)
+    protected function processFile(string $file, ObjectManager $manager)
     {
         $iso3 = strtoupper(pathinfo($file, PATHINFO_FILENAME));
 
@@ -83,10 +77,6 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
 
             if (\XMLReader::ELEMENT !== $xml->nodeType) {
                 continue;
-            }
-
-            if (0 !== $limit && ++$i > $limit) {
-                break;
             }
 
             $name = $xml->getAttribute('name');
