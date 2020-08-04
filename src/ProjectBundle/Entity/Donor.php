@@ -3,7 +3,7 @@
 namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
+
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 
@@ -48,7 +48,7 @@ class Donor implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="dateAdded", type="datetime")
-     * @ JMS_Type("DateTime<'d-m-Y H:m:i'>")
+     * DateTime<'d-m-Y H:m:i'>
      *
      * @SymfonyGroups({"FullDonor"})
      */

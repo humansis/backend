@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
-//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
+
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -76,7 +76,7 @@ class Person
      * @var DateTime|null
      *
      * @ORM\Column(name="dateOfBirth", type="date", nullable=true)
-     * @ JMS_Type("DateTime<'d-m-Y'>")
+     * DateTime<'d-m-Y'>
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
      * @Assert\NotBlank(message="The date of birth is required.")
      */
@@ -86,7 +86,7 @@ class Person
      * @var DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     * @ JMS_Type("DateTime<'d-m-Y H:m:i'>")
+     * DateTime<'d-m-Y H:m:i'>
      * @SymfonyGroups({"FullHousehold", "Fullself"})
      */
     private $updatedOn;

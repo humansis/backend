@@ -4,7 +4,7 @@ namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
+
 
 /**
  * Logs
@@ -63,7 +63,7 @@ class Logs
      * @var \DateTime
      *
      * @ORM\Column(name="date", type="datetime")
-     * @ JMS_Type("DateTime<'d-m-Y H:m'>")
+     * DateTime<'d-m-Y H:m'>
      * @SymfonyGroups({"FullLogs"})
      */
     private $date;

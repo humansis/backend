@@ -7,7 +7,7 @@ use CommonBundle\Utils\ExportableInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\Expr\Select;
 use ProjectBundle\Entity\Project;
-//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
+
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use BeneficiaryBundle\Entity\Household;
 
@@ -48,7 +48,7 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="UpdatedOn", type="datetime")
-     * @ JMS_Type("DateTime<'d-m-Y H:i:s'>")
+     * DateTime<'d-m-Y H:i:s'>
      *
      * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      */
@@ -58,7 +58,7 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_distribution", type="date")
-     * @ JMS_Type("DateTime<'d-m-Y'>")
+     * DateTime<'d-m-Y'>
      *
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */

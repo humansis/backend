@@ -10,7 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Symfony\Component\Serializer\Annotation as Serializer;
-//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
+
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use VoucherBundle\Entity\Smartcard;
@@ -60,7 +60,7 @@ class Beneficiary implements ExportableInterface
      * @var DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     * @ JMS_Type("DateTime<'d-m-Y H:m:i'>")
+     * DateTime<'d-m-Y H:m:i'>
      * @SymfonyGroups({"FullHousehold", "FullBeneficiary"})
      */
     private $updatedOn;

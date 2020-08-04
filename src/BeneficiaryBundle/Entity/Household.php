@@ -224,7 +224,7 @@ class Household
      * @var \DateTimeInterface
      *
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
-     * @ JMS_Type("DateTime<'d-m-Y'>")
+     * DateTime<'d-m-Y'>
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $supportDateReceived;

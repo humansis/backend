@@ -7,7 +7,7 @@ use DateTimeInterface;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-//use Symfony\Component\Serializer\Annotation\Type as JMS_Type;
+
 use UserBundle\Entity\User;
 
 /**
@@ -72,7 +72,7 @@ class SmartcardDeposit
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
      *
-     * @ JMS_Type("DateTime<'d-m-Y'>")
+     * DateTime<'d-m-Y'>
      * @SymfonyGroups({"FullSmartcard"})
      */
     private $createdAt;
