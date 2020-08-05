@@ -319,8 +319,22 @@ class VoucherController extends Controller
      * When a voucher is returned to humanitarian
      *
      * @Rest\Post("/vouchers/redeem", name="redeem_vouchers")
-     * @ Security("is_granted('ROLE_VENDOR')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Vouchers")
+     *
+     * @SWG\Parameter(name="voucher",
+     *     in="body",
+     *     description="return vouchers to humanitarians",
+     *     required=true,
+     *     @SWG\Schema(
+     *      @SWG\Property(
+     *           property="id",
+     *           type="integer",
+     *           description="voucher id",
+     *           example="1234",
+     *         )
+     *     )
+     * )
      *
      * @SWG\Response(
      *     response=200,
