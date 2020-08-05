@@ -279,10 +279,10 @@ class HouseholdExportCSVService
         foreach ($this->getCountrySpecifics($countryISO3) as $countrySpecific) {
             $countryField = $countrySpecific->getFieldString();
 
-            $specificHxl = [$countryField => ''];
-            $specificHouseholdHead = [$countryField => rand(0, 100)];
-            $specificDependent = [$countryField => ''];
-            $specificDetails = [$countryField => $countrySpecific->getType()];
+            $specificHxl[$countryField] = '';
+            $specificHouseholdHead[$countryField] = rand(0, 100);
+            $specificDependent[$countryField] = '';
+            $specificDetails[$countryField] = $countrySpecific->getType();
         }
 
         return [
