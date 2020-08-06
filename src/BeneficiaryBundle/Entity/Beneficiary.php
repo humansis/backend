@@ -9,8 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
-use Symfony\Component\Serializer\Annotation as Serializer;
-
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use VoucherBundle\Entity\Smartcard;
@@ -21,18 +19,8 @@ use VoucherBundle\Entity\Smartcard;
  * @ORM\Table(name="beneficiary")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\BeneficiaryRepository")
  */
-class Beneficiary implements ExportableInterface
+class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
-     */
-    private $id;
-
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person", cascade={"persist", "remove"})
      */
@@ -121,14 +109,6 @@ class Beneficiary implements ExportableInterface
         $this->setUpdatedOn(new DateTime());
 
         //TODO check if updatedOn everytime
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     /**
