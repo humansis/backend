@@ -5,6 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
+ * @ORM\Entity()
  * @ORM\Table(name="abstract_beneficiary")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="bnf_type", type="string")

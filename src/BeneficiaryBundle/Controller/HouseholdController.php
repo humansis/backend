@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Controller;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\HouseholdActivity;
 use BeneficiaryBundle\Model\Household\HouseholdActivityChangesCollection;
 use BeneficiaryBundle\Model\Household\HouseholdChange\Factory\FilteredHouseholdChangeFactory;
