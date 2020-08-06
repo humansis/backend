@@ -13,17 +13,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="community")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CommunityRepository")
  */
-class Community
+class Community extends AbstractBeneficiary
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
     /**
      * @var Person|null
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person", cascade={"persist", "remove"})
@@ -66,16 +57,6 @@ class Community
     public function __construct()
     {
         $this->contact = new Person();
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

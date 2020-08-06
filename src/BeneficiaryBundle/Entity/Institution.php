@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="institution")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\InstitutionRepository")
  */
-class Institution
+class Institution extends AbstractBeneficiary
 {
     const TYPE_SCHOOL = 'school';
     const TYPE_HEALTH_CENTER = 'health';
@@ -30,16 +30,6 @@ class Institution
         self::TYPE_PRODUCTION,
         self::TYPE_COMMERCE,
     ];
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
-     */
-    private $id;
 
     /**
      * @var string
@@ -100,16 +90,6 @@ class Institution
     public function __construct()
     {
         $this->contact = new Person();
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

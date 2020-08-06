@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="household")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdRepository")
  */
-class Household
+class Household extends AbstractBeneficiary
 {
 
     /**
@@ -84,17 +84,6 @@ class Household
         10 => 'None',
         11 => 'Other',
     ];
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
-     */
-    private $id;
 
     /**
      * @var int
@@ -242,30 +231,6 @@ class Household
 
         $this->assets = [];
         $this->supportReceivedTypes = [];
-    }
-
-
-    /**
-     * Set id.
-     *
-     * @param $id
-     * @return Household
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

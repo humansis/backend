@@ -9,13 +9,16 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="bnf_type", type="string")
  * @ORM\DiscriminatorMap({
- *     "bnf" = "Beneficiary"
+ *     "bnf" = "Beneficiary",
+ *     "hh" = "Household",
+ *     "inst" = "Institution",
+ *     "comm" = "Community"
  * })
 */
 abstract class AbstractBeneficiary
 {
     /**
-     * @var int
+     * @var int|null
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -23,13 +26,22 @@ abstract class AbstractBeneficiary
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
-    private $id;
+    protected $id;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
+
+    /**
+     * @param int|null $id
+     */
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
 }
