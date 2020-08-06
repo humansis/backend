@@ -99,7 +99,7 @@ class CSVToArrayMapper
 
         // set generator to next column after last column in self::MAPPING
         $generator = new ExcelColumnsGenerator();
-        foreach ($generator as $char) {
+        while ($char = $generator->getNext()) {
             if ($char === self::MAPPING[$lastColumn]) {
                 break;
             }
@@ -126,12 +126,11 @@ class CSVToArrayMapper
      *
      * @throws \Exception
      */
-    public function fromCSVToArray(array $sheetArray, $countryIso3, $mappingCSV)
+    public function fromCSVToArray(array $sheetArray, array $rowHeader, $countryIso3, $mappingCSV)
     {
         // Get the mapping for the current country
         $listHouseholdArray = [];
         $householdArray = null;
-        $rowHeader = [];
         $formattedHouseholdArray = null;
 
         foreach ($sheetArray as $indexRow => $row) {

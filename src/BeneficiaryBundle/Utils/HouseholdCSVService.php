@@ -154,9 +154,10 @@ class HouseholdCSVService
     protected function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, $mappingCSV, string $email)
     {
         $headers = $this->container->get('beneficiary.household_export_csv_service')->getHeaders($countryIso3);
+        $rowHeader = $sheetArray[1];
         $sheetArray = array_slice($sheetArray, count($headers) + 1);
 
-        $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $countryIso3, $mappingCSV);
+        $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $rowHeader, $countryIso3, $mappingCSV);
 
         return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, null, $email);
     }
