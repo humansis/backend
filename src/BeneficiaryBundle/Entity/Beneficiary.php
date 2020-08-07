@@ -69,22 +69,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     private $vulnerabilityCriteria;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
-     * @SymfonyGroups({"FullReceivers", "FullBeneficiary"})
-     *
-     * @var DistributionBeneficiary $distributionBeneficiary
-     */
-    private $distributionBeneficiary;
-
-    /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
-     * @ SymfonyGroups({"FullReceivers", "FullBeneficiary"})
-     *
-     * @var DistributionBeneficiary[] $distributionBeneficiary
-     */
-    private $distributionBeneficiaries;
-
-    /**
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Smartcard", mappedBy="beneficiary")
      *
      * @var Collection|Smartcard[]
@@ -102,8 +86,8 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      */
     public function __construct()
     {
+        parent::__construct();
         $this->vulnerabilityCriteria = new ArrayCollection();
-        $this->distributionBeneficiaries = new ArrayCollection();
         $this->person = new Person();
         $this->smartcards = new ArrayCollection();
         $this->setUpdatedOn(new DateTime());
@@ -343,30 +327,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     }
 
     /**
-     * @return DistributionBeneficiary
-     */
-    public function getDistributionBeneficiary(): DistributionBeneficiary
-    {
-        return $this->distributionBeneficiaries->getIterator()->current();
-    }
-
-    /**
-     * @return DistributionBeneficiary[]|Collection
-     */
-    public function getDistributionBeneficiaries(): Collection
-    {
-        return $this->distributionBeneficiaries;
-    }
-
-    /**
-     * @param DistributionBeneficiary[]|Collection $distributionBeneficiaries
-     */
-    public function setDistributionBeneficiaries(array $distributionBeneficiaries): Collection
-    {
-        $this->distributionBeneficiaries = $distributionBeneficiaries;
-    }
-
-    /**
      * Get vulnerabilityCriterion.
      *
      * @return Collection
@@ -378,6 +338,8 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Set VulnerabilityCriterions.
+     *
+     * @param Collection|null $collection
      *
      * @return Beneficiary
      */
