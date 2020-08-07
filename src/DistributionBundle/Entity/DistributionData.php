@@ -561,15 +561,15 @@ class DistributionData implements ExportableInterface
             // Then we make the string coherent
             if ($field === 'livelihood') {
                 $value = Household::LIVELIHOOD[$value];
-            } else if ($field === 'camp Name') {
+            } elseif ($field === 'camp Name') {
                 $field = 'camp Id';
             }
 
             if ($field === 'gender' || $field === 'head Of Household Gender') {
                 $stringCriterion = $field . " " . $condition . ($value === '0' ? ' Female' : ' Male');
-            } else if ($condition === 'true') {
+            } elseif ($condition === 'true') {
                 $stringCriterion = $field;
-            } else if ($condition === 'false') {
+            } elseif ($condition === 'false') {
                 $stringCriterion = 'not ' . $field;
             } else {
                 $stringCriterion = $field . " " . $condition . " " . $value;
@@ -605,7 +605,7 @@ class DistributionData implements ExportableInterface
             } else {
                 $percentage .= '0% ' . $commodity->getModalityType()->getName();
             }
-        } 
+        }
        
         
         $typeString = $this->getType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
@@ -635,7 +635,8 @@ class DistributionData implements ExportableInterface
         ];
     }
 
-    public function getPercentageValue($commodity) {
+    public function getPercentageValue($commodity)
+    {
         $totalCommodityValue = count($this->getDistributionBeneficiaries()) * $commodity->getValue();
         $amountSent = 0;
         foreach ($this->getDistributionBeneficiaries() as $distributionBeneficiary) {
@@ -646,7 +647,8 @@ class DistributionData implements ExportableInterface
     }
 
 
-    public function getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary) {
+    public function getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary)
+    {
         $modalityType = $this->getCommodities()[0]->getModalityType()->getName();
         if ($modalityType === 'Mobile Money') {
             $numberOfTransactions = count($distributionBeneficiary->getTransactions());
@@ -656,7 +658,7 @@ class DistributionData implements ExportableInterface
             } else {
                 return 0;
             }
-        } else if ($modalityType === 'QR Code Voucher') {
+        } elseif ($modalityType === 'QR Code Voucher') {
             $booklets =  $distributionBeneficiary->getBooklets();
             foreach ($booklets as $booklet) {
                 if ($booklet->getStatus() === 1 || $booklet->getStatus() === 2) {
@@ -673,8 +675,7 @@ class DistributionData implements ExportableInterface
                 return 0;
             }
             $correspondingGeneralRelief = $distributionBeneficiary->getGeneralReliefs()[$commodityIndex];
-            return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0 );
+            return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0);
         }
     }
-
 }

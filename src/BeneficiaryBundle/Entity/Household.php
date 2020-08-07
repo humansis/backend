@@ -2,9 +2,12 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 // use Symfony\Component\Serializer\Annotation\ as JMS_Type;
+use InvalidArgumentException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -218,7 +221,7 @@ class Household extends AbstractBeneficiary
     private $supportOrganizationName;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
      * DateTime<'d-m-Y'>
@@ -230,7 +233,7 @@ class Household extends AbstractBeneficiary
      * @var int|null
      *
      * @ORM\Column(name="income_spent_on_food", type="integer", nullable=true)
-     * @Groups({"FullHousehold"})
+     * @SymfonyGroups({"FullHousehold"})
      */
     private $incomeSpentOnFood;
 
@@ -238,7 +241,7 @@ class Household extends AbstractBeneficiary
      * @var int|null
      *
      * @ORM\Column(name="household_income", type="integer", nullable=true)
-     * @Groups({"FullHousehold"})
+     * @SymfonyGroups({"FullHousehold"})
      */
     private $householdIncome;
 
@@ -247,9 +250,9 @@ class Household extends AbstractBeneficiary
      */
     public function __construct()
     {
+        parent::__construct();
         $this->countrySpecificAnswers = new ArrayCollection();
         $this->beneficiaries = new ArrayCollection();
-        $this->projects = new ArrayCollection();
         $this->householdLocations = new ArrayCollection();
 
         $this->assets = [];
@@ -297,7 +300,7 @@ class Household extends AbstractBeneficiary
     {
         foreach ((array) $assets as $asset) {
             if (!isset(self::ASSETS[$asset])) {
-                throw new \InvalidArgumentException(sprintf('Argument 1 contain invalid asset key %d.', $asset));
+                throw new InvalidArgumentException(sprintf('Argument 1 contain invalid asset key %d.', $asset));
             }
         }
 
@@ -322,7 +325,7 @@ class Household extends AbstractBeneficiary
     public function setShelterStatus(?int $shelterStatus): self
     {
         if (null !== $shelterStatus && !isset(self::SHELTER_STATUSES[$shelterStatus])) {
-            throw new \InvalidArgumentException(sprintf('Argument 1 is not valid shelter status key.'));
+            throw new InvalidArgumentException(sprintf('Argument 1 is not valid shelter status key.'));
         }
 
         $this->shelterStatus = $shelterStatus;
@@ -403,35 +406,13 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * Set archived.
-     *
-     * @param bool $archived
-     *
-     * @return Household
-     */
-    public function setArchived($archived)
-    {
-        $this->archived = $archived;
-
-        return $this;
-    }
-
-    /**
-     * Get archived.
-     *
-     * @return bool
-     */
-    public function getArchived()
-    {
-        return $this->archived;
-    }
-
-    /**
      * Set beneficiaries.
      *
+     * @param Collection|null $collection
+     *
      * @return Household
      */
-    public function setBeneficiaries(\Doctrine\Common\Collections\Collection $collection = null)
+    public function setBeneficiaries(Collection $collection = null)
     {
         $this->beneficiaries = $collection;
 
@@ -439,26 +420,13 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * Set project.
-     *
-     * @param \Doctrine\Common\Collections\Collection|null $collection
-     * @return Household
-     */
-    public function setProjects(\Doctrine\Common\Collections\Collection $collection = null)
-    {
-        $this->projects = $collection;
-
-        return $this;
-    }
-
-    /**
      * Set countrySpecificAnswer.
      *
-     * @param \Doctrine\Common\Collections\Collection $collection
+     * @param Collection|null $collection
      *
      * @return Household
      */
-    public function setCountrySpecificAnswers(\Doctrine\Common\Collections\Collection $collection = null)
+    public function setCountrySpecificAnswers(Collection $collection = null)
     {
         $this->countrySpecificAnswers[] = $collection;
 
@@ -468,11 +436,11 @@ class Household extends AbstractBeneficiary
     /**
      * Add countrySpecificAnswer.
      *
-     * @param \BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
+     * @param CountrySpecificAnswer $countrySpecificAnswer
      *
      * @return Household
      */
-    public function addCountrySpecificAnswer(\BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
+    public function addCountrySpecificAnswer(CountrySpecificAnswer $countrySpecificAnswer)
     {
         $this->countrySpecificAnswers[] = $countrySpecificAnswer;
 
@@ -482,11 +450,11 @@ class Household extends AbstractBeneficiary
     /**
      * Remove countrySpecificAnswer.
      *
-     * @param \BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
+     * @param CountrySpecificAnswer $countrySpecificAnswer
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCountrySpecificAnswer(\BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
+    public function removeCountrySpecificAnswer(CountrySpecificAnswer $countrySpecificAnswer)
     {
         return $this->countrySpecificAnswers->removeElement($countrySpecificAnswer);
     }
@@ -494,7 +462,7 @@ class Household extends AbstractBeneficiary
     /**
      * Get countrySpecificAnswers.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getCountrySpecificAnswers()
     {
@@ -504,11 +472,11 @@ class Household extends AbstractBeneficiary
     /**
      * Add beneficiary.
      *
-     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
+     * @param Beneficiary $beneficiary
      *
      * @return Household
      */
-    public function addBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
+    public function addBeneficiary(Beneficiary $beneficiary)
     {
         $this->beneficiaries->add($beneficiary);
 
@@ -518,11 +486,11 @@ class Household extends AbstractBeneficiary
     /**
      * Remove beneficiary.
      *
-     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
+     * @param Beneficiary $beneficiary
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
+    public function removeBeneficiary(Beneficiary $beneficiary)
     {
         return $this->beneficiaries->removeElement($beneficiary);
     }
@@ -530,7 +498,7 @@ class Household extends AbstractBeneficiary
     /**
      * Get beneficiaries.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getBeneficiaries()
     {
@@ -542,44 +510,9 @@ class Household extends AbstractBeneficiary
      */
     public function resetBeneficiaries()
     {
-        $this->beneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->beneficiaries = new ArrayCollection();
 
         return $this;
-    }
-
-    /**
-     * Add project.
-     *
-     * @param \ProjectBundle\Entity\Project $project
-     *
-     * @return Household
-     */
-    public function addProject(\ProjectBundle\Entity\Project $project)
-    {
-        $this->projects[] = $project;
-        return $this;
-    }
-
-    /**
-     * Remove project.
-     *
-     * @param \ProjectBundle\Entity\Project $project
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeProject(\ProjectBundle\Entity\Project $project)
-    {
-        return $this->projects->removeElement($project);
-    }
-
-    /**
-     * Get projects.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getProjects()
-    {
-        return $this->projects;
     }
 
     /**
@@ -665,11 +598,11 @@ class Household extends AbstractBeneficiary
     /**
      * Remove householdLocation.
      *
-     * @param \BeneficiaryBundle\Entity\HouseholdLocation $householdLocation
+     * @param HouseholdLocation $householdLocation
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
+    public function removeHouseholdLocation(HouseholdLocation $householdLocation)
     {
         return $this->householdLocations->removeElement($householdLocation);
     }
@@ -677,11 +610,11 @@ class Household extends AbstractBeneficiary
     /**
      * Add householdLocation.
      *
-     * @param \BeneficiaryBundle\Entity\HouseholdLocation $householdLocation
+     * @param HouseholdLocation $householdLocation
      *
      * @return Household
      */
-    public function addHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
+    public function addHouseholdLocation(HouseholdLocation $householdLocation)
     {
         $this->householdLocations[] = $householdLocation;
         $householdLocation->setHousehold($this);
@@ -691,7 +624,7 @@ class Household extends AbstractBeneficiary
     /**
      * Get householdLocations.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getHouseholdLocations()
     {
@@ -735,7 +668,7 @@ class Household extends AbstractBeneficiary
     {
         foreach ((array) $supportReceivedTypes as $type) {
             if (!isset(self::SUPPORT_RECIEVED_TYPES[$type])) {
-                throw new \InvalidArgumentException(sprintf('Argument 1 contain invalid received type key %d.', $type));
+                throw new InvalidArgumentException(sprintf('Argument 1 contain invalid received type key %d.', $type));
             }
         }
 
@@ -762,19 +695,19 @@ class Household extends AbstractBeneficiary
 
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getSupportDateReceived(): ?\DateTimeInterface
+    public function getSupportDateReceived(): ?DateTimeInterface
     {
         return $this->supportDateReceived;
     }
 
     /**
-     * @param \DateTimeInterface|null $supportDateReceived
+     * @param DateTimeInterface|null $supportDateReceived
      *
      * @return self
      */
-    public function setSupportDateReceived(?\DateTimeInterface $supportDateReceived): self
+    public function setSupportDateReceived(?DateTimeInterface $supportDateReceived): self
     {
         $this->supportDateReceived = $supportDateReceived;
 

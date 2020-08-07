@@ -45,17 +45,11 @@ class Community extends AbstractBeneficiary
     private $longitude;
 
     /**
-     * @var boolean
-     *
-     * @ORM\Column(type="boolean", options={"default" : 0})
-     */
-    private $archived = 0;
-
-    /**
      * Community constructor.
      */
     public function __construct()
     {
+        parent::__construct();
         $this->contact = new Person();
     }
 
@@ -234,29 +228,4 @@ class Community extends AbstractBeneficiary
     {
         return $this->longitude;
     }
-
-    /**
-     * Set archived.
-     *
-     * @param bool $archived
-     *
-     * @return self
-     */
-    public function setArchived(bool $archived)
-    {
-        $this->archived = $archived;
-
-        return $this;
-    }
-
-    /**
-     * Get archived.
-     *
-     * @return bool
-     */
-    public function getArchived(): bool
-    {
-        return $this->archived;
-    }
-
 }

@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Entity;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -39,9 +40,9 @@ class DistributionBeneficiary
     private $distributionData;
 
     /**
-     * @var Beneficiary
+     * @var AbstractBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="distributionBeneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="distributionBeneficiary")
      * @ SymfonyGroups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
      * @SymfonyGroups({"ValidatedDistribution"})
      */
