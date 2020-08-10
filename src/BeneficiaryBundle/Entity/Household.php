@@ -237,6 +237,14 @@ class Household
      */
     private $supportDateReceived;
 
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(name="income_spent_on_food", type="integer", nullable=true)
+     * @Groups({"FullHousehold"})
+     */
+    private $incomeSpentOnFood;
+
 
     /**
      * Constructor
@@ -799,5 +807,25 @@ class Household
         $this->supportDateReceived = $supportDateReceived;
 
         return $this;
+    }
+
+    /**
+     * @param int|null $incomeSpentOnFood
+     *
+     * @return self
+     */
+    public function setIncomeSpentOnFood(?int $incomeSpentOnFood): self
+    {
+        $this->incomeSpentOnFood = $incomeSpentOnFood;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getIncomeSpentOnFood(): ?int
+    {
+        return $this->incomeSpentOnFood;
     }
 }
