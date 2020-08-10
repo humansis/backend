@@ -237,6 +237,13 @@ class Household
      */
     private $supportDateReceived;
 
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(name="household_income", type="integer", nullable=true)
+     * @Groups({"FullHousehold"})
+     */
+    private $householdIncome;
 
     /**
      * Constructor
@@ -799,5 +806,26 @@ class Household
         $this->supportDateReceived = $supportDateReceived;
 
         return $this;
+    }
+
+    /**
+     * @param int|null $householdIncome
+     *
+     * @return self
+     */
+    public function setHouseholdIncome(?int $householdIncome): self
+    {
+        $this->householdIncome = $householdIncome;
+
+        return $this;
+    }
+
+
+    /**
+     * @return int|null
+     */
+    public function getHouseholdIncome(): ?int
+    {
+        return $this->householdIncome;
     }
 }
