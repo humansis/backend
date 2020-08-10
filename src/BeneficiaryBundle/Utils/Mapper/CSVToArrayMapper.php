@@ -150,11 +150,6 @@ class CSVToArrayMapper
                 }
                 $householdArray = $formattedHouseholdArray;
                 $householdArray['beneficiaries'] = [$formattedHouseholdArray['beneficiaries']];
-                try {
-                    $this->generateStaticBeneficiary($householdArray);
-                } catch (\Exception $exception) {
-                    throw $exception;
-                }
             } else {
                 // Add beneficiary to existing household
                 $householdArray['beneficiaries'][] = $formattedHouseholdArray['beneficiaries'];
@@ -162,6 +157,7 @@ class CSVToArrayMapper
         }
         // Add the last household to the list
         if (null !== $formattedHouseholdArray) {
+            $this->generateStaticBeneficiary($householdArray);
             $listHouseholdArray[] = $householdArray;
         }
 
@@ -372,8 +368,27 @@ class CSVToArrayMapper
         }
 
         $hhAge = \DateTime::createFromFormat('d-m-Y', $hhBirthDate)->diff(new \DateTime())->y;
-        $hhGender = $headBeneficiary['gender'];
-        $hasIncludedHHMember = false;
+
+        foreach ($householdArray['beneficiaries'] as $beneficiary) {
+            if (isset($beneficiary['date_of_birth']) && isset($beneficiary['gender'])) {
+                $age = \DateTime::createFromFormat('d-m-Y', $beneficiary['date_of_birth'])->diff(new \DateTime())->y;
+                if ($age <= 2) {
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-0-2';
+                } elseif ($age < 6) {
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-2-5';
+                } elseif ($age < 18) {
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-6-17';
+                } elseif ($age < 65) {
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-18-64';
+                } else {
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-65-99';
+                }
+
+                if (array_key_exists($expectedStaticField, $householdArray) && null !== $householdArray[$expectedStaticField]) {
+                    --$householdArray[$expectedStaticField];
+                }
+            }
+        }
 
         $staticFields = [
             'f-0-2', 'f-2-5', 'f-6-17', 'f-18-64', 'f-65-99',
@@ -384,12 +399,6 @@ class CSVToArrayMapper
             if ($headBeneficiary && !empty($householdArray[$field])) {
                 list ($gender, $fromAge, $toAge) = explode('-', $staticField);
                 $gender = $gender === 'f' ? 0 : 1;
-
-                // Deduction of the household head in the total number of household members
-                if (!$hasIncludedHHMember && $hhGender === $gender && $fromAge <= $hhAge && $hhAge <= $toAge) {
-                    $hasIncludedHHMember = true;
-                    $householdArray[$field] -= 1;
-                }
 
                 $birthDate = new \DateTime();
                 $ageInterval = new \DateInterval('P' . ($toAge - $fromAge) * 12 . 'M');
@@ -417,9 +426,7 @@ class CSVToArrayMapper
             unset($householdArray[$field]);
         }
 
-        if (!$hasIncludedHHMember) {
-            throw new \Exception('Member field must be included Head member');
-        }
+        $x = 1;
     }
 
     /**
