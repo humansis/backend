@@ -209,6 +209,14 @@ class Household extends AbstractBeneficiary
     private $supportReceivedTypes;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="support_organization_name", type="string", nullable=true)
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
+     */
+    private $supportOrganizationName;
+
+    /**
      * @var DateTimeInterface
      *
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
@@ -648,6 +656,22 @@ class Household extends AbstractBeneficiary
         $this->supportReceivedTypes = (array) $supportReceivedTypes;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSupportOrganizationName(): ?string
+    {
+        return $this->supportOrganizationName;
+    }
+
+    /**
+     * @param string|null $supportOrganizationName
+     */
+    public function setSupportOrganizationName(?string $supportOrganizationName): void
+    {
+        $this->supportOrganizationName = $supportOrganizationName;
     }
 
 
