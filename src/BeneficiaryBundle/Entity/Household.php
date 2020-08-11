@@ -245,6 +245,13 @@ class Household
      */
     private $incomeSpentOnFood;
 
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(name="household_income", type="integer", nullable=true)
+     * @Groups({"FullHousehold"})
+     */
+    private $householdIncome;
 
     /**
      * Constructor
@@ -817,6 +824,16 @@ class Household
     public function setIncomeSpentOnFood(?int $incomeSpentOnFood): self
     {
         $this->incomeSpentOnFood = $incomeSpentOnFood;
+    }
+
+    /**
+     * @param int|null $householdIncome
+     *
+     * @return self
+     */
+    public function setHouseholdIncome(?int $householdIncome): self
+    {
+        $this->householdIncome = $householdIncome;
 
         return $this;
     }
@@ -827,5 +844,13 @@ class Household
     public function getIncomeSpentOnFood(): ?int
     {
         return $this->incomeSpentOnFood;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getHouseholdIncome(): ?int
+    {
+        return $this->householdIncome;
     }
 }
