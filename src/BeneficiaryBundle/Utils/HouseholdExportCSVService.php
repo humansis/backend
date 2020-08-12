@@ -101,7 +101,7 @@ class HouseholdExportCSVService
         'Prefix phone 2' => "'+855",
         'Number phone 2' => "'223543767",
         'Proxy phone 2' => 'N',
-        'ID Type' => 'IDCard',
+        'ID Type' => 'National ID',
         'ID Number' => '030617701',
         'F 0 - 2' => 2,
         'F 2 - 5' => 0,
