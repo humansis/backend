@@ -53,6 +53,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $country_specific_answer = current($household["country_specific_answers"]);
             $this->assertArrayHasKey('answer', $country_specific_answer);
             $this->assertArrayHasKey('country_specific', $country_specific_answer);
+            $this->assertArrayHasKey('income_spent_on_food', $household);
             $this->assertArrayHasKey('household_income', $household);
         } catch (\Exception $exception) {
             $this->removeHousehold($this->namefullnameHousehold);
