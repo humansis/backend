@@ -174,6 +174,14 @@ class Beneficiary implements ExportableInterface
     private $smartcard;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="fathers_name", type="string", length=255, nullable=true)
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
+     */
+    private $fathersName;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -899,5 +907,26 @@ class Beneficiary implements ExportableInterface
         }
 
         return null;
+    }
+
+    /**
+     * @param string|null $fathersName
+     *
+     * @return Beneficiary
+     */
+    public function setFathersName(?string $fathersName): Beneficiary
+    {
+        $this->fathersName = $fathersName;
+
+        return $this;
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getFathersName(): ?string
+    {
+        return $this->fathersName;
     }
 }
