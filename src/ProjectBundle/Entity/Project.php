@@ -109,7 +109,7 @@ class Project implements ExportableInterface
     private $donors;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="ProjectBundle\Entity\ProjectSector", mappedBy="project", cascade={"persist"})
      *
      * @Groups({"FullProject", "FullDistribution", "SmallDistribution"})
      */
