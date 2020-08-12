@@ -92,10 +92,6 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\SectorFixtures:
-        tags:
-            - { name: doctrine.fixture.orm }
-
     CommonBundle\DataFixtures\UserFixtures:
         arguments:
             - "@fos_user.user_manager"
