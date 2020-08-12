@@ -772,7 +772,7 @@ class CSVToArrayMapper
                 throw new \InvalidArgumentException("'{$formattedHouseholdArray['support_date_received']}' is not valid support date received.");
             }
 
-            $formattedHouseholdArray['support_date_received'] = $date;
+            $formattedHouseholdArray['support_date_received'] = $formattedHouseholdArray['support_date_received'];
         }
     }
     /**
