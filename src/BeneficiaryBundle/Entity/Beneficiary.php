@@ -728,6 +728,21 @@ class Beneficiary implements ExportableInterface
             ];
         }
 
+        $assets = [];
+        foreach ((array) $this->getHousehold()->getAssets() as $type) {
+            $assets[] = Household::ASSETS[$type];
+        }
+
+        $supportReceivedTypes = [];
+        foreach ((array) $this->getHousehold()->getShelterStatus() as $type) {
+            $supportReceivedTypes[] = Household::SUPPORT_RECIEVED_TYPES[$type];
+        }
+
+        $shelterStatus = '';
+        if ($this->getHousehold()->getShelterStatus()) {
+            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
+        }
+
         $tempBenef = [
             "beneficiary ID" => $this->getId(),
             "localGivenName" => $this->getLocalGivenName(),
@@ -749,6 +764,11 @@ class Beneficiary implements ExportableInterface
             "proxy phone 2" => $proxyphones[1],
             "ID Type" => $typenationalID,
             "ID Number" => $valuesnationalID,
+            "Assets" => implode(', ', $assets),
+            "Shelter Status" => $shelterStatus,
+            "Debt Level" => $this->getHousehold()->getDebtLevel(),
+            "Support Received Types" => implode(', ', $supportReceivedTypes),
+            "Support Date Received" => $this->getHousehold()->getSupportDateReceived() ? $this->getHousehold()->getSupportDateReceived()->format('d-m-Y') : null,
         ];
 
         foreach ($valueCountrySpecific as $key => $value) {
