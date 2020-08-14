@@ -3,6 +3,8 @@
 namespace VoucherBundle\Utils;
 
 use CommonBundle\InputType\Country;
+use CommonBundle\InputType\DataTableType;
+use CommonBundle\InputType\RequestConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -167,7 +169,9 @@ class VoucherService
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
         } else if ($filters) {
-            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $filters)[1];
+            /** @var DataTableType $dataTableFilter */
+            $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
+            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
         } else {
             $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
         }
@@ -203,7 +207,9 @@ class VoucherService
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids)->getResult();
         } else if ($filters) {
-            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $filters)[1];
+            /** @var DataTableType $dataTableFilter */
+            $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
+            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
         } else {
             $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
         }
