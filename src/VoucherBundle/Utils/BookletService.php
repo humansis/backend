@@ -662,7 +662,7 @@ class BookletService
     {
         $limitMinimum = $filter->pageIndex * $filter->pageSize;
 
-        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryISO3, $limitMinimum, $filter->pageSize, $filter->getSort(), $filter->getFilter());
+        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryISO3->getIso3(), $limitMinimum, $filter->pageSize, $filter->getSort(), $filter->getFilter());
         $length = $booklets[0];
         $booklets = $booklets[1];
         return [$length, $booklets];
