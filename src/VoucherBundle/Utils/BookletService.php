@@ -627,9 +627,10 @@ class BookletService
 
             $products = [];
             if ($transactionBooklet) {
+                /** @var Voucher $voucher */
                 foreach ($transactionBooklet->getVouchers() as $voucher) {
-                    foreach ($voucher->getProducts() as $product) {
-                        array_push($products, $product->getName());
+                    foreach ($voucher->getRecords() as $record) {
+                        array_push($products, $record->getProduct()->getName());
                     }
                 }
             }
