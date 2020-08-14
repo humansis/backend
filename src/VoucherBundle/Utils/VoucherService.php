@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Utils;
 
+use CommonBundle\InputType\Country;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -166,7 +167,7 @@ class VoucherService
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
         } else if ($filters) {
-            $booklets = $this->container->get('voucher.booklet_service')->getAll($countryIso3, $filters)[1];
+            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $filters)[1];
         } else {
             $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
         }
@@ -202,7 +203,7 @@ class VoucherService
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids)->getResult();
         } else if ($filters) {
-            $booklets = $this->container->get('voucher.booklet_service')->getAll($countryIso3, $filters)[1];
+            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $filters)[1];
         } else {
             $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
         }
