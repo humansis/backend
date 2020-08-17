@@ -120,6 +120,14 @@ class Person
     private $referral;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="fathers_name", type="string", length=255, nullable=true)
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "Fullself"})
+     */
+    private $fathersName;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -714,5 +722,26 @@ class Person
         }
 
         return null;
+    }
+
+    /**
+     * @param string|null $fathersName
+     *
+     * @return Person
+     */
+    public function setFathersName(?string $fathersName): Person
+    {
+        $this->fathersName = $fathersName;
+
+        return $this;
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getFathersName(): ?string
+    {
+        return $this->fathersName;
     }
 }
