@@ -216,7 +216,7 @@ class Household extends AbstractBeneficiary
      * @var string|null
      *
      * @ORM\Column(name="support_organization_name", type="string", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $supportOrganizationName;
 
