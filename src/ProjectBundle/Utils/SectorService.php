@@ -243,11 +243,25 @@ class SectorService
     /**
      * @return Sector[]
      */
-    public function findAll()
+    public function findAll(): iterable
     {
         $sectors = [];
         foreach (SubSectorEnum::all() as $subSectorName) {
             $sectors[] = $this->findBySubSector($subSectorName);
+        }
+        return $sectors;
+    }
+
+    public function getSubsBySector(): iterable
+    {
+        $sectors = [];
+        foreach (SectorEnum::all() as $sector) {
+            $sectors[$sector] = [];
+        }
+        /** @var Sector $subSectorName */
+        foreach (SubSectorEnum::all() as $subSectorName) {
+            $sectorDTO = $this->findBySubSector($subSectorName);
+            $sectors[$sectorDTO->getSectorName()][] = $sectorDTO;
         }
         return $sectors;
     }
