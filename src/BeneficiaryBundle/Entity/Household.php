@@ -152,11 +152,7 @@ class Household extends AbstractBeneficiary
      */
     private $beneficiaries;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
-     */
-    private $projects;
+
 
     /**
      * @var boolean
@@ -229,21 +225,6 @@ class Household extends AbstractBeneficiary
      */
     private $supportDateReceived;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="income_spent_on_food", type="integer", nullable=true)
-     * @SymfonyGroups({"FullHousehold"})
-     */
-    private $incomeSpentOnFood;
-
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="household_income", type="integer", nullable=true)
-     * @SymfonyGroups({"FullHousehold"})
-     */
-    private $householdIncome;
 
     /**
      * Constructor
@@ -712,43 +693,5 @@ class Household extends AbstractBeneficiary
         $this->supportDateReceived = $supportDateReceived;
 
         return $this;
-    }
-
-    /**
-     * @param int|null $incomeSpentOnFood
-     *
-     * @return self
-     */
-    public function setIncomeSpentOnFood(?int $incomeSpentOnFood): self
-    {
-        $this->incomeSpentOnFood = $incomeSpentOnFood;
-    }
-
-    /**
-     * @param int|null $householdIncome
-     *
-     * @return self
-     */
-    public function setHouseholdIncome(?int $householdIncome): self
-    {
-        $this->householdIncome = $householdIncome;
-
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getIncomeSpentOnFood(): ?int
-    {
-        return $this->incomeSpentOnFood;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getHouseholdIncome(): ?int
-    {
-        return $this->householdIncome;
     }
 }
