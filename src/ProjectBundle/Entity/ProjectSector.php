@@ -5,6 +5,7 @@ namespace ProjectBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use ProjectBundle\DBAL\SectorEnum;
+use ProjectBundle\DBAL\SubSectorEnum;
 
 /**
  * Sector
@@ -29,19 +30,21 @@ class ProjectSector
 
     /**
      * @var string
+     * @see SectorEnum
      *
      * @ORM\Column(name="sector", type="enum_sector", nullable=false)
      * @Groups({"FullSector", "FullProject"})
      */
     private $sector;
 
-    // /**
-    //  * @var string|null
-    //  *
-    //  * @ORM\Column(name="subsector", type="enum_sector", nullable=true)
-    //  * @Groups({"FullSector", "FullProject"})
-    //  */
-    // private $subSector;
+    /**
+     * @var string|null
+     * @see SubSectorEnum
+     *
+     * @ORM\Column(name="subsector", type="enum_sub_sector", nullable=true)
+     * @Groups({"FullSector", "FullProject"})
+     */
+    private $subSector;
 
     /**
      * @var Project
@@ -103,24 +106,24 @@ class ProjectSector
      */
     public function getName(): string
     {
-        return SectorEnum::getLabel($this->getSector());
+        return $this->getSector() . '-' . $this->getSubSector();
     }
 
-    // /**
-    //  * @return string|null
-    //  */
-    // public function getSubSector(): ?string
-    // {
-    //     return $this->subSector;
-    // }
-    //
-    // /**
-    //  * @param string|null $subSector
-    //  */
-    // public function setSubSector(?string $subSector): void
-    // {
-    //     $this->subSector = $subSector;
-    // }
+    /**
+     * @return string|null
+     */
+    public function getSubSector(): ?string
+    {
+        return $this->subSector;
+    }
+
+    /**
+     * @param string|null $subSector
+     */
+    public function setSubSector(?string $subSector): void
+    {
+        $this->subSector = $subSector;
+    }
 
     /**
      * @return Project
