@@ -2,129 +2,220 @@
 
 namespace ProjectBundle\Entity;
 
+use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Community;
+use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\Institution;
+use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 
 /**
- * Sector
- *
- * @ORM\Table(name="sector")
- * @ORM\Entity(repositoryClass="ProjectBundle\Repository\SectorRepository")
+ * Sector DTO
  */
 class Sector
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @Groups({"FullSector", "FullProject"})
-     */
-    private $id;
+    /** @var string */
+    private $sectorName;
+
+    /** @var string|null */
+    private $subSectorName;
+
+    /** @var bool */
+    private $distributionAllowed = false;
+
+    /** @var bool */
+    private $activityAllowed = false;
+
+    /** @var bool */
+    private $beneficiaryAllowed = false;
+
+    /** @var bool */
+    private $householdAllowed = false;
+
+    /** @var bool */
+    private $communityAllowed = false;
+
+    /** @var bool */
+    private $institutionAllowed = false;
 
     /**
-     * @var string
+     * Sector constructor.
      *
-     * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"FullSector", "FullProject"})
+     * @param string      $sectorName
+     * @param string|null $subSectorName
      */
-    private $name;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", mappedBy="sectors")
-     */
-    private $projects;
-
-
-    /**
-     * Set id.
-     *
-     * @return int
-     */
-    public function setId($id)
+    public function __construct(string $sectorName, ?string $subSectorName)
     {
-        $this->id = $id;
-
-        return $this->id;
-    }
-
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
+        $this->sectorName = $sectorName;
+        $this->subSectorName = $subSectorName;
     }
 
     /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return Sector
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name.
-     *
      * @return string
      */
-    public function getName()
+    public function getSectorName(): string
     {
-        return $this->name;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->projects = new \Doctrine\Common\Collections\ArrayCollection();
+        return $this->sectorName;
     }
 
     /**
-     * Add project.
-     *
-     * @param \ProjectBundle\Entity\Project $project
-     *
-     * @return Sector
+     * @param string $sectorName
      */
-    public function addProject(\ProjectBundle\Entity\Project $project)
+    public function setSectorName(string $sectorName): self
     {
-        $this->projects[] = $project;
+        $this->sectorName = $sectorName;
 
         return $this;
     }
 
     /**
-     * Remove project.
-     *
-     * @param \ProjectBundle\Entity\Project $project
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return string|null
      */
-    public function removeProject(\ProjectBundle\Entity\Project $project)
+    public function getSubSectorName(): ?string
     {
-        return $this->projects->removeElement($project);
+        return $this->subSectorName;
     }
 
     /**
-     * Get projects.
-     *
-     * @return \Doctrine\Common\Collections\Collection
+     * @param string|null $subSectorName
      */
-    public function getProjects()
+    public function setSubSectorName(?string $subSectorName): self
     {
-        return $this->projects;
+        $this->subSectorName = $subSectorName;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDistributionAllowed(): bool
+    {
+        return $this->distributionAllowed;
+    }
+
+    /**
+     * @param bool $distributionAllowed
+     */
+    public function setDistributionAllowed(bool $distributionAllowed = true): self
+    {
+        $this->distributionAllowed = $distributionAllowed;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActivityAllowed(): bool
+    {
+        return $this->activityAllowed;
+    }
+
+    /**
+     * @param bool $activityAllowed
+     */
+    public function setActivityAllowed(bool $activityAllowed = true): self
+    {
+        $this->activityAllowed = $activityAllowed;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBeneficiaryAllowed(): bool
+    {
+        return $this->beneficiaryAllowed;
+    }
+
+    /**
+     * @param bool $beneficiaryAllowed
+     */
+    public function setBeneficiaryAllowed(bool $beneficiaryAllowed = true): self
+    {
+        $this->beneficiaryAllowed = $beneficiaryAllowed;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHouseholdAllowed(): bool
+    {
+        return $this->householdAllowed;
+    }
+
+    /**
+     * @param bool $householdAllowed
+     */
+    public function setHouseholdAllowed(bool $householdAllowed = true): self
+    {
+        $this->householdAllowed = $householdAllowed;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCommunityAllowed(): bool
+    {
+        return $this->communityAllowed;
+    }
+
+    /**
+     * @param bool $communityAllowed
+     */
+    public function setCommunityAllowed(bool $communityAllowed = true): self
+    {
+        $this->communityAllowed = $communityAllowed;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInstitutionAllowed(): bool
+    {
+        return $this->institutionAllowed;
+    }
+
+    /**
+     * @param bool $institutionAllowed
+     */
+    public function setInstitutionAllowed(bool $institutionAllowed = true): self
+    {
+        $this->institutionAllowed = $institutionAllowed;
+
+        return $this;
+    }
+
+    /**
+     * @param object $assistance
+     *
+     * @return bool
+     */
+    public function supportsAssistance(object $assistance): bool
+    {
+        return $assistance instanceof DistributionData && $this->isDistributionAllowed();
+    }
+
+    /**
+     * @param object $target
+     *
+     * @return bool
+     */
+    public function supportsTarget(object $target): bool
+    {
+        return $target instanceof Beneficiary && $this->isBeneficiaryAllowed()
+            || $target instanceof Household && $this->isHouseholdAllowed()
+            || $target instanceof Institution && $this->isInstitutionAllowed()
+            || $target instanceof Community && $this->isCommunityAllowed()
+            ;
     }
 }

@@ -4,14 +4,21 @@ namespace CommonBundle\DBAL;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
-class AbstractEnum extends Type
+abstract class AbstractEnum extends Type
 {
     protected $name;
-    protected $values = array();
+    protected static $values;
+
+    public static function all(): array
+    {
+        return self::$values;
+    }
 
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        $values = array_map(function($val) { return "'".$val."'"; }, $this->values);
+        $values = array_map(function ($val) {
+            return "'".$val."'";
+        }, self::$values);
 
         return "ENUM(".implode(", ", $values).")";
     }
@@ -23,7 +30,7 @@ class AbstractEnum extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (!in_array($value, $this->values)) {
+        if (!in_array($value, self::$values)) {
             throw new \InvalidArgumentException("Invalid '".$this->name."' value.");
         }
         return $value;
