@@ -33,3 +33,8 @@ services:
 
     ProjectBundle\Mapper\SectorMapper:
         public: true
+
+    project.sector_mapper:
+        class: ProjectBundle\Mapper\SectorMapper
+        arguments: []
+        public: true
