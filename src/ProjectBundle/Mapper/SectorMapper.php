@@ -1,28 +1,57 @@
 <?php
-
 namespace ProjectBundle\Mapper;
 
-use ProjectBundle\Entity\Donor;
-use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\Sector;
 
 class SectorMapper
 {
-    public function toArray(?Sector $sector): ?array
+    private function toSubArray(string $sector, iterable $subSectors): array
     {
-        if (!$sector) {
-            return null;
+        $subSectorMapped = [];
+
+        /** @var Sector $subSector */
+        foreach ($subSectors as $subSector) {
+            $ss = [
+                'id' => $subSector->getSubSectorName(),
+                'name' => $this->getLabelKeyFromEnum($subSector->getSubSectorName()),
+                'availableTargets' => [],
+                'assistanceType' => '',
+            ];
+            if ($subSector->isCommunityAllowed()) {
+                $ss['availableTargets'][] = 'community';
+            }
+            if ($subSector->isInstitutionAllowed()) {
+                $ss['availableTargets'][] = 'institution';
+            }
+            if ($subSector->isHouseholdAllowed()) {
+                $ss['availableTargets'][] = 'household';
+            }
+            if ($subSector->isBeneficiaryAllowed()) {
+                $ss['availableTargets'][] = 'individual';
+            }
+            if ($subSector->isActivityAllowed()) {
+                $ss['assistanceType'] = 'activity';
+            } elseif ($subSector->isDistributionAllowed()) {
+                $ss['assistanceType'] = 'distribution';
+            }
+            $subSectorMapped[] = $ss;
         }
         return [
-            'id' => $sector->getId(),
-            'name' => $sector->getName(),
+            'id' => $sector,
+            'name' => $this->getLabelKeyFromEnum($sector),
+            'subSectors' => $subSectorMapped,
         ];
     }
 
-    public function toArrays(iterable $projects): iterable
+    private function getLabelKeyFromEnum(string $enumValue): string
     {
-        foreach ($projects as $project) {
-            yield $this->toArray($project);
+        return 'label_sector_'.$enumValue;
+    }
+
+    public function listToSubArrays(iterable $sectorTree): iterable
+    {
+        foreach ($sectorTree as $sector => $subSectors) {
+            yield $this->toSubArray($sector, $subSectors);
         }
     }
 }

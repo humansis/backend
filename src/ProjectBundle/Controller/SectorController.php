@@ -3,8 +3,8 @@
 
 namespace ProjectBundle\Controller;
 
-
 use ProjectBundle\Entity\Sector;
+use ProjectBundle\Mapper\SectorMapper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +20,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  */
 class SectorController extends Controller
 {
-
     /**
      * @Rest\Get("/sectors", name="get_all_sectors")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
@@ -39,11 +38,9 @@ class SectorController extends Controller
      */
     public function getAllAction()
     {
-        $sectors = $this->get('project.sector_service')->findAll();
+        $sectorMapper = $this->get('project.sector_mapper');
+        $sectors = $this->get('project.sector_service')->getSubsBySector();
 
-        $json = $this->get('serializer')
-            ->serialize($sectors, 'json', ['groups' => ['FullSector']]);
-
-        return new Response($json);
+        return $this->json($sectorMapper->listToSubArrays($sectors));
     }
 }
