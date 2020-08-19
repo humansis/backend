@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * CampAddress
@@ -26,13 +26,13 @@ class CampAddress
      * @var string
      *
      * @ORM\Column(name="tentNumber", type="string", length=45)
-     * @Groups({"FullHousehold"})
+     * @SymfonyGroups({"FullHousehold"})
      */
     private $tentNumber;
 
      /**
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Camp", cascade={"persist"})
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $camp;
 

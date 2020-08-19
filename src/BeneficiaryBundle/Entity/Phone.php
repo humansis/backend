@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Phone
@@ -19,7 +19,7 @@ class Phone
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $id;
 
@@ -27,7 +27,7 @@ class Phone
      * @var string
      *
      * @ORM\Column(name="number", type="string", length=45)
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $number;
 
@@ -35,7 +35,7 @@ class Phone
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=45)
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $type;
 
@@ -43,7 +43,7 @@ class Phone
      * @var string
      *
      * @ORM\Column(name="prefix", type="string", length=45)
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $prefix;
 
@@ -51,16 +51,16 @@ class Phone
      * @var boolean
      *
      * @ORM\Column(name="proxy", type="boolean")
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
-    private $proxy;
+    private $proxy = false;
 
     /**
-     * @var Beneficiary
+     * @var Person
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="phones")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Person", inversedBy="phones")
      */
-    private $beneficiary;
+    private $person;
 
     /**
      * Get id.
@@ -171,13 +171,13 @@ class Phone
     /**
      * Set beneficiary.
      *
-     * @param \BeneficiaryBundle\Entity\Beneficiary|null $beneficiary
+     * @param Person|null $person
      *
      * @return Phone
      */
-    public function setBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary = null)
+    public function setPerson(?Person $person = null)
     {
-        $this->beneficiary = $beneficiary;
+        $this->person = $person;
 
         return $this;
     }
@@ -185,10 +185,10 @@ class Phone
     /**
      * Get beneficiary.
      *
-     * @return \BeneficiaryBundle\Entity\Beneficiary|null
+     * @return Person|null
      */
-    public function getBeneficiary()
+    public function getPerson()
     {
-        return $this->beneficiary;
+        return $this->person;
     }
 }

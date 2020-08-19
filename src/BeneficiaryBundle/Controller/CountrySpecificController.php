@@ -4,7 +4,7 @@ namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use JMS\Serializer\SerializationContext;
+
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -38,11 +38,11 @@ class CountrySpecificController extends Controller
     {
         $countrySpecifics = $this->get('beneficiary.country_specific_service')->getAll($request->get('__country'));
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $countrySpecifics,
                 'json',
-                SerializationContext::create()->setGroups(['FullCountrySpecific'])->setSerializeNull(true)
+                ['groups' => ['FullCountrySpecific']]
             );
 
         return new Response($json);
@@ -66,12 +66,8 @@ class CountrySpecificController extends Controller
         $countrySpecific = $this->get('beneficiary.country_specific_service')
             ->create($request->request->get('__country'), $request->request->all());
 
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $countrySpecific,
-                'json',
-                SerializationContext::create()->setGroups(['FullCountrySpecific'])->setSerializeNull(true)
-            );
+        $json = $this->get('serializer')
+            ->serialize($countrySpecific,'json', ['groups' => ['FullCountrySpecific']]);
 
         return new Response($json);
     }
@@ -96,11 +92,11 @@ class CountrySpecificController extends Controller
         $countrySpecific = $this->get('beneficiary.country_specific_service')
             ->update($countrySpecific, $request->request->get('__country'), $request->request->all());
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $countrySpecific,
                 'json',
-                SerializationContext::create()->setGroups(['FullCountrySpecific'])->setSerializeNull(true)
+                ['groups' => ['FullCountrySpecific']]
             );
 
         return new Response($json);

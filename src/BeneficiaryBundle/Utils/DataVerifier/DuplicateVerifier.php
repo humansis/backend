@@ -5,7 +5,7 @@ namespace BeneficiaryBundle\Utils\DataVerifier;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializationContext;
+
 use Symfony\Component\DependencyInjection\Container;
 
 class DuplicateVerifier extends AbstractVerifier
@@ -62,10 +62,10 @@ class DuplicateVerifier extends AbstractVerifier
             if (! $match && ! empty($existingBeneficiaries)) {
                 // reset the existing household's beneficiaries to include only the duplicate
                 $oldHousehold = json_decode(
-                    $this->container->get('jms_serializer')->serialize(
+                    $this->container->get('serializer')->serialize(
                         $existingBeneficiaries[0]->getHousehold(),
                         'json',
-                        SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
+                        ['groups' => ['FullHousehold']]
                     ),
                     true
                 );

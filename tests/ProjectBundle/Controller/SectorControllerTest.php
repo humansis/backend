@@ -24,7 +24,7 @@ class SectorControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("jms_serializer");
+        $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser

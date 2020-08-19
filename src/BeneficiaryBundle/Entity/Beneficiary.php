@@ -3,12 +3,12 @@
 namespace BeneficiaryBundle\Entity;
 
 use CommonBundle\Utils\ExportableInterface;
+use DateTime;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as Serializer;
-use JMS\Serializer\Annotation\Type as JMS_Type;
-use JMS\Serializer\Annotation\Groups;
+use Exception;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use VoucherBundle\Entity\Smartcard;
@@ -19,67 +19,18 @@ use VoucherBundle\Entity\Smartcard;
  * @ORM\Table(name="beneficiary")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\BeneficiaryRepository")
  */
-class Beneficiary implements ExportableInterface
+class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person", cascade={"persist", "remove"})
      */
-    private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="enGivenName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
-     */
-    private $enGivenName;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="enFamilyName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
-     */
-    private $enFamilyName;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="localGivenName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
-     * @Assert\NotBlank(message="The local given name is required.")
-     */
-    private $localGivenName;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="localFamilyName", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
-     * @Assert\NotBlank(message="The local family name is required.")
-     */
-    private $localFamilyName;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="gender", type="smallint")
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
-     * @Assert\NotBlank(message="The gender is required.")
-     */
-    private $gender;
+    private $person;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="status", type="boolean")
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold"})
      * @Assert\NotBlank(message="The status is required.")
      */
     private $status;
@@ -88,35 +39,19 @@ class Beneficiary implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="residency_status", type="string", length=20)
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold", "FullBeneficiary"})
      * @Assert\Regex("/^(refugee|IDP|resident)$/i")
      */
     private $residencyStatus;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="dateOfBirth", type="date")
-     * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
-     * @Assert\NotBlank(message="The date of birth is required.")
-     */
-    private $dateOfBirth;
-
-    /**
-     * @var \DateTime|null
+     * @var DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
-     * @Groups({"FullHousehold", "FullBeneficiary"})
+     * DateTime<'d-m-Y H:m:i'>
+     * @SymfonyGroups({"FullHousehold", "FullBeneficiary"})
      */
     private $updatedOn;
-
-    /**
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "FullBeneficiary"})
-     */
-    private $profile;
 
     /**
      * @var Household
@@ -129,35 +64,9 @@ class Beneficiary implements ExportableInterface
      * @var VulnerabilityCriterion
      *
      * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $vulnerabilityCriteria;
-
-    /**
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="beneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
-     */
-    private $phones;
-
-    /**
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="beneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
-     */
-    private $nationalIds;
-
-    /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
-     * @Groups({"FullReceivers", "FullBeneficiary"})
-     *
-     * @var DistributionBeneficiary $distributionBeneficiary
-     */
-    private $distributionBeneficiary;
-
-    /**
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Referral", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
-     */
-    private $referral;
 
     /**
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Smartcard", mappedBy="beneficiary")
@@ -168,8 +77,7 @@ class Beneficiary implements ExportableInterface
 
     /**
      * @var string
-     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
-     * @Serializer\Accessor(getter="getSmartcard")
+     * @ SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
      */
     private $smartcard;
 
@@ -178,173 +86,176 @@ class Beneficiary implements ExportableInterface
      */
     public function __construct()
     {
-        $this->vulnerabilityCriteria = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->nationalIds = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->smartcards = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->setUpdatedOn(new \DateTime());
+        parent::__construct();
+        $this->vulnerabilityCriteria = new ArrayCollection();
+        $this->person = new Person();
+        $this->smartcards = new ArrayCollection();
+        $this->setUpdatedOn(new DateTime());
 
         //TODO check if updatedOn everytime
     }
 
     /**
-     * Get id.
-     *
-     * @return int
+     * @return Person
      */
-    public function getId()
+    public function getPerson(): Person
     {
-        return $this->id;
+        return $this->person;
     }
+
 
     /**
      * Set enGivenName.
-     *
+     * @deprecated
      * @param string $enGivenName
      *
      * @return Beneficiary
      */
-    public function setEnGivenName($enGivenName)
+    public function setEnGivenName($enGivenName): self
     {
-        $this->enGivenName = $enGivenName;
+        $this->person->setEnGivenName($enGivenName);
 
         return $this;
     }
 
     /**
      * Get enGivenName.
-     *
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return string
      */
-    public function getEnGivenName()
+    public function getEnGivenName(): string
     {
-        return $this->enGivenName;
+        return $this->person->getEnGivenName();
     }
 
     /**
      * Set enFamilyName.
-     *
+     * @deprecated
      * @param string $enFamilyName
      *
      * @return Beneficiary
      */
-    public function setEnFamilyName($enFamilyName)
+    public function setEnFamilyName($enFamilyName): self
     {
-        $this->enFamilyName = $enFamilyName;
+        $this->person->setEnFamilyName($enFamilyName);
 
         return $this;
     }
 
     /**
      * Get enFamilyName.
-     *
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return string
      */
-    public function getEnFamilyName()
+    public function getEnFamilyName(): ?string
     {
-        return $this->enFamilyName;
+        return $this->person->getEnFamilyName();
     }
 
     /**
      * Set localGivenName.
-     *
+     * @deprecated
      * @param string $localGivenName
      *
      * @return Beneficiary
      */
-    public function setLocalGivenName($localGivenName)
+    public function setLocalGivenName($localGivenName): self
     {
-        $this->localGivenName = $localGivenName;
-
+        $this->person->setLocalGivenName($localGivenName);
         return $this;
     }
 
     /**
      * Get localGivenName.
-     *
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return string
      */
-    public function getLocalGivenName()
+    public function getLocalGivenName(): ?string
     {
-        return $this->localGivenName;
+        return $this->person->getLocalGivenName();
     }
 
     /**
      * Set localFamilyName.
-     *
+     * @deprecated
      * @param string $localFamilyName
      *
      * @return Beneficiary
      */
-    public function setLocalFamilyName($localFamilyName)
+    public function setLocalFamilyName($localFamilyName): self
     {
-        $this->localFamilyName = $localFamilyName;
+        $this->person->setLocalFamilyName($localFamilyName);
 
         return $this;
     }
 
     /**
      * Get localFamilyName.
-     *
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return string
      */
-    public function getLocalFamilyName()
+    public function getLocalFamilyName(): ?string
     {
-        return $this->localFamilyName;
+        return $this->person->getLocalFamilyName();
     }
 
     /**
      * Set gender.
-     *
+     * @deprecated
      * @param int $gender
      *
      * @return Beneficiary
      */
-    public function setGender($gender)
+    public function setGender($gender): self
     {
-        $this->gender = $gender;
-
+        $this->person->setGender($gender);
         return $this;
     }
 
     /**
      * Get gender.
-     *
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return int
      */
-    public function getGender()
+    public function getGender(): int
     {
-        return $this->gender;
+        return $this->person->getGender();
     }
 
     /**
      * Set dateOfBirth.
-     *
-     * @param \DateTime $dateOfBirth
+     * @deprecated
+     * @param DateTime $dateOfBirth
      *
      * @return Beneficiary
      */
-    public function setDateOfBirth($dateOfBirth)
+    public function setDateOfBirth($dateOfBirth): self
     {
-        $this->dateOfBirth = $dateOfBirth;
+        $this->person->setDateOfBirth($dateOfBirth);
 
         return $this;
     }
 
     /**
      * Get dateOfBirth.
-     *
-     * @return \DateTime
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @return DateTime
      */
-    public function getDateOfBirth()
+    public function getDateOfBirth(): ?\DateTimeInterface
     {
-        return $this->dateOfBirth;
+        return $this->person->getDateOfBirth();
     }
 
     /**
      * Set updatedOn.
      *
-     * @param \DateTime|null $updatedOn
+     * @param DateTime|null $updatedOn
      *
      * @return Beneficiary
      */
@@ -358,7 +269,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get updatedOn.
      *
-     * @return \DateTime|null
+     * @return DateTime|null
      */
     public function getUpdatedOn()
     {
@@ -368,11 +279,11 @@ class Beneficiary implements ExportableInterface
     /**
      * Set household.
      *
-     * @param \BeneficiaryBundle\Entity\Household|null $household
+     * @param Household|null $household
      *
      * @return Beneficiary
      */
-    public function setHousehold(\BeneficiaryBundle\Entity\Household $household = null)
+    public function setHousehold(Household $household = null)
     {
         $this->household = $household;
 
@@ -382,7 +293,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get household.
      *
-     * @return \BeneficiaryBundle\Entity\Household|null
+     * @return Household|null
      */
     public function getHousehold()
     {
@@ -392,11 +303,11 @@ class Beneficiary implements ExportableInterface
     /**
      * Add vulnerabilityCriterion.
      *
-     * @param \BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion
+     * @param VulnerabilityCriterion $vulnerabilityCriterion
      *
      * @return Beneficiary
      */
-    public function addVulnerabilityCriterion(\BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion)
+    public function addVulnerabilityCriterion(VulnerabilityCriterion $vulnerabilityCriterion)
     {
         $this->vulnerabilityCriteria[] = $vulnerabilityCriterion;
 
@@ -406,11 +317,11 @@ class Beneficiary implements ExportableInterface
     /**
      * Remove vulnerabilityCriterion.
      *
-     * @param \BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion
+     * @param VulnerabilityCriterion $vulnerabilityCriterion
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeVulnerabilityCriterion(\BeneficiaryBundle\Entity\VulnerabilityCriterion $vulnerabilityCriterion)
+    public function removeVulnerabilityCriterion(VulnerabilityCriterion $vulnerabilityCriterion)
     {
         return $this->vulnerabilityCriteria->removeElement($vulnerabilityCriterion);
     }
@@ -418,7 +329,7 @@ class Beneficiary implements ExportableInterface
     /**
      * Get vulnerabilityCriterion.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getVulnerabilityCriteria()
     {
@@ -428,9 +339,11 @@ class Beneficiary implements ExportableInterface
     /**
      * Set VulnerabilityCriterions.
      *
+     * @param Collection|null $collection
+     *
      * @return Beneficiary
      */
-    public function setVulnerabilityCriteria(\Doctrine\Common\Collections\Collection $collection = null)
+    public function setVulnerabilityCriteria(Collection $collection = null)
     {
         $this->vulnerabilityCriteria = $collection;
 
@@ -439,102 +352,104 @@ class Beneficiary implements ExportableInterface
 
     /**
      * Add phone.
-     *
-     * @param \BeneficiaryBundle\Entity\Phone $phone
+     * @deprecated
+     * @param Phone $phone
      *
      * @return Beneficiary
      */
-    public function addPhone(\BeneficiaryBundle\Entity\Phone $phone)
+    public function addPhone(Phone $phone): self
     {
-        $this->phones[] = $phone;
+        $this->person->addPhone($phone);
 
         return $this;
     }
 
     /**
      * Remove phone.
-     *
-     * @param \BeneficiaryBundle\Entity\Phone $phone
+     * @deprecated
+     * @param Phone $phone
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removePhone(\BeneficiaryBundle\Entity\Phone $phone)
+    public function removePhone(Phone $phone): bool
     {
-        return $this->phones->removeElement($phone);
+        return $this->person->removePhone($phone);
     }
 
     /**
      * Get phones.
-     *
-     * @return \Doctrine\Common\Collections\Collection
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @return Collection
      */
-    public function getPhones()
+    public function getPhones(): Collection
     {
-        return $this->phones;
+        return $this->person->getPhones();
     }
 
     /**
      * Set phones.
-     *
+     * @deprecated
      * @param $collection
      *
      * @return Beneficiary
      */
-    public function setPhones(\Doctrine\Common\Collections\Collection $collection = null)
+    public function setPhones(Collection $collection = null): self
     {
-        $this->phones = $collection;
+        $this->person->setPhones($collection);
 
         return $this;
     }
 
     /**
      * Set nationalId.
-     *
+     * @deprecated
      * @param  $collection
      *
      * @return Beneficiary
      */
-    public function setNationalIds(\Doctrine\Common\Collections\Collection $collection = null)
+    public function setNationalIds(Collection $collection = null): self
     {
-        $this->nationalIds = $collection;
+        $this->person->setNationalIds($collection);
 
         return $this;
     }
 
     /**
      * Add nationalId.
-     *
-     * @param \BeneficiaryBundle\Entity\NationalId $nationalId
+     * @deprecated
+     * @param NationalId $nationalId
      *
      * @return Beneficiary
      */
-    public function addNationalId(\BeneficiaryBundle\Entity\NationalId $nationalId)
+    public function addNationalId(NationalId $nationalId): self
     {
-        $this->nationalIds[] = $nationalId;
+        $this->person->addNationalId($nationalId);
 
         return $this;
     }
 
     /**
      * Remove nationalId.
-     *
-     * @param \BeneficiaryBundle\Entity\NationalId $nationalId
+     * @deprecated
+     * @param NationalId $nationalId
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeNationalId(\BeneficiaryBundle\Entity\NationalId $nationalId)
+    public function removeNationalId(NationalId $nationalId): bool
     {
-        return $this->nationalIds->removeElement($nationalId);
+        return $this->person->removeNationalId($nationalId);
     }
 
     /**
      * Get nationalIds.
-     *
-     * @return \Doctrine\Common\Collections\Collection
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @return Collection
      */
-    public function getNationalIds()
+    public function getNationalIds(): Collection
     {
-        return $this->nationalIds;
+        return $this->person->getNationalIds();
     }
 
     /**
@@ -544,7 +459,7 @@ class Beneficiary implements ExportableInterface
      *
      * @return Beneficiary
      */
-    public function setStatus($status)
+    public function setStatus($status): self
     {
         $this->status = $status;
 
@@ -556,7 +471,7 @@ class Beneficiary implements ExportableInterface
      *
      * @return bool
      */
-    public function getStatus()
+    public function getStatus(): bool
     {
         return $this->status;
     }
@@ -564,7 +479,7 @@ class Beneficiary implements ExportableInterface
     /**
      * @return string
      */
-    public function getResidencyStatus()
+    public function getResidencyStatus(): string
     {
         return $this->residencyStatus;
     }
@@ -574,7 +489,7 @@ class Beneficiary implements ExportableInterface
      *
      * @return Beneficiary
      */
-    public function setResidencyStatus($residencyStatus)
+    public function setResidencyStatus($residencyStatus): self
     {
         $this->residencyStatus = $residencyStatus;
         return $this;
@@ -582,50 +497,52 @@ class Beneficiary implements ExportableInterface
 
     /**
      * Set profile.
-     *
-     * @param \BeneficiaryBundle\Entity\Profile|null $profile
+     * @deprecated
+     * @param Profile|null $profile
      *
      * @return Beneficiary
      */
-    public function setProfile(\BeneficiaryBundle\Entity\Profile $profile = null)
+    public function setProfile(Profile $profile = null): self
     {
-        $this->profile = $profile;
+        $this->person->setProfile($profile);
 
         return $this;
     }
 
     /**
      * Get profile.
-     *
-     * @return \BeneficiaryBundle\Entity\Profile|null
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @return Profile|null
      */
-    public function getProfile()
+    public function getProfile(): ?Profile
     {
-        return $this->profile;
+        return $this->person->getProfile();
     }
 
     /**
      * Set referral.
-     *
-     * @param \BeneficiaryBundle\Entity\Referral|null $referral
+     * @deprecated
+     * @param Referral|null $referral
      *
      * @return Beneficiary
      */
-    public function setReferral(\BeneficiaryBundle\Entity\Referral $referral = null)
+    public function setReferral(Referral $referral = null)
     {
-        $this->referral = $referral;
+        $this->person->setReferral($referral);
 
         return $this;
     }
 
     /**
      * Get referral.
-     *
-     * @return \BeneficiaryBundle\Entity\Referral|null
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @return Referral|null
      */
-    public function getReferral()
+    public function getReferral(): ?Referral
     {
-        return $this->referral;
+        return $this->person->getReferral();
     }
 
 
@@ -877,8 +794,8 @@ class Beneficiary implements ExportableInterface
     {
         if ($this->getDateOfBirth()) {
             try {
-                return $this->getDateOfBirth()->diff(new \DateTime('now'))->y;
-            } catch (\Exception $ex) {
+                return $this->getDateOfBirth()->diff(new DateTime('now'))->y;
+            } catch (Exception $ex) {
                 return null;
             }
         }
@@ -887,6 +804,7 @@ class Beneficiary implements ExportableInterface
     }
 
     /**
+     * @SymfonyGroups({"FullHousehold"})
      * @return string
      */
     public function getSmartcard()

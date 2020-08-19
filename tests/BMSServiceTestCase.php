@@ -14,8 +14,11 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Utils\CommodityService;
+use DistributionBundle\Utils\ConfigurationLoader;
+use DistributionBundle\Utils\CriteriaDistributionService;
 use Doctrine\ORM\EntityManager;
-use JMS\Serializer\SerializationContext;
+
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\BrowserKit\Client;
@@ -41,7 +44,7 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var Container $container */
     protected $container;
 
-    /** @var $serializer */
+    /** @var SerializerInterface */
     protected $serializer;
 
     /** @var TokenStorage $tokenStorage */
@@ -180,7 +183,7 @@ class BMSServiceTestCase extends KernelTestCase
      * If you plan to use another serializer, use the setter before calling this setUp Method in the child class setUp method.
      * Ex :
      * function setUp(){
-     *      $this->setDefaultSerializerName("jms_serializer");
+     *      $this->setDefaultSerializerName("serializer");
      *      parent::setUp();
      * }
      */
@@ -377,7 +380,7 @@ class BMSServiceTestCase extends KernelTestCase
             ->serialize(
                 $household,
                 'json',
-                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+                ['groups' => ["FullHousehold"]]
             );
 
         return json_decode($json, true);
@@ -401,12 +404,13 @@ class BMSServiceTestCase extends KernelTestCase
             if (!empty($beneficiaries)) {
                 /** @var Beneficiary $beneficiary */
                 foreach ($beneficiaries as $beneficiary) {
-                    $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
-                    $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+                    $phones = $this->em->getRepository(Phone::class)->findByPerson($beneficiary->getPerson());
+                    $nationalIds = $this->em->getRepository(NationalId::class)->findByPerson($beneficiary->getPerson());
                     $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
                     if ($profile instanceof Profile) {
                         $this->em->remove($profile);
                     }
+                    $this->em->remove($beneficiary->getPerson());
                     foreach ($phones as $phone) {
                         $this->em->remove($phone);
                     }

@@ -4,7 +4,7 @@
 namespace DistributionBundle\Controller;
 
 use DistributionBundle\Utils\CriteriaDistributionService;
-use JMS\Serializer\SerializationContext;
+
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -86,11 +86,11 @@ class CriteriaDistributionController extends Controller
         $countryISO3 = $filters['__country'];
         $criteria = $criteriaDistributionService->getAll($countryISO3);
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $criteria,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(["Criteria"])
+                ['groups' => ["Criteria"]]
             );
         return new Response($json);
     }
@@ -136,7 +136,7 @@ class CriteriaDistributionController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $receivers,
                 'json'
@@ -183,7 +183,7 @@ class CriteriaDistributionController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $camps,
                 'json'
