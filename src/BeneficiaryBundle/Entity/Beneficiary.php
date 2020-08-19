@@ -818,4 +818,28 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         return null;
     }
+
+    /**
+     * Get fathersName.
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @return string|null
+     */
+    public function getFathersName(): ?string
+    {
+        return $this->person->getFathersName();
+    }
+
+    /**
+     * Set fathersName.
+     * @deprecated
+     * @param string|null $fathersName
+     * @return Beneficiary
+     */
+    public function setFathersName(?string $fathersName): self
+    {
+        $this->person->setFathersName($fathersName);
+
+        return $this;
+    }
 }
