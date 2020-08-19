@@ -50,12 +50,9 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('GET', '/api/wsse/summary');
         $summary = json_decode($this->client->getResponse()->getContent(), true);
-        if (!empty($summary)) {
-            $this->assertContainsOnly('int', $summary);
-            $this->assertCount(5, $summary);
-        } else {
-            $this->markTestIncomplete("The database is incomplete.");
-        }
-        return true;
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
+        $this->assertContainsOnly('int', $summary);
+        $this->assertCount(5, $summary);
     }
 }
