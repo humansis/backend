@@ -206,7 +206,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Set gender.
      * @deprecated
-     * @param int $gender
+     * @param int $gender one of Person::GENDER_*
      *
      * @return Beneficiary
      */
@@ -220,7 +220,8 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * Get gender.
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
-     * @return int
+     *
+     * @return int one of Person::GENDER_*
      */
     public function getGender(): int
     {

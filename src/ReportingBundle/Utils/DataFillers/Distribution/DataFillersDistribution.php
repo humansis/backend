@@ -275,7 +275,7 @@ class DataFillersDistribution extends DataFillers
                                    ->leftjoin('db.beneficiary', 'b')
                                    ->leftjoin('db.distributionData', 'dd')
                                    ->where('b.gender = :gender')
-                                        ->setParameter('gender', 1)
+                                        ->setParameter('gender', \BeneficiaryBundle\Entity\Person::GENDER_MALE)
                                    ->select("count(b.id) as value", 'dd.id as distribution')
                                    ->groupBy('distribution');
             $results = $qb->getQuery()->getArrayResult();
@@ -319,7 +319,7 @@ class DataFillersDistribution extends DataFillers
                                    ->leftjoin('db.beneficiary', 'b')
                                    ->leftjoin('db.distributionData', 'dd')
                                    ->where('b.gender = :gender')
-                                        ->setParameter('gender', 0)
+                                        ->setParameter('gender', \BeneficiaryBundle\Entity\Person::GENDER_FEMALE)
                                    ->select("count(b.id) as value", 'dd.id as distribution')
                                    ->groupBy('distribution');
             $results = $qb->getQuery()->getArrayResult();

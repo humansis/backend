@@ -19,6 +19,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Person
 {
+    const GENDER_FEMALE = 0;
+    const GENDER_MALE = 1;
+
     /**
      * @var int
      *
@@ -247,7 +250,7 @@ class Person
     /**
      * Set gender.
      *
-     * @param int $gender
+     * @param int $gender one of self::GENDER_*
      *
      * @return self
      */
@@ -261,7 +264,7 @@ class Person
     /**
      * Get gender.
      *
-     * @return int|null
+     * @return int|null one of self::GENDER_*
      */
     public function getGender(): ?int
     {

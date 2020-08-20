@@ -5,6 +5,7 @@ namespace ReportingBundle\Utils\DataFillers\Project;
 use \BeneficiaryBundle\Entity\Beneficiary;
 
 use \BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\Person;
 use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use \DistributionBundle\Entity\DistributionBeneficiary;
 
@@ -115,7 +116,7 @@ class DataFillersProject
                                         ->where('h.id = :household')
                                             ->setParameter('household', $household->getId())
                                         ->andWhere('b.gender = :gender')
-                                            ->setParameter('gender', 1)
+                                            ->setParameter('gender', Person::GENDER_MALE)
                                         ->select('Distinct count(b) AS value');
                 $result = $qb->getQuery()->getArrayResult();
                 //foreach men find, increment the counter
@@ -171,7 +172,7 @@ class DataFillersProject
                                         ->where('h.id = :household')
                                             ->setParameter('household', $household->getId())
                                         ->andWhere('b.gender = :gender')
-                                            ->setParameter('gender', 0)
+                                            ->setParameter('gender', Person::GENDER_FEMALE)
                                         ->select('Distinct count(b) AS value');
                 $result = $qb->getQuery()->getArrayResult();
                 //foreach women find, increment the counter

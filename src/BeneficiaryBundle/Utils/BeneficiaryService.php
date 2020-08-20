@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\Referral;
@@ -84,9 +85,9 @@ class BeneficiaryService
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
         if ($beneficiaryArray["gender"] === 'Male' || $beneficiaryArray["gender"] === 'M') {
-            $beneficiaryArray["gender"] = 1;
+            $beneficiaryArray["gender"] = Person::GENDER_MALE;
         } elseif ($beneficiaryArray["gender"] === 'Female' || $beneficiaryArray["gender"] === 'F') {
-            $beneficiaryArray["gender"] = 0;
+            $beneficiaryArray["gender"] = Person::GENDER_FEMALE;
         }
 
         if (array_key_exists('phone1_type', $beneficiaryArray)) {
