@@ -49,7 +49,7 @@ class CommonController extends Controller
     {
         $country = $request->request->get('__country');
         
-        // try {
+        try {
             $total_beneficiaries = $this->get('beneficiary.beneficiary_service')->countAll($country);
             $active_projects = $this->get('project.project_service')->countAll($country);
             $enrolled_beneficiaries = $this->get('distribution.distribution_service')->countAllBeneficiaries($country);
@@ -58,9 +58,9 @@ class CommonController extends Controller
 
             $total_completed_distributions = $this->get('distribution.distribution_service')->countCompleted($country);
             
-        // } catch (\Exception $exception) {
-        //     return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        // }
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
         
         return $this->json([
             $total_beneficiaries,
