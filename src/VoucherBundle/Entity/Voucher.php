@@ -119,6 +119,19 @@ class Voucher implements ExportableInterface
     }
 
     /**
+     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedDistribution"})
+     *
+     * @return \DateTimeInterface|null
+     */
+    public function getUsedAt(): ?\DateTimeInterface
+    {
+        if (!$this->getVoucherPurchase()) {
+            return null;
+        }
+        return $this->getVoucherPurchase()->getCreatedAt();
+    }
+
+    /**
      * Set code.
      *
      * @param string $code
