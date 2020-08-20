@@ -10,7 +10,7 @@ services:
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@jms_serializer'
+            - '@serializer'
             - '@validator'
             - '@location_service'
             - '@distribution.commodity_service'
@@ -24,7 +24,7 @@ services:
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@jms_serializer'
+            - '@serializer'
             - '@validator'
             - '@service_container'
 
@@ -59,7 +59,7 @@ services:
         public: true
         arguments:
             - "@=service('doctrine.orm.entity_manager').getRepository('DistributionBundle:DistributionBeneficiary')"
-            - '@jms_serializer'
+            - '@serializer'
 
 #######################################################################################
 ##                                       CSV                                         ##
@@ -73,7 +73,7 @@ services:
             - '@beneficiary.household_export_csv_service'
             - '@service_container'
             - '@beneficiary.household_service'
-            - '@jms_serializer'
+            - '@serializer'
             - '@validator'
             - "@request_validator"
             - "@beneficiary.csv_to_array_mapper"

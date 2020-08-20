@@ -5,6 +5,7 @@ namespace DistributionBundle\Utils;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
@@ -17,7 +18,7 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
-use JMS\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv as CsvWriter;
@@ -191,12 +192,13 @@ class DistributionCSVService
         $addArray = array();
         
         foreach ($newAndAddArray as $beneficiaryArray) {
-            $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy(
+            $person = $this->em->getRepository(Person::class)->findOneBy(
                 [
                     "localGivenName" => $beneficiaryArray['localGivenName'],
                     "localFamilyName" => $beneficiaryArray['localFamilyName']
                 ]
             );
+            $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneByPerson($person);
             if ($beneficiary instanceof Beneficiary) {
                 // Check if the beneficiary is associate to the project of the distribution
                 if (in_array($distributionData->getProject(), $beneficiary->getHousehold()->getProjects()->getValues())) {
@@ -358,8 +360,13 @@ class DistributionCSVService
             $this->CSVToArrayMapper->mapLivelihood($householdToCreate);
 
             $this->householdService->createOrEdit($householdToCreate, array($distributionProject));
-            $toCreate = $this->em->getRepository(Beneficiary::class)
-                ->findOneBy(["localGivenName" => $beneficiaryToCreate['localGivenName'], 'localFamilyName' => $beneficiaryToCreate['localFamilyName'], 'gender' => $beneficiaryToCreate['gender']]);
+            $person = $this->em->getRepository(Person::class)
+                ->findOneBy([
+                    "localGivenName" => $beneficiaryToCreate['localGivenName'],
+                    'localFamilyName' => $beneficiaryToCreate['localFamilyName'],
+                    'gender' => $beneficiaryToCreate['gender']
+                ]);
+            $toCreate = $this->em->getRepository(Beneficiary::class)->findOneByPerson($person);
             $this->em->persist($toCreate);
             
             // Add created beneficiary to distribution
@@ -374,11 +381,14 @@ class DistributionCSVService
         // Add
         foreach ($data['added'] as $beneficiaryToAdd) {
             $justification = $beneficiaryToAdd['justification'];
-            $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->findOneBy(
+            $person = $this->em->getRepository(Person::class)->findOneBy(
                 [
                     "localGivenName" => $beneficiaryToAdd['localGivenName'],
                     "localFamilyName" => $beneficiaryToAdd['localFamilyName']
                 ]
+            );
+            $beneficiaryToAdd = $this->em->getRepository(Beneficiary::class)->findOneByPerson(
+                $person
             );
 
             $household = $beneficiaryToAdd->getHousehold();
@@ -452,7 +462,7 @@ class DistributionCSVService
                 }
             }
             
-            $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($toUpdate);
+            $phones = $this->em->getRepository(Phone::class)->findByPerson($toUpdate->getPerson());
             foreach ($phones as $phone) {
                 $this->em->remove($phone);
             }
@@ -465,12 +475,12 @@ class DistributionCSVService
                     $phone->setType($beneficiaryToUpdate['type phone ' . $phoneIndex]);
                     $phone->setPrefix($beneficiaryToUpdate['prefix phone ' . $phoneIndex]);
                     $phone->setProxy($beneficiaryToUpdate['proxy phone ' . $phoneIndex] === 1 ? true : false);
-                    $phone->setBeneficiary($toUpdate);
+                    $phone->setPerson($toUpdate);
                     $toUpdate->addPhone($phone);
                 }
             }
 
-            $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($toUpdate);
+            $nationalIds = $this->em->getRepository(NationalId::class)->findByPerson($toUpdate->getPerson());
             foreach ($nationalIds as $nationalId) {
                 $this->em->remove($nationalId);
             }
@@ -480,7 +490,7 @@ class DistributionCSVService
                 $newNationalId = new NationalId();
                 $newNationalId->setIdNumber($beneficiaryToUpdate['ID Number']);
                 $newNationalId->setIdType($beneficiaryToUpdate['ID Type']);
-                $newNationalId->setBeneficiary($toUpdate);
+                $newNationalId->setPerson($toUpdate);
                 $toUpdate->addNationalId($newNationalId);
             }
 

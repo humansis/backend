@@ -6,7 +6,7 @@ use BeneficiaryBundle\Mapper\InstitutionMapper;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\InstitutionService;
 use CommonBundle\Response\CommonBinaryFileResponse;
-use JMS\Serializer\SerializationContext;
+
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -56,12 +56,7 @@ class InstitutionController extends Controller
     {
         /** @var InstitutionMapper $institutionMapper */
         $institutionMapper = $this->get(InstitutionMapper::class);
-
-        $json = $this->get('serializer')->serialize(
-                $institutionMapper->toFullArray($institution),
-                'json'
-            );
-        return new Response($json);
+        return $this->json($institutionMapper->toFullArray($institution));
     }
 
     /**
@@ -95,15 +90,11 @@ class InstitutionController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $json = $this->get('serializer')->serialize(
-                [
-                    0 => $institutions[0],
-                    1 => $institutionMapper->toFullArrays($institutions[1]),
-                ],
-                'json'
-            );
 
-        return new Response($json);
+        return $this->json([
+            0 => $institutions[0],
+            1 => $institutionMapper->toFullArrays($institutions[1]),
+        ]);
     }
 
 
@@ -160,11 +151,7 @@ class InstitutionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('serializer')->serialize(
-                $institutionMapper->toFullArray($institution),
-                'json'
-            );
-        return new Response($json);
+        return $this->json($institutionMapper->toFullArray($institution));
     }
 
 
@@ -222,11 +209,7 @@ class InstitutionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('serializer')->serialize(
-                $institutionMapper->toFullArray($institution),
-                'json'
-            );
-        return new Response($json);
+        return $this->json($institutionMapper->toFullArray($institution));
     }
 
     /**
@@ -251,11 +234,7 @@ class InstitutionController extends Controller
         $institutionMapper = $this->get(InstitutionMapper::class);
 
         $institution = $institutionService->remove($institution);
-        $json = $this->get('serializer')->serialize(
-                $institutionMapper->toFullArray($institution),
-                'json'
-            );
-        return new Response($json);
+        return $this->json($institutionMapper->toFullArray($institution));
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Controller;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\HouseholdActivity;
 use BeneficiaryBundle\Model\Household\HouseholdActivityChangesCollection;
 use BeneficiaryBundle\Model\Household\HouseholdChange\Factory\FilteredHouseholdChangeFactory;
@@ -10,7 +11,7 @@ use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper;
 use CommonBundle\Response\CommonBinaryFileResponse;
-use JMS\Serializer\SerializationContext;
+
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -56,11 +57,11 @@ class HouseholdController extends Controller
      */
     public function showAction(Household $household)
     {
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $household,
                 'json',
-                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+                ['groups' => ["FullHousehold"]]
             );
         return new Response($json);
     }
@@ -94,11 +95,11 @@ class HouseholdController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $households,
                 'json',
-                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+                ['groups' => ["SmallHousehold"]]
             );
 
         return new Response($json);
@@ -158,11 +159,11 @@ class HouseholdController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $household,
                 'json',
-                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+                ['groups' => ["FullHousehold"]]
             );
         return new Response($json);
     }
@@ -224,11 +225,11 @@ class HouseholdController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $household,
                 'json',
-                SerializationContext::create()->setGroups("FullHousehold")->setSerializeNull(true)
+                ['groups' => ["FullHousehold"]]
             );
         return new Response($json);
     }
@@ -293,8 +294,8 @@ class HouseholdController extends Controller
         }
 
 
-        $json = $this->get('jms_serializer')
-            ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
+        $json = $this->get('serializer')
+            ->serialize($return, 'json', ['groups' => ['FullHousehold']]);
         return new Response($json);
     }
 
@@ -317,11 +318,11 @@ class HouseholdController extends Controller
         /** @var HouseholdService $householdService */
         $householdService = $this->get("beneficiary.household_service");
         $household = $householdService->remove($household);
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $household,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(["FullHousehold"])
+                ['groups' => ["FullHousehold"]]
             );
         return new Response($json);
     }
@@ -376,7 +377,7 @@ class HouseholdController extends Controller
         try {
             $response = $this->get('beneficiary.api_import_service')->import($countryIso3, $provider, $params, $project);
 
-            $json = $this->get('jms_serializer')
+            $json = $this->get('serializer')
                 ->serialize($response, 'json');
 
             return new Response($json);
@@ -484,11 +485,11 @@ class HouseholdController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $households,
                 'json',
-                SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
+                ['groups' => ["SmallHousehold"]]
             );
         return new Response($json);
     }

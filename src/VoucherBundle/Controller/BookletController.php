@@ -7,8 +7,8 @@ use CommonBundle\InputType;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\Common\Collections\Collection;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
+
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -102,7 +102,7 @@ class BookletController extends Controller
     public function createBookletSyncAction(Request $request)
     {
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
+        $serializer = $this->get('serializer');
 
         $bookletData = $request->request->all();
 
@@ -115,7 +115,7 @@ class BookletController extends Controller
         $bookletJson = $serializer->serialize(
             $return,
             'json',
-            SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true)
+            ['groups' => ['FullBooklet']]
         );
 
         return new Response($bookletJson);
@@ -190,10 +190,10 @@ class BookletController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $json = $this->get('jms_serializer')->serialize(
+        $json = $this->get('serializer')->serialize(
             $booklets,
             'json',
-            SerializationContext::create()->setGroups(["FullBooklet"])->setSerializeNull(true)
+            ['groups' => ["FullBooklet"]]
         );
         return new Response($json);
     }
@@ -230,7 +230,7 @@ class BookletController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($booklets, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($booklets, 'json', ['groups' => ['FullBooklet']]);
         return new Response($json);
     }
 
@@ -303,7 +303,7 @@ class BookletController extends Controller
             ];
         }
 
-        $json = $this->get('jms_serializer')->serialize($bookletPasswords, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($bookletPasswords, 'json', ['groups' => ['FullBooklet']]);
         return new Response($json);
     }
 
@@ -362,7 +362,7 @@ class BookletController extends Controller
      */
     public function getSingleBookletAction(Booklet $booklet)
     {
-        $json = $this->get('jms_serializer')->serialize($booklet, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($booklet, 'json', ['groups' => ['FullBooklet']]);
 
         return new Response($json);
     }
@@ -409,7 +409,7 @@ class BookletController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($newBooklet, 'json', SerializationContext::create()->setGroups(['FullBooklet'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($newBooklet, 'json', ['groups' => ['FullBooklet']]);
         return new Response($json);
     }
 

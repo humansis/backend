@@ -9,25 +9,33 @@ class InstitutionMapper
     private $addressMapper;
     /** @var NationalIdMapper */
     private $nationalIdMapper;
+    /** @var PersonMapper */
+    private $personMapper;
 
     /**
      * CommunityMapper constructor.
-     * @param AddressMapper $addressMapper
+     *
+     * @param AddressMapper    $addressMapper
      * @param NationalIdMapper $nationalIdMapper
+     * @param PersonMapper     $personMapper
      */
-    public function __construct(AddressMapper $addressMapper, NationalIdMapper $nationalIdMapper)
+    public function __construct(AddressMapper $addressMapper, NationalIdMapper $nationalIdMapper, PersonMapper $personMapper)
     {
         $this->addressMapper = $addressMapper;
         $this->nationalIdMapper = $nationalIdMapper;
+        $this->personMapper = $personMapper;
     }
 
     /**
-     * @param Institution $institution
+     * @param Institution|null $institution
+     *
      * @return array
      */
     public function toFullArray(?Institution $institution): ?array
     {
-        if (!$institution) return null;
+        if (!$institution) {
+            return null;
+        }
         return [
             "id" => $institution->getId(),
             "name" => $institution->getName(),
@@ -40,6 +48,7 @@ class InstitutionMapper
             "address" => $this->addressMapper->toFlatArray($institution->getAddress()),
             "latitude" => $institution->getLatitude(),
             "longitude" => $institution->getLongitude(),
+            "contact" => $this->personMapper->toFullArray($institution->getContact()),
         ];
     }
 
@@ -53,5 +62,4 @@ class InstitutionMapper
             yield $this->toFullArray($institution);
         }
     }
-
 }

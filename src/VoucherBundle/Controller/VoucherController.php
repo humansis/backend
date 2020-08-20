@@ -6,8 +6,8 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
+
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -69,7 +69,7 @@ class VoucherController extends Controller
     public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
+        $serializer = $this->get('serializer');
 
         $voucherData = $request->request->all();
 
@@ -82,7 +82,7 @@ class VoucherController extends Controller
         $voucherJson = $serializer->serialize(
             $return,
             'json',
-            SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true)
+            ['groups' => ['FullVoucher']]
         );
 
         return new Response($voucherJson);
@@ -120,7 +120,7 @@ class VoucherController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($vouchers, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($vouchers, 'json', ['groups' => ['FullVoucher']]);
         return new Response($json);
     }
 
@@ -155,8 +155,8 @@ class VoucherController extends Controller
     {
         $vouchers = $this->getDoctrine()->getRepository(VoucherPurchaseRecord::class)->findPurchasedByBeneficiary($beneficiary);
 
-        $json = $this->get('jms_serializer')
-            ->serialize($vouchers, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['ValidatedDistribution']));
+        $json = $this->get('serializer')
+            ->serialize($vouchers, 'json', ['groups' => ['ValidatedDistribution']]);
 
         return new Response($json);
     }
@@ -189,7 +189,7 @@ class VoucherController extends Controller
      */
     public function getSingleVoucherAction(Voucher $voucher)
     {
-        $json = $this->get('jms_serializer')->serialize($voucher, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($voucher, 'json', ['groups' => ['FullVoucher']]);
 
         return new Response($json);
     }
@@ -264,8 +264,8 @@ class VoucherController extends Controller
             }
         }
 
-        $json = $this->get('jms_serializer')->serialize($newVouchers, 'json',
-            SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($newVouchers, 'json',
+            ['groups' => ['FullVoucher']]);
 
         return new Response($json);
     }
@@ -319,8 +319,22 @@ class VoucherController extends Controller
      * When a voucher is returned to humanitarian
      *
      * @Rest\Post("/vouchers/redeem", name="redeem_vouchers")
-     * @ Security("is_granted('ROLE_VENDOR')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Vouchers")
+     *
+     * @SWG\Parameter(name="voucher",
+     *     in="body",
+     *     description="return vouchers to humanitarians",
+     *     required=true,
+     *     @SWG\Schema(
+     *      @SWG\Property(
+     *           property="id",
+     *           type="integer",
+     *           description="voucher id",
+     *           example="1234",
+     *         )
+     *     )
+     * )
      *
      * @SWG\Response(
      *     response=200,
@@ -359,7 +373,7 @@ class VoucherController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')->serialize($voucher, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($voucher, 'json', ['groups' => ['FullVoucher']]);
         return new Response($json);
     }
 

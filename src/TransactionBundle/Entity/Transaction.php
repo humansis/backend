@@ -5,8 +5,8 @@ namespace TransactionBundle\Entity;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use UserBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Type as JMS_Type;
-use JMS\Serializer\Annotation\Groups;
+// use Symfony\Component\Serializer\Annotation as JMS_Type;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Transaction
@@ -31,7 +31,7 @@ class Transaction
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedDistribution"})
      *
      */
     private $id;
@@ -41,7 +41,7 @@ class Transaction
      *
      * @ORM\Column(name="transaction_id", type="string", length=45)
      *
-     * @Groups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedDistribution"})
      */
     private $transactionId;
 
@@ -50,7 +50,7 @@ class Transaction
      *
      * @ORM\Column(name="amount_sent", type="string")
      *
-     * @Groups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedDistribution"})
      */
     private $amountSent;
 
@@ -59,7 +59,7 @@ class Transaction
      *
      * @ORM\Column(name="date_sent", type="datetime")
      *
-     * @Groups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedDistribution"})
      */
     private $dateSent;
 
@@ -68,7 +68,7 @@ class Transaction
      *
      * @ORM\Column(name="transaction_status", type="smallint")
      *
-     * @Groups({"ValidatedDistribution", "FullReceivers", "FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"ValidatedDistribution", "FullReceivers", "FullDistribution", "SmallDistribution"})
      */
     private $transactionStatus;
 
@@ -77,7 +77,7 @@ class Transaction
      *
      * @ORM\Column(name="message", type="string", length=255, nullable=true)
      *
-     * @Groups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedDistribution"})
      */
     private $message;
 
@@ -86,7 +86,7 @@ class Transaction
      *
      * @ORM\Column(name="money_received", type="boolean", nullable=true)
      *
-     * @Groups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedDistribution"})
      */
     private $moneyReceived;
 
@@ -95,7 +95,7 @@ class Transaction
      *
      * @ORM\Column(name="pickup_date", type="datetime", nullable=true)
      *
-     * @Groups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedDistribution"})
      */
     private $pickupDate;
 
@@ -110,9 +110,9 @@ class Transaction
      * @var \DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
+     * DateTime<'d-m-Y H:m:i'>
      *
-     * @Groups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedDistribution"})
      */
     private $updatedOn;
     

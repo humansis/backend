@@ -4,8 +4,8 @@ namespace UserBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
+
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
@@ -97,9 +97,9 @@ class UserController extends Controller
         }
 
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
+        $serializer = $this->get('serializer');
 
-        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
         return new Response($userJson);
     }
 
@@ -354,7 +354,7 @@ class UserController extends Controller
     public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
+        $serializer = $this->get('serializer');
 
         $userData = $request->request->all();
 
@@ -364,7 +364,7 @@ class UserController extends Controller
             $userJson = $serializer->serialize(
                 $return,
                 'json',
-                SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true)
+                ['groups' => ['FullUser']]
             );
             return new Response($userJson);
         } catch (\Exception $exception) {
@@ -395,7 +395,7 @@ class UserController extends Controller
     {
         $user = $this->getUser();
         if ($user instanceof User) {
-            $user = $this->get('jms_serializer')->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+            $user = $this->get('serializer')->serialize($user, 'json', ['groups' => ['FullUser']]);
             return new Response($user, Response::HTTP_OK);
         }
         return new Response(null, Response::HTTP_UNAUTHORIZED);
@@ -432,7 +432,7 @@ class UserController extends Controller
         $offset = ($request->query->has('offset'))? $request->query->get('offset') : null;
 
         $users = $this->get('user.user_service')->findAll($limit, $offset);
-        $json = $this->get('jms_serializer')->serialize($users, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($users, 'json', ['groups' => ['FullUser']]);
 
         return new Response($json, Response::HTTP_OK);
     }
@@ -467,7 +467,7 @@ class UserController extends Controller
         $limit = ($request->query->has('limit'))? $request->query->get('limit') : null;
         $offset = ($request->query->has('offset'))? $request->query->get('offset') : null;
         $users = $this->get('user.user_service')->findWebUsers($limit, $offset);
-        $json = $this->get('jms_serializer')->serialize($users, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($users, 'json', ['groups' => ['FullUser']]);
         return new Response($json, Response::HTTP_OK);
     }
 
@@ -497,7 +497,7 @@ class UserController extends Controller
     {
         $projects = $this->get('user.user_service')->findAllProjects($user);
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize($projects, 'json');
 
         return new Response($json, Response::HTTP_OK);
@@ -539,7 +539,7 @@ class UserController extends Controller
     {
         $userData = $request->request->all();
         $userNew = $this->get('user.user_service')->update($user, $userData);
-        $json = $this->get('jms_serializer')->serialize($userNew, 'json', SerializationContext::create()->setGroups(['FullUser']));
+        $json = $this->get('serializer')->serialize($userNew, 'json', ['groups' => ['FullUser']]);
         return new Response($json);
     }
 
@@ -571,7 +571,7 @@ class UserController extends Controller
     {
         $language = $request->request->get('language');
         $userUpdated = $this->get('user.user_service')->updateLanguage($user, $language);
-        $json = $this->get('jms_serializer')->serialize($userUpdated, 'json', SerializationContext::create()->setGroups(['FullUser']));
+        $json = $this->get('serializer')->serialize($userUpdated, 'json', ['groups'=>['FullUser']]);
         return new Response($json);
     }
 
@@ -625,10 +625,10 @@ class UserController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_UNAUTHORIZED);
         }
 
-        $userJson = $this->get('jms_serializer')->serialize(
+        $userJson = $this->get('serializer')->serialize(
             $user,
             'json',
-            SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true)
+            [['FullUser']]
         );
 
         return new Response($userJson);
@@ -707,8 +707,8 @@ class UserController extends Controller
         }
         
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
-        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        $serializer = $this->get('serializer');
+        $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
         return new Response($userJson);
     }
 
@@ -737,8 +737,8 @@ class UserController extends Controller
         }
         
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
-        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        $serializer = $this->get('serializer');
+        $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
         return new Response($userJson);
     }
 
@@ -767,8 +767,8 @@ class UserController extends Controller
         }
         
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
-        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        $serializer = $this->get('serializer');
+        $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
         return new Response($userJson);
     }
 }

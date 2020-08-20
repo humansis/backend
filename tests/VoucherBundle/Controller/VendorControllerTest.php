@@ -15,7 +15,7 @@ class VendorControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("jms_serializer");
+        $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
         // Get a Client instance for simulate a browser
         $this->client = $this->container->get('test.client');
@@ -33,6 +33,8 @@ class VendorControllerTest extends BMSServiceTestCase
     {
         $crawler = $this->request('GET', '/api/wsse/initialize/' . $this->username);
         $data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
         $this->assertArrayHasKey('user_id', $data);
         $this->assertArrayHasKey('salt', $data);
     }

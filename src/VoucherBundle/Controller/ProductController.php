@@ -3,8 +3,8 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
+
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -63,7 +63,7 @@ class ProductController extends Controller
     public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
+        $serializer = $this->get('serializer');
 
         $productData = $request->request->all();
 
@@ -76,7 +76,7 @@ class ProductController extends Controller
         $productJson = $serializer->serialize(
             $return,
             'json',
-            SerializationContext::create()->setGroups(['FullProduct'])->setSerializeNull(true)
+            ['groups' => ['FullProduct']]
         );
         return new Response($productJson);
     }
@@ -112,7 +112,7 @@ class ProductController extends Controller
     public function getAction(Request $request)
     {
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
+        $serializer = $this->get('serializer');
 
         $body = $request->request->all();
         $countryIso3 = $body['__country'];
@@ -126,7 +126,7 @@ class ProductController extends Controller
         $productJson = $serializer->serialize(
             $return,
             'json',
-            SerializationContext::create()->setGroups(['FullProduct'])->setSerializeNull(true)
+            ['groups' => ['FullProduct']]
         );
         return new Response($productJson);
     }
@@ -197,7 +197,7 @@ class ProductController extends Controller
     public function updateAction(Product $product, Request $request)
     {
         /** @var Serializer $serializer */
-        $serializer = $this->get('jms_serializer');
+        $serializer = $this->get('serializer');
 
         $productData = $request->request->all();
 
@@ -210,7 +210,7 @@ class ProductController extends Controller
         $productJson = $serializer->serialize(
             $return,
             'json',
-            SerializationContext::create()->setGroups(['FullProduct'])->setSerializeNull(true)
+            ['groups' => ['FullProduct']]
         );
         return new Response($productJson);
     }

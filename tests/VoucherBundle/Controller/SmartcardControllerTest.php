@@ -24,8 +24,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
         if (!$smartcard) {
-            $smartcard = new Smartcard('1234ABC', new \DateTime('now'));
-            $smartcard->setBeneficiary($this->em->getRepository(Beneficiary::class)->find(1));
+            $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
+          
+            $smartcard = new Smartcard('1234ABC', $beneficiary, new \DateTime('now'));
             $smartcard->setState(Smartcard::STATE_ACTIVE);
             $this->em->persist($smartcard);
             $this->em->flush();
@@ -49,9 +50,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
             $this->em->flush();
         }
 
+        $bnfId = $this->em->getRepository(Beneficiary::class)->findOneBy([])->getId();
+
         $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
             'serialNumber' => '1111111',
-            'beneficiaryId' => 1, // @todo replace for fixture
+            'beneficiaryId' => $bnfId, // @todo replace for fixture
             'createdAt' => '2020-02-02T12:00:00Z',
         ]);
 
@@ -71,9 +74,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testRegisterDuplicateSmartcard()
     {
+        $bnfId = $this->em->getRepository(Beneficiary::class)->findOneBy([])->getId();
+
         $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
             'serialNumber' => '1234ABC',
-            'beneficiaryId' => 1, // @todo replace for fixture
+            'beneficiaryId' => $bnfId, // @todo replace for fixture
             'createdAt' => '2020-02-02T12:00:00Z',
         ]);
 

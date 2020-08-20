@@ -11,7 +11,7 @@ use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -89,7 +89,7 @@ class DistributionService
             $class = new \ReflectionClass($classRetrieverString);
             $this->retriever = $class->newInstanceArgs([$this->em]);
         } catch (\Exception $exception) {
-            throw new \Exception("Your class Retriever is undefined or malformed.");
+            throw new \Exception("Your class Retriever is undefined or malformed.", 0, $exception);
         }
     }
 
@@ -147,7 +147,13 @@ class DistributionService
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
         /** @var DistributionData $distribution */
-        $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
+        // $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
+        $distribution = new DistributionData();
+        $distribution->setName($distributionArray['name']);
+        // $distribution->setDateDistribution(new \DateTime($distributionArray['date_distribution']));
+        $distribution->setDateDistribution(new \DateTime());
+        // $distribution->getCommodities()->add();
+
         $distribution->setUpdatedOn(new \DateTime());
         $errors = $this->validator->validate($distribution);
         if (count($errors) > 0) {
@@ -160,16 +166,16 @@ class DistributionService
 
         // TODO : make the front send 0 or 1 instead of Individual (Beneficiary comes from the import)
         if ($distributionArray['type'] === "Beneficiary" || $distributionArray['type'] === "Individual" || $distributionArray['type'] === "1") {
-            $distribution->settype(1);
+            $distribution->setType(1);
         } else {
-            $distribution->settype(0);
+            $distribution->setType(0);
         }
 
         $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
 
         $project = $distribution->getProject();
-        $projectTmp = $this->em->getRepository(Project::class)->find($project);
+        $projectTmp = $this->em->getRepository(Project::class)->findOneBy([]);
         if ($projectTmp instanceof Project) {
             $distribution->setProject($projectTmp);
         }

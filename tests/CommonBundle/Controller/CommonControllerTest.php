@@ -31,7 +31,7 @@ class CommonControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("jms_serializer");
+        $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
@@ -50,12 +50,9 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('GET', '/api/wsse/summary');
         $summary = json_decode($this->client->getResponse()->getContent(), true);
-        if (!empty($summary)) {
-            $this->assertContainsOnly('int', $summary);
-            $this->assertCount(5, $summary);
-        } else {
-            $this->markTestIncomplete("The database is incomplete.");
-        }
-        return true;
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
+        $this->assertContainsOnly('int', $summary);
+        $this->assertCount(5, $summary);
     }
 }

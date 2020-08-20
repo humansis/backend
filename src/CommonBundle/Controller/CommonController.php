@@ -2,16 +2,10 @@
 
 namespace CommonBundle\Controller;
 
-use DistributionBundle\Entity\DistributionData;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use JMS\Serializer\SerializationContext;
-
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -57,18 +51,20 @@ class CommonController extends Controller
             $total_beneficiary_served = $this->get('beneficiary.beneficiary_service')->countAllServed($country);
 
             $total_completed_distributions = $this->get('distribution.distribution_service')->countCompleted($country);
-            
-            $result = array($total_beneficiaries, $active_projects, $enrolled_beneficiaries, $total_beneficiary_served, $total_completed_distributions);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('jms_serializer')->serialize($result, 'json', null);
-        
-        return new Response($json);
+        return $this->json([
+            $total_beneficiaries,
+            $active_projects,
+            $enrolled_beneficiaries,
+            $total_beneficiary_served,
+            $total_completed_distributions
+        ]);
     }
 
-        /**
+    /**
      * @Rest\Get("/logs", name="get_logs")
      *
      * @SWG\Tag(name="Common")
@@ -86,14 +82,14 @@ class CommonController extends Controller
      * @return Response
      */
     public function getLogs(Request $request)
-    {        
+    {
         try {
             $logs = $this->get('log_service')->getLogs();
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('jms_serializer')->serialize($logs, 'json', SerializationContext::create()->setGroups(['FullLogs'])->setSerializeNull(true));
+        $json = $this->get('serializer')->serialize($logs, 'json', ['groups' => ['FullLogs']]);
         
         return new Response($json);
     }

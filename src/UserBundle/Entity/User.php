@@ -6,9 +6,8 @@ use CommonBundle\Utils\ExportableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
-use JMS\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use Symfony\Component\Validator\Constraints as Assert;
 use TransactionBundle\Entity\Transaction;
 
 /**
@@ -25,13 +24,13 @@ class User extends BaseUser implements ExportableInterface
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      */
     protected $id;
 
     /**
      * @var string
-     * @Groups({"FullUser", "FullVendor"})
+     * @SymfonyGroups({"FullUser", "FullVendor"})
      * @SymfonyGroups({"HouseholdChanges"})
      * @Assert\NotBlank(message="Username can't be empty")
      * @Assert\Length(
@@ -45,25 +44,25 @@ class User extends BaseUser implements ExportableInterface
     
     /**
      * @var string
-     * @Groups({"FullUser", "FullVendor"})
+     * @SymfonyGroups({"FullUser", "FullVendor"})
      */
     protected $password;
 
     /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserCountry", mappedBy="user", cascade={"persist","remove"})
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      */
     private $countries;
 
     /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="user")
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      */
     private $projects;
 
     /**
      * @var string
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      * @SymfonyGroups({"HouseholdChanges"})
      * @Assert\NotBlank(message="Email can't be empty")
      */
@@ -71,7 +70,7 @@ class User extends BaseUser implements ExportableInterface
 
     /**
      * @var array
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      */
     protected $roles;
     
@@ -79,21 +78,21 @@ class User extends BaseUser implements ExportableInterface
      * @var Transaction
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="sentBy")
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      */
     private $transactions;
 
     /**
      * @ORM\OneToOne(targetEntity="\VoucherBundle\Entity\Vendor", mappedBy="user", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      */
     private $vendor;
 
     /**
      * @var string
      * @ORM\Column(name="language", type="string", length=255, nullable=true)
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      */
     protected $language;
 
@@ -101,7 +100,7 @@ class User extends BaseUser implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="phonePrefix", type="string", nullable=true)
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      */
     protected $phonePrefix;
 
@@ -109,21 +108,21 @@ class User extends BaseUser implements ExportableInterface
      * @var int
      *
      * @ORM\Column(name="phoneNumber", type="integer", nullable=true)
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      */
     protected $phoneNumber;
 
      /**
      * @var boolean
      * @ORM\Column(name="changePassword", type="boolean", options={"default" : 0})
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      */
     protected $changePassword;
 
     /**
      * @var boolean
      * @ORM\Column(name="twoFactorAuthentication", type="boolean", options={"default" : 0})
-     * @Groups({"FullUser"})
+     * @SymfonyGroups({"FullUser"})
      */
     protected $twoFactorAuthentication = false;
 
@@ -131,6 +130,7 @@ class User extends BaseUser implements ExportableInterface
     {
         parent::__construct();
         $this->countries = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     /**

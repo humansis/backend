@@ -114,6 +114,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             echo "\n";
             $manager->flush();
             $manager->clear();
+            break; // TODO: smazat
         }
     }
 

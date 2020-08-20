@@ -24,7 +24,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("jms_serializer");
+        $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
@@ -53,6 +53,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $country_specific_answer = current($household["country_specific_answers"]);
             $this->assertArrayHasKey('answer', $country_specific_answer);
             $this->assertArrayHasKey('country_specific', $country_specific_answer);
+            $this->assertArrayHasKey('income_spent_on_food', $household);
+            $this->assertArrayHasKey('household_income', $household);
         } catch (\Exception $exception) {
             $this->removeHousehold($this->namefullnameHousehold);
             $this->fail("\nThe mapping of fields of Household entity is not correct (1).\n");
@@ -128,6 +130,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 $this->assertArrayHasKey('local_given_name', $beneficiary);
                 $this->assertArrayHasKey('local_family_name', $beneficiary);
                 $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
+                $this->assertArrayHasKey('fathers_name', $beneficiary);
                 $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
                 if (is_array($vulnerability_criterion)) {
                     $this->assertArrayHasKey('id', $vulnerability_criterion);
