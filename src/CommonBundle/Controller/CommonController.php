@@ -2,16 +2,10 @@
 
 namespace CommonBundle\Controller;
 
-use DistributionBundle\Entity\DistributionData;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-
-
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -57,7 +51,6 @@ class CommonController extends Controller
             $total_beneficiary_served = $this->get('beneficiary.beneficiary_service')->countAllServed($country);
 
             $total_completed_distributions = $this->get('distribution.distribution_service')->countCompleted($country);
-            
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -71,7 +64,7 @@ class CommonController extends Controller
         ]);
     }
 
-        /**
+    /**
      * @Rest\Get("/logs", name="get_logs")
      *
      * @SWG\Tag(name="Common")
@@ -89,7 +82,7 @@ class CommonController extends Controller
      * @return Response
      */
     public function getLogs(Request $request)
-    {        
+    {
         try {
             $logs = $this->get('log_service')->getLogs();
         } catch (\Exception $exception) {
