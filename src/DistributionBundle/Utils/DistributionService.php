@@ -120,11 +120,7 @@ class DistributionService
     public function setCommoditiesToNewBeneficiaries(DistributionData $distributionData, $beneficiaries) {
         $commodities = $distributionData->getCommodities();
         foreach ($commodities as $commodity) {
-            $modality = $commodity->getModalityType()->getModality();
-            if ($modality->getName() === 'In Kind' ||
-                $modality->getName() === 'Other' ||
-                $commodity->getModalityType()->getName() === 'Paper Voucher'
-                || $commodity->getModalityType()->getName() === 'Cash') {
+            if ($commodity->getModalityType()->isGeneralRelief()) {
                 foreach ($beneficiaries as $beneficiary) {
                     $generalRelief = new GeneralReliefItem();
                     $generalRelief->setDistributionBeneficiary($beneficiary);

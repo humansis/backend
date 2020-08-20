@@ -2,23 +2,119 @@
 
 namespace BeneficiaryBundle\Utils\Mapper;
 
+use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
-use BeneficiaryBundle\Entity\Camp;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use Doctrine\ORM\EntityManagerInterface;
 
-class CSVToArrayMapper extends AbstractMapper
+class CSVToArrayMapper
 {
+    /**
+     * Mapping between fields and CSV columns.
+     */
+    private const MAPPING = [
+        // Household
+        'address_street' => 'A',
+        'address_number' => 'B',
+        'address_postcode' => 'C',
+        'camp' => 'D',
+        'tent_number' => 'E',
+        'livelihood' => 'F',
+        'income_level' => 'G',
+        'food_consumption_score' => 'H',
+        'coping_strategies_index' => 'I',
+        'notes' => 'J',
+        'latitude' => 'K',
+        'longitude' => 'L',
+        'location' => [
+            // Location
+            'adm1' => 'M',
+            'adm2' => 'N',
+            'adm3' => 'O',
+            'adm4' => 'P',
+        ],
+        // Beneficiary
+        'beneficiaries' => [
+            'local_given_name' => 'Q',
+            'local_family_name' => 'R',
+            'en_given_name' => 'S',
+            'en_family_name' => 'T',
+            'gender' => 'U',
+            'status' => 'V',
+            'residency_status' => 'W',
+            'date_of_birth' => 'X',
+            'vulnerability_criteria' => 'Y',
+            'phone1_type' => 'Z',
+            'phone1_prefix' => 'AA',
+            'phone1_number' => 'AB',
+            'phone1_proxy' => 'AC',
+            'phone2_type' => 'AD',
+            'phone2_prefix' => 'AE',
+            'phone2_number' => 'AF',
+            'phone2_proxy' => 'AG',
+            'national_id_type' => 'AH',
+            'national_id_number' => 'AI',
+        ],
+        'member_f-0-2' => 'AJ',
+        'member_f-2-5' => 'AK',
+        'member_f-6-17' => 'AL',
+        'member_f-18-64' => 'AM',
+        'member_f-65-99' => 'AN',
+        'member_m-0-2' => 'AO',
+        'member_m-2-5' => 'AP',
+        'member_m-6-17' => 'AQ',
+        'member_m-18-64' => 'AR',
+        'member_m-65-99' => 'AS',
+        'shelter_status' => 'AT',
+        'assets' => 'AU',
+        'debt_level' => 'AV',
+        'support_received_types' => 'AW',
+        'support_date_received' => 'AX',
+    ];
+
     private $countrySpecificIds = [];
 
     private $vulnerabilityCriteriaIds = [];
 
     private $adms = [];
+
+    /** @var EntityManagerInterface */
+    protected $em;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->em = $entityManager;
+    }
+
+    public function getMappingCSVOfCountry($countryIso3)
+    {
+        $lastColumn = array_key_last(self::MAPPING);
+
+        // set generator to next column after last column in self::MAPPING
+        $generator = new ExcelColumnsGenerator();
+        while ($char = $generator->getNext()) {
+            if ($char === self::MAPPING[$lastColumn]) {
+                break;
+            }
+        }
+
+        $mappingCSVCountry = self::MAPPING;
+
+        /** @var CountrySpecific[] $countrySpecifics */
+        $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($countryIso3);
+        foreach ($countrySpecifics as $i => $countrySpecific) {
+            $mappingCSVCountry['tmp_country_specific'.$i] = $generator->getNext();
+        }
+
+        return $mappingCSVCountry;
+    }
 
     /**
      * Get the list of households with their beneficiaries.
@@ -30,36 +126,21 @@ class CSVToArrayMapper extends AbstractMapper
      *
      * @throws \Exception
      */
-    public function fromCSVToArray(array $sheetArray, $countryIso3)
+    public function fromCSVToArray(array $sheetArray, array $rowHeader, $countryIso3, $mappingCSV)
     {
         // Get the mapping for the current country
-        $mappingCSV = $this->loadMappingCSVOfCountry($countryIso3);
         $listHouseholdArray = [];
         $householdArray = null;
-        $rowHeader = [];
         $formattedHouseholdArray = null;
 
         foreach ($sheetArray as $indexRow => $row) {
-            // Check if no column has been deleted
-            if (!$row['A'] && !$row['B'] && !$row['C'] && !$row['D'] && !$row['E'] && !$row['F'] && !$row['G'] && !$row['H'] && !$row['I'] && !$row['J'] && !$row['K'] && !$row['L'] && !$row['M'] && !$row['N'] && !$row['O'] && !$row['P'] && !$row['Q'] && !$row['R'] && !$row['S'] && !$row['T'] && !$row['U'] && !$row['V'] && !$row['W'] && !$row['X'] && !$row['Y'] && !$row['Z'] && !$row['AA'] && !$row['AB'] && !$row['AC'] && !$row['AD'] && !$row['AE']) {
-                continue;
-            }
-
-            // Index == 1
-            if (Household::indexRowHeader === $indexRow) {
-                $rowHeader = $row;
-            }
-            // Index < first row of data
-            if ($indexRow < Household::firstRow) {
+            if (self::isEmpty($row)) {
                 continue;
             }
 
             // Load the household array for the current row
-            try {
-                $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $indexRow, $row, $rowHeader);
-            } catch (\Exception $exception) {
-                throw $exception;
-            }
+            $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $indexRow, $row, $rowHeader);
+
             // Check if it's a new household or just a new beneficiary in the current household
             // If address_street exists it's a new household
             if (array_key_exists('household_locations', $formattedHouseholdArray)) {
@@ -76,6 +157,7 @@ class CSVToArrayMapper extends AbstractMapper
         }
         // Add the last household to the list
         if (null !== $formattedHouseholdArray) {
+            $this->generateStaticBeneficiary($householdArray);
             $listHouseholdArray[] = $householdArray;
         }
 
@@ -236,8 +318,11 @@ class CSVToArrayMapper extends AbstractMapper
             $this->mapProfile($formattedHouseholdArray);
             $this->mapStatus($formattedHouseholdArray);
             $this->mapLivelihood($formattedHouseholdArray);
-            $formattedHouseholdArray['coping_strategies_index'] = null;
-            $formattedHouseholdArray['food_consumption_score'] = null;
+            $this->mapShelterStatus($formattedHouseholdArray);
+            $this->mapAssets($formattedHouseholdArray);
+            $this->mapDebtLevel($formattedHouseholdArray);
+            $this->mapSupportReceivedTypes($formattedHouseholdArray);
+            $this->mapSupportDateReceived($formattedHouseholdArray);
         } catch (\Exception $exception) {
             throw $exception;
         }
@@ -267,6 +352,81 @@ class CSVToArrayMapper extends AbstractMapper
                 unset($formattedHouseholdArray[$indexFormatted]);
             }
         }
+    }
+
+    /**
+     * @param $householdArray
+     *
+     * @throws \Exception
+     */
+    private function generateStaticBeneficiary(&$householdArray)
+    {
+        $headBeneficiary = $householdArray['beneficiaries'][0];
+        $hhBirthDate = $headBeneficiary['date_of_birth'];
+        if (empty($hhBirthDate)) {
+            throw new \Exception('Date of birth is required for Head');
+        }
+
+        $hhAge = \DateTime::createFromFormat('d-m-Y', $hhBirthDate)->diff(new \DateTime())->y;
+
+        foreach ($householdArray['beneficiaries'] as $beneficiary) {
+            if (isset($beneficiary['date_of_birth']) && isset($beneficiary['gender'])) {
+                $age = \DateTime::createFromFormat('d-m-Y', $beneficiary['date_of_birth'])->diff(new \DateTime())->y;
+                if ($age <= 2) {
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-0-2';
+                } elseif ($age < 6) {
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-2-5';
+                } elseif ($age < 18) {
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-6-17';
+                } elseif ($age < 65) {
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-18-64';
+                } else {
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-65-99';
+                }
+
+                if (array_key_exists($expectedStaticField, $householdArray) && null !== $householdArray[$expectedStaticField]) {
+                    --$householdArray[$expectedStaticField];
+                }
+            }
+        }
+
+        $staticFields = [
+            'f-0-2', 'f-2-5', 'f-6-17', 'f-18-64', 'f-65-99',
+            'm-0-2', 'm-2-5', 'm-6-17', 'm-18-64', 'm-65-99',
+        ];
+        foreach ($staticFields as $staticField) {
+            $field = 'member_' . $staticField;
+            if ($headBeneficiary && !empty($householdArray[$field])) {
+                list ($gender, $fromAge, $toAge) = explode('-', $staticField);
+                $gender = $gender === 'f' ? 0 : 1;
+
+                $birthDate = new \DateTime();
+                $ageInterval = new \DateInterval('P' . ($toAge - $fromAge) * 12 . 'M');
+                $birthDate->sub($ageInterval);
+                for ($i = 1; $i <= $householdArray[$field]; $i++) {
+                    $generatedBeneficiary = [
+                        'local_given_name' => 'Member ' . $i,
+                        'local_family_name' => $headBeneficiary['local_family_name'],
+                        'en_given_name' => 'Member ' . $i,
+                        'en_family_name' => $headBeneficiary['en_family_name'],
+                        'date_of_birth' => $birthDate->format('d-m-Y'),
+                        'gender' => $gender,
+                        'status' => 0,
+                        'residency_status' => $headBeneficiary['residency_status'],
+                        'vulnerability_criteria' => [],
+                        'phones' => [],
+                        'national_ids' => [],
+                        'profile' => [
+                            'photo' => '',
+                        ],
+                    ];
+                    $householdArray['beneficiaries'][] = $generatedBeneficiary;
+                }
+            }
+            unset($householdArray[$field]);
+        }
+
+        $x = 1;
     }
 
     /**
@@ -539,5 +699,95 @@ class CSVToArrayMapper extends AbstractMapper
                 throw new \Exception("Invalid livelihood.");
             }
         }
+    }
+
+    private function mapShelterStatus(&$formattedHouseholdArray)
+    {
+        if (isset($formattedHouseholdArray['shelter_status'])) {
+            foreach (Household::SHELTER_STATUSES as $id => $status) {
+                if (0 === strcasecmp(trim($formattedHouseholdArray['shelter_status']), $status)) {
+                    $formattedHouseholdArray['shelter_status'] = $id;
+                    return;
+                }
+            }
+
+            throw new \InvalidArgumentException("'{$formattedHouseholdArray['shelter_status']}' is not valid shelter status.");
+        }
+    }
+
+    private function mapAssets(&$formattedHouseholdArray)
+    {
+        if (isset($formattedHouseholdArray['assets'])) {
+            $assets = [];
+            foreach (explode(',', $formattedHouseholdArray['assets']) as $value) {
+                foreach (Household::ASSETS as $id => $asset) {
+                    if (0 === strcasecmp(trim($value), $asset)) {
+                        $assets[] = $id;
+                        continue 2;
+                    }
+                }
+
+                throw new \InvalidArgumentException("'$value' is not valid asset.");
+            }
+
+            $formattedHouseholdArray['assets'] = $assets;
+        }
+    }
+
+    private function mapDebtLevel(&$formattedHouseholdArray)
+    {
+        if (isset($formattedHouseholdArray['debt_level'])) {
+            if (!is_numeric($formattedHouseholdArray['debt_level'])) {
+                throw new \InvalidArgumentException("'{$formattedHouseholdArray['debt_level']}' is not valid debt level.");
+            }
+
+            $formattedHouseholdArray['debt_level'] = intval($formattedHouseholdArray['debt_level']);
+        }
+    }
+
+    private function mapSupportReceivedTypes(&$formattedHouseholdArray)
+    {
+        if (isset($formattedHouseholdArray['support_received_types'])) {
+            $types = [];
+            foreach (explode(',', $formattedHouseholdArray['support_received_types']) as $value) {
+                foreach (Household::SUPPORT_RECIEVED_TYPES as $id => $type) {
+                    if (0 === strcasecmp(trim($value), $type)) {
+                        $types[] = $id;
+                        continue 2;
+                    }
+                }
+
+                throw new \InvalidArgumentException("'$value' is not valid support received type.");
+            }
+
+            $formattedHouseholdArray['support_received_types'] = $types;
+        }
+    }
+
+    private function mapSupportDateReceived(&$formattedHouseholdArray)
+    {
+        if (isset($formattedHouseholdArray['support_date_received'])) {
+            $date = \DateTime::createFromFormat('d-m-Y', $formattedHouseholdArray['support_date_received']);
+            if (false === $date) {
+                throw new \InvalidArgumentException("'{$formattedHouseholdArray['support_date_received']}' is not valid support date received.");
+            }
+
+            $formattedHouseholdArray['support_date_received'] = $formattedHouseholdArray['support_date_received'];
+        }
+    }
+    /**
+     * @param array $values
+     *
+     * @return bool return true, if all values in array are empty
+     */
+    protected static function isEmpty(array $values): bool
+    {
+        foreach ($values as $value) {
+            if (!empty($value)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

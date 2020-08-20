@@ -2,7 +2,10 @@
 
 namespace BeneficiaryBundle\Controller;
 
-use BeneficiaryBundle\Utils\ExportCSVService;
+use BeneficiaryBundle\Entity\HouseholdActivity;
+use BeneficiaryBundle\Model\Household\HouseholdActivityChangesCollection;
+use BeneficiaryBundle\Model\Household\HouseholdChange\Factory\FilteredHouseholdChangeFactory;
+use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper;
@@ -265,96 +268,40 @@ class HouseholdController extends Controller
      */
     public function importAction(Request $request, Project $project)
     {
+        try {
+
+
         set_time_limit(0); // 0 = no limits
-        $token = empty($request->query->get('token')) ? null : $request->query->get('token');
-
-        $contentJson = $request->request->get('errors');
-
+        $token = $request->query->get('token');
+        $tmpFile = $request->request->get('tmpFile');
+        $mapping = $request->request->get('mapping');
         $email = $request->query->get('email');
         $countryIso3 = $request->request->get('__country');
 
         /** @var HouseholdCSVService $householdService */
         $householdService = $this->get('beneficiary.household_csv_service');
 
-        if ($token === null) {
+        if (empty($token) && empty($mapping)) {
             if (!$request->files->has('file')) {
                 return new Response('You must upload a file.', Response::HTTP_BAD_REQUEST);
             }
-            try {
-                $return = $householdService->saveCSV($countryIso3, $project, $request->files->get('file'), $token, $email);
-            } catch (\Exception $e) {
-                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
+            $return = $householdService->createPreview($countryIso3, $request->files->get('file'));
+        } elseif ($mapping) {
+            $return = $householdService->saveCSVAndAnalyze($countryIso3, $project, $tmpFile, $mapping, $email);
         } else {
-            try {
-                if (!$contentJson) {
-                    $contentJson = [];
-                }
-                $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $token, $email);
-            } catch (\Exception $e) {
-                return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            if (!($contentJson = $request->request->get('errors'))) {
+                $contentJson = [];
             }
+            $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $token, $email);
+        }
+        } catch (\Exception $ex) {
+            return new Response($ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
 
         $json = $this->get('jms_serializer')
             ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
         return new Response($json);
-    }
-
-    /**
-     * @Rest\Get("/csv/households/export", name="get_pattern_csv_household")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
-     *
-     * @SWG\Tag(name="Households")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Return Household (old and new) if similarity founded",
-     *      examples={
-     *          "application/json": {
-     *              {
-     *                  "'Household','','','','','','','','','','','Beneficiary','','','','','',''\n'Address street','Address number','Address postcode','Livelihood','Notes','Latitude','Longitude','Adm1','Adm2','Adm3','Adm4','Family name','Gender','Status','Date of birth','Vulnerability criteria','Phones','National IDs'\n",
-     *                  "pattern_household_fra.csv"
-     *              }
-     *          }
-     *      }
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function getPatternCSVAction(Request $request)
-    {
-        $countryIso3 = $request->request->get('__country');
-
-        $type = $request->query->get('type') ?: 'csv';
-        /** @var ExportCSVService $exportCSVService */
-        $exportCSVService = $this->get('beneficiary.household_export_csv_service');
-        try {
-            $filename = $exportCSVService->generate($countryIso3, $type);
-
-            // Create binary file to send
-            $response = new BinaryFileResponse(getcwd() . '/' . $filename);
-
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
-            $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
-            if ($mimeTypeGuesser->isSupported()) {
-                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
-            } else {
-                $response->headers->set('Content-Type', 'text/plain');
-            }
-            $response->deleteFileAfterSend(true);
-
-            return $response;
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
     }
 
     /**
@@ -550,6 +497,41 @@ class HouseholdController extends Controller
                 SerializationContext::create()->setGroups("SmallHousehold")->setSerializeNull(true)
             );
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Get("/households/{householdId}/changes")
+     *
+     * @SWG\Tag(name="Households")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Get list of changes in household",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=HouseholdActivityChange::class, groups={"HouseholdChanges"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(response=404, description="Household does not exists")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function householdChanges(Request $request)
+    {
+        /** @var Household|null $household */
+        $household = $this->getDoctrine()->getRepository(Household::class)->find($request->get('householdId'));
+        if (!$household) {
+            throw $this->createNotFoundException('Household does not exists.');
+        }
+
+        $activities = $this->getDoctrine()->getRepository(HouseholdActivity::class)->findByHousehold($household);
+
+        $changes = new HouseholdActivityChangesCollection($activities, new FilteredHouseholdChangeFactory());
+        $changes = $this->get('serializer')->serialize($changes, 'json', ['groups' => ['HouseholdChanges']]);
+
+        return new Response($changes);
     }
 
 }

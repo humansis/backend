@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * NationalId
@@ -13,6 +14,26 @@ use JMS\Serializer\Annotation\Groups;
  */
 class NationalId
 {
+    const TYPE_NATIONAL_ID = 'national_id';
+    const TYPE_PASSPORT = 'passport';
+    const TYPE_FAMILY = 'family_registration';
+    const TYPE_BIRTH_CERTIFICATE = 'birth_certificate';
+    const TYPE_DRIVERS_LICENSE = 'drivers_license';
+    const TYPE_CAMP_ID = 'camp_id';
+    const TYPE_SOCIAL_SERVICE_ID = 'social_service_card';
+    const TYPE_OTHER = 'other';
+
+    const TYPE_ALL = [
+        self::TYPE_NATIONAL_ID,
+        self::TYPE_PASSPORT,
+        self::TYPE_FAMILY,
+        self::TYPE_BIRTH_CERTIFICATE,
+        self::TYPE_DRIVERS_LICENSE,
+        self::TYPE_CAMP_ID,
+        self::TYPE_SOCIAL_SERVICE_ID,
+        self::TYPE_OTHER,
+    ];
+
     /**
      * @var int
      *
@@ -27,7 +48,7 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_number", type="string", length=255)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullInstitution"})
      */
     private $idNumber;
 
@@ -35,7 +56,8 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_type", type="string", length=45)
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers", "FullInstitution"})
+     * @Assert\Choice(choices=BeneficiaryBundle\Entity\NationalId::TYPE_ALL)
      */
     private $idType;
 

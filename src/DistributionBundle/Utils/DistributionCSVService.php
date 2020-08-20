@@ -9,7 +9,7 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
-use BeneficiaryBundle\Utils\ExportCSVService;
+use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
@@ -41,7 +41,7 @@ class DistributionCSVService
     /** @var EntityManagerInterface $em */
     private $em;
     
-    /** @var ExportCSVService $exportCSVService */
+    /** @var HouseholdExportCSVService $exportCSVService */
     private $exportCSVService;
     
     /** @var ContainerInterface $container */
@@ -67,7 +67,7 @@ class DistributionCSVService
     /**
      * DistributionCSVService constructor.
      * @param EntityManagerInterface $entityManager
-     * @param ExportCSVService $exportCSVService
+     * @param HouseholdExportCSVService $exportCSVService
      * @param ContainerInterface $container
      * @param HouseholdService $householdService
      * @param Serializer $serializer
@@ -77,7 +77,7 @@ class DistributionCSVService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ExportCSVService $exportCSVService,
+        HouseholdExportCSVService $exportCSVService,
         ContainerInterface $container,
         HouseholdService $householdService,
         Serializer $serializer,

@@ -2,9 +2,9 @@
 
 namespace BeneficiaryBundle\Entity;
 
-use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Institution
@@ -16,10 +16,19 @@ class Institution
 {
     const TYPE_SCHOOL = 'school';
     const TYPE_HEALTH_CENTER = 'health';
-    const TYPE_COMMUNITY_CENTER = 'comunity_center';
+    const TYPE_COMMUNITY_CENTER = 'community_center';
     const TYPE_GOVERNMENT = 'government';
     const TYPE_PRODUCTION = 'production';
     const TYPE_COMMERCE = 'commerce';
+
+    const TYPE_ALL = [
+        self::TYPE_SCHOOL,
+        self::TYPE_HEALTH_CENTER,
+        self::TYPE_COMMUNITY_CENTER,
+        self::TYPE_GOVERNMENT,
+        self::TYPE_PRODUCTION,
+        self::TYPE_COMMERCE,
+    ];
 
     /**
      * @var int
@@ -27,14 +36,24 @@ class Institution
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"FullBeneficiary", "FullInstitution"})
      */
     private $id;
 
     /**
      * @var string
      *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @Groups({"FullBeneficiary", "FullInstitution"})
+     */
+    private $name;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="type", type="string", length=255)
      * @Groups({"FullBeneficiary", "FullInstitution"})
+     * @Assert\Choice(choices=BeneficiaryBundle\Entity\Institution::TYPE_ALL)
      */
     private $type;
 
@@ -49,8 +68,16 @@ class Institution
     /**
      * @var string
      *
+     * @ORM\Column(name="contact_family_name", type="string", length=255, nullable=true)
+     * @Groups({"FullBeneficiary", "FullInstitution"})
+     */
+    private $contactFamilyName;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="phone_number", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $phoneNumber;
 
@@ -58,25 +85,17 @@ class Institution
      * @var string
      *
      * @ORM\Column(name="phone_prefix", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
      */
     private $phonePrefix;
 
     /**
-     * @var string
+     * @var NationalId
      *
-     * @ORM\Column(name="id_number", type="string", length=255, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution"})
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\NationalId", cascade={"persist", "remove"})
+     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers"})
      */
-    private $idNumber;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="id_type", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullReceivers"})
-     */
-    private $idType;
+    private $nationalId;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
@@ -118,17 +137,29 @@ class Institution
     }
 
     /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
      * Set type.
      *
      * @param string $type
-     *
-     * @return Institution
      */
-    public function setType(string $type)
+    public function setType(string $type): void
     {
         $this->type = $type;
-
-        return $this;
     }
 
     /**
@@ -155,6 +186,22 @@ class Institution
     public function setContactName(?string $contactName): void
     {
         $this->contactName = $contactName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getContactFamilyName(): ?string
+    {
+        return $this->contactFamilyName;
+    }
+
+    /**
+     * @param string|null $contactFamilyName
+     */
+    public function setContactFamilyName(?string $contactFamilyName): void
+    {
+        $this->contactFamilyName = $contactFamilyName;
     }
 
     /**
@@ -190,35 +237,19 @@ class Institution
     }
 
     /**
-     * @return string|null
+     * @return NationalId|null
      */
-    public function getIdNumber(): ?string
+    public function getNationalId(): ?NationalId
     {
-        return $this->idNumber;
+        return $this->nationalId;
     }
 
     /**
-     * @param string|null $idNumber
+     * @param NationalId|null $nationalId
      */
-    public function setIdNumber(?string $idNumber): void
+    public function setNationalId(?NationalId $nationalId): void
     {
-        $this->idNumber = $idNumber;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getIdType(): ?string
-    {
-        return $this->idType;
-    }
-
-    /**
-     * @param string|null $idType
-     */
-    public function setIdType(?string $idType): void
-    {
-        $this->idType = $idType;
+        $this->nationalId = $nationalId;
     }
 
     /**

@@ -2,15 +2,16 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\Type as JMS_Type;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
-use CommonBundle\Utils\ExportableInterface;
-use BeneficiaryBundle\Entity\Referral;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use VoucherBundle\Entity\Smartcard;
 
 /**
  * Beneficiary
@@ -159,13 +160,28 @@ class Beneficiary implements ExportableInterface
     private $referral;
 
     /**
-     * Constructor
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Smartcard", mappedBy="beneficiary")
+     *
+     * @var Collection|Smartcard[]
+     */
+    private $smartcards;
+
+    /**
+     * @var string
+     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
+     * @Serializer\Accessor(getter="getSmartcard")
+     */
+    private $smartcard;
+
+    /**
+     * Constructor.
      */
     public function __construct()
     {
         $this->vulnerabilityCriteria = new \Doctrine\Common\Collections\ArrayCollection();
         $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nationalIds = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->smartcards = new \Doctrine\Common\Collections\ArrayCollection();
         $this->setUpdatedOn(new \DateTime());
 
         //TODO check if updatedOn everytime
@@ -700,6 +716,8 @@ class Beneficiary implements ExportableInterface
                 "tent number" => "",
                 "livelihood" => "",
                 "incomeLevel" => "",
+                "foodConsumptionScore" => "",
+                "copingStrategiesIndex" => "",
                 "notes" => "",
                 "latitude" => "",
                 "longitude" => "",
@@ -708,6 +726,21 @@ class Beneficiary implements ExportableInterface
                 "adm3" => "",
                 "adm4" => "",
             ];
+        }
+
+        $assets = [];
+        foreach ((array) $this->getHousehold()->getAssets() as $type) {
+            $assets[] = Household::ASSETS[$type];
+        }
+
+        $supportReceivedTypes = [];
+        foreach ((array) $this->getHousehold()->getShelterStatus() as $type) {
+            $supportReceivedTypes[] = Household::SUPPORT_RECIEVED_TYPES[$type];
+        }
+
+        $shelterStatus = '';
+        if ($this->getHousehold()->getShelterStatus()) {
+            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
         }
 
         $tempBenef = [
@@ -731,6 +764,11 @@ class Beneficiary implements ExportableInterface
             "proxy phone 2" => $proxyphones[1],
             "ID Type" => $typenationalID,
             "ID Number" => $valuesnationalID,
+            "Assets" => implode(', ', $assets),
+            "Shelter Status" => $shelterStatus,
+            "Debt Level" => $this->getHousehold()->getDebtLevel(),
+            "Support Received Types" => implode(', ', $supportReceivedTypes),
+            "Support Date Received" => $this->getHousehold()->getSupportDateReceived() ? $this->getHousehold()->getSupportDateReceived()->format('d-m-Y') : null,
         ];
 
         foreach ($valueCountrySpecific as $key => $value) {
@@ -820,6 +858,8 @@ class Beneficiary implements ExportableInterface
             "tent number" => $tentNumber,
             "livelihood" => $livelihood,
             "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
+            "foodConsumptionScore" => $this->getHousehold()->getFoodConsumptionScore(),
+            "copingStrategiesIndex" => $this->getHousehold()->getCopingStrategiesIndex(),
             "notes" => $this->getHousehold()->getNotes(),
             "latitude" => $this->getHousehold()->getLatitude(),
             "longitude" => $this->getHousehold()->getLongitude(),
@@ -860,6 +900,21 @@ class Beneficiary implements ExportableInterface
                 return $this->getDateOfBirth()->diff(new \DateTime('now'))->y;
             } catch (\Exception $ex) {
                 return null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSmartcard()
+    {
+        foreach ($this->smartcards as $smartcard) {
+            if ($smartcard->isActive()) {
+                $this->smartcard = $smartcard->getSerialNumber();
+                return $this->smartcard;
             }
         }
 

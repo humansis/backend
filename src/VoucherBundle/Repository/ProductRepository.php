@@ -13,8 +13,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     public function getNameByBooklet(int $bookletId) {
         $qb = $this->createQueryBuilder('p');
         
-        $qb->leftJoin('p.voucherRecords', 'vr')
-            ->leftJoin('vr.voucher', 'v')
+        $qb->leftJoin('p.vouchers', 'v')
             ->leftJoin('v.booklet', 'b')
             ->where('b.id = :id')
                 ->setParameter('id', $bookletId)

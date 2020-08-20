@@ -196,8 +196,13 @@ class HouseholdService
 
         $dateReceived = null;
         if (isset($householdArray["support_date_received"]) && $householdArray["support_date_received"]) {
-            $dateReceived = \DateTime::createFromFormat('d-m-Y', $householdArray["support_date_received"]);
-            if (false === $dateReceived) {
+            if (is_string($householdArray['support_date_received'])) {
+                $dateReceived = \DateTime::createFromFormat('d-m-Y', $householdArray['support_date_received']);
+            } else {
+                $dateReceived = $householdArray['support_date_received'];
+            }
+
+            if (!$dateReceived instanceof \DateTimeInterface) {
                 throw new \Exception("Value of support_date_received is invalid");
             }
         }

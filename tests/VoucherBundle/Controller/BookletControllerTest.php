@@ -66,8 +66,11 @@ class BookletControllerTest extends BMSServiceTestCase
         $body = [
             "pageIndex" => 0,
             "pageSize" => 10,
-            "filter" => [],
-            "sort" => []
+            "filter" => [
+                ['category' => 'aaa', 'filter' => "asdfg"],
+                ['category' => 'bbb', 'filter' => "asdfg"],
+            ],
+            "sort" => ["sort"=>'adasd','direction'=>'ASC']
         ];
         $crawler = $this->request('POST', '/api/wsse/booklets/get/all', $body);
         $booklets = json_decode($this->client->getResponse()->getContent(), true);
@@ -291,7 +294,7 @@ class BookletControllerTest extends BMSServiceTestCase
         ];
 
         // Second step
-        $crawler = $this->request('POST', '/api/wsse/booklets/assign/'.$beneficiary->getId().'/'.$distribution->getId(), $body);
+        $crawler = $this->request('POST', '/api/wsse/booklets/assign/'.$distribution->getId().'/'.$beneficiary->getId(), $body);
         $response = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());

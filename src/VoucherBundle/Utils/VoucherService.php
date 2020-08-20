@@ -2,6 +2,9 @@
 
 namespace VoucherBundle\Utils;
 
+use CommonBundle\InputType\Country;
+use CommonBundle\InputType\DataTableType;
+use CommonBundle\InputType\RequestConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -49,18 +52,13 @@ class VoucherService
         try {
             $currentId = array_key_exists('lastId', $vouchersData) ? $vouchersData['lastId'] + 1 : $this->getLastId() + 1;
             for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
-                $voucher = new Voucher();
+
                 $voucherData = $vouchersData;
                 $voucherData['value'] = $vouchersData['values'][$x];
                 $booklet = $voucherData['booklet'];
                 $code = $this->generateCode($voucherData, $currentId);
 
-                $voucher->setUsedAt(null)
-                        ->setCode($code)
-                        ->setBooklet($booklet)
-                        ->setVendor(null)
-                        ->setValue($voucherData['value']);
-
+                $voucher = new Voucher($code, $voucherData['value'], $booklet);
                 $currentId++;
 
                 $this->em->persist($voucher);
@@ -107,104 +105,14 @@ class VoucherService
         return $this->em->getRepository(Voucher::class)->findAll();
     }
 
-    /**
-     * @param array $voucherData
-     * @return Voucher
-     * @throws \Exception
-     * @deprecated Defective/incomplete processing of voucher scan
-     */
-    public function scannedDeprecated(array $voucherData)
+    public function redeem(Voucher $voucher): void
     {
-        try {
-            $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
-            $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendorId']);
-            if (!$voucher || $voucher->getUsedAt() !== null) {
-                return $voucher;
-            }
-            $voucher->setVendor($vendor)
-                    ->setUsedAt(new \DateTime($voucherData['used_at'])); // TODO : check format
-
-            foreach ($voucherData['productIds'] as $productId) {
-                $product = $this->em->getRepository(Product::class)->find($productId);
-
-                $record = VoucherRecord::create(
-                    $product,
-                    $voucherData['value'] ?? null,
-                    $voucherData['quantity'] ?? null,
-                    isset($voucherData['used_at']) ? new \DateTime($voucherData['used_at']) : null
-                );
-
-                $voucher->addRecord($record);
-            }
-
-            $booklet = $voucher->getBooklet();
-            $vouchers = $booklet->getVouchers();
-            $allVouchersUsed = true;
-            foreach ($vouchers as $voucher) {
-                if ($voucher->getUsedAt() === null) {
-                    $allVouchersUsed = false;
-                }
-            }
-            if ($allVouchersUsed === true) {
-                $booklet->setStatus(Booklet::USED);
-            }
-
-            $this->em->merge($voucher);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            throw new \Exception('Error setting Vendor or changing used status');
+        if ($voucher->getVoucherPurchase() == null) {
+            throw new \InvalidArgumentException("Reddemed voucher must be used.");
         }
-        return $voucher;
-    }
-
-    /**
-     * @param array $voucherData
-     * @return Voucher
-     * @throws \Exception
-     */
-    public function scanned(array $voucherData)
-    {
-        try {
-            $vendor = $this->em->getRepository(Vendor::class)->find($voucherData['vendorId']);
-            $product = $this->em->getRepository(Product::class)->find($voucherData['productId']);
-
-            $record = VoucherRecord::create(
-                $product,
-                $voucherData['value'] ?? null,
-                $voucherData['quantity'] ?? null,
-                isset($voucherData['usedAt']) ? \DateTime::createFromFormat('d-m-Y H:i:s', $voucherData['usedAt']) : null
-            );
-
-            /** @var Voucher $voucher */
-            $voucher = $this->em->getRepository(Voucher::class)->find($voucherData['id']);
-            if (!$voucher || $voucher->getUsedAt() !== null) {
-                return $voucher;
-            }
-
-            $voucher
-                ->setVendor($vendor)
-                ->addRecord($record);
-
-
-            $booklet = $voucher->getBooklet();
-            $vouchers = $booklet->getVouchers();
-
-            $allVouchersUsed = true;
-            foreach ($vouchers as $voucher) {
-                if ($voucher->getUsedAt() === null) {
-                    $allVouchersUsed = false;
-                }
-            }
-            if ($allVouchersUsed === true) {
-                $booklet->setStatus(Booklet::USED);
-            }
-
-            $this->em->persist($voucher);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            throw new \Exception('Error setting Vendor or changing used status');
-        }
-        return $voucher;
+        $voucher->redeem();
+        $this->em->persist($voucher);
+        $this->em->flush();
     }
 
     /**
@@ -217,7 +125,7 @@ class VoucherService
      */
     public function deleteOneFromDatabase(Voucher $voucher, bool $removeVoucher = true)
     {
-        if ($removeVoucher && $voucher->getUsedAt() === null) {
+        if ($removeVoucher && null === $voucher->getVoucherPurchase()) {
             $this->em->remove($voucher);
             $this->em->flush();
         } else {
@@ -261,7 +169,9 @@ class VoucherService
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
         } else if ($filters) {
-            $booklets = $this->container->get('voucher.booklet_service')->getAll($countryIso3, $filters)[1];
+            /** @var DataTableType $dataTableFilter */
+            $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
+            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
         } else {
             $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
         }
@@ -297,7 +207,9 @@ class VoucherService
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids)->getResult();
         } else if ($filters) {
-            $booklets = $this->container->get('voucher.booklet_service')->getAll($countryIso3, $filters)[1];
+            /** @var DataTableType $dataTableFilter */
+            $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
+            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
         } else {
             $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
         }

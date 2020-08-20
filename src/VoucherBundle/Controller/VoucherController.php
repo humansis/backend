@@ -3,21 +3,26 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use Doctrine\ORM\EntityNotFoundException;
+use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\Type;
+use Symfony\Component\Validator\Constraints\Valid;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
-use VoucherBundle\Entity\VoucherRecord;
-use VoucherBundle\Exception\FixedValidationException;
+use VoucherBundle\Entity\VoucherPurchaseRecord;
+use VoucherBundle\InputType\VoucherPurchase;
+use VoucherBundle\Repository\VoucherRepository;
 
 /**
  * Class VoucherController
@@ -137,20 +142,21 @@ class VoucherController extends Controller
      *     description="List of purchased vouchers",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=VoucherRecord::class, groups={"ValidatedDistribution"}))
+     *         @SWG\Items(ref=@Model(type=VoucherPurchaseRecord::class, groups={"ValidatedDistribution"}))
      *     )
      * )
      * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
      *
      * @param Beneficiary $beneficiary
+     *
      * @return Response
      */
-    public function purchasedVoucherRecords(Beneficiary $beneficiary)
+    public function purchasedVoucherPurchases(Beneficiary $beneficiary)
     {
-        $vouchers = $this->getDoctrine()->getRepository(VoucherRecord::class)->findPurchasedByBeneficiary($beneficiary);
+        $vouchers = $this->getDoctrine()->getRepository(VoucherPurchaseRecord::class)->findPurchasedByBeneficiary($beneficiary);
 
         $json = $this->get('jms_serializer')
-            ->serialize($vouchers, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["ValidatedDistribution"]));
+            ->serialize($vouchers, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['ValidatedDistribution']));
 
         return new Response($json);
     }
@@ -190,7 +196,7 @@ class VoucherController extends Controller
 
 
     /**
-     * When a vendor sends their scanned vouchers
+     * When a vendor sends their scanned vouchers.
      *
      * @Rest\Post("/vouchers/scanned", name="scanned_vouchers")
      * @Security("is_granted('ROLE_VENDOR')")
@@ -207,72 +213,154 @@ class VoucherController extends Controller
      * )
      *
      * @param Request $request
+     *
      * @return Response
+     *
      * @deprecated endpoint does not support quantity
      */
     public function scanDeprecated(Request $request)
     {
         $vouchersData = $request->request->all();
         unset($vouchersData['__country']);
+
         $newVouchers = [];
 
         foreach ($vouchersData as $voucherData) {
             try {
-                $newVoucher = $this->get('voucher.voucher_service')->scannedDeprecated($voucherData);
-                $newVouchers[] = $newVoucher;
-            } catch (\Exception $exception) {
+                // This endpoint does accept value for all products, not for each one.
+                // So, we set value for first product in list, other products will have value=null
+                $value = false;
+
+                $productData = [];
+                foreach ($voucherData['productIds'] as $id) {
+                    if (false === $value) {
+                        $value = $voucherData['value'] ?? 0;
+                    }
+
+                    $productData[] = [
+                        'id' => $id,
+                        'value' => $value,
+                        'quantity' => null,
+                    ];
+
+                    // after first product has set value, next products will have null value
+                    $value = null;
+                }
+
+                $input = new VoucherPurchase();
+                $input->setProducts($productData);
+                $input->setVouchers([$voucherData['id']]);
+                $input->setVendorId($voucherData['vendorId']);
+
+                if (isset($voucherData['used_at'])) {
+                    $input->setCreatedAt(new \DateTime($voucherData['used_at']));
+                }
+
+                $voucherPurchase = $this->get('voucher.purchase_service')->purchase($input);
+
+                $newVouchers[] = $voucherPurchase->getVouchers()->current();
+            } catch (Exception $exception) {
                 return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
             }
         }
 
-        $json = $this->get('jms_serializer')->serialize($newVouchers, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        $json = $this->get('jms_serializer')->serialize($newVouchers, 'json',
+            SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+
         return new Response($json);
     }
 
     /**
-     * When a vendor sends their scanned vouchers
+     * Provide purchase of goods for vouchers.
+     * If vendor scan some vouchers and sell some goods for them, this request will send.
      *
-     * @Rest\Post("/vendor-app/v1/vouchers/scanned")
+     * @Rest\Post("/vendor-app/v1/vouchers/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
      *
      * @SWG\Tag(name="Vendor App")
-     * @SWG\Parameter(name="scanned voucher",
+     * @SWG\Parameter(name="purchase for vouchers",
      *     in="body",
      *     required=true,
-     *     @Model(type=\VoucherBundle\Annotation\VoucherScanned::class)
+     *     type="array",
+     *     @SWG\Schema(ref=@Model(type="VoucherBundle\InputType\VoucherPurchase"))
      * )
      * @SWG\Response(response=200, description="SUCCESS")
      * @SWG\Response(response=400, description="BAD_REQUEST")
      *
      * @param Request $request
+     *
      * @return Response
      */
-    public function scan(Request $request)
+    public function purchase(Request $request)
     {
+        $data = $this->get('serializer')->deserialize($request->getContent(), VoucherPurchase::class.'[]', 'json');
+
+        $errors = $this->get('validator')->validate($data, [
+            new All([new Type(['type' => VoucherPurchase::class])]),
+            new Valid(),
+        ]);
+
+        if (count($errors) > 0) {
+            return new Response((string) $errors, Response::HTTP_BAD_REQUEST);
+        }
+
         try {
-            $vouchersData = $request->request->all();
-            unset($vouchersData['__country']);
-
-            $newVouchers = [];
-            foreach ($vouchersData as $voucherData) {
-                try {
-                    $this->get('request_validator')->validate(
-                        "voucher_scanned",
-                        \VoucherBundle\Constraints\VoucherScannedConstraints::class,
-                        $voucherData
-                    );
-                } catch (ValidationException $exception) {
-                    throw new FixedValidationException($exception);
-                }
-
-                $newVouchers[] = $this->get('voucher.voucher_service')->scanned($voucherData);
+            foreach ($data as $item) {
+                $this->get('voucher.purchase_service')->purchase($item);
             }
 
-            $json = $this->get('jms_serializer')->serialize($newVouchers, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
-            return new Response($json);
+            return new Response(json_encode(true));
+        } catch (EntityNotFoundException $ex) {
+            return new Response($ex->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * When a voucher is returned to humanitarian
+     *
+     * @Rest\Post("/vouchers/redeem", name="redeem_vouchers")
+     * @ Security("is_granted('ROLE_VENDOR')")
+     * @SWG\Tag(name="Vouchers")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="SUCCESS",
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request           $request
+     *
+     * @return Response
+     */
+    public function redeemAction(Request $request)
+    {
+        $voucherRepository = $this->getDoctrine()->getRepository(Voucher::class);
+
+        $voucherData = $request->request->all();
+        unset($voucherData['__country']);
+
+        if (!isset($voucherData['id'])) {
+            return new Response("Missing parameter 'id'", Response::HTTP_BAD_REQUEST);
+        }
+
+        /** @var Voucher|null $voucher */
+        $voucher = $voucherRepository->find($voucherData['id']);
+
+        if (!$voucher) {
+            return new Response("There is no voucher with id '{$voucherData['id']}'", Response::HTTP_BAD_REQUEST);
+        }
+        try {
+            $this->get('voucher.voucher_service')->redeem($voucher);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+
+        $json = $this->get('jms_serializer')->serialize($voucher, 'json', SerializationContext::create()->setGroups(['FullVoucher'])->setSerializeNull(true));
+        return new Response($json);
     }
 
     /**

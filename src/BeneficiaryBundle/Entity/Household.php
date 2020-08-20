@@ -86,70 +86,6 @@ class Household
     ];
 
     /**
-     * First value with a column in the csv which can move, depends on the number of country specifics
-     * @var string
-     */
-    const firstColumnNonStatic = 'O';
-
-    /**
-     * The row index of the header (with the name of country specifics)
-     * @var int
-     */
-    const indexRowHeader = 1;
-
-    /**
-     * First row with data
-     * @var int $first_row
-     */
-    const firstRow = 6;
-
-    /**
-     * Mapping between fields and CSV columns
-     */
-    const MAPPING_CSV = [
-        // Household
-        "address_street" => "A",
-        "address_number" => "B",
-        "address_postcode" => "C",
-        "camp" => "D",
-        "tent_number" => "E",
-        "livelihood" => "F",
-        "income_level" => "G",
-        "notes" => "H",
-        "latitude" => "I",
-        "longitude" => "J",
-        "location" => [
-            // Location
-            "adm1" => "K",
-            "adm2" => "L",
-            "adm3" => "M",
-            "adm4" => "N"
-        ],
-        // Beneficiary
-        "beneficiaries" => [
-            "local_given_name" => "O",
-            "local_family_name" => "P",
-            "en_given_name" => "Q",
-            "en_family_name" => "R",
-            "gender" => "S",
-            "status" => "T",
-            "residency_status" => "U",
-            "date_of_birth" => "V",
-            "vulnerability_criteria" => "W",
-            "phone1_type" => "X",
-            "phone1_prefix" => "Y",
-            "phone1_number" => "Z",
-            "phone1_proxy" => "AA",
-            "phone2_type" => "AB",
-            "phone2_prefix" => "AC",
-            "phone2_number" => "AD",
-            "phone2_proxy" => "AE",
-            "national_id_type" => "AF",
-            "national_id_number" => "AG",
-        ]
-    ];
-
-    /**
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
@@ -164,7 +100,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="livelihood", type="integer", nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $livelihood;
 
@@ -172,7 +108,7 @@ class Household
      * @var int[]
      *
      * @ORM\Column(name="assets", type="array", nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $assets;
 
@@ -180,7 +116,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="shelter_status", type="integer", nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $shelterStatus;
 
@@ -188,7 +124,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $notes;
 
@@ -196,7 +132,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $latitude;
 
@@ -204,7 +140,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold"})
+     * @Groups({"FullHousehold", "Activity"})
      */
     private $longitude;
 
@@ -234,6 +170,7 @@ class Household
      * @var boolean
      *
      * @ORM\Column(type="boolean", options={"default" : 0})
+     * @Groups({"Activity"})
      */
     private $archived = 0;
 
@@ -241,7 +178,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $incomeLevel;
 
@@ -249,7 +186,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="foodConsumptionScore", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $foodConsumptionScore;
 
@@ -257,7 +194,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="copingStrategiesIndex", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $copingStrategiesIndex;
 
@@ -271,7 +208,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="debt_level", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $debtLevel;
 
@@ -279,7 +216,7 @@ class Household
      * @var int[]
      *
      * @ORM\Column(name="support_received_types", type="array", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $supportReceivedTypes;
 
@@ -288,7 +225,7 @@ class Household
      *
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
      * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $supportDateReceived;
 

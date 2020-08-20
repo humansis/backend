@@ -22,7 +22,7 @@ class Product implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullProduct", "ValidatedDistribution"})
+     * @Groups({"FullProduct", "ValidatedDistribution", "FullVoucher"})
      */
     private $id;
 
@@ -59,23 +59,12 @@ class Product implements ExportableInterface
     private $archived;
 
     /**
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\VoucherRecord", mappedBy="product")
-     */
-    private $voucherRecords;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="countryISO3", type="string", length=3)
      * @Groups({"FullProduct"})
      */
     private $countryISO3;
-
-    public function __construct()
-    {
-        $this->voucherRecords = new ArrayCollection();
-    }
-
 
     /**
      * Get id.
@@ -181,27 +170,6 @@ class Product implements ExportableInterface
     public function getImage()
     {
         return $this->image;
-    }
-
-    /**
-     * @return Collection|VoucherRecord[]
-     */
-    public function getVoucherRecords(): Collection
-    {
-        return $this->voucherRecords;
-    }
-
-    /**
-     * @param $records Collection|VoucherRecord[]
-     *
-     * @return self
-     */
-    public function setVoucherRecords($records): self
-    {
-        $this->voucherRecords->clear();
-        $this->voucherRecords = new ArrayCollection($records);
-
-        return $this;
     }
 
     /**

@@ -5,14 +5,15 @@ namespace DistributionBundle\Entity;
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use TransactionBundle\Entity\Transaction;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\Groups;
+use TransactionBundle\Entity\Transaction;
 use VoucherBundle\Entity\Booklet;
-use DistributionBundle\Entity\GeneralReliefItem;
+use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
- * DistributionBeneficiary
+ * DistributionBeneficiary.
  *
  * @ORM\Table(name="distribution_beneficiary")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\DistributionBeneficiaryRepository")
@@ -44,7 +45,7 @@ class DistributionBeneficiary
      * @Groups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
      */
     private $beneficiary;
-    
+
     /**
      * @var Transaction
      *
@@ -69,12 +70,21 @@ class DistributionBeneficiary
      */
     private $generalReliefs;
 
+    /**
+     * @var SmartcardDeposit[]
+     *
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
+     */
+    private $smartcardDeposits;
+
     public function __construct()
     {
         $this->booklets = new ArrayCollection();
+        $this->generalReliefs = new ArrayCollection();
+        $this->smartcardDeposits = new ArrayCollection();
     }
 
-     /**
+    /**
      * @var string
      *
      * @ORM\Column(name="justification", type="string", length=511, nullable=true)
@@ -84,13 +94,21 @@ class DistributionBeneficiary
     private $justification;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="removed", type="boolean", options={"default" : 0})
      *
      * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
      */
     private $removed;
+
+    /**
+     * @var bool|null
+     *
+     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @Serializer\Accessor(getter="getSmartcardDistributed")
+     */
+    private $smartcardDistributed;
 
     /**
      * Get id.
@@ -103,13 +121,28 @@ class DistributionBeneficiary
     }
 
     /**
+     * @return bool|null true, if smartcard money was already distributed/deposited to beneficiary. Null, if distribution is not about smartcard.
+     */
+    public function getSmartcardDistributed(): ?bool
+    {
+        foreach ($this->getDistributionData()->getCommodities() as $commodity) {
+            /** @var Commodity $commodity */
+            if ('Smartcard' === $commodity->getModalityType()->getName()) {
+                return count($this->smartcardDeposits) > 0;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Set distributionData.
      *
-     * @param \DistributionBundle\Entity\DistributionData|null $distributionData
+     * @param DistributionData|null $distributionData
      *
      * @return DistributionBeneficiary
      */
-    public function setDistributionData(\DistributionBundle\Entity\DistributionData $distributionData = null)
+    public function setDistributionData(DistributionData $distributionData = null)
     {
         $this->distributionData = $distributionData;
 
@@ -119,7 +152,7 @@ class DistributionBeneficiary
     /**
      * Get distributionData.
      *
-     * @return \DistributionBundle\Entity\DistributionData|null
+     * @return DistributionData|null
      */
     public function getDistributionData()
     {
@@ -129,11 +162,11 @@ class DistributionBeneficiary
     /**
      * Set beneficiary.
      *
-     * @param \BeneficiaryBundle\Entity\Beneficiary|null $beneficiary
+     * @param Beneficiary|null $beneficiary
      *
      * @return DistributionBeneficiary
      */
-    public function setBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary = null)
+    public function setBeneficiary(Beneficiary $beneficiary = null)
     {
         $this->beneficiary = $beneficiary;
 
@@ -143,15 +176,15 @@ class DistributionBeneficiary
     /**
      * Get beneficiary.
      *
-     * @return \BeneficiaryBundle\Entity\Beneficiary|null
+     * @return Beneficiary|null
      */
     public function getBeneficiary()
     {
         return $this->beneficiary;
     }
- 
+
     /**
-     * Get the value of Transaction
+     * Get the value of Transaction.
      *
      * @return Transaction
      */
@@ -159,9 +192,9 @@ class DistributionBeneficiary
     {
         return $this->transactions;
     }
- 
+
     /**
-     * Add a Transaction
+     * Add a Transaction.
      *
      * @param Transaction transaction
      *
@@ -170,29 +203,32 @@ class DistributionBeneficiary
     public function addTransaction(Transaction $transaction)
     {
         $this->transactions[] = $transaction;
- 
+
         return $this;
     }
-    
+
     /**
-     * Remove a Transaction
-     * @param  Transaction $transaction
+     * Remove a Transaction.
+     *
+     * @param Transaction $transaction
+     *
      * @return self
      */
     public function removeTransaction(Transaction $transaction)
     {
         $this->transactions->removeElement($transaction);
+
         return $this;
     }
-    
+
     /**
-     * Set transactions
+     * Set transactions.
      *
      * @param $collection
      *
      * @return self
      */
-    public function setPhones(\Doctrine\Common\Collections\Collection $collection = null)
+    public function setPhones(Collection $collection = null)
     {
         $this->transactions = $collection;
 
@@ -229,9 +265,9 @@ class DistributionBeneficiary
 
         return $this;
     }
-    
+
     /**
-     * Get the value of Transaction
+     * Get the value of Transaction.
      *
      * @return GeneralReliefItem
      */
@@ -239,9 +275,9 @@ class DistributionBeneficiary
     {
         return $this->generalReliefs;
     }
- 
+
     /**
-     * Add a GeneralReliefItem
+     * Add a GeneralReliefItem.
      *
      * @param GeneralReliefItem $generalRelief
      *
@@ -250,18 +286,21 @@ class DistributionBeneficiary
     public function addGeneralRelief(GeneralReliefItem $generalRelief)
     {
         $this->generalReliefs[] = $generalRelief;
- 
+
         return $this;
     }
-    
+
     /**
-     * Remove a GeneralReliefItem
-     * @param  GeneralReliefItem $generalRelief
+     * Remove a GeneralReliefItem.
+     *
+     * @param GeneralReliefItem $generalRelief
+     *
      * @return self
      */
     public function removeGeneralRelief(GeneralReliefItem $generalRelief)
     {
         $this->generalReliefs->removeElement($generalRelief);
+
         return $this;
     }
 
@@ -292,7 +331,7 @@ class DistributionBeneficiary
     /**
      * Set removed.
      *
-     * @param boolean $removed
+     * @param bool $removed
      *
      * @return self
      */
@@ -306,7 +345,7 @@ class DistributionBeneficiary
     /**
      * Get removed.
      *
-     * @return boolean
+     * @return bool
      */
     public function getRemoved()
     {

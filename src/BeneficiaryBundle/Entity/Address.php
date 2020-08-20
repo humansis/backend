@@ -27,7 +27,7 @@ class Address
      * @var string|null
      *
      * @ORM\Column(name="number", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold"})
+     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
      */
     private $number;
 
@@ -35,7 +35,7 @@ class Address
      * @var string
      *
      * @ORM\Column(name="street", type="string", length=255, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold"})
+     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
      */
     private $street;
 
@@ -43,22 +43,23 @@ class Address
      * @var string
      *
      * @ORM\Column(name="postcode", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullHousehold"})
+     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
      */
     private $postcode;
 
     /**
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold"})
+     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold", "SmallHousehold"})
      */
     private $location;
 
     /**
-     * @param string|null $street
-     * @param string|null $number
-     * @param string|null $postCode
+     * @param string|null   $street
+     * @param string|null   $number
+     * @param string|null   $postCode
      * @param Location|null $location
-     * @return static
+     *
+     * @return self
      */
     public static function create(?string $street, ?string $number, ?string $postCode, ?Location $location = null): self
     {

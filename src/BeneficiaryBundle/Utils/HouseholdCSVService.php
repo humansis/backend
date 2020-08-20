@@ -3,6 +3,7 @@
 
 namespace BeneficiaryBundle\Utils;
 
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\DataTreatment\AbstractTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\DuplicateTreatment;
 use BeneficiaryBundle\Utils\DataTreatment\ValidateTreatment;
@@ -14,7 +15,6 @@ use BeneficiaryBundle\Utils\DataVerifier\AbstractVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\ExistingHouseholdVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\LessVerifier;
-use BeneficiaryBundle\Utils\DataVerifier\LevenshteinTypoVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
@@ -48,6 +48,7 @@ class HouseholdCSVService
     /** @var int $step */
     private $step;
 
+    private const NUMBER_OF_ROWS_FOR_PREVIEW  = 10;
 
     /**
      * HouseholdCSVService constructor.
@@ -71,47 +72,94 @@ class HouseholdCSVService
         $this->container = $container;
     }
 
-
     /**
-     * Defined the reader and transform CSV to array
+     * Build structure for show preview on FE.
      *
-     * @param $countryIso3
-     * @param Project $project
+     * @param string       $countryIso3
      * @param UploadedFile $uploadedFile
-     * @param $token
-     * @param string $email
-     * @return array
+     *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function saveCSV($countryIso3, Project $project, UploadedFile $uploadedFile, $token, string $email)
+    public function createPreview($countryIso3, UploadedFile $uploadedFile)
     {
-        // If it's the first step, we transform CSV to array mapped for corresponding to the entity DistributionData
         $reader = IOFactory::createReaderForFile($uploadedFile->getRealPath());
-
         $worksheet = $reader->load($uploadedFile->getRealPath())->getActiveSheet();
-        $sheetArray = $worksheet->rangeToArray('A1:' . $worksheet->getHighestColumn() . $worksheet->getHighestRow(), null, true, true, true);
-        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $token, $email);
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_var = $dir_root . '/../var/data_csv';
+        if (!is_dir($dir_var)) {
+            mkdir($dir_var);
+        }
+        $uploadedFile->move($dir_var);
+
+        $headers = $this->container->get('beneficiary.household_export_csv_service')->getHeaders($countryIso3);
+        $header = reset($headers);
+        $header = array_keys($header);
+        $header = array_filter($header, 'trim');    // some header cells are empty (due to help messages). We need to strip them.
+
+        $headerResult = [];
+        $generator = new ExcelColumnsGenerator();
+        foreach ($header as $item) {
+            $headerResult[$generator->getNext()] = $item;
+        }
+
+        $dataRange = sprintf('A%s:%s%s',            // for example: A2:AB1000
+            count($headers) + 1 + 1,                // number of header rows - we want to removed it from data
+            $worksheet->getHighestColumn(),
+            self::NUMBER_OF_ROWS_FOR_PREVIEW
+        );
+        $data = $worksheet->rangeToArray($dataRange, null, false, true, true);
+
+        return [
+            'header' => $headerResult,
+            'data' => array_values($data),
+            'mapping' => $this->CSVToArrayMapper->getMappingCSVOfCountry($countryIso3),
+            'tmpFile' => $uploadedFile->getFilename(),
+        ];
     }
 
     /**
-     * @param $countryIso3
+     * Defined the reader and transform CSV to array.
+     *
+     * @param         $countryIso3
      * @param Project $project
-     * @param array $sheetArray
-     * @param $token
-     * @param string $email
+     * @param string  $email
+     *
+     * @return array
+     *
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    public function saveCSVAndAnalyze($countryIso3, Project $project, $tmpFile, $mappingCSV, string $email)
+    {
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $csvFile = $dir_root.'/../var/data_csv/'.$tmpFile;
+
+        $sheetArray = $this->loadSheet($csvFile);
+
+        return $this->transformAndAnalyze($countryIso3, $project, $sheetArray, $mappingCSV, $email);
+    }
+
+    /**
+     * @param         $countryIso3
+     * @param Project $project
+     * @param array   $sheetArray
+     * @param string  $email
+     *
      * @return array|bool
+     *
      * @throws \Exception
      */
-    public function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, $token, string $email)
+    protected function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, $mappingCSV, string $email)
     {
-        // Get the list of households from csv with their beneficiaries
-        if ($token === null) {
-            $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $countryIso3);
-            return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, $token, $email);
-        } else {
-            return $this->foundErrors($countryIso3, $project, $sheetArray, $token, $email);
-        }
+        $headers = $this->container->get('beneficiary.household_export_csv_service')->getHeaders($countryIso3);
+        $rowHeader = $sheetArray[1];
+        $sheetArray = array_slice($sheetArray, count($headers) + 1);
+
+        $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $rowHeader, $countryIso3, $mappingCSV);
+
+        return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, null, $email);
     }
 
     /**
@@ -128,7 +176,7 @@ class HouseholdCSVService
         // Clean cache if timestamp is expired
         $this->clearExpiredSessions();
         $this->token = $token;
-        
+
         do {
             // get step
             $this->step = $this->getStepFromCache();
@@ -456,5 +504,29 @@ class HouseholdCSVService
         }
         closedir($dir);
         rmdir($src);
+    }
+
+    private function loadSheet(string $filename): array
+    {
+        $reader = IOFactory::createReaderForFile($filename);
+        $worksheet = $reader->load($filename)->getActiveSheet();
+
+        $sheetArray = $worksheet->rangeToArray('A1:'.$worksheet->getHighestColumn().$worksheet->getHighestRow(), null, false, true, true);
+
+        // search for null columns from end to start
+        foreach (array_reverse($sheetArray[1], true) as $c => $cell) {
+            foreach ($sheetArray as $r => $row) {
+                if (null !== $sheetArray[$r][$c]) {
+                    // stop searching for null values if some found
+                    break 2;
+                }
+            }
+
+            foreach ($sheetArray as $r => $row) {
+                unset($sheetArray[$r][$c]);
+            }
+        }
+
+        return $sheetArray;
     }
 }

@@ -107,12 +107,13 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             foreach ($this->getTestingLocations($manager, (string)$project->getIso3()) as $location) {
                 $locationIndex++;
                 $this->createHousehold($manager, $location, $project);
-                if (($locationIndex % 200) == 0) {
+                if (($locationIndex % 50) == 0) {
                     $manager->flush();
                 }
             }
             echo "\n";
             $manager->flush();
+            $manager->clear();
         }
     }
 
@@ -184,7 +185,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
                 $bnf->setEnGivenName($bnfData['en_given_name']);
                 $bnf->setLocalFamilyName($bnfData['local_family_name']);
                 $bnf->setLocalGivenName($bnfData['local_given_name']);
-                $bnf->setGender($bnfData['gender']);
+                $bnf->setGender($gender === 'F'? 0 : 1);
                 $bnf->setStatus($household->getBeneficiaries()->count() == 0);
                 $bnf->setResidencyStatus($bnfData['residency_status']);
 

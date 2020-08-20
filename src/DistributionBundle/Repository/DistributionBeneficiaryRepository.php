@@ -2,9 +2,10 @@
 
 namespace DistributionBundle\Repository;
 
+use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\DistributionData;
-use CommonBundle\Entity\Location;
 use BeneficiaryBundle\Entity\Household;
 
 /**
@@ -73,5 +74,22 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             'removed' => false,
         ]);
         return (int) $result;
+    }
+
+    /**
+     * @param DistributionData $distributionData
+     * @param Beneficiary      $beneficiary
+     *
+     * @return DistributionBeneficiary|null
+     */
+    public function findByDistributionAndBeneficiary(DistributionData $distributionData, Beneficiary $beneficiary): ?DistributionBeneficiary
+    {
+        $qb = $this->createQueryBuilder('db')
+            ->andWhere('db.distributionData = :distributionData')
+            ->andWhere('db.beneficiary = :beneficiary')
+            ->setParameter('distributionData', $distributionData)
+            ->setParameter('beneficiary', $beneficiary);
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }
