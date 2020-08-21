@@ -55,7 +55,7 @@ class ProductService
 
             $product->setImage($productData['image'])
               ->setName($productData['name'])
-              ->setUnit($productData['unit'])
+              ->setUnit($productData['unit'] ?? null)
               ->setArchived(false)
               ->setCountryISO3($productData['__country']);
 
