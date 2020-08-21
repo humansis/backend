@@ -218,7 +218,7 @@ class HouseholdCSVService
                 } else if ($this->step === 5) {
                     // update timestamp (10 minutes) and step
                     $this->updateTokenState();
-                    break;
+                    continue;
                 }
             }
 
