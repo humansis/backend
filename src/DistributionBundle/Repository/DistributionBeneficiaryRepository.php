@@ -7,6 +7,7 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\DistributionData;
 use BeneficiaryBundle\Entity\Household;
+use VoucherBundle\Entity\Booklet;
 
 /**
  * DistributionBeneficiaryRepository
@@ -46,7 +47,7 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
                 ->leftJoin("db.booklets", "b")
                 ->andWhere('b IS NULL')
                 ->orWhere("b.status = :s")
-                ->setParameter(':s', 3);
+                ->setParameter(':s', Booklet::UNASSIGNED);
         
         return $q->getQuery()->getResult();
     }
