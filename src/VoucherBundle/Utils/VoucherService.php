@@ -52,10 +52,12 @@ class VoucherService
 
                 $voucherData = $vouchersData;
                 $voucherData['value'] = $vouchersData['values'][$x];
+                /** @var Booklet $booklet */
                 $booklet = $voucherData['booklet'];
                 $code = $this->generateCode($voucherData, $currentId);
 
                 $voucher = new Voucher($code, $voucherData['value'], $booklet);
+                $booklet->getVouchers()->add($voucher);
                 $currentId++;
 
                 $this->em->persist($voucher);
