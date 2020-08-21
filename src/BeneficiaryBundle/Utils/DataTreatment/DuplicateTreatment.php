@@ -83,6 +83,6 @@ class DuplicateTreatment extends AbstractTreatment
             }
         }
 
-        return 'Done';
+        return [];
     }
 }

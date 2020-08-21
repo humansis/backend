@@ -28,7 +28,7 @@ class ExistingHouseholdVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array &$householdArray, int $cacheId, string $email)
     {
-        return; //temporary switch off duplication check
+/*
 
         if (empty($householdArray['beneficiaries']) && empty($householdArray['household_locations'])) {
             throw new \Exception('Beneficiaries or location missing in household');
@@ -63,7 +63,7 @@ class ExistingHouseholdVerifier extends AbstractVerifier
             $currentLocation['address']['number'] ?? null,
             $currentLocation['camp_address']['tent_number'] ?? null
         );
-
+*/
         if (empty($existingHousehold)) {
             $this->saveInCache('to_create', $cacheId, $householdArray, $email, null);
         }
