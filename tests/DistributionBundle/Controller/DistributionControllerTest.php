@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
 use Tests\BMSServiceTestCase;
 use TransactionBundle\Entity\Transaction;
+use VoucherBundle\Utils\BookletService;
 
 class DistributionControllerTest extends BMSServiceTestCase
 {
@@ -317,24 +318,55 @@ class DistributionControllerTest extends BMSServiceTestCase
      */
     public function testDistributionBeneficiariesVouchers($distribution)
     {
+        $bookletService = new BookletService(
+            $this->em,
+            $this->container->get('validator'),
+            $this->container,
+            $this->container->get('event_dispatcher')
+        );
+
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        $distributionRepo = $this->em->getRepository(DistributionBeneficiary::class);
+        $firstDistributionBeneficiary = $distributionRepo->findOneBy(['distributionData'=>$distribution['id']]);
+        $bnfId = $firstDistributionBeneficiary->getBeneficiary()->getId();
 
+        $booklet = $bookletService->create('KHM', [
+            'number_booklets' => 1,
+            'number_vouchers' => 10,
+            'currency' => 'USD',
+            'individual_values' => range(100, 110)
+        ]);
+        $bookletService->assign($booklet, $firstDistributionBeneficiary->getDistributionData(), $firstDistributionBeneficiary->getBeneficiary());
 
         // Second step
-        // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiaries');
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue(gettype($beneficiaries) == "array");
-        $this->assertArrayHasKey('id', $beneficiaries[0]);
-        $this->assertArrayHasKey('beneficiary', $beneficiaries[0]);
-        $this->assertArrayHasKey('transactions', $beneficiaries[0]);
+        $this->assertIsArray($beneficiaries);
+        $pivotBeneficiary = null;
+        foreach ($beneficiaries as $beneficiary) {
+            $this->assertIsArray($beneficiary['booklets'], "Booklets is not array in BNF ".$beneficiary['id'].'/'.$beneficiary['beneficiary']['id']);
+            if ($beneficiary['beneficiary']['id'] === $bnfId) {
+                $pivotBeneficiary = $beneficiary;
+            }
+        }
+        $this->assertNotNull($pivotBeneficiary, "There is no BNF ({$bnfId}) with added voucher");
+        $this->assertCount(1, $pivotBeneficiary['booklets'], "Wrong booklet count");
+        $this->assertArrayHasKey('currency', $pivotBeneficiary['booklets'][0], "Inconsistent currency");
+        $this->assertCount(10, $pivotBeneficiary['booklets'][0]['vouchers']);
+
+        foreach ($pivotBeneficiary['booklets'][0]['vouchers'] as $id => $voucher) {
+            $this->assertArrayHasKey('value', $voucher);
+            $this->assertEquals($voucher['value'], 100+$id, "Wrong voucher value");
+            $this->assertArrayHasKey('used_at', $voucher);
+            $this->assertArrayHasKey('redeemed_at', $voucher);
+        }
     }
 
     /**
