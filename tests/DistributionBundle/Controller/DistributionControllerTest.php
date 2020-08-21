@@ -265,7 +265,9 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id']);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $one = json_decode($this->client->getResponse()->getContent(), true);
+
 
         // Check if the second step succeed
         $this->assertArrayHasKey('id', $one);
@@ -299,6 +301,33 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiaries');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertTrue(gettype($beneficiaries) == "array");
+        $this->assertArrayHasKey('id', $beneficiaries[0]);
+        $this->assertArrayHasKey('beneficiary', $beneficiaries[0]);
+        $this->assertArrayHasKey('transactions', $beneficiaries[0]);
+    }
+
+    /**
+     * @depends testCreateDistribution
+     * @param $distribution
+     */
+    public function testDistributionBeneficiariesVouchers($distribution)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiaries');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -342,6 +371,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'], $body);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $update = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -377,6 +407,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] . '/archive');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $archive = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -399,6 +430,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('GET', '/api/wsse/distributions/projects/'. $distribution['project']['id']);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $distributions = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -487,6 +519,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('POST', '/api/wsse/distributions/beneficiaries/project/'. $distribution['project']['id'], $body);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -526,6 +559,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('POST', '/api/wsse/transaction/distribution/'. $distribution['id'].'/send', $body);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $sendMoney = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(true == true);
@@ -554,6 +588,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('GET', '/api/wsse/transaction/distribution/'. $distribution['id'].'/email');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $update = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
