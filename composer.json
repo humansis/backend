@@ -26,6 +26,7 @@
 		"php": "^7.3",
 		"ext-Zend-OPcache": "*",
 		"ext-json": "*",
+		"ext-xmlreader": "*",
 		"aws/aws-sdk-php": "^3.90",
 		"beberlei/doctrineextensions": "^1.0",
 		"doctrine/doctrine-bundle": "^1.6",
@@ -57,7 +58,7 @@
 		"symfony/templating": "^3.4",
 		"tecnickcom/tcpdf": "^6.2",
 		"twig/twig": "^1.0||^2.0"
-	},
+    },
 	"require-dev": {
 		"doctrine/coding-standard": "^5.0",
 		"mashape/unirest-php": "^3.0",

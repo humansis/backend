@@ -269,6 +269,9 @@ class HouseholdController extends Controller
      */
     public function importAction(Request $request, Project $project)
     {
+        try {
+
+
         set_time_limit(0); // 0 = no limits
         $token = $request->query->get('token');
         $tmpFile = $request->request->get('tmpFile');
@@ -291,6 +294,9 @@ class HouseholdController extends Controller
                 $contentJson = [];
             }
             $return = $householdService->foundErrors($countryIso3, $project, $contentJson, $token, $email);
+        }
+        } catch (\Exception $ex) {
+            return new Response($ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
 
