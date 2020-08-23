@@ -17,9 +17,20 @@ final class Version20200807130256 extends AbstractMigration
 
         $this->addSql('DROP INDEX UNIQ_7ABF446ACCFA12B8 ON abstract_beneficiary');
 
-        $this->addSql('CREATE TABLE abstract_beneficiary_project (abstract_beneficiary_id INT NOT NULL, project_id INT NOT NULL, INDEX IDX_80AC6109982A3051 (abstract_beneficiary_id), INDEX IDX_80AC6109166D1F9C (project_id), PRIMARY KEY(abstract_beneficiary_id, project_id)) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE abstract_beneficiary_project ADD CONSTRAINT FK_80AC6109982A3051 FOREIGN KEY (abstract_beneficiary_id) REFERENCES abstract_beneficiary (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE abstract_beneficiary_project ADD CONSTRAINT FK_80AC6109166D1F9C FOREIGN KEY (project_id) REFERENCES project (id) ON DELETE CASCADE');
+        $this->addSql('
+            CREATE TABLE abstract_beneficiary_project (
+                abstract_beneficiary_id INT NOT NULL,
+                project_id INT NOT NULL,
+                INDEX IDX_80AC6109982A3051 (abstract_beneficiary_id),
+                INDEX IDX_80AC6109166D1F9C (project_id),
+                PRIMARY KEY(abstract_beneficiary_id, project_id),
+                CONSTRAINT FK_80AC6109982A3051 FOREIGN KEY (abstract_beneficiary_id)
+                    REFERENCES abstract_beneficiary (id)
+                    ON DELETE CASCADE,
+                CONSTRAINT FK_80AC6109166D1F9C FOREIGN KEY (project_id)
+                    REFERENCES project (id)
+                    ON DELETE CASCADE
+            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
         $this->addSql('INSERT INTO abstract_beneficiary_project (abstract_beneficiary_id, project_id) SELECT household_id, project_id FROM `household_project`;');
         $this->addSql('DROP TABLE household_project');
 

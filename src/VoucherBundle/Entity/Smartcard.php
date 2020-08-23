@@ -80,7 +80,7 @@ class Smartcard
     /**
      * @var \DateTimeInterface
      *
-     * @ORM\Column(name="created_at", type="datetimetz", nullable=false)
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
     private $createdAt;
