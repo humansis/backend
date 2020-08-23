@@ -269,7 +269,6 @@ class DistributionController extends Controller
         $return = $distributionBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
 
         return new Response(json_encode($return));
-       
     }
 
     /**
@@ -524,28 +523,28 @@ class DistributionController extends Controller
         return new Response($json, Response::HTTP_OK);
     }
 
-     /**
-     * Complete a distribution.
-     *
-     * @Rest\Post("/distributions/{id}/complete", name="completed_project")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
-     *
-     * @SWG\Tag(name="Distributions")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="OK"
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param DistributionData $distribution
-     *
-     * @return Response
-     */
+    /**
+    * Complete a distribution.
+    *
+    * @Rest\Post("/distributions/{id}/complete", name="completed_project")
+    * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+    *
+    * @SWG\Tag(name="Distributions")
+    *
+    * @SWG\Response(
+    *     response=200,
+    *     description="OK"
+    * )
+    *
+    * @SWG\Response(
+    *     response=400,
+    *     description="BAD_REQUEST"
+    * )
+    *
+    * @param DistributionData $distribution
+    *
+    * @return Response
+    */
     public function completeAction(DistributionData $distribution)
     {
         try {
