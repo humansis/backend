@@ -16,9 +16,25 @@ final class Version20200724110417 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         // create person table
-        $this->addSql('CREATE TABLE person (id INT AUTO_INCREMENT NOT NULL, profile_id INT DEFAULT NULL, referral_id INT DEFAULT NULL, enGivenName VARCHAR(255) DEFAULT NULL, enFamilyName VARCHAR(255) DEFAULT NULL, localGivenName VARCHAR(255) DEFAULT NULL, localFamilyName VARCHAR(255) DEFAULT NULL, gender SMALLINT NULL, dateOfBirth DATE NULL, updated_on DATETIME DEFAULT NULL, UNIQUE INDEX UNIQ_34DCD176CCFA12B8 (profile_id), UNIQUE INDEX UNIQ_34DCD1763CCAA4B7 (referral_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE person ADD CONSTRAINT FK_34DCD176CCFA12B8 FOREIGN KEY (profile_id) REFERENCES profile (id)');
-        $this->addSql('ALTER TABLE person ADD CONSTRAINT FK_34DCD1763CCAA4B7 FOREIGN KEY (referral_id) REFERENCES referral (id)');
+        $this->addSql('
+            CREATE TABLE person (
+                id INT AUTO_INCREMENT NOT NULL,
+                profile_id INT DEFAULT NULL,
+                referral_id INT DEFAULT NULL,
+                enGivenName VARCHAR(255) DEFAULT NULL,
+                enFamilyName VARCHAR(255) DEFAULT NULL,
+                localGivenName VARCHAR(255) DEFAULT NULL,
+                localFamilyName VARCHAR(255) DEFAULT NULL,
+                gender SMALLINT NULL, dateOfBirth DATE NULL,
+                updated_on DATETIME DEFAULT NULL,
+                UNIQUE INDEX UNIQ_34DCD176CCFA12B8 (profile_id),
+                UNIQUE INDEX UNIQ_34DCD1763CCAA4B7 (referral_id),
+                PRIMARY KEY(id),
+                CONSTRAINT FK_34DCD176CCFA12B8 FOREIGN KEY (profile_id)
+                    REFERENCES profile (id),
+                CONSTRAINT FK_34DCD1763CCAA4B7 FOREIGN KEY (referral_id)
+                    REFERENCES referral (id)
+            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
 
         // edit bnf table
         $this->addSql('ALTER TABLE beneficiary DROP FOREIGN KEY FK_7ABF446A3CCAA4B7');

@@ -15,7 +15,7 @@ final class Version20200805123128 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('CREATE TABLE abstract_beneficiary (id INT AUTO_INCREMENT NOT NULL, bnf_type varchar(4) NOT NULL, UNIQUE INDEX UNIQ_7ABF446ACCFA12B8 (id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE abstract_beneficiary (id INT AUTO_INCREMENT NOT NULL, bnf_type varchar(255) NOT NULL, UNIQUE INDEX UNIQ_7ABF446ACCFA12B8 (id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
         // create helper columns
         $this->addSql('ALTER TABLE abstract_beneficiary ADD source_hh_id INT DEFAULT NULL, ADD source_bnf_id INT DEFAULT NULL, ADD source_institution_id INT DEFAULT NULL, ADD source_community_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE abstract_beneficiary ADD CONSTRAINT `FK_111` FOREIGN KEY (`source_hh_id`) REFERENCES `household`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE; ');
