@@ -146,6 +146,7 @@ class CSVToArrayMapper
             if (array_key_exists('household_locations', $formattedHouseholdArray)) {
                 // If there is already a previous household, add it to the list of households and create a new one
                 if (null !== $householdArray) {
+                    $this->generateStaticBeneficiary($householdArray);
                     $listHouseholdArray[] = $householdArray;
                 }
                 $householdArray = $formattedHouseholdArray;
