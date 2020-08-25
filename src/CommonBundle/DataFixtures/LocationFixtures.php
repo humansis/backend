@@ -90,6 +90,10 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
             } elseif ('adm4' === $xml->name) {
                 $this->buildAdm4($name, $code, $adm3, $manager);
             }
+
+            if (++$i >= self::LIMIT) {
+                break;
+            }
         }
 
         $manager->flush();
