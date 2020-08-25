@@ -3,6 +3,7 @@
 namespace ProjectBundle\Controller;
 
 
+use ProjectBundle\Mapper\ProjectMapper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,10 +50,9 @@ class ProjectController extends Controller
     {
         $user = $this->getUser();
         $projects = $this->get('project.project_service')->findAll($request->request->get('__country'), $user);
-        $json = $this->get('serializer')
-            ->serialize($projects, 'json', ['groups' => ['FullProject']]);
+        $projectMapper = $this->get(ProjectMapper::class);
 
-        return new Response($json, Response::HTTP_OK);
+        return $this->json($projectMapper->toFullArrays($projects));
     }
 
     /**
