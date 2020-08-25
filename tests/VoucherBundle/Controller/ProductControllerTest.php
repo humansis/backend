@@ -90,6 +90,7 @@ class ProductControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->request('GET', '/api/wsse/products');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $products = json_decode($this->client->getResponse()->getContent(), true);
 
         if (!empty($products)) {
