@@ -67,6 +67,14 @@ services:
     BeneficiaryBundle\Mapper\NationalIdMapper:
         public: true
 
+    BeneficiaryBundle\Mapper\BeneficiaryMapper:
+        public: true
+
+    BeneficiaryBundle\Mapper\AssistanceMapper:
+        arguments:
+            - '@BeneficiaryBundle\Mapper\BeneficiaryMapper'
+        public: true
+
     BeneficiaryBundle\Mapper\PhoneMapper:
         public: false
 

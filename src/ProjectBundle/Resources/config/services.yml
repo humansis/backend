@@ -21,4 +21,14 @@ services:
         public: true
 
     ProjectBundle\Mapper\ProjectMapper:
+        arguments:
+            - '@ProjectBundle\Mapper\DonorMapper'
+            - '@ProjectBundle\Mapper\SectorMapper'
+            - '@BeneficiaryBundle\Mapper\AssistanceMapper'
+        public: true
+
+    ProjectBundle\Mapper\DonorMapper:
+        public: true
+
+    ProjectBundle\Mapper\SectorMapper:
         public: true
