@@ -55,6 +55,10 @@ doctrine:
         user: '%database_user%'
         password: '%database_password%'
         charset: UTF8
+        mapping_types:
+            enum: string
+        types:
+            assistance_type_enum: DistributionBundle\DBAL\AssistanceTypeEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

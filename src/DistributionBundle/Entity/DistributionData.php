@@ -4,6 +4,7 @@ namespace DistributionBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
+use DistributionBundle\DBAL\AssistanceTypeEnum;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\Expr\Select;
 use ProjectBundle\Entity\Project;
@@ -34,6 +35,14 @@ class DistributionData implements ExportableInterface
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="assistance_type", type="assistance_type_enum")
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "FullBooklet", "DistributionOverview"})
+     */
+    private $assistanceType = AssistanceTypeEnum::DISTRIBUTION;
 
     /**
      * @var string
@@ -111,11 +120,11 @@ class DistributionData implements ExportableInterface
     /**
      * @var int
      *
-     * @ORM\Column(type="integer", name="type_distribution")
+     * @ORM\Column(name="type_distribution", type="integer")
      *
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
-    private $type;
+    private $targetType;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="distributionData")
@@ -173,6 +182,26 @@ class DistributionData implements ExportableInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAssistanceType(): string
+    {
+        return $this->assistanceType;
+    }
+
+    /**
+     * @param string $assistanceType
+     *
+     * @return DistributionData
+     */
+    public function setAssistanceType(string $assistanceType): self
+    {
+        $this->assistanceType = $assistanceType;
+
+        return $this;
     }
 
     /**
@@ -299,13 +328,13 @@ class DistributionData implements ExportableInterface
     /**
      * Set type.
      *
-     * @param int $type
+     * @param int $targetType
      *
-     * @return DistributionData
+     * @return self
      */
-    public function setType($type)
+    public function setTargetType(int $targetType): self
     {
-        $this->type = $type;
+        $this->targetType = $targetType;
 
         return $this;
     }
@@ -315,9 +344,9 @@ class DistributionData implements ExportableInterface
      *
      * @return int
      */
-    public function getType()
+    public function getTargetType(): int
     {
-        return $this->type;
+        return $this->targetType;
     }
 
     /**
@@ -605,7 +634,7 @@ class DistributionData implements ExportableInterface
         }
        
         
-        $typeString = $this->getType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
+        $typeString = $this->getTargetType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
 
         $adm1 = $this->getLocation()->getAdm1Name();
         $adm2 = $this->getLocation()->getAdm2Name();
