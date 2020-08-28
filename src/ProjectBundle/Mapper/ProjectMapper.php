@@ -3,6 +3,9 @@
 namespace ProjectBundle\Mapper;
 
 use BeneficiaryBundle\Mapper\AssistanceMapper;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
+use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\DistributionData;
 use ProjectBundle\Entity\Project;
 
 class ProjectMapper
@@ -16,18 +19,27 @@ class ProjectMapper
     /** @var AssistanceMapper */
     private $assistanceMapper;
 
+    /** @var BeneficiaryRepository */
+    private $beneficiaryRepo;
+
     /**
      * ProjectMapper constructor.
      *
-     * @param DonorMapper      $donorMapper
-     * @param SectorMapper     $sectorMapper
-     * @param AssistanceMapper $assistanceMapper
+     * @param DonorMapper           $donorMapper
+     * @param SectorMapper          $sectorMapper
+     * @param AssistanceMapper      $assistanceMapper
+     * @param BeneficiaryRepository $beneficiaryRepo
      */
-    public function __construct(DonorMapper $donorMapper, SectorMapper $sectorMapper, \BeneficiaryBundle\Mapper\AssistanceMapper $assistanceMapper)
-    {
+    public function __construct(
+        DonorMapper $donorMapper,
+        SectorMapper $sectorMapper,
+        AssistanceMapper $assistanceMapper,
+        BeneficiaryRepository $beneficiaryRepo
+    ) {
         $this->donorMapper = $donorMapper;
         $this->sectorMapper = $sectorMapper;
         $this->assistanceMapper = $assistanceMapper;
+        $this->beneficiaryRepo = $beneficiaryRepo;
     }
 
     public function toFullArray(?Project $project): ?array
@@ -35,6 +47,7 @@ class ProjectMapper
         if (!$project) {
             return null;
         }
+        $bnfCount = $this->beneficiaryRepo->countAllInProject($project);
         return [
             'id' => $project->getId(),
             'iso3' => $project->getIso3(),
@@ -46,7 +59,8 @@ class ProjectMapper
             'start_date' => $project->getStartDate()->format('Y-m-d'),
             'number_of_households' => $project->getNumberOfHouseholds(),
             'sectors' => $this->sectorMapper->toArrays($project->getSectors()),
-            'distributions' => $this->assistanceMapper->toBeneficiaryOnlyArrays($project->getDistributions()),
+            'reached_beneficiaries' => $bnfCount,
+            'distributions' => $this->assistanceMapper->toMinimalArrays($project->getDistributions()),
         ];
     }
 

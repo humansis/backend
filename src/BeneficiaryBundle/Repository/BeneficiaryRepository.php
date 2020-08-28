@@ -6,6 +6,8 @@ use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\DistributionData;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
@@ -75,6 +77,19 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $this->beneficiariesInCountry($qb, $iso3);
         $qb->andWhere('hh.archived = 0')
             ->select('COUNT(DISTINCT b)');
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function countAllInProject(Project $project): int
+    {
+        $qb = $this->createQueryBuilder('b');
+        $qb
+            ->select('COUNT(DISTINCT b)')
+            ->where(':project MEMBER OF b.projects')
+            ->setParameter('project', $project)
+            ->andWhere('b.archived = 0')
+        ;
 
         return $qb->getQuery()->getSingleScalarResult();
     }

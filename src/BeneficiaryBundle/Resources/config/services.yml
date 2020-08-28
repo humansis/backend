@@ -44,6 +44,12 @@ services:
             - "@service_container"
         public: true
 
+    beneficiary.repository:
+        class: BeneficiaryBundle\Repository\BeneficiaryRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - BeneficiaryBundle\Entity\Beneficiary
+
     BeneficiaryBundle\Mapper\CommunityMapper:
         arguments:
             - '@BeneficiaryBundle\Mapper\AddressMapper'

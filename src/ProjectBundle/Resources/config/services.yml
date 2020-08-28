@@ -25,6 +25,7 @@ services:
             - '@ProjectBundle\Mapper\DonorMapper'
             - '@ProjectBundle\Mapper\SectorMapper'
             - '@BeneficiaryBundle\Mapper\AssistanceMapper'
+            - '@beneficiary.repository'
         public: true
 
     ProjectBundle\Mapper\DonorMapper:

@@ -143,6 +143,8 @@ class ProjectControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('number_of_households', $project);
             $this->assertArrayHasKey('sectors', $project);
             $this->assertArrayHasKey('distributions', $project);
+            $this->assertArrayHasKey('reached_beneficiaries', $project);
+            $this->assertIsNumeric($project['reached_beneficiaries']);
 
             $this->assertIsArray($project['donors'], "Donors is not array");
             $this->assertIsArray($project['distributions'], "Distributions is not array");
