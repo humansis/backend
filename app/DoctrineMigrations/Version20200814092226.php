@@ -15,9 +15,6 @@ final class Version20200814092226 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP TABLE sector');
-        $this->addSql('ALTER TABLE project_sector CHANGE project_id project_id INT DEFAULT NULL');
-
         $subSectors = [];
 
         $subSectors[] = 'food_parcels_baskets';
@@ -74,29 +71,29 @@ final class Version20200814092226 extends AbstractMigration
             'tvet' => ['education', 'education_services'],
         ];
         foreach ($sectorToSubSectorMapping as $oldSector => [$newSector, $newSubSector]) {
-            $this->addSql("UPDATE project_sector ps SET ps.subsector='$newSubSector', ps.sector='$newSector' WHERE ps.sector_id IN (SELECT id FROM sector WHERE name = '$oldSector');");
+            $this->addSql("UPDATE project_sector ps SET ps.subsector='$newSubSector', ps.sector='$newSector' WHERE ps.sector = '$oldSector';");
         }
-        $this->addSql("DELETE FROM project_sector ps WHERE ps.sector ='NFIs'");
+        $this->addSql("DELETE FROM project_sector WHERE sector = 'NFIs';");
 
         $sectors = [];
-        $sector[] = "food_security";
-        $sector[] = "livelihoods";
-        $sector[] = "multipurpose_cash";
-        $sector[] = "shelter";
-        $sector[] = "wash";
-        $sector[] = "protection";
-        $sector[] = "education";
-        $sector[] = "emergency_telco";
-        $sector[] = "health";
-        $sector[] = "logistics";
-        $sector[] = "nutrition";
-        $sector[] = "mine";
-        $sector[] = "drr_resilience";
-        $sector[] = "non_sector";
-        $sector[] = "camp_management";
-        $sector[] = "early_recovery";
+        $sectors[] = "food_security";
+        $sectors[] = "livelihoods";
+        $sectors[] = "multipurpose_cash";
+        $sectors[] = "shelter";
+        $sectors[] = "wash";
+        $sectors[] = "protection";
+        $sectors[] = "education";
+        $sectors[] = "emergency_telco";
+        $sectors[] = "health";
+        $sectors[] = "logistics";
+        $sectors[] = "nutrition";
+        $sectors[] = "mine";
+        $sectors[] = "drr_resilience";
+        $sectors[] = "non_sector";
+        $sectors[] = "camp_management";
+        $sectors[] = "early_recovery";
         $sectors = implode("', '", $sectors);
-        $this->addSql("ALTER TABLE project_sector ADD sector ENUM('$sectors') DEFAULT NULL COMMENT '(DC2Type:enum_sector)'");
+        $this->addSql("ALTER TABLE project_sector CHANGE sector sector ENUM('$sectors') DEFAULT NULL COMMENT '(DC2Type:enum_sector)'");
     }
 
     public function down(Schema $schema) : void
