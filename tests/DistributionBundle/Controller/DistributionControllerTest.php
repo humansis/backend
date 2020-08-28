@@ -9,6 +9,7 @@ use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
+use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
@@ -59,6 +60,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             "adm2"=> "",
             "adm3" => "",
             "adm4" => "",
+            "type" => AssistanceTypeEnum::DISTRIBUTION,
             "commodities" => [
                 [
                     "modality" => "Cash",
@@ -109,7 +111,7 @@ class DistributionControllerTest extends BMSServiceTestCase
                     ]
                 ]
             ],
-            "type"=> "Household",
+            "target_type"=> DistributionData::TYPE_HOUSEHOLD,
             "threshold"=> "1"
         );
 
@@ -120,9 +122,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->request('PUT', '/api/wsse/distributions', $criteria);
-        $return = json_decode($this->client->getResponse()->getContent(), true);
-
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $return = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('distribution', $return);
         $this->assertArrayHasKey('data', $return);
@@ -130,6 +131,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         $distribution = $return['distribution'];
         $this->assertArrayHasKey('id', $distribution);
         $this->assertArrayHasKey('name', $distribution);
+        $this->assertArrayHasKey('type', $distribution);
+        $this->assertArrayHasKey('target_type', $distribution);
         $this->assertArrayHasKey('location', $distribution);
         $this->assertArrayHasKey('project', $distribution);
         $this->assertArrayHasKey('selection_criteria', $distribution);
@@ -159,8 +162,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         // Check if the second step succeed
-        $this->assertTrue(gettype($randomBenef[0]) == 'array');
-        $this->assertTrue(gettype($randomBenef[1]) == 'array');
+        $this->assertIsArray($randomBenef[0]);
+        $this->assertIsArray($randomBenef[1]);
     }
 
     /**

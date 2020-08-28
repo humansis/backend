@@ -3,20 +3,24 @@
 
 namespace CommonBundle\DataFixtures;
 
+use DistributionBundle\DBAL\AssistanceTypeEnum;
+use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Utils\DistributionService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
-class DistributionFixtures extends Fixture implements DependentFixtureInterface
+class DistributionFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
     private $distributionArray = [
         'adm1' => '',
         'adm2' => '',
         'adm3' => '',
         'adm4' => '',
+        'type' => AssistanceTypeEnum::DISTRIBUTION,
         'commodities' => [
             0 => [
                 'modality' => 'CTP',
@@ -59,7 +63,7 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface
                 ],
             ],
         ],
-        'type' => 'Individual',
+        'target_type' => DistributionData::TYPE_BENEFICIARY,
         'threshold' => '1'
     ];
 
@@ -94,5 +98,10 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface
         return [
             ProjectFixtures::class,
         ];
+    }
+
+    public static function getGroups(): array
+    {
+        return ['test'];
     }
 }

@@ -136,7 +136,7 @@ class DistributionBeneficiaryService
             foreach ($beneficiariesArray as $beneficiaryArray) {
 
                 if ($beneficiaryArray !== $beneficiariesData["__country"]) {
-                    switch ($distributionData->getType()) {
+                    switch ($distributionData->getTargetType()) {
                         case 0:
                             $headHousehold = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
                             $household = $headHousehold->getHousehold();
