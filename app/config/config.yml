@@ -58,6 +58,7 @@ doctrine:
         mapping_types:
             enum: string
         types:
+            assistance_type_enum: DistributionBundle\DBAL\AssistanceTypeEnum
             enum_sector: ProjectBundle\DBAL\SectorEnum
             enum_sub_sector: ProjectBundle\DBAL\SubSectorEnum
     orm:
