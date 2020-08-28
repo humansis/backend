@@ -2,9 +2,23 @@
 namespace ProjectBundle\Mapper;
 
 use ProjectBundle\Entity\Sector;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class SectorMapper
 {
+    /** @var TranslatorInterface */
+    private $translator;
+
+    /**
+     * SectorMapper constructor.
+     *
+     * @param TranslatorInterface $translator
+     */
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     private function toSubArray(string $sector, iterable $subSectors): array
     {
         $subSectorMapped = [];
@@ -13,7 +27,7 @@ class SectorMapper
         foreach ($subSectors as $subSector) {
             $ss = [
                 'id' => $subSector->getSubSectorName(),
-                'name' => $this->getLabelKeyFromEnum($subSector->getSubSectorName()),
+                'name' => $this->getLabel($subSector->getSubSectorName()),
                 'availableTargets' => [],
                 'assistanceType' => '',
             ];
@@ -38,14 +52,14 @@ class SectorMapper
         }
         return [
             'id' => $sector,
-            'name' => $this->getLabelKeyFromEnum($sector),
+            'name' => $this->getLabel($sector),
             'subSectors' => $subSectorMapped,
         ];
     }
 
-    private function getLabelKeyFromEnum(string $enumValue): string
+    private function getLabel(string $enumValue): string
     {
-        return 'label_sector_'.$enumValue;
+        return $this->translator->trans('label_sector_'.$enumValue, [], 'sectors', 'en');
     }
 
     public function listToSubArrays(iterable $sectorTree): iterable
