@@ -45,6 +45,7 @@ final class Version20200812101228 extends AbstractMigration
 
         $this->addSql('CREATE UNIQUE INDEX uniq_sector_project ON project_sector (sector, project_id)');
         $this->addSql('ALTER TABLE project_sector DROP sector_id, CHANGE project_id project_id INT NOT NULL');
+        $this->addSql('DROP TABLE sector');
     }
 
     public function down(Schema $schema) : void
