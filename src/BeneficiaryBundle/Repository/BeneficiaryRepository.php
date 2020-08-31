@@ -392,9 +392,16 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         }
         // The selection criteria is directly a field in the Beneficiary table
         else if ($criterion['type'] === 'table_field') {
-            $orStatement->add('b.' . $field . $condition . ' :parameter'.$i);
-            $qb->addSelect('(CASE WHEN b.' . $field . $condition . ' :parameter'.$i . ' THEN b.' . $field . ' ELSE :null END) AS ' . $field.$i)
-                ->setParameter('null', null);
+            if (in_array($field, ['dateOfBirth', 'gender'])) {
+                $orStatement->add('prsn.' . $field . $condition . ' :parameter'.$i);
+                $qb->join('b.person', 'prsn');
+                $qb->addSelect('(CASE WHEN prsn.' . $field . $condition . ' :parameter'.$i . ' THEN prsn.' . $field . ' ELSE :null END) AS ' . $field.$i)
+                    ->setParameter('null', null);
+            } else {
+                $orStatement->add('b.' . $field . $condition . ' :parameter'.$i);
+                $qb->addSelect('(CASE WHEN b.' . $field . $condition . ' :parameter'.$i . ' THEN b.' . $field . ' ELSE :null END) AS ' . $field.$i)
+                    ->setParameter('null', null);
+            }
         }
         else if ($criterion['type'] === 'other') {
             // The selection criteria is the last distribution
@@ -416,18 +423,25 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         $qb->leftJoin('hh.beneficiaries', 'hhh'.$i)
             ->andWhere('hhh'.$i . '.status = 1');
+        $qb->join('hhh'.$i.'.person', 'prsn'.$i);
+
         // The selection criteria is directly a field in the Beneficiary table
         if ($criterion['type'] === 'table_field') {
             // The criterion name identifies the criterion (eg. headOfHouseholdDateOfBirth) whereas the field is gonna identify the table field (eg. dateOfBirth) in the Beneficiary table
             $criterionName = $field;
             if ($field === 'headOfHouseholdDateOfBirth') {
-                $field = 'dateOfBirth';
+                $orStatement->add('prsn'.$i.'.dateOfBirth ' . $condition . ' :parameter'.$i);
+                $qb->addSelect('(CASE WHEN prsn'.$i.'.dateOfBirth ' . $condition . ' :parameter'.$i . ' THEN prsn'.$i.'.dateOfBirth ELSE :null END) AS ' . $criterionName.$i)
+                    ->setParameter('null', null);
             } else if ($field === 'headOfHouseholdGender') {
-                $field = 'gender';
+                $orStatement->add('prsn'.$i.'.gender ' . $condition . ' :parameter'.$i);
+                $qb->addSelect('(CASE WHEN prsn'.$i.'.gender ' . $condition . ' :parameter'.$i . ' THEN prsn'.$i.'.gender ELSE :null END) AS ' . $criterionName.$i)
+                    ->setParameter('null', null);
+            } else {
+                $orStatement->add('hhh'.$i . '.' . $field . $condition . ' :parameter'.$i);
+                $qb->addSelect('(CASE WHEN hhh'.$i . '.' . $field . $condition . ' :parameter'.$i . ' THEN hhh'.$i . '.' . $field . ' ELSE :null END) AS ' . $criterionName.$i)
+                    ->setParameter('null', null);
             }
-            $orStatement->add('hhh'.$i . '.' . $field . $condition . ' :parameter'.$i);
-            $qb->addSelect('(CASE WHEN hhh'.$i . '.' . $field . $condition . ' :parameter'.$i . ' THEN hhh'.$i . '.' . $field . ' ELSE :null END) AS ' . $criterionName.$i)
-                ->setParameter('null', null);
         }
         else if ($criterion['type'] === 'other') {
             if ($field === 'disabledHeadOfHousehold') {
