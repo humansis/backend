@@ -49,15 +49,11 @@ final class Version20200724110417 extends AbstractMigration
         $this->addSql('ALTER TABLE phone DROP FOREIGN KEY FK_444F97DDECCAAFA0');
         $this->addSql('DROP INDEX IDX_444F97DDECCAAFA0 ON phone');
         $this->addSql('ALTER TABLE phone CHANGE beneficiary_id person_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE phone ADD CONSTRAINT FK_444F97DD217BBB47 FOREIGN KEY (person_id) REFERENCES person (id)');
-        $this->addSql('CREATE INDEX IDX_444F97DD217BBB47 ON phone (person_id)');
 
         // edit national id
         $this->addSql('ALTER TABLE national_id DROP FOREIGN KEY FK_36491297ECCAAFA0');
         $this->addSql('DROP INDEX IDX_36491297ECCAAFA0 ON national_id');
         $this->addSql('ALTER TABLE national_id CHANGE beneficiary_id person_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE national_id ADD CONSTRAINT FK_36491297217BBB47 FOREIGN KEY (person_id) REFERENCES person (id)');
-        $this->addSql('CREATE INDEX IDX_36491297217BBB47 ON national_id (person_id)');
 
         // copy data from bnf to person
         $this->addSql('INSERT INTO person (id, profile_id, referral_id, enGivenName, enFamilyName, localGivenName, localFamilyName, gender, dateOfBirth, updated_on) SELECT id, profile_id, referral_id, enGivenName, enFamilyName, localGivenName, localFamilyName, gender, dateOfBirth, updated_on FROM `beneficiary`');
@@ -65,6 +61,13 @@ final class Version20200724110417 extends AbstractMigration
 
         // clear bnf columns
         $this->addSql('ALTER TABLE beneficiary DROP profile_id, DROP referral_id, DROP localGivenName, DROP localFamilyName, DROP gender, DROP dateOfBirth, DROP enGivenName, DROP enFamilyName');
+
+        $this->addSql('ALTER TABLE phone ADD CONSTRAINT FK_444F97DD217BBB47 FOREIGN KEY (person_id) REFERENCES person (id)');
+        $this->addSql('CREATE INDEX IDX_444F97DD217BBB47 ON phone (person_id)');
+
+
+        $this->addSql('ALTER TABLE national_id ADD CONSTRAINT FK_36491297217BBB47 FOREIGN KEY (person_id) REFERENCES person (id)');
+        $this->addSql('CREATE INDEX IDX_36491297217BBB47 ON national_id (person_id)');
     }
 
     public function down(Schema $schema) : void
