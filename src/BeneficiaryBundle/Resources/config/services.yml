@@ -44,6 +44,12 @@ services:
             - "@service_container"
         public: true
 
+    beneficiary.repository:
+        class: BeneficiaryBundle\Repository\BeneficiaryRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - BeneficiaryBundle\Entity\Beneficiary
+
     BeneficiaryBundle\Mapper\CommunityMapper:
         arguments:
             - '@BeneficiaryBundle\Mapper\AddressMapper'
@@ -65,6 +71,14 @@ services:
         public: true
 
     BeneficiaryBundle\Mapper\NationalIdMapper:
+        public: true
+
+    BeneficiaryBundle\Mapper\BeneficiaryMapper:
+        public: true
+
+    BeneficiaryBundle\Mapper\AssistanceMapper:
+        arguments:
+            - '@BeneficiaryBundle\Mapper\BeneficiaryMapper'
         public: true
 
     BeneficiaryBundle\Mapper\PhoneMapper:
