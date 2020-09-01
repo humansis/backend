@@ -152,6 +152,10 @@ class DistributionService
         $distributionArray['assistance_type'] = AssistanceTypeEnum::DISTRIBUTION;
         $distributionArray['target_type'] = $distributionArray['type'];
         unset($distributionArray['type']);
+
+        $selectionCriteriaGroup = $distributionArray['selection_criteria'];
+        unset($distributionArray['selection_criteria']);
+
         /** @var Assistance $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), Assistance::class, 'json', [
             \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
@@ -189,14 +193,16 @@ class DistributionService
         foreach ($distributionArray['commodities'] as $item) {
             $this->commodityService->create($distribution, $item, false);
         }
-        $criteria = [];
-        foreach ($distribution->getSelectionCriteria() as $item) {
-            $distribution->removeSelectionCriterion($item);
-            if ($item->getTableString() == null) {
-                $item->setTableString("Beneficiary");
-            }
 
-            $criteria[] = $this->criteriaDistributionService->save($distribution, $item, false);
+        $criteria = [];
+        foreach ($selectionCriteriaGroup as $i => $criteriaData) {
+            foreach ($criteriaData as $criterionArray) {
+                /** @var SelectionCriteria $criterion */
+                $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json');
+                $criterion->setGroupNumber($i);
+                $this->criteriaDistributionService->save($distribution, $criterion, false);
+                $criteria[] = $criterionArray;
+            }
         }
 
         $this->em->persist($distribution);
@@ -204,6 +210,7 @@ class DistributionService
 
         $this->em->persist($distribution);
 
+        $distributionArray['selection_criteria'] = $criteria;
         $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $threshold);
         $this->saveReceivers($distribution, $listReceivers);
 
