@@ -7,17 +7,31 @@ services:
 
     project.project_service:
         class: ProjectBundle\Utils\ProjectService
-        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator' , '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@serializer', '@validator' , '@service_container']
         public: true
 
     project.donor_service:
         class: ProjectBundle\Utils\DonorService
-        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@serializer', '@validator', '@service_container']
         public: true
 
     project.sector_service:
         class: ProjectBundle\Utils\SectorService
-        arguments: ['@doctrine.orm.entity_manager', '@jms_serializer', '@validator']
+        arguments: ['@doctrine.orm.entity_manager', '@serializer', '@validator']
+        public: true
+
+    ProjectBundle\Mapper\ProjectMapper:
+        arguments:
+            - '@ProjectBundle\Mapper\DonorMapper'
+            - '@ProjectBundle\Mapper\SectorMapper'
+            - '@BeneficiaryBundle\Mapper\AssistanceMapper'
+            - '@beneficiary.repository'
+        public: true
+
+    ProjectBundle\Mapper\DonorMapper:
+        public: true
+
+    ProjectBundle\Mapper\SectorMapper:
         public: true
 
     project.sector_mapper:

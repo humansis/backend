@@ -4,11 +4,10 @@
 namespace ProjectBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\Serializer;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Sector;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**

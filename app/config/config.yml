@@ -19,7 +19,9 @@ framework:
     form: ~
     csrf_protection: ~
     validation: { enable_annotations: true }
-    serializer: { enable_annotations: true }
+    serializer:
+        enable_annotations: true
+        name_converter: 'serializer.name_converter.camel_case_to_snake_case'
     templating:
         engines: ['twig']
     default_locale: '%locale%'
@@ -94,12 +96,13 @@ swiftmailer:
     spool:      { type: memory }
 
 doctrine_migrations:
-      dir_name:             "%kernel.root_dir%/DoctrineMigrations"
-      namespace:            Application\Migrations
-      table_name:           migration_versions
-      name:                 Application Migrations
-      organize_migrations:  false # Version >= 1.2, possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false
-      custom_template:      ~ # Version >= 1.2, path to your custom migrations template
+    dir_name:             "%kernel.root_dir%/DoctrineMigrations"
+    namespace:            Application\Migrations
+    table_name:           migration_versions
+    name:                 Application Migrations
+    organize_migrations:  false # Version >= 1.2, possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false
+    custom_template:      ~ # Version >= 1.2, path to your custom migrations template
+#    all_or_nothing:       true # we have too old doctrine version
 
 fos_user:
     db_driver: orm

@@ -5,13 +5,14 @@ namespace BeneficiaryBundle\Utils;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use PhpOption\Tests\PhpOptionRepo;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
@@ -84,9 +85,9 @@ class BeneficiaryService
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
         if ($beneficiaryArray["gender"] === 'Male' || $beneficiaryArray["gender"] === 'M') {
-            $beneficiaryArray["gender"] = 1;
+            $beneficiaryArray["gender"] = Person::GENDER_MALE;
         } elseif ($beneficiaryArray["gender"] === 'Female' || $beneficiaryArray["gender"] === 'F') {
-            $beneficiaryArray["gender"] = 0;
+            $beneficiaryArray["gender"] = Person::GENDER_FEMALE;
         }
 
         if (array_key_exists('phone1_type', $beneficiaryArray)) {
@@ -131,11 +132,11 @@ class BeneficiaryService
             
             // Clear vulnerability criteria, phones and national id
             $beneficiary->setVulnerabilityCriteria(null);
-            $items = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
+            $items = $this->em->getRepository(Phone::class)->findByPerson($beneficiary->getPerson());
             foreach ($items as $item) {
                 $this->em->remove($item);
             }
-            $items = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+            $items = $this->em->getRepository(NationalId::class)->findByPerson($beneficiary->getPerson());
             foreach ($items as $item) {
                 $this->em->remove($item);
             }
@@ -244,7 +245,7 @@ class BeneficiaryService
 
 
         $phone = new Phone();
-        $phone->setBeneficiary($beneficiary)
+        $phone->setPerson($beneficiary->getPerson())
             ->setType($phoneArray["type"])
             ->setNumber($phoneArray["number"])
             ->setPrefix($phoneArray["prefix"])
@@ -274,7 +275,7 @@ class BeneficiaryService
             'any'
         );
         $nationalId = new NationalId();
-        $nationalId->setBeneficiary($beneficiary)
+        $nationalId->setPerson($beneficiary->getPerson())
             ->setIdType($nationalIdArray["id_type"])
             ->setIdNumber($nationalIdArray["id_number"]);
 
@@ -333,13 +334,13 @@ class BeneficiaryService
             return false;
         }
 
-        $nationalIds = $this->em->getRepository(NationalId::class)->findByBeneficiary($beneficiary);
+        $nationalIds = $this->em->getRepository(NationalId::class)->findByPerson($beneficiary->getPerson());
         $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
         foreach ($nationalIds as $nationalId) {
             $this->em->remove($nationalId);
         }
 
-        $phones = $this->em->getRepository(Phone::class)->findByBeneficiary($beneficiary);
+        $phones = $this->em->getRepository(Phone::class)->findByPerson($beneficiary->getPerson());
         foreach ($phones as $phone) {
             $this->em->remove($phone);
         }

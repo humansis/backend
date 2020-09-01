@@ -12,7 +12,7 @@ class ProductControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("jms_serializer");
+        $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
         // Get a Client instance for simulate a browser
         $this->client = $this->container->get('test.client');
@@ -82,6 +82,34 @@ class ProductControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
+    public function testCreateProductWithoutUnits()
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('PUT', '/api/wsse/products', [
+            'image' => 'image.png',
+            'name' => 'another product',
+        ]);
+
+        $product = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        $this->assertArrayHasKey('image', $product);
+        $this->assertArrayHasKey('name', $product);
+        $this->assertArrayHasKey('unit', $product);
+        $this->assertNull($product['unit']);
+
+        return $product;
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function testGetAllProducts()
     {
         // Log a user in order to go through the security firewall
@@ -90,6 +118,7 @@ class ProductControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->request('GET', '/api/wsse/products');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $products = json_decode($this->client->getResponse()->getContent(), true);
 
         if (!empty($products)) {

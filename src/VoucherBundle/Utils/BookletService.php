@@ -604,7 +604,8 @@ class BookletService
      */
     public function exportVouchersDistributionToCsv(DistributionData $distributionData, string $type)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)
+            ->findByDistributionData($distributionData);
 
         $beneficiaries = array();
         $exportableTable = array();
@@ -627,9 +628,10 @@ class BookletService
 
             $products = [];
             if ($transactionBooklet) {
+                /** @var Voucher $voucher */
                 foreach ($transactionBooklet->getVouchers() as $voucher) {
-                    foreach ($voucher->getProducts() as $product) {
-                        array_push($products, $product->getName());
+                    foreach ($voucher->getRecords() as $record) {
+                        array_push($products, $record->getProduct()->getName());
                     }
                 }
             }
@@ -661,7 +663,7 @@ class BookletService
     {
         $limitMinimum = $filter->pageIndex * $filter->pageSize;
 
-        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryISO3, $limitMinimum, $filter->pageSize, $filter->getSort(), $filter->getFilter());
+        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryISO3->getIso3(), $limitMinimum, $filter->pageSize, $filter->getSort(), $filter->getFilter());
         $length = $booklets[0];
         $booklets = $booklets[1];
         return [$length, $booklets];

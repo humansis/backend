@@ -6,7 +6,7 @@ use CommonBundle\Entity\Organization;
 use CommonBundle\Entity\OrganizationServices;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use JMS\Serializer\SerializationContext;
+
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -49,7 +49,7 @@ class OrganizationController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('jms_serializer')->serialize($organization, 'json', null);
+        $json = $this->get('serializer')->serialize($organization, 'json');
         
         return new Response($json);
     }
@@ -91,8 +91,8 @@ class OrganizationController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $organizationJson = $this->get('jms_serializer')
-            ->serialize($organization, 'json', SerializationContext::create()->setGroups(['FullOrganization'])->setSerializeNull(true));
+        $organizationJson = $this->get('serializer')
+            ->serialize($organization, 'json', ['groups' => ['FullOrganization']]);
 
         return new Response($organizationJson);
     }
@@ -193,8 +193,8 @@ class OrganizationController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $responseJson = $this->get('jms_serializer')
-            ->serialize($response, 'json', SerializationContext::create()->setGroups(['FullOrganization'])->setSerializeNull(true));
+        $responseJson = $this->get('serializer')
+            ->serialize($response, 'json', ['groups' => ['FullOrganization']]);
 
         return new Response($responseJson);
     }
@@ -233,8 +233,8 @@ class OrganizationController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $responseJson = $this->get('jms_serializer')
-            ->serialize($response, 'json', SerializationContext::create()->setGroups(['FullOrganization'])->setSerializeNull(true));
+        $responseJson = $this->get('serializer')
+            ->serialize($response, 'json', ['groups' => ['FullOrganization']]);
 
         return new Response($responseJson);
     }

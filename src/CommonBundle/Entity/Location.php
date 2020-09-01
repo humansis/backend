@@ -3,7 +3,7 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Location
@@ -19,7 +19,7 @@ class Location
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "FullVendor"})
+     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "FullVendor"})
      */
     private $id;
 
@@ -27,7 +27,7 @@ class Location
      * @var Adm1
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm1", mappedBy="location")
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
+     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
      */
     private $adm1;
 
@@ -35,7 +35,7 @@ class Location
      * @var Adm2
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm2", mappedBy="location")
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
+     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
      */
     private $adm2;
 
@@ -43,7 +43,7 @@ class Location
      * @var Adm3
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm3", mappedBy="location")
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
+     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
      */
     private $adm3;
 
@@ -51,7 +51,7 @@ class Location
      * @var Adm4
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm4", mappedBy="location")
-     * @Groups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
+     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullDistribution", "FullInstitution", "SmallDistribution", "FullVendor"})
      */
     private $adm4;
 

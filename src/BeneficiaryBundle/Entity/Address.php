@@ -4,7 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Address
@@ -27,7 +27,7 @@ class Address
      * @var string|null
      *
      * @ORM\Column(name="number", type="string", length=45, nullable=true)
-     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
+     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
      */
     private $number;
 
@@ -35,7 +35,7 @@ class Address
      * @var string
      *
      * @ORM\Column(name="street", type="string", length=255, nullable=true)
-     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
+     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
      */
     private $street;
 
@@ -43,25 +43,25 @@ class Address
      * @var string
      *
      * @ORM\Column(name="postcode", type="string", length=45, nullable=true)
-     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
+     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
      */
     private $postcode;
 
     /**
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
-     * @Groups({"FullInstitution", "FullBeneficiary", "FullHousehold", "SmallHousehold"})
+     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold", "SmallHousehold"})
      */
     private $location;
 
-
     /**
-     * @param string $street
-     * @param string $number
-     * @param string $postCode
-     * @param Location $location
+     * @param string|null   $street
+     * @param string|null   $number
+     * @param string|null   $postCode
+     * @param Location|null $location
+     *
      * @return self
      */
-    public static function create(string $street, string $number, string $postCode, Location $location = null): self
+    public static function create(?string $street, ?string $number, ?string $postCode, ?Location $location = null): self
     {
         $address = new Address();
         $address->setNumber($number)

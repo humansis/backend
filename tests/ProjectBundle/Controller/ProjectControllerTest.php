@@ -20,8 +20,8 @@ class ProjectControllerTest extends BMSServiceTestCase
         "end_date" => "01-05-2019",
         "target" => 5,
         "notes" => "This is a note",
-        "sectors" => [],
-        "donors" => [],
+        "sectors" => [1, 2],
+        "donors" => [1, 2],
     ];
 
 
@@ -31,7 +31,7 @@ class ProjectControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("jms_serializer");
+        $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
@@ -126,6 +126,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->request('GET', '/api/wsse/projects');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $projects = json_decode($this->client->getResponse()->getContent(), true);
 
         if (!empty($projects)) {
@@ -141,6 +142,13 @@ class ProjectControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('start_date', $project);
             $this->assertArrayHasKey('number_of_households', $project);
             $this->assertArrayHasKey('sectors', $project);
+            $this->assertArrayHasKey('distributions', $project);
+            $this->assertArrayHasKey('reached_beneficiaries', $project);
+            $this->assertIsNumeric($project['reached_beneficiaries']);
+
+            $this->assertIsArray($project['donors'], "Donors is not array");
+            $this->assertIsArray($project['distributions'], "Distributions is not array");
+            $this->assertIsArray($project['sectors'], "Sectors is not array");
         } else {
             $this->markTestIncomplete("You currently don't have any project in your database.");
         }

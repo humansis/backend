@@ -12,13 +12,14 @@ use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
@@ -171,9 +172,9 @@ class HouseholdService
                     throw new \Exception("Location was not found.");
                 }
                 $newHouseholdLocation->setAddress(Address::create(
-                    $householdLocation['address']['street'],
-                    $householdLocation['address']['number'],
-                    $householdLocation['address']['postcode'],
+                    $householdLocation['address']['street'] ?? null,
+                    $householdLocation['address']['number'] ?? null,
+                    $householdLocation['address']['postcode'] ?? null,
                     $location
                     ));
             }
@@ -247,9 +248,9 @@ class HouseholdService
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 try {
                     if ($beneficiaryToSave['gender'] === 'Male') {
-                        $beneficiaryToSave['gender'] = 1;
+                        $beneficiaryToSave['gender'] = Person::GENDER_MALE;
                     } elseif ($beneficiaryToSave['gender'] === 'Female') {
-                        $beneficiaryToSave['gender'] = 0;
+                        $beneficiaryToSave['gender'] = Person::GENDER_FEMALE;
                     }
 
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);

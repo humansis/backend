@@ -6,7 +6,7 @@ namespace DistributionBundle\Controller;
 use DistributionBundle\Entity\Modality;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Utils\ModalityService;
-use JMS\Serializer\SerializationContext;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,11 +45,11 @@ class ModalityController extends Controller
         $modalityService = $this->get('distribution.modality_service');
         $all = $modalityService->getAll();
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $all,
                 'json',
-                SerializationContext::create()->setGroups(["FullModality"])->setSerializeNull(true)
+                ['groups' => ["FullModality"]]
             );
 
         return new Response($json);
@@ -79,11 +79,11 @@ class ModalityController extends Controller
         $modalityService = $this->get('distribution.modality_service');
         $all = $modalityService->getAllModalityTypes($modality);
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $all,
                 'json',
-                SerializationContext::create()->setGroups(["FullModalityType"])->setSerializeNull(true)
+                ['groups' => ["FullModalityType"]]
             );
 
         return new Response($json);

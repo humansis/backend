@@ -6,7 +6,7 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
 use DistributionBundle\Utils\DistributionService;
 use DistributionBundle\Utils\DistributionCsvService;
-use JMS\Serializer\SerializationContext;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,8 +63,8 @@ class DistributionController extends Controller
     {
         $distributions = $this->getDoctrine()->getRepository(DistributionData::class)->findDistributedToBeneficiary($beneficiary);
 
-        $json = $this->get('jms_serializer')
-            ->serialize($distributions, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["DistributionOverview"]));
+        $json = $this->get('serializer')
+            ->serialize($distributions, 'json', ['groups' => ["DistributionOverview"]]);
 
         return new Response($json);
     }
@@ -95,22 +95,18 @@ class DistributionController extends Controller
             $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
             $receivers = $distributionBeneficiaryService->getRandomBeneficiaries($distributionData, $numberToDisplay);
 
-            $json = $this->get('jms_serializer')
+            $json = $this->get('serializer')
                 ->serialize(
                     $receivers,
                     'json',
-                    SerializationContext::create()->setSerializeNull(true)->setGroups([
-                        'FullReceivers',
-                    ])
+                    ['groups' => ['FullReceivers']]
                 );
         } else {
-            $json = $this->get('jms_serializer')
+            $json = $this->get('serializer')
                 ->serialize(
                     "The size to display is unset",
                     'json',
-                    SerializationContext::create()->setSerializeNull(true)->setGroups([
-                        'FullReceivers',
-                    ])
+                    ['groups' => ['FullReceivers']]
                 );
         }
 
@@ -140,14 +136,11 @@ class DistributionController extends Controller
         $distributionService = $this->get('distribution.distribution_service');
         $distributionData = $distributionService->validateDistribution($distributionData);
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $distributionData,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    'FullReceivers',
-                    'FullDistribution',
-                ])
+                ['groups' => ['FullReceivers', 'FullDistribution']]
             );
 
         return new Response($json);
@@ -192,14 +185,11 @@ class DistributionController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $listReceivers,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    'FullReceivers',
-                    'FullDistribution',
-                ])
+                ['groups' => ['FullReceivers', 'FullDistribution']]
             );
 
         return new Response($json);
@@ -236,15 +226,15 @@ class DistributionController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $distributionBeneficiary,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups([
+                ['groups' => [
                     'FullDistributionBeneficiary',
                     'FullDistribution',
                     'FullBeneficiary',
-                ])
+                ]]
             );
 
         return new Response($json);
@@ -279,7 +269,6 @@ class DistributionController extends Controller
         $return = $distributionBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
 
         return new Response(json_encode($return));
-       
     }
 
     /**
@@ -315,11 +304,11 @@ class DistributionController extends Controller
             $data[] = $distributionDataFactory->build($distributionData, ['SmallDistribution']);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $data,
                 'json',
-                SerializationContext::create()->setGroups(['SmallDistribution'])->setSerializeNull(true)
+                ['groups' => ['SmallDistribution']]
             );
 
         return new Response($json);
@@ -345,11 +334,11 @@ class DistributionController extends Controller
     public function getOneAction(DistributionData $distributionData)
     {
         $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $distributionDataFactory->build($distributionData, ['FullDistribution']),
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
+                ['groups' => ['FullDistribution']]
             );
         return new Response($json);
     }
@@ -380,13 +369,11 @@ class DistributionController extends Controller
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($distributionData);
         
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    "ValidatedDistribution",
-                ])
+                ['groups' => ["ValidatedDistribution"]]
             );
 
         return new Response($json);
@@ -444,13 +431,11 @@ class DistributionController extends Controller
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionAssignableBeneficiaries($distributionData);
         
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups([
-                    "ValidatedDistribution",
-                ])
+                ['groups' => ["ValidatedDistribution"]]
             );
 
         return new Response($json);
@@ -497,9 +482,8 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')
-            ->serialize($distributionData, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullDistribution'])
-            );
+        $json = $this->get('serializer')
+            ->serialize($distributionData, 'json', ['groups' => ['FullDistribution']]);
         return new Response($json, Response::HTTP_OK);
     }
 
@@ -533,34 +517,34 @@ class DistributionController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('jms_serializer')
-            ->serialize($archivedDistribution, 'json', SerializationContext::create()->setSerializeNull(true));
+        $json = $this->get('serializer')
+            ->serialize($archivedDistribution, 'json');
 
         return new Response($json, Response::HTTP_OK);
     }
 
-     /**
-     * Complete a distribution.
-     *
-     * @Rest\Post("/distributions/{id}/complete", name="completed_project")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
-     *
-     * @SWG\Tag(name="Distributions")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="OK"
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param DistributionData $distribution
-     *
-     * @return Response
-     */
+    /**
+    * Complete a distribution.
+    *
+    * @Rest\Post("/distributions/{id}/complete", name="completed_project")
+    * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+    *
+    * @SWG\Tag(name="Distributions")
+    *
+    * @SWG\Response(
+    *     response=200,
+    *     description="OK"
+    * )
+    *
+    * @SWG\Response(
+    *     response=400,
+    *     description="BAD_REQUEST"
+    * )
+    *
+    * @param DistributionData $distribution
+    *
+    * @return Response
+    */
     public function completeAction(DistributionData $distribution)
     {
         try {
@@ -569,8 +553,8 @@ class DistributionController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('jms_serializer')
-            ->serialize($completedDistribution, 'json', SerializationContext::create()->setSerializeNull(true));
+        $json = $this->get('serializer')
+            ->serialize($completedDistribution, 'json');
 
         return new Response($json, Response::HTTP_OK);
     }
@@ -617,11 +601,11 @@ class DistributionController extends Controller
             $data[] = $distributionDataFactory->build($distributionData, ['SmallDistribution']);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $data,
                 'json',
-                SerializationContext::create()->setGroups(['SmallDistribution'])->setSerializeNull(true)
+                ['groups' => ['SmallDistribution']]
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -687,11 +671,11 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $filtered,
                 'json',
-                SerializationContext::create()->setGroups(['FullDistribution'])->setSerializeNull(true)
+                ['groups' => ['FullDistribution']]
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -772,8 +756,8 @@ class DistributionController extends Controller
                 $return = 'An error occured, please check the body';
             }
 
-            $json = $this->get('jms_serializer')
-                ->serialize($return, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
+            $json = $this->get('serializer')
+                ->serialize($return, 'json', ['groups' => ['FullHousehold']]);
 
             return new Response($json);
         } else {
@@ -820,8 +804,8 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('jms_serializer')
-        ->serialize($beneficiariesInProject, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold']));
+        $json = $this->get('serializer')
+        ->serialize($beneficiariesInProject, 'json', ['groups' => ['FullHousehold']]);
 
         return new Response($json, Response::HTTP_OK);
     }
@@ -894,7 +878,7 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $response,
                 'json',

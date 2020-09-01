@@ -2,10 +2,13 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Type as JMS_Type;
-use JMS\Serializer\Annotation\Groups;
+// use Symfony\Component\Serializer\Annotation\ as JMS_Type;
+use InvalidArgumentException;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Household
@@ -13,7 +16,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="household")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdRepository")
  */
-class Household
+class Household extends AbstractBeneficiary
 {
 
     /**
@@ -88,19 +91,8 @@ class Household
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
-     */
-    private $id;
-
-    /**
-     * @var int
-     *
      * @ORM\Column(name="livelihood", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $livelihood;
 
@@ -108,7 +100,7 @@ class Household
      * @var int[]
      *
      * @ORM\Column(name="assets", type="array", nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $assets;
 
@@ -116,7 +108,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="shelter_status", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $shelterStatus;
 
@@ -124,7 +116,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $notes;
 
@@ -132,7 +124,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $latitude;
 
@@ -140,7 +132,7 @@ class Household
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @Groups({"FullHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $longitude;
 
@@ -148,7 +140,7 @@ class Household
      * @var CountrySpecificAnswer
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="household", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold"})
+     * @SymfonyGroups({"FullHousehold"})
      */
     private $countrySpecificAnswers;
 
@@ -156,13 +148,13 @@ class Household
      * @var Beneficiary
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household")
-     * @Groups({"FullHousehold", "SmallHousehold", "FullReceivers"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $beneficiaries;
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households")
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $projects;
 
@@ -170,7 +162,7 @@ class Household
      * @var boolean
      *
      * @ORM\Column(type="boolean", options={"default" : 0})
-     * @Groups({"Activity"})
+     * @SymfonyGroups({"Activity"})
      */
     private $archived = 0;
 
@@ -178,7 +170,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $incomeLevel;
 
@@ -186,7 +178,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="foodConsumptionScore", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $foodConsumptionScore;
 
@@ -194,13 +186,13 @@ class Household
      * @var int
      *
      * @ORM\Column(name="copingStrategiesIndex", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $copingStrategiesIndex;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $householdLocations;
 
@@ -208,7 +200,7 @@ class Household
      * @var int
      *
      * @ORM\Column(name="debt_level", type="integer", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $debtLevel;
 
@@ -216,7 +208,7 @@ class Household
      * @var int[]
      *
      * @ORM\Column(name="support_received_types", type="array", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $supportReceivedTypes;
 
@@ -224,16 +216,16 @@ class Household
      * @var string|null
      *
      * @ORM\Column(name="support_organization_name", type="string", nullable=true)
-     * @Groups({"FullHousehold", "SmallHousehold"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $supportOrganizationName;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
-     * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullHousehold", "SmallHousehold", "Activity"})
+     * DateTime<'d-m-Y'>
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $supportDateReceived;
 
@@ -241,7 +233,7 @@ class Household
      * @var int|null
      *
      * @ORM\Column(name="income_spent_on_food", type="integer", nullable=true)
-     * @Groups({"FullHousehold"})
+     * @SymfonyGroups({"FullHousehold"})
      */
     private $incomeSpentOnFood;
 
@@ -249,7 +241,7 @@ class Household
      * @var int|null
      *
      * @ORM\Column(name="household_income", type="integer", nullable=true)
-     * @Groups({"FullHousehold"})
+     * @SymfonyGroups({"FullHousehold"})
      */
     private $householdIncome;
 
@@ -258,37 +250,13 @@ class Household
      */
     public function __construct()
     {
+        parent::__construct();
         $this->countrySpecificAnswers = new ArrayCollection();
         $this->beneficiaries = new ArrayCollection();
-        $this->projects = new ArrayCollection();
         $this->householdLocations = new ArrayCollection();
 
         $this->assets = [];
         $this->supportReceivedTypes = [];
-    }
-
-
-    /**
-     * Set id.
-     *
-     * @param $id
-     * @return Household
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**
@@ -332,7 +300,7 @@ class Household
     {
         foreach ((array) $assets as $asset) {
             if (!isset(self::ASSETS[$asset])) {
-                throw new \InvalidArgumentException(sprintf('Argument 1 contain invalid asset key %d.', $asset));
+                throw new InvalidArgumentException(sprintf('Argument 1 contain invalid asset key %d.', $asset));
             }
         }
 
@@ -357,7 +325,7 @@ class Household
     public function setShelterStatus(?int $shelterStatus): self
     {
         if (null !== $shelterStatus && !isset(self::SHELTER_STATUSES[$shelterStatus])) {
-            throw new \InvalidArgumentException(sprintf('Argument 1 is not valid shelter status key.'));
+            throw new InvalidArgumentException(sprintf('Argument 1 is not valid shelter status key.'));
         }
 
         $this->shelterStatus = $shelterStatus;
@@ -438,35 +406,13 @@ class Household
     }
 
     /**
-     * Set archived.
-     *
-     * @param bool $archived
-     *
-     * @return Household
-     */
-    public function setArchived($archived)
-    {
-        $this->archived = $archived;
-
-        return $this;
-    }
-
-    /**
-     * Get archived.
-     *
-     * @return bool
-     */
-    public function getArchived()
-    {
-        return $this->archived;
-    }
-
-    /**
      * Set beneficiaries.
      *
+     * @param Collection|null $collection
+     *
      * @return Household
      */
-    public function setBeneficiaries(\Doctrine\Common\Collections\Collection $collection = null)
+    public function setBeneficiaries(Collection $collection = null)
     {
         $this->beneficiaries = $collection;
 
@@ -474,26 +420,13 @@ class Household
     }
 
     /**
-     * Set project.
-     *
-     * @param \Doctrine\Common\Collections\Collection|null $collection
-     * @return Household
-     */
-    public function setProjects(\Doctrine\Common\Collections\Collection $collection = null)
-    {
-        $this->projects = $collection;
-
-        return $this;
-    }
-
-    /**
      * Set countrySpecificAnswer.
      *
-     * @param \Doctrine\Common\Collections\Collection $collection
+     * @param Collection|null $collection
      *
      * @return Household
      */
-    public function setCountrySpecificAnswers(\Doctrine\Common\Collections\Collection $collection = null)
+    public function setCountrySpecificAnswers(Collection $collection = null)
     {
         $this->countrySpecificAnswers[] = $collection;
 
@@ -503,11 +436,11 @@ class Household
     /**
      * Add countrySpecificAnswer.
      *
-     * @param \BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
+     * @param CountrySpecificAnswer $countrySpecificAnswer
      *
      * @return Household
      */
-    public function addCountrySpecificAnswer(\BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
+    public function addCountrySpecificAnswer(CountrySpecificAnswer $countrySpecificAnswer)
     {
         $this->countrySpecificAnswers[] = $countrySpecificAnswer;
 
@@ -517,11 +450,11 @@ class Household
     /**
      * Remove countrySpecificAnswer.
      *
-     * @param \BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
+     * @param CountrySpecificAnswer $countrySpecificAnswer
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCountrySpecificAnswer(\BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
+    public function removeCountrySpecificAnswer(CountrySpecificAnswer $countrySpecificAnswer)
     {
         return $this->countrySpecificAnswers->removeElement($countrySpecificAnswer);
     }
@@ -529,7 +462,7 @@ class Household
     /**
      * Get countrySpecificAnswers.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getCountrySpecificAnswers()
     {
@@ -539,11 +472,11 @@ class Household
     /**
      * Add beneficiary.
      *
-     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
+     * @param Beneficiary $beneficiary
      *
      * @return Household
      */
-    public function addBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
+    public function addBeneficiary(Beneficiary $beneficiary)
     {
         $this->beneficiaries->add($beneficiary);
 
@@ -553,11 +486,11 @@ class Household
     /**
      * Remove beneficiary.
      *
-     * @param \BeneficiaryBundle\Entity\Beneficiary $beneficiary
+     * @param Beneficiary $beneficiary
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeBeneficiary(\BeneficiaryBundle\Entity\Beneficiary $beneficiary)
+    public function removeBeneficiary(Beneficiary $beneficiary)
     {
         return $this->beneficiaries->removeElement($beneficiary);
     }
@@ -565,7 +498,7 @@ class Household
     /**
      * Get beneficiaries.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getBeneficiaries()
     {
@@ -577,44 +510,9 @@ class Household
      */
     public function resetBeneficiaries()
     {
-        $this->beneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->beneficiaries = new ArrayCollection();
 
         return $this;
-    }
-
-    /**
-     * Add project.
-     *
-     * @param \ProjectBundle\Entity\Project $project
-     *
-     * @return Household
-     */
-    public function addProject(\ProjectBundle\Entity\Project $project)
-    {
-        $this->projects[] = $project;
-        return $this;
-    }
-
-    /**
-     * Remove project.
-     *
-     * @param \ProjectBundle\Entity\Project $project
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeProject(\ProjectBundle\Entity\Project $project)
-    {
-        return $this->projects->removeElement($project);
-    }
-
-    /**
-     * Get projects.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getProjects()
-    {
-        return $this->projects;
     }
 
     /**
@@ -700,11 +598,11 @@ class Household
     /**
      * Remove householdLocation.
      *
-     * @param \BeneficiaryBundle\Entity\HouseholdLocation $householdLocation
+     * @param HouseholdLocation $householdLocation
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
+    public function removeHouseholdLocation(HouseholdLocation $householdLocation)
     {
         return $this->householdLocations->removeElement($householdLocation);
     }
@@ -712,11 +610,11 @@ class Household
     /**
      * Add householdLocation.
      *
-     * @param \BeneficiaryBundle\Entity\HouseholdLocation $householdLocation
+     * @param HouseholdLocation $householdLocation
      *
      * @return Household
      */
-    public function addHouseholdLocation(\BeneficiaryBundle\Entity\HouseholdLocation $householdLocation)
+    public function addHouseholdLocation(HouseholdLocation $householdLocation)
     {
         $this->householdLocations[] = $householdLocation;
         $householdLocation->setHousehold($this);
@@ -726,7 +624,7 @@ class Household
     /**
      * Get householdLocations.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getHouseholdLocations()
     {
@@ -770,7 +668,7 @@ class Household
     {
         foreach ((array) $supportReceivedTypes as $type) {
             if (!isset(self::SUPPORT_RECIEVED_TYPES[$type])) {
-                throw new \InvalidArgumentException(sprintf('Argument 1 contain invalid received type key %d.', $type));
+                throw new InvalidArgumentException(sprintf('Argument 1 contain invalid received type key %d.', $type));
             }
         }
 
@@ -797,19 +695,19 @@ class Household
 
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getSupportDateReceived(): ?\DateTimeInterface
+    public function getSupportDateReceived(): ?DateTimeInterface
     {
         return $this->supportDateReceived;
     }
 
     /**
-     * @param \DateTimeInterface|null $supportDateReceived
+     * @param DateTimeInterface|null $supportDateReceived
      *
      * @return self
      */
-    public function setSupportDateReceived(?\DateTimeInterface $supportDateReceived): self
+    public function setSupportDateReceived(?DateTimeInterface $supportDateReceived): self
     {
         $this->supportDateReceived = $supportDateReceived;
 

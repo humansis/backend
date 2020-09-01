@@ -7,7 +7,7 @@ namespace BeneficiaryBundle\Utils\DataVerifier;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializationContext;
+
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ExistingHouseholdVerifier extends AbstractVerifier
@@ -28,6 +28,8 @@ class ExistingHouseholdVerifier extends AbstractVerifier
      */
     public function verify(string $countryISO3, array &$householdArray, int $cacheId, string $email)
     {
+/*
+
         if (empty($householdArray['beneficiaries']) && empty($householdArray['household_locations'])) {
             throw new \Exception('Beneficiaries or location missing in household');
         }
@@ -61,7 +63,7 @@ class ExistingHouseholdVerifier extends AbstractVerifier
             $currentLocation['address']['number'] ?? null,
             $currentLocation['camp_address']['tent_number'] ?? null
         );
-
+*/
         if (empty($existingHousehold)) {
             $this->saveInCache('to_create', $cacheId, $householdArray, $email, null);
         }
@@ -77,10 +79,10 @@ class ExistingHouseholdVerifier extends AbstractVerifier
     {
         if (! empty($household)) {
             $arrayOldHousehold = json_decode(
-                $this->container->get('jms_serializer')->serialize(
+                $this->container->get('serializer')->serialize(
                     $household,
                     'json',
-                    SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
+                    ['groups' => ['FullHousehold']]
                 ),
                 true
             );

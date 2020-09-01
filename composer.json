@@ -26,6 +26,7 @@
 		"php": "^7.3",
 		"ext-Zend-OPcache": "*",
 		"ext-json": "*",
+		"ext-xmlreader": "*",
 		"aws/aws-sdk-php": "^3.90",
 		"beberlei/doctrineextensions": "^1.0",
 		"doctrine/doctrine-bundle": "^1.6",
@@ -37,7 +38,6 @@
 		"friendsofsymfony/user-bundle": "^2.1",
 		"google/apiclient": "^2.2",
 		"incenteev/composer-parameter-handler": "^2.0",
-		"jms/serializer-bundle": "^2.4",
 		"jrk/levenshtein-bundle": "dev-master",
 		"knplabs/knp-gaufrette-bundle": "^0.5.3",
 		"mpdf/mpdf": "^7.1",
@@ -58,7 +58,7 @@
 		"symfony/templating": "^3.4",
 		"tecnickcom/tcpdf": "^6.2",
 		"twig/twig": "^1.0||^2.0"
-	},
+    },
 	"require-dev": {
 		"doctrine/coding-standard": "^5.0",
 		"mashape/unirest-php": "^3.0",

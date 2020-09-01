@@ -58,7 +58,7 @@ class CommunityControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("jms_serializer");
+        $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
@@ -90,8 +90,8 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         $this->assertSame($community['contact_name'], $communityBody['contact_name'] ?? '', "Returned data are different than input: contact_name");
         $this->assertSame($community['contact_family_name'], $communityBody['contact_family_name'] ?? '', "Returned data are different than input: contact_name");
-        $this->assertSame($community['phone_prefix'], $communityBody['phone_prefix'] ?? '', "Returned data are different than input: phone_prefix");
-        $this->assertSame($community['phone_number'], $communityBody['phone_number'] ?? '', "Returned data are different than input: phone_number");
+        $this->assertSame($community['phone_prefix'], $communityBody['phone_prefix'] ?? null, "Returned data are different than input: phone_prefix");
+        $this->assertSame($community['phone_number'], $communityBody['phone_number'] ?? null, "Returned data are different than input: phone_number");
         $this->assertSame($community['longitude'], $communityBody['longitude'] ?? '', "Returned data are different than input: longitude");;
         $this->assertSame($community['latitude'], $communityBody['latitude'] ?? '', "Returned data are different than input: latitude");;
 

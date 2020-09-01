@@ -3,7 +3,7 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * OrganizationServices
@@ -19,7 +19,7 @@ class OrganizationServices
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullOrganization"})
+     * @SymfonyGroups({"FullOrganization"})
      */
     private $id;
 
@@ -27,7 +27,7 @@ class OrganizationServices
      * @var bool
      *
      * @ORM\Column(name="enabled", type="boolean")
-     * @Groups({"FullOrganization"})
+     * @SymfonyGroups({"FullOrganization"})
      */
     private $enabled;
 
@@ -35,7 +35,7 @@ class OrganizationServices
      * @var json
      *
      * @ORM\Column(name="parameters_value", type="json")
-     * @Groups({"FullOrganization"})
+     * @SymfonyGroups({"FullOrganization"})
      */
     private $parametersValue;
 
@@ -50,7 +50,7 @@ class OrganizationServices
      * @var Service
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Service", inversedBy="organizationServices")
-     * @Groups({"FullOrganization"})
+     * @SymfonyGroups({"FullOrganization"})
      */
     private $service;
 

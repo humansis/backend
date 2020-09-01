@@ -3,7 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * @ORM\Table(name="modality_type")
@@ -17,7 +17,7 @@ class ModalityType
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullModalityType", "FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullModalityType", "FullDistribution", "SmallDistribution"})
      */
     private $id;
 
@@ -25,7 +25,7 @@ class ModalityType
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"FullModalityType", "FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullModalityType", "FullDistribution", "SmallDistribution"})
      */
     private $name;
 
@@ -33,7 +33,7 @@ class ModalityType
      * @var Modality
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Modality", inversedBy="modalityTypes")
-     * @Groups({"FullModalityType", "FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullModalityType", "FullDistribution", "SmallDistribution"})
      */
     private $modality;
 

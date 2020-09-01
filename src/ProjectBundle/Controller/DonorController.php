@@ -3,7 +3,7 @@
 
 namespace ProjectBundle\Controller;
 
-use JMS\Serializer\SerializationContext;
+
 use ProjectBundle\Entity\Donor;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,8 +41,8 @@ class DonorController extends Controller
     {
         $donors = $this->get('project.donor_service')->findAll();
 
-        $donorsJson = $this->get('jms_serializer')
-            ->serialize($donors, 'json', SerializationContext::create()->setGroups(['FullDonor'])->setSerializeNull(true));
+        $donorsJson = $this->get('serializer')
+            ->serialize($donors, 'json', ['groups' => ['FullDonor']]);
         return new Response($donorsJson);
     }
 
@@ -83,8 +83,8 @@ class DonorController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $donorJson = $this->get('jms_serializer')
-            ->serialize($donor, 'json', SerializationContext::create()->setGroups(['FullDonor'])->setSerializeNull(true));
+        $donorJson = $this->get('serializer')
+            ->serialize($donor, 'json', ['groups' => ['FullDonor']]);
 
         return new Response($donorJson);
     }
@@ -127,8 +127,8 @@ class DonorController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $donorJson = $this->get('jms_serializer')
-            ->serialize($donor, 'json', SerializationContext::create()->setGroups(['FullDonor'])->setSerializeNull(true));
+        $donorJson = $this->get('serializer')
+            ->serialize($donor, 'json', ['groups' => ['FullDonor']]);
 
         return new Response($donorJson);
     }

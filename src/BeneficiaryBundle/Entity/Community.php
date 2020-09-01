@@ -3,8 +3,9 @@
 namespace BeneficiaryBundle\Entity;
 
 use CommonBundle\Entity\Location;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Community
@@ -12,60 +13,18 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="community")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CommunityRepository")
  */
-class Community
+class Community extends AbstractBeneficiary
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @var Person|null
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="contact_person_id", referencedColumnName="id", nullable=true)
      */
-    private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="contact_name", type="string", length=255, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity"})
-     */
-    private $contactName;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="contact_family_name", type="string", length=255, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity"})
-     */
-    private $contactFamilyName;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="phone_number", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
-     */
-    private $phoneNumber;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="phone_prefix", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity", "FullHousehold", "FullReceivers", "ValidatedDistribution"})
-     */
-    private $phonePrefix;
-
-    /**
-     * @var NationalId
-     *
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\NationalId", cascade={"persist", "remove"})
-     * @Groups({"FullInstitution", "FullBeneficiary", "FullCommunity", "FullHousehold", "SmallHousehold", "FullReceivers"})
-     */
-    private $nationalId;
+    private $contact;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
-     * @Groups({"FullBeneficiary", "FullCommunity"})
+     * @SymfonyGroups({"FullBeneficiary", "FullCommunity"})
      */
     private $address;
 
@@ -73,7 +32,7 @@ class Community
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity"})
+     * @SymfonyGroups({"FullBeneficiary", "FullCommunity"})
      */
     private $latitude;
 
@@ -81,25 +40,33 @@ class Community
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @Groups({"FullBeneficiary", "FullCommunity"})
+     * @SymfonyGroups({"FullBeneficiary", "FullCommunity"})
      */
     private $longitude;
 
     /**
-     * @var boolean
-     *
-     * @ORM\Column(type="boolean", options={"default" : 0})
+     * Community constructor.
      */
-    private $archived = 0;
+    public function __construct()
+    {
+        parent::__construct();
+        $this->contact = new Person();
+    }
 
     /**
-     * Get id.
-     *
-     * @return int
+     * @return Person|null
      */
-    public function getId()
+    public function getContact(): ?Person
     {
-        return $this->id;
+        return $this->contact;
+    }
+
+    /**
+     * @param Person|null $contact
+     */
+    public function setContact(?Person $contact): void
+    {
+        $this->contact = $contact;
     }
 
     /**
@@ -107,7 +74,7 @@ class Community
      */
     public function getContactName(): ?string
     {
-        return $this->contactName;
+        return $this->contact->getEnGivenName();
     }
 
     /**
@@ -115,23 +82,45 @@ class Community
      */
     public function setContactName(?string $contactName): void
     {
-        $this->contactName = $contactName;
+        $this->contact->setEnGivenName($contactName);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getContactFamilyName(): string
+    public function getContactFamilyName(): ?string
     {
-        return $this->contactFamilyName;
+        return $this->contact->getEnFamilyName();
     }
 
     /**
-     * @param string $contactFamilyName
+     * @param string|null $contactFamilyName
      */
-    public function setContactFamilyName(string $contactFamilyName): void
+    public function setContactFamilyName(?string $contactFamilyName): void
     {
-        $this->contactFamilyName = $contactFamilyName;
+        $this->contact->setEnFamilyName($contactFamilyName);
+    }
+
+    /**
+     * @return Phone|null
+     */
+    public function getPhone(): ?Phone
+    {
+        if ($this->contact->getPhones()->count() === 0) return null;
+        return $this->contact->getPhones()->current();
+    }
+
+    /**
+     * @param Phone|null $phone
+     */
+    public function setPhone(?Phone $phone): void
+    {
+        if ($phone) {
+            $phone->setPerson($this->getContact());
+            $this->contact->setPhones(new ArrayCollection([$phone]));
+        } else {
+            $this->contact->setPhones(new ArrayCollection());
+        }
     }
 
     /**
@@ -139,15 +128,10 @@ class Community
      */
     public function getPhoneNumber(): ?string
     {
-        return $this->phoneNumber;
-    }
-
-    /**
-     * @param string|null $phoneNumber
-     */
-    public function setPhoneNumber(?string $phoneNumber): void
-    {
-        $this->phoneNumber = $phoneNumber;
+        if ($this->getPhone()) {
+            return $this->getPhone()->getNumber();
+        }
+        return null;
     }
 
     /**
@@ -155,15 +139,10 @@ class Community
      */
     public function getPhonePrefix(): ?string
     {
-        return $this->phonePrefix;
-    }
-
-    /**
-     * @param string|null $phonePrefix
-     */
-    public function setPhonePrefix(?string $phonePrefix): void
-    {
-        $this->phonePrefix = $phonePrefix;
+        if (!$this->getPhone()) {
+            return null;
+        }
+        return $this->getPhone()->getPrefix();
     }
 
     /**
@@ -171,7 +150,8 @@ class Community
      */
     public function getNationalId(): ?NationalId
     {
-        return $this->nationalId;
+        if ($this->contact->getNationalIds()->count() === 0) return null;
+        return $this->contact->getNationalIds()->current();
     }
 
     /**
@@ -179,7 +159,12 @@ class Community
      */
     public function setNationalId(?NationalId $nationalId): void
     {
-        $this->nationalId = $nationalId;
+        if ($nationalId) {
+            $nationalId->setPerson($this->getContact());
+            $this->contact->setNationalIds(new ArrayCollection([$nationalId]));
+        } else {
+            $this->contact->setNationalIds(new ArrayCollection());
+        }
     }
 
     /**
@@ -243,29 +228,4 @@ class Community
     {
         return $this->longitude;
     }
-
-    /**
-     * Set archived.
-     *
-     * @param bool $archived
-     *
-     * @return self
-     */
-    public function setArchived(bool $archived)
-    {
-        $this->archived = $archived;
-
-        return $this;
-    }
-
-    /**
-     * Get archived.
-     *
-     * @return bool
-     */
-    public function getArchived(): bool
-    {
-        return $this->archived;
-    }
-
 }

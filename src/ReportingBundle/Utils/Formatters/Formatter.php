@@ -3,7 +3,7 @@
 namespace ReportingBundle\Utils\Formatters;
 
 use ReportingBundle\Utils\Formatters\FormatterInterface;
-use JMS\Serializer\SerializationContext;
+
 
 /**
  * Class Formatter
