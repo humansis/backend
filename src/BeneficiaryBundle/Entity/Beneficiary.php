@@ -124,7 +124,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return string
      */
-    public function getEnGivenName(): string
+    public function getEnGivenName(): ?string
     {
         return $this->person->getEnGivenName();
     }
