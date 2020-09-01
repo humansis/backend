@@ -147,14 +147,14 @@ class DistributionService
     {
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
-        /** @var DistributionData $distribution */
-        // $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
-        $distribution = new DistributionData();
-        $distribution->setName($distributionArray['name']);
-        // $distribution->setDateDistribution(new \DateTime($distributionArray['date_distribution']));
-        $distribution->setDateDistribution(new \DateTime());
-        // $distribution->getCommodities()->add();
 
+        $selectionCriteriaGroup = $distributionArray['selection_criteria'];
+        unset($distributionArray['selection_criteria']);
+
+        /** @var DistributionData $distribution */
+        $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json', [
+            \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
+        ]);
         $distribution->setUpdatedOn(new \DateTime());
         $errors = $this->validator->validate($distribution);
         if (count($errors) > 0) {
@@ -188,20 +188,24 @@ class DistributionService
         foreach ($distributionArray['commodities'] as $item) {
             $this->commodityService->create($distribution, $item, false);
         }
-        $criteria = [];
-        foreach ($distribution->getSelectionCriteria() as $item) {
-            $distribution->removeSelectionCriterion($item);
-            if ($item->getTableString() == null) {
-                $item->setTableString("Beneficiary");
-            }
 
-            $criteria[] = $this->criteriaDistributionService->save($distribution, $item, false);
+        $criteria = [];
+        foreach ($selectionCriteriaGroup as $i => $criteriaData) {
+            foreach ($criteriaData as $criterionArray) {
+                /** @var SelectionCriteria $criterion */
+                $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json');
+                $criterion->setGroupNumber($i);
+                $this->criteriaDistributionService->save($distribution, $criterion, false);
+                $criteria[] = $criterionArray;
+            }
         }
 
         $this->em->persist($distribution);
         $this->em->flush();
 
         $this->em->persist($distribution);
+
+        $distributionArray['selection_criteria'] = $criteria;
 
         $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['type'], $projectTmp, $threshold);
         $this->saveReceivers($distribution, $listReceivers);
