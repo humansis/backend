@@ -4,6 +4,6 @@ namespace BeneficiaryBundle\Exception;
 
 use Exception;
 
-class WeightingParserException extends Exception
+class CsvParserException extends Exception
 {
 }
