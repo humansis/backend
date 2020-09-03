@@ -29,9 +29,9 @@ class OrganizationService
     /**
      * Returns the organization
      *
-     * @return Organization
+     * @return Organization[]
      */
-    public function get()
+    public function get(): iterable
     {
         return $this->em->getRepository(Organization::class)->findAll();
     }

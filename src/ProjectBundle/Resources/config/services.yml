@@ -26,16 +26,13 @@ services:
             - '@ProjectBundle\Mapper\SectorMapper'
             - '@BeneficiaryBundle\Mapper\AssistanceMapper'
             - '@beneficiary.repository'
+            - '@project.sector_service'
         public: true
 
     ProjectBundle\Mapper\DonorMapper:
         public: true
 
     ProjectBundle\Mapper\SectorMapper:
-        public: true
-
-    project.sector_mapper:
-        class: ProjectBundle\Mapper\SectorMapper
         arguments:
             - '@translator'
         public: true
