@@ -5,7 +5,6 @@ namespace CommonBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
-
 /**
  * Organization
  *
@@ -14,15 +13,15 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Organization
 {
-     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"FullOrganization"})
-     */
+    /**
+    * @var int
+    *
+    * @ORM\Column(name="id", type="integer")
+    * @ORM\Id
+    * @ORM\GeneratedValue(strategy="AUTO")
+    *
+    * @SymfonyGroups({"FullOrganization"})
+    */
     private $id;
 
 
@@ -131,13 +130,13 @@ class Organization
         return $this->name;
     }
 
-     /**
-     * Set logo.
-     *
-     * @param string $logo
-     *
-     * @return Organization
-     */
+    /**
+    * Set logo.
+    *
+    * @param string $logo
+    *
+    * @return Organization
+    */
     public function setLogo($logo)
     {
         $this->logo = $logo;
@@ -227,13 +226,13 @@ class Organization
         return $this->secondaryColor;
     }
 
-     /**
-     * Set footerContent.
-     *
-     * @param string $footerContent
-     *
-     * @return Organization
-     */
+    /**
+    * Set footerContent.
+    *
+    * @param string $footerContent
+    *
+    * @return Organization
+    */
     public function setFooterContent($footerContent)
     {
         $this->footerContent = $footerContent;
