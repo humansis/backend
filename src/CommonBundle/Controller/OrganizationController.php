@@ -41,10 +41,9 @@ class OrganizationController extends Controller
      * @return Response
      */
     public function getOrganizationAction(Request $request)
-    {        
+    {
         try {
             $organization = $this->get('organization_service')->get();
-           
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -97,29 +96,29 @@ class OrganizationController extends Controller
         return new Response($organizationJson);
     }
 
-     /**
-     * @Rest\Post("/organization/upload/logo", name="upload_logo")
-     * @Security("is_granted('ROLE_ADMIN')")
-     *
-     * @SWG\Tag(name="Organization")
-     *
-     * @SWG\Parameter(
-     *     name="file",
-     *     in="formData",
-     *     required=true,
-     *     type="file"
-     * )
-     * @SWG\Response(
-     *     response=200,
-     *     description="Image uploaded",
-     *     @SWG\Schema(
-     *          type="string"
-     *     )
-     * )
-     *
-     * @param Request $request
-     * @return Response
-     */
+    /**
+    * @Rest\Post("/organization/upload/logo", name="upload_logo")
+    * @Security("is_granted('ROLE_ADMIN')")
+    *
+    * @SWG\Tag(name="Organization")
+    *
+    * @SWG\Parameter(
+    *     name="file",
+    *     in="formData",
+    *     required=true,
+    *     type="file"
+    * )
+    * @SWG\Response(
+    *     response=200,
+    *     description="Image uploaded",
+    *     @SWG\Schema(
+    *          type="string"
+    *     )
+    * )
+    *
+    * @param Request $request
+    * @return Response
+    */
     public function uploadLogoAction(Request $request)
     {
         $content = $request->getContent();
@@ -144,7 +143,7 @@ class OrganizationController extends Controller
      *
      * @Rest\Get("/organization/print/template", name="print_template")
      * @Security("is_granted('ROLE_ADMIN')")
-     * 
+     *
      * @SWG\Tag(name="Organization")
      *
      * @SWG\Response(
