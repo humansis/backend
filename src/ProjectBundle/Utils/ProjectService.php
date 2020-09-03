@@ -140,7 +140,7 @@ class ProjectService
             $project->getSectors()->clear();
             /** @var Sector $sector */
             foreach ($sectorsId as $sectorId) {
-                $sectorTmp = $this->em->getRepository(Sector::class)->find($sectorId);
+                $sectorTmp = $this->container->get('project.sector_service')->findBySubSector($sectorId);
                 if ($sectorTmp instanceof Sector) {
                     $project->addSector($sectorTmp);
                 }
@@ -199,7 +199,7 @@ class ProjectService
             if (null !== $sectors) {
                 $project->removeSectors();
                 foreach ($sectors as $sector) {
-                    $newSector = $this->em->getRepository(Sector::class)->find($sector);
+                    $newSector = $this->container->get('project.sector_service')->getSubsBySector($sector);
                     if ($newSector instanceof Sector) {
                         $project->addSector($newSector);
                     }
