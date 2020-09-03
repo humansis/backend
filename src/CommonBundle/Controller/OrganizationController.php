@@ -30,7 +30,11 @@ class OrganizationController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="OK"
+     *     description="OK",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Organization::class))
+     *     )
      * )
      *
      * @SWG\Response(
@@ -43,14 +47,12 @@ class OrganizationController extends Controller
     public function getOrganizationAction(Request $request)
     {
         try {
-            $organization = $this->get('organization_service')->get();
+            $organizations = $this->get('organization_service')->get();
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('serializer')->serialize($organization, 'json', [
-            'group'=>'FullOrganization',
-        ]);
+        $json = $this->get('serializer')->serialize($organizations, 'json', ['groups' => ['FullOrganization']]);
         
         return new Response($json);
     }

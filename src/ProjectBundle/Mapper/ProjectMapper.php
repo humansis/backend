@@ -7,6 +7,7 @@ use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Utils\SectorService;
 
 class ProjectMapper
 {
@@ -15,6 +16,9 @@ class ProjectMapper
 
     /** @var SectorMapper */
     private $sectorMapper;
+
+    /** @var SectorService */
+    private $sectorService;
 
     /** @var AssistanceMapper */
     private $assistanceMapper;
@@ -29,17 +33,20 @@ class ProjectMapper
      * @param SectorMapper          $sectorMapper
      * @param AssistanceMapper      $assistanceMapper
      * @param BeneficiaryRepository $beneficiaryRepo
+     * @param SectorService         $sectorService
      */
     public function __construct(
         DonorMapper $donorMapper,
         SectorMapper $sectorMapper,
         AssistanceMapper $assistanceMapper,
-        BeneficiaryRepository $beneficiaryRepo
+        BeneficiaryRepository $beneficiaryRepo,
+        SectorService $sectorService
     ) {
         $this->donorMapper = $donorMapper;
         $this->sectorMapper = $sectorMapper;
         $this->assistanceMapper = $assistanceMapper;
         $this->beneficiaryRepo = $beneficiaryRepo;
+        $this->sectorService = $sectorService;
     }
 
     public function toFullArray(?Project $project): ?array
@@ -48,6 +55,10 @@ class ProjectMapper
             return null;
         }
         $bnfCount = $this->beneficiaryRepo->countAllInProject($project);
+        $sectors = [];
+        foreach ($project->getSectors() as $subSectorName) {
+            $sectors[] = $this->sectorService->findBySubSector($subSectorName);
+        }
         return [
             'id' => $project->getId(),
             'iso3' => $project->getIso3(),
@@ -58,7 +69,7 @@ class ProjectMapper
             'end_date' => $project->getEndDate()->format('d-m-Y'),
             'start_date' => $project->getStartDate()->format('d-m-Y'),
             'number_of_households' => $project->getNumberOfHouseholds(),
-            'sectors' => $this->sectorMapper->toArrays($project->getSectors()),
+            'sectors' => $this->sectorMapper->listToSubArrays($sectors),
             'reached_beneficiaries' => $bnfCount,
             'distributions' => $this->assistanceMapper->toMinimalArrays($project->getDistributions()),
         ];
