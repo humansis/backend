@@ -38,7 +38,7 @@ class SectorController extends Controller
      */
     public function getAllAction()
     {
-        $sectorMapper = $this->get('project.sector_mapper');
+        $sectorMapper = $this->get(SectorMapper::class);
         $sectors = $this->get('project.sector_service')->getSubsBySector();
 
         return $this->json($sectorMapper->listToSubArrays($sectors));
