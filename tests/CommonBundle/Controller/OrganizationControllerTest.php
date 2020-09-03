@@ -36,7 +36,10 @@ class OrganizationControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->request('GET', '/api/wsse/organization');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
         $organization = json_decode($this->client->getResponse()->getContent(), true);
+
         if (!empty($organization)) {
             $this->assertArrayHasKey('name', $organization[0]);
             $this->assertArrayHasKey('font', $organization[0]);
