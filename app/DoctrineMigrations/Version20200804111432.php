@@ -30,7 +30,7 @@ final class Version20200804111432 extends AbstractMigration
         $this->addSql('ALTER TABLE person DROP source_community_id');
 
         // copy phone to its table
-        $this->addSql('INSERT INTO phone (person_id, type, prefix, number) SELECT contact_person_id, "TYPE_community_CONTACT", phone_prefix, phone_number FROM `community`;');
+        $this->addSql('INSERT INTO phone (person_id, type, prefix, number, proxy) SELECT contact_person_id, "TYPE_community_CONTACT", phone_prefix, phone_number, 0 FROM `community`;');
         // connect national id to person
         $this->addSql('UPDATE national_id nid INNER JOIN community i ON i.national_id_id=nid.id SET nid.person_id=i.contact_person_id');
 
