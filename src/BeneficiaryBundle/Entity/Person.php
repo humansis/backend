@@ -250,11 +250,11 @@ class Person
     /**
      * Set gender.
      *
-     * @param int $gender one of self::GENDER_*
+     * @param int|null $gender one of self::GENDER_*
      *
      * @return self
      */
-    public function setGender(int $gender)
+    public function setGender(?int $gender)
     {
         $this->gender = $gender;
 

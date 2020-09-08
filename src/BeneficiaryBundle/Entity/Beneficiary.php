@@ -107,7 +107,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Set enGivenName.
      * @deprecated
-     * @param string $enGivenName
+     * @param string|null $enGivenName
      *
      * @return Beneficiary
      */
@@ -122,9 +122,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * Get enGivenName.
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
-     * @return string
+     * @return string|null
      */
-    public function getEnGivenName(): string
+    public function getEnGivenName(): ?string
     {
         return $this->person->getEnGivenName();
     }
@@ -132,7 +132,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Set enFamilyName.
      * @deprecated
-     * @param string $enFamilyName
+     * @param string|null $enFamilyName
      *
      * @return Beneficiary
      */
@@ -147,7 +147,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * Get enFamilyName.
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
-     * @return string
+     * @return string|null
      */
     public function getEnFamilyName(): ?string
     {
@@ -157,7 +157,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Set localGivenName.
      * @deprecated
-     * @param string $localGivenName
+     * @param string|null $localGivenName
      *
      * @return Beneficiary
      */
@@ -171,7 +171,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * Get localGivenName.
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
-     * @return string
+     * @return string|null
      */
     public function getLocalGivenName(): ?string
     {
@@ -181,7 +181,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Set localFamilyName.
      * @deprecated
-     * @param string $localFamilyName
+     * @param string|null $localFamilyName
      *
      * @return Beneficiary
      */
@@ -196,7 +196,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * Get localFamilyName.
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
-     * @return string
+     * @return string|null
      */
     public function getLocalFamilyName(): ?string
     {
@@ -206,7 +206,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Set gender.
      * @deprecated
-     * @param int $gender one of Person::GENDER_*
+     * @param int|null $gender one of Person::GENDER_*
      *
      * @return Beneficiary
      */
@@ -221,9 +221,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      *
-     * @return int one of Person::GENDER_*
+     * @return int|null one of Person::GENDER_*
      */
-    public function getGender(): int
+    public function getGender(): ?int
     {
         return $this->person->getGender();
     }
@@ -231,7 +231,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Set dateOfBirth.
      * @deprecated
-     * @param DateTime $dateOfBirth
+     * @param DateTime|null $dateOfBirth
      *
      * @return Beneficiary
      */
@@ -246,7 +246,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * Get dateOfBirth.
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getDateOfBirth(): ?\DateTimeInterface
     {
