@@ -44,11 +44,9 @@ class DuplicateVerifier extends AbstractVerifier
         foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary) {
 
             /** @var Beneficiary[] $existingBeneficiaries */
-            $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByUnarchived(
-                [
-                    'localGivenName'  => trim($newBeneficiary['local_given_name']),
-                    'localFamilyName' => trim($newBeneficiary['local_family_name'])
-                ]
+            $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByName(
+                trim($newBeneficiary['local_given_name']),
+                trim($newBeneficiary['local_family_name'])
             );
 
             $match = false;
