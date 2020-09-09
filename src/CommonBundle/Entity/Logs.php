@@ -63,7 +63,6 @@ class Logs
      * @var \DateTime
      *
      * @ORM\Column(name="date", type="datetime")
-     * DateTime<'d-m-Y H:m'>
      * @SymfonyGroups({"FullLogs"})
      */
     private $date;

@@ -48,9 +48,6 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="UpdatedOn", type="datetime")
-     * DateTime<'d-m-Y H:i:s'>
-     *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      */
     private $updatedOn;
 
@@ -58,7 +55,6 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_distribution", type="date")
-     * DateTime<'d-m-Y'>
      *
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
@@ -219,12 +215,13 @@ class DistributionData implements ExportableInterface
 
     /**
      * Get updatedOn.
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      *
-     * @return \DateTime
+     * @return string
      */
-    public function getUpdatedOn()
+    public function getUpdatedOn(): string
     {
-        return $this->updatedOn;
+        return $this->updatedOn->format('Y-m-d H:i:s');
     }
 
     /**
@@ -626,7 +623,7 @@ class DistributionData implements ExportableInterface
             "adm4" =>$adm4,
             "Name" => $this->getName(),
             "Date of distribution " => $this->getDateDistribution(),
-            "Update on " => $this->getUpdatedOn(),
+            "Update on " => $this->updatedOn,
             "Selection criteria" =>  $valueselectioncriteria,
             "Commodities " => $valuescommodities,
             "Number of beneficiaries" => count($this->getDistributionBeneficiaries()),

@@ -110,7 +110,6 @@ class Transaction
      * @var \DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     * DateTime<'d-m-Y H:m:i'>
      *
      * @SymfonyGroups({"ValidatedDistribution"})
      */

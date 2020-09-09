@@ -120,7 +120,7 @@ class LevenshteinTypoVerifier extends AbstractVerifier
                 $this->container->get('serializer')->serialize(
                         $household,
                         'json',
-                        ['groups' => ['FullHousehold']]
+                        ['groups' => ['FullHousehold'], 'datetime_format' => 'd-m-Y']
                     ),
                 true
             );

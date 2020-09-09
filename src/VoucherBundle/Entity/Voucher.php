@@ -60,7 +60,6 @@ class Voucher implements ExportableInterface
      * @var \DateTime|null
      *
      * @ORM\Column(name="redeemed_at", type="datetime", nullable=true)
-     * DateTime<'d-m-Y'>
      * @SymfonyGroups({"FullVoucher", "ValidatedDistribution"})
      */
     private $redeemedAt;
@@ -121,9 +120,20 @@ class Voucher implements ExportableInterface
     /**
      * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedDistribution"})
      *
+     * @return string|null
+     */
+    public function getUsedAt(): ?string
+    {
+        if (!$this->getUsedAtDate()) {
+            return null;
+        }
+        return $this->getUsedAtDate()->format('Y-m-d');
+    }
+
+    /**
      * @return \DateTimeInterface|null
      */
-    public function getUsedAt(): ?\DateTimeInterface
+    public function getUsedAtDate(): ?\DateTimeInterface
     {
         if (!$this->getVoucherPurchase()) {
             return null;

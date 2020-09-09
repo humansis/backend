@@ -63,7 +63,7 @@ class DuplicateVerifier extends AbstractVerifier
                     $this->container->get('serializer')->serialize(
                         $existingBeneficiaries[0]->getHousehold(),
                         'json',
-                        ['groups' => ['FullHousehold']]
+                        ['groups' => ['FullHousehold'], 'datetime_format' => 'd-m-Y']
                     ),
                     true
                 );

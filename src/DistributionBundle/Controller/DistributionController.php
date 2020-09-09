@@ -19,6 +19,7 @@ use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 /**
  * Class DistributionController
@@ -99,14 +100,14 @@ class DistributionController extends Controller
                 ->serialize(
                     $receivers,
                     'json',
-                    ['groups' => ['FullReceivers']]
+                    ['groups' => ['FullReceivers'], 'datetime_format' => 'd-m-Y']
                 );
         } else {
             $json = $this->get('serializer')
                 ->serialize(
                     "The size to display is unset",
                     'json',
-                    ['groups' => ['FullReceivers']]
+                    ['groups' => ['FullReceivers'], 'datetime_format' => 'd-m-Y']
                 );
         }
 
@@ -140,7 +141,7 @@ class DistributionController extends Controller
             ->serialize(
                 $distributionData,
                 'json',
-                ['groups' => ['FullReceivers', 'FullDistribution']]
+                ['groups' => ['FullReceivers', 'FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -189,7 +190,7 @@ class DistributionController extends Controller
             ->serialize(
                 $listReceivers,
                 'json',
-                ['groups' => ['FullReceivers', 'FullDistribution']]
+                ['groups' => ['FullReceivers', 'FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -308,7 +309,7 @@ class DistributionController extends Controller
             ->serialize(
                 $data,
                 'json',
-                ['groups' => ['SmallDistribution']]
+                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -338,7 +339,7 @@ class DistributionController extends Controller
             ->serialize(
                 $distributionDataFactory->build($distributionData, ['FullDistribution']),
                 'json',
-                ['groups' => ['FullDistribution']]
+                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -368,12 +369,22 @@ class DistributionController extends Controller
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($distributionData);
-        
+
+        $dateCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []) {
+            return $innerObject instanceof \DateTime ? $innerObject->format('d-m-Y') : '';
+        };
+        $dateTimeCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []) {
+            return $innerObject instanceof \DateTime ? $innerObject->format('d-m-Y H:i:s') : '';
+        };
+
         $json = $this->get('serializer')
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
-                ['groups' => ["ValidatedDistribution"]]
+                [
+                    'groups' => ["ValidatedDistribution"],
+                    'datetime_format' => 'd-m-Y',
+                ]
             );
 
         return new Response($json);
@@ -435,7 +446,7 @@ class DistributionController extends Controller
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
-                ['groups' => ["ValidatedDistribution"]]
+                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y H:m:i']
             );
 
         return new Response($json);
@@ -483,7 +494,7 @@ class DistributionController extends Controller
         }
 
         $json = $this->get('serializer')
-            ->serialize($distributionData, 'json', ['groups' => ['FullDistribution']]);
+            ->serialize($distributionData, 'json', ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']);
         return new Response($json, Response::HTTP_OK);
     }
 
@@ -605,7 +616,7 @@ class DistributionController extends Controller
             ->serialize(
                 $data,
                 'json',
-                ['groups' => ['SmallDistribution']]
+                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -675,7 +686,7 @@ class DistributionController extends Controller
             ->serialize(
                 $filtered,
                 'json',
-                ['groups' => ['FullDistribution']]
+                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -757,7 +768,7 @@ class DistributionController extends Controller
             }
 
             $json = $this->get('serializer')
-                ->serialize($return, 'json', ['groups' => ['FullHousehold']]);
+                ->serialize($return, 'json', ['groups' => ['FullHousehold'], 'datetime_format' => 'd-m-Y']);
 
             return new Response($json);
         } else {
@@ -805,7 +816,7 @@ class DistributionController extends Controller
         }
 
         $json = $this->get('serializer')
-        ->serialize($beneficiariesInProject, 'json', ['groups' => ['FullHousehold']]);
+        ->serialize($beneficiariesInProject, 'json', ['groups' => ['FullHousehold'], 'datetime_format' => 'd-m-Y']);
 
         return new Response($json, Response::HTTP_OK);
     }
@@ -882,7 +893,7 @@ class DistributionController extends Controller
             ->serialize(
                 $response,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(["ValidatedDistribution",])
+                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y H:m:i']
             );
 
         return new Response($json, Response::HTTP_OK);

@@ -82,7 +82,7 @@ class VoucherController extends Controller
         $voucherJson = $serializer->serialize(
             $return,
             'json',
-            ['groups' => ['FullVoucher']]
+            ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']
         );
 
         return new Response($voucherJson);
@@ -120,7 +120,7 @@ class VoucherController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('serializer')->serialize($vouchers, 'json', ['groups' => ['FullVoucher']]);
+        $json = $this->get('serializer')->serialize($vouchers, 'json', ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']);
         return new Response($json);
     }
 
@@ -156,7 +156,7 @@ class VoucherController extends Controller
         $vouchers = $this->getDoctrine()->getRepository(VoucherPurchaseRecord::class)->findPurchasedByBeneficiary($beneficiary);
 
         $json = $this->get('serializer')
-            ->serialize($vouchers, 'json', ['groups' => ['ValidatedDistribution']]);
+            ->serialize($vouchers, 'json', ['groups' => ['ValidatedDistribution'], 'datetime_format' => 'd-m-Y H:m:i']);
 
         return new Response($json);
     }
@@ -189,7 +189,7 @@ class VoucherController extends Controller
      */
     public function getSingleVoucherAction(Voucher $voucher)
     {
-        $json = $this->get('serializer')->serialize($voucher, 'json', ['groups' => ['FullVoucher']]);
+        $json = $this->get('serializer')->serialize($voucher, 'json', ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']);
 
         return new Response($json);
     }
@@ -265,7 +265,7 @@ class VoucherController extends Controller
         }
 
         $json = $this->get('serializer')->serialize($newVouchers, 'json',
-            ['groups' => ['FullVoucher']]);
+            ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']);
 
         return new Response($json);
     }
@@ -373,7 +373,7 @@ class VoucherController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('serializer')->serialize($voucher, 'json', ['groups' => ['FullVoucher']]);
+        $json = $this->get('serializer')->serialize($voucher, 'json', ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']);
         return new Response($json);
     }
 

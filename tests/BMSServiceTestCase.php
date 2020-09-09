@@ -380,7 +380,7 @@ class BMSServiceTestCase extends KernelTestCase
             ->serialize(
                 $household,
                 'json',
-                ['groups' => ["FullHousehold"]]
+                ['groups' => ["FullHousehold"], 'datetime_format' => 'd-m-Y']
             );
 
         return json_decode($json, true);
