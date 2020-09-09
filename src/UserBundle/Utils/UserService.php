@@ -229,11 +229,10 @@ class UserService
     /**
      * @param string $username
      * @param string $saltedPassword
-     * @param $origin
      * @return mixed
      * @throws \Exception
      */
-    public function login(string $username, string $saltedPassword, $origin)
+    public function login(string $username, string $saltedPassword)
     {
         $repository = $this->em->getRepository(User::class);
 
@@ -243,31 +242,7 @@ class UserService
             'enabled' => 1
         ]);
 
-        if ($user instanceof User) {
-            // $countries = array();
-            
-            // $countryRepo = $this->em->getRepository(UserCountry::class);
-            // $userCountries = $countryRepo->findBy(["user" => $user]);
-            // if ($userCountries) {
-            //     foreach ($userCountries as $userCountry) {
-            //         array_push($countries, $userCountry->getIso3());
-            //     }
-            // } else {
-            //     $countries = $this->countryList;
-            // }
-            
-            // $projectRepo = $this->em->getRepository('UserBundle:UserProject');
-            // $userProjects = $projectRepo->findBy(["user" => $user]);
-            // if ($userProjects) {
-            //     foreach ($userProjects as $userProject) {
-            //         array_push($countries, $userProject->getProject()->getIso3());
-            //     }
-            // }
-            
-            // if ($origin && $user->getRoles()[0] !== "ROLE_ADMIN" && !in_array($origin, array_unique($countries))) {
-            //     throw new \Exception('Unable to log in from this country (' . $origin . ')', Response::HTTP_BAD_REQUEST);
-            // }
-        } else {
+        if (!$user instanceof User) {
             throw new \Exception('Wrong password', Response::HTTP_BAD_REQUEST);
         }
 
@@ -684,5 +659,24 @@ class UserService
         }  else {
             throw new \Exception("There was a problem with the HID request: could not get user email"); 
         }
+    }
+
+    public function getCountries(User $user)
+    {
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+            return ['KHM', 'SYR', 'UKR'];
+        }
+
+        $countries = [];
+        foreach ($user->getCountries() as $country) {
+            $countries[$country] = true;
+        }
+
+        foreach ($user->getProjects() as $userProject) {
+            /** @var UserProject $userProject */
+            $countries[$userProject->getProject()->getIso3()] = true;
+        }
+
+        return array_keys($countries);
     }
 }
