@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="service")
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\ServiceRepository")
  */
-class Service
+class Service implements \JsonSerializable
 {
     /**
      * @var int
@@ -19,7 +19,6 @@ class Service
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullOrganization"})
      */
     private $id;
 
@@ -27,7 +26,6 @@ class Service
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @SymfonyGroups({"FullOrganization"})
      */
     private $name;
 
@@ -35,7 +33,6 @@ class Service
      * @var json
      *
      * @ORM\Column(name="parameters", type="json")
-     * @SymfonyGroups({"FullOrganization"})
      */
     private $parameters;
 
@@ -43,14 +40,13 @@ class Service
      * @var string
      *
      * @ORM\Column(name="country", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullOrganization"})
      */
     private $country;
 
     /**
-     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\OrganizationServices", mappedBy="service", cascade={"remove"})
-     *
      * @var OrganizationServices $organizationServices
+     *
+     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\OrganizationServices", mappedBy="service", cascade={"remove"})
      */
     private $organizationServices;
 
@@ -173,5 +169,15 @@ class Service
     public function getOrganizationServices()
     {
         return $this->organizationServices;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'parameters' => $this->parameters,
+            'country' => $this->country,
+        ];
     }
 }

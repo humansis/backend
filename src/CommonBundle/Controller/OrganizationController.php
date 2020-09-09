@@ -49,7 +49,9 @@ class OrganizationController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('serializer')->serialize($organization, 'json');
+        $json = $this->get('serializer')->serialize($organization, 'json', [
+            'group'=>'FullOrganization',
+        ]);
         
         return new Response($json);
     }
