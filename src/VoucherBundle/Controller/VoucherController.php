@@ -156,7 +156,7 @@ class VoucherController extends Controller
         $vouchers = $this->getDoctrine()->getRepository(VoucherPurchaseRecord::class)->findPurchasedByBeneficiary($beneficiary);
 
         $json = $this->get('serializer')
-            ->serialize($vouchers, 'json', ['groups' => ['ValidatedDistribution'], 'datetime_format' => 'd-m-Y']);
+            ->serialize($vouchers, 'json', ['groups' => ['ValidatedDistribution'], 'datetime_format' => 'd-m-Y H:m:i']);
 
         return new Response($json);
     }

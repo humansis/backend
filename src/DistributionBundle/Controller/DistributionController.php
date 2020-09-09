@@ -373,7 +373,7 @@ class DistributionController extends Controller
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
-                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y']
+                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y H:m:i']
             );
 
         return new Response($json);
@@ -435,7 +435,7 @@ class DistributionController extends Controller
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
-                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y']
+                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y H:m:i']
             );
 
         return new Response($json);
@@ -882,7 +882,7 @@ class DistributionController extends Controller
             ->serialize(
                 $response,
                 'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(["ValidatedDistribution",])
+                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y H:m:i']
             );
 
         return new Response($json, Response::HTTP_OK);

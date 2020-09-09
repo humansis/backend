@@ -70,7 +70,7 @@ class TransactionController extends Controller
         }
         
         $json = $this->get('serializer')
-            ->serialize($response, 'json', ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y']);
+            ->serialize($response, 'json', ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y H:m:i']);
         return new Response($json);
     }
     
