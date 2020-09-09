@@ -96,20 +96,14 @@ class ProjectController extends Controller
      *     )
      * )
      *
-     * @param Project $Project
+     * @param Project $project
      *
      * @return Response
      */
     public function getOneAction(Project $project)
     {
-        $json = $this->get('serializer')
-            ->serialize(
-                $project,
-                'json',
-                ['groups' => ['FullProject']]
-            );
-
-        return new Response($json);
+        $projectMapper = $this->get(ProjectMapper::class);
+        return $this->json($projectMapper->toFullArray($project));
     }
 
     /**
@@ -149,9 +143,8 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('serializer')
-            ->serialize($project, 'json', ['groups' => ['FullProject']]);
-        return new Response($json, Response::HTTP_OK);
+        $projectMapper = $this->get(ProjectMapper::class);
+        return $this->json($projectMapper->toFullArray($project));
     }
 
     /**
@@ -192,9 +185,8 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('serializer')
-            ->serialize($project, 'json', ['groups' => ['FullProject']]);
-        return new Response($json, Response::HTTP_OK);
+        $projectMapper = $this->get(ProjectMapper::class);
+        return $this->json($projectMapper->toFullArray($project));
     }
 
     /**
