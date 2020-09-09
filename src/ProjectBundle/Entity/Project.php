@@ -2,6 +2,7 @@
 
 namespace ProjectBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
@@ -152,6 +153,7 @@ class Project implements ExportableInterface
         $this->donors = new \Doctrine\Common\Collections\ArrayCollection();
         $this->sectors = new \Doctrine\Common\Collections\ArrayCollection();
         $this->households = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->distributions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -617,7 +619,7 @@ class Project implements ExportableInterface
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getDistributions()
+    public function getDistributions(): Collection
     {
         return $this->distributions;
     }
