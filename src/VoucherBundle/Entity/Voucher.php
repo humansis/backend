@@ -60,7 +60,6 @@ class Voucher implements ExportableInterface
      * @var \DateTime|null
      *
      * @ORM\Column(name="redeemed_at", type="datetime", nullable=true)
-     * DateTime<'d-m-Y'>
      * @SymfonyGroups({"FullVoucher", "ValidatedDistribution"})
      */
     private $redeemedAt;

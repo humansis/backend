@@ -373,7 +373,7 @@ class DistributionController extends Controller
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
-                ['groups' => ["ValidatedDistribution"]]
+                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -435,7 +435,7 @@ class DistributionController extends Controller
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
-                ['groups' => ["ValidatedDistribution"]]
+                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
