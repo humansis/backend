@@ -99,14 +99,14 @@ class DistributionController extends Controller
                 ->serialize(
                     $receivers,
                     'json',
-                    ['groups' => ['FullReceivers']]
+                    ['groups' => ['FullReceivers'], 'datetime_format' => 'd-m-Y']
                 );
         } else {
             $json = $this->get('serializer')
                 ->serialize(
                     "The size to display is unset",
                     'json',
-                    ['groups' => ['FullReceivers']]
+                    ['groups' => ['FullReceivers'], 'datetime_format' => 'd-m-Y']
                 );
         }
 

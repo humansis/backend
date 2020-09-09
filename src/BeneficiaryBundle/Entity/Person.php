@@ -79,7 +79,6 @@ class Person
      * @var DateTime|null
      *
      * @ORM\Column(name="dateOfBirth", type="date", nullable=true)
-     * DateTime<'d-m-Y'>
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "Fullself"})
      * @Assert\NotBlank(message="The date of birth is required.")
      */
