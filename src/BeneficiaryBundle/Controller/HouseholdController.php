@@ -61,7 +61,7 @@ class HouseholdController extends Controller
             ->serialize(
                 $household,
                 'json',
-                ['groups' => ["FullHousehold"]]
+                ['groups' => ["FullHousehold"], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -99,7 +99,7 @@ class HouseholdController extends Controller
             ->serialize(
                 $households,
                 'json',
-                ['groups' => ["SmallHousehold"]]
+                ['groups' => ["SmallHousehold"], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -163,7 +163,7 @@ class HouseholdController extends Controller
             ->serialize(
                 $household,
                 'json',
-                ['groups' => ["FullHousehold"]]
+                ['groups' => ["FullHousehold"], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -229,7 +229,7 @@ class HouseholdController extends Controller
             ->serialize(
                 $household,
                 'json',
-                ['groups' => ["FullHousehold"]]
+                ['groups' => ["FullHousehold"], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -301,7 +301,7 @@ class HouseholdController extends Controller
 
 
         $json = $this->get('serializer')
-            ->serialize($return, 'json', ['groups' => ['FullHousehold']]);
+            ->serialize($return, 'json', ['groups' => ['FullHousehold'], 'datetime_format' => 'd-m-Y']);
         return new Response($json);
     }
 
@@ -328,7 +328,7 @@ class HouseholdController extends Controller
             ->serialize(
                 $household,
                 'json',
-                ['groups' => ["FullHousehold"]]
+                ['groups' => ["FullHousehold"], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -495,7 +495,7 @@ class HouseholdController extends Controller
             ->serialize(
                 $households,
                 'json',
-                ['groups' => ["SmallHousehold"]]
+                ['groups' => ["SmallHousehold"], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }

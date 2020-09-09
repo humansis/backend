@@ -58,7 +58,7 @@ class LocationController extends Controller
             ->serialize(
                 $adm1,
                 'json',
-                ['groups' => ["SmallHousehold"]]
+                ['groups' => ["SmallHousehold"], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -90,7 +90,7 @@ class LocationController extends Controller
             ->serialize(
                 $adm2,
                 'json',
-                ['groups' => ["SmallHousehold"]]
+                ['groups' => ["SmallHousehold"], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -122,7 +122,7 @@ class LocationController extends Controller
             ->serialize(
                 $adm3,
                 'json',
-                ['groups' => ["SmallHousehold"]]
+                ['groups' => ["SmallHousehold"], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -154,7 +154,7 @@ class LocationController extends Controller
             ->serialize(
                 $adm4,
                 'json',
-                ['groups' => ["SmallHousehold"]]
+                ['groups' => ["SmallHousehold"], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -216,7 +216,7 @@ class LocationController extends Controller
             ->serialize(
                 $location,
                 'json',
-                ['groups' => ["SmallHousehold"]]
+                ['groups' => ["SmallHousehold"], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
