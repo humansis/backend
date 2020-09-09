@@ -28,10 +28,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb = $this->createQueryBuilder("hh");
         $this->whereHouseholdInCountry($qb, $iso3);
         $qb->andWhere('hh.archived = 0');
-        
+
         return $qb;
     }
-    
+
     public function getUnarchivedByProject(Project $project)
     {
         $qb = $this->createQueryBuilder("hh");
@@ -39,7 +39,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 ->where("p = :project")
                 ->setParameter("project", $project)
                 ->andWhere("hh.archived = 0");
-                
+
         return $q;
     }
 
@@ -67,6 +67,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
     {
         $qb = $this->findAllByCountry($iso3);
         $q = $qb->leftJoin("hh.beneficiaries", "b")
+            ->leftJoin('b.person', 'p')
             // Those leftJoins are already done in findAllByCountry
             // ->leftJoin("hh.householdLocations", "hl")
             // ->leftJoin("hl.address", "ad")
@@ -78,8 +79,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         COALESCE(ad.street, ''),
                         COALESCE(ad.number, ''),
                         COALESCE(ad.postcode, ''),
-                        COALESCE(b.localGivenName, ''),
-                        COALESCE(b.localFamilyName, '')
+                        COALESCE(p.localGivenName, ''),
+                        COALESCE(p.localFamilyName, '')
                     ),
                     :stringToSearch
                 ) as levenshtein")
@@ -107,6 +108,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
     {
         $qb = $this->findAllByCountry($iso3);
         $q = $qb->leftJoin("hh.beneficiaries", "b")
+            ->leftJoin('b.person', 'p')
             // Those leftJoins are already done in findAllByCountry
             // ->leftJoin("hh.householdLocations", "hl")
             // ->leftJoin("hl.campAddress", "ca")
@@ -118,8 +120,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     CONCAT(
                         COALESCE(c.name, ''),
                         COALESCE(ca.tentNumber, ''),
-                        COALESCE(b.localGivenName, ''),
-                        COALESCE(b.localFamilyName, '')
+                        COALESCE(p.localGivenName, ''),
+                        COALESCE(p.localFamilyName, '')
                     ),
                     :stringToSearch
                 ) as levenshtein"
@@ -138,7 +140,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
     }
 
 
-    
+
 
     /**
      * Get all Household by country
@@ -167,7 +169,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 ->leftJoin("hh.beneficiaries", "head")
                 ->andWhere("head.status = 1")
                 ->andWhere("hh.archived = 0");
-            
+
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
         if (array_key_exists("sort", $sort) && array_key_exists("direction", $sort)) {
             $value = $sort["sort"];
@@ -196,7 +198,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             // If the field is the vulnerabilities, we sort it by the direction sent
             elseif ($value == "vulnerabilities") {
                 $q->addGroupBy("vb")->addOrderBy("vb.fieldString", $direction);
-            } 
+            }
             // If the field is the national ID, we sort it by the direction sent
             elseif ($value == "nationalId") {
                 $q->addGroupBy("ni")->addOrderBy("ni.idNumber", $direction);
@@ -345,11 +347,12 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->select('hh')
             ->innerJoin('hh.beneficiaries', 'b')
             ->innerJoin('hh.householdLocations', 'hl')
+            ->innerJoin('b.person', 'p')
             ->where('hh.archived = 0')
             ->andWhere('b.status = 1')
-            ->andWhere('b.localGivenName = :givenName')
+            ->andWhere('p.localGivenName = :givenName')
                 ->setParameter('givenName', $givenName)
-            ->andWhere('b.localFamilyName = :familyName')
+            ->andWhere('p.localFamilyName = :familyName')
                 ->setParameter('familyName', $familyName)
         ;
 
