@@ -5,7 +5,6 @@ namespace CommonBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
-
 /**
  * Organization
  *
@@ -76,9 +75,9 @@ class Organization
     private $footerContent;
 
     /**
-     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\OrganizationServices", mappedBy="organization", cascade={"remove"})
-     *
      * @var OrganizationServices $organizationServices
+     *
+     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\OrganizationServices", mappedBy="organization", cascade={"remove"})
      */
     private $organizationServices;
 
