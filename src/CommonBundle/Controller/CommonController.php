@@ -89,7 +89,7 @@ class CommonController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('serializer')->serialize($logs, 'json', ['groups' => ['FullLogs']]);
+        $json = $this->get('serializer')->serialize($logs, 'json', ['groups' => ['FullLogs'], 'datetime_format' => 'd-m-Y H:i']);
         
         return new Response($json);
     }
