@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use UserBundle\Adapter\UserAdapter;
 use UserBundle\Entity\User;
 
 /**
@@ -87,7 +88,7 @@ class UserController extends Controller
         // }
 
         try {
-            $user = $this->container->get('user.user_service')->login($username, $saltedPassword, $originISO3);
+            $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
@@ -154,7 +155,21 @@ class UserController extends Controller
      */
     public function offlineLoginAction(Request $request)
     {
-        return $this->loginAction($request);
+        $username = $request->request->get('username');
+        $saltedPassword = $request->request->get('password');
+
+        $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
+        if ($user->getVendor() !== null) {
+            return new Response('You cannot connect on this site, please use the app.', Response::HTTP_FORBIDDEN);
+        }
+
+        $userJson = $this->get('serializer')->serialize($user, 'json', ['groups' => ['FullUser']]);
+
+        // add available countries to user
+        $object = json_decode($userJson);
+        $object->available_countries = $this->container->get('user.user_service')->getCountries($user);
+
+        return new JsonResponse($object);
     }
 
     /**
