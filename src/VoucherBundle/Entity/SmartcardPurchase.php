@@ -63,7 +63,6 @@ class SmartcardPurchase
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
      *
-     * DateTime<'d-m-Y'>
      * @SymfonyGroups({"FullSmartcard"})
      */
     private $createdAt;

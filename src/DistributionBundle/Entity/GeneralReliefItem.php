@@ -30,7 +30,6 @@ class GeneralReliefItem
      * @var \DateTime|null
      *
      * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
-     * DateTime<'d-m-Y H:m'>
      * @SymfonyGroups({"ValidatedDistribution"})
      */
     private $distributedAt;

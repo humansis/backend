@@ -48,7 +48,6 @@ class Donor implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="dateAdded", type="datetime")
-     * DateTime<'d-m-Y H:m:i'>
      *
      * @SymfonyGroups({"FullDonor"})
      */
