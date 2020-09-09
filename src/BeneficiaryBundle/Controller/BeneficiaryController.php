@@ -81,7 +81,7 @@ class BeneficiaryController extends Controller
         $json = $this->get('serializer')
         ->serialize(
                 $newBeneficiary,
-                'json', ['groups' => ['FullBeneficiary']]);
+                'json', ['groups' => ['FullBeneficiary'], 'datetime_format' => 'd-m-Y H:i:s']);
         return new Response($json);
     }
 
@@ -148,7 +148,7 @@ class BeneficiaryController extends Controller
         ->serialize(
             $Beneficiary,
             'json',
-            ['groups' => ['FullBeneficiary']]
+            ['groups' => ['FullBeneficiary'], 'datetime_format' => 'd-m-Y H:i:s']
         );
         return new Response($json);
     }
@@ -186,7 +186,7 @@ class BeneficiaryController extends Controller
     public function beneficiary(Smartcard $smartcard): Response
     {
         $json = $this->get('serializer')
-            ->serialize($smartcard->getBeneficiary(), 'json', ['groups' => ['FullBeneficiary']]);
+            ->serialize($smartcard->getBeneficiary(), 'json', ['groups' => ['FullBeneficiary'], 'datetime_format' => 'd-m-Y H:i:s']);
 
         return new Response($json);
     }
