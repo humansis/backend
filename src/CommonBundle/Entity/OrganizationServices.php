@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="organization_service")
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\OrganizationServicesRepository")
  */
-class OrganizationServices
+class OrganizationServices implements \JsonSerializable
 {
     /**
      * @var int
@@ -19,7 +19,6 @@ class OrganizationServices
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullOrganization"})
      */
     private $id;
 
@@ -27,7 +26,6 @@ class OrganizationServices
      * @var bool
      *
      * @ORM\Column(name="enabled", type="boolean")
-     * @SymfonyGroups({"FullOrganization"})
      */
     private $enabled;
 
@@ -35,7 +33,6 @@ class OrganizationServices
      * @var json
      *
      * @ORM\Column(name="parameters_value", type="json")
-     * @SymfonyGroups({"FullOrganization"})
      */
     private $parametersValue;
 
@@ -50,7 +47,6 @@ class OrganizationServices
      * @var Service
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Service", inversedBy="organizationServices")
-     * @SymfonyGroups({"FullOrganization"})
      */
     private $service;
 
@@ -170,5 +166,15 @@ class OrganizationServices
     public function getService()
     {
         return $this->service;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'enabled' => $this->enabled,
+            'parametersValue' => $this->parametersValue,
+            'service' => $this->service,
+        ];
     }
 }
