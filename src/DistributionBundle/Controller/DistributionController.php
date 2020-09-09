@@ -140,7 +140,7 @@ class DistributionController extends Controller
             ->serialize(
                 $distributionData,
                 'json',
-                ['groups' => ['FullReceivers', 'FullDistribution']]
+                ['groups' => ['FullReceivers', 'FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -189,7 +189,7 @@ class DistributionController extends Controller
             ->serialize(
                 $listReceivers,
                 'json',
-                ['groups' => ['FullReceivers', 'FullDistribution']]
+                ['groups' => ['FullReceivers', 'FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -308,7 +308,7 @@ class DistributionController extends Controller
             ->serialize(
                 $data,
                 'json',
-                ['groups' => ['SmallDistribution']]
+                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -338,7 +338,7 @@ class DistributionController extends Controller
             ->serialize(
                 $distributionDataFactory->build($distributionData, ['FullDistribution']),
                 'json',
-                ['groups' => ['FullDistribution']]
+                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -483,7 +483,7 @@ class DistributionController extends Controller
         }
 
         $json = $this->get('serializer')
-            ->serialize($distributionData, 'json', ['groups' => ['FullDistribution']]);
+            ->serialize($distributionData, 'json', ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']);
         return new Response($json, Response::HTTP_OK);
     }
 
@@ -605,7 +605,7 @@ class DistributionController extends Controller
             ->serialize(
                 $data,
                 'json',
-                ['groups' => ['SmallDistribution']]
+                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -675,7 +675,7 @@ class DistributionController extends Controller
             ->serialize(
                 $filtered,
                 'json',
-                ['groups' => ['FullDistribution']]
+                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);

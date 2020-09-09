@@ -48,7 +48,6 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="UpdatedOn", type="datetime")
-     * DateTime<'d-m-Y H:i:s'>
      *
      * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      */
@@ -58,7 +57,6 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_distribution", type="date")
-     * DateTime<'d-m-Y'>
      *
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
