@@ -757,7 +757,7 @@ class DistributionController extends Controller
             }
 
             $json = $this->get('serializer')
-                ->serialize($return, 'json', ['groups' => ['FullHousehold']]);
+                ->serialize($return, 'json', ['groups' => ['FullHousehold'], 'datetime_format' => 'd-m-Y']);
 
             return new Response($json);
         } else {
@@ -805,7 +805,7 @@ class DistributionController extends Controller
         }
 
         $json = $this->get('serializer')
-        ->serialize($beneficiariesInProject, 'json', ['groups' => ['FullHousehold']]);
+        ->serialize($beneficiariesInProject, 'json', ['groups' => ['FullHousehold'], 'datetime_format' => 'd-m-Y']);
 
         return new Response($json, Response::HTTP_OK);
     }

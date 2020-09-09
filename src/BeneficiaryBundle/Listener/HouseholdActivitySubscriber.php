@@ -73,7 +73,7 @@ class HouseholdActivitySubscriber implements EventSubscriber
         /** @var Household $household */
         $household = $args->getObject();
 
-        $json = $this->serializer->serialize($household, 'json', ['groups' => ["Activity"]]);
+        $json = $this->serializer->serialize($household, 'json', ['groups' => ["Activity"], 'datetime_format' => 'd-m-Y']);
 
         $activity = new HouseholdActivity($household, $user, $json);
         $this->em->persist($activity);
