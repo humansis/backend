@@ -42,7 +42,7 @@ class DonorController extends Controller
         $donors = $this->get('project.donor_service')->findAll();
 
         $donorsJson = $this->get('serializer')
-            ->serialize($donors, 'json', ['groups' => ['FullDonor']]);
+            ->serialize($donors, 'json', ['groups' => ['FullDonor'], 'datetime_format' => 'd-m-Y H:i:s']);
         return new Response($donorsJson);
     }
 
@@ -84,7 +84,7 @@ class DonorController extends Controller
         }
 
         $donorJson = $this->get('serializer')
-            ->serialize($donor, 'json', ['groups' => ['FullDonor']]);
+            ->serialize($donor, 'json', ['groups' => ['FullDonor'], 'datetime_format' => 'd-m-Y H:i:s']);
 
         return new Response($donorJson);
     }
@@ -128,7 +128,7 @@ class DonorController extends Controller
         }
 
         $donorJson = $this->get('serializer')
-            ->serialize($donor, 'json', ['groups' => ['FullDonor']]);
+            ->serialize($donor, 'json', ['groups' => ['FullDonor'], 'datetime_format' => 'd-m-Y H:i:s']);
 
         return new Response($donorJson);
     }
