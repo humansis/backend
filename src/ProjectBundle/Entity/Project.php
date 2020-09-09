@@ -51,7 +51,6 @@ class Project implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="startDate", type="date")
-     * DateTime<'d-m-Y'>
      *
      * @SymfonyGroups({"FullProject"})
      */
@@ -61,7 +60,6 @@ class Project implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="endDate", type="date")
-     * DateTime<'d-m-Y'>
      *
      * @SymfonyGroups({"FullProject"})
      */
