@@ -167,6 +167,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 ->leftJoin("per.nationalIds", "ni")
                 ->leftJoin("per.referral", "r")
                 ->leftJoin("hh.beneficiaries", "head")
+                ->leftJoin("head.person", "headper")
                 ->andWhere("head.status = 1")
                 ->andWhere("hh.archived = 0");
 
@@ -181,11 +182,11 @@ class HouseholdRepository extends AbstractCriteriaRepository
             }
             // If the field is the local first name, we sort it by the direction sent
             elseif ($value == "localFirstName") {
-                $q->addGroupBy("head.localGivenName")->addOrderBy("head.localGivenName", $direction);
+                $q->addGroupBy("headper.localGivenName")->addOrderBy("headper.localGivenName", $direction);
             }
             // If the field is the local family name, we sort it by the direction sent
             elseif ($value == "localFamilyName") {
-                $q->addGroupBy("head.localFamilyName")->addOrderBy("head.localFamilyName", $direction);
+                $q->addGroupBy("headper.localFamilyName")->addOrderBy("headper.localFamilyName", $direction);
             }
             // If the field is the number of dependents, we sort it by the direction sent
             elseif ($value == "dependents") {
@@ -220,10 +221,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 if ($category === "any" && count($filterValues) > 0) {
                     foreach ($filterValues as $filterValue) {
                         $q->andWhere("CONCAT(
-                            COALESCE(b.enFamilyName, ''),
-                            COALESCE(b.enGivenName, ''),
-                            COALESCE(b.localFamilyName, ''),
-                            COALESCE(b.localGivenName, ''),
+                            COALESCE(per.enFamilyName, ''),
+                            COALESCE(per.enGivenName, ''),
+                            COALESCE(per.localFamilyName, ''),
+                            COALESCE(per.localGivenName, ''),
                             COALESCE(p.name, ''),
                             COALESCE(adm1.name, ''),
                             COALESCE(adm2.name, ''),
@@ -235,7 +236,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     }
                 } elseif ($category === "gender") {
                     // If the category is the gender only one option can be selected and filterValues is a string instead of an array
-                    $q->andWhere("b.gender = :filterValue")
+                    $q->andWhere("per.gender = :filterValue")
                         ->setParameter("filterValue", $filterValues);
                 } elseif ($category === "projects" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
