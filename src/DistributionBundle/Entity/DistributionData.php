@@ -635,6 +635,10 @@ class DistributionData implements ExportableInterface
     public function getPercentageValue($commodity)
     {
         $totalCommodityValue = count($this->getDistributionBeneficiaries()) * $commodity->getValue();
+        if ($totalCommodityValue <= 0.00001) {
+            return 0;
+        }
+
         $amountSent = 0;
         foreach ($this->getDistributionBeneficiaries() as $distributionBeneficiary) {
             $amountSent += $this->getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary);
