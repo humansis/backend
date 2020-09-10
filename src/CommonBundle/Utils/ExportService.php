@@ -88,7 +88,7 @@ class ExportService
             ++$rowIndex;
             $generator->reset();
             foreach ($tableHeaders as $i => $header) {
-                $worksheet->setCellValue($generator->getNext().$rowIndex, $value[$header]);
+                $worksheet->setCellValue($generator->getNext().$rowIndex, $value[$header] ?? null);
             }
         }
 
