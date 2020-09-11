@@ -158,12 +158,18 @@ class UserController extends Controller
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('password');
 
-        $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
+        try {
+            $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
+        }
+
         if ($user->getVendor() !== null) {
             return new Response('You cannot connect on this site, please use the app.', Response::HTTP_FORBIDDEN);
         }
 
-        $userJson = $this->get('serializer')->serialize($user, 'json', ['groups' => ['FullUser']]);
+        $serializer = $this->get('jms_serializer');
+        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
 
         // add available countries to user
         $object = json_decode($userJson);
