@@ -112,8 +112,8 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
     public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge, DateTime $distributionDate, int $distributionType) {
         $maxDateOfBirth = clone $distributionDate;
         $minDateOfBirth = clone $distributionDate;
-        $maxDateOfBirth->sub(new DateInterval('P'.$minAge.'Y'));
-        $minDateOfBirth->sub(new DateInterval('P'.$maxAge.'Y'));
+        $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
+        $minDateOfBirth->sub(new \DateInterval('P'.$maxAge.'Y'));
         $qb = $this->createQueryBuilder('dd');
         $qb
             ->andWhere('dd.id = :distributionId')
