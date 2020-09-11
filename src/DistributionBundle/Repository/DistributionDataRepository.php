@@ -68,7 +68,7 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('p.iso3 = :country')
                 ->setParameter('country', $countryISO)
             ->andWhere('dd.dateDistribution > :now')
-                ->setParameter('now', new \DateTime());
+                ->setParameter('now', new DateTime());
 
         return $qb->getQuery()->getResult();
     }
@@ -83,24 +83,6 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
 
         return $qb->getQuery()->getSingleScalarResult();
 
-    }
-
-    public function getNoBenificiaryByResidencyStatus(int $distributionId, string $residencyStatus, int $distributionType) {
-        $qb = $this->createQueryBuilder('dd');
-        $qb
-            ->andWhere('dd.id = :distributionId')
-                ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
-        if ($distributionType === DistributionData::TYPE_BENEFICIARY) {
-            $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus');
-        } else {
-            $qb->leftJoin('db.beneficiary', 'hhh')
-                ->leftJoin('hhh.household', 'hh')
-                ->leftJoin('hh.beneficiaries', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus');
-        }
-           $qb->setParameter('residencyStatus', $residencyStatus)
-                ->select('COUNT(b)');
-        return $qb->getQuery()->getSingleScalarResult();
     }
 
     public function getNoHeadHouseholdsByGender(int $distributionId, int $gender) {
@@ -130,14 +112,14 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
     public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge, DateTime $distributionDate, int $distributionType) {
         $maxDateOfBirth = clone $distributionDate;
         $minDateOfBirth = clone $distributionDate;
-        $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
-        $minDateOfBirth->sub(new \DateInterval('P'.$maxAge.'Y'));
+        $maxDateOfBirth->sub(new DateInterval('P'.$minAge.'Y'));
+        $minDateOfBirth->sub(new DateInterval('P'.$maxAge.'Y'));
         $qb = $this->createQueryBuilder('dd');
         $qb
             ->andWhere('dd.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
             ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
- 
+
         if ($distributionType === DistributionData::TYPE_BENEFICIARY) {
             $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender');
         } else {

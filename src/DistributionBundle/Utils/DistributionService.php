@@ -358,12 +358,12 @@ class DistributionService
             array_map(function($donor) { return $donor->getShortname(); }, $project->getDonors()->toArray())
         );
         
-        foreach ($distributions as $distribution) {
-
-            $idps = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "IDP", $distribution->getType());
-            $residents = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "resident", $distribution->getType());
-            $maleHHH = $this->em->getRepository(DistributionData::class)->getNoHeadHouseholdsByGender($distribution->getId(), Person::GENDER_MALE);
-            $femaleHHH = $this->em->getRepository(DistributionData::class)->getNoHeadHouseholdsByGender($distribution->getId(), Person::GENDER_FEMALE);
+        foreach ($distributions as $distribution)
+        {
+            $idps = $this->getBeneficiaryCountByResidencyStatus($distribution, "IDP", $distribution->getType());
+            $residents = $this->getBeneficiaryCountByResidencyStatus($distribution, "resident", $distribution->getType());
+            $maleHHH = $this->em->getRepository(Beneficiary::class)->countHouseholdHeadsByGender($distribution, Person::GENDER_MALE);
+            $femaleHHH = $this->em->getRepository(Beneficiary::class)->countHouseholdHeadsByGender($distribution, Person::GENDER_FEMALE);
             $maleChildrenUnder23month = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 0, 2, $distribution->getDateDistribution(), $distribution->getType());
             $femaleChildrenUnder23month = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 0, 2, $distribution->getDateDistribution(), $distribution->getType());
             $maleChildrenUnder5years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 2, 6, $distribution->getDateDistribution(), $distribution->getType());
@@ -753,5 +753,14 @@ class DistributionService
         }
     }
 
+    private function getBeneficiaryCountByResidencyStatus(DistributionData $distribution, string $residencyStatus, int $type): int
+    {
+        if ($type === DistributionData::TYPE_BENEFICIARY) {
+            return $this->em->getRepository(Beneficiary::class)->countByResidencyStatus($distribution, $residencyStatus);
+        } elseif ($type === DistributionData::TYPE_HOUSEHOLD) {
+            return $this->em->getRepository(Household::class)->countBeneficiariesByResidencyStatus($distribution, $residencyStatus);
+        }
+        return 0;
+    }
 
 }
