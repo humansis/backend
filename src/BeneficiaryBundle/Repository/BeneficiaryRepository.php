@@ -176,6 +176,27 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         }
     }
 
+    public function countByResidencyStatus(DistributionData $distributionData, string $residencyStatus): int
+    {
+        $qb = $this->createQueryBuilder('b');
+        $qb->select('COUNT(DISTINCT b)');
+        $this->whereInDistribution($qb, $distributionData);
+        $this->whereResidencyStatus($qb, $residencyStatus);
+        $qb->where('b.archived = 0');
+        return $qb->getQuery()->getSingleResult();
+    }
+
+    public function countHouseholdHeadsByGender(DistributionData $distributionData, int $gender): int
+    {
+        $qb = $this->createQueryBuilder('b');
+        $qb->select('COUNT(DISTINCT b)');
+        $this->whereInDistribution($qb, $distributionData);
+        $this->whereHouseHoldHead($qb);
+        $this->whereGender($qb, $gender);
+        $qb->where('b.archived = 0');
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
     /**
      * @param $onlyCount
      * @param $countryISO3
@@ -198,6 +219,32 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $this->setCountry($qb, $countryISO3);
 
         return $qb;
+    }
+
+    protected function whereInDistribution(QueryBuilder &$qb, DistributionData $distributionData)
+    {
+        $qb->leftJoin('b.distributionBeneficiaries', 'db', Join::WITH,
+            'db.removed = 0 and db.distributionData = :distribution'
+            )
+            ->setParameter('distribution', $distributionData)
+        ;
+    }
+
+    protected function whereResidencyStatus(QueryBuilder &$qb, string $residencyStatus)
+    {
+        $qb->where('b.residencyStatus = :residencyStatus');
+        $qb->setParameter('residencyStatus', $residencyStatus);
+    }
+
+    protected function whereHouseHoldHead(QueryBuilder &$qb)
+    {
+        $qb->where('b.status = 1');
+    }
+
+    protected function whereGender(QueryBuilder &$qb, int $gender)
+    {
+        $qb->join('b.person', 'p');
+        $qb->where('p.gender = '.$gender);
     }
 
     /**
