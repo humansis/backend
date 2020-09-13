@@ -3,7 +3,7 @@
 namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 
@@ -24,7 +24,7 @@ class ProjectSector
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullSector", "FullProject"})
+     * @SymfonyGroups({"FullSector", "FullProject"})
      */
     private $id;
 
@@ -33,7 +33,7 @@ class ProjectSector
      * @see SectorEnum
      *
      * @ORM\Column(name="sector", type="enum_sector", nullable=false)
-     * @Groups({"FullSector", "FullProject"})
+     * @SymfonyGroups({"FullSector", "FullProject"})
      */
     private $sector;
 
@@ -42,7 +42,7 @@ class ProjectSector
      * @see SubSectorEnum
      *
      * @ORM\Column(name="subsector", type="enum_sub_sector", nullable=true)
-     * @Groups({"FullSector", "FullProject"})
+     * @SymfonyGroups({"FullSector", "FullProject"})
      */
     private $subSector;
 
