@@ -182,8 +182,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->select('COUNT(DISTINCT b)');
         $this->whereInDistribution($qb, $distributionData);
         $this->whereResidencyStatus($qb, $residencyStatus);
-        $qb->where('b.archived = 0');
-        return $qb->getQuery()->getSingleResult();
+        $qb->andWhere('b.archived = 0');
+        return $qb->getQuery()->getSingleScalarResult();
     }
 
     public function countHouseholdHeadsByGender(DistributionData $distributionData, int $gender): int
@@ -193,7 +193,23 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $this->whereInDistribution($qb, $distributionData);
         $this->whereHouseHoldHead($qb);
         $this->whereGender($qb, $gender);
-        $qb->where('b.archived = 0');
+        $qb->andWhere('b.archived = 0');
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function countByAgeAndByGender(DistributionData $distribution, int $gender, int $minAge, int $maxAge, \DateTimeInterface $distributionDate): int
+    {
+        $qb = $this->createQueryBuilder('b');
+        $qb->select('COUNT(DISTINCT b)');
+        $this->whereInDistribution($qb, $distribution);
+        $this->whereGender($qb, $gender);
+
+        $maxDateOfBirth = clone $distributionDate;
+        $minDateOfBirth = clone $distributionDate;
+        $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
+        $minDateOfBirth->sub(new \DateInterval('P'.$maxAge.'Y'));
+        $this->whereBornBetween($qb, $minDateOfBirth, $maxDateOfBirth);
+
         return $qb->getQuery()->getSingleScalarResult();
     }
 
@@ -221,30 +237,50 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb;
     }
 
-    protected function whereInDistribution(QueryBuilder &$qb, DistributionData $distributionData)
+    protected function whereInDistribution(QueryBuilder $qb, DistributionData $distributionData)
     {
-        $qb->leftJoin('b.distributionBeneficiaries', 'db', Join::WITH,
-            'db.removed = 0 and db.distributionData = :distribution'
-            )
-            ->setParameter('distribution', $distributionData)
-        ;
+        if (!in_array('db', $qb->getAllAliases())) {
+            $qb->leftJoin(
+                'b.distributionBeneficiaries',
+                'db',
+                Join::WITH,
+                'db.removed = 0'
+            );
+            $qb->andWhere('db.distributionData = :distribution');
+            $qb->setParameter('distribution', $distributionData);
+        }
     }
 
-    protected function whereResidencyStatus(QueryBuilder &$qb, string $residencyStatus)
+    protected function whereResidencyStatus(QueryBuilder $qb, string $residencyStatus)
     {
-        $qb->where('b.residencyStatus = :residencyStatus');
+        $qb->andWhere('b.residencyStatus = :residencyStatus');
         $qb->setParameter('residencyStatus', $residencyStatus);
     }
 
-    protected function whereHouseHoldHead(QueryBuilder &$qb)
+    protected function whereHouseHoldHead(QueryBuilder $qb)
     {
-        $qb->where('b.status = 1');
+        $qb->andWhere('b.status = :status');
+        $qb->setParameter('status', 1); // status = HHH
     }
 
-    protected function whereGender(QueryBuilder &$qb, int $gender)
+    protected function whereGender(QueryBuilder $qb, int $gender)
     {
-        $qb->join('b.person', 'p');
-        $qb->where('p.gender = '.$gender);
+        if (!in_array('p', $qb->getAllAliases())) {
+            $qb->join('b.person', 'p');
+        }
+        $qb->andWhere('p.gender = :g');
+        $qb->setParameter('g', $gender);
+    }
+
+    protected function whereBornBetween(QueryBuilder &$qb, \DateTimeInterface $minDateOfBirth, \DateTimeInterface $maxDateOfBirth)
+    {
+        if (!in_array('p', $qb->getAllAliases())) {
+            $qb->join('b.person', 'p');
+        }
+        $qb->andWhere('p.dateOfBirth >= :minDateOfBirth');
+        $qb->andWhere('p.dateOfBirth < :maxDateOfBirth');
+        $qb->setParameter('minDateOfBirth', $minDateOfBirth);
+        $qb->setParameter('maxDateOfBirth', $maxDateOfBirth);
     }
 
     /**

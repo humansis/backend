@@ -521,11 +521,11 @@ class DistributionData implements ExportableInterface
     /**
      * Set dateDistribution.
      *
-     * @param \DateTime $dateDistribution
+     * @param \DateTimeInterface $dateDistribution
      *
      * @return DistributionData
      */
-    public function setDateDistribution($dateDistribution)
+    public function setDateDistribution(\DateTimeInterface $dateDistribution)
     {
         $this->dateDistribution = $dateDistribution;
 
@@ -535,9 +535,9 @@ class DistributionData implements ExportableInterface
     /**
      * Get dateDistribution.
      *
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
-    public function getDateDistribution()
+    public function getDateDistribution(): \DateTimeInterface
     {
         return $this->dateDistribution;
     }
