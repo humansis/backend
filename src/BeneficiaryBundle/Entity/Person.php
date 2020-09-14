@@ -123,10 +123,10 @@ class Person
     /**
      * @var string|null
      *
-     * @ORM\Column(name="fathers_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="local_parents_name", type="string", length=255, nullable=true)
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
      */
-    private $fathersName;
+    private $parentsName;
 
     /**
      * Constructor.
@@ -726,13 +726,13 @@ class Person
     }
 
     /**
-     * @param string|null $fathersName
+     * @param string|null $parentsName
      *
      * @return Person
      */
-    public function setFathersName(?string $fathersName): Person
+    public function setParentsName(?string $parentsName): Person
     {
-        $this->fathersName = $fathersName;
+        $this->parentsName = $parentsName;
 
         return $this;
     }
@@ -740,8 +740,8 @@ class Person
     /**
      * @return string|null
      */
-    public function getFathersName(): ?string
+    public function getParentsName(): ?string
     {
-        return $this->fathersName;
+        return $this->parentsName;
     }
 }
