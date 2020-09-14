@@ -129,6 +129,14 @@ class Person
     private $parentsName;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="en_parents_name", type="string", length=255, nullable=true)
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
+     */
+    private $enParentsName;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -743,5 +751,27 @@ class Person
     public function getParentsName(): ?string
     {
         return $this->parentsName;
+    }
+
+
+    /**
+     * @param string|null $enParentsName
+     *
+     * @return Person
+     */
+    public function setEnParentsName(?string $enParentsName): Person
+    {
+        $this->enParentsName = $enParentsName;
+
+        return $this;
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getEnParentsName(): ?string
+    {
+        return $this->enParentsName;
     }
 }
