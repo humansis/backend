@@ -15,7 +15,6 @@ use BeneficiaryBundle\Utils\DataVerifier\AbstractVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\DuplicateVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\ExistingHouseholdVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\LessVerifier;
-use BeneficiaryBundle\Utils\DataVerifier\LevenshteinTypoVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\MoreVerifier;
 use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
@@ -308,8 +307,7 @@ class HouseholdCSVService
         switch ($step) {
             // CASE FOUND TYPO ISSUES
             case 1:
-                // return new ExistingHouseholdVerifier($this->em, $this->container, $this->initOrGetToken());
-                return new LevenshteinTypoVerifier($this->em, $this->container, $this->initOrGetToken());
+                return new ExistingHouseholdVerifier($this->em, $this->container, $this->initOrGetToken()); // new LevenshteinTypoVerifier($this->em, $this->container, $this->initOrGetToken());
                 break;
             // CASE FOUND MORE ISSUES
             case 2:
