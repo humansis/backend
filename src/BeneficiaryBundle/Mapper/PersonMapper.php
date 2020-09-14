@@ -45,6 +45,7 @@ class PersonMapper
             "date_of_birth" => $person->getDateOfBirth() ? $person->getDateOfBirth()->format('d-m-Y') : null,
             "age" => $person->getAge(),
             "parents_name" => $person->getParentsName(),
+            "en_parents_name" => $person->getEnParentsName(),
         ];
     }
 
