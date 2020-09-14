@@ -126,7 +126,7 @@ class Person
      * @ORM\Column(name="local_parents_name", type="string", length=255, nullable=true)
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
      */
-    private $parentsName;
+    private $localParentsName;
 
     /**
      * @var string|null
@@ -734,13 +734,13 @@ class Person
     }
 
     /**
-     * @param string|null $parentsName
+     * @param string|null $localParentsName
      *
      * @return Person
      */
-    public function setParentsName(?string $parentsName): Person
+    public function setLocalParentsName(?string $localParentsName): Person
     {
-        $this->parentsName = $parentsName;
+        $this->localParentsName = $localParentsName;
 
         return $this;
     }
@@ -748,9 +748,9 @@ class Person
     /**
      * @return string|null
      */
-    public function getParentsName(): ?string
+    public function getLocalParentsName(): ?string
     {
-        return $this->parentsName;
+        return $this->localParentsName;
     }
 
 

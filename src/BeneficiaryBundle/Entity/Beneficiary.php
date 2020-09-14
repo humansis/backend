@@ -840,25 +840,25 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     }
 
     /**
-     * Get parentsName.
+     * Get localParentsName.
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return string|null
      */
-    public function getParentsName(): ?string
+    public function getLocalParentsName(): ?string
     {
-        return $this->person->getParentsName();
+        return $this->person->getLocalParentsName();
     }
 
     /**
-     * Set parentsName.
+     * Set localParentsName.
      * @deprecated
-     * @param string|null $fathersName
+     * @param string|null $localParentsName
      * @return Beneficiary
      */
-    public function setParentsName(?string $fathersName): self
+    public function setLocalParentsName(?string $localParentsName): self
     {
-        $this->person->setParentsName($fathersName);
+        $this->person->setLocalParentsName($localParentsName);
 
         return $this;
     }
@@ -882,7 +882,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      */
     public function setEnParentsName(?string $enParentsName): self
     {
-        $this->person->setParentsName($enParentsName);
+        $this->person->setEnParentsName($enParentsName);
 
         return $this;
     }
