@@ -37,7 +37,6 @@ class Smartcard
      *
      * @ORM\Column(name="code", type="string", length=14, unique=true, nullable=false)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard", "ValidatedDistribution"})
-     * @Serializer\Groups({"SmartcardOverview", "FullSmartcard", "ValidatedDistribution"})
      */
     private $serialNumber;
 
@@ -46,7 +45,6 @@ class Smartcard
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="smartcards")
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
-     * @Serializer\Groups({"SmartcardOverview", "FullSmartcard"})
      */
     private $beneficiary;
 
@@ -55,7 +53,6 @@ class Smartcard
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
      * @SymfonyGroups({"FullSmartcard"})
-     * @Serializer\Groups({"FullSmartcard"})
      */
     private $deposites;
 
@@ -64,7 +61,6 @@ class Smartcard
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
      * @SymfonyGroups({"FullSmartcard"})
-     * @Serializer\Groups({"FullSmartcard"})
      */
     private $purchases;
 

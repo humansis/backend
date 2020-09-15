@@ -136,13 +136,17 @@ class DistributionController extends Controller
         /** @var DistributionService $distributionService */
         $distributionService = $this->get('distribution.distribution_service');
         $distributionData = $distributionService->validateDistribution($distributionData);
+try {
 
         $json = $this->get('serializer')
             ->serialize(
                 $distributionData,
                 'json',
-                ['groups' => ['FullReceivers', 'FullDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
+} catch (\Exception $ex) {
+    throw $ex;
+}
 
         return new Response($json);
     }

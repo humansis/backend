@@ -7,8 +7,9 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
+
 use TransactionBundle\Entity\Transaction;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\SmartcardDeposit;
@@ -43,8 +44,8 @@ class DistributionBeneficiary
      * @var AbstractBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="distributionBeneficiary")
-     * @ SymfonyGroups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
+     * @SymfonyMaxDepth(3)
      */
     private $beneficiary;
 
@@ -52,8 +53,8 @@ class DistributionBeneficiary
      * @var Transaction
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
-     * @ SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyMaxDepth(1)
      */
     private $transactions;
 
