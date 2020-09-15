@@ -35,7 +35,7 @@ class SmartcardController extends Controller
      * Register smartcard to system and assign to beneficiary.
      *
      * @Rest\Post("/offline-app/v1/smartcards")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER')")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Offline App")
@@ -110,7 +110,7 @@ class SmartcardController extends Controller
      * Info about smartcard.
      *
      * @Rest\Get("/offline-app/v1/smartcards/{serialNumber}")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_VENDOR')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER')")
      * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
@@ -189,7 +189,7 @@ class SmartcardController extends Controller
      * Update smartcard, typically its' state.
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER')")
      * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
@@ -271,7 +271,8 @@ class SmartcardController extends Controller
      * Put money to smartcard. If smartcard does not exists, it will be created.
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}/deposit")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @ParamConverter("smartcard")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER')")
      *
      * @SWG\Tag(name="Smartcards")
      *
