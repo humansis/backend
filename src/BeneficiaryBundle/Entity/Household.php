@@ -686,10 +686,14 @@ class Household extends AbstractBeneficiary
 
     /**
      * @param string|null $supportOrganizationName
+     *
+     * @return self
      */
-    public function setSupportOrganizationName(?string $supportOrganizationName): void
+    public function setSupportOrganizationName(?string $supportOrganizationName): self
     {
         $this->supportOrganizationName = $supportOrganizationName;
+
+        return $this;
     }
 
 
