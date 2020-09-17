@@ -175,6 +175,7 @@ class BMSServiceTestCase extends KernelTestCase
         "assets" => [1, 2],
         "debt_level" => 2,
         "support_received_types" => null,
+        "support_organization_name" => "Abcd Ltd.",
         "support_date_received" => "22-02-2020",
     ];
 
