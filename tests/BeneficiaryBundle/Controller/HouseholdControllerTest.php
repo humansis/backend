@@ -62,6 +62,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
             return false;
         }
 
+        $this->assertEquals($this->bodyHousehold['support_organization_name'], $household['support_organization_name'], "'support_organization_name' wasn't saved");
+
         return true;
     }
 
@@ -161,8 +163,10 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        $body = [];
         $body['household'] = $this->bodyHousehold;
         $body['projects'] = [1];
+        $body['household']['support_organization_name'] = "__TEST_ADD_support_organization_name__";
 
         $crawler = $this->request('PUT', '/api/wsse/households', $body);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
@@ -183,6 +187,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('country_specific_answers', $householdsArray);
         $this->assertArrayHasKey('projects', $householdsArray);
 
+        $this->assertEquals($body['household']['support_organization_name'], $householdsArray['support_organization_name'], "'support_organization_name' wasn't changed");
+
         return $householdsArray;
     }
 
@@ -197,8 +203,10 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        $body = [];
         $body['household'] = $this->bodyHousehold;
         $body['projects'] = [1];
+        $body['household']['support_organization_name'] = "__TEST_EDIT_support_organization_name__";
 
         $crawler = $this->request('POST', '/api/wsse/households/' . $hh['id'], $body);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
@@ -218,6 +226,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('support_organization_name', $householdsArray);
         $this->assertArrayHasKey('country_specific_answers', $householdsArray);
         $this->assertArrayHasKey('projects', $householdsArray);
+
+        $this->assertEquals($body['household']['support_organization_name'], $householdsArray['support_organization_name'], "'support_organization_name' wasn't changed");
 
         return true;
     }
