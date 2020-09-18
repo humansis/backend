@@ -2,6 +2,7 @@
 
 namespace TransactionBundle\Utils\Provider;
 
+use CommonBundle\Entity\OrganizationServices;
 use DistributionBundle\Entity\DistributionBeneficiary;
 
 use DistributionBundle\Entity\DistributionData;
