@@ -6,31 +6,31 @@ use BeneficiaryBundle\Exception\CsvParserException;
 
 abstract class AbstractCsvParser
 {
-    protected $mandatoryColumns = [];
+    abstract protected function processCsv(array $csv): object;
 
-    abstract public function parse(string $pathToCsv);
+    abstract protected function mandatoryColumns(): array;
+
 
     /**
      * @param string $pathToCsv
      *
-     * @return array
-     *
+     * @return object
      * @throws CsvParserException
      */
-    protected function readCsvToArray(string $pathToCsv): array
+    public function parse(string $pathToCsv): object
     {
         if (!file_exists($pathToCsv)) {
-            throw new CsvParserException('File not found ('.$pathToCsv.')');
+            throw new CsvParserException($pathToCsv,'File not found');
         }
 
         $fileHandler = fopen($pathToCsv, 'r');
         if (false === $fileHandler) {
-            throw new CsvParserException('Failed to open file ('.realpath($pathToCsv).')');
+            throw new CsvParserException($pathToCsv, 'Failed to open file');
         }
 
         $csvHead = (array) fgetcsv($fileHandler);
 
-        $this->checkMandatoryColumns($csvHead);
+        $this->checkMandatoryColumns($pathToCsv, $csvHead);
 
         $csv = [];
         while (false !== ($row = fgetcsv($fileHandler))) {
@@ -43,26 +43,29 @@ abstract class AbstractCsvParser
 
         fclose($fileHandler);
 
-        return $csv;
+        return $this->processCsv($csv);
     }
 
+
     /**
-     * @param array $firstRow
+     * @param string $pathToCsv
+     * @param array  $firstRow
      *
      * @throws CsvParserException
      */
-    private function checkMandatoryColumns(array $firstRow): void
+    private function checkMandatoryColumns(string $pathToCsv, array $firstRow): void
     {
+        $mandatoryColumns = $this->mandatoryColumns();
         $missingColumns = [];
 
-        foreach ($this->mandatoryColumns as $column) {
+        foreach ($mandatoryColumns as $column) {
             if (!in_array($column, $firstRow)) {
                 $missingColumns[] = $column;
             }
         }
 
         if (!empty($missingColumns)) {
-            throw new CsvParserException('CSV file has wrong structure (missing columns '.implode(', ', $missingColumns).' )');
+            throw new CsvParserException($pathToCsv, 'CSV file has wrong structure (missing columns '.implode(', ', $missingColumns).' )');
         }
     }
 
