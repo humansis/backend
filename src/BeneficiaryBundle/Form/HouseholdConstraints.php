@@ -68,6 +68,8 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "en_family_name" => $optionalString,
             "local_given_name" => $string,
             "local_family_name" => $string,
+            "en_parents_name" => $string,
+            "local_parents_name" => $string,
             "gender" => $numeric,
             "status" => $numeric,
             "residency_status" => $string,
