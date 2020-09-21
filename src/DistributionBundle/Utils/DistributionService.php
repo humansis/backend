@@ -382,7 +382,7 @@ class DistributionService
             $noFamilies = $distribution->getType() === DistributionData::TYPE_BENEFICIARY ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
             $familySize = $distribution->getType() === DistributionData::TYPE_HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
             $modalityType = $distribution->getCommodities()[0]->getModalityType()->getName();
-            $beneficiaryServed =  $this->em->getRepository(DistributionData::class)->getNoServed($distribution->getId(), $modalityType);
+            $beneficiaryServed =  $bnfRepo->countServed($distribution, $modalityType);
 
             $commodityNames = implode(', ',
                     array_map(
