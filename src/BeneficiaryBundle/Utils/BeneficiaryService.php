@@ -159,6 +159,10 @@ class BeneficiaryService
             ->setResidencyStatus($beneficiaryArray["residency_status"])
             ->setUpdatedOn(new \DateTime());
 
+        $beneficiary->getPerson()
+            ->setLocalParentsName($beneficiaryArray['local_parents_name'])
+            ->setEnParentsName($beneficiaryArray['en_parents_name']);
+
         $errors = $this->validator->validate($beneficiary);
         if (count($errors) > 0) {
             $errorsMessage = "";
