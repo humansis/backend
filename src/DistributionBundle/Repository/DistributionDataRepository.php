@@ -85,24 +85,6 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
 
     }
 
-    public function getNoServed(int $distributionId, string $modalityType) {
-        $qb = $this->createQueryBuilder('dd');
-        $qb
-            ->andWhere('dd.id = :distributionId')
-                ->setParameter('distributionId', $distributionId)
-                ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
-                ->select('COUNT(DISTINCT db)');
-
-                if ($modalityType === 'Mobile Money') {
-                    $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
-                } else if ($modalityType === 'QR Code Voucher') {
-                    $qb->innerJoin('db.booklets', 'b', Join::WITH, 'b.status = 1 OR b.status = 2');
-                } else {
-                    $qb->innerJoin('db.generalReliefs', 'gr', Join::WITH, 'gr.distributedAt IS NOT NULL');
-                }     
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
     /**
      * Returns list of distributions distributed to given beneficiary
      *

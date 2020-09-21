@@ -213,6 +213,22 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    public function countServed(DistributionData $distribution, string $modalityType): int
+    {
+        $qb = $this->createQueryBuilder('b');
+        $qb->select('COUNT(DISTINCT b)');
+        $this->whereInDistribution($qb, $distribution);
+
+        if ($modalityType === 'Mobile Money') {
+            $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
+        } else if ($modalityType === 'QR Code Voucher') {
+            $qb->innerJoin('db.booklets', 'b', Join::WITH, 'b.status = 1 OR b.status = 2');
+        } else {
+            $qb->innerJoin('db.generalReliefs', 'gr', Join::WITH, 'gr.distributedAt IS NOT NULL');
+        }
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
     /**
      * @param $onlyCount
      * @param $countryISO3
