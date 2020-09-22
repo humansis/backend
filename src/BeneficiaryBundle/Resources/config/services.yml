@@ -112,6 +112,12 @@ services:
             - "@service_container"
         public: true
 
+    beneficiary.vulnerability_resolver:
+        class: BeneficiaryBundle\Model\Vulnerability\Resolver
+        arguments:
+            - "@service_container"
+        public: true
+
 
 #######################################################################################
 ##                                      IMPORT                                       ##
