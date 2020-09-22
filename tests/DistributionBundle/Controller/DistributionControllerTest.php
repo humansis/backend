@@ -60,16 +60,16 @@ class DistributionControllerTest extends BMSServiceTestCase
             "adm2"=> "",
             "adm3" => "",
             "adm4" => "",
-            "type" => AssistanceTypeEnum::DISTRIBUTION,
+            "type" => DistributionData::TYPE_HOUSEHOLD,
             "commodities" => [
                 [
                     "modality" => "Cash",
                     "modality_type" => [
-                        "id" => "1"
+                        "id" => 1,
                     ],
                     "type" => "Mobile Money",
                     "unit" => "USD",
-                    "value" => "150",
+                    "value" => 150.1,
                     "description" => null
                 ]
             ],
@@ -94,7 +94,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             "project"=> [
                 "donors"=> [],
                 "donors_name"=> [],
-                "id"=> "1",
+                "id"=> 1,
                 "name"=> "",
                 "sectors"=> [],
                 "sectors_name"=> []
@@ -111,8 +111,7 @@ class DistributionControllerTest extends BMSServiceTestCase
                     ]
                 ]
             ],
-            "target_type"=> DistributionData::TYPE_HOUSEHOLD,
-            "threshold"=> "1"
+            "threshold"=> 1,
         );
 
 

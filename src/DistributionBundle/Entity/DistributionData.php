@@ -120,7 +120,7 @@ class DistributionData implements ExportableInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="type_distribution", type="integer")
+     * @ORM\Column(name="target_type", type="integer")
      *
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
@@ -337,6 +337,17 @@ class DistributionData implements ExportableInterface
         $this->targetType = $targetType;
 
         return $this;
+    }
+
+    /**
+     * @deprecated remove after FE edits done
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     *
+     * @return int
+     */
+    public function getType(): int
+    {
+        return $this->targetType;
     }
 
     /**
