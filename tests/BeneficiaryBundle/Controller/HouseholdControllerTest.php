@@ -241,6 +241,10 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('country_specific_answers', $householdsArray);
         $this->assertArrayHasKey('projects', $householdsArray);
 
+        $beneficiary = current($householdsArray["beneficiaries"]);
+        $this->assertArrayHasKey('local_parents_name', $beneficiary);
+        $this->assertArrayHasKey('en_parents_name', $beneficiary);
+
         $this->assertEquals($body['household']['support_organization_name'], $householdsArray['support_organization_name'], "'support_organization_name' wasn't changed");
 
         return true;

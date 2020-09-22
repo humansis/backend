@@ -160,8 +160,8 @@ class BeneficiaryService
             ->setUpdatedOn(new \DateTime());
 
         $beneficiary->getPerson()
-            ->setLocalParentsName(isset($beneficiaryArray['local_parents_name']) ? $beneficiaryArray['local_parents_name'] : null)
-            ->setEnParentsName(isset($beneficiaryArray['en_parents_name']) ? $beneficiaryArray['en_parents_name'] : null);
+            ->setLocalParentsName($beneficiaryArray['local_parents_name'] ?? null)
+            ->setEnParentsName($beneficiaryArray['en_parents_name'] ?? null);
 
         $errors = $this->validator->validate($beneficiary);
         if (count($errors) > 0) {
