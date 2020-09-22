@@ -2,18 +2,16 @@
 
 namespace TransactionBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-
-use FOS\RestBundle\Controller\Annotations as Rest;
-use Swagger\Annotations as SWG;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
+use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\DistributionData;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Swagger\Annotations as SWG;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use TransactionBundle\Entity\Transaction;
 
 /**
  * Class TransactionController
@@ -271,5 +269,25 @@ class TransactionController extends Controller
             ->serialize($response, 'json');
 
         return new Response($json);
+    }
+
+    /**
+     * List of purchases by beneficiary.
+     *
+     * @Rest\Get("/transactions/purchases/beneficiary/{beneficiaryId}")
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
+     * @Security("is_granted('ROLE_PROJECT_MANAGER')")
+     *
+     * @SWG\Tag(name="Transaction")
+     * @SWG\Response(response=200, description="OK")
+     *
+     * @param Beneficiary $beneficiary
+     * @return Response
+     */
+    public function purchasesAction(Beneficiary $beneficiary)
+    {
+        $result = $this->getDoctrine()->getRepository(Transaction::class)->getPurchases($beneficiary);
+
+        return $this->json($result);
     }
 }
