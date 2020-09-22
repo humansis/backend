@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Person;
 use CommonBundle\Utils\LocationService;
+use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Entity\GeneralReliefItem;
@@ -147,13 +148,11 @@ class DistributionService
     {
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
+        $distributionArray['assistance_type'] = AssistanceTypeEnum::DISTRIBUTION;
+        $distributionArray['target_type'] = $distributionArray['type'];
+        unset($distributionArray['type']);
         /** @var DistributionData $distribution */
-        // $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
-        $distribution = new DistributionData();
-        $distribution->setName($distributionArray['name']);
-        // $distribution->setDateDistribution(new \DateTime($distributionArray['date_distribution']));
-        $distribution->setDateDistribution(new \DateTime());
-        // $distribution->getCommodities()->add();
+        $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
 
         $distribution->setUpdatedOn(new \DateTime());
         $errors = $this->validator->validate($distribution);
@@ -166,7 +165,7 @@ class DistributionService
         }
 
         // TODO : make the front send 0 or 1 instead of Individual (Beneficiary comes from the import)
-        if ($distributionArray['type'] === "Beneficiary" || $distributionArray['type'] === "Individual" || $distributionArray['type'] === "1") {
+        if ($distributionArray['target_type'] === "Beneficiary" || $distributionArray['target_type'] === "Individual" || $distributionArray['target_type'] === "1") {
             $distribution->setTargetType(1);
         } else {
             $distribution->setTargetType(0);
@@ -203,7 +202,7 @@ class DistributionService
 
         $this->em->persist($distribution);
 
-        $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['type'], $projectTmp, $threshold);
+        $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $threshold);
         $this->saveReceivers($distribution, $listReceivers);
 
         $this->em->flush();
