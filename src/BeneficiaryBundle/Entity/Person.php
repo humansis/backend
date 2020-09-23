@@ -123,10 +123,18 @@ class Person
     /**
      * @var string|null
      *
-     * @ORM\Column(name="fathers_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="local_parents_name", type="string", length=255, nullable=true)
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
      */
-    private $fathersName;
+    private $localParentsName;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="en_parents_name", type="string", length=255, nullable=true)
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
+     */
+    private $enParentsName;
 
     /**
      * Constructor.
@@ -726,13 +734,13 @@ class Person
     }
 
     /**
-     * @param string|null $fathersName
+     * @param string|null $localParentsName
      *
      * @return Person
      */
-    public function setFathersName(?string $fathersName): Person
+    public function setLocalParentsName(?string $localParentsName): Person
     {
-        $this->fathersName = $fathersName;
+        $this->localParentsName = $localParentsName;
 
         return $this;
     }
@@ -740,8 +748,30 @@ class Person
     /**
      * @return string|null
      */
-    public function getFathersName(): ?string
+    public function getLocalParentsName(): ?string
     {
-        return $this->fathersName;
+        return $this->localParentsName;
+    }
+
+
+    /**
+     * @param string|null $enParentsName
+     *
+     * @return Person
+     */
+    public function setEnParentsName(?string $enParentsName): Person
+    {
+        $this->enParentsName = $enParentsName;
+
+        return $this;
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getEnParentsName(): ?string
+    {
+        return $this->enParentsName;
     }
 }

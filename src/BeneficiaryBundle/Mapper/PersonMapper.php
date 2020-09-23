@@ -44,7 +44,8 @@ class PersonMapper
             "referral" => $person->getReferral(),
             "date_of_birth" => $person->getDateOfBirth() ? $person->getDateOfBirth()->format('d-m-Y') : null,
             "age" => $person->getAge(),
-            "fathers_name" => $person->getFathersName(),
+            "local_parents_name" => $person->getLocalParentsName(),
+            "en_parents_name" => $person->getEnParentsName(),
         ];
     }
 

@@ -56,6 +56,15 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('income_spent_on_food', $household);
             $this->assertArrayHasKey('household_income', $household);
             $this->assertArrayHasKey('support_organization_name', $household);
+
+            $beneficiary = current($household["beneficiaries"]);
+
+            $this->assertArrayHasKey('local_parents_name', $beneficiary);
+            $this->assertEquals('PARENTSNAME_TEST_LOCAL', $beneficiary['local_parents_name']);
+
+            $this->assertArrayHasKey('en_parents_name', $beneficiary);
+            $this->assertEquals('PARENTSNAME_TEST_EN', $beneficiary['en_parents_name']);
+
         } catch (\Exception $exception) {
             $this->removeHousehold($this->namefullnameHousehold);
             $this->fail("\nThe mapping of fields of Household entity is not correct (1).\n");
@@ -134,7 +143,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 $this->assertArrayHasKey('local_given_name', $beneficiary);
                 $this->assertArrayHasKey('local_family_name', $beneficiary);
                 $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
-                $this->assertArrayHasKey('fathers_name', $beneficiary);
+                $this->assertArrayHasKey('local_parents_name', $beneficiary);
+                $this->assertArrayHasKey('en_parents_name', $beneficiary);
                 $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
                 if (is_array($vulnerability_criterion)) {
                     $this->assertArrayHasKey('id', $vulnerability_criterion);
@@ -187,6 +197,10 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('country_specific_answers', $householdsArray);
         $this->assertArrayHasKey('projects', $householdsArray);
 
+        $beneficiary = current($householdsArray["beneficiaries"]);
+        $this->assertArrayHasKey('local_parents_name', $beneficiary);
+        $this->assertArrayHasKey('en_parents_name', $beneficiary);
+
         $this->assertEquals($body['household']['support_organization_name'], $householdsArray['support_organization_name'], "'support_organization_name' wasn't changed");
 
         return $householdsArray;
@@ -226,6 +240,10 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('support_organization_name', $householdsArray);
         $this->assertArrayHasKey('country_specific_answers', $householdsArray);
         $this->assertArrayHasKey('projects', $householdsArray);
+
+        $beneficiary = current($householdsArray["beneficiaries"]);
+        $this->assertArrayHasKey('local_parents_name', $beneficiary);
+        $this->assertArrayHasKey('en_parents_name', $beneficiary);
 
         $this->assertEquals($body['household']['support_organization_name'], $householdsArray['support_organization_name'], "'support_organization_name' wasn't changed");
 
