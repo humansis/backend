@@ -18,23 +18,28 @@ class TransactionRepository extends \Doctrine\ORM\EntityRepository
     public function getPurchases(Beneficiary $beneficiary): PurchaseCollection
     {
         $sql = '
-        SELECT spr.product_id, sum(spr.value) as value, sum(spr.quantity) as quantity, \'Smartcard\' as source
+        SELECT max(sp.used_at) as used_at, spr.product_id, p.name, p.unit, sum(spr.value) as value, sum(spr.quantity) as quantity, \'Smartcard\' as source
             FROM smartcard_purchase_record spr
             LEFT JOIN smartcard_purchase sp ON sp.id=spr.smartcard_purchase_id
             LEFT JOIN smartcard s ON s.id=sp.smartcard_id AND s.beneficiary_id = :beneficiary
+            LEFT JOIN product p ON p.id=spr.product_id
             GROUP BY spr.product_id
         UNION
-        SELECT vpr.product_id, sum(vpr.value) as value, sum(vpr.quantity) as quantity, \'QRvoucher\' as source
+        SELECT max(vp.used_at) as used_at, vpr.product_id, p.name, p.unit, sum(vpr.value) as value, sum(vpr.quantity) as quantity, \'QRvoucher\' as source
             FROM voucher_purchase_record vpr
             LEFT JOIN voucher_purchase vp ON vp.id=vpr.voucher_purchase_id
             LEFT JOIN voucher v ON v.voucher_purchase_id=vp.id
             LEFT JOIN booklet b ON b.id=v.booklet_id
             LEFT JOIN distribution_beneficiary db ON db.id=b.distribution_beneficiary_id AND db.beneficiary_id = :beneficiary
+            LEFT JOIN product p ON p.id=vpr.product_id
             GROUP BY vpr.product_id
         ';
 
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addScalarResult('used_at', 'usedAt', Types::DATETIME_MUTABLE);
         $rsm->addScalarResult('product_id', 'productId', Types::INTEGER);
+        $rsm->addScalarResult('name', 'productName', Types::STRING);
+        $rsm->addScalarResult('unit', 'unit', Types::STRING);
         $rsm->addScalarResult('value', 'value', Types::DECIMAL);
         $rsm->addScalarResult('quantity', 'quantity', Types::DECIMAL);
         $rsm->addScalarResult('source', 'source', Types::STRING);
