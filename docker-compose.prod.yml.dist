@@ -23,6 +23,8 @@ services:
             - 8081:80
         networks:
             - pma
+        volumes:
+            - ./docker/prod/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
         environment:
             PMA_HOST: bmsdb.chezpnmoy3ob.eu-central-1.rds.amazonaws.com
 

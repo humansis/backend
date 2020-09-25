@@ -45,6 +45,8 @@ services:
             - 8081:80
         networks:
             - pma
+        volumes:
+            - ./docker/dev/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
 
     nginx:
         image: nginx
