@@ -20,7 +20,7 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface,
         'adm2' => '',
         'adm3' => '',
         'adm4' => '',
-        'type' => AssistanceTypeEnum::DISTRIBUTION,
+        'type' => DistributionData::TYPE_BENEFICIARY,
         'commodities' => [
             0 => [
                 'modality' => 'CTP',
@@ -29,7 +29,7 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface,
                 ],
                 'type' => 'Mobile',
                 'unit' => 'USD',
-                'value' => '45',
+                'value' => 45,
                 'description' => null
             ]
         ],
@@ -64,7 +64,7 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface,
             ],
         ],
         'target_type' => DistributionData::TYPE_BENEFICIARY,
-        'threshold' => '1'
+        'threshold' => 1,
     ];
 
     private $distributionService;
