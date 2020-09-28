@@ -10,7 +10,7 @@ use DistributionBundle\Utils\DistributionCsvService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\Beneficiary;
 use ProjectBundle\Entity\Project;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -22,7 +22,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 /**
- * Class DistributionController
+ * Class AssistanceController
  * @package DistributionBundle\Controller
  *
  * @SWG\Parameter(
@@ -32,7 +32,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
  *      required=true
  * )
  */
-class DistributionController extends Controller
+class AssistanceController extends Controller
 {
     /**
      * All distributed transactions by parameters
@@ -52,7 +52,7 @@ class DistributionController extends Controller
      *     description="List of distributed items to beneficiary",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=DistributionData::class, groups={"DistributionOverview"}))
+     *         @SWG\Items(ref=@Model(type=Assistance::class, groups={"DistributionOverview"}))
      *     )
      * )
      * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
@@ -62,7 +62,7 @@ class DistributionController extends Controller
      */
     public function distributionsToBeneficiary(Beneficiary $beneficiary)
     {
-        $distributions = $this->getDoctrine()->getRepository(DistributionData::class)->findDistributedToBeneficiary($beneficiary);
+        $distributions = $this->getDoctrine()->getRepository(Assistance::class)->findDistributedToBeneficiary($beneficiary);
 
         $json = $this->get('serializer')
             ->serialize($distributions, 'json', ['groups' => ["DistributionOverview"]]);
@@ -79,22 +79,22 @@ class DistributionController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="Random beneficiaries",
-     *     @Model(type=DistributionData::class)
+     *     @Model(type=Assistance::class)
      * )
      *
      * @param Request $request
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      *
      * @return Response
      */
-    public function getRandomBeneficiariesAction(Request $request, DistributionData $distributionData)
+    public function getRandomBeneficiariesAction(Request $request, Assistance $assistance)
     {
         if ($request->query->get("size")) {
             $numberToDisplay = $request->query->get("size");
 
             /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
             $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-            $receivers = $distributionBeneficiaryService->getRandomBeneficiaries($distributionData, $numberToDisplay);
+            $receivers = $distributionBeneficiaryService->getRandomBeneficiaries($assistance, $numberToDisplay);
 
             $json = $this->get('serializer')
                 ->serialize(
@@ -124,22 +124,22 @@ class DistributionController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="Distribution validated",
-     *     @Model(type=DistributionData::class)
+     *     @Model(type=Assistance::class)
      * )
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      *
      * @return Response
      */
-    public function validateAction(DistributionData $distributionData)
+    public function validateAction(Assistance $assistance)
     {
         /** @var DistributionService $distributionService */
         $distributionService = $this->get('distribution.distribution_service');
-        $distributionData = $distributionService->validateDistribution($distributionData);
+        $assistance = $distributionService->validateDistribution($assistance);
 
         $json = $this->get('serializer')
             ->serialize(
-                $distributionData,
+                $assistance,
                 'json',
                 ['groups' => ['FullReceivers', 'FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
@@ -161,13 +161,13 @@ class DistributionController extends Controller
      *      type="object",
      *      required=true,
      *      description="Body of the request",
-     * 	  @SWG\Schema(ref=@Model(type=DistributionData::class))
+     * 	  @SWG\Schema(ref=@Model(type=Assistance::class))
      * )
      *
      * @SWG\Response(
      *     response=200,
      *     description="Project created",
-     *     @Model(type=DistributionData::class)
+     *     @Model(type=Assistance::class)
      * )
      *
      * @param Request $request
@@ -209,20 +209,20 @@ class DistributionController extends Controller
      * )
      *
      * @param Request          $request
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      *
      * @return Response
      *
      * @throws \Exception
      */
-    public function addBeneficiaryAction(Request $request, DistributionData $distributionData)
+    public function addBeneficiaryAction(Request $request, Assistance $assistance)
     {
         $data = $request->request->all();
 
         try {
             /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
             $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-            $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiary($distributionData, $data);
+            $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiary($assistance, $data);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -255,12 +255,12 @@ class DistributionController extends Controller
      * )
      *
      * @param Request $request
-     * @param DistributionData $distribution
+     * @param Assistance $distribution
      * @param Beneficiary $beneficiary
      *
      * @return Response
      */
-    public function removeOneBeneficiaryAction(Request $request, DistributionData $distribution, Beneficiary $beneficiary)
+    public function removeOneBeneficiaryAction(Request $request, Assistance $distribution, Beneficiary $beneficiary)
     {
         $deletionData = $request->request->all();
 
@@ -283,7 +283,7 @@ class DistributionController extends Controller
      *     description="Filtered distributions",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=DistributionData::class, groups={"SmallDistribution"}))
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
      *     )
      * )
      *
@@ -299,10 +299,10 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
+        $assistanceFactory = $this->get('distribution.distribution_data_output_factory');
         $data = [];
-        foreach ($distributions as $distributionData) {
-            $data[] = $distributionDataFactory->build($distributionData, ['SmallDistribution']);
+        foreach ($distributions as $assistance) {
+            $data[] = $assistanceFactory->build($assistance, ['SmallDistribution']);
         }
 
         $json = $this->get('serializer')
@@ -325,19 +325,19 @@ class DistributionController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="one distribution",
-     *     @Model(type=DistributionData::class, groups={"SmallDistribution"})
+     *     @Model(type=Assistance::class, groups={"SmallDistribution"})
      * )
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      *
      * @return Response
      */
-    public function getOneAction(DistributionData $distributionData)
+    public function getOneAction(Assistance $assistance)
     {
-        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
+        $assistanceFactory = $this->get('distribution.distribution_data_output_factory');
         $json = $this->get('serializer')
             ->serialize(
-                $distributionDataFactory->build($distributionData, ['FullDistribution']),
+                $assistanceFactory->build($assistance, ['FullDistribution']),
                 'json',
                 ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
@@ -361,14 +361,14 @@ class DistributionController extends Controller
      *     )
      * )
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return Response
      */
-    public function getDistributionBeneficiariesAction(DistributionData $distributionData)
+    public function getDistributionBeneficiariesAction(Assistance $assistance)
     {
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($distributionData);
+        $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($assistance);
 
         $dateCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []) {
             return $innerObject instanceof \DateTime ? $innerObject->format('d-m-Y') : '';
@@ -408,12 +408,12 @@ class DistributionController extends Controller
      *     )
      * )
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return Response
      */
-    public function offlineGetDistributionBeneficiariesAction(DistributionData $distributionData)
+    public function offlineGetDistributionBeneficiariesAction(Assistance $assistance)
     {
-        return $this->getDistributionBeneficiariesAction($distributionData);
+        return $this->getDistributionBeneficiariesAction($assistance);
     }
 
     /**
@@ -433,14 +433,14 @@ class DistributionController extends Controller
      *     )
      * )
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return Response
      */
-    public function getDistributionAssignableBeneficiariesAction(DistributionData $distributionData)
+    public function getDistributionAssignableBeneficiariesAction(Assistance $assistance)
     {
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionAssignableBeneficiaries($distributionData);
+        $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionAssignableBeneficiaries($assistance);
         
         $json = $this->get('serializer')
             ->serialize(
@@ -461,16 +461,16 @@ class DistributionController extends Controller
      * @SWG\Tag(name="Distributions")
      *
      * @SWG\Parameter(
-     *     name="distributionData",
+     *     name="assistance",
      *     in="body",
      *     required=true,
-     *     @Model(type=DistributionData::class)
+     *     @Model(type=Assistance::class)
      * )
      *
      * @SWG\Response(
      *     response=200,
      *     description="distribution updated",
-     *     @Model(type=DistributionData::class)
+     *     @Model(type=Assistance::class)
      * )
      *
      * @SWG\Response(
@@ -479,22 +479,22 @@ class DistributionController extends Controller
      * )
      *
      * @param Request          $request
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      *
      * @return Response
      */
-    public function updateAction(Request $request, DistributionData $distributionData)
+    public function updateAction(Request $request, Assistance $assistance)
     {
         $distributionArray = $request->request->all();
         try {
-            $distributionData = $this->get('distribution.distribution_service')
-                ->edit($distributionData, $distributionArray);
+            $assistance = $this->get('distribution.distribution_service')
+                ->edit($assistance, $distributionArray);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         $json = $this->get('serializer')
-            ->serialize($distributionData, 'json', ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']);
+            ->serialize($assistance, 'json', ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']);
         return new Response($json, Response::HTTP_OK);
     }
 
@@ -516,11 +516,11 @@ class DistributionController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
-     * @param DistributionData $distribution
+     * @param Assistance $distribution
      *
      * @return Response
      */
-    public function archiveAction(DistributionData $distribution)
+    public function archiveAction(Assistance $distribution)
     {
         try {
             $archivedDistribution = $this->get('distribution.distribution_service')
@@ -552,11 +552,11 @@ class DistributionController extends Controller
     *     description="BAD_REQUEST"
     * )
     *
-    * @param DistributionData $distribution
+    * @param Assistance $distribution
     *
     * @return Response
     */
-    public function completeAction(DistributionData $distribution)
+    public function completeAction(Assistance $distribution)
     {
         try {
             $completedDistribution = $this->get('distribution.distribution_service')
@@ -584,7 +584,7 @@ class DistributionController extends Controller
      *     description="OK",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=DistributionData::class, groups={"SmallDistribution"}))
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
      *     )
      * )
      *
@@ -606,10 +606,10 @@ class DistributionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $distributionDataFactory = $this->get('distribution.distribution_data_output_factory');
+        $assistanceFactory = $this->get('distribution.distribution_data_output_factory');
         $data = [];
-        foreach ($filtered as $distributionData) {
-            $data[] = $distributionDataFactory->build($distributionData, ['SmallDistribution']);
+        foreach ($filtered as $assistance) {
+            $data[] = $assistanceFactory->build($assistance, ['SmallDistribution']);
         }
 
         $json = $this->get('serializer')
@@ -636,7 +636,7 @@ class DistributionController extends Controller
      *     description="OK",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=DistributionData::class, groups={"SmallDistribution"}))
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
      *     )
      * )
      *
@@ -724,15 +724,15 @@ class DistributionController extends Controller
      * )
      *
      * @param Request          $request
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      *
      * @return Response
      */
-    public function importBeneficiariesAction(Request $request, DistributionData $distributionData)
+    public function importBeneficiariesAction(Request $request, Assistance $assistance)
     {
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
+        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($assistance);
 
         $countryIso3 =  $request->request->get('__country');
 
@@ -748,7 +748,7 @@ class DistributionController extends Controller
                 }
                 
                 try {
-                    $return = $distributionCsvService->parseCSV($countryIso3, $beneficiaries, $distributionData, $request->files->get('file'));
+                    $return = $distributionCsvService->parseCSV($countryIso3, $beneficiaries, $assistance, $request->files->get('file'));
                 } catch (\Exception $e) {
                     return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
                 }
@@ -759,7 +759,7 @@ class DistributionController extends Controller
                     return new Response('You must provide the data to update.', Response::HTTP_BAD_REQUEST);
                 }
                 try {
-                    $return = $distributionCsvService->saveCSV($countryIso3, $distributionData, $data);
+                    $return = $distributionCsvService->saveCSV($countryIso3, $assistance, $data);
                 } catch (\Exception $e) {
                     return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
                 }

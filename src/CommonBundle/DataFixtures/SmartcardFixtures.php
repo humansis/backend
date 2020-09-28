@@ -5,7 +5,7 @@ namespace CommonBundle\DataFixtures;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DateTimeImmutable;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -112,7 +112,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         if (null === $this->distributionBeneficiary) {
             $this->distributionBeneficiary = new DistributionBeneficiary();
             $this->distributionBeneficiary->setBeneficiary($this->randomEntity(Beneficiary::class, $manager));
-            $this->distributionBeneficiary->setDistributionData($this->randomEntity(DistributionData::class, $manager));
+            $this->distributionBeneficiary->setAssistance($this->randomEntity(Assistance::class, $manager));
             $this->distributionBeneficiary->setRemoved(false);
             $manager->persist($this->distributionBeneficiary);
         }
