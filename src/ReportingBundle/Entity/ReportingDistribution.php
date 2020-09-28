@@ -22,7 +22,7 @@ class ReportingDistribution
     private $id;
 
     /**
-     *@ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="reportingDistribution")
+     *@ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="reportingDistribution")
      * @ORM\JoinColumn(nullable=true)
      **/
     private $distribution;
@@ -98,7 +98,7 @@ class ReportingDistribution
     /**
      * Set distribution
      *
-     * @param \DistributionBundle\Entity\DistributionData $distribution
+     * @param \DistributionBundle\Entity\Assistance $distribution
      * @return ReportingDistribution
      */
     public function setDistribution($distribution)
@@ -111,7 +111,7 @@ class ReportingDistribution
     /**
      * Get distribution
      *
-     * @return \DistributionBundle\Entity\DistributionData
+     * @return \DistributionBundle\Entity\Assistance
      */
     public function getDistribution()
     {

@@ -4,7 +4,7 @@ namespace Tests\DistributionBundle\Controller;
 
 use Tests\BMSServiceTestCase;
 
-class CriteriaDistributionControllerTest extends BMSServiceTestCase
+class CriteriaAssistanceControllerTest extends BMSServiceTestCase
 {
     /**
      * @throws \Exception

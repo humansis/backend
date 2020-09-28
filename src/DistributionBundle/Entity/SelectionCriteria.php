@@ -24,11 +24,12 @@ class SelectionCriteria
     private $id;
 
     /**
-     * @var DistributionData
+     * @var Assistance
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="selectionCriteria")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="selectionCriteria")
+     * @ORM\JoinColumn(name="distribution_data_id")
      */
-    private $distributionData;
+    private $assistance;
 
     /**
      * @var string
@@ -265,27 +266,27 @@ class SelectionCriteria
     }
 
     /**
-     * Set distributionData.
+     * Set assistance.
      *
-     * @param \DistributionBundle\Entity\DistributionData|null $distributionData
+     * @param \DistributionBundle\Entity\Assistance|null $assistance
      *
      * @return SelectionCriteria
      */
-    public function setDistributionData(\DistributionBundle\Entity\DistributionData $distributionData = null)
+    public function setAssistance(\DistributionBundle\Entity\Assistance $assistance = null)
     {
-        $this->distributionData = $distributionData;
+        $this->assistance = $assistance;
 
         return $this;
     }
 
     /**
-     * Get distributionData.
+     * Get assistance.
      *
-     * @return \DistributionBundle\Entity\DistributionData|null
+     * @return \DistributionBundle\Entity\Assistance|null
      */
-    public function getDistributionData()
+    public function getAssistance()
     {
-        return $this->distributionData;
+        return $this->assistance;
     }
 
     /**

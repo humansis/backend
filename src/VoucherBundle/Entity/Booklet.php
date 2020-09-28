@@ -318,7 +318,7 @@ class Booklet implements ExportableInterface
 
         $password = empty($this->getPassword()) ? 'No' : 'Yes';
         $distribution = $this->getDistributionBeneficiary() ?
-            $this->getDistributionBeneficiary()->getDistributionData()->getName() :
+            $this->getDistributionBeneficiary()->getAssistance()->getName() :
             null;
         $beneficiary = $this->getDistributionBeneficiary() ?
             $this->getDistributionBeneficiary()->getBeneficiary()->getLocalGivenName() :

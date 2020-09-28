@@ -4,7 +4,7 @@ namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\InputType;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\Common\Collections\Collection;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
@@ -553,7 +553,7 @@ class BookletController extends Controller
      * @Rest\Post("/booklets/assign/{distributionId}/{beneficiaryId}", name="assign_booklet")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
      * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
-     * @ParamConverter("distributionData", options={"mapping": {"distributionId": "id"}})
+     * @ParamConverter("assistance", options={"mapping": {"distributionId": "id"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      *
      * @SWG\Tag(name="Booklets")
@@ -566,15 +566,15 @@ class BookletController extends Controller
      *
      * @param Booklet $booklet
      * @param Beneficiary $beneficiary
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return Response
      */
-    public function assignAction(Request $request, DistributionData $distributionData, Beneficiary $beneficiary)
+    public function assignAction(Request $request, Assistance $assistance, Beneficiary $beneficiary)
     {
         $code = $request->request->get('code');
         $booklet = $this->get('voucher.booklet_service')->getOne($code);
         try {
-            $return = $this->get('voucher.booklet_service')->assign($booklet, $distributionData, $beneficiary);
+            $return = $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -588,7 +588,7 @@ class BookletController extends Controller
      * @Rest\Post("/offline-app/v1/booklets/assign/{distributionId}/{beneficiaryId}")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
      * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
-     * @ParamConverter("distributionData", options={"mapping": {"distributionId": "id"}})
+     * @ParamConverter("assistance", options={"mapping": {"distributionId": "id"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      *
      * @SWG\Tag(name="Offline App")
@@ -597,13 +597,13 @@ class BookletController extends Controller
      * @SWG\Response(response=200, description="SUCCESS", @SWG\Schema(type="string"))
      *
      * @param Request          $request
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param Beneficiary      $beneficiary
      * @return Response
      */
-    public function offlineAssignAction(Request $request, DistributionData $distributionData, Beneficiary $beneficiary)
+    public function offlineAssignAction(Request $request, Assistance $assistance, Beneficiary $beneficiary)
     {
-        return $this->assignAction($request, $distributionData, $beneficiary);
+        return $this->assignAction($request, $assistance, $beneficiary);
     }
 
     /**

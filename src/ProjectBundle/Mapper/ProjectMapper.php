@@ -5,7 +5,7 @@ namespace ProjectBundle\Mapper;
 use BeneficiaryBundle\Mapper\AssistanceMapper;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\SectorService;
 

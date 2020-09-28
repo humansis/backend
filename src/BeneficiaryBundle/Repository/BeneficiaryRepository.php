@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\Household;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -110,23 +110,23 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getAllofDistribution(DistributionData $distributionData)
+    public function getAllofDistribution(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->leftJoin('b.distributionBeneficiary', 'db')
-            ->where('db.distributionData = :distributionData')
-            ->setParameter('distributionData', $distributionData);
+            ->where('db.assistance = :assistance')
+            ->setParameter('assistance', $assistance);
 
         return $q->getQuery()->getResult();
     }
 
-    public function getNotRemovedofDistribution(DistributionData $distributionData)
+    public function getNotRemovedofDistribution(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->leftJoin('b.distributionBeneficiary', 'db')
-            ->where('db.distributionData = :distributionData')
+            ->where('db.assistance = :assistance')
             ->andWhere('db.removed = 0')
-            ->setParameter('distributionData', $distributionData);
+            ->setParameter('assistance', $assistance);
 
         return $q->getQuery()->getResult();
     }
@@ -423,7 +423,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             // The selection criteria is the last distribution
             if ($field === 'hasNotBeenInDistributionsSince') {
                 $qb->leftJoin('b.distributionBeneficiary', 'db'.$i)
-                    ->leftJoin('db'.$i . '.distributionData', 'd'.$i)
+                    ->leftJoin('db'.$i . '.assistance', 'd'.$i)
                     // If has criteria, add it to the select to calculate weight later
                     ->addSelect('(CASE WHEN d'.$i . '.dateDistribution < :parameter'.$i . ' THEN d'.$i . '.dateDistribution WHEN SIZE(b.distributionBeneficiary) = 0 THEN :noDistribution ELSE :null END)'. ' AS ' . $criterion['field_string'].$i)
                     ->setParameter('noDistribution', 'noDistribution')

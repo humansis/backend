@@ -138,7 +138,7 @@ class Project implements ExportableInterface
     private $households;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionData", mappedBy="project")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Assistance", mappedBy="project")
      * @SymfonyGroups({"FullProject"})
      */
     private $distributions;
@@ -591,11 +591,11 @@ class Project implements ExportableInterface
     /**
      * Add distribution.
      *
-     * @param \DistributionBundle\Entity\DistributionData $distribution
+     * @param \DistributionBundle\Entity\Assistance $distribution
      *
      * @return Project
      */
-    public function addDistribution(\DistributionBundle\Entity\DistributionData $distribution)
+    public function addDistribution(\DistributionBundle\Entity\Assistance $distribution)
     {
         $this->distributions[] = $distribution;
 
@@ -605,11 +605,11 @@ class Project implements ExportableInterface
     /**
      * Remove distribution.
      *
-     * @param \DistributionBundle\Entity\DistributionData $distribution
+     * @param \DistributionBundle\Entity\Assistance $distribution
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeDistribution(\DistributionBundle\Entity\DistributionData $distribution)
+    public function removeDistribution(\DistributionBundle\Entity\Assistance $distribution)
     {
         return $this->distributions->removeElement($distribution);
     }

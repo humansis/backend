@@ -8,7 +8,7 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\SelectionCriteria;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
@@ -168,14 +168,14 @@ class CriteriaDistributionService
     }
 
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param SelectionCriteria $selectionCriteria
      * @param bool $flush
      * @return SelectionCriteria
      */
-    public function save(DistributionData $distributionData, SelectionCriteria $selectionCriteria, bool $flush)
+    public function save(Assistance $assistance, SelectionCriteria $selectionCriteria, bool $flush)
     {
-        $selectionCriteria->setDistributionData($distributionData);
+        $selectionCriteria->setAssistance($assistance);
         $this->em->persist($selectionCriteria);
         if ($flush) {
             $this->em->flush();

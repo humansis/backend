@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\TransactionBundle;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
@@ -42,7 +42,7 @@ abstract class DefaultFinancialProvider
     
     /**
      * Send request to financial API
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param  string $type    type of the request ("GET", "POST", etc.)
      * @param  string $route   url of the request
      * @param  array  $headers headers of the request (optional)
@@ -50,7 +50,7 @@ abstract class DefaultFinancialProvider
      * @return mixed  response
      * @throws \Exception
      */
-    public function sendRequest(DistributionData $distributionData, string $type, string $route, array $body = array())
+    public function sendRequest(Assistance $assistance, string $type, string $route, array $body = array())
     {
         throw new \Exception("You need to define the financial provider for the country.");
     }
@@ -75,7 +75,7 @@ abstract class DefaultFinancialProvider
 
     /**
      * Send money to all beneficiaries
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param  float $amount
      * @param  string $currency
      * @param string $from
@@ -83,16 +83,16 @@ abstract class DefaultFinancialProvider
      * @throws \Exception
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function sendMoneyToAll(DistributionData $distributionData, float $amount, string $currency, string $from)
+    public function sendMoneyToAll(Assistance $assistance, float $amount, string $currency, string $from)
     {
         // temporary variables to limit the amount of money that can be sent for one distribution to: 1000$
         $cache = new FilesystemCache();
-        if (! $cache->has($distributionData->getId() . '-amount_sent')) {
-            $cache->set($distributionData->getId() . '-amount_sent', 0);
+        if (! $cache->has($assistance->getId() . '-amount_sent')) {
+            $cache->set($assistance->getId() . '-amount_sent', 0);
         }
 
         $this->from = $from;
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['assistance' => $assistance]);
 
         $response = array(
             'sent'          => array(),
@@ -103,7 +103,7 @@ abstract class DefaultFinancialProvider
 
         $count = 0;
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
-            $cache->set($this->from . '-progression-' . $distributionData->getId(), $count);
+            $cache->set($this->from . '-progression-' . $assistance->getId(), $count);
             $beneficiary = $distributionBeneficiary->getBeneficiary();
             
             $transactions = $distributionBeneficiary->getTransactions();
@@ -130,8 +130,8 @@ abstract class DefaultFinancialProvider
                 if (! $transactions->isEmpty()) {
                     array_push($response['already_sent'], $distributionBeneficiary);
                 } else {
-                    if ($cache->has($distributionData->getId() . '-amount_sent')) {
-                        $amountSent = $cache->get($distributionData->getId() . '-amount_sent');
+                    if ($cache->has($assistance->getId() . '-amount_sent')) {
+                        $amountSent = $cache->get($assistance->getId() . '-amount_sent');
                     }
                     // if the limit hasn't been reached
                     if (empty($amountSent) || $amountSent + $amount <= 1000) {
@@ -141,7 +141,7 @@ abstract class DefaultFinancialProvider
                                 array_push($response['failure'], $distributionBeneficiary);
                             } else {
                                 // add amount to amount sent
-                                $cache->set($distributionData->getId() . '-amount_sent', $amountSent + $amount);
+                                $cache->set($assistance->getId() . '-amount_sent', $amountSent + $amount);
                                 array_push($response['sent'], $distributionBeneficiary);
                             }
                         } catch (Exception $e) {
@@ -160,22 +160,22 @@ abstract class DefaultFinancialProvider
             $count++;
         }
 
-        $cache->delete($this->from . '-progression-' . $distributionData->getId());
+        $cache->delete($this->from . '-progression-' . $assistance->getId());
 
         return $response;
     }
 
     /**
      * Update distribution status (check if money has been picked up)
-     * @param  DistributionData $distributionData
+     * @param  Assistance $assistance
      * @return void
      * @throws \Exception
      */
-    public function updateStatusDistribution(DistributionData $distributionData)
+    public function updateStatusDistribution(Assistance $assistance)
     {
         $response = array();
 
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['assistance' => $assistance]);
         
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
             $successfulTransaction = $this->em->getRepository(Transaction::class)->findOneBy(
@@ -238,18 +238,18 @@ abstract class DefaultFinancialProvider
     
     /**
      * Save transaction record in file
-     * @param  DistributionData $distributionData
+     * @param  Assistance $assistance
      * @param  array           $data
      * @return void
      */
-    public function recordTransaction(DistributionData $distributionData, array $data)
+    public function recordTransaction(Assistance $assistance, array $data)
     {
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data';
         if (! is_dir($dir_var)) {
             mkdir($dir_var);
         }
-        $file_record = $dir_var . '/record_' . $distributionData->getId() . '.csv';
+        $file_record = $dir_var . '/record_' . $assistance->getId() . '.csv';
 
         $fp = fopen($file_record, 'a');
         if (!file_get_contents($file_record)) {

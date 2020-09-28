@@ -10,7 +10,7 @@ use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DateTime;
@@ -52,36 +52,36 @@ class DistributionBeneficiaryService
     /**
      * Get all beneficiaries from a distribution
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return array
      */
-    public function getBeneficiaries(DistributionData $distributionData)
+    public function getBeneficiaries(Assistance $assistance)
     {
-        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($distributionData);
+        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($assistance);
         return $beneficiaries;
     }
     
     /**
      * Get all distribution beneficiaries from a distribution
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return array
      */
-    public function getDistributionBeneficiaries(DistributionData $distributionData)
+    public function getDistributionBeneficiaries(Assistance $assistance)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['distributionData' => $distributionData]);
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['assistance' => $assistance]);
         return $distributionBeneficiaries;
     }
 
     /**
      * Get distribution beneficiaries without booklets
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return array
      */
-    public function getDistributionAssignableBeneficiaries(DistributionData $distributionData)
+    public function getDistributionAssignableBeneficiaries(Assistance $assistance)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findAssignable($distributionData);
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findAssignable($assistance);
         return $distributionBeneficiaries;
     }
 
@@ -89,13 +89,13 @@ class DistributionBeneficiaryService
     /**
      * Get random beneficiaries from a distribution
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param Int $numberRandomBeneficiary
      * @return array
      */
-    public function getRandomBeneficiaries(DistributionData $distributionData, Int $numberRandomBeneficiary)
+    public function getRandomBeneficiaries(Assistance $assistance, Int $numberRandomBeneficiary)
     {
-        $listReceivers = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($distributionData);
+        $listReceivers = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($assistance);
 
         if (sizeof($listReceivers) < $numberRandomBeneficiary) {
             return $listReceivers;
@@ -119,12 +119,12 @@ class DistributionBeneficiaryService
     /**
      * Add either a beneficiary of a household(in this case, we assigned the head of the household) to a distribution
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param array $beneficiariesArray
      * @return DistributionBeneficiary
      * @throws \Exception
      */
-    public function addBeneficiary(DistributionData $distributionData, array $beneficiariesData)
+    public function addBeneficiary(Assistance $assistance, array $beneficiariesData)
     {
         $beneficiary = null;
 
@@ -136,7 +136,7 @@ class DistributionBeneficiaryService
             foreach ($beneficiariesArray as $beneficiaryArray) {
 
                 if ($beneficiaryArray !== $beneficiariesData["__country"]) {
-                    switch ($distributionData->getTargetType()) {
+                    switch ($assistance->getTargetType()) {
                         case 0:
                             $headHousehold = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
                             $household = $headHousehold->getHousehold();
@@ -155,7 +155,7 @@ class DistributionBeneficiaryService
                     $distributionBeneficiary = new DistributionBeneficiary();
 
                     $sameDistributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
-                        ->findOneBy(['beneficiary' => $beneficiary, 'distributionData' => $distributionData]);
+                        ->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
                     // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
                     if ($sameDistributionBeneficiary && sizeof($beneficiariesArray) <= 2 && !$sameDistributionBeneficiary->getRemoved()) {
                         throw new \Exception('This beneficiary/household is already part of the distribution', Response::HTTP_BAD_REQUEST);
@@ -164,7 +164,7 @@ class DistributionBeneficiaryService
                             ->setJustification($beneficiariesData['justification']);
                         $this->em->persist($sameDistributionBeneficiary);
                     } else if (!$sameDistributionBeneficiary) {
-                        $distributionBeneficiary->setDistributionData($distributionData)
+                        $distributionBeneficiary->setAssistance($assistance)
                             ->setBeneficiary($beneficiary)
                             ->setRemoved(0)
                             ->setJustification($beneficiariesData['justification']);
@@ -173,12 +173,12 @@ class DistributionBeneficiaryService
                     }
                 }
             }
-            if ($distributionData->getValidated()) {
-                $distributionData = $this->container->get('distribution.distribution_service')->setCommoditiesToNewBeneficiaries($distributionData, $distributionBeneficiaries);
+            if ($assistance->getValidated()) {
+                $assistance = $this->container->get('distribution.distribution_service')->setCommoditiesToNewBeneficiaries($assistance, $distributionBeneficiaries);
             }
 
-            $distributionData->setUpdatedOn(new \DateTime());
-            $this->em->persist($distributionData);
+            $assistance->setUpdatedOn(new \DateTime());
+            $this->em->persist($assistance);
 
             $this->em->flush();
         } else {
@@ -188,16 +188,16 @@ class DistributionBeneficiaryService
     }
 
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param Beneficiary $beneficiary
      * @return bool
      */
-    public function removeBeneficiaryInDistribution(DistributionData $distributionData, Beneficiary $beneficiary, $deletionData)
+    public function removeBeneficiaryInDistribution(Assistance $assistance, Beneficiary $beneficiary, $deletionData)
     {
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'distributionData' => $distributionData->getId()]);
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'assistance' => $assistance->getId()]);
 
         // Update updatedOn datetime
-        $distributionData->setUpdatedOn(new DateTime());
+        $assistance->setUpdatedOn(new DateTime());
 
         $distributionBeneficiary->setRemoved(1)
             ->setJustification($deletionData['justification']);
