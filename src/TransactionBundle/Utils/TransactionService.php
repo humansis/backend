@@ -5,7 +5,7 @@ namespace TransactionBundle\Utils;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -43,12 +43,12 @@ class TransactionService
     /**
      * Send money to distribution beneficiaries
      * @param  string $countryISO3
-     * @param  DistributionData $distributionData
+     * @param  Assistance $assistance
      * @return object
      * @throws \Exception
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function sendMoney(string $countryISO3, DistributionData $distributionData, User $user)
+    public function sendMoney(string $countryISO3, Assistance $assistance, User $user)
     {
         try {
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
@@ -56,9 +56,9 @@ class TransactionService
             throw $e;
         }
         
-        if ($distributionData->getCommodities()[0]->getModalityType()->getName() === "Mobile Money") {
-            $amountToSend = $distributionData->getCommodities()[0]->getValue();
-            $currencyToSend = $distributionData->getCommodities()[0]->getUnit();
+        if ($assistance->getCommodities()[0]->getModalityType()->getName() === "Mobile Money") {
+            $amountToSend = $assistance->getCommodities()[0]->getValue();
+            $currencyToSend = $assistance->getCommodities()[0]->getUnit();
         } else {
             throw new \Exception("The commodity of the distribution does not allow this operation.");
         }
@@ -66,7 +66,7 @@ class TransactionService
         $from = $user->getId();
         
         try {
-            return $this->financialProvider->sendMoneyToAll($distributionData, $amountToSend, $currencyToSend, $from);
+            return $this->financialProvider->sendMoneyToAll($assistance, $amountToSend, $currencyToSend, $from);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -95,30 +95,30 @@ class TransactionService
     /**
      * Send email to confirm transaction
      * @param  User $user
-     * @param  DistributionData $distributionData
+     * @param  Assistance $assistance
      * @return void
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function sendVerifyEmail(User $user, DistributionData $distributionData)
+    public function sendVerifyEmail(User $user, Assistance $assistance)
     {
         $code = random_int(100000, 999999);
 
         $id = $user->getId();
         $cache = new FilesystemCache();
-        $cache->set($distributionData->getId() . '-' . $id . '-code_transaction_confirmation', $code);
+        $cache->set($assistance->getId() . '-' . $id . '-code_transaction_confirmation', $code);
 
-        $commodity = $distributionData->getCommodities()->get(0);
-        $numberOfBeneficiaries = count($distributionData->getDistributionBeneficiaries());
+        $commodity = $assistance->getCommodities()->get(0);
+        $numberOfBeneficiaries = count($assistance->getDistributionBeneficiaries());
         $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
 
-        $message = (new \Swift_Message('Confirm transaction for distribution ' . $distributionData->getName()))
+        $message = (new \Swift_Message('Confirm transaction for distribution ' . $assistance->getName()))
             ->setFrom('admin@bmstaging.info')
             ->setTo($user->getEmail())
             ->setBody(
                 $this->container->get('templating')->render(
                     'Emails/confirm_transaction.html.twig',
                     array(
-                        'distribution' => $distributionData->getName(),
+                        'distribution' => $assistance->getName(),
                         'amount' => $amountToSend . ' ' . $commodity->getUnit(),
                         'number' => $numberOfBeneficiaries,
                         'date' => new \DateTime(),
@@ -135,19 +135,19 @@ class TransactionService
     /**
      * Send logs by email
      * @param User $user
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      */
-    public function sendLogsEmail(User $user, DistributionData $distributionData)
+    public function sendLogsEmail(User $user, Assistance $assistance)
     {
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/data';
         if (! is_dir($dir_var)) {
             mkdir($dir_var);
         }
-        $file_record = $dir_var . '/record_' . $distributionData->getId() . '.csv';
+        $file_record = $dir_var . '/record_' . $assistance->getId() . '.csv';
 
         if (is_file($file_record) && file_get_contents($file_record)) {
-            $message = (new \Swift_Message('Transaction logs for ' . $distributionData->getName()))
+            $message = (new \Swift_Message('Transaction logs for ' . $assistance->getName()))
                 ->setFrom('admin@bmstaging.info')
                 ->setTo($user->getEmail())
                 ->setBody(
@@ -155,14 +155,14 @@ class TransactionService
                         'Emails/logs_transaction.html.twig',
                         array(
                             'user' => $user->getUsername(),
-                            'distribution' => $distributionData->getName()
+                            'distribution' => $assistance->getName()
                         )
                     ),
                     'text/html'
                 );
-            $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_' . $distributionData->getId() . '.csv')->setFilename('logsTransaction.csv'));
+            $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_' . $assistance->getId() . '.csv')->setFilename('logsTransaction.csv'));
         } else {
-            $message = (new \Swift_Message('Transaction logs for ' . $distributionData->getName()))
+            $message = (new \Swift_Message('Transaction logs for ' . $assistance->getName()))
                 ->setFrom('admin@bmstaging.info')
                 ->setTo($user->getEmail())
                 ->setBody(
@@ -170,7 +170,7 @@ class TransactionService
                         'Emails/no_logs_transaction.html.twig',
                         array(
                             'user' => $user->getUsername(),
-                            'distribution' => $distributionData->getName()
+                            'distribution' => $assistance->getName()
                         )
                     ),
                     'text/html'
@@ -184,24 +184,24 @@ class TransactionService
      * Verify confirmation code
      * @param  int $code
      * @param User $user
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return boolean
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function verifyCode(int $code, User $user, DistributionData $distributionData)
+    public function verifyCode(int $code, User $user, Assistance $assistance)
     {
         $cache = new FilesystemCache();
 
         $checkedAgainst = '';
         $id = $user->getId();
-        if ($cache->has($distributionData->getId() . '-' . $id . '-code_transaction_confirmation')) {
-            $checkedAgainst = $cache->get($distributionData->getId() . '-' . $id . '-code_transaction_confirmation');
+        if ($cache->has($assistance->getId() . '-' . $id . '-code_transaction_confirmation')) {
+            $checkedAgainst = $cache->get($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
         }
 
         $result = ($code === intval($checkedAgainst));
 
         if ($result) {
-            $cache->delete($distributionData->getId() . '-' . $id . '-code_transaction_confirmation');
+            $cache->delete($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
         }
         return $result;
     }
@@ -209,11 +209,11 @@ class TransactionService
     /**
      * Update transaction status
      * @param $countryISO3
-     * @param  DistributionData $distributionData
+     * @param  Assistance $assistance
      * @return array
      * @throws \Exception
      */
-    public function updateTransactionStatus(string $countryISO3, DistributionData $distributionData)
+    public function updateTransactionStatus(string $countryISO3, Assistance $assistance)
     {
         try {
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
@@ -222,7 +222,7 @@ class TransactionService
         }
         
         try {
-            return $this->financialProvider->updateStatusDistribution($distributionData);
+            return $this->financialProvider->updateStatusDistribution($assistance);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -231,11 +231,11 @@ class TransactionService
     /**
      * Test API connection
      * @param  string $countryISO3
-     * @param  DistributionData $distributionData
+     * @param  Assistance $assistance
      * @return string
      * @throws \Exception
      */
-    public function testConnection(string $countryISO3, DistributionData $distributionData)
+    public function testConnection(string $countryISO3, Assistance $assistance)
     {
         try {
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
@@ -244,7 +244,7 @@ class TransactionService
         }
         
         try {
-            return $this->financialProvider->getToken($distributionData);
+            return $this->financialProvider->getToken($assistance);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -253,15 +253,15 @@ class TransactionService
     /**
      * Test API connection
      * @param User $user
-     * @param  DistributionData $distributionData
+     * @param  Assistance $assistance
      * @return string
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function checkProgression(User $user, DistributionData $distributionData)
+    public function checkProgression(User $user, Assistance $assistance)
     {
         $cache = new FilesystemCache();
-        if ($cache->has($user->getEmail() . '-progression-' . $distributionData->getId())) {
-            return $cache->get($user->getEmail() . '-progression-' . $distributionData->getId());
+        if ($cache->has($user->getEmail() . '-progression-' . $assistance->getId())) {
+            return $cache->get($user->getEmail() . '-progression-' . $assistance->getId());
         } else {
             return 0;
         }
@@ -299,13 +299,13 @@ class TransactionService
     }
 
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param string $type
      * @return mixed
      */
-    public function exportToCsv(DistributionData $distributionData, string $type)
+    public function exportToCsv(Assistance $assistance, string $type)
     {
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
+        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findByAssistance($assistance);
 
         $transactions = array();
         $exportableTable = array();

@@ -5,7 +5,7 @@ namespace DistributionBundle\Repository;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\Household;
 use VoucherBundle\Entity\Booklet;
 
@@ -41,11 +41,11 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getOneOrNullResult();
     }
 
-    public function findAssignable(DistributionData $distributionData)
+    public function findAssignable(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder("db");
-        $q = $qb->where("db.distributionData = :dd")
-                ->setParameter("dd", $distributionData)
+        $q = $qb->where("db.assistance = :dd")
+                ->setParameter("dd", $assistance)
                 ->leftJoin("db.booklets", "b")
                 ->andWhere('b IS NULL')
                 ->orWhere("b.status = :s")
@@ -54,12 +54,12 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getResult();
     }
 
-    public function countWithoutBooklet(DistributionData $distributionData)
+    public function countWithoutBooklet(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder("db");
         $q = $qb->select("COUNT(db)")
-                ->where("db.distributionData = :dd")
-                ->setParameter("dd", $distributionData)
+                ->where("db.assistance = :dd")
+                ->setParameter("dd", $assistance)
                 ->leftJoin("db.booklets", "b")
                 ->andWhere('b IS NULL');
         
@@ -67,30 +67,30 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return int
      */
-    public function countActive(DistributionData $distributionData)
+    public function countActive(Assistance $assistance)
     {
         $result = $this->count([
-            'distributionData' => $distributionData,
+            'assistance' => $assistance,
             'removed' => false,
         ]);
         return (int) $result;
     }
 
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param Beneficiary      $beneficiary
      *
      * @return DistributionBeneficiary|null
      */
-    public function findByDistributionAndBeneficiary(DistributionData $distributionData, Beneficiary $beneficiary): ?DistributionBeneficiary
+    public function findByDistributionAndBeneficiary(Assistance $assistance, Beneficiary $beneficiary): ?DistributionBeneficiary
     {
         $qb = $this->createQueryBuilder('db')
-            ->andWhere('db.distributionData = :distributionData')
+            ->andWhere('db.assistance = :assistance')
             ->andWhere('db.beneficiary = :beneficiary')
-            ->setParameter('distributionData', $distributionData)
+            ->setParameter('assistance', $assistance)
             ->setParameter('beneficiary', $beneficiary);
 
         return $qb->getQuery()->getOneOrNullResult();

@@ -86,7 +86,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         $q = $qb->leftJoin('b.distribution_beneficiary', 'db')
                 ->leftJoin('b.vouchers', 'v')
                 ->leftJoin('db.beneficiary', 'bf')
-                ->leftJoin('db.distributionData', 'd')
+                ->leftJoin('db.assistance', 'd')
                 ->where('b.status != :status')
                 ->andWhere('b.countryISO3 = :country')
                 ->setParameter('country', $countryISO3)

@@ -3,8 +3,8 @@
 namespace TransactionBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\Household;
-use DistributionBundle\Entity\DistributionData;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -46,10 +46,10 @@ class TransactionController extends Controller
      * )
      *
      * @param Request $request
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return Response
      */
-    public function sendTransactionAction(Request $request, DistributionData $distributionData)
+    public function sendTransactionAction(Request $request, Assistance $assistance)
     {
         $countryISO3 = $request->request->get('__country');
         $code = $request->request->get('code');
@@ -57,13 +57,13 @@ class TransactionController extends Controller
 
         $code = trim(preg_replace('/\s+/', ' ', $code));
 
-        $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code, $user, $distributionData);
+        $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code, $user, $assistance);
         if (! $validatedTransaction) {
             return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
         }
         
         try {
-            $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $distributionData, $user);
+            $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $assistance, $user);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -86,14 +86,14 @@ class TransactionController extends Controller
      * )
      *
      * @param  Request $request
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return Response
      */
-    public function sendVerificationEmailAction(Request $request, DistributionData $distributionData)
+    public function sendVerificationEmailAction(Request $request, Assistance $assistance)
     {
         $user = $this->getUser();
         try {
-            $this->get('transaction.transaction_service')->sendVerifyEmail($user, $distributionData);
+            $this->get('transaction.transaction_service')->sendVerifyEmail($user, $assistance);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -113,14 +113,14 @@ class TransactionController extends Controller
      * )
      *
      * @param  Request $request
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return Response
      */
-    public function updateTransactionStatusAction(Request $request, DistributionData $distributionData)
+    public function updateTransactionStatusAction(Request $request, Assistance $assistance)
     {
         $countryISO3 = $request->request->get('__country');
         try {
-            $beneficiaries = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $distributionData);
+            $beneficiaries = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $assistance);
             $json = $this->get('serializer')
             ->serialize($beneficiaries, 'json');
             return new Response($json);
@@ -141,14 +141,14 @@ class TransactionController extends Controller
      *     description="OK"
      * )
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return Response
      */
-    public function getLogsTransactionAction(DistributionData $distributionData)
+    public function getLogsTransactionAction(Assistance $assistance)
     {
         $user = $this->getUser();
         try {
-            $this->get('transaction.transaction_service')->sendLogsEmail($user, $distributionData);
+            $this->get('transaction.transaction_service')->sendLogsEmail($user, $assistance);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -168,15 +168,15 @@ class TransactionController extends Controller
      * )
      *
      * @param Request $request
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return Response
      */
-    public function getTestTransactionAction(Request $request, DistributionData $distributionData)
+    public function getTestTransactionAction(Request $request, Assistance $assistance)
     {
         $countryISO3 = $request->request->get('__country');
 
         try {
-            $response = $this->get('transaction.transaction_service')->testConnection($countryISO3, $distributionData);
+            $response = $this->get('transaction.transaction_service')->testConnection($countryISO3, $assistance);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -195,15 +195,15 @@ class TransactionController extends Controller
      *     description="OK"
      * )
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return Response
      */
-    public function checkProgressionTransactionAction(DistributionData $distributionData)
+    public function checkProgressionTransactionAction(Assistance $assistance)
     {
         $user = $this->getUser();
 
         try {
-            $response = $this->get('transaction.transaction_service')->checkProgression($user, $distributionData);
+            $response = $this->get('transaction.transaction_service')->checkProgression($user, $assistance);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

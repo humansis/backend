@@ -4,7 +4,7 @@
 namespace CommonBundle\DataFixtures;
 
 use DistributionBundle\DBAL\AssistanceTypeEnum;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\DistributionService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -20,7 +20,7 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface,
         'adm2' => '',
         'adm3' => '',
         'adm4' => '',
-        'type' => DistributionData::TYPE_BENEFICIARY,
+        'type' => Assistance::TYPE_BENEFICIARY,
         'commodities' => [
             0 => [
                 'modality' => 'CTP',
@@ -61,7 +61,7 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface,
                 'weight' => 1
             ]
         ],
-        'target_type' => DistributionData::TYPE_BENEFICIARY,
+        'target_type' => Assistance::TYPE_BENEFICIARY,
         'threshold' => 1,
     ];
 

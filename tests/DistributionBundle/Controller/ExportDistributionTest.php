@@ -3,7 +3,7 @@
 namespace App\tests\DistributionBundle\Controller;
 
 use CommonBundle\Utils\ExportService;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use Tests\BMSServiceTestCase;
 
 class ExportDistributionTest extends BMSServiceTestCase
@@ -21,7 +21,7 @@ class ExportDistributionTest extends BMSServiceTestCase
     public function testExportDistribution()
     {
         $exportservice = new ExportService($this->em, $this->container);
-        $exportableTable = $this->em->getRepository(DistributionData::class)->findAll();
+        $exportableTable = $this->em->getRepository(Assistance::class)->findAll();
 
         $filename = $exportservice->export($exportableTable, 'actual', 'csv');
         $path = getcwd() . '/' . $filename;

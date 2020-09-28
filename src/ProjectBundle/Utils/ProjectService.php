@@ -5,7 +5,7 @@ namespace ProjectBundle\Utils;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use dateTime;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Donor;
@@ -292,20 +292,20 @@ class ProjectService
      */
     public function delete(Project $project)
     {
-        $distributionData = $this->em->getRepository(DistributionData::class)->findByProject($project);
+        $assistance = $this->em->getRepository(Assistance::class)->findByProject($project);
 
-        if (empty($distributionData)) {
+        if (empty($assistance)) {
             try {
                 $this->em->remove($project);
             } catch (\Exception $error) {
                 throw new \Exception("Error deleting project");
             }
         } else {
-            if (! $this->checkIfAllDistributionClosed($distributionData)) {
+            if (! $this->checkIfAllDistributionClosed($assistance)) {
                 throw new \Exception("You can't delete this project as it has an unfinished distribution");
             } else {
                 try {
-                    foreach ($distributionData as $distributionDatum) {
+                    foreach ($assistance as $distributionDatum) {
                         $distributionDatum->setArchived(1);
                     }
 
@@ -321,12 +321,12 @@ class ProjectService
 
     /**
      * Check if all distributions allow for the project to be deleted
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return boolean
      */
-    private function checkIfAllDistributionClosed(array $distributionData)
+    private function checkIfAllDistributionClosed(array $assistance)
     {
-        foreach ($distributionData as $distributionDatum) {
+        foreach ($assistance as $distributionDatum) {
             if (!$distributionDatum->getArchived() && !$distributionDatum->getCompleted()) {
                 return false;
             }
