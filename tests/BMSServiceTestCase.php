@@ -13,7 +13,7 @@ use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\CommodityService;
 use DistributionBundle\Utils\ConfigurationLoader;
 use DistributionBundle\Utils\CriteriaDistributionService;

@@ -50,7 +50,7 @@ Create the commande php bin/console reporting:data-indicator:add which call data
 * DefautDatafillers (service) : call DataFillers when the indicator in parameter match with a regular expression and call the corresponding function (indicator code must always be the name of the function to call).
 	* begin by BMS_C or BMSU_C : call CountryDataFillers to set data in ReportingCountry and ReportingValue
 	* begin by BMS_P or BMSU_P : call ProjectDataFillers to set data in ReportingProject and ReportingValue
-	* begin by BMS_D or BMSU_D : call DistributionDataFillers to set data in ReportingDistribution and ReportingValue
+	* begin by BMS_D or BMSU_D : call AssistanceFillers to set data in ReportingDistribution and ReportingValue
 
 
 Insertion and retrieve request in the database are in DQL (Doctrine Query Langage)

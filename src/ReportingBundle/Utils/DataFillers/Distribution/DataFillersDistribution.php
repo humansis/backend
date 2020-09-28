@@ -10,7 +10,7 @@ use ReportingBundle\Entity\ReportingIndicator;
 use ReportingBundle\Entity\ReportingValue;
 use ReportingBundle\Entity\ReportingDistribution;
 use \DistributionBundle\Entity\DistributionBeneficiary;
-use \DistributionBundle\Entity\DistributionData;
+use \DistributionBundle\Entity\Assistance;
 use \DistributionBundle\Entity\Commodity;
 use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
 
@@ -65,7 +65,7 @@ class DataFillersDistribution extends DataFillers
         try {
             $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
             $qb = $this->repository->createQueryBuilder('db')
-                                   ->leftjoin('db.distributionData', 'dd')
+                                   ->leftjoin('db.assistance', 'dd')
                                    ->select('count(db.id) AS value', 'dd.id as distribution')
                                    ->groupBy('distribution');
             $results = $qb->getQuery()->getArrayResult();
@@ -79,7 +79,7 @@ class DataFillersDistribution extends DataFillers
                 $this->em->persist($new_value);
                 $this->em->flush();
 
-                $this->repository = $this->em->getRepository(DistributionData::class);
+                $this->repository = $this->em->getRepository(Assistance::class);
                 $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
                 $new_reportingDistribution = new ReportingDistribution();
@@ -106,7 +106,7 @@ class DataFillersDistribution extends DataFillers
         try {
             $this->repository = $this->em->getRepository(Commodity::class);
             $qb = $this->repository->createQueryBuilder('c')
-                                   ->leftjoin('c.distributionData', 'dd')
+                                   ->leftjoin('c.assistance', 'dd')
                                    ->select('c.value AS value', 'c.id as id', 'c.unit as unity', 'dd.id as distribution');
             $commodityValues = $qb->getQuery()->getArrayResult();
             $results = [];
@@ -136,7 +136,7 @@ class DataFillersDistribution extends DataFillers
                 $this->em->persist($new_value);
                 $this->em->flush();
 
-                $this->repository = $this->em->getRepository(DistributionData::class);
+                $this->repository = $this->em->getRepository(Assistance::class);
                 $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
                 $new_reportingDistribution = new ReportingDistribution();
@@ -163,7 +163,7 @@ class DataFillersDistribution extends DataFillers
         try {
             $this->repository = $this->em->getRepository(Commodity::class);
             $qb = $this->repository->createQueryBuilder('c')
-                                   ->leftjoin('c.distributionData', 'dd')
+                                   ->leftjoin('c.assistance', 'dd')
                                    ->leftjoin('c.modalityType', 'm')
                                    ->leftjoin('m.modality', 'mt')
                                    ->select("CONCAT(mt.name, '-', m.name) AS value", 'dd.id as distribution');
@@ -178,7 +178,7 @@ class DataFillersDistribution extends DataFillers
                 $this->em->persist($new_value);
                 $this->em->flush();
 
-                $this->repository = $this->em->getRepository(DistributionData::class);
+                $this->repository = $this->em->getRepository(Assistance::class);
                 $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
                 $new_reportingDistribution = new ReportingDistribution();
@@ -206,18 +206,18 @@ class DataFillersDistribution extends DataFillers
         $beneficiaries = $this->repository->findAll();
 
         //Get all distribution
-        $this->repository = $this->em->getRepository(DistributionData::class);
+        $this->repository = $this->em->getRepository(Assistance::class);
         $distributions = $this->repository->findAll();
 
         //Search the age of all beneficiary in all distribution and push the result of the query in a array
         foreach ($distributions as $distribution) {
             $results = [];
             foreach ($beneficiaries as $beneficiary) {
-                if ($distribution->getId() === $beneficiary->getDistributionData()->getId()) {
+                if ($distribution->getId() === $beneficiary->getAssistance()->getId()) {
                     $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
                     $qb = $this->repository->createQueryBuilder('db')
                                         ->leftjoin('db.beneficiary', 'b')
-                                        ->leftjoin('db.distributionData', 'dd')
+                                        ->leftjoin('db.assistance', 'dd')
                                         ->where('b.id = :beneficiary')
                                             ->setParameter('beneficiary', $beneficiary->getBeneficiary()->getId())
                                         ->andWhere('dd.id = :distribution')
@@ -244,7 +244,7 @@ class DataFillersDistribution extends DataFillers
                     $this->em->persist($new_value);
                     $this->em->flush();
 
-                    $this->repository = $this->em->getRepository(DistributionData::class);
+                    $this->repository = $this->em->getRepository(Assistance::class);
                     $distribution = $this->repository->findOneBy(['id' => $results[0][0]['distribution']]);
 
                     $new_reportingDistribution = new ReportingDistribution();
@@ -273,7 +273,7 @@ class DataFillersDistribution extends DataFillers
             $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
             $qb = $this->repository->createQueryBuilder('db')
                                    ->leftjoin('db.beneficiary', 'b')
-                                   ->leftjoin('db.distributionData', 'dd')
+                                   ->leftjoin('db.assistance', 'dd')
                                    ->where('b.gender = :gender')
                                         ->setParameter('gender', \BeneficiaryBundle\Entity\Person::GENDER_MALE)
                                    ->select("count(b.id) as value", 'dd.id as distribution')
@@ -289,7 +289,7 @@ class DataFillersDistribution extends DataFillers
                 $this->em->persist($new_value);
                 $this->em->flush();
 
-                $this->repository = $this->em->getRepository(DistributionData::class);
+                $this->repository = $this->em->getRepository(Assistance::class);
                 $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
                 $new_reportingDistribution = new ReportingDistribution();
@@ -317,7 +317,7 @@ class DataFillersDistribution extends DataFillers
             $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
             $qb = $this->repository->createQueryBuilder('db')
                                    ->leftjoin('db.beneficiary', 'b')
-                                   ->leftjoin('db.distributionData', 'dd')
+                                   ->leftjoin('db.assistance', 'dd')
                                    ->where('b.gender = :gender')
                                         ->setParameter('gender', \BeneficiaryBundle\Entity\Person::GENDER_FEMALE)
                                    ->select("count(b.id) as value", 'dd.id as distribution')
@@ -333,7 +333,7 @@ class DataFillersDistribution extends DataFillers
                 $this->em->persist($new_value);
                 $this->em->flush();
 
-                $this->repository = $this->em->getRepository(DistributionData::class);
+                $this->repository = $this->em->getRepository(Assistance::class);
                 $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
                 $new_reportingDistribution = new ReportingDistribution();
@@ -367,7 +367,7 @@ class DataFillersDistribution extends DataFillers
         $beneficiaries = $this->repository->findAll();
 
         //Get all distribution
-        $this->repository = $this->em->getRepository(DistributionData::class);
+        $this->repository = $this->em->getRepository(Assistance::class);
         $distributions = $this->repository->findAll();
 
         $results = [];
@@ -375,11 +375,11 @@ class DataFillersDistribution extends DataFillers
         //Search all vulnerability criterion foreach beneficiary in a distribution and count the vulnerability served
         foreach ($distributions as $distribution) {
             foreach ($beneficiaries as $beneficiary) {
-                if ($distribution->getId() === $beneficiary->getDistributionData()->getId()) {
+                if ($distribution->getId() === $beneficiary->getAssistance()->getId()) {
                     $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
                     $qb = $this->repository->createQueryBuilder('db')
                                             ->leftjoin('db.beneficiary', 'b')
-                                            ->leftjoin('db.distributionData', 'dd')
+                                            ->leftjoin('db.assistance', 'dd')
                                             ->leftjoin('b.vulnerabilityCriteria', 'vc')
                                             ->where('b.id = :beneficiary')
                                                 ->setParameter('beneficiary', $beneficiary->getBeneficiary()->getId())
@@ -414,7 +414,7 @@ class DataFillersDistribution extends DataFillers
                     $this->em->persist($new_value);
                     $this->em->flush();
     
-                    $this->repository = $this->em->getRepository(DistributionData::class);
+                    $this->repository = $this->em->getRepository(Assistance::class);
                     $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
     
                     $new_reportingDistribution = new ReportingDistribution();
@@ -449,7 +449,7 @@ class DataFillersDistribution extends DataFillers
         $beneficiaries = $this->repository->findAll();
 
         //get all distribution
-        $this->repository = $this->em->getRepository(DistributionData::class);
+        $this->repository = $this->em->getRepository(Assistance::class);
         $distributions = $this->repository->findAll();
 
         $results = [];
@@ -458,11 +458,11 @@ class DataFillersDistribution extends DataFillers
         foreach ($distributions as $distribution) {
             $byDistribution = [];
             foreach ($beneficiaries as $beneficiary) {
-                if ($distribution->getId() === $beneficiary->getDistributionData()->getId()) {
+                if ($distribution->getId() === $beneficiary->getAssistance()->getId()) {
                     $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
                     $qb = $this->repository->createQueryBuilder('db')
                                         ->leftjoin('db.beneficiary', 'b')
-                                        ->leftjoin('db.distributionData', 'dd')
+                                        ->leftjoin('db.assistance', 'dd')
                                         ->leftjoin('b.vulnerabilityCriteria', 'vc')
                                         ->where('b.id = :beneficiary')
                                             ->setParameter('beneficiary', $beneficiary->getBeneficiary()->getId())
@@ -513,7 +513,7 @@ class DataFillersDistribution extends DataFillers
                     $this->em->persist($new_value);
                     $this->em->flush();
     
-                    $this->repository = $this->em->getRepository(DistributionData::class);
+                    $this->repository = $this->em->getRepository(Assistance::class);
                     $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
     
                     $new_reportingDistribution = new ReportingDistribution();

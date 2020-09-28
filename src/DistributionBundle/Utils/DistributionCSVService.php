@@ -13,7 +13,7 @@ use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
@@ -108,7 +108,7 @@ class DistributionCSVService
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function parseCSV($countryIso3, $beneficiaries, DistributionData $distributionData, UploadedFile $uploadedFile)
+    public function parseCSV($countryIso3, $beneficiaries, Assistance $assistance, UploadedFile $uploadedFile)
     {
         $spreadsheet = IOFactory::load($uploadedFile->getRealPath());
         $worksheet = $spreadsheet->getSheet(0);
@@ -152,7 +152,7 @@ class DistributionCSVService
             ->findOneBy(
                 [
                     'beneficiary' => $beneficiary,
-                    'distributionData' => $distributionData
+                    'assistance' => $assistance
                 ]
             );
             if (! $inFile && !$distributionBeneficiary->getRemoved()) {
@@ -201,7 +201,7 @@ class DistributionCSVService
             $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneByPerson($person);
             if ($beneficiary instanceof Beneficiary) {
                 // Check if the beneficiary is associate to the project of the distribution
-                if (in_array($distributionData->getProject(), $beneficiary->getHousehold()->getProjects()->getValues())) {
+                if (in_array($assistance->getProject(), $beneficiary->getHousehold()->getProjects()->getValues())) {
                     array_push($addArray, $beneficiaryArray);
                 }
             } else {
@@ -223,16 +223,16 @@ class DistributionCSVService
      * Recover the array of the CSV and save the data to the dataBase.
      *
      * @param string $countryIso3
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param array     data
      *
      * @return array
      *
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function saveCSV(string $countryIso3, DistributionData $distributionData, array $data)
+    public function saveCSV(string $countryIso3, Assistance $assistance, array $data)
     {
-        $distributionProject = $distributionData->getProject();
+        $distributionProject = $assistance->getProject();
         
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
@@ -372,7 +372,7 @@ class DistributionCSVService
             // Add created beneficiary to distribution
             $newDistributionBeneficiary = new DistributionBeneficiary();
             $newDistributionBeneficiary->setBeneficiary($toCreate)
-                ->setDistributionData($distributionData)
+                ->setAssistance($assistance)
                 ->setRemoved(0)
                 ->setJustification($beneficiaryToCreate['justification']);
             $this->em->persist($newDistributionBeneficiary);
@@ -398,7 +398,7 @@ class DistributionCSVService
             }
             $distributionBeneficiary = new DistributionBeneficiary();
             $distributionBeneficiary->setBeneficiary($beneficiaryToAdd)
-                ->setDistributionData($distributionData)
+                ->setAssistance($assistance)
                 ->setRemoved(0)
                 ->setJustification($justification);
             $this->em->persist($distributionBeneficiary);
@@ -411,7 +411,7 @@ class DistributionCSVService
                 ->findOneBy(
                     [
                         'beneficiary' => $beneficiary,
-                        'distributionData' => $distributionData
+                        'assistance' => $assistance
                     ]
                 );
             $toRemove->setRemoved(1)
@@ -428,7 +428,7 @@ class DistributionCSVService
                 ->findOneBy(
                     [
                         'beneficiary' => $toUpdate,
-                        'distributionData' => $distributionData
+                        'assistance' => $assistance
                     ]
                 );
             
@@ -498,7 +498,7 @@ class DistributionCSVService
 
         }
 
-        $distributionData->setUpdatedOn(new \DateTime());
+        $assistance->setUpdatedOn(new \DateTime());
 
         $this->em->flush();
         

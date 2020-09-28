@@ -2,7 +2,7 @@
 
 namespace CommonBundle\Controller;
 
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
@@ -201,7 +201,7 @@ class ExportController extends Controller
             throw $this->createNotFoundException("Missing distribution ID.");
         }
 
-        $distribution = $this->getDoctrine()->getRepository(DistributionData::class)->find($request->query->get('id'));
+        $distribution = $this->getDoctrine()->getRepository(Assistance::class)->find($request->query->get('id'));
         if (null == $distribution) {
             throw $this->createNotFoundException("Invalid distribution requested.");
         }

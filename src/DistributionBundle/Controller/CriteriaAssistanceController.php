@@ -16,7 +16,7 @@ use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
- * Class CriteriaDistributionController
+ * Class CriteriaAssistanceController
  * @package DistributionBundle\Controller
  *
  * @SWG\Parameter(
@@ -26,7 +26,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  *     required=true
  * )
  */
-class CriteriaDistributionController extends Controller
+class CriteriaAssistanceController extends Controller
 {
 
     /**

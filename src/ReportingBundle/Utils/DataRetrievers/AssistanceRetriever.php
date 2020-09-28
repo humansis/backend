@@ -7,13 +7,13 @@ use Doctrine\ORM\EntityManager;
 use function GuzzleHttp\Psr7\str;
 use ReportingBundle\Entity\ReportingDistribution;
 use \ProjectBundle\Entity\Project;
-use \DistributionBundle\Entity\DistributionData;
+use \DistributionBundle\Entity\Assistance;
 
 /**
- * Class DistributionDataRetrievers
+ * Class AssistanceRetrievers
  * @package ReportingBundle\Utils\DataRetrievers
  */
-class DistributionDataRetriever extends AbstractDataRetriever
+class AssistanceRetriever extends AbstractDataRetriever
 {
     /**
      * @var EntityManager
@@ -26,7 +26,7 @@ class DistributionDataRetriever extends AbstractDataRetriever
     private $project;
 
     /**
-     * DistributionDataRetrievers constructor.
+     * AssistanceRetrievers constructor.
      * @param EntityManager $em
      * @param ProjectDataRetriever $project
      */

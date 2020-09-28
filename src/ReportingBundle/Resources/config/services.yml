@@ -51,7 +51,7 @@ services:
         public: true
 
     reporting.data_retrievers.distribution:
-        class: ReportingBundle\Utils\DataRetrievers\DistributionDataRetriever
+        class: ReportingBundle\Utils\DataRetrievers\AssistanceRetriever
         arguments: ['@doctrine.orm.entity_manager', '@reporting.data_retrievers.project']
         public: true
 

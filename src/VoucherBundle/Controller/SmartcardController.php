@@ -4,7 +4,7 @@ namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -333,7 +333,7 @@ class SmartcardController extends Controller
             $smartcard->setSuspicious(true, 'Smartcard is in '.$smartcard->getState().' state');
         }
 
-        $distribution = $this->getDoctrine()->getRepository(DistributionData::class)->find($request->request->getInt('distributionId'));
+        $distribution = $this->getDoctrine()->getRepository(Assistance::class)->find($request->request->getInt('distributionId'));
         if (!$distribution) {
             throw new BadRequestHttpException('Distribution does not exists.');
         }

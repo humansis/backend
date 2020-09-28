@@ -12,7 +12,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Location;
 use ReportingBundle\Entity\ReportingCountry;
 use ProjectBundle\Entity\Project;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use \TransactionBundle\Entity\Transaction;
 
 /**
@@ -185,7 +185,7 @@ class DataFillersCountry extends DataFillers
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $this->repository = $this->em->getRepository(DistributionData::class);
+            $this->repository = $this->em->getRepository(Assistance::class);
             $qb = $this->repository->createQueryBuilder('dd');
 
             $qb->leftJoin('dd.location', 'l');
