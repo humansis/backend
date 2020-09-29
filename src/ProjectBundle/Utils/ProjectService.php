@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Donor;
 use ProjectBundle\Entity\Project;
-use ProjectBundle\Entity\Sector;
+use ProjectBundle\DTO\Sector;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -140,7 +140,7 @@ class ProjectService
             $project->getSectors()->clear();
             /** @var Sector $sector */
             foreach ($sectorsId as $sectorId) {
-                $sectorTmp = $this->em->getRepository(Sector::class)->find($sectorId);
+                $sectorTmp = $this->container->get('project.sector_service')->findBySubSector($sectorId);
                 if ($sectorTmp instanceof Sector) {
                     $project->addSector($sectorTmp);
                 }
@@ -199,7 +199,7 @@ class ProjectService
             if (null !== $sectors) {
                 $project->removeSectors();
                 foreach ($sectors as $sector) {
-                    $newSector = $this->em->getRepository(Sector::class)->find($sector);
+                    $newSector = $this->container->get('project.sector_service')->getSubsBySector($sector);
                     if ($newSector instanceof Sector) {
                         $project->addSector($newSector);
                     }

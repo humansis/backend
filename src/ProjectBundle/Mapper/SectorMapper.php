@@ -1,28 +1,71 @@
 <?php
-
 namespace ProjectBundle\Mapper;
 
-use ProjectBundle\Entity\Donor;
-use ProjectBundle\Entity\Project;
-use ProjectBundle\Entity\Sector;
+use ProjectBundle\DTO\Sector;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class SectorMapper
 {
-    public function toArray(?Sector $sector): ?array
+    /** @var TranslatorInterface */
+    private $translator;
+
+    /**
+     * SectorMapper constructor.
+     *
+     * @param TranslatorInterface $translator
+     */
+    public function __construct(TranslatorInterface $translator)
     {
-        if (!$sector) {
-            return null;
+        $this->translator = $translator;
+    }
+
+    private function toSubArray(string $sector, iterable $subSectors): array
+    {
+        $subSectorMapped = [];
+
+        /** @var Sector $subSector */
+        foreach ($subSectors as $subSector) {
+            $ss = [
+                'id' => $subSector->getSubSectorName(),
+                'name' => $this->getLabel($subSector->getSubSectorName()),
+                'availableTargets' => [],
+                'assistanceType' => '',
+            ];
+            if ($subSector->isCommunityAllowed()) {
+                $ss['availableTargets'][] = 'community';
+            }
+            if ($subSector->isInstitutionAllowed()) {
+                $ss['availableTargets'][] = 'institution';
+            }
+            if ($subSector->isHouseholdAllowed()) {
+                $ss['availableTargets'][] = 'household';
+            }
+            if ($subSector->isBeneficiaryAllowed()) {
+                $ss['availableTargets'][] = 'individual';
+            }
+            if ($subSector->isActivityAllowed()) {
+                $ss['assistanceType'] = 'activity';
+            } elseif ($subSector->isDistributionAllowed()) {
+                $ss['assistanceType'] = 'distribution';
+            }
+            $subSectorMapped[] = $ss;
         }
         return [
-            'id' => $sector->getId(),
-            'name' => $sector->getName(),
+            'id' => $sector,
+            'name' => $this->getLabel($sector),
+            'subSectors' => $subSectorMapped,
         ];
     }
 
-    public function toArrays(iterable $projects): iterable
+    private function getLabel(string $enumValue): string
     {
-        foreach ($projects as $project) {
-            yield $this->toArray($project);
+        return $this->translator->trans('label_sector_'.$enumValue, [], 'sectors', 'en');
+    }
+
+    public function listToSubArrays(iterable $sectorTree): iterable
+    {
+        foreach ($sectorTree as $sector => $subSectors) {
+            yield $this->toSubArray($sector, $subSectors);
         }
     }
 }
