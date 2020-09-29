@@ -1,6 +1,6 @@
 <?php
 
-namespace ProjectBundle\Entity;
+namespace ProjectBundle\DTO;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;

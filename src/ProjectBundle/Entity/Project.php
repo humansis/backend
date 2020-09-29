@@ -437,11 +437,11 @@ class Project implements ExportableInterface
     /**
      * Add sector.
      *
-     * @param \ProjectBundle\Entity\Sector $sector
+     * @param \ProjectBundle\DTO\Sector $sector
      *
      * @return Project
      */
-    public function addSector(\ProjectBundle\Entity\Sector $sector)
+    public function addSector(\ProjectBundle\DTO\Sector $sector)
     {
         $this->sectors->add($sector);
 
@@ -451,11 +451,11 @@ class Project implements ExportableInterface
     /**
      * Remove sector.
      *
-     * @param \ProjectBundle\Entity\Sector $sector
+     * @param \ProjectBundle\DTO\Sector $sector
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeSector(\ProjectBundle\Entity\Sector $sector)
+    public function removeSector(\ProjectBundle\DTO\Sector $sector)
     {
         return $this->sectors->removeElement($sector);
     }

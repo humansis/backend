@@ -1,7 +1,7 @@
 <?php
 namespace ProjectBundle\Mapper;
 
-use ProjectBundle\Entity\Sector;
+use ProjectBundle\DTO\Sector;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class SectorMapper
