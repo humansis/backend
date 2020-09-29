@@ -101,10 +101,7 @@ class DistributionController extends Controller
     {
         $distributions = $this->getDoctrine()->getRepository(DistributionData::class)->findDistributedToHousehold($household);
 
-        $json = $this->get('serializer')
-            ->serialize($distributions, 'json', ['groups' => ["DistributionOverview"]]);
-
-        return new Response($json);
+        return $this->json($distributions);
     }
 
     /**

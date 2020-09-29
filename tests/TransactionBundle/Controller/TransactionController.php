@@ -35,10 +35,13 @@ class TransactionController extends BMSServiceTestCase
         $this->assertIsArray($criteria);
 
         foreach ($criteria as $criterion) {
+            $this->assertArrayHasKey('beneficiary', $criterion);
             $this->assertArrayHasKey('productId', $criterion);
+            $this->assertArrayHasKey('productName', $criterion);
             $this->assertArrayHasKey('value', $criterion);
             $this->assertArrayHasKey('quantity', $criterion);
             $this->assertArrayHasKey('source', $criterion);
+            $this->assertArrayHasKey('usedAt', $criterion);
         }
     }
 
@@ -55,10 +58,13 @@ class TransactionController extends BMSServiceTestCase
         $this->assertIsArray($criteria);
 
         foreach ($criteria as $criterion) {
+            $this->assertArrayHasKey('beneficiary', $criterion);
             $this->assertArrayHasKey('productId', $criterion);
+            $this->assertArrayHasKey('productName', $criterion);
             $this->assertArrayHasKey('value', $criterion);
             $this->assertArrayHasKey('quantity', $criterion);
             $this->assertArrayHasKey('source', $criterion);
+            $this->assertArrayHasKey('usedAt', $criterion);
         }
     }
 
