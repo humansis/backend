@@ -5,7 +5,7 @@ namespace Tests\ProjectBundle\Controller;
 
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
-use ProjectBundle\Entity\Sector;
+use ProjectBundle\DTO\Sector;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 

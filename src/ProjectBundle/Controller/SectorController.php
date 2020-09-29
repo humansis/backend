@@ -3,7 +3,7 @@
 
 namespace ProjectBundle\Controller;
 
-use ProjectBundle\Entity\Sector;
+use ProjectBundle\DTO\Sector;
 use ProjectBundle\Mapper\SectorMapper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
