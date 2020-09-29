@@ -7,8 +7,6 @@ imports:
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
-    vulnerability_weightingFile:        '@@BeneficiaryBundle/Resources/vulnerability/weighting_example.csv'
-    vulnerability_scoringFileTemplate:  '@@BeneficiaryBundle/Resources/vulnerability/scoring_<<COUNTRY>>.csv'
 
 framework:
     #esi: ~
