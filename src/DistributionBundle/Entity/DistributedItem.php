@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Read only entity.
  *
- * @ORM\Entity()
+ * @ORM\MappedSuperclass()
  */
 class DistributedItem implements \JsonSerializable
 {
