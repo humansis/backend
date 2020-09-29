@@ -1,4 +1,5 @@
 <?php
+
 namespace CommonBundle\DBAL;
 
 use Doctrine\DBAL\Types\Type;
@@ -7,6 +8,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 abstract class AbstractEnum extends Type
 {
     protected $name;
+
     protected static $values;
 
     public static function all(): array
@@ -33,6 +35,7 @@ abstract class AbstractEnum extends Type
         if (!in_array($value, self::$values)) {
             throw new \InvalidArgumentException("Invalid '".$this->name."' value.");
         }
+
         return $value;
     }
 
