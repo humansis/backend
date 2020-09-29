@@ -3,6 +3,7 @@
 namespace DistributionBundle\Repository;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
@@ -98,6 +99,36 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
             ->orderBy('dd.dateDistribution', 'DESC');
 
         $qb->setParameter('beneficiary', $beneficiary);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Returns list of distributions distributed to given household.
+     *
+     * @param Household           $household
+     * @return DistributionData[]
+     */
+    public function findDistributedToHousehold(Household $household)
+    {
+        $ids = $this->_em->createQueryBuilder()
+            ->select('b.id')
+            ->from(Beneficiary::class, 'b')
+        ->where('b.household = :household')
+        ->setParameter('household', $household)
+        ->getQuery()
+        ->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_SCALAR);
+
+        $ids = array_map(function ($value) {
+            return $value['id'];
+        }, $ids);
+
+        $qb = $this->createQueryBuilder('dd')
+            ->join('dd.distributionBeneficiaries', 'db')
+            ->where('db.beneficiary IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->orderBy('dd.dateDistribution', 'DESC');
+
 
         return $qb->getQuery()->getResult();
     }

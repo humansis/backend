@@ -3,6 +3,7 @@
 namespace TransactionBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\DistributionData;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -287,6 +288,26 @@ class TransactionController extends Controller
     public function purchasesAction(Beneficiary $beneficiary)
     {
         $result = $this->getDoctrine()->getRepository(Transaction::class)->getPurchases($beneficiary);
+
+        return $this->json($result);
+    }
+
+    /**
+     * List of purchases by household.
+     *
+     * @Rest\Get("/transactions/purchases/household/{householdId}")
+     * @ParamConverter("household", options={"mapping": {"householdId" : "id"}})
+     * @Security("is_granted('ROLE_PROJECT_MANAGER')")
+     *
+     * @SWG\Tag(name="Transaction")
+     * @SWG\Response(response=200, description="OK")
+     *
+     * @param Household $household
+     * @return Response
+     */
+    public function purchasesOfHouseholdAction(Household $household)
+    {
+        $result = $this->getDoctrine()->getRepository(Transaction::class)->getHouseholdPurchases($household);
 
         return $this->json($result);
     }
