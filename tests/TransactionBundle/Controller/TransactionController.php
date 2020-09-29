@@ -42,5 +42,25 @@ class TransactionController extends BMSServiceTestCase
         }
     }
 
+    public function testListOfHouseholdPurchases()
+    {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/wsse/transactions/purchases/household/'. 5);
+
+        $criteria = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($criteria);
+
+        foreach ($criteria as $criterion) {
+            $this->assertArrayHasKey('productId', $criterion);
+            $this->assertArrayHasKey('value', $criterion);
+            $this->assertArrayHasKey('quantity', $criterion);
+            $this->assertArrayHasKey('source', $criterion);
+        }
+    }
+
     //Transactions tests are in the DistributionBundle because we needed a distribution to test the differents routes
 }
