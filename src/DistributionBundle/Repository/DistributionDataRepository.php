@@ -5,9 +5,11 @@ namespace DistributionBundle\Repository;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
+use DistributionBundle\Entity\DistributedItem;
 use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
 use DistributionBundle\Entity\DistributionData;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
  * DistributionDataRepository
@@ -23,7 +25,7 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
                    ->select("MAX(dd.id)");
         return $qb->getQuery()->getSingleScalarResult();
     }
-    
+
     public function getTotalValue(string $country)
     {
         $qb = $this->createQueryBuilder("dd");
@@ -39,7 +41,7 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
 
         return $qb->getQuery()->getSingleScalarResult();
     }
-    
+
     public function getActiveByCountry(string $country)
     {
         $qb = $this->createQueryBuilder("dd")
@@ -138,7 +140,7 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('dd.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
             ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
- 
+
         if ($distributionType === DistributionData::TYPE_BENEFICIARY) {
             $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender');
         } else {
@@ -167,7 +169,7 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
                     $qb->innerJoin('db.booklets', 'b', Join::WITH, 'b.status = 1 OR b.status = 2');
                 } else {
                     $qb->innerJoin('db.generalReliefs', 'gr', Join::WITH, 'gr.distributedAt IS NOT NULL');
-                }     
+                }
         return $qb->getQuery()->getSingleScalarResult();
     }
 
@@ -191,30 +193,28 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
     /**
      * Returns list of distributions distributed to given household.
      *
-     * @param Household           $household
-     * @return DistributionData[]
+     * @param Household $household
+     *
+     * @return DistributedItem[]
      */
-    public function findDistributedToHousehold(Household $household)
+    public function findDistributedToHousehold(Household $household): iterable
     {
-        $ids = $this->_em->createQueryBuilder()
-            ->select('b.id')
-            ->from(Beneficiary::class, 'b')
-        ->where('b.household = :household')
-        ->setParameter('household', $household)
-        ->getQuery()
-        ->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_SCALAR);
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addRootEntityFromClassMetadata(DistributedItem::class, 'di');
 
-        $ids = array_map(function ($value) {
-            return $value['id'];
-        }, $ids);
+        $sql = '
+        SELECT '.$rsm->generateSelectClause().' FROM ( 
+            SELECT dd.*, db.beneficiary_id FROM distribution_data dd
+            JOIN distribution_beneficiary db ON dd.id=db.distribution_data_id
+            JOIN beneficiary b ON b.id=db.beneficiary_id
+            WHERE b.household_id = :household
+        ) AS di
+        ORDER BY di.date_distribution ASC
+        ';
 
-        $qb = $this->createQueryBuilder('dd')
-            ->join('dd.distributionBeneficiaries', 'db')
-            ->where('db.beneficiary IN (:ids)')
-            ->setParameter('ids', $ids)
-            ->orderBy('dd.dateDistribution', 'DESC');
-
-
-        return $qb->getQuery()->getResult();
+        return $this->getEntityManager()
+            ->createNativeQuery($sql, $rsm)
+            ->setParameter('household', $household)
+            ->getResult();
     }
 }
