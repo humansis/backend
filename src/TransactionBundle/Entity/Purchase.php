@@ -7,9 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 use VoucherBundle\Entity\Product;
 
 /**
- * Read only entity
+ * Read only entity.
  *
- * @ORM\Entity()
+ * @ORM\MappedSuperclass()
  */
 class Purchase implements \JsonSerializable
 {
