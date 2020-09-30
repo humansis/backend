@@ -15,7 +15,7 @@ use BeneficiaryBundle\Entity\Household;
 /**
  * Assistance
  *
- * @ORM\Table(name="distribution_data")
+ * @ORM\Table(name="assistance")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\AssistanceRepository")
  */
 class Assistance implements ExportableInterface
