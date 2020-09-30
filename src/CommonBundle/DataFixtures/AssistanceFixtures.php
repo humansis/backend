@@ -53,13 +53,15 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         ],
         'selection_criteria' => [
             0 => [
-                'condition_string' => 'true',
-                'field_string' => 'disabled',
-                'id_field' => 1,
-                'target' => 'Beneficiary',
-                'table_string' => 'vulnerabilityCriteria',
-                'weight' => '1'
-            ]
+                0 => [
+                    'condition_string' => 'true',
+                    'field_string' => 'disabled',
+                    'id_field' => 1,
+                    'target' => 'Beneficiary',
+                    'table_string' => 'vulnerabilityCriteria',
+                    'weight' => 1,
+                ],
+            ],
         ],
         'target_type' => Assistance::TYPE_BENEFICIARY,
         'assistance_type' => AssistanceTypeEnum::DISTRIBUTION,
