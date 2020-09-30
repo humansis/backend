@@ -191,12 +191,12 @@ class DistributionService
 
         $criteria = [];
         foreach ($selectionCriteriaGroup as $i => $criteriaData) {
-            foreach ($criteriaData as $criterionArray) {
+            foreach ($criteriaData as $j => $criterionArray) {
                 /** @var SelectionCriteria $criterion */
                 $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json');
                 $criterion->setGroupNumber($i);
                 $this->criteriaDistributionService->save($distribution, $criterion, false);
-                $criteria[] = $criterionArray;
+                $criteria[$i][$j] = $criterionArray;
             }
         }
 
