@@ -35,7 +35,7 @@ class DistributionBeneficiary
      * @var Assistance
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="distributionBeneficiaries")
-     * @ORM\JoinColumn(name="distribution_data_id")
+     * @ORM\JoinColumn(name="assistance_id")
      * @SymfonyGroups({"FullDistributionBeneficiary", "FullBooklet"})
      */
     private $assistance;
