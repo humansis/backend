@@ -46,7 +46,7 @@ class Commodity
     /**
      * @var Assistance
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="commodities")
-     * @ORM\JoinColumn(name="distribution_data_id")
+     * @ORM\JoinColumn(name="assistance_id")
      */
     private $assistance;
 
