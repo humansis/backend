@@ -22,13 +22,13 @@ class ReportingDistribution
     private $id;
 
     /**
-     *@ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="reportingDistribution")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="reportingDistribution")
+     * @ORM\JoinColumn(name="assistance_id", nullable=true)
      **/
     private $distribution;
 
     /**
-     *@ORM\ManyToOne(targetEntity="ReportingBundle\Entity\ReportingIndicator", inversedBy="reportingDistribution")
+     * @ORM\ManyToOne(targetEntity="ReportingBundle\Entity\ReportingIndicator", inversedBy="reportingDistribution")
      * @ORM\JoinColumn(nullable=true)
      **/
     private $indicator;
