@@ -136,7 +136,7 @@ class ProjectService
         }
 
         $sectorsId = $projectArray["sectors"];
-        if (null !== $sectorsId) {
+        if (count($sectorsId) > 0) {
             $project->getSectors()->clear();
             /** @var Sector $sector */
             foreach ($sectorsId as $sectorId) {
@@ -145,6 +145,8 @@ class ProjectService
                     $project->addSector($sectorTmp);
                 }
             }
+        } else {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Project must have at least one sector');
         }
 
         $donorsId = $projectArray["donors"];
