@@ -95,6 +95,9 @@ final class Version20200805123128 extends AbstractMigration
         $this->addSql('ALTER TABLE community ADD CONSTRAINT FK_1B604033BF396750 FOREIGN KEY (id) REFERENCES abstract_beneficiary (id) ON DELETE CASCADE');
         // $this->addSql('ALTER TABLE institution CHANGE id id INT NOT NULL');
         $this->addSql('ALTER TABLE institution ADD CONSTRAINT FK_3A9F98E5BF396750 FOREIGN KEY (id) REFERENCES abstract_beneficiary (id) ON DELETE CASCADE');
+
+        // logs contains IDs of (old) beneficiaries, so it is necessary to remove them
+        $this->addSql('DELETE FROM `logs` WHERE 1=1 ');
     }
 
     public function down(Schema $schema) : void
