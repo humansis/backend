@@ -1,82 +1,95 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-#immediately exits if a command exits with an non-zero status
+# parameters:
+# $1: environment (dev, test, stage, demo, prod)
+# $2: clean database (true, false)
+# $3: load fixtures (dev, test, false)
+# $4: cache clear mode (normal, aggressive)
+
+# immediately exits if a command exits with an non-zero status
 set -e
 
-if [[ $1 == "master" ]]; then
-    ec2_prod="ec2-35-158-182-63.eu-central-1.compute.amazonaws.com"
-    ec2_demo="ec2-18-185-233-146.eu-central-1.compute.amazonaws.com"
-    if [ -z `ssh-keygen -F $ec2_prod` ]; then
-        ssh-keyscan -H $ec2_prod >> ~/.ssh/known_hosts
-    fi
-    if [ -z `ssh-keygen -F $ec2_demo` ]; then
-        ssh-keyscan -H $ec2_demo >> ~/.ssh/known_hosts
-    fi
+# configure
+echo "Configuring application build"
+if [[ $1 == "prod" ]]; then
+  ec2_host="api.humansis.org"
+  mv docker/docker-compose.yml.prod docker-compose.yml
+  bash apply_env_config.sh ${RDS_HOSTNAME_PROD} ${RDS_DB_NAME_PROD} ${RDS_USERNAME_PROD} ${RDS_PASSWORD_PROD}
+elif [[ $1 == "demo" ]]; then
+  ec2_host="api-demo.humansis.org"
+  mv docker/docker-compose.yml.demo docker-compose.yml
+  bash apply_env_config.sh ${RDS_HOSTNAME_DEMO} ${RDS_DB_NAME_DEMO} ${RDS_USERNAME_DEMO} ${RDS_PASSWORD_DEMO}
+elif [[ $1 == "stage" ]]; then
+  ec2_host="apistage.humansis.org"
+  mv docker/docker-compose.yml.stage docker-compose.yml
+  bash apply_env_config.sh ${RDS_HOSTNAME_STAGE} ${RDS_DB_NAME_STAGE} ${RDS_USERNAME_STAGE} ${RDS_PASSWORD_STAGE}
+elif [[ $1 == "test" ]]; then
+  ec2_host="apitest.humansis.org"
+  mv docker/docker-compose.yml.test docker-compose.yml
+  bash apply_env_config.sh ${RDS_HOSTNAME_TEST} ${RDS_DB_NAME_TEST} ${RDS_USERNAME_TEST} ${RDS_PASSWORD_TEST}
 elif [[ $1 == "dev" ]]; then
-    ec2_test="ec2-35-157-77-79.eu-central-1.compute.amazonaws.com"
-    if [ -z `ssh-keygen -F $ec2_test` ]; then
-        ssh-keyscan -H $ec2_test >> ~/.ssh/known_hosts
-    fi
-elif [[ $1 =~ ^release\/.*$ ]]; then
-    ec2_stage="ec2-18-156-21-101.eu-central-1.compute.amazonaws.com"
-    if [ -z `ssh-keygen -F $ec2_stage` ]; then
-        ssh-keyscan -H $ec2_stage >> ~/.ssh/known_hosts
-    fi
+  ec2_host="apidev.humansis.org"
+  mv docker/docker-compose.yml.dev docker-compose.yml
+  bash apply_env_config.sh ${RDS_HOSTNAME_DEV} ${RDS_DB_NAME_DEV} ${RDS_USERNAME_DEV} ${RDS_PASSWORD_DEV}
 else
-    ec2_dev="ec2-52-57-90-156.eu-central-1.compute.amazonaws.com"
-    if [ -z `ssh-keygen -F $ec2_dev` ]; then
-        ssh-keyscan -H $ec2_dev >> ~/.ssh/known_hosts
-    fi
+  echo "Wrong environment parameter. Options are: [dev, test, stage, demo, prod]"
+  exit 1
+fi
+echo "...done"
+
+# add host to known_hosts
+if [ -z `ssh-keygen -F $ec2_host` ]; then
+  ssh-keyscan -H $ec2_host >> ~/.ssh/known_hosts
 fi
 
-command="cd /var/www/html/bms_api; \
-    git pull origin-bis $1; \
-    git checkout $1; \
-    ./hooks/post-checkout; \
-    sudo docker-compose exec -T php bash -c 'composer install';\
-    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear --env=prod'; \
-    sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
+# get app version
+echo "Getting application information"
+bash get_info.sh
+echo "...done"
 
+# deploy files to host
+echo "Upload application files to remote server"
+rsync --progress -avz -e "ssh -i ec2_bms.pem" --exclude-from='sync_excludes' ./* ubuntu@$ec2_host:/var/www/html/bms_api/ --delete
+echo "...done"
+echo "Starting application containers"
+start_app="cd /var/www/html/bms_api && sudo docker-compose up -d"
+ssh -i ec2_bms.pem ubuntu@$ec2_host $start_app
+echo "...done"
+echo "Loading composer files"
+load_composer="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'composer install'"
+ssh -i ec2_bms.pem ubuntu@$ec2_host $load_composer
+echo "...done"
 
-command_stage="cd /var/www/html/bms_api; \
-    git pull origin-bis $1; \
-    git checkout $1; \
-    ./hooks/post-checkout; \
-    sudo docker-compose exec -T php bash -c 'composer install';\
-    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear --env=dev'; \
-    sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
-
-
-command_clean_db="cd /var/www/html/bms_api; \
-    git pull origin-bis $1; \
-    git checkout $1; \
-    ./hooks/post-checkout; \
-    sudo docker-compose exec -T php bash -c 'composer install'; \
-    sudo docker-compose exec -T php bash -c 'php bin/console doctrine:database:drop --force'; \
-    sudo docker-compose exec -T php bash -c 'rm -rf var/cache/*'; \
-    sudo docker-compose exec -T php bash -c 'php bin/console doctrine:database:create'; \
-    sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'; \
-    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'; \
-    sudo docker-compose exec -T php bash -c 'php bin/console ra:cacheimport:clear'; \
-    sudo docker-compose exec -T php bash -c 'php bin/console reporting:code-indicator:add'"
-
-fixtures_test="cd /var/www/html/bms_api; \
-    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=test';\
-    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'"
-
-fixtures_dev="cd /var/www/html/bms_api; \
-    sudo docker-compose exec  -T php bash -c 'php bin/console doctrine:fixtures:load --env=dev';\
-    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'"
-
-if [[ $1 == "master" ]]; then
-    ssh -i $2 ubuntu@$ec2_prod $command
-    ssh -i $2 ubuntu@$ec2_demo $command
-elif [[ $1 == "dev" ]]; then
-    ssh -i $2 ubuntu@$ec2_test $command_clean_db
-    ssh -i $2 ubuntu@$ec2_test $fixtures_dev
-elif [[ $1 =~ ^release\/.*$ ]]; then
-    ssh -i $2 ubuntu@$ec2_stage $command_stage
-else
-    ssh -i $2 ubuntu@$ec2_dev $command_clean_db
-    ssh -i $2 ubuntu@$ec2_dev $fixtures_dev
+# clean database
+echo "Cleaning database"
+if [[ $2 == "true" ]]; then
+  clean_database="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'bash clean_database.sh'"
+  ssh -i ec2_bms.pem ubuntu@$ec2_host $clean_database
+elif [[ $2 != "false" ]]; then
+  echo "Wrong clean database parameter. Options are: [true, false]"
+  exit 1
 fi
+echo "...done"
+
+# load fixtures
+echo "Loading fixtures"
+if [[ $3 != "false" ]]; then
+  if [[ $3 == "dev" ]]; then
+    load_fixtures="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:fixtures:load --env=dev'"
+  elif [[ $3 == "test" ]]; then
+    load_fixtures="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:fixtures:load --env=test'"
+  else
+    echo "Wrong fixtures environment parameter. Options are: [dev, test, false (do not load fixtures)]"
+    exit 1
+  fi
+  ssh -i ec2_bms.pem ubuntu@$ec2_host $load_fixtures
+fi
+echo "...done"
+
+# clear cache
+# normal: php bin/console cache:clear --env=prod + php bin/console cache:clear
+# aggressive: normal + rm ./var/cache/* + docker restart php_container
+echo "Clearing cache"
+cache_clear="bash /var/www/html/bms_api/clear_cache.sh $4"
+ssh -i ec2_bms.pem ubuntu@$ec2_host $cache_clear
+echo "...done"
