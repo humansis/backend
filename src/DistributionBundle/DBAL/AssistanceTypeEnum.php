@@ -16,7 +16,7 @@ class AssistanceTypeEnum extends AbstractEnum
         self::DISTRIBUTION,
     ];
 
-    public function all(): array
+    public static function all(): array
     {
         return self::$values;
     }

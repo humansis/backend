@@ -13,14 +13,14 @@ abstract class AbstractEnum extends Type
 
     public static function all(): array
     {
-        return self::$values;
+        return self::$values ?? [];
     }
 
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
         $values = array_map(function ($val) {
             return "'".$val."'";
-        }, self::$values);
+        }, $this::all());
 
         return "ENUM(".implode(", ", $values).")";
     }
@@ -32,7 +32,7 @@ abstract class AbstractEnum extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (!in_array($value, self::$values)) {
+        if (!in_array($value, $this::all())) {
             throw new \InvalidArgumentException("Invalid '".$this->name."' value.");
         }
 

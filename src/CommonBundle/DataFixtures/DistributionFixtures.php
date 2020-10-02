@@ -62,6 +62,7 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface,
             ]
         ],
         'target_type' => Assistance::TYPE_BENEFICIARY,
+        'assistance_type' => AssistanceTypeEnum::DISTRIBUTION,
         'threshold' => 1,
     ];
 
