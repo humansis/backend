@@ -93,11 +93,15 @@ class LocationService
 
     /**
      * @param Country $country
-     * @param LocationType $locationType
+     * @param LocationType|null $locationType
      * @return Location|null
      */
-    public function getLocationByInputType(Country $country, LocationType $locationType)
+    public function getLocationByInputType(Country $country, ?LocationType $locationType)
     {
+        if (!$locationType) {
+            return null;
+        }
+
         // Define location array
         $adm1 = $this->em->getRepository(Adm1::class)->find($locationType->getAdm1());
         $adm2 = null;
