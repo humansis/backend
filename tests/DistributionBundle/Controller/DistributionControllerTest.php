@@ -99,12 +99,14 @@ class DistributionControllerTest extends BMSServiceTestCase
             ],
             "selection_criteria"=> [
                 [
-                    "condition_string"=> "true",
-                    "field_string"=> "disabled",
-                    "id_field"=> "1",
-                    "target"=> "Beneficiary",
-                    "table_string"=> "vulnerabilityCriteria",
-                    "weight"=> "1"
+                    [
+                        "condition_string"=> "true",
+                        "field_string"=> "disabled",
+                        "id_field"=> 1,
+                        "target"=> "Beneficiary",
+                        "table_string"=> "vulnerabilityCriteria",
+                        "weight"=> 1,
+                    ]
                 ]
             ],
             "type"=> "Household",

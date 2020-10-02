@@ -121,28 +121,11 @@ class CriteriaDistributionController extends Controller
      * @param Request $request
      * @param Project $project
      * @return Response
+     * @deprecated Use `/beneficiaries/project/{id}/number` instead
      */
     public function getBeneficiariesNumberAction(Request $request, Project $project)
     {
-        $filters = $request->request->all();
-        $filters['countryIso3'] = $filters['__country'];
-        $threshold = $filters['threshold'];
-
-        /** @var CriteriaDistributionService $criteriaDistributionService */
-        try {
-            $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-            $receivers = $criteriaDistributionService->load($filters, $project, $threshold, true);
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-        $json = $this->get('serializer')
-            ->serialize(
-                $receivers,
-                'json'
-            );
-
-        return new Response($json);
+        return $this->forward('BeneficiaryBundle:Beneficiary:getBeneficiariesNumber', ['request' => $request, 'project' => $project]);
     }
 
      /**

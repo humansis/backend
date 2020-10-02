@@ -55,85 +55,89 @@ class CriteriaDistributionService
     {
         $countryISO3 = $filters['countryIso3'];
         $distributionType = $filters['distribution_type'];
-        $criteria = $filters['criteria'];
 
-        foreach ($criteria as $index => $criterion) {
-            if ($criterion['table_string'] === 'Personnal') {
-                $criterion['type'] = $this->configurationLoader->criteria[$criterion['field_string']]['type'];
-                $criteria[$index] = $criterion;
-            }
-        }
-
-        $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
-                ->getDistributionBeneficiaries($criteria, $project, $countryISO3, $threshold, $distributionType);
-
-        $beneficiaryScores = [];
         $reachedBeneficiaries = [];
 
-        $vulnerabilityCriteria = [];
-        $alreadyPassedOnce = [];
+        foreach ($filters['criteria'] as $group) {
+            foreach ($group as $index => $criterion) {
+                if ($criterion['table_string'] === 'Personnal') {
+                    $criterion['type'] = $this->configurationLoader->criteria[$criterion['field_string']]['type'];
+                    $group[$index] = $criterion;
+                }
+            }
 
-        // 1. Calculate the selection score foreach beneficiary
-        foreach ($selectableBeneficiaries as $beneficiary) {
-            $score = 0;
+            $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
+                ->getDistributionBeneficiaries($group, $project, $countryISO3, $threshold, $distributionType);
 
-            // 1.1 Update the score foreach selection criterion
-            foreach ($criteria as $index => $criterion) {
-                $fieldString = $criterion['field_string'];
+            $beneficiaryScores = [];
 
-                // If the distribution type is Household and the beneficiary is not the head, count only the criteria targetting the beneficiaries
-                if ($distributionType !== '0' || $beneficiary['headId'] === $beneficiary['id'] || $criterion['target'] === 'Beneficiary') {
-    
-                    // In the case of vulnerabilityCriteria, dql forces us to add a b or a hhh in front of the key for it to be unique
-                    if ($criterion['table_string'] === 'vulnerabilityCriteria') {
-                        $fieldString = 'b' . $fieldString; // fieldString = bdisabled/blactating etc
-                    } if ($criterion['field_string'] === 'disabledHeadOfHousehold') {
-                        $fieldString = 'hhh'.$index.'disabled';
-                    }
-                    
-                    if (array_key_exists($fieldString.$index, $beneficiary) && !is_null($beneficiary[$fieldString.$index])) {
-                        // Sometimes the vulnerability criteria are counted several times
+            $vulnerabilityCriteria = [];
+            $alreadyPassedOnce = [];
+
+            // 1. Calculate the selection score foreach beneficiary
+            foreach ($selectableBeneficiaries as $beneficiary) {
+                $score = 0;
+
+                // 1.1 Update the score foreach selection criterion
+                foreach ($group as $index => $criterion) {
+                    $fieldString = $criterion['field_string'];
+
+                    // If the distribution type is Household and the beneficiary is not the head, count only the criteria targetting the beneficiaries
+                    if ($distributionType !== '0' || $beneficiary['headId'] === $beneficiary['id'] || $criterion['target'] === 'Beneficiary') {
+
+                        // In the case of vulnerabilityCriteria, dql forces us to add a b or a hhh in front of the key for it to be unique
                         if ($criterion['table_string'] === 'vulnerabilityCriteria') {
-                            if (array_key_exists($beneficiary['id'], $vulnerabilityCriteria)) {
-                                if (!in_array($fieldString, $vulnerabilityCriteria[$beneficiary['id']])) {
-                                    array_push($vulnerabilityCriteria[$beneficiary['id']], $fieldString);
+                            $fieldString = 'b'.$fieldString; // fieldString = bdisabled/blactating etc
+                        }
+                        if ($criterion['field_string'] === 'disabledHeadOfHousehold') {
+                            $fieldString = 'hhh'.$index.'disabled';
+                        }
+
+                        if (array_key_exists($fieldString.$index, $beneficiary) && !is_null($beneficiary[$fieldString.$index])) {
+                            // Sometimes the vulnerability criteria are counted several times
+                            if ($criterion['table_string'] === 'vulnerabilityCriteria') {
+                                if (array_key_exists($beneficiary['id'], $vulnerabilityCriteria)) {
+                                    if (!in_array($fieldString, $vulnerabilityCriteria[$beneficiary['id']])) {
+                                        array_push($vulnerabilityCriteria[$beneficiary['id']], $fieldString);
+                                        $score += $criterion['weight'];
+                                    }
+                                } else {
+                                    $vulnerabilityCriteria[$beneficiary['id']] = [$fieldString];
                                     $score += $criterion['weight'];
                                 }
-                            } else {
-                                $vulnerabilityCriteria[$beneficiary['id']] = [$fieldString];
-                                $score += $criterion['weight'];
+                            } // If it exists, it means we are in one of the duplicates from the vulnerability criteria bug
+                            else {
+                                if (!in_array($beneficiary['id'], $alreadyPassedOnce)) {
+                                    $score += $criterion['weight'];
+                                }
                             }
                         }
-                        // If it exists, it means we are in one of the duplicates from the vulnerability criteria bug
-                        else if (!in_array($beneficiary['id'], $alreadyPassedOnce)) {
-                            $score += $criterion['weight'];
-                        }
+                    }
+                }
+
+                array_push($alreadyPassedOnce, $beneficiary['id']);
+
+                // 1.2. In case it is a distribution targetting households, gather the score to the head, else just store it
+                if ($distributionType === '0') {
+                    if (!array_key_exists($beneficiary['headId'], $beneficiaryScores)) {
+                        $beneficiaryScores[$beneficiary['headId']] = $score;
+                    } else {
+                        $beneficiaryScores[$beneficiary['headId']] = intval($beneficiaryScores[$beneficiary['headId']]) + $score;
+                    }
+                } else {
+                    if (!array_key_exists($beneficiary['id'], $beneficiaryScores)) {
+                        $beneficiaryScores[$beneficiary['id']] = $score;
+                    } else {
+                        $beneficiaryScores[$beneficiary['id']] = intval($beneficiaryScores[$beneficiary['id']]) + $score;
                     }
                 }
             }
 
-            array_push($alreadyPassedOnce, $beneficiary['id']);
-
-            // 1.2. In case it is a distribution targetting households, gather the score to the head, else just store it
-            if ($distributionType === '0') {
-                if (!array_key_exists($beneficiary['headId'], $beneficiaryScores)) {
-                    $beneficiaryScores[$beneficiary['headId']] = $score;
-                } else {
-                    $beneficiaryScores[$beneficiary['headId']] = intval($beneficiaryScores[$beneficiary['headId']]) + $score;
+            // 2. Verify who is above the threshold
+            foreach ($beneficiaryScores as $selectableBeneficiaryId => $score) {
+                if ($score >= $threshold) {
+                    $reachedBeneficiaries[$selectableBeneficiaryId] = true;
                 }
-            } else {
-                if (!array_key_exists($beneficiary['id'], $beneficiaryScores)) {
-                    $beneficiaryScores[$beneficiary['id']] = $score;
-                } else {
-                    $beneficiaryScores[$beneficiary['id']] = intval($beneficiaryScores[$beneficiary['id']]) + $score;
-                }
-            }
-        }
-        
-        // 2. Verify who is above the threshold 
-        foreach ($beneficiaryScores as $selectableBeneficiaryId => $score) {
-            if ($score >= $threshold) {
-                array_push($reachedBeneficiaries, $selectableBeneficiaryId);
             }
         }
         
@@ -142,8 +146,25 @@ class CriteriaDistributionService
             return ['number' =>  count($reachedBeneficiaries)];
         } else {
             // !!!! Those are ids, not directly beneficiaries !!!!
-            return ['finalArray' =>  $reachedBeneficiaries];
+            return ['finalArray' =>  array_keys($reachedBeneficiaries)];
         }
+    }
+
+    /**
+     * @param array   $filters
+     * @param Project $project
+     * @param int     $threshold
+     * @param int     $limit
+     * @param int     $offset
+     *
+     * @return Beneficiary[]
+     * @throws \Exception
+     */
+    public function getList(array $filters, Project $project, int $threshold, int $limit, int $offset)
+    {
+        $result = $this->load($filters, $project, $threshold, false);
+
+        return $this->em->getRepository(Beneficiary::class)->findBy(['id' => $result['finalArray']], null, $limit, $offset);
     }
 
     /**
