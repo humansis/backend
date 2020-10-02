@@ -48,11 +48,10 @@ class SmartcardPurchaseRepository extends EntityRepository
      */
     public function countPurchasesToRedeem(Vendor $vendor): PurchaseBatchToRedeem
     {
-        // TODO: replace createdAt by redeemedAt
         $qb = $this->createQueryBuilder('p')
             ->select('p.id')
             ->where('p.vendor = :vendor')
-            // ->andWhere('p.createdAt is null')
+            ->andWhere('p.redeemedAt is null')
             ->setParameter('vendor', $vendor);
 
         $ids = array_map(function ($result) {
@@ -81,14 +80,13 @@ class SmartcardPurchaseRepository extends EntityRepository
      */
     public function getRedeemBatches(Vendor $vendor): array
     {
-        // TODO: replace createdAt by redeemedAt
         $qb = $this->createQueryBuilder('p')
-            ->select('p.createdAt as batchDate, COUNT(p.id) as purchaseCount, SUM(pr.value) as purchaseRecordsValue')
+            ->select('p.redeemedAt as batchDate, COUNT(p.id) as purchaseCount, SUM(pr.value) as purchaseRecordsValue')
             ->join('p.records', 'pr')
             ->where('p.vendor = :vendor')
-            ->andWhere('p.createdAt is not null')
+            ->andWhere('p.redeemedAt is not null')
             ->setParameter('vendor', $vendor)
-            ->groupBy('p.createdAt');
+            ->groupBy('p.redeemedAt');
 
         $batches = [];
         foreach ($qb->getQuery()->getResult() as $batch) {
