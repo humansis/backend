@@ -67,6 +67,15 @@ class SmartcardPurchase
      */
     private $createdAt;
 
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(name="redeemed_at", type="datetime", nullable=true)
+     *
+     * @SymfonyGroups({"FullSmartcard"})
+     */
+    private $redeemedAt;
+
     protected function __construct()
     {
         $this->records = new ArrayCollection();
@@ -135,4 +144,21 @@ class SmartcardPurchase
     {
         return $this->createdAt;
     }
+
+    /**
+     * @return DateTime
+     */
+    public function getRedeemedAt(): DateTime
+    {
+        return $this->redeemedAt;
+    }
+
+    /**
+     * @param DateTime|null $redeemedAt
+     */
+    public function setRedeemedAt(?DateTime $redeemedAt): void
+    {
+        $this->redeemedAt = $redeemedAt;
+    }
+
 }
