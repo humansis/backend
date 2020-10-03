@@ -5,7 +5,7 @@ namespace VoucherBundle\DTO;
 /**
  * stores statistics from repository
  */
-class PurchaseBatchToRedeem
+class PurchaseRedemptionBatch
 {
     /** @var int */
     private $count;

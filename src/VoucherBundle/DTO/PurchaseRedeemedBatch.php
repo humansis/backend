@@ -5,7 +5,7 @@ namespace VoucherBundle\DTO;
 /**
  * stores statistics from repository
  */
-class PurchaseRedeemedBatch
+class PurchaseRedeemedBatch implements \JsonSerializable
 {
     /** @var \DateTimeInterface */
     private $date;
@@ -52,5 +52,14 @@ class PurchaseRedeemedBatch
     public function getValue(): float
     {
         return $this->value;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'date' => $this->date ? $this->date->format('d-m-Y H:i') : null,
+            'count' => $this->count,
+            'value' => $this->value,
+        ];
     }
 }

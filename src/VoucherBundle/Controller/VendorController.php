@@ -18,6 +18,7 @@ use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Booklet;
 use UserBundle\Entity\User;
+use VoucherBundle\InputType\SmartcardRedemtionBatch;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 /**
@@ -276,6 +277,62 @@ class VendorController extends Controller
         $summaryBatches = $repository->getRedeemBatches($vendor);
 
         return $this->json($summaryBatches);
+    }
+
+    /**
+     * Set vendor purchase as redeemed
+     *
+     * @Rest\Post("/vendors/{id}/redeem-batch", name="vendor_redeem_batch")
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @SWG\Tag(name="Single Vendor")
+     *
+     * @SWG\Parameter(
+     *     name="vendor",
+     *     in="body",
+     *     type="array",
+     *     required=true,
+     *     description="fields of the vendor purchase ids",
+     *     schema="int"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All vendor purchases",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=SmartcardPurchaseSummary::class))
+     *     )
+     * )
+     *
+     * @param Vendor                  $vendor
+     *
+     * @param SmartcardRedemtionBatch $newBatch
+     *
+     * @return Response
+     */
+    public function redeemBatch(Vendor $vendor, SmartcardRedemtionBatch $newBatch): Response
+    {
+        if ($vendor->getId() !== $newBatch->getVendorId()) {
+            return new Response("Inconsistent vendor from URL and batch", Response::HTTP_BAD_REQUEST);
+        }
+        /** @var SmartcardPurchaseRepository $repository */
+        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
+        $purchases = $repository->findBy([
+            'id' => $newBatch->getPurchases(),
+        ]);
+
+        foreach ($purchases as $purchase) {
+            if ($purchase->getVendor()->getId() !== $newBatch->getVendorId()) {
+                return new Response("Inconsistent vendor and purchase' #{$purchase->getId()} vendor", Response::HTTP_BAD_REQUEST);
+            }
+
+            $purchase->setRedeemedAt($newBatch->getRedeemedAt());
+        }
+
+        $this->getDoctrine()->getManager()->flush();
+
+        return true;
     }
 
     /**
