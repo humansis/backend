@@ -5,7 +5,7 @@ namespace VoucherBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use VoucherBundle\DTO\PurchaseBatchToRedeem;
+use VoucherBundle\DTO\PurchaseRedemptionBatch;
 use VoucherBundle\DTO\PurchaseRedeemedBatch;
 use VoucherBundle\DTO\PurchaseSummary;
 use VoucherBundle\Entity\Smartcard;
@@ -36,17 +36,17 @@ class SmartcardPurchaseRepository extends EntityRepository
 
         $summary = $qb->getQuery()->getSingleResult();
 
-        return new PurchaseSummary($summary['purchaseCount'], $summary['purchaseRecordsValue']);
+        return new PurchaseSummary($summary['purchaseCount'], $summary['purchaseRecordsValue'] ?? 0);
     }
 
     /**
      * @param Vendor $vendor
      *
-     * @return PurchaseBatchToRedeem
+     * @return PurchaseRedemptionBatch
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function countPurchasesToRedeem(Vendor $vendor): PurchaseBatchToRedeem
+    public function countPurchasesToRedeem(Vendor $vendor): PurchaseRedemptionBatch
     {
         $qb = $this->createQueryBuilder('p')
             ->select('p.id')
@@ -66,7 +66,7 @@ class SmartcardPurchaseRepository extends EntityRepository
 
         $summary = $qb->getQuery()->getSingleResult();
 
-        return new PurchaseBatchToRedeem(
+        return new PurchaseRedemptionBatch(
             $summary['purchaseCount'],
             $summary['purchaseRecordsValue'] ?? 0,
             $ids
