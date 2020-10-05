@@ -2,7 +2,7 @@
 
 # parameters:
 # $1: environment (dev, test, stage, demo, prod)
-# $2: clean database (true, false)
+# $2: clean database (true, false, database)
 # $3: load fixtures (dev, test, false)
 # $4: cache clear mode (normal, aggressive)
 
@@ -63,10 +63,18 @@ echo "...done"
 # clean database
 echo "Cleaning database"
 if [[ $2 == "true" ]]; then
+  clean_database="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'bash clean_database.sh migrations'"
+  ssh -i ec2_bms.pem ubuntu@$ec2_host $clean_database
+elif [[ $2 == "database" ]]; then
   clean_database="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'bash clean_database.sh'"
   ssh -i ec2_bms.pem ubuntu@$ec2_host $clean_database
+  # get database
+  bash get_db.sh "$1"
+  # run database migrations
+  migrations="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
+  ssh -i ec2_bms.pem ubuntu@$ec2_host $migrations
 elif [[ $2 != "false" ]]; then
-  echo "Wrong clean database parameter. Options are: [true, false]"
+  echo "Wrong clean database parameter. Options are: [true, false, database]"
   exit 1
 fi
 echo "...done"
@@ -82,7 +90,9 @@ if [[ $3 != "false" ]]; then
     echo "Wrong fixtures environment parameter. Options are: [dev, test, false (do not load fixtures)]"
     exit 1
   fi
-  ssh -i ec2_bms.pem ubuntu@$ec2_host $load_fixtures
+  if [[ ! -z $load_fixtures ]]; then
+    ssh -i ec2_bms.pem ubuntu@$ec2_host $load_fixtures
+  fi
 fi
 echo "...done"
 
