@@ -2,9 +2,10 @@
 
 namespace VoucherBundle\InputType;
 
+use CommonBundle\InputType\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class SmartcardRedemtionBatch
+class SmartcardRedemtionBatch implements InputTypeInterface
 {
     /**
      * @var int[]
@@ -18,18 +19,10 @@ class SmartcardRedemtionBatch
     private $purchases;
 
     /**
-     * @var int ID of vendor/seller
+     * @var string
      *
-     * @Assert\Type("int")
      * @Assert\NotBlank()
-     */
-    private $vendorId;
-
-    /**
-     * @var \DateTimeInterface
-     *
-     * @Assert\DateTime()
-     * @Assert\NotBlank()
+     * @Assert\Regex(pattern="|\d\d-\d\d-\d\d\d\d \d\d:\d\d:\d\d|")
      */
     private $redeemedAt;
 
@@ -50,33 +43,17 @@ class SmartcardRedemtionBatch
     }
 
     /**
-     * @return int
-     */
-    public function getVendorId(): int
-    {
-        return $this->vendorId;
-    }
-
-    /**
-     * @param int $vendorId
-     */
-    public function setVendorId(int $vendorId): void
-    {
-        $this->vendorId = $vendorId;
-    }
-
-    /**
      * @return \DateTimeInterface
      */
     public function getRedeemedAt(): \DateTimeInterface
     {
-        return $this->redeemedAt;
+        return new \DateTime($this->redeemedAt);
     }
 
     /**
-     * @param \DateTimeInterface $redeemedAt
+     * @param string $redeemedAt
      */
-    public function setRedeemedAt(\DateTimeInterface $redeemedAt): void
+    public function setRedeemedAt(string $redeemedAt): void
     {
         $this->redeemedAt = $redeemedAt;
     }

@@ -195,11 +195,7 @@ class VendorController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="All vendor purchases",
-     *     @SWG\Schema(
-     *         type="object",
-     *         @SWG\Items(ref=@Model(type=SmartcardPurchaseSummary::class))
-     *     )
+     *     description="All vendor purchases"
      * )
      *
      * @param Vendor $vendor
@@ -227,11 +223,7 @@ class VendorController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Vendor purchases to redeem",
-     *     @SWG\Schema(
-     *         type="object",
-     *         @SWG\Items(ref=@Model(type=SmartcardPurchaseSummary::class))
-     *     )
+     *     description="Vendor purchases to redeem"
      * )
      *
      * @param Vendor $vendor
@@ -252,7 +244,7 @@ class VendorController extends Controller
     /**
      * Get vendor purchase counts
      *
-     * @Rest\Get("/vendors/{id}/redeem-batches", name="get_vendor_redeem_batches")
+     * @Rest\Get("/vendors/{id}/redeemed-batches", name="get_vendor_redeem_batches")
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * @SWG\Tag(name="Single Vendor")
@@ -260,10 +252,6 @@ class VendorController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="All vendor purchases",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=SmartcardPurchaseSummary::class))
-     *     )
      * )
      *
      * @param Vendor $vendor
@@ -298,11 +286,7 @@ class VendorController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="All vendor purchases",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=SmartcardPurchaseSummary::class))
-     *     )
+     *     description="All vendor purchases"
      * )
      *
      * @param Vendor                  $vendor
@@ -313,9 +297,6 @@ class VendorController extends Controller
      */
     public function redeemBatch(Vendor $vendor, SmartcardRedemtionBatch $newBatch): Response
     {
-        if ($vendor->getId() !== $newBatch->getVendorId()) {
-            return new Response("Inconsistent vendor from URL and batch", Response::HTTP_BAD_REQUEST);
-        }
         /** @var SmartcardPurchaseRepository $repository */
         $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
         $purchases = $repository->findBy([
@@ -323,8 +304,11 @@ class VendorController extends Controller
         ]);
 
         foreach ($purchases as $purchase) {
-            if ($purchase->getVendor()->getId() !== $newBatch->getVendorId()) {
+            if ($purchase->getVendor()->getId() !== $vendor->getId()) {
                 return new Response("Inconsistent vendor and purchase' #{$purchase->getId()} vendor", Response::HTTP_BAD_REQUEST);
+            }
+            if ($purchase->getRedeemedAt() !== null) {
+                return new Response("Purchase' #{$purchase->getId()} was already redeemed at " . $purchase->getRedeemedAt()->format('Y-m-d H:i:s'), Response::HTTP_BAD_REQUEST);
             }
 
             $purchase->setRedeemedAt($newBatch->getRedeemedAt());
@@ -332,7 +316,7 @@ class VendorController extends Controller
 
         $this->getDoctrine()->getManager()->flush();
 
-        return true;
+        return $this->json(true);
     }
 
     /**
