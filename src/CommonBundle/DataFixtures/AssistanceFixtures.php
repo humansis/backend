@@ -13,9 +13,9 @@ use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
-class DistributionFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
+class AssistanceFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
-    private $distributionArray = [
+    private $assistanceArray = [
         'adm1' => '',
         'adm2' => '',
         'adm3' => '',
@@ -88,9 +88,9 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface,
     {
         if ($this->kernel->getEnvironment() !== "prod") {
             $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => 'KHM']);
-            $this->distributionArray['project']['id'] = $project->getId();
+            $this->assistanceArray['project']['id'] = $project->getId();
 
-            $this->distributionService->create("KHM", $this->distributionArray, 1);
+            $this->distributionService->create("KHM", $this->assistanceArray, 1);
         }
     }
 

@@ -125,7 +125,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\DistributionFixtures:
+    CommonBundle\DataFixtures\AssistanceFixtures:
         arguments:
             - "@kernel"
             - "@distribution.distribution_service"
