@@ -146,9 +146,9 @@ class SmartcardPurchase
     }
 
     /**
-     * @return DateTimeInterface
+     * @return DateTimeInterface|null
      */
-    public function getRedeemedAt(): DateTimeInterface
+    public function getRedeemedAt(): ?DateTimeInterface
     {
         return $this->redeemedAt;
     }
