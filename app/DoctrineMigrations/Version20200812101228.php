@@ -33,7 +33,7 @@ final class Version20200812101228 extends AbstractMigration
             'nutrition' => 'nutrition',
             'protection' => 'protection',
             'shelter' => 'shelter',
-            'cash for work' => 'casch_for_work',
+            'cash for work' => 'cash_for_work',
             'TVET' => 'tvet',
             'food, RTE kits' => 'food_rte',
             'NFIs' => 'nfis',
