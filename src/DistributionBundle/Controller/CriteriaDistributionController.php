@@ -31,7 +31,7 @@ class CriteriaDistributionController extends Controller
 
     /**
      * @Rest\Get("/distributions/criteria", name="get_criteria_celection")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE') or is_granted('ROLE_DISTRIBUTION_CREATE')")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      *

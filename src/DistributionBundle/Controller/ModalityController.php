@@ -24,7 +24,7 @@ class ModalityController extends Controller
 
     /**
      * @Rest\Get("/modalities")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE') or is_granted('ROLE_DISTRIBUTION_CREATE')")
      *
      * @SWG\Tag(name="Modalities")
      *
