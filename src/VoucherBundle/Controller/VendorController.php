@@ -3,8 +3,6 @@
 namespace VoucherBundle\Controller;
 
 
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -14,12 +12,9 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Booklet;
 use UserBundle\Entity\User;
-use VoucherBundle\InputType\SmartcardRedemtionBatch;
-use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 /**
  * Class VendorController
@@ -183,140 +178,6 @@ class VendorController extends Controller
     public function getSingleActionVendor(Vendor $vendor)
     {
         return $this->getSingleAction($vendor);
-    }
-
-    /**
-     * Get vendor purchase counts
-     *
-     * @Rest\Get("/vendors/{id}/purchases", name="get_all_vendor_purchases")
-     * @Security("is_granted('ROLE_ADMIN')")
-     *
-     * @SWG\Tag(name="Single Vendor")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="All vendor purchases"
-     * )
-     *
-     * @param Vendor $vendor
-     *
-     * @return Response
-     * @throws NoResultException
-     * @throws NonUniqueResultException
-     */
-    public function getPurchasesSummary(Vendor $vendor): Response
-    {
-        /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $summary = $repository->countPurchases($vendor);
-
-        return $this->json($summary);
-    }
-
-    /**
-     * Get vendor purchases to redeem
-     *
-     * @Rest\Get("/vendors/{id}/purchases-to-redeem", name="get_vendor_purchases_to_redeem")
-     * @Security("is_granted('ROLE_ADMIN')")
-     *
-     * @SWG\Tag(name="Single Vendor")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Vendor purchases to redeem"
-     * )
-     *
-     * @param Vendor $vendor
-     *
-     * @return Response
-     * @throws NoResultException
-     * @throws NonUniqueResultException
-     */
-    public function getPurchasesToRedeemSummary(Vendor $vendor): Response
-    {
-        /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $summary = $repository->countPurchasesToRedeem($vendor);
-
-        return $this->json($summary);
-    }
-
-    /**
-     * Get vendor purchase counts
-     *
-     * @Rest\Get("/vendors/{id}/redeemed-batches", name="get_vendor_redeem_batches")
-     * @Security("is_granted('ROLE_ADMIN')")
-     *
-     * @SWG\Tag(name="Single Vendor")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="All vendor purchases",
-     * )
-     *
-     * @param Vendor $vendor
-     *
-     * @return Response
-     */
-    public function getRedeemBatches(Vendor $vendor): Response
-    {
-        /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $summaryBatches = $repository->getRedeemBatches($vendor);
-
-        return $this->json($summaryBatches);
-    }
-
-    /**
-     * Set vendor purchase as redeemed
-     *
-     * @Rest\Post("/vendors/{id}/redeem-batch", name="vendor_redeem_batch")
-     * @Security("is_granted('ROLE_ADMIN')")
-     *
-     * @SWG\Tag(name="Single Vendor")
-     *
-     * @SWG\Parameter(
-     *     name="vendor",
-     *     in="body",
-     *     type="array",
-     *     required=true,
-     *     description="fields of the vendor purchase ids",
-     *     schema="int"
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="All vendor purchases"
-     * )
-     *
-     * @param Vendor                  $vendor
-     *
-     * @param SmartcardRedemtionBatch $newBatch
-     *
-     * @return Response
-     */
-    public function redeemBatch(Vendor $vendor, SmartcardRedemtionBatch $newBatch): Response
-    {
-        /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $purchases = $repository->findBy([
-            'id' => $newBatch->getPurchases(),
-        ]);
-
-        foreach ($purchases as $purchase) {
-            if ($purchase->getVendor()->getId() !== $vendor->getId()) {
-                return new Response("Inconsistent vendor and purchase' #{$purchase->getId()} vendor", Response::HTTP_BAD_REQUEST);
-            }
-            if ($purchase->getRedeemedAt() !== null) {
-                return new Response("Purchase' #{$purchase->getId()} was already redeemed at " . $purchase->getRedeemedAt()->format('Y-m-d H:i:s'), Response::HTTP_BAD_REQUEST);
-            }
-
-            $purchase->setRedeemedAt($newBatch->getRedeemedAt());
-        }
-
-        $this->getDoctrine()->getManager()->flush();
-
-        return $this->json(true);
     }
 
     /**
