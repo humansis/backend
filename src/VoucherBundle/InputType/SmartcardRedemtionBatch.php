@@ -19,14 +19,6 @@ class SmartcardRedemtionBatch implements InputTypeInterface
     private $purchases;
 
     /**
-     * @var string
-     *
-     * @Assert\NotBlank()
-     * @Assert\Regex(pattern="|\d\d-\d\d-\d\d\d\d \d\d:\d\d:\d\d|")
-     */
-    private $redeemedAt;
-
-    /**
      * @return array
      */
     public function getPurchases(): array
@@ -40,21 +32,5 @@ class SmartcardRedemtionBatch implements InputTypeInterface
     public function setPurchases(array $purchases): void
     {
         $this->purchases = $purchases;
-    }
-
-    /**
-     * @return \DateTimeInterface
-     */
-    public function getRedeemedAt(): \DateTimeInterface
-    {
-        return new \DateTime($this->redeemedAt);
-    }
-
-    /**
-     * @param string $redeemedAt
-     */
-    public function setRedeemedAt(string $redeemedAt): void
-    {
-        $this->redeemedAt = $redeemedAt;
     }
 }

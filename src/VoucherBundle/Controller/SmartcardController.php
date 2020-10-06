@@ -555,6 +555,7 @@ class SmartcardController extends Controller
             'id' => $newBatch->getPurchases(),
         ]);
 
+        $redeemedAtDate = new \DateTime();
         foreach ($purchases as $purchase) {
             if ($purchase->getVendor()->getId() !== $vendor->getId()) {
                 return new Response("Inconsistent vendor and purchase' #{$purchase->getId()} vendor", Response::HTTP_BAD_REQUEST);
@@ -563,7 +564,7 @@ class SmartcardController extends Controller
                 return new Response("Purchase' #{$purchase->getId()} was already redeemed at " . $purchase->getRedeemedAt()->format('Y-m-d H:i:s'), Response::HTTP_BAD_REQUEST);
             }
 
-            $purchase->setRedeemedAt($newBatch->getRedeemedAt());
+            $purchase->setRedeemedAt($redeemedAtDate);
         }
 
         $this->getDoctrine()->getManager()->flush();
