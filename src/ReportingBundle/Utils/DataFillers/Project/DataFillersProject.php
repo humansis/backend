@@ -426,7 +426,7 @@ class DataFillersProject
         foreach ($projects as $project) {
             $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
             $qb = $this->repository->createQueryBuilder('db')
-                ->leftjoin('db.distributionData', 'dd')
+                ->leftjoin('db.assistance', 'dd')
                 ->leftJoin('dd.project', 'p')
                 ->where('p.id = :project')
                 ->setParameter('project', $project->getId())

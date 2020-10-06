@@ -8,10 +8,10 @@ use Doctrine\ORM\QueryBuilder;
 use phpDocumentor\Reflection\Types\Object_;
 use ReportingBundle\Entity\ReportingDistribution;
 use \ProjectBundle\Entity\Project;
-use \DistributionBundle\Entity\DistributionData;
+use \DistributionBundle\Entity\Assistance;
 
 /**
- * Class DistributionDataRetrievers
+ * Class AssistanceRetrievers
  * @package ReportingBundle\Utils\DataRetrievers
  */
 abstract class AbstractDataRetriever

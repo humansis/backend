@@ -4,7 +4,7 @@ namespace BeneficiaryBundle\Mapper;
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 
 class AssistanceMapper
 {
@@ -21,7 +21,7 @@ class AssistanceMapper
         $this->beneficiaryMapper = $beneficiaryMapper;
     }
 
-    public function toMinimalArray(?DistributionData $assistance): ?array
+    public function toMinimalArray(?Assistance $assistance): ?array
     {
         if (!$assistance) {
             return null;
@@ -39,7 +39,7 @@ class AssistanceMapper
         }
     }
 
-    public function toBeneficiaryOnlyArray(?DistributionData $assistance): ?array
+    public function toBeneficiaryOnlyArray(?Assistance $assistance): ?array
     {
         if (!$assistance) {
             return null;

@@ -4,7 +4,7 @@
 namespace DistributionBundle\Utils;
 
 use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -29,16 +29,16 @@ class CommodityService
     }
 
     /**
-     * @param DistributionData $distribution
+     * @param Assistance $distribution
      * @param array $commodityArray
      * @param bool $flush
      * @return Commodity
      */
-    public function create(DistributionData $distribution, array $commodityArray, bool $flush)
+    public function create(Assistance $distribution, array $commodityArray, bool $flush)
     {
         $commodity = new Commodity();
         $commodity->setValue($commodityArray["value"])
-            ->setDistributionData($distribution)
+            ->setAssistance($distribution)
             ->setUnit($commodityArray["unit"])
             ->setModalityType(
                 $this->em->getRepository(ModalityType::class)

@@ -11,7 +11,7 @@ use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\DistributionCSVService;
@@ -50,9 +50,9 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
             $this->markTestIncomplete("There is no beneficiary with the ID specified to execute the test.");
         }
 
-        $distributionData = $this->em->getRepository(DistributionData::class)->findAll();
+        $assistance = $this->em->getRepository(Assistance::class)->findAll();
 
-        if (!$distributionData) {
+        if (!$assistance) {
             print_r("\nThere is no distribution with the ID specified to execute the test.\n");
             $this->markTestIncomplete("There is no distribution with the ID specified to execute the test.");
         }
@@ -60,7 +60,7 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
         // If everything is ok, we create a new distributionBeneficiary
         $distributionBeneficiary = new DistributionBeneficiary();
         $distributionBeneficiary->setBeneficiary($beneficiary[0])
-            ->setDistributionData($distributionData[0])
+            ->setAssistance($assistance[0])
             ->setRemoved(0);
 
         $this->em->persist($distributionBeneficiary);
@@ -97,7 +97,7 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
     public function testRemoveDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
     {
         $beneficiaryId = $distributionBeneficiary->getBeneficiary()->getId();
-        $distributionId = $distributionBeneficiary->getDistributionData()->getId();
+        $distributionId = $distributionBeneficiary->getAssistance()->getId();
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);

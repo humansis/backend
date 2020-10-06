@@ -9,9 +9,10 @@ use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
+use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\DistributionCSVService;
@@ -27,7 +28,7 @@ use VoucherBundle\InputType\VoucherPurchase;
 use VoucherBundle\Model\PurchaseService;
 use VoucherBundle\Utils\BookletService;
 
-class DistributionControllerTest extends BMSServiceTestCase
+class AssistanceControllerTest extends BMSServiceTestCase
 {
     /** @var DistributionCSVService $distributionCSVService */
     private $distributionCSVService;
@@ -59,15 +60,16 @@ class DistributionControllerTest extends BMSServiceTestCase
             "adm2"=> "",
             "adm3" => "",
             "adm4" => "",
+            "type" => Assistance::TYPE_HOUSEHOLD,
             "commodities" => [
                 [
                     "modality" => "Cash",
                     "modality_type" => [
-                        "id" => "1"
+                        "id" => 1,
                     ],
                     "type" => "Mobile Money",
                     "unit" => "USD",
-                    "value" => "150",
+                    "value" => 150.1,
                     "description" => null
                 ]
             ],
@@ -92,7 +94,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             "project"=> [
                 "donors"=> [],
                 "donors_name"=> [],
-                "id"=> "1",
+                "id"=> 1,
                 "name"=> "",
                 "sectors"=> [],
                 "sectors_name"=> []
@@ -109,8 +111,7 @@ class DistributionControllerTest extends BMSServiceTestCase
                     ]
                 ]
             ],
-            "type"=> "Household",
-            "threshold"=> "1"
+            "threshold"=> 1,
         );
 
 
@@ -120,9 +121,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->request('PUT', '/api/wsse/distributions', $criteria);
-        $return = json_decode($this->client->getResponse()->getContent(), true);
-
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $return = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('distribution', $return);
         $this->assertArrayHasKey('data', $return);
@@ -130,6 +130,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         $distribution = $return['distribution'];
         $this->assertArrayHasKey('id', $distribution);
         $this->assertArrayHasKey('name', $distribution);
+        $this->assertArrayHasKey('type', $distribution);
+        $this->assertArrayHasKey('target_type', $distribution);
         $this->assertArrayHasKey('location', $distribution);
         $this->assertArrayHasKey('project', $distribution);
         $this->assertArrayHasKey('selection_criteria', $distribution);
@@ -159,8 +161,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         // Check if the second step succeed
-        $this->assertTrue(gettype($randomBenef[0]) == 'array');
-        $this->assertTrue(gettype($randomBenef[1]) == 'array');
+        $this->assertIsArray($randomBenef[0]);
+        $this->assertIsArray($randomBenef[1]);
     }
 
     /**
@@ -337,7 +339,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $distributionRepo = $this->em->getRepository(DistributionBeneficiary::class);
-        $firstDistributionBeneficiary = $distributionRepo->findOneBy(['distributionData'=>$distribution['id']]);
+        $firstDistributionBeneficiary = $distributionRepo->findOneBy(['assistance'=>$distribution['id']]);
         $bnfId = $firstDistributionBeneficiary->getBeneficiary()->getId();
 
         $booklet = $bookletService->create('KHM', [
@@ -346,7 +348,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             'currency' => 'USD',
             'individual_values' => range(100, 110)
         ]);
-        $bookletService->assign($booklet, $firstDistributionBeneficiary->getDistributionData(), $firstDistributionBeneficiary->getBeneficiary());
+        $bookletService->assign($booklet, $firstDistributionBeneficiary->getAssistance(), $firstDistributionBeneficiary->getBeneficiary());
 
         $bookletBig = $bookletService->create('KHM', [
             'number_booklets' => 1,
@@ -354,7 +356,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             'currency' => 'EUR',
             'individual_values' => range(200, 220)
         ]);
-        $bookletService->assign($bookletBig, $firstDistributionBeneficiary->getDistributionData(), $firstDistributionBeneficiary->getBeneficiary());
+        $bookletService->assign($bookletBig, $firstDistributionBeneficiary->getAssistance(), $firstDistributionBeneficiary->getBeneficiary());
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([]);
 
@@ -536,15 +538,15 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $countryIso3 = 'KHM';
 
-        //distributionData will be used in the function "parseCSV" to get all the beneficiaries in a project :
-        $distributionData = $this->em->getRepository(DistributionData::class)->findOneById($distribution['id']);
+        //assistance will be used in the function "parseCSV" to get all the beneficiaries in a project :
+        $assistance = $this->em->getRepository(Assistance::class)->findOneById($distribution['id']);
         $distributionBeneficiaryService = $this->container->get('distribution.distribution_beneficiary_service');
 
         //beneficiaries contains all beneficiaries in a distribution :
-        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
+        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($assistance);
         $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiariesInDistribution.csv', 'beneficiaryInDistribution.csv');
 
-        $import = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
+        $import = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $assistance, $uploadedFile);
 
         // Check if the second step succeed
         $this->assertTrue(gettype($import) == "array");
@@ -563,7 +565,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             $import[$justifiedType] = $justifiedBeneficiaries;
         }
 
-        $save = $distributionCSVService->saveCSV($countryIso3, $distributionData, $import);
+        $save = $distributionCSVService->saveCSV($countryIso3, $assistance, $import);
 
         $this->assertTrue(gettype($save) == "array");
         $this->assertArrayHasKey('result', $save);
@@ -680,17 +682,17 @@ class DistributionControllerTest extends BMSServiceTestCase
             $this->em->remove($commodity);
         }
 
-        $distribution = $this->em->getRepository(DistributionData::class)->find($distribution['id']);
-        if ($distribution instanceof DistributionData) {
+        $distribution = $this->em->getRepository(Assistance::class)->find($distribution['id']);
+        if ($distribution instanceof Assistance) {
             $distributionBeneficiaries = $this->em
-                ->getRepository(DistributionBeneficiary::class)->findByDistributionData($distribution);
+                ->getRepository(DistributionBeneficiary::class)->findByAssistance($distribution);
             foreach ($distributionBeneficiaries as $distributionBeneficiary) {
                 $transaction = $this->em->getRepository(Transaction::class)->findOneByDistributionBeneficiary($distributionBeneficiary);
                 $this->em->remove($transaction);
                 $this->em->remove($distributionBeneficiary);
             }
 
-            $selectionCriteria = $this->em->getRepository(SelectionCriteria::class)->findByDistributionData($distribution);
+            $selectionCriteria = $this->em->getRepository(SelectionCriteria::class)->findByAssistance($distribution);
             foreach ($selectionCriteria as $selectionCriterion) {
                 $this->em->remove($selectionCriterion);
             }

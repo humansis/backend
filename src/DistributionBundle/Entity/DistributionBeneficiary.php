@@ -32,12 +32,13 @@ class DistributionBeneficiary
     private $id;
 
     /**
-     * @var DistributionData
+     * @var Assistance
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="distributionBeneficiaries")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="distributionBeneficiaries")
+     * @ORM\JoinColumn(name="assistance_id")
      * @SymfonyGroups({"FullDistributionBeneficiary", "FullBooklet"})
      */
-    private $distributionData;
+    private $assistance;
 
     /**
      * @var AbstractBeneficiary
@@ -126,7 +127,7 @@ class DistributionBeneficiary
      */
     public function getSmartcardDistributed(): ?bool
     {
-        foreach ($this->getDistributionData()->getCommodities() as $commodity) {
+        foreach ($this->getAssistance()->getCommodities() as $commodity) {
             /** @var Commodity $commodity */
             if ('Smartcard' === $commodity->getModalityType()->getName()) {
                 return count($this->smartcardDeposits) > 0;
@@ -137,27 +138,27 @@ class DistributionBeneficiary
     }
 
     /**
-     * Set distributionData.
+     * Set assistance.
      *
-     * @param DistributionData|null $distributionData
+     * @param Assistance|null $assistance
      *
      * @return DistributionBeneficiary
      */
-    public function setDistributionData(DistributionData $distributionData = null)
+    public function setAssistance(Assistance $assistance = null)
     {
-        $this->distributionData = $distributionData;
+        $this->assistance = $assistance;
 
         return $this;
     }
 
     /**
-     * Get distributionData.
+     * Get assistance.
      *
-     * @return DistributionData|null
+     * @return Assistance|null
      */
-    public function getDistributionData()
+    public function getAssistance()
     {
-        return $this->distributionData;
+        return $this->assistance;
     }
 
     /**

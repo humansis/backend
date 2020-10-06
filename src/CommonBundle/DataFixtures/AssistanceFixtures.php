@@ -3,20 +3,24 @@
 
 namespace CommonBundle\DataFixtures;
 
+use DistributionBundle\DBAL\AssistanceTypeEnum;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\DistributionService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
-class DistributionFixtures extends Fixture implements DependentFixtureInterface
+class AssistanceFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
-    private $distributionArray = [
+    private $assistanceArray = [
         'adm1' => '',
         'adm2' => '',
         'adm3' => '',
         'adm4' => '',
+        'type' => Assistance::TYPE_BENEFICIARY,
         'commodities' => [
             0 => [
                 'modality' => 'CTP',
@@ -25,7 +29,7 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'type' => 'Mobile',
                 'unit' => 'USD',
-                'value' => '45',
+                'value' => 45,
                 'description' => null
             ]
         ],
@@ -59,8 +63,9 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface
                 ],
             ],
         ],
-        'type' => 'Individual',
-        'threshold' => '1'
+        'target_type' => Assistance::TYPE_BENEFICIARY,
+        'assistance_type' => AssistanceTypeEnum::DISTRIBUTION,
+        'threshold' => 1,
     ];
 
     private $distributionService;
@@ -83,9 +88,9 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface
     {
         if ($this->kernel->getEnvironment() !== "prod") {
             $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => 'KHM']);
-            $this->distributionArray['project']['id'] = $project->getId();
+            $this->assistanceArray['project']['id'] = $project->getId();
 
-            $this->distributionService->create("KHM", $this->distributionArray, 1);
+            $this->distributionService->create("KHM", $this->assistanceArray, 1);
         }
     }
 
@@ -94,5 +99,10 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface
         return [
             ProjectFixtures::class,
         ];
+    }
+
+    public static function getGroups(): array
+    {
+        return ['test'];
     }
 }

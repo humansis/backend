@@ -4,7 +4,7 @@ namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
@@ -432,29 +432,29 @@ class BookletService
      *
      * @param Booklet $booklet
      * @param Beneficiary $beneficiary
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return string
      * @throws \Exception
      *
      */
-    public function assign(Booklet $booklet, DistributionData $distributionData, Beneficiary $beneficiary)
+    public function assign(Booklet $booklet, Assistance $assistance, Beneficiary $beneficiary)
     {
         if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED || $booklet->getStatus() === Booklet::DISTRIBUTED) {
             throw new \Exception("This booklet has already been distributed, used or is actually deactivated");
         }
 
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(
-            ['beneficiary' => $beneficiary, "distributionData" => $distributionData]
+            ['beneficiary' => $beneficiary, "assistance" => $assistance]
         );
         $booklet->setDistributionBeneficiary($distributionBeneficiary)
             ->setStatus(Booklet::DISTRIBUTED);
         $this->em->merge($booklet);
 
-        $beneficiariesWithoutBooklets = $this->em->getRepository(DistributionBeneficiary::class)->countWithoutBooklet($distributionData);
+        $beneficiariesWithoutBooklets = $this->em->getRepository(DistributionBeneficiary::class)->countWithoutBooklet($assistance);
 
         if ($beneficiariesWithoutBooklets === '1') {
-            $distributionData->setCompleted(true);
-            $this->em->merge($distributionData);
+            $assistance->setCompleted(true);
+            $this->em->merge($assistance);
         }
 
         $this->em->flush();
@@ -598,14 +598,14 @@ class BookletService
     }
 
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param string $type
      * @return mixed
      */
-    public function exportVouchersDistributionToCsv(DistributionData $distributionData, string $type)
+    public function exportVouchersDistributionToCsv(Assistance $assistance, string $type)
     {
         $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)
-            ->findByDistributionData($distributionData);
+            ->findByAssistance($assistance);
 
         $beneficiaries = array();
         $exportableTable = array();
