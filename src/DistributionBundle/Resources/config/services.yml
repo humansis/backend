@@ -77,3 +77,7 @@ services:
             - '@validator'
             - "@request_validator"
             - "@beneficiary.csv_to_array_mapper"
+
+    distribution.export.ukr_post:
+        class: DistributionBundle\Export\UkrPostExport
+        public: true
