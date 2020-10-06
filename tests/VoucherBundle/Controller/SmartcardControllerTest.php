@@ -339,7 +339,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
         ]);
         $batchToRedeem = [
             "purchases" => array_map(function (\VoucherBundle\Entity\SmartcardPurchase $purchase) { return $purchase->getId(); }, $purchases),
-            "redeemed_at" => "31-12-2020 23:59:59"
         ];
 
         $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/' . $vendorId, $batchToRedeem);
