@@ -103,11 +103,13 @@ class LocationService
         }
 
         // Define location array
-        $adm1 = $this->em->getRepository(Adm1::class)->find($locationType->getAdm1());
+        $adm1 = null;
         $adm2 = null;
         $adm3 = null;
         $adm4 = null;
-
+        if ($locationType->getAdm1() !== null) {
+            $adm1 = $this->em->getRepository(Adm1::class)->find($locationType->getAdm1());
+        }
         if ($locationType->getAdm2() !== null) {
             $adm2 = $this->em->getRepository(Adm2::class)->find($locationType->getAdm2());
         }
