@@ -21,6 +21,8 @@ class SectorEnum extends AbstractEnum
         self::MINE,
         self::DRR_RESILIENCE,
         self::NON_SECTOR,
+        self::CAMP_MANAGEMENT,
+        self::EARLY_RECOVERY,
     ];
 
     const FOOD_SECURITY = "food_security";
