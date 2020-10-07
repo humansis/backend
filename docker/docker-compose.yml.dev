@@ -27,7 +27,7 @@ services:
             - ./docker/dev/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
         environment:
                 PMA_HOST: %env(RDS_HOSTNAME)%
-                PMA_ABSOLUTE_URI: https://apidev.humansis.org/phpmyadmin/
+                PMA_ABSOLUTE_URI: https://apidev.humansis.org/pma_yzixy37h/
 
     nginx:
         image: nginx

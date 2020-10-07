@@ -49,7 +49,7 @@ echo "...done"
 
 # deploy files to host
 echo "Upload application files to remote server"
-rsync --progress -avz -e "ssh -i ec2_bms.pem" --exclude-from='sync_excludes' ./* ubuntu@$ec2_host:/var/www/html/bms_api/ --delete
+rsync --progress -avz -e "ssh -i ec2_bms.pem" --exclude 'ec2_bms.pem' --exclude-from='sync_excludes' ./* ubuntu@$ec2_host:/var/www/html/bms_api/ --delete
 echo "...done"
 echo "Starting application containers"
 start_app="cd /var/www/html/bms_api && sudo docker-compose up -d"
