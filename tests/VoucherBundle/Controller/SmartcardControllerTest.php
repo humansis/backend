@@ -312,11 +312,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $batch = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertIsArray($batch);
-        $this->assertArrayHasKey('count', $batch);
         $this->assertArrayHasKey('value', $batch);
         $this->assertArrayHasKey('purchases_ids', $batch);
 
-        $this->assertIsInt($batch['count']);
         $this->assertIsNumeric($batch['value']);
         $this->assertIsArray($batch['purchases_ids']);
         foreach ($batch['purchases_ids'] as $id) {
