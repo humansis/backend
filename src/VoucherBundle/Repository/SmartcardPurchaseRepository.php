@@ -48,7 +48,7 @@ class SmartcardPurchaseRepository extends EntityRepository
      */
     public function countPurchasesToRedeem(Vendor $vendor): PurchaseRedemptionBatch
     {
-        $qb = $this->createQueryBuilder('p')
+        $idsQuery = $this->createQueryBuilder('p')
             ->select('p.id')
             ->where('p.vendor = :vendor')
             ->andWhere('p.redeemedAt is null')
@@ -56,18 +56,17 @@ class SmartcardPurchaseRepository extends EntityRepository
 
         $ids = array_map(function ($result) {
             return (int) $result['id'];
-        }, $qb->getQuery()->getScalarResult());
+        }, $idsQuery->getQuery()->getScalarResult());
 
-        $qb = $this->createQueryBuilder('p')
-            ->select('COUNT(p.id) as purchaseCount, SUM(pr.value) as purchaseRecordsValue')
+        $valueQuery = $this->createQueryBuilder('p')
+            ->select('SUM(pr.value) as purchaseRecordsValue')
             ->join('p.records', 'pr')
             ->where('p.id IN (:ids)')
             ->setParameter('ids', $ids);
 
-        $summary = $qb->getQuery()->getSingleResult();
+        $summary = $valueQuery->getQuery()->getSingleResult();
 
         return new PurchaseRedemptionBatch(
-            $summary['purchaseCount'],
             $summary['purchaseRecordsValue'] ?? 0,
             $ids
         );

@@ -7,9 +7,6 @@ namespace VoucherBundle\DTO;
  */
 class PurchaseRedemptionBatch
 {
-    /** @var int */
-    private $count;
-
     /** @var float */
     private $value;
 
@@ -19,23 +16,13 @@ class PurchaseRedemptionBatch
     /**
      * PurchaseBatchToRedeem constructor.
      *
-     * @param int   $count
      * @param float $value
      * @param int[] $purchasesIds
      */
-    public function __construct(int $count, float $value, array $purchasesIds)
+    public function __construct(float $value, array $purchasesIds)
     {
-        $this->count = $count;
         $this->value = $value;
         $this->purchasesIds = $purchasesIds;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCount(): int
-    {
-        return $this->count;
     }
 
     /**
