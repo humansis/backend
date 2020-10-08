@@ -5,6 +5,8 @@
 # $2: database name
 # $3: database user
 # $4: database user password
+# $5: mobile master key
+# $6: mobile master key version
 
 cp app/config/parameters.yml.dist app/config/parameters.yml
 # common
@@ -20,6 +22,8 @@ sed -i -e "s|%env(RDS_PORT)%|${DB_PORT}|g" \
 sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" \
   -e "s|%env(RDS_DB_NAME)%|$2|g" \
   -e "s|%env(RDS_USERNAME)%|$3|g" \
-  -e "s|%env(RDS_PASSWORD)%|$4|g" app/config/parameters.yml
+  -e "s|%env(RDS_PASSWORD)%|$4|g" \
+  -e "s|%env(MOBILE_MASTER_KEY)%|$5|g" \
+  -e "s|%env(MOBILE_MASTER_KEY_VERSION)%|$6|g" app/config/parameters.yml
 
 sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" docker-compose.yml

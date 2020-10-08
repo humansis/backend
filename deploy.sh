@@ -14,23 +14,23 @@ echo "Configuring application build"
 if [[ $1 == "prod" ]]; then
   ec2_host="api.humansis.org"
   mv docker/docker-compose.yml.prod docker-compose.yml
-  bash apply_env_config.sh ${RDS_HOSTNAME_PROD} ${RDS_DB_NAME_PROD} ${RDS_USERNAME_PROD} ${RDS_PASSWORD_PROD}
+  bash apply_env_config.sh ${RDS_HOSTNAME_PROD} ${RDS_DB_NAME_PROD} ${RDS_USERNAME_PROD} ${RDS_PASSWORD_PROD} ${MOBILE_KEY_PROD} ${MOBILE_KEY_VERSION_PROD}
 elif [[ $1 == "demo" ]]; then
   ec2_host="api-demo.humansis.org"
   mv docker/docker-compose.yml.demo docker-compose.yml
-  bash apply_env_config.sh ${RDS_HOSTNAME_DEMO} ${RDS_DB_NAME_DEMO} ${RDS_USERNAME_DEMO} ${RDS_PASSWORD_DEMO}
+  bash apply_env_config.sh ${RDS_HOSTNAME_DEMO} ${RDS_DB_NAME_DEMO} ${RDS_USERNAME_DEMO} ${RDS_PASSWORD_DEMO} ${MOBILE_KEY_DEMO} ${MOBILE_KEY_VERSION_DEMO}
 elif [[ $1 == "stage" ]]; then
   ec2_host="apistage.humansis.org"
   mv docker/docker-compose.yml.stage docker-compose.yml
-  bash apply_env_config.sh ${RDS_HOSTNAME_STAGE} ${RDS_DB_NAME_STAGE} ${RDS_USERNAME_STAGE} ${RDS_PASSWORD_STAGE}
+  bash apply_env_config.sh ${RDS_HOSTNAME_STAGE} ${RDS_DB_NAME_STAGE} ${RDS_USERNAME_STAGE} ${RDS_PASSWORD_STAGE} ${MOBILE_KEY_STAGE} ${MOBILE_KEY_VERSION_STAGE}
 elif [[ $1 == "test" ]]; then
   ec2_host="apitest.humansis.org"
   mv docker/docker-compose.yml.test docker-compose.yml
-  bash apply_env_config.sh ${RDS_HOSTNAME_TEST} ${RDS_DB_NAME_TEST} ${RDS_USERNAME_TEST} ${RDS_PASSWORD_TEST}
+  bash apply_env_config.sh ${RDS_HOSTNAME_TEST} ${RDS_DB_NAME_TEST} ${RDS_USERNAME_TEST} ${RDS_PASSWORD_TEST} ${MOBILE_KEY_TEST} ${MOBILE_KEY_VERSION_TEST}
 elif [[ $1 == "dev" ]]; then
   ec2_host="apidev.humansis.org"
   mv docker/docker-compose.yml.dev docker-compose.yml
-  bash apply_env_config.sh ${RDS_HOSTNAME_DEV} ${RDS_DB_NAME_DEV} ${RDS_USERNAME_DEV} ${RDS_PASSWORD_DEV}
+  bash apply_env_config.sh ${RDS_HOSTNAME_DEV} ${RDS_DB_NAME_DEV} ${RDS_USERNAME_DEV} ${RDS_PASSWORD_DEV} ${MOBILE_KEY_DEV} ${MOBILE_KEY_VERSION_DEV}
 else
   echo "Wrong environment parameter. Options are: [dev, test, stage, demo, prod]"
   exit 1
