@@ -19,5 +19,5 @@ parameters:
     humanitarian_secret: ""
     google_client: ""
 
-    mobile_app_master_key: '%env(MOBILE_MASTER_KEY)%'
-    mobile_app_version: '%env(MOBILE_MASTER_KEY_VERSION)%'
+    mobile_app_master_key: "123456789ABCDEF"
+    mobile_app_version: "19700101"
