@@ -13,7 +13,8 @@ final class Version20200827122139 extends AbstractMigration
     {
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE selection_criteria ADD group_number INT NOT NULL DEFAULT 1');
+        $this->addSql('ALTER TABLE selection_criteria ADD group_number INT DEFAULT 1');
+        $this->addSql('ALTER TABLE selection_criteria CHANGE group_number group_number INT NOT NULL');
     }
 
     public function down(Schema $schema): void
