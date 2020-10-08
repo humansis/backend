@@ -149,9 +149,6 @@ class DistributionService
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
 
-        $selectionCriteriaGroup = $distributionArray['selection_criteria'];
-        unset($distributionArray['selection_criteria']);
-
         $distributionArray['assistance_type'] = AssistanceTypeEnum::DISTRIBUTION;
         $distributionArray['target_type'] = $distributionArray['type'];
         unset($distributionArray['type']);
@@ -192,24 +189,20 @@ class DistributionService
         foreach ($distributionArray['commodities'] as $item) {
             $this->commodityService->create($distribution, $item, false);
         }
-
         $criteria = [];
-        foreach ($selectionCriteriaGroup as $i => $criteriaData) {
-            foreach ($criteriaData as $j => $criterionArray) {
-                /** @var SelectionCriteria $criterion */
-                $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json');
-                $criterion->setGroupNumber($i);
-                $this->criteriaDistributionService->save($distribution, $criterion, false);
-                $criteria[$i][$j] = $criterionArray;
+        foreach ($distribution->getSelectionCriteria() as $item) {
+            $distribution->removeSelectionCriterion($item);
+            if ($item->getTableString() == null) {
+                $item->setTableString("Beneficiary");
             }
+
+            $criteria[] = $this->criteriaDistributionService->save($distribution, $item, false);
         }
 
         $this->em->persist($distribution);
         $this->em->flush();
 
         $this->em->persist($distribution);
-
-        $distributionArray['selection_criteria'] = $criteria;
 
         $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $threshold);
         $this->saveReceivers($distribution, $listReceivers);
