@@ -53,10 +53,20 @@ class HouseholdController extends Controller
      * )
      *
      * @param Household $household
+     * @param Request   $request
      * @return Response
      */
-    public function showAction(Household $household)
+    public function showAction(Household $household, Request $request)
     {
+        $allowedCountries = [];
+        foreach ($household->getProjects() as $project) {
+            $allowedCountries[] = $project->getIso3();
+        }
+
+        if (in_array($request->request->get('__country'), $allowedCountries)) {
+            throw $this->createAccessDeniedException('You do not have permission to access this resource.');
+        }
+
         $json = $this->get('serializer')
             ->serialize(
                 $household,

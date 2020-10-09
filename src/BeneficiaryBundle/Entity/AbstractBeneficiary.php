@@ -108,7 +108,7 @@ abstract class AbstractBeneficiary
     /**
      * Get projects.
      *
-     * @return ArrayCollection
+     * @return ArrayCollection|Project[]
      */
     public function getProjects(): Collection
     {
