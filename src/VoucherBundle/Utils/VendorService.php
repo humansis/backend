@@ -20,6 +20,7 @@ use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Entity\VoucherPurchase;
 
 class VendorService
 {
@@ -221,14 +222,15 @@ class VendorService
     public function printInvoice(Vendor $vendor)
     {
         try {
-            $now = new DateTime();
-            $vouchers = $vendor->getVouchers();
-            if (!count($vouchers)) {
+            $voucherPurchases = $this->em->getRepository(VoucherPurchase::class)->findByVendor($vendor);
+            if (0 === count($voucherPurchases)) {
                 throw new \Exception('This vendor has no voucher. Try syncing with the server.');
             }
             $totalValue = 0;
-            foreach ($vouchers as $voucher) {
-                $totalValue += $voucher->getValue();
+            foreach ($voucherPurchases as $voucherPurchase) {
+                foreach ($voucherPurchase->getRecords() as $record) {
+                    $totalValue += $record->getValue();
+                }
             }
 
             $location = $vendor->getLocation();
@@ -274,8 +276,8 @@ class VendorService
                         'addressDistrict' => $district ? $district->getName() : null,
                         'addressProvince' => $province ? $province->getName() : null,
                         'addressCountry' => $province ? $province->getCountryISO3() : null,
-                        'date'  => $now->format('d-m-Y'),
-                        'vouchers' => $vouchers,
+                        'date'  => (new DateTime())->format('d-m-Y'),
+                        'voucherPurchases' => $voucherPurchases,
                         'totalValue' => $totalValue
                     ),
                     $this->container->get('pdf_service')->getInformationStyle()

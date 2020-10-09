@@ -112,7 +112,7 @@ class InstitutionService
         }
 
 
-        if ($institutionType->getNationalId() !== null) {
+        if ($institutionType->getNationalId() !== null && !$institutionType->getNationalId()->isEmpty()) {
             $institution->setNationalId(new NationalId());
             $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getNumber());
             $institution->getNationalId()->setIdType($institutionType->getNationalId()->getType());

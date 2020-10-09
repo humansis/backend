@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\HouseholdLocation;
+use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -529,5 +530,25 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $this->getHouseholdLocation($qb);
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
         $locationRepository->getCountry($qb);
+    }
+
+    public function countBeneficiariesByResidencyStatus(DistributionData $distribution, string $residencyStatus): int
+    {
+        $qb = $this->createQueryBuilder('h');
+
+        $qb->select('COUNT(DISTINCT b)')
+            ->leftJoin('h.beneficiaries', 'b')
+            ->leftJoin('h.distributionBeneficiary', 'db')
+            ->leftJoin('db.distributionData', 'd')
+            ->andWhere('db.removed = 0')
+            ->andWhere('db.distributionData = :distribution')
+            ->andWhere('b.residencyStatus = :residencyStatus')
+            ->andWhere('b.archived = 0')
+            ->andWhere('h.archived = 0')
+            ->setParameter('distribution', $distribution)
+            ->setParameter('residencyStatus', $residencyStatus)
+        ;
+
+        return $qb->getQuery()->getSingleScalarResult();
     }
 }

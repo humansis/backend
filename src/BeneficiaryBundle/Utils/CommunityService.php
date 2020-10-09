@@ -109,7 +109,7 @@ class CommunityService
             $community->getPhone()->setNumber($communityType->getPhoneNumber());
         }
 
-        if ($communityType->getNationalId() !== null) {
+        if ($communityType->getNationalId() !== null && !$communityType->getNationalId()->isEmpty()) {
             $community->setNationalId(new NationalId());
             $community->getNationalId()->setIdNumber($communityType->getNationalId()->getNumber());
             $community->getNationalId()->setIdType($communityType->getNationalId()->getType());

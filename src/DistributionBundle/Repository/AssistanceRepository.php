@@ -71,7 +71,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('p.iso3 = :country')
                 ->setParameter('country', $countryISO)
             ->andWhere('dd.dateDistribution > :now')
-                ->setParameter('now', new \DateTime());
+                ->setParameter('now', new DateTime());
 
         return $qb->getQuery()->getResult();
     }

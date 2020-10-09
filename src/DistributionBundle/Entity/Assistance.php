@@ -561,11 +561,11 @@ class Assistance implements ExportableInterface
     /**
      * Set dateDistribution.
      *
-     * @param \DateTime $dateDistribution
+     * @param \DateTimeInterface $dateDistribution
      *
      * @return Assistance
      */
-    public function setDateDistribution($dateDistribution)
+    public function setDateDistribution(\DateTimeInterface $dateDistribution)
     {
         $this->dateDistribution = $dateDistribution;
 
@@ -575,9 +575,9 @@ class Assistance implements ExportableInterface
     /**
      * Get dateDistribution.
      *
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
-    public function getDateDistribution()
+    public function getDateDistribution(): \DateTimeInterface
     {
         return $this->dateDistribution;
     }

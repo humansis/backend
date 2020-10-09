@@ -49,6 +49,18 @@ class CommunityControllerTest extends BMSServiceTestCase
             'minimalistic' => [[
                 '__country' => 'KHM'
             ]],
+            'minimalistic with street name' => [[
+                'address' => [
+                    'street' => 'Street name',
+                ],
+            ]],
+            'minimalistic with location' => [[
+                'address' => [
+                    'location' => [
+                        'adm1' => 1,
+                    ],
+                ],
+            ]],
         ];
     }
 
@@ -98,6 +110,16 @@ class CommunityControllerTest extends BMSServiceTestCase
         if (isset($community['national_id'])) {
             $this->assertSame($community['national_id']['type'], $communityBody['national_id']['type'] ?? null, "Returned data are different than input: type");
             $this->assertSame($community['national_id']['number'], $communityBody['national_id']['number'] ?? null, "Returned data are different than input: number");
+        }
+
+        if ($community['address'] !== null) {
+            $this->assertArrayHasKey('street', $community['address'],"Part of answer missing: address[street]");
+            $this->assertArrayHasKey('number', $community['address'],"Part of answer missing: address[number]");
+            $this->assertArrayHasKey('postcode', $community['address'],"Part of answer missing: address[postcode]");
+
+            $this->assertSame($community['address']['street'], $communityBody['address']['street'] ?? null, "Returned data are different than input: address");
+            $this->assertSame($community['address']['number'], $communityBody['address']['number'] ?? null, "Returned data are different than input: address");
+            $this->assertSame($community['address']['postcode'], $communityBody['address']['postcode'] ?? null, "Returned data are different than input: address");
         }
 
         return $community;

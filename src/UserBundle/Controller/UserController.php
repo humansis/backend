@@ -168,8 +168,7 @@ class UserController extends Controller
             return new Response('You cannot connect on this site, please use the app.', Response::HTTP_FORBIDDEN);
         }
 
-        $serializer = $this->get('jms_serializer');
-        $userJson = $serializer->serialize($user, 'json', SerializationContext::create()->setGroups(['FullUser'])->setSerializeNull(true));
+        $userJson = $this->get('serializer')->serialize($user, 'json', ['groups' => ['FullUser']]);
 
         // add available countries to user
         $object = json_decode($userJson);

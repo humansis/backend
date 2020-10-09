@@ -4,7 +4,6 @@ namespace BeneficiaryBundle\Entity;
 
 use CommonBundle\Utils\ExportableInterface;
 use DateTime;
-use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -75,12 +74,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     private $smartcards;
 
     /**
-     * @var string
-     * @ SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
-     */
-    private $smartcard;
-
-    /**
      * Constructor.
      */
     public function __construct()
@@ -120,7 +113,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get enGivenName.
      * @deprecated
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
      * @return string|null
      */
     public function getEnGivenName(): ?string
@@ -145,7 +138,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get enFamilyName.
      * @deprecated
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @return string|null
      */
     public function getEnFamilyName(): ?string
@@ -169,7 +162,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get localGivenName.
      * @deprecated
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
      * @return string|null
      */
     public function getLocalGivenName(): ?string
@@ -194,7 +187,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get localFamilyName.
      * @deprecated
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @return string|null
      */
     public function getLocalFamilyName(): ?string
@@ -218,7 +211,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get gender.
      * @deprecated
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      *
      * @return int|null one of Person::GENDER_*
      */
@@ -244,7 +237,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get dateOfBirth.
      * @deprecated
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @return DateTime|null
      */
     public function getDateOfBirth(): ?\DateTimeInterface
@@ -379,7 +372,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get phones.
      * @deprecated
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @return Collection
      */
     public function getPhones(): Collection
@@ -444,7 +437,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get nationalIds.
      * @deprecated
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @return Collection
      */
     public function getNationalIds(): Collection
@@ -512,7 +505,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get profile.
      * @deprecated
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "FullBeneficiary"})
      * @return Profile|null
      */
     public function getProfile(): ?Profile
@@ -537,7 +530,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get referral.
      * @deprecated
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
      * @return Referral|null
      */
     public function getReferral(): ?Referral
@@ -824,7 +817,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     }
 
     /**
-     * @SymfonyGroups({"FullHousehold"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
      * @return string
      */
     public function getSmartcard()

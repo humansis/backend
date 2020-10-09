@@ -175,7 +175,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistance,
                 'json',
-                ['groups' => ['FullReceivers', 'FullDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);

@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class LocationType implements InputTypeInterface
 {
     /**
-     * @var int
+     * @var int|null
      * @Assert\GreaterThanOrEqual(0)
      */
     private $adm1;
@@ -28,17 +28,17 @@ class LocationType implements InputTypeInterface
     private $adm4;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getAdm1(): int
+    public function getAdm1(): ?int
     {
         return $this->adm1;
     }
 
     /**
-     * @param int $adm1
+     * @param int|null $adm1
      */
-    public function setAdm1(int $adm1): void
+    public function setAdm1(?int $adm1): void
     {
         $this->adm1 = $adm1;
     }

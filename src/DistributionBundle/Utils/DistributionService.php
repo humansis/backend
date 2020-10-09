@@ -754,5 +754,14 @@ class DistributionService
         }
     }
 
+    private function getBeneficiaryCountByResidencyStatus(DistributionData $distribution, string $residencyStatus, int $type): int
+    {
+        if ($type === DistributionData::TYPE_BENEFICIARY) {
+            return $this->em->getRepository(Beneficiary::class)->countByResidencyStatus($distribution, $residencyStatus);
+        } elseif ($type === DistributionData::TYPE_HOUSEHOLD) {
+            return $this->em->getRepository(Household::class)->countBeneficiariesByResidencyStatus($distribution, $residencyStatus);
+        }
+        return 0;
+    }
 
 }
