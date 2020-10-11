@@ -309,8 +309,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('GET', '/api/wsse/distributions/household/'. $hhId);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-        $hhsummary = json_decode($this->client->getResponse()->getContent(), true);
-
+        $hhsummaries = json_decode($this->client->getResponse()->getContent(), true);
+        $hhsummary = $hhsummaries[0];
 
         // Check if the second step succeed
         $this->assertArrayHasKey('id', $hhsummary);

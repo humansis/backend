@@ -6,7 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 
@@ -202,7 +202,7 @@ class Sector
      */
     public function supportsAssistance(object $assistance): bool
     {
-        return $assistance instanceof DistributionData && $this->isDistributionAllowed();
+        return $assistance instanceof Assistance && $this->isDistributionAllowed();
     }
 
     /**

@@ -89,7 +89,7 @@ class AssistanceController extends Controller
      *     description="List of distributed items to household",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=DistributionData::class, groups={"DistributionOverview"}))
+     *         @SWG\Items(ref=@Model(type=Assistance::class, groups={"DistributionOverview"}))
      *     )
      * )
      * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")

@@ -44,7 +44,7 @@ class DistributedItem implements \JsonSerializable
     /**
      * @var Commodity[]
      *
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="distributionData")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="assistance")
      */
     private $commodities;
 
