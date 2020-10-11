@@ -290,6 +290,36 @@ class AssistanceControllerTest extends BMSServiceTestCase
 //        $this->assertArrayHasKey('distribution_beneficiaries', $one);
     }
 
+    /**
+     * @depends testCreateDistribution
+     * @param $distribution
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testHouseholdSummary($distribution)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $hhId = 1;
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('GET', '/api/wsse/distributions/household/'. $hhId);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $hhsummary = json_decode($this->client->getResponse()->getContent(), true);
+
+
+        // Check if the second step succeed
+        $this->assertArrayHasKey('id', $hhsummary);
+        $this->assertArrayHasKey('name', $hhsummary);
+        $this->assertArrayHasKey('date_distribution', $hhsummary);
+        $this->assertArrayHasKey('type', $hhsummary);
+        $this->assertArrayHasKey('commodities', $hhsummary);
+    }
+
 
     /**
      * @depends testCreateDistribution

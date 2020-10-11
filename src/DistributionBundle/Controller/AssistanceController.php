@@ -99,7 +99,7 @@ class AssistanceController extends Controller
      */
     public function distributionsToHousehold(Household $household)
     {
-        $distributions = $this->getDoctrine()->getRepository(DistributionData::class)->findDistributedToHousehold($household);
+        $distributions = $this->getDoctrine()->getRepository(Assistance::class)->findDistributedToHousehold($household);
 
         return $this->json($distributions);
     }
