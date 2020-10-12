@@ -291,25 +291,29 @@ class AssistanceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @depends testCreateDistribution
-     * @param $distribution
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testHouseholdSummary($distribution)
+    public function testHouseholdSummary()
     {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $hhId = 1;
+        $hh = $this->em->getRepository(Household::class)->findOneBy([]);
+        $hhId = $hh->getId();
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('GET', '/api/wsse/distributions/household/'. $hhId);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $hhsummaries = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($hhsummaries);
+        if (count($hhsummaries) < 1) {
+            $this->markTestSkipped("Warning: there are no Assistances for this HH");
+        }
         $hhsummary = $hhsummaries[0];
 
         // Check if the second step succeed
