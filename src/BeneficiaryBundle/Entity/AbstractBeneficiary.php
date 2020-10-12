@@ -45,16 +45,7 @@ abstract class AbstractBeneficiary
      *
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      */
-    private $distributionBeneficiaries;
-
-    /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
-     * @ORM\JoinColumn(name="distribution_beneficiary_id")
-     * @SymfonyGroups({"FullReceivers", "FullBeneficiary"})
-     *
-     * @var AssistanceBeneficiary $assistanceBeneficiary
-     */
-    private $assistanceBeneficiary;
+    private $assistanceBeneficiaries;
 
     /**
      * @var boolean
@@ -69,7 +60,7 @@ abstract class AbstractBeneficiary
     public function __construct()
     {
         $this->projects = new ArrayCollection();
-        $this->distributionBeneficiaries = new ArrayCollection();
+        $this->assistanceBeneficiaries = new ArrayCollection();
     }
 
     /**
@@ -133,27 +124,19 @@ abstract class AbstractBeneficiary
     }
 
     /**
-     * @return AssistanceBeneficiary
-     */
-    public function getAssistanceBeneficiary(): ?AssistanceBeneficiary
-    {
-        return $this->distributionBeneficiaries->getIterator()->current();
-    }
-
-    /**
      * @return AssistanceBeneficiary[]|Collection
      */
-    public function getDistributionBeneficiaries(): Collection
+    public function getAssistanceBeneficiaries(): Collection
     {
-        return $this->distributionBeneficiaries;
+        return $this->assistanceBeneficiaries;
     }
 
     /**
-     * @param AssistanceBeneficiary[]|Collection $distributionBeneficiaries
+     * @param AssistanceBeneficiary[]|Collection $assistanceBeneficiaries
      */
-    public function setDistributionBeneficiaries(array $distributionBeneficiaries): void
+    public function setAssistanceBeneficiaries(array $assistanceBeneficiaries): void
     {
-        $this->distributionBeneficiaries = $distributionBeneficiaries;
+        $this->assistanceBeneficiaries = $assistanceBeneficiaries;
     }
 
     /**

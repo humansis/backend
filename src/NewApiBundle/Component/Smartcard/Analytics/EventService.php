@@ -47,7 +47,7 @@ class EventService
     {
         $collector = new EventCollector();
         $collector->add(new Event('beneficiary', 'updated', $beneficiary->getUpdatedOn()));
-        foreach ($beneficiary->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+        foreach ($beneficiary->getAssistanceBeneficiaries() as $assistanceBeneficiary) {
             $assistance = $assistanceBeneficiary->getAssistance();
 
             $this->collectAssistanceEvents($collector, $assistance, $assistanceBeneficiary, $assistanceBeneficiary->getReliefPackages()->toArray());
