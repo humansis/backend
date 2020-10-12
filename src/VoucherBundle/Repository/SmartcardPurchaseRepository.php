@@ -23,18 +23,24 @@ class SmartcardPurchaseRepository extends EntityRepository
      * @param Vendor $vendor
      *
      * @return PurchaseSummary
-     * @throws NoResultException
      * @throws NonUniqueResultException
      */
     public function countPurchases(Vendor $vendor): PurchaseSummary
     {
         $qb = $this->createQueryBuilder('p')
-            ->select('COUNT(p.id) as purchaseCount, SUM(pr.value) as purchaseRecordsValue')
+            ->select('COUNT(DISTINCT p.id) as purchaseCount, SUM(pr.value) as purchaseRecordsValue, v.id')
             ->join('p.records', 'pr')
+            ->join('p.vendor', 'v')
             ->where('p.vendor = :vendor')
-            ->setParameter('vendor', $vendor);
+            ->setParameter('vendor', $vendor)
+            ->groupBy('v.id')
+        ;
 
-        $summary = $qb->getQuery()->getSingleResult();
+        try {
+            $summary = $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $e) {
+            return new PurchaseSummary(0, 0);
+        }
 
         return new PurchaseSummary($summary['purchaseCount'], $summary['purchaseRecordsValue'] ?? 0);
     }
@@ -43,7 +49,6 @@ class SmartcardPurchaseRepository extends EntityRepository
      * @param Vendor $vendor
      *
      * @return PurchaseRedemptionBatch
-     * @throws NoResultException
      * @throws NonUniqueResultException
      */
     public function countPurchasesToRedeem(Vendor $vendor): PurchaseRedemptionBatch
@@ -61,15 +66,18 @@ class SmartcardPurchaseRepository extends EntityRepository
         $valueQuery = $this->createQueryBuilder('p')
             ->select('SUM(pr.value) as purchaseRecordsValue')
             ->join('p.records', 'pr')
+            ->join('p.vendor', 'v')
             ->where('p.id IN (:ids)')
-            ->setParameter('ids', $ids);
+            ->setParameter('ids', $ids)
+            ->groupBy('v.id');
 
-        $summary = $valueQuery->getQuery()->getSingleResult();
+        try {
+            $summary = $valueQuery->getQuery()->getSingleResult();
+        } catch (NoResultException $e) {
+            return new PurchaseRedemptionBatch(0, []);
+        }
 
-        return new PurchaseRedemptionBatch(
-            $summary['purchaseRecordsValue'] ?? 0,
-            $ids
-        );
+        return new PurchaseRedemptionBatch($summary['purchaseRecordsValue'], $ids);
     }
 
     /**
