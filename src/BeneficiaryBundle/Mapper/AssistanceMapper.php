@@ -2,23 +2,29 @@
 namespace BeneficiaryBundle\Mapper;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Repository\DistributionBeneficiaryRepository;
 
 class AssistanceMapper
 {
     /** @var BeneficiaryMapper */
     private $beneficiaryMapper;
+    /** @var DistributionBeneficiaryRepository */
+    private $distributionBNFRepo;
 
     /**
      * AssistanceMapper constructor.
      *
      * @param BeneficiaryMapper $beneficiaryMapper
+     * @param DistributionBeneficiaryRepository $distributionBNFRepo
      */
-    public function __construct(BeneficiaryMapper $beneficiaryMapper)
-    {
+    public function __construct(
+        BeneficiaryMapper $beneficiaryMapper,
+        DistributionBeneficiaryRepository $distributionBNFRepo
+    ) {
         $this->beneficiaryMapper = $beneficiaryMapper;
+        $this->distributionBNFRepo = $distributionBNFRepo;
     }
 
     public function toMinimalArray(?Assistance $assistance): ?array
@@ -68,6 +74,37 @@ class AssistanceMapper
     {
         foreach ($assistances as $assistance) {
             yield $this->toBeneficiaryOnlyArray($assistance);
+        }
+    }
+
+    public function toFullArray(Assistance $assistance): array
+    {
+        $assistanceArray = [
+            'id' => $assistance->getId(),
+            'name' => $assistance->getName(),
+            'updated_on' => $assistance->getUpdatedOn(),
+            'date_distribution' => $assistance->getDateDistribution(),
+            'location' => $assistance->getLocation(),
+            'project' => $assistance->getProject(),
+            'selection_criteria' => $assistance->getSelectionCriteria(),
+            'archived' => $assistance->getArchived(),
+            'validated' => $assistance->getValidated(),
+            'reporting_distribution' => $assistance->getReportingDistribution(),
+            'type' => $assistance->getTargetType(),
+            'assistance_type' => $assistance->getAssistanceType(),
+            'target_type' => $assistance->getTargetType(),
+            'commodities' => $assistance->getCommodities(),
+            // 'distribution_beneficiaries' => $assistance->getDistributionBeneficiaries(),
+            'completed' => $assistance->getCompleted(),
+            'beneficiaries_count' => $this->distributionBNFRepo->countActive($assistance),
+        ];
+        return $assistanceArray;
+    }
+
+    public function toFullArrays(iterable $assistances): iterable
+    {
+        foreach ($assistances as $assistance) {
+            yield $this->toFullArray($assistance);
         }
     }
 }

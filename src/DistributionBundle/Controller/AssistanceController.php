@@ -3,6 +3,7 @@
 namespace DistributionBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Mapper\AssistanceMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
 use DistributionBundle\Utils\DistributionService;
@@ -333,15 +334,11 @@ class AssistanceController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $assistanceFactory = $this->get('distribution.distribution_data_output_factory');
-        $data = [];
-        foreach ($distributions as $assistance) {
-            $data[] = $assistanceFactory->build($assistance, ['SmallDistribution']);
-        }
+        $assistanceMapper = $this->get(AssistanceMapper::class);
 
         $json = $this->get('serializer')
             ->serialize(
-                $data,
+                $assistanceMapper->toFullArrays($distributions),
                 'json',
                 ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
             );
@@ -368,10 +365,10 @@ class AssistanceController extends Controller
      */
     public function getOneAction(Assistance $assistance)
     {
-        $assistanceFactory = $this->get('distribution.distribution_data_output_factory');
+        $assistanceMapper = $this->get(AssistanceMapper::class);
         $json = $this->get('serializer')
             ->serialize(
-                $assistanceFactory->build($assistance, ['FullDistribution']),
+                $assistanceMapper->toFullArray($assistance),
                 'json',
                 ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
@@ -640,15 +637,11 @@ class AssistanceController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $assistanceFactory = $this->get('distribution.distribution_data_output_factory');
-        $data = [];
-        foreach ($filtered as $assistance) {
-            $data[] = $assistanceFactory->build($assistance, ['SmallDistribution']);
-        }
+        $assistanceMapper = $this->get(AssistanceMapper::class);
 
         $json = $this->get('serializer')
             ->serialize(
-                $data,
+                $assistanceMapper->toFullArrays($filtered),
                 'json',
                 ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
             );
