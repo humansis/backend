@@ -64,6 +64,8 @@ final class Version20200814092226 extends AbstractMigration
         $subSectors[] = 'education_services';
         $subSectors = implode("', '", $subSectors);
         $this->addSql("ALTER TABLE project_sector ADD subsector ENUM('$subSectors') DEFAULT NULL COMMENT '(DC2Type:enum_sub_sector)'");
+        $this->addSql('DROP INDEX uniq_sector_project ON project_sector');
+        $this->addSql('CREATE UNIQUE INDEX uniq_sector_project ON project_sector (sector, subsector, project_id)');
 
         $sectorToSubSectorMapping = [
             'food_rte' => ['food_security', 'rter'],

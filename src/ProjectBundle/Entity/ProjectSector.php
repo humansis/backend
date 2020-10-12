@@ -11,7 +11,7 @@ use ProjectBundle\DBAL\SubSectorEnum;
  * Sector
  *
  * @ORM\Table(name="project_sector", uniqueConstraints={
- *      @ORM\UniqueConstraint(name="uniq_sector_project", columns={"sector", "project_id"})})
+ *      @ORM\UniqueConstraint(name="uniq_sector_project", columns={"sector", "subsector", "project_id"})})
  * })
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\SectorRepository")
  */
