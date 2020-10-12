@@ -14,7 +14,7 @@ use JMS\Serializer\Annotation\Type as JMS_Type;
  * Voucher purchase.
  *
  * @ORM\Table(name="voucher_purchase")
- * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherRepository")
+ * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherPurchaseRepository")
  */
 class VoucherPurchase
 {
