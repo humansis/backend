@@ -8,8 +8,8 @@ use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
+use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Vendor;
-use VoucherBundle\InputType\SmartcardPurchase;
 
 class SmartcardControllerTest extends BMSServiceTestCase
 {
@@ -240,9 +240,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $vendorId = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc'])->getId();
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc']);
+        $purchases = $this->em->getRepository(SmartcardPurchase::class)->findBy(['vendor'=>$vendor]);
+        $purchaseCount = count($purchases);
 
-        $crawler = $this->request('GET', '/api/wsse/smartcards/purchases/' . $vendorId);
+        $crawler = $this->request('GET', '/api/wsse/smartcards/purchases/' . $vendor->getId());
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $summary = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -251,6 +253,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('value', $summary);
 
         $this->assertIsNumeric($summary['count']);
+        $this->assertEquals($purchaseCount, $summary['count'], "Wrong purchase count");
         $this->assertIsNumeric($summary['value']);
     }
 
@@ -263,7 +266,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $vendorId = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc'])->getId();
         $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy([]);
-        $purchase = new SmartcardPurchase();
+        $purchase = new \VoucherBundle\InputType\SmartcardPurchase();
         $purchase->setProducts([[
             'id' => 1,
             'quantity' => 5.9,
