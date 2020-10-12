@@ -89,7 +89,7 @@ class AssistanceController extends Controller
      *     description="List of distributed items to household",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=DistributionData::class, groups={"DistributionOverview"}))
+     *         @SWG\Items(ref=@Model(type=Assistance::class, groups={"DistributionOverview"}))
      *     )
      * )
      * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
@@ -99,7 +99,7 @@ class AssistanceController extends Controller
      */
     public function distributionsToHousehold(Household $household)
     {
-        $distributions = $this->getDoctrine()->getRepository(DistributionData::class)->findDistributedToHousehold($household);
+        $distributions = $this->getDoctrine()->getRepository(Assistance::class)->findDistributedToHousehold($household);
 
         return $this->json($distributions);
     }

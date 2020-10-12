@@ -37,14 +37,14 @@ class DistributedItem implements \JsonSerializable
     /**
      * @var int
      *
-     * @ORM\Column(name="type_distribution", type="integer")
+     * @ORM\Column(name="target_type", type="integer")
      */
     private $type;
 
     /**
      * @var Commodity[]
      *
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="distributionData")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="assistance")
      */
     private $commodities;
 

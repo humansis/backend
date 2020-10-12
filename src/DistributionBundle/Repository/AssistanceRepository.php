@@ -204,8 +204,8 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         $sql = '
         SELECT '.$rsm->generateSelectClause().' FROM ( 
-            SELECT dd.*, db.beneficiary_id FROM distribution_data dd
-            JOIN distribution_beneficiary db ON dd.id=db.distribution_data_id
+            SELECT ass.*, db.beneficiary_id FROM assistance ass
+            JOIN distribution_beneficiary db ON ass.id=db.assistance_id
             JOIN beneficiary b ON b.id=db.beneficiary_id
             WHERE b.household_id = :household
         ) AS di
