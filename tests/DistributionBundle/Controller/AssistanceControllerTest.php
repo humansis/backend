@@ -492,7 +492,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetDistributions($distribution)
+    public function testGetDistributionsForOldMobile($distribution)
     {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
@@ -505,19 +505,28 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $distributions = json_decode($this->client->getResponse()->getContent(), true);
 
+        if (count($distributions) < 1) {
+            $this->markTestSkipped("Warning: there is no distribution to proper test endpoint");
+        }
+
+        $distribution = $distributions[0];
+
         // Check if the second step succeed
-        $this->assertTrue(gettype($distributions) == "array");
-        $this->assertArrayHasKey('id', $distributions[0]);
-        $this->assertArrayHasKey('updated_on', $distributions[0]);
-        $this->assertArrayHasKey('date_distribution', $distributions[0]);
-        $this->assertArrayHasKey('location', $distributions[0]);
-        $this->assertArrayHasKey('project', $distributions[0]);
-        $this->assertArrayHasKey('selection_criteria', $distributions[0]);
-        $this->assertArrayHasKey('archived', $distributions[0]);
-        $this->assertArrayHasKey('validated', $distributions[0]);
-        $this->assertArrayHasKey('type', $distributions[0]);
-        $this->assertArrayHasKey('commodities', $distributions[0]);
-        $this->assertArrayHasKey('beneficiaries_count', $distributions[0]);
+        $this->assertIsArray($distributions);
+        $this->assertArrayHasKey('id', $distribution);
+        $this->assertArrayHasKey('updated_on', $distribution);
+        $this->assertArrayHasKey('date_distribution', $distribution);
+        $this->assertArrayHasKey('location', $distribution);
+        $this->assertArrayHasKey('project', $distribution);
+        $this->assertArrayHasKey('selection_criteria', $distribution);
+        $this->assertArrayHasKey('archived', $distribution);
+        $this->assertArrayHasKey('validated', $distribution);
+        $this->assertArrayHasKey('type', $distribution);
+        $this->assertArrayHasKey('commodities', $distribution);
+        $this->assertArrayHasKey('beneficiaries_count', $distribution);
+        $this->assertArrayHasKey('distribution_beneficiaries', $distribution);
+        $this->assertIsArray($distribution['distribution_beneficiaries']);
+        $this->assertCount($distribution['beneficiaries_count'], $distribution['distribution_beneficiaries']);
     }
 
     /**

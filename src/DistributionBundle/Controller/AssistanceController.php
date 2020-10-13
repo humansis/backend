@@ -641,7 +641,7 @@ class AssistanceController extends Controller
 
         $json = $this->get('serializer')
             ->serialize(
-                $assistanceMapper->toFullArrays($filtered),
+                $assistanceMapper->toOldMobileArrays($filtered),
                 'json',
                 ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
             );

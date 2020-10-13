@@ -1,7 +1,9 @@
 <?php
+
 namespace BeneficiaryBundle\Mapper;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
+use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\DistributionBeneficiaryRepository;
@@ -32,6 +34,7 @@ class AssistanceMapper
         if (!$assistance) {
             return null;
         }
+
         return [
             'id' => $assistance->getId(),
             'name' => $assistance->getName(),
@@ -62,6 +65,7 @@ class AssistanceMapper
                 'beneficiary' => $this->beneficiaryMapper->toMinimalArrays($bnfs),
             ];
         }
+
         return [
             'id' => $assistance->getId(),
             'name' => $assistance->getName(),
@@ -77,8 +81,11 @@ class AssistanceMapper
         }
     }
 
-    public function toFullArray(Assistance $assistance): array
+    public function toFullArray(?Assistance $assistance): ?array
     {
+        if (!$assistance) {
+            return null;
+        }
         $assistanceArray = [
             'id' => $assistance->getId(),
             'name' => $assistance->getName(),
@@ -98,6 +105,7 @@ class AssistanceMapper
             'completed' => $assistance->getCompleted(),
             'beneficiaries_count' => $this->distributionBNFRepo->countActive($assistance),
         ];
+
         return $assistanceArray;
     }
 
@@ -105,6 +113,65 @@ class AssistanceMapper
     {
         foreach ($assistances as $assistance) {
             yield $this->toFullArray($assistance);
+        }
+    }
+
+    /**
+     * @param Assistance|null $assistance
+     *
+     * @return array
+     * @deprecated this is too big so dont use it
+     */
+    public function toOldMobileArray(?Assistance $assistance): ?array
+    {
+        if (!$assistance) {
+            return null;
+        }
+        /** @var AbstractBeneficiary[] $bnfs */
+        $bnfs = [];
+        foreach ($assistance->getDistributionBeneficiaries() as $db)
+        {
+            if ($db->getBeneficiary() instanceof Beneficiary
+                && !$db->getRemoved()
+                && !$db->getBeneficiary()->getArchived()
+            ) {
+                $bnfs[] = $db->getBeneficiary();
+            }
+        };
+
+        $assistanceArray = [
+            'id' => $assistance->getId(),
+            'name' => $assistance->getName(),
+            'updated_on' => $assistance->getUpdatedOn(),
+            'date_distribution' => $assistance->getDateDistribution(),
+            'location' => $assistance->getLocation(),
+            'project' => $assistance->getProject(),
+            'selection_criteria' => $assistance->getSelectionCriteria(),
+            'archived' => $assistance->getArchived(),
+            'validated' => $assistance->getValidated(),
+            'reporting_distribution' => $assistance->getReportingDistribution(),
+            'type' => $assistance->getTargetType(),
+            'assistance_type' => $assistance->getAssistanceType(),
+            'target_type' => $assistance->getTargetType(),
+            'commodities' => $assistance->getCommodities(),
+            'distribution_beneficiaries' => $this->beneficiaryMapper->toOldMobileArrays($bnfs),
+            'completed' => $assistance->getCompleted(),
+            'beneficiaries_count' => $this->distributionBNFRepo->countActive($assistance),
+        ];
+
+        return $assistanceArray;
+    }
+
+    /**
+     * @param iterable $assistances
+     *
+     * @return iterable
+     * @deprecated this is too big so dont use it
+     */
+    public function toOldMobileArrays(iterable $assistances): iterable
+    {
+        foreach ($assistances as $assistance) {
+            yield $this->toOldMobileArray($assistance);
         }
     }
 }
