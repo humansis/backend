@@ -601,11 +601,10 @@ class AssistanceController extends Controller
         return new Response($json, Response::HTTP_OK);
     }
 
-
     /**
      * Get distributions of one project.
      *
-     * @Rest\Get("/distributions/projects/{id}", name="get_distributions_of_project")
+     * @Rest\Get("/frontend/v0/distributions/projects/{id}", name="get_distributions_of_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
      *
      * @SWG\Tag(name="Distributions")
@@ -629,6 +628,54 @@ class AssistanceController extends Controller
      * @return Response
      */
     public function getDistributionsAction(Project $project)
+    {
+        try {
+            $distributions = $project->getDistributions();
+            $filtered = $this->get('distribution.distribution_service')->filterDistributions($distributions);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $assistanceMapper = $this->get(AssistanceMapper::class);
+
+        $json = $this->get('serializer')
+            ->serialize(
+                $assistanceMapper->toFullArrays($filtered),
+                'json',
+                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+            );
+
+        return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
+     * Get distributions of one project.
+     * @deprecated only for old mobile app
+     *
+     * @Rest\Get("/distributions/projects/{id}", name="get_distributions_of_project_mobile")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Project $project
+     *
+     * @return Response
+     */
+    public function getDistributionsForOldMobileAppAction(Project $project)
     {
         try {
             $distributions = $project->getDistributions();

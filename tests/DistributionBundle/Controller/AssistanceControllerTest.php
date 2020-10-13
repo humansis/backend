@@ -488,11 +488,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistribution
-     * @param $distribution
+     * @param $d
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetDistributionsForOldMobile($distribution)
+    public function testGetDistributionsForFrontend($d)
     {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
@@ -501,7 +501,48 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/projects/'. $distribution['project']['id']);
+        $crawler = $this->request('GET', '/api/wsse/frontend/v0/distributions/projects/'. $d['project']['id']);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $distributions = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (count($distributions) < 1) {
+            $this->markTestSkipped("Warning: there is no distribution to proper test endpoint");
+        }
+
+        $distribution = $distributions[0];
+
+        // Check if the second step succeed
+        $this->assertIsArray($distributions);
+        $this->assertArrayHasKey('id', $distribution);
+        $this->assertArrayHasKey('updated_on', $distribution);
+        $this->assertArrayHasKey('date_distribution', $distribution);
+        $this->assertArrayHasKey('location', $distribution);
+        $this->assertArrayHasKey('project', $distribution);
+        $this->assertArrayHasKey('selection_criteria', $distribution);
+        $this->assertArrayHasKey('archived', $distribution);
+        $this->assertArrayHasKey('validated', $distribution);
+        $this->assertArrayHasKey('type', $distribution);
+        $this->assertArrayHasKey('commodities', $distribution);
+        $this->assertArrayHasKey('beneficiaries_count', $distribution);
+        $this->assertArrayNotHasKey('distribution_beneficiaries', $distribution);
+    }
+
+    /**
+     * @depends testCreateDistribution
+     * @param $d
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testGetDistributionsForOldMobile($d)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('GET', '/api/wsse/distributions/projects/'. $d['project']['id']);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $distributions = json_decode($this->client->getResponse()->getContent(), true);
 
