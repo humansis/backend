@@ -7,8 +7,8 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\Type as JMS_Type;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * Voucher purchase.
@@ -25,7 +25,7 @@ class VoucherPurchase
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullVoucher"})
+     * @SymfonyGroups({"FullVoucher"})
      */
     private $id;
 
@@ -35,7 +35,7 @@ class VoucherPurchase
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @Groups({"FullVoucher"})
+     * @SymfonyGroups({"FullVoucher"})
      */
     private $vendor;
 
@@ -43,8 +43,6 @@ class VoucherPurchase
      * @var Collection|Voucher[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
-     *
-     * @Groups({"FullVoucher", "ValidatedDistribution"})
      */
     private $vouchers;
 
@@ -53,7 +51,7 @@ class VoucherPurchase
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\VoucherPurchaseRecord", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
      *
-     * @Groups({"FullVoucher", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullVoucher", "ValidatedDistribution"})
      */
     private $records;
 
@@ -62,8 +60,7 @@ class VoucherPurchase
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
      *
-     * @JMS_Type("DateTime<'d-m-Y'>")
-     * @Groups({"FullVoucher", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullVoucher", "ValidatedDistribution"})
      */
     private $createdAt;
 

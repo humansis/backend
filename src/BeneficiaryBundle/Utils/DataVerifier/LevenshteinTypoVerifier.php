@@ -6,7 +6,7 @@ namespace BeneficiaryBundle\Utils\DataVerifier;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializationContext;
+
 use Symfony\Component\DependencyInjection\Container;
 
 class LevenshteinTypoVerifier extends AbstractVerifier
@@ -117,10 +117,10 @@ class LevenshteinTypoVerifier extends AbstractVerifier
     {
         if (! empty($household)) {
             $arrayOldHousehold = json_decode(
-                $this->container->get('jms_serializer')->serialize(
+                $this->container->get('serializer')->serialize(
                         $household,
                         'json',
-                        SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
+                        ['groups' => ['FullHousehold'], 'datetime_format' => 'd-m-Y']
                     ),
                 true
             );

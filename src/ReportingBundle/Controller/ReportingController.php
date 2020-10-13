@@ -8,7 +8,7 @@ use phpDocumentor\Reflection\TypeResolver;
 use ReportingBundle\Utils\Formatters\Formatter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-use JMS\Serializer\SerializationContext;
+
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Request;

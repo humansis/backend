@@ -3,7 +3,7 @@
 namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Sector
@@ -20,7 +20,7 @@ class Sector
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullSector", "FullProject"})
+     * @SymfonyGroups({"FullSector", "FullProject"})
      */
     private $id;
 
@@ -28,7 +28,7 @@ class Sector
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"FullSector", "FullProject"})
+     * @SymfonyGroups({"FullSector", "FullProject"})
      */
     private $name;
 

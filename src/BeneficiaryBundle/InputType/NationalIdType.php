@@ -49,4 +49,9 @@ class NationalIdType implements InputTypeInterface
     {
         $this->number = $number;
     }
+
+    public function isEmpty(): bool
+    {
+        return $this->getNumber() === null && $this->getType() === null;
+    }
 }

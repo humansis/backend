@@ -3,22 +3,22 @@ namespace DistributionBundle\OutputType\Factory;
 
 use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Repository\DistributionBeneficiaryRepository;
-use JMS\Serializer\ArrayTransformerInterface;
-use JMS\Serializer\SerializationContext;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class DistributionDataFactory
 {
     /** @var DistributionBeneficiaryRepository */
     private $distributionBNFRepo;
-    /** @var ArrayTransformerInterface */
+    /** @var SerializerInterface */
     private $serializer;
 
     /**
      * DistributionDataFactory constructor.
      * @param DistributionBeneficiaryRepository $distributionBNFRepo
-     * @param ArrayTransformerInterface $serializer
+     * @param SerializerInterface $serializer
      */
-    public function __construct(DistributionBeneficiaryRepository $distributionBNFRepo, ArrayTransformerInterface $serializer)
+    public function __construct(DistributionBeneficiaryRepository $distributionBNFRepo, SerializerInterface $serializer)
     {
         $this->distributionBNFRepo = $distributionBNFRepo;
         $this->serializer = $serializer;
@@ -27,12 +27,23 @@ class DistributionDataFactory
 
     public function build(DistributionData $distributionData, array $distributionGroups): array
     {
-        $distributionArray = $this->serializer
-            ->toArray(
-                $distributionData,
-                SerializationContext::create()->setSerializeNull(true)->setGroups($distributionGroups)
-            );
-        $distributionArray['beneficiaries_count'] = $this->distributionBNFRepo->countActive($distributionData);
+        $distributionArray = [
+            'id' => $distributionData->getId(),
+            'name' => $distributionData->getName(),
+            'updated_on' => $distributionData->getUpdatedOn(),
+            'date_distribution' => $distributionData->getDateDistribution(),
+            'location' => $distributionData->getLocation(),
+            'project' => $distributionData->getProject(),
+            'selection_criteria' => $distributionData->getSelectionCriteria(),
+            'archived' => $distributionData->getArchived(),
+            'validated' => $distributionData->getValidated(),
+            'reporting_distribution' => $distributionData->getReportingDistribution(),
+            'type' => $distributionData->getType(),
+            'commodities' => $distributionData->getCommodities(),
+            // 'distribution_beneficiaries' => $distributionData->getDistributionBeneficiaries(),
+            'completed' => $distributionData->getCompleted(),
+            'beneficiaries_count' => $this->distributionBNFRepo->countActive($distributionData),
+        ];
         return $distributionArray;
     }
 }

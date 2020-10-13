@@ -3,8 +3,8 @@
 namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Type as JMS_Type;
-use JMS\Serializer\Annotation\Groups;
+
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 
 /**
@@ -22,7 +22,7 @@ class Donor implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullDonor", "FullProject"})
+     * @SymfonyGroups({"FullDonor", "FullProject"})
      */
     private $id;
 
@@ -31,7 +31,7 @@ class Donor implements ExportableInterface
      *
      * @ORM\Column(name="fullname", type="string", length=255)
      *
-     * @Groups({"FullDonor", "FullProject"})
+     * @SymfonyGroups({"FullDonor", "FullProject"})
      */
     private $fullname;
 
@@ -40,7 +40,7 @@ class Donor implements ExportableInterface
      *
      * @ORM\Column(name="shortname", type="string", length=255, nullable=true)
      *
-     * @Groups({"FullDonor", "FullProject"})
+     * @SymfonyGroups({"FullDonor", "FullProject"})
      */
     private $shortname;
 
@@ -48,9 +48,8 @@ class Donor implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="dateAdded", type="datetime")
-     * @JMS_Type("DateTime<'d-m-Y H:m:i'>")
      *
-     * @Groups({"FullDonor"})
+     * @SymfonyGroups({"FullDonor"})
      */
     private $dateAdded;
 
@@ -59,14 +58,14 @@ class Donor implements ExportableInterface
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      *
-     * @Groups({"FullDonor"})
+     * @SymfonyGroups({"FullDonor"})
      */
     private $notes;
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", mappedBy="donors")
      *
-     * @Groups({"FullDonor"})
+     * @SymfonyGroups({"FullDonor"})
      */
     private $projects;
 
@@ -74,7 +73,7 @@ class Donor implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="logo", type="string", length=255, nullable=true)
-     * @Groups({"FullDonor"})
+     * @SymfonyGroups({"FullDonor"})
      */
     private $logo;
 

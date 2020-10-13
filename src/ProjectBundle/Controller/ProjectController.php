@@ -2,7 +2,8 @@
 
 namespace ProjectBundle\Controller;
 
-use JMS\Serializer\SerializationContext;
+
+use ProjectBundle\Mapper\ProjectMapper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,10 +50,9 @@ class ProjectController extends Controller
     {
         $user = $this->getUser();
         $projects = $this->get('project.project_service')->findAll($request->request->get('__country'), $user);
-        $json = $this->get('jms_serializer')
-            ->serialize($projects, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
+        $projectMapper = $this->get(ProjectMapper::class);
 
-        return new Response($json, Response::HTTP_OK);
+        return $this->json($projectMapper->toFullArrays($projects));
     }
 
     /**
@@ -96,20 +96,14 @@ class ProjectController extends Controller
      *     )
      * )
      *
-     * @param Project $Project
+     * @param Project $project
      *
      * @return Response
      */
     public function getOneAction(Project $project)
     {
-        $json = $this->get('jms_serializer')
-            ->serialize(
-                $project,
-                'json',
-                SerializationContext::create()->setSerializeNull(true)->setGroups(['FullProject'])
-            );
-
-        return new Response($json);
+        $projectMapper = $this->get(ProjectMapper::class);
+        return $this->json($projectMapper->toFullArray($project));
     }
 
     /**
@@ -149,9 +143,8 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('jms_serializer')
-            ->serialize($project, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
-        return new Response($json, Response::HTTP_OK);
+        $projectMapper = $this->get(ProjectMapper::class);
+        return $this->json($projectMapper->toFullArray($project));
     }
 
     /**
@@ -192,9 +185,8 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('jms_serializer')
-            ->serialize($project, 'json', SerializationContext::create()->setGroups(['FullProject'])->setSerializeNull(true));
-        return new Response($json, Response::HTTP_OK);
+        $projectMapper = $this->get(ProjectMapper::class);
+        return $this->json($projectMapper->toFullArray($project));
     }
 
     /**

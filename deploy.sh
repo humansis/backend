@@ -34,8 +34,18 @@ command="cd /var/www/html/bms_api; \
     git checkout $1; \
     ./hooks/post-checkout; \
     sudo docker-compose exec -T php bash -c 'composer install';\
-    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'; \
+    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear --env=prod'; \
     sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
+
+
+command_stage="cd /var/www/html/bms_api; \
+    git pull origin-bis $1; \
+    git checkout $1; \
+    ./hooks/post-checkout; \
+    sudo docker-compose exec -T php bash -c 'composer install';\
+    sudo docker-compose exec -T php bash -c 'php bin/console cache:clear --env=dev'; \
+    sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
+
 
 command_clean_db="cd /var/www/html/bms_api; \
     git pull origin-bis $1; \
@@ -65,8 +75,7 @@ elif [[ $1 == "dev" ]]; then
     ssh -i $2 ubuntu@$ec2_test $command_clean_db
     ssh -i $2 ubuntu@$ec2_test $fixtures_dev
 elif [[ $1 =~ ^release\/.*$ ]]; then
-    ssh -i $2 ubuntu@$ec2_stage $command_clean_db
-    ssh -i $2 ubuntu@$ec2_stage $fixtures_test
+    ssh -i $2 ubuntu@$ec2_stage $command_stage
 else
     ssh -i $2 ubuntu@$ec2_dev $command_clean_db
     ssh -i $2 ubuntu@$ec2_dev $fixtures_dev

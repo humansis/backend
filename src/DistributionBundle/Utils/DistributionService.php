@@ -4,6 +4,7 @@ namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\Person;
 use CommonBundle\Utils\LocationService;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\DistributionData;
@@ -11,7 +12,7 @@ use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -89,7 +90,7 @@ class DistributionService
             $class = new \ReflectionClass($classRetrieverString);
             $this->retriever = $class->newInstanceArgs([$this->em]);
         } catch (\Exception $exception) {
-            throw new \Exception("Your class Retriever is undefined or malformed.");
+            throw new \Exception("Your class Retriever is undefined or malformed.", 0, $exception);
         }
     }
 
@@ -147,7 +148,13 @@ class DistributionService
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
         /** @var DistributionData $distribution */
-        $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
+        // $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
+        $distribution = new DistributionData();
+        $distribution->setName($distributionArray['name']);
+        // $distribution->setDateDistribution(new \DateTime($distributionArray['date_distribution']));
+        $distribution->setDateDistribution(new \DateTime());
+        // $distribution->getCommodities()->add();
+
         $distribution->setUpdatedOn(new \DateTime());
         $errors = $this->validator->validate($distribution);
         if (count($errors) > 0) {
@@ -160,16 +167,16 @@ class DistributionService
 
         // TODO : make the front send 0 or 1 instead of Individual (Beneficiary comes from the import)
         if ($distributionArray['type'] === "Beneficiary" || $distributionArray['type'] === "Individual" || $distributionArray['type'] === "1") {
-            $distribution->settype(1);
+            $distribution->setType(1);
         } else {
-            $distribution->settype(0);
+            $distribution->setType(0);
         }
 
         $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
 
         $project = $distribution->getProject();
-        $projectTmp = $this->em->getRepository(Project::class)->find($project);
+        $projectTmp = $this->em->getRepository(Project::class)->findOneBy([]);
         if ($projectTmp instanceof Project) {
             $distribution->setProject($projectTmp);
         }
@@ -343,6 +350,7 @@ class DistributionService
      */
     public function exportToOfficialCsv(int $projectId, string $type)
     {
+        /** @var DistributionData[] $distributions */
         $distributions = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId]);
         $project = $this->em->getRepository(Project::class)->find($projectId);
         $exportableTable = [];
@@ -351,28 +359,30 @@ class DistributionService
             array_map(function($donor) { return $donor->getShortname(); }, $project->getDonors()->toArray())
         );
         
-        foreach ($distributions as $distribution) {
-
-            $idps = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "IDP", $distribution->getType());
-            $residents = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "resident", $distribution->getType());
-            $maleHHH = $this->em->getRepository(DistributionData::class)->getNoHeadHouseholdsByGender($distribution->getId(), 1);
-            $femaleHHH = $this->em->getRepository(DistributionData::class)->getNoHeadHouseholdsByGender($distribution->getId(), 0);
-            $maleChildrenUnder23month = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 0, 2, $distribution->getDateDistribution(), $distribution->getType());
-            $femaleChildrenUnder23month = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 0, 2, $distribution->getDateDistribution(), $distribution->getType());
-            $maleChildrenUnder5years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 2, 6, $distribution->getDateDistribution(), $distribution->getType());
-            $femaleChildrenUnder5years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 2, 6, $distribution->getDateDistribution(), $distribution->getType());
-            $maleUnder17years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 6, 18, $distribution->getDateDistribution(), $distribution->getType());
-            $femaleUnder17years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 6, 18, $distribution->getDateDistribution(), $distribution->getType());
-            $maleUnder59years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 18, 60, $distribution->getDateDistribution(), $distribution->getType());
-            $femaleUnder59years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 18, 60, $distribution->getDateDistribution(), $distribution->getType());
-            $maleOver60years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 60, 200, $distribution->getDateDistribution(), $distribution->getType());
-            $femaleOver60years = $this->em->getRepository(DistributionData::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 60, 200, $distribution->getDateDistribution(), $distribution->getType());
+        $bnfRepo = $this->em->getRepository(Beneficiary::class);
+        
+        foreach ($distributions as $distribution)
+        {
+            $idps = $this->getBeneficiaryCountByResidencyStatus($distribution, "IDP", $distribution->getType());
+            $residents = $this->getBeneficiaryCountByResidencyStatus($distribution, "resident", $distribution->getType());
+            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($distribution, Person::GENDER_MALE);
+            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($distribution, Person::GENDER_FEMALE);
+            $maleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($distribution, 1, 0, 2, $distribution->getDateDistribution());
+            $femaleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($distribution, 0, 0, 2, $distribution->getDateDistribution());
+            $maleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($distribution, 1, 2, 6, $distribution->getDateDistribution());
+            $femaleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($distribution, 0, 2, 6, $distribution->getDateDistribution());
+            $maleUnder17years = $bnfRepo->countByAgeAndByGender($distribution, 1, 6, 18, $distribution->getDateDistribution());
+            $femaleUnder17years = $bnfRepo->countByAgeAndByGender($distribution, 0, 6, 18, $distribution->getDateDistribution());
+            $maleUnder59years = $bnfRepo->countByAgeAndByGender($distribution, 1, 18, 60, $distribution->getDateDistribution());
+            $femaleUnder59years = $bnfRepo->countByAgeAndByGender($distribution, 0, 18, 60, $distribution->getDateDistribution());
+            $maleOver60years = $bnfRepo->countByAgeAndByGender($distribution, 1, 60, 200, $distribution->getDateDistribution());
+            $femaleOver60years = $bnfRepo->countByAgeAndByGender($distribution, 0, 60, 200, $distribution->getDateDistribution());
             $maleTotal = $maleChildrenUnder23month + $maleChildrenUnder5years + $maleUnder17years + $maleUnder59years + $maleOver60years;
             $femaleTotal = $femaleChildrenUnder23month + $femaleChildrenUnder5years + $femaleUnder17years + $femaleUnder59years + $femaleOver60years;
             $noFamilies = $distribution->getType() === DistributionData::TYPE_BENEFICIARY ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
             $familySize = $distribution->getType() === DistributionData::TYPE_HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
             $modalityType = $distribution->getCommodities()[0]->getModalityType()->getName();
-            $beneficiaryServed =  $this->em->getRepository(DistributionData::class)->getNoServed($distribution->getId(), $modalityType);
+            $beneficiaryServed =  $bnfRepo->countServed($distribution, $modalityType);
 
             $commodityNames = implode(', ',
                     array_map(
@@ -746,5 +756,14 @@ class DistributionService
         }
     }
 
+    private function getBeneficiaryCountByResidencyStatus(DistributionData $distribution, string $residencyStatus, int $type): int
+    {
+        if ($type === DistributionData::TYPE_BENEFICIARY) {
+            return $this->em->getRepository(Beneficiary::class)->countByResidencyStatus($distribution, $residencyStatus);
+        } elseif ($type === DistributionData::TYPE_HOUSEHOLD) {
+            return $this->em->getRepository(Household::class)->countBeneficiariesByResidencyStatus($distribution, $residencyStatus);
+        }
+        return 0;
+    }
 
 }

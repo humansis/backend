@@ -7,8 +7,8 @@ use CommonBundle\Utils\ExportableInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\Expr\Select;
 use ProjectBundle\Entity\Project;
-use JMS\Serializer\Annotation\Type as JMS_Type;
-use JMS\Serializer\Annotation\Groups;
+
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use BeneficiaryBundle\Entity\Household;
 
 /**
@@ -31,7 +31,7 @@ class DistributionData implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $id;
 
@@ -40,7 +40,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=45)
      *
-     * @Groups({"FullDistribution", "SmallDistribution", "FullBooklet", "DistributionOverview"})
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "FullBooklet", "DistributionOverview"})
      */
     private $name;
 
@@ -48,9 +48,6 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="UpdatedOn", type="datetime")
-     * @JMS_Type("DateTime<'d-m-Y H:i:s'>")
-     *
-     * @Groups({"FullDistribution", "SmallDistribution"})
      */
     private $updatedOn;
 
@@ -58,9 +55,8 @@ class DistributionData implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_distribution", type="date")
-     * @JMS_Type("DateTime<'d-m-Y'>")
      *
-     * @Groups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $dateDistribution;
 
@@ -69,7 +65,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
      *
-     * @Groups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      */
     private $location;
 
@@ -78,14 +74,14 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="distributions")
      *
-     * @Groups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      */
     private $project;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\SelectionCriteria", mappedBy="distributionData")
      *
-     * @Groups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      */
     private $selectionCriteria;
 
@@ -94,7 +90,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
      *
-     * @Groups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      */
     private $archived = 0;
 
@@ -103,7 +99,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(name="validated", type="boolean", options={"default" : 0})
      *
-     * @Groups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      */
     private $validated = 0;
 
@@ -117,20 +113,20 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(type="integer", name="type_distribution")
      *
-     * @Groups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $type;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="distributionData")
-     * @Groups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $commodities;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="distributionData")
      *
-     * @Groups({"FullDistribution", "FullProject"})
+     * @SymfonyGroups({"FullDistribution", "FullProject"})
      */
     private $distributionBeneficiaries;
 
@@ -139,7 +135,7 @@ class DistributionData implements ExportableInterface
      *
      * @ORM\Column(name="completed", type="boolean", options={"default" : 0})
      *
-     * @Groups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      */
     private $completed = 0;
 
@@ -152,6 +148,7 @@ class DistributionData implements ExportableInterface
         $this->reportingDistribution = new \Doctrine\Common\Collections\ArrayCollection();
         $this->selectionCriteria = new \Doctrine\Common\Collections\ArrayCollection();
         $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->commodities = new \Doctrine\Common\Collections\ArrayCollection();
         $this->setUpdatedOn(new \DateTime());
     }
 
@@ -218,12 +215,13 @@ class DistributionData implements ExportableInterface
 
     /**
      * Get updatedOn.
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      *
-     * @return \DateTime
+     * @return string
      */
-    public function getUpdatedOn()
+    public function getUpdatedOn(): string
     {
-        return $this->updatedOn;
+        return $this->updatedOn->format('Y-m-d H:i:s');
     }
 
     /**
@@ -317,7 +315,7 @@ class DistributionData implements ExportableInterface
      *
      * @return int
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
@@ -523,11 +521,11 @@ class DistributionData implements ExportableInterface
     /**
      * Set dateDistribution.
      *
-     * @param \DateTime $dateDistribution
+     * @param \DateTimeInterface $dateDistribution
      *
      * @return DistributionData
      */
-    public function setDateDistribution($dateDistribution)
+    public function setDateDistribution(\DateTimeInterface $dateDistribution)
     {
         $this->dateDistribution = $dateDistribution;
 
@@ -537,9 +535,9 @@ class DistributionData implements ExportableInterface
     /**
      * Get dateDistribution.
      *
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
-    public function getDateDistribution()
+    public function getDateDistribution(): \DateTimeInterface
     {
         return $this->dateDistribution;
     }
@@ -560,15 +558,15 @@ class DistributionData implements ExportableInterface
             // Then we make the string coherent
             if ($field === 'livelihood') {
                 $value = Household::LIVELIHOOD[$value];
-            } else if ($field === 'camp Name') {
+            } elseif ($field === 'camp Name') {
                 $field = 'camp Id';
             }
 
             if ($field === 'gender' || $field === 'head Of Household Gender') {
                 $stringCriterion = $field . " " . $condition . ($value === '0' ? ' Female' : ' Male');
-            } else if ($condition === 'true') {
+            } elseif ($condition === 'true') {
                 $stringCriterion = $field;
-            } else if ($condition === 'false') {
+            } elseif ($condition === 'false') {
                 $stringCriterion = 'not ' . $field;
             } else {
                 $stringCriterion = $field . " " . $condition . " " . $value;
@@ -604,7 +602,7 @@ class DistributionData implements ExportableInterface
             } else {
                 $percentage .= '0% ' . $commodity->getModalityType()->getName();
             }
-        } 
+        }
        
         
         $typeString = $this->getType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
@@ -625,7 +623,7 @@ class DistributionData implements ExportableInterface
             "adm4" =>$adm4,
             "Name" => $this->getName(),
             "Date of distribution " => $this->getDateDistribution(),
-            "Update on " => $this->getUpdatedOn(),
+            "Update on " => $this->updatedOn,
             "Selection criteria" =>  $valueselectioncriteria,
             "Commodities " => $valuescommodities,
             "Number of beneficiaries" => count($this->getDistributionBeneficiaries()),
@@ -634,8 +632,13 @@ class DistributionData implements ExportableInterface
         ];
     }
 
-    public function getPercentageValue($commodity) {
+    public function getPercentageValue($commodity)
+    {
         $totalCommodityValue = count($this->getDistributionBeneficiaries()) * $commodity->getValue();
+        if ($totalCommodityValue <= 0.00001) {
+            return 0;
+        }
+
         $amountSent = 0;
         foreach ($this->getDistributionBeneficiaries() as $distributionBeneficiary) {
             $amountSent += $this->getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary);
@@ -645,7 +648,8 @@ class DistributionData implements ExportableInterface
     }
 
 
-    public function getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary) {
+    public function getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary)
+    {
         $modalityType = $this->getCommodities()[0]->getModalityType()->getName();
         if ($modalityType === 'Mobile Money') {
             $numberOfTransactions = count($distributionBeneficiary->getTransactions());
@@ -655,7 +659,7 @@ class DistributionData implements ExportableInterface
             } else {
                 return 0;
             }
-        } else if ($modalityType === 'QR Code Voucher') {
+        } elseif ($modalityType === 'QR Code Voucher') {
             $booklets =  $distributionBeneficiary->getBooklets();
             foreach ($booklets as $booklet) {
                 if ($booklet->getStatus() === 1 || $booklet->getStatus() === 2) {
@@ -672,8 +676,7 @@ class DistributionData implements ExportableInterface
                 return 0;
             }
             $correspondingGeneralRelief = $distributionBeneficiary->getGeneralReliefs()[$commodityIndex];
-            return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0 );
+            return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0);
         }
     }
-
 }

@@ -5,7 +5,7 @@ namespace BeneficiaryBundle\Utils\DataVerifier;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\SerializationContext;
+
 use Symfony\Component\DependencyInjection\Container;
 
 class DuplicateVerifier extends AbstractVerifier
@@ -44,11 +44,9 @@ class DuplicateVerifier extends AbstractVerifier
         foreach ($householdArray['new']['beneficiaries'] as $newBeneficiary) {
 
             /** @var Beneficiary[] $existingBeneficiaries */
-            $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByUnarchived(
-                [
-                    'localGivenName'  => trim($newBeneficiary['local_given_name']),
-                    'localFamilyName' => trim($newBeneficiary['local_family_name'])
-                ]
+            $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByName(
+                trim($newBeneficiary['local_given_name']),
+                trim($newBeneficiary['local_family_name'])
             );
 
             $match = false;
@@ -62,10 +60,10 @@ class DuplicateVerifier extends AbstractVerifier
             if (! $match && ! empty($existingBeneficiaries)) {
                 // reset the existing household's beneficiaries to include only the duplicate
                 $oldHousehold = json_decode(
-                    $this->container->get('jms_serializer')->serialize(
+                    $this->container->get('serializer')->serialize(
                         $existingBeneficiaries[0]->getHousehold(),
                         'json',
-                        SerializationContext::create()->setSerializeNull(true)->setGroups(['FullHousehold'])
+                        ['groups' => ['FullHousehold'], 'datetime_format' => 'd-m-Y']
                     ),
                     true
                 );

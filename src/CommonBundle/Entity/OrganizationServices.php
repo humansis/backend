@@ -3,7 +3,7 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * OrganizationServices
@@ -11,7 +11,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Table(name="organization_service")
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\OrganizationServicesRepository")
  */
-class OrganizationServices
+class OrganizationServices implements \JsonSerializable
 {
     /**
      * @var int
@@ -19,7 +19,6 @@ class OrganizationServices
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullOrganization"})
      */
     private $id;
 
@@ -27,7 +26,6 @@ class OrganizationServices
      * @var bool
      *
      * @ORM\Column(name="enabled", type="boolean")
-     * @Groups({"FullOrganization"})
      */
     private $enabled;
 
@@ -35,7 +33,6 @@ class OrganizationServices
      * @var json
      *
      * @ORM\Column(name="parameters_value", type="json")
-     * @Groups({"FullOrganization"})
      */
     private $parametersValue;
 
@@ -50,7 +47,6 @@ class OrganizationServices
      * @var Service
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Service", inversedBy="organizationServices")
-     * @Groups({"FullOrganization"})
      */
     private $service;
 
@@ -170,5 +166,15 @@ class OrganizationServices
     public function getService()
     {
         return $this->service;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'enabled' => $this->enabled,
+            'parametersValue' => $this->parametersValue,
+            'service' => $this->service,
+        ];
     }
 }

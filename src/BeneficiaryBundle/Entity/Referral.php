@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Referral
@@ -37,7 +37,7 @@ class Referral
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
-     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedDistribution"})
      */
     private $type;
 
@@ -45,7 +45,7 @@ class Referral
      * @var string
      *
      * @ORM\Column(name="comment", type="string", length=255)
-     * @Groups({"FullHousehold", "SmallHousehold", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedDistribution"})
      */
     private $comment;
 

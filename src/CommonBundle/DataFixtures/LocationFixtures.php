@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Kernel;
 class LocationFixtures extends Fixture implements FixtureGroupInterface
 {
     // maximum imported lines per file (due to performace on dev env)
-    const LIMIT = 100;
+    const LIMIT = 10;
 
     /** @var string */
     private $env;
@@ -89,6 +89,10 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
                 $adm3 = $this->buildAdm3($name, $code, $adm2, $manager);
             } elseif ('adm4' === $xml->name) {
                 $this->buildAdm4($name, $code, $adm3, $manager);
+            }
+
+            if (++$i >= self::LIMIT) {
+                break;
             }
         }
 

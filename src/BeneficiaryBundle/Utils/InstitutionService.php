@@ -6,10 +6,12 @@ namespace BeneficiaryBundle\Utils;
 use BeneficiaryBundle\Entity\Address;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Person;
+use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Form\InstitutionConstraints;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -102,10 +104,15 @@ class InstitutionService
         $institution->setLatitude($institutionType->getLatitude());
         $institution->setContactName($institutionType->getContactName());
         $institution->setContactFamilyName($institutionType->getContactFamilyName());
-        $institution->setPhonePrefix($institutionType->getPhonePrefix());
-        $institution->setPhoneNumber($institutionType->getPhoneNumber());
+        if ($institutionType->getPhoneNumber()) {
+            $institution->setPhone(new Phone());
+            $institution->getPhone()->setType('Institution contact');
+            $institution->getPhone()->setPrefix($institutionType->getPhonePrefix());
+            $institution->getPhone()->setNumber($institutionType->getPhoneNumber());
+        }
 
-        if ($institutionType->getNationalId() !== null) {
+
+        if ($institutionType->getNationalId() !== null && !$institutionType->getNationalId()->isEmpty()) {
             $institution->setNationalId(new NationalId());
             $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getNumber());
             $institution->getNationalId()->setIdType($institutionType->getNationalId()->getType());
@@ -185,6 +192,9 @@ class InstitutionService
      */
     public function update(GlobalInputType\Country $iso3, Institution $institution, InputType\UpdateInstitutionType $institutionType): Institution
     {
+        if ($institution->getContact() == null) {
+            $institution->setContact(new Person());
+        }
         if (null !== $newValue = $institutionType->getName()) {
             $institution->setName($newValue);
         }
@@ -209,13 +219,15 @@ class InstitutionService
             $institution->setContactName($newValue);
         }
         if (null !== $newValue = $institutionType->getContactFamilyName()) {
-            $institution->setContactName($newValue);
+            $institution->setContactFamilyName($newValue);
         }
-        if (null !== $newValue = $institutionType->getPhonePrefix()) {
-            $institution->setPhonePrefix($newValue);
-        }
-        if (null !== $newValue = $institutionType->getPhoneNumber()) {
-            $institution->setPhoneNumber($newValue);
+        if (null !== $newNumber = $institutionType->getPhoneNumber()) {
+            $newPrefix = $institutionType->getPhonePrefix();
+            if ($institution->getPhone() == null) {
+                $institution->setPhone(new Phone());
+            }
+            $institution->getPhone()->setPrefix($newPrefix);
+            $institution->getPhone()->setNumber($newNumber);
         }
 
         /** @var InputType\BeneficiaryAddressType $address */

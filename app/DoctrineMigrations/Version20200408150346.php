@@ -15,8 +15,24 @@ final class Version20200408150346 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('CREATE TABLE institution (id INT AUTO_INCREMENT NOT NULL, address_id INT DEFAULT NULL, type VARCHAR(255) NOT NULL, contact_name VARCHAR(255) DEFAULT NULL, phone_number VARCHAR(45) DEFAULT NULL, phone_prefix VARCHAR(45) DEFAULT NULL, id_number VARCHAR(255) DEFAULT NULL, id_type VARCHAR(45) DEFAULT NULL, latitude VARCHAR(45) DEFAULT NULL, longitude VARCHAR(45) DEFAULT NULL, archived TINYINT(1) DEFAULT \'0\' NOT NULL, UNIQUE INDEX UNIQ_3A9F98E5F5B7AF75 (address_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE institution ADD CONSTRAINT FK_3A9F98E5F5B7AF75 FOREIGN KEY (address_id) REFERENCES address (id)');
+        $this->addSql('
+            CREATE TABLE institution (
+                id INT AUTO_INCREMENT NOT NULL,
+                address_id INT DEFAULT NULL,
+                type VARCHAR(255) NOT NULL,
+                contact_name VARCHAR(255) DEFAULT NULL,
+                phone_number VARCHAR(45) DEFAULT NULL,
+                phone_prefix VARCHAR(45) DEFAULT NULL,
+                id_number VARCHAR(255) DEFAULT NULL,
+                id_type VARCHAR(45) DEFAULT NULL,
+                latitude VARCHAR(45) DEFAULT NULL,
+                longitude VARCHAR(45) DEFAULT NULL,
+                archived TINYINT(1) DEFAULT \'0\' NOT NULL,
+                UNIQUE INDEX UNIQ_3A9F98E5F5B7AF75 (address_id),
+                PRIMARY KEY(id),
+                CONSTRAINT FK_3A9F98E5F5B7AF75 FOREIGN KEY (address_id)
+                    REFERENCES address (id)
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
     }
 
     public function down(Schema $schema) : void

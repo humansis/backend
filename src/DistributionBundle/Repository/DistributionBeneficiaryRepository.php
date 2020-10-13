@@ -7,6 +7,7 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\DistributionData;
 use BeneficiaryBundle\Entity\Household;
+use VoucherBundle\Entity\Booklet;
 
 /**
  * DistributionBeneficiaryRepository
@@ -21,10 +22,12 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder("db");
         $q = $qb->select("COUNT(DISTINCT db.beneficiary)")
                 ->leftJoin("db.beneficiary", "b")
-                ->leftJoin("b.household", "hh");
-        $householdRepository = $this->getEntityManager()->getRepository(Household::class);
-        $householdRepository->whereHouseholdInCountry($q, $iso3);
-        $q->andWhere('hh.archived = 0');        
+                ->leftJoin("b.projects", "p")
+                ->andWhere('p.iso3 = :country')
+                ->andWhere('b.archived = 0')
+        ;
+        $q->setParameter('country', $iso3);
+
         return $q->getQuery()->getSingleScalarResult();
     }
     
@@ -46,7 +49,7 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
                 ->leftJoin("db.booklets", "b")
                 ->andWhere('b IS NULL')
                 ->orWhere("b.status = :s")
-                ->setParameter(':s', 3);
+                ->setParameter(':s', Booklet::UNASSIGNED);
         
         return $q->getQuery()->getResult();
     }

@@ -24,7 +24,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("jms_serializer");
+        $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
@@ -53,11 +53,16 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $country_specific_answer = current($household["country_specific_answers"]);
             $this->assertArrayHasKey('answer', $country_specific_answer);
             $this->assertArrayHasKey('country_specific', $country_specific_answer);
+            $this->assertArrayHasKey('income_spent_on_food', $household);
+            $this->assertArrayHasKey('household_income', $household);
+            $this->assertArrayHasKey('support_organization_name', $household);
         } catch (\Exception $exception) {
             $this->removeHousehold($this->namefullnameHousehold);
             $this->fail("\nThe mapping of fields of Household entity is not correct (1).\n");
             return false;
         }
+
+        $this->assertEquals($this->bodyHousehold['support_organization_name'], $household['support_organization_name'], "'support_organization_name' wasn't saved");
 
         return true;
     }
@@ -113,6 +118,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             "sort" => []
         ];
         $crawler = $this->request('POST', '/api/wsse/households/get/all', $body);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $householdsArray = json_decode($this->client->getResponse()->getContent(), true);
         $households = $householdsArray[1];
         if (!empty($households)) {
@@ -128,6 +134,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 $this->assertArrayHasKey('local_given_name', $beneficiary);
                 $this->assertArrayHasKey('local_family_name', $beneficiary);
                 $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
+                $this->assertArrayHasKey('fathers_name', $beneficiary);
                 $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
                 if (is_array($vulnerability_criterion)) {
                     $this->assertArrayHasKey('id', $vulnerability_criterion);
@@ -156,11 +163,13 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $body;
+        $body = [];
         $body['household'] = $this->bodyHousehold;
         $body['projects'] = [1];
+        $body['household']['support_organization_name'] = "__TEST_ADD_support_organization_name__";
 
         $crawler = $this->request('PUT', '/api/wsse/households', $body);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $householdsArray = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('id', $householdsArray);
@@ -174,10 +183,13 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('income_level', $householdsArray);
         $this->assertArrayHasKey('notes', $householdsArray);
         $this->assertArrayHasKey('beneficiaries', $householdsArray);
+        $this->assertArrayHasKey('support_organization_name', $householdsArray);
         $this->assertArrayHasKey('country_specific_answers', $householdsArray);
         $this->assertArrayHasKey('projects', $householdsArray);
 
-        return true;
+        $this->assertEquals($body['household']['support_organization_name'], $householdsArray['support_organization_name'], "'support_organization_name' wasn't changed");
+
+        return $householdsArray;
     }
 
     /**
@@ -191,27 +203,31 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $body;
+        $body = [];
         $body['household'] = $this->bodyHousehold;
         $body['projects'] = [1];
+        $body['household']['support_organization_name'] = "__TEST_EDIT_support_organization_name__";
 
-        // $crawler = $this->request('POST', '/api/wsse/households/' . $hh['id'], $body);
-        // $householdsArray = json_decode($this->client->getResponse()->getContent(), true);
+        $crawler = $this->request('POST', '/api/wsse/households/' . $hh['id'], $body);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $householdsArray = json_decode($this->client->getResponse()->getContent(), true);
 
-        // $this->assertArrayHasKey('id', $householdsArray);
-        // $this->assertArrayHasKey('address_postcode', $householdsArray);
-        // $this->assertArrayHasKey('address_street', $householdsArray);
-        // $this->assertArrayHasKey('address_number', $householdsArray);
-        // $this->assertArrayHasKey('latitude', $householdsArray);
-        // $this->assertArrayHasKey('longitude', $householdsArray);
-        // $this->assertArrayHasKey('livelihood', $householdsArray);
-        // $this->assertArrayHasKey('notes', $householdsArray);
-        // $this->assertArrayHasKey('beneficiaries', $householdsArray);
-        // $this->assertArrayHasKey('country_specific_answers', $householdsArray);
-        // $this->assertArrayHasKey('location', $householdsArray);
-        // $this->assertArrayHasKey('projects', $householdsArray);
+        $this->assertArrayHasKey('id', $householdsArray);
+        $this->assertArrayHasKey('household_locations', $householdsArray);
+        $householdLocation = array_pop($householdsArray["household_locations"]);
+        $this->assertArrayHasKey('type', $householdLocation);
+        $this->assertArrayHasKey('location_group', $householdLocation);
+        $this->assertArrayHasKey('latitude', $householdsArray);
+        $this->assertArrayHasKey('longitude', $householdsArray);
+        $this->assertArrayHasKey('livelihood', $householdsArray);
+        $this->assertArrayHasKey('income_level', $householdsArray);
+        $this->assertArrayHasKey('notes', $householdsArray);
+        $this->assertArrayHasKey('beneficiaries', $householdsArray);
+        $this->assertArrayHasKey('support_organization_name', $householdsArray);
+        $this->assertArrayHasKey('country_specific_answers', $householdsArray);
+        $this->assertArrayHasKey('projects', $householdsArray);
 
-        $this->assertTrue(true === true);
+        $this->assertEquals($body['household']['support_organization_name'], $householdsArray['support_organization_name'], "'support_organization_name' wasn't changed");
 
         return true;
     }

@@ -15,16 +15,59 @@ final class Version20190702080035 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('CREATE TABLE household_location (id INT AUTO_INCREMENT NOT NULL, address_id INT DEFAULT NULL, camp_address_id INT DEFAULT NULL, household_id INT DEFAULT NULL, location_group VARCHAR(45) NOT NULL, type VARCHAR(45) NOT NULL, UNIQUE INDEX UNIQ_822570EEF5B7AF75 (address_id), UNIQUE INDEX UNIQ_822570EE5AC9717 (camp_address_id), INDEX IDX_822570EEE79FF843 (household_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE address (id INT AUTO_INCREMENT NOT NULL, location_id INT DEFAULT NULL, number VARCHAR(45) DEFAULT NULL, street VARCHAR(255) DEFAULT NULL, postcode VARCHAR(45) DEFAULT NULL, INDEX IDX_D4E6F8164D218E (location_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE camp_address (id INT AUTO_INCREMENT NOT NULL, camp_id INT DEFAULT NULL, tentNumber VARCHAR(45) NOT NULL, INDEX IDX_7DDD2CEF77075ABB (camp_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE camp (id INT AUTO_INCREMENT NOT NULL, location_id INT DEFAULT NULL, name VARCHAR(45) NOT NULL, INDEX IDX_C194423064D218E (location_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE household_location ADD CONSTRAINT FK_822570EEF5B7AF75 FOREIGN KEY (address_id) REFERENCES address (id)');
-        $this->addSql('ALTER TABLE household_location ADD CONSTRAINT FK_822570EE5AC9717 FOREIGN KEY (camp_address_id) REFERENCES camp_address (id)');
-        $this->addSql('ALTER TABLE household_location ADD CONSTRAINT FK_822570EEE79FF843 FOREIGN KEY (household_id) REFERENCES household (id)');
-        $this->addSql('ALTER TABLE address ADD CONSTRAINT FK_D4E6F8164D218E FOREIGN KEY (location_id) REFERENCES location (id)');
-        $this->addSql('ALTER TABLE camp_address ADD CONSTRAINT FK_7DDD2CEF77075ABB FOREIGN KEY (camp_id) REFERENCES camp (id)');
-        $this->addSql('ALTER TABLE camp ADD CONSTRAINT FK_C194423064D218E FOREIGN KEY (location_id) REFERENCES location (id)');
+        $this->addSql('
+            CREATE TABLE address (id INT AUTO_INCREMENT NOT NULL,
+                location_id INT DEFAULT NULL,
+                number VARCHAR(45) DEFAULT NULL,
+                street VARCHAR(255) DEFAULT NULL,
+                postcode VARCHAR(45) DEFAULT NULL,
+                INDEX IDX_D4E6F8164D218E (location_id),
+                PRIMARY KEY(id),
+                CONSTRAINT FK_D4E6F8164D218E FOREIGN KEY (location_id)
+                    REFERENCES location (id)
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+
+        $this->addSql('
+            CREATE TABLE camp (
+                id INT AUTO_INCREMENT NOT NULL,
+                location_id INT DEFAULT NULL,
+                name VARCHAR(45) NOT NULL,
+                INDEX IDX_C194423064D218E (location_id),
+                PRIMARY KEY(id),
+                CONSTRAINT FK_C194423064D218E FOREIGN KEY (location_id)
+                    REFERENCES location (id)
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+
+        $this->addSql('
+            CREATE TABLE camp_address (
+                id INT AUTO_INCREMENT NOT NULL,
+                camp_id INT DEFAULT NULL,
+                tentNumber VARCHAR(45) NOT NULL,
+                INDEX IDX_7DDD2CEF77075ABB (camp_id),
+                PRIMARY KEY(id),
+                CONSTRAINT FK_7DDD2CEF77075ABB FOREIGN KEY (camp_id)
+                    REFERENCES camp (id)
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+
+        $this->addSql('
+            CREATE TABLE household_location (
+                id INT AUTO_INCREMENT NOT NULL,
+                address_id INT DEFAULT NULL,
+                camp_address_id INT DEFAULT NULL,
+                household_id INT DEFAULT NULL,
+                location_group VARCHAR(45) NOT NULL,
+                type VARCHAR(45) NOT NULL,
+                UNIQUE INDEX UNIQ_822570EEF5B7AF75 (address_id),
+                UNIQUE INDEX UNIQ_822570EE5AC9717 (camp_address_id),
+                INDEX IDX_822570EEE79FF843 (household_id),
+                PRIMARY KEY(id),
+                CONSTRAINT FK_822570EEF5B7AF75 FOREIGN KEY (address_id)
+                    REFERENCES address (id),
+                CONSTRAINT FK_822570EE5AC9717 FOREIGN KEY (camp_address_id)
+                    REFERENCES camp_address (id),
+                CONSTRAINT FK_822570EEE79FF843 FOREIGN KEY (household_id)
+                    REFERENCES household (id)
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
     }
 
     public function postUp(Schema $schema) : void

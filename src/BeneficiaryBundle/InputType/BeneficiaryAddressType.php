@@ -7,17 +7,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 class BeneficiaryAddressType implements InputTypeInterface
 {
     /**
-     * @var string
+     * @var string|null
      * @Assert\Length(max="255")
      */
     private $street;
     /**
-     * @var string
+     * @var string|null
      * @Assert\Length(max="255")
      */
     private $number;
     /**
-     * @var string
+     * @var string|null
      * @Assert\Length(max="255")
      */
     private $postcode;
@@ -28,49 +28,49 @@ class BeneficiaryAddressType implements InputTypeInterface
     private $location;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getStreet(): string
+    public function getStreet(): ?string
     {
         return $this->street;
     }
 
     /**
-     * @param string $street
+     * @param string|null $street
      */
-    public function setStreet(string $street): void
+    public function setStreet(?string $street): void
     {
         $this->street = $street;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getNumber(): string
+    public function getNumber(): ?string
     {
         return $this->number;
     }
 
     /**
-     * @param string $number
+     * @param string|null $number
      */
-    public function setNumber(string $number): void
+    public function setNumber(?string $number): void
     {
         $this->number = $number;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPostcode(): string
+    public function getPostcode(): ?string
     {
         return $this->postcode;
     }
 
     /**
-     * @param string $postcode
+     * @param string|null $postcode
      */
-    public function setPostcode(string $postcode): void
+    public function setPostcode(?string $postcode): void
     {
         $this->postcode = $postcode;
     }

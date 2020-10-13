@@ -2,10 +2,11 @@
 
 namespace ProjectBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use JMS\Serializer\Annotation\Type as JMS_Type;
-use JMS\Serializer\Annotation\Groups;
+
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 use BeneficiaryBundle\Entity\Household;
 
@@ -25,7 +26,7 @@ class Project implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
+     * @SymfonyGroups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
      */
     private $id;
 
@@ -34,7 +35,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
+     * @SymfonyGroups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
      */
     private $name;
 
@@ -43,7 +44,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="internalId", type="string", length=255, nullable=true)
      *
-     * @Groups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
+     * @SymfonyGroups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
      */
     private $internalId;
 
@@ -51,9 +52,8 @@ class Project implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="startDate", type="date")
-     * @JMS_Type("DateTime<'d-m-Y'>")
      *
-     * @Groups({"FullProject"})
+     * @SymfonyGroups({"FullProject"})
      */
     private $startDate;
 
@@ -61,16 +61,15 @@ class Project implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="endDate", type="date")
-     * @JMS_Type("DateTime<'d-m-Y'>")
      *
-     * @Groups({"FullProject"})
+     * @SymfonyGroups({"FullProject"})
      */
     private $endDate;
 
     /**
      * @var int
      *
-     * @Groups({"FullProject"})
+     * @SymfonyGroups({"FullProject"})
      */
     private $numberOfHouseholds;
 
@@ -79,7 +78,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="target", type="float", nullable=true)
      *
-     * @Groups({"FullProject"})
+     * @SymfonyGroups({"FullProject"})
      */
     private $target;
 
@@ -88,7 +87,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="notes", type="text", nullable=true)
      *
-     * @Groups({"FullProject"})
+     * @SymfonyGroups({"FullProject"})
      */
     private $notes;
 
@@ -97,21 +96,21 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="iso3", type="text")
      *
-     * @Groups({"FullProject", "FullUser"})
+     * @SymfonyGroups({"FullProject", "FullUser"})
      */
     private $iso3;
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Donor", inversedBy="projects")
      *
-     * @Groups({"FullProject"})
+     * @SymfonyGroups({"FullProject"})
      */
     private $donors;
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects", cascade={"persist"})
      *
-     * @Groups({"FullProject", "FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullProject", "FullDistribution", "SmallDistribution"})
      */
     private $sectors;
 
@@ -119,7 +118,7 @@ class Project implements ExportableInterface
      * @var boolean
      *
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
-     * @Groups({"FullProject", "FullUser", "SmallHousehold", "FullHousehold"})
+     * @SymfonyGroups({"FullProject", "FullUser", "SmallHousehold", "FullHousehold"})
      */
     private $archived = 0;
 
@@ -140,7 +139,7 @@ class Project implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionData", mappedBy="project")
-     * @Groups({"FullProject"})
+     * @SymfonyGroups({"FullProject"})
      */
     private $distributions;
 
@@ -154,6 +153,7 @@ class Project implements ExportableInterface
         $this->donors = new \Doctrine\Common\Collections\ArrayCollection();
         $this->sectors = new \Doctrine\Common\Collections\ArrayCollection();
         $this->households = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->distributions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -619,7 +619,7 @@ class Project implements ExportableInterface
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getDistributions()
+    public function getDistributions(): Collection
     {
         return $this->distributions;
     }

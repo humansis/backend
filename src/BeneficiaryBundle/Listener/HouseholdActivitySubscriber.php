@@ -8,9 +8,8 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use UserBundle\Entity\User;
 
 class HouseholdActivitySubscriber implements EventSubscriber
@@ -74,9 +73,7 @@ class HouseholdActivitySubscriber implements EventSubscriber
         /** @var Household $household */
         $household = $args->getObject();
 
-        $json = $this->serializer->serialize($household, 'json',
-            SerializationContext::create()->setGroups('Activity')->setSerializeNull(true)
-        );
+        $json = $this->serializer->serialize($household, 'json', ['groups' => ["Activity"], 'datetime_format' => 'd-m-Y']);
 
         $activity = new HouseholdActivity($household, $user, $json);
         $this->em->persist($activity);

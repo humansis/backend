@@ -12,13 +12,14 @@ use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
@@ -192,7 +193,8 @@ class HouseholdService
             ->setAssets($householdArray["assets"] ?? [])
             ->setShelterStatus($householdArray["shelter_status"] ?? null)
             ->setDebtLevel($householdArray["debt_level"] ?? null)
-            ->setSupportReceivedTypes($householdArray["support_received_types"] ?? []);
+            ->setSupportReceivedTypes($householdArray["support_received_types"] ?? [])
+            ->setSupportOrganizationName($householdArray["support_organization_name"] ?? null);
 
         $dateReceived = null;
         if (isset($householdArray["support_date_received"]) && $householdArray["support_date_received"]) {
@@ -247,9 +249,9 @@ class HouseholdService
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 try {
                     if ($beneficiaryToSave['gender'] === 'Male') {
-                        $beneficiaryToSave['gender'] = 1;
+                        $beneficiaryToSave['gender'] = Person::GENDER_MALE;
                     } elseif ($beneficiaryToSave['gender'] === 'Female') {
-                        $beneficiaryToSave['gender'] = 0;
+                        $beneficiaryToSave['gender'] = Person::GENDER_FEMALE;
                     }
 
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);

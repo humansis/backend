@@ -52,6 +52,22 @@ class InstitutionControllerTest extends BMSServiceTestCase
                 'name' => 'Local mayor institution',
                 'type' => Institution::TYPE_GOVERNMENT,
             ]],
+            'minimalistic with street name' => [[
+                'name' => 'Local mayor institution',
+                'type' => Institution::TYPE_COMMUNITY_CENTER,
+                'address' => [
+                    'street' => 'Street name',
+                ],
+            ]],
+            'minimalistic with location' => [[
+                'name' => 'Local mayor institution',
+                'type' => Institution::TYPE_COMMUNITY_CENTER,
+                'address' => [
+                    'location' => [
+                        'adm1' => 1,
+                    ],
+                ],
+            ]],
         ];
     }
 
@@ -61,7 +77,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("jms_serializer");
+        $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
@@ -111,9 +127,9 @@ class InstitutionControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('number', $institution['address'],"Part of answer missing: address[number]");
             $this->assertArrayHasKey('postcode', $institution['address'],"Part of answer missing: address[postcode]");
 
-            $this->assertSame($institution['address']['street'], $institutionBody['address']['street'], "Returned data are different than input: address");
-            $this->assertSame($institution['address']['number'], $institutionBody['address']['number'], "Returned data are different than input: address");
-            $this->assertSame($institution['address']['postcode'], $institutionBody['address']['postcode'], "Returned data are different than input: address");
+            $this->assertSame($institution['address']['street'], $institutionBody['address']['street'] ?? null, "Returned data are different than input: address");
+            $this->assertSame($institution['address']['number'], $institutionBody['address']['number'] ?? null, "Returned data are different than input: address");
+            $this->assertSame($institution['address']['postcode'], $institutionBody['address']['postcode'] ?? null, "Returned data are different than input: address");
         }
 
         return $institution;

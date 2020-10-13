@@ -2,12 +2,14 @@
 
 namespace DistributionBundle\Entity;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as Serializer;
-use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
+
 use TransactionBundle\Entity\Transaction;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\SmartcardDeposit;
@@ -26,7 +28,7 @@ class DistributionBeneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet"})
+     * @SymfonyGroups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet"})
      */
     private $id;
 
@@ -34,15 +36,16 @@ class DistributionBeneficiary
      * @var DistributionData
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionData", inversedBy="distributionBeneficiaries")
-     * @Groups({"FullDistributionBeneficiary", "FullBooklet"})
+     * @SymfonyGroups({"FullDistributionBeneficiary", "FullBooklet"})
      */
     private $distributionData;
 
     /**
-     * @var Beneficiary
+     * @var AbstractBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="distributionBeneficiary")
-     * @Groups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="distributionBeneficiary")
+     * @SymfonyGroups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
+     * @SymfonyMaxDepth(3)
      */
     private $beneficiary;
 
@@ -50,7 +53,8 @@ class DistributionBeneficiary
      * @var Transaction
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyMaxDepth(1)
      */
     private $transactions;
 
@@ -58,7 +62,7 @@ class DistributionBeneficiary
      * @var Booklet
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
      */
     private $booklets;
 
@@ -66,7 +70,7 @@ class DistributionBeneficiary
      * @var GeneralReliefItem
      *
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
      */
     private $generalReliefs;
 
@@ -89,7 +93,7 @@ class DistributionBeneficiary
      *
      * @ORM\Column(name="justification", type="string", length=511, nullable=true)
      *
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
      */
     private $justification;
 
@@ -98,15 +102,12 @@ class DistributionBeneficiary
      *
      * @ORM\Column(name="removed", type="boolean", options={"default" : 0})
      *
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
      */
     private $removed;
 
     /**
      * @var bool|null
-     *
-     * @Groups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
-     * @Serializer\Accessor(getter="getSmartcardDistributed")
      */
     private $smartcardDistributed;
 
@@ -121,6 +122,7 @@ class DistributionBeneficiary
     }
 
     /**
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
      * @return bool|null true, if smartcard money was already distributed/deposited to beneficiary. Null, if distribution is not about smartcard.
      */
     public function getSmartcardDistributed(): ?bool

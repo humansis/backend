@@ -14,4 +14,11 @@ class NationalIdMapper
             "number" => $nationalId->getIdNumber(),
         ];
     }
+
+    public function toFullArrays(iterable $nationalIds)
+    {
+        foreach ($nationalIds as $nationalId) {
+            yield $this->toFullArray($nationalId);
+        }
+    }
 }

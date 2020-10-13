@@ -49,6 +49,18 @@ class CommunityControllerTest extends BMSServiceTestCase
             'minimalistic' => [[
                 '__country' => 'KHM'
             ]],
+            'minimalistic with street name' => [[
+                'address' => [
+                    'street' => 'Street name',
+                ],
+            ]],
+            'minimalistic with location' => [[
+                'address' => [
+                    'location' => [
+                        'adm1' => 1,
+                    ],
+                ],
+            ]],
         ];
     }
 
@@ -58,7 +70,7 @@ class CommunityControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("jms_serializer");
+        $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
@@ -90,14 +102,24 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         $this->assertSame($community['contact_name'], $communityBody['contact_name'] ?? '', "Returned data are different than input: contact_name");
         $this->assertSame($community['contact_family_name'], $communityBody['contact_family_name'] ?? '', "Returned data are different than input: contact_name");
-        $this->assertSame($community['phone_prefix'], $communityBody['phone_prefix'] ?? '', "Returned data are different than input: phone_prefix");
-        $this->assertSame($community['phone_number'], $communityBody['phone_number'] ?? '', "Returned data are different than input: phone_number");
+        $this->assertSame($community['phone_prefix'], $communityBody['phone_prefix'] ?? null, "Returned data are different than input: phone_prefix");
+        $this->assertSame($community['phone_number'], $communityBody['phone_number'] ?? null, "Returned data are different than input: phone_number");
         $this->assertSame($community['longitude'], $communityBody['longitude'] ?? '', "Returned data are different than input: longitude");;
         $this->assertSame($community['latitude'], $communityBody['latitude'] ?? '', "Returned data are different than input: latitude");;
 
         if (isset($community['national_id'])) {
             $this->assertSame($community['national_id']['type'], $communityBody['national_id']['type'] ?? null, "Returned data are different than input: type");
             $this->assertSame($community['national_id']['number'], $communityBody['national_id']['number'] ?? null, "Returned data are different than input: number");
+        }
+
+        if ($community['address'] !== null) {
+            $this->assertArrayHasKey('street', $community['address'],"Part of answer missing: address[street]");
+            $this->assertArrayHasKey('number', $community['address'],"Part of answer missing: address[number]");
+            $this->assertArrayHasKey('postcode', $community['address'],"Part of answer missing: address[postcode]");
+
+            $this->assertSame($community['address']['street'], $communityBody['address']['street'] ?? null, "Returned data are different than input: address");
+            $this->assertSame($community['address']['number'], $communityBody['address']['number'] ?? null, "Returned data are different than input: address");
+            $this->assertSame($community['address']['postcode'], $communityBody['address']['postcode'] ?? null, "Returned data are different than input: address");
         }
 
         return $community;

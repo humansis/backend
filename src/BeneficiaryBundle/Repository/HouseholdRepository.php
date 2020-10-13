@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\HouseholdLocation;
+use DistributionBundle\Entity\DistributionData;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -28,10 +29,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb = $this->createQueryBuilder("hh");
         $this->whereHouseholdInCountry($qb, $iso3);
         $qb->andWhere('hh.archived = 0');
-        
+
         return $qb;
     }
-    
+
     public function getUnarchivedByProject(Project $project)
     {
         $qb = $this->createQueryBuilder("hh");
@@ -39,7 +40,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 ->where("p = :project")
                 ->setParameter("project", $project)
                 ->andWhere("hh.archived = 0");
-                
+
         return $q;
     }
 
@@ -67,6 +68,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
     {
         $qb = $this->findAllByCountry($iso3);
         $q = $qb->leftJoin("hh.beneficiaries", "b")
+            ->leftJoin('b.person', 'p')
             // Those leftJoins are already done in findAllByCountry
             // ->leftJoin("hh.householdLocations", "hl")
             // ->leftJoin("hl.address", "ad")
@@ -78,8 +80,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         COALESCE(ad.street, ''),
                         COALESCE(ad.number, ''),
                         COALESCE(ad.postcode, ''),
-                        COALESCE(b.localGivenName, ''),
-                        COALESCE(b.localFamilyName, '')
+                        COALESCE(p.localGivenName, ''),
+                        COALESCE(p.localFamilyName, '')
                     ),
                     :stringToSearch
                 ) as levenshtein")
@@ -107,6 +109,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
     {
         $qb = $this->findAllByCountry($iso3);
         $q = $qb->leftJoin("hh.beneficiaries", "b")
+            ->leftJoin('b.person', 'p')
             // Those leftJoins are already done in findAllByCountry
             // ->leftJoin("hh.householdLocations", "hl")
             // ->leftJoin("hl.campAddress", "ca")
@@ -118,8 +121,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     CONCAT(
                         COALESCE(c.name, ''),
                         COALESCE(ca.tentNumber, ''),
-                        COALESCE(b.localGivenName, ''),
-                        COALESCE(b.localFamilyName, '')
+                        COALESCE(p.localGivenName, ''),
+                        COALESCE(p.localFamilyName, '')
                     ),
                     :stringToSearch
                 ) as levenshtein"
@@ -138,7 +141,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
     }
 
 
-    
+
 
     /**
      * Get all Household by country
@@ -161,12 +164,14 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $q = $qb->leftJoin("hh.beneficiaries", "b")
                 ->leftJoin("hh.projects", "p")
                 ->leftJoin("b.vulnerabilityCriteria", "vb")
-                ->leftJoin("b.nationalIds", "ni")
-                ->leftJoin("b.referral", "r")
+                ->leftJoin("b.person", "per")
+                ->leftJoin("per.nationalIds", "ni")
+                ->leftJoin("per.referral", "r")
                 ->leftJoin("hh.beneficiaries", "head")
+                ->leftJoin("head.person", "headper")
                 ->andWhere("head.status = 1")
                 ->andWhere("hh.archived = 0");
-            
+
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
         if (array_key_exists("sort", $sort) && array_key_exists("direction", $sort)) {
             $value = $sort["sort"];
@@ -178,11 +183,11 @@ class HouseholdRepository extends AbstractCriteriaRepository
             }
             // If the field is the local first name, we sort it by the direction sent
             elseif ($value == "localFirstName") {
-                $q->addGroupBy("head.localGivenName")->addOrderBy("head.localGivenName", $direction);
+                $q->addGroupBy("headper.localGivenName")->addOrderBy("headper.localGivenName", $direction);
             }
             // If the field is the local family name, we sort it by the direction sent
             elseif ($value == "localFamilyName") {
-                $q->addGroupBy("head.localFamilyName")->addOrderBy("head.localFamilyName", $direction);
+                $q->addGroupBy("headper.localFamilyName")->addOrderBy("headper.localFamilyName", $direction);
             }
             // If the field is the number of dependents, we sort it by the direction sent
             elseif ($value == "dependents") {
@@ -195,7 +200,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             // If the field is the vulnerabilities, we sort it by the direction sent
             elseif ($value == "vulnerabilities") {
                 $q->addGroupBy("vb")->addOrderBy("vb.fieldString", $direction);
-            } 
+            }
             // If the field is the national ID, we sort it by the direction sent
             elseif ($value == "nationalId") {
                 $q->addGroupBy("ni")->addOrderBy("ni.idNumber", $direction);
@@ -217,10 +222,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 if ($category === "any" && count($filterValues) > 0) {
                     foreach ($filterValues as $filterValue) {
                         $q->andWhere("CONCAT(
-                            COALESCE(b.enFamilyName, ''),
-                            COALESCE(b.enGivenName, ''),
-                            COALESCE(b.localFamilyName, ''),
-                            COALESCE(b.localGivenName, ''),
+                            COALESCE(per.enFamilyName, ''),
+                            COALESCE(per.enGivenName, ''),
+                            COALESCE(per.localFamilyName, ''),
+                            COALESCE(per.localGivenName, ''),
                             COALESCE(p.name, ''),
                             COALESCE(adm1.name, ''),
                             COALESCE(adm2.name, ''),
@@ -232,7 +237,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     }
                 } elseif ($category === "gender") {
                     // If the category is the gender only one option can be selected and filterValues is a string instead of an array
-                    $q->andWhere("b.gender = :filterValue")
+                    $q->andWhere("per.gender = :filterValue")
                         ->setParameter("filterValue", $filterValues);
                 } elseif ($category === "projects" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
@@ -344,11 +349,12 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->select('hh')
             ->innerJoin('hh.beneficiaries', 'b')
             ->innerJoin('hh.householdLocations', 'hl')
+            ->innerJoin('b.person', 'p')
             ->where('hh.archived = 0')
             ->andWhere('b.status = 1')
-            ->andWhere('b.localGivenName = :givenName')
+            ->andWhere('p.localGivenName = :givenName')
                 ->setParameter('givenName', $givenName)
-            ->andWhere('b.localFamilyName = :familyName')
+            ->andWhere('p.localFamilyName = :familyName')
                 ->setParameter('familyName', $familyName)
         ;
 
@@ -524,5 +530,25 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $this->getHouseholdLocation($qb);
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
         $locationRepository->getCountry($qb);
+    }
+
+    public function countBeneficiariesByResidencyStatus(DistributionData $distribution, string $residencyStatus): int
+    {
+        $qb = $this->createQueryBuilder('h');
+
+        $qb->select('COUNT(DISTINCT b)')
+            ->leftJoin('h.beneficiaries', 'b')
+            ->leftJoin('h.distributionBeneficiary', 'db')
+            ->leftJoin('db.distributionData', 'd')
+            ->andWhere('db.removed = 0')
+            ->andWhere('db.distributionData = :distribution')
+            ->andWhere('b.residencyStatus = :residencyStatus')
+            ->andWhere('b.archived = 0')
+            ->andWhere('h.archived = 0')
+            ->setParameter('distribution', $distribution)
+            ->setParameter('residencyStatus', $residencyStatus)
+        ;
+
+        return $qb->getQuery()->getSingleScalarResult();
     }
 }

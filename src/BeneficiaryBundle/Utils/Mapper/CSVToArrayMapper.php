@@ -530,9 +530,9 @@ class CSVToArrayMapper
         $gender_string = trim($formattedHouseholdArray['beneficiaries']['gender']);
 
         if (strcasecmp(trim($gender_string), 'Male') === 0 || strcasecmp(trim($gender_string), 'M') === 0) {
-            $formattedHouseholdArray['beneficiaries']['gender'] = 1;
+            $formattedHouseholdArray['beneficiaries']['gender'] = \BeneficiaryBundle\Entity\Person::GENDER_MALE;
         } else if (strcasecmp(trim($gender_string), 'Female') === 0 || strcasecmp(trim($gender_string), 'F') === 0) {
-            $formattedHouseholdArray['beneficiaries']['gender'] = 0;
+            $formattedHouseholdArray['beneficiaries']['gender'] = \BeneficiaryBundle\Entity\Person::GENDER_FEMALE;
         }
     }
 

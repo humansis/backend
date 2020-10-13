@@ -51,7 +51,8 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
                 return;
             }
 
-            $smartcard = new Smartcard($serialNumber, $this->randomEntity(Beneficiary::class, $manager), new DateTimeImmutable('now'));
+            $smartcard = new Smartcard($serialNumber, new DateTimeImmutable('now'));
+            $smartcard->setBeneficiary($this->randomEntity(Beneficiary::class, $manager));
             $smartcard->setState(self::generateState());
 
             for ($j = 0; $j < rand(0, 5); ++$j) {

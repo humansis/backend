@@ -3,7 +3,7 @@
 
 namespace ProjectBundle\Controller;
 
-use JMS\Serializer\SerializationContext;
+
 use ProjectBundle\Entity\Sector;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,8 +41,8 @@ class SectorController extends Controller
     {
         $sectors = $this->get('project.sector_service')->findAll();
 
-        $json = $this->get('jms_serializer')
-            ->serialize($sectors, 'json', SerializationContext::create()->setGroups(['FullSector'])->setSerializeNull(true));
+        $json = $this->get('serializer')
+            ->serialize($sectors, 'json', ['groups' => ['FullSector']]);
 
         return new Response($json);
     }

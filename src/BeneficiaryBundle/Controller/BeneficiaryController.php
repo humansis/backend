@@ -5,7 +5,7 @@ namespace BeneficiaryBundle\Controller;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Utils\BeneficiaryService;
-use JMS\Serializer\SerializationContext;
+
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -32,7 +32,7 @@ class BeneficiaryController extends Controller
     public function getAllVulnerabilityCriteriaAction()
     {
         $vulnerabilityCriteria = $this->get('beneficiary.beneficiary_service')->getAllVulnerabilityCriteria();
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
             ->serialize($vulnerabilityCriteria, 'json');
 
         return new Response($json);
@@ -78,10 +78,10 @@ class BeneficiaryController extends Controller
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
         ->serialize(
                 $newBeneficiary,
-                'json', SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true));
+                'json', ['groups' => ['FullBeneficiary'], 'datetime_format' => 'd-m-Y H:i:s']);
         return new Response($json);
     }
 
@@ -144,11 +144,11 @@ class BeneficiaryController extends Controller
      */
     public function getOneAction(Beneficiary $Beneficiary)
     {
-        $json = $this->get('jms_serializer')
+        $json = $this->get('serializer')
         ->serialize(
             $Beneficiary,
             'json',
-            SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true)
+            ['groups' => ['FullBeneficiary'], 'datetime_format' => 'd-m-Y H:i:s']
         );
         return new Response($json);
     }
@@ -185,8 +185,8 @@ class BeneficiaryController extends Controller
      */
     public function beneficiary(Smartcard $smartcard): Response
     {
-        $json = $this->get('jms_serializer')
-            ->serialize($smartcard->getBeneficiary(), 'json', SerializationContext::create()->setGroups(['FullBeneficiary'])->setSerializeNull(true));
+        $json = $this->get('serializer')
+            ->serialize($smartcard->getBeneficiary(), 'json', ['groups' => ['FullBeneficiary'], 'datetime_format' => 'd-m-Y H:i:s']);
 
         return new Response($json);
     }

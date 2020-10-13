@@ -7,7 +7,7 @@ use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use dateTime;
 use DistributionBundle\Entity\DistributionData;
 use Doctrine\ORM\EntityManagerInterface;
-use JMS\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Donor;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\Sector;
@@ -136,7 +136,7 @@ class ProjectService
         }
 
         $sectorsId = $projectArray["sectors"];
-        if (null !== $sectorsId) {
+        if (count($sectorsId) > 0) {
             $project->getSectors()->clear();
             /** @var Sector $sector */
             foreach ($sectorsId as $sectorId) {
@@ -145,6 +145,8 @@ class ProjectService
                     $project->addSector($sectorTmp);
                 }
             }
+        } else {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Project must have at least one sector');
         }
 
         $donorsId = $projectArray["donors"];

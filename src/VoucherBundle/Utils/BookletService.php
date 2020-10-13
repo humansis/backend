@@ -604,7 +604,8 @@ class BookletService
      */
     public function exportVouchersDistributionToCsv(DistributionData $distributionData, string $type)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)
+            ->findByDistributionData($distributionData);
 
         $beneficiaries = array();
         $exportableTable = array();
