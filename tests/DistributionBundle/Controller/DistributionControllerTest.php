@@ -55,19 +55,21 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->createHousehold();
 
         $criteria = array(
+            "id" => null,
             "adm1" => "",
             "adm2"=> "",
             "adm3" => "",
             "adm4" => "",
             "commodities" => [
                 [
+                    'id' => null,
                     "modality" => "Cash",
                     "modality_type" => [
-                        "id" => "1"
+                        "id" => 1,
                     ],
                     "type" => "Mobile Money",
                     "unit" => "USD",
-                    "value" => "150",
+                    "value" => 150,
                     "description" => null
                 ]
             ],
@@ -92,7 +94,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             "project"=> [
                 "donors"=> [],
                 "donors_name"=> [],
-                "id"=> "1",
+                "id"=> 1,
                 "name"=> "",
                 "sectors"=> [],
                 "sectors_name"=> []
@@ -101,13 +103,13 @@ class DistributionControllerTest extends BMSServiceTestCase
                 [
                     "condition_string"=> "true",
                     "field_string"=> "disabled",
-                    "id_field"=> "1",
+                    "id_field"=> 1,
                     "target"=> "Beneficiary",
                     "table_string"=> "vulnerabilityCriteria",
-                    "weight"=> "1"
+                    "weight"=> 1,
                 ]
             ],
-            "type"=> "Household",
+            "type"=> DistributionData::TYPE_HOUSEHOLD,
             "threshold"=> "1"
         );
 
