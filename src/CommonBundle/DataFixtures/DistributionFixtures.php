@@ -25,7 +25,7 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'type' => 'Mobile',
                 'unit' => 'USD',
-                'value' => '45',
+                'value' => 45,
                 'description' => null
             ]
         ],
@@ -54,10 +54,10 @@ class DistributionFixtures extends Fixture implements DependentFixtureInterface
                 'id_field' => 1,
                 'target' => 'Beneficiary',
                 'table_string' => 'vulnerabilityCriteria',
-                'weight' => '1'
+                'weight' => 1,
             ]
         ],
-        'type' => 'Individual',
+        'type' => \DistributionBundle\Entity\DistributionData::TYPE_BENEFICIARY,
         'threshold' => '1'
     ];
 

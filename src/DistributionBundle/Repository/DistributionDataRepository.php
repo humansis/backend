@@ -3,10 +3,13 @@
 namespace DistributionBundle\Repository;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
+use DistributionBundle\Entity\DistributedItem;
 use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
 use DistributionBundle\Entity\DistributionData;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
  * DistributionDataRepository
@@ -22,7 +25,7 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
                    ->select("MAX(dd.id)");
         return $qb->getQuery()->getSingleScalarResult();
     }
-    
+
     public function getTotalValue(string $country)
     {
         $qb = $this->createQueryBuilder("dd");
@@ -38,7 +41,7 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
 
         return $qb->getQuery()->getSingleScalarResult();
     }
-    
+
     public function getActiveByCountry(string $country)
     {
         $qb = $this->createQueryBuilder("dd")
@@ -100,5 +103,33 @@ class DistributionDataRepository extends \Doctrine\ORM\EntityRepository
         $qb->setParameter('beneficiary', $beneficiary);
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Returns list of distributions distributed to given household.
+     *
+     * @param Household $household
+     *
+     * @return DistributedItem[]
+     */
+    public function findDistributedToHousehold(Household $household): iterable
+    {
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addRootEntityFromClassMetadata(DistributedItem::class, 'di');
+
+        $sql = '
+        SELECT '.$rsm->generateSelectClause().' FROM ( 
+            SELECT dd.*, db.beneficiary_id FROM distribution_data dd
+            JOIN distribution_beneficiary db ON dd.id=db.distribution_data_id
+            JOIN beneficiary b ON b.id=db.beneficiary_id
+            WHERE b.household_id = :household
+        ) AS di
+        ORDER BY di.date_distribution ASC
+        ';
+
+        return $this->getEntityManager()
+            ->createNativeQuery($sql, $rsm)
+            ->setParameter('household', $household)
+            ->getResult();
     }
 }

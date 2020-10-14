@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Controller;
 
+use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
 use DistributionBundle\Utils\DistributionService;
@@ -68,6 +69,39 @@ class DistributionController extends Controller
             ->serialize($distributions, 'json', ['groups' => ["DistributionOverview"]]);
 
         return new Response($json);
+    }
+
+    /**
+     * All distributed transactions by parameters
+     *
+     * @Rest\Get("/distributions/household/{householdId}")
+     * @ParamConverter("household", options={"mapping": {"householdId" : "id"}})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Distributions")
+     * @SWG\Parameter(name="householdId",
+     *     in="path",
+     *     type="integer",
+     *     required=true
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="List of distributed items to household",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=DistributionData::class, groups={"DistributionOverview"}))
+     *     )
+     * )
+     * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
+     *
+     * @param Household $household
+     * @return Response
+     */
+    public function distributionsToHousehold(Household $household)
+    {
+        $distributions = $this->getDoctrine()->getRepository(DistributionData::class)->findDistributedToHousehold($household);
+
+        return $this->json($distributions);
     }
 
     /**

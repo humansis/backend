@@ -148,12 +148,9 @@ class DistributionService
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
         /** @var DistributionData $distribution */
-        // $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json');
-        $distribution = new DistributionData();
-        $distribution->setName($distributionArray['name']);
-        // $distribution->setDateDistribution(new \DateTime($distributionArray['date_distribution']));
-        $distribution->setDateDistribution(new \DateTime());
-        // $distribution->getCommodities()->add();
+        $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json', [
+            \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
+        ]);
 
         $distribution->setUpdatedOn(new \DateTime());
         $errors = $this->validator->validate($distribution);
@@ -176,7 +173,7 @@ class DistributionService
         $distribution->setLocation($location);
 
         $project = $distribution->getProject();
-        $projectTmp = $this->em->getRepository(Project::class)->findOneBy([]);
+        $projectTmp = $this->em->getRepository(Project::class)->find($project);
         if ($projectTmp instanceof Project) {
             $distribution->setProject($projectTmp);
         }
