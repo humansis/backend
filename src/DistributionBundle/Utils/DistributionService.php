@@ -177,7 +177,7 @@ class DistributionService
         $distribution->setLocation($location);
 
         $project = $distribution->getProject();
-        $projectTmp = $this->em->getRepository(Project::class)->findOneBy([]);
+        $projectTmp = $this->em->getRepository(Project::class)->find($project);
         if ($projectTmp instanceof Project) {
             $distribution->setProject($projectTmp);
         }

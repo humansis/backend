@@ -56,6 +56,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->createHousehold();
 
         $criteria = array(
+            "id" => null,
             "adm1" => "",
             "adm2"=> "",
             "adm3" => "",
@@ -63,6 +64,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "type" => Assistance::TYPE_HOUSEHOLD,
             "commodities" => [
                 [
+                    'id' => null,
                     "modality" => "Cash",
                     "modality_type" => [
                         "id" => 1,
