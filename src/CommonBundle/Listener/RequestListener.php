@@ -31,6 +31,12 @@ class RequestListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
+        $disableListener = $event->getRequest()->attributes->get('disable-common-request-listener');
+
+        if ($disableListener) {
+            return;
+        }
+
         if ($event->getRequest()->headers->has('country')) {
             $countryISO3 = $event->getRequest()->headers->get('country');
             
