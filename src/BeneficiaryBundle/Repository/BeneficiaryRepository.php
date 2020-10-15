@@ -525,8 +525,11 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         // The selection criteria is directly a field in the Beneficiary table
         else if ($criterion['type'] === 'table_field') {
             if (in_array($field, ['dateOfBirth', 'gender'])) {
+                if (!in_array('prsn', $qb->getAllAliases())) {
+                    $qb->join('b.person', 'prsn');
+                }
+
                 $orStatement->add('prsn.' . $field . $condition . ' :parameter'.$i);
-                $qb->join('b.person', 'prsn');
                 $qb->addSelect('(CASE WHEN prsn.' . $field . $condition . ' :parameter'.$i . ' THEN prsn.' . $field . ' ELSE :null END) AS ' . $field.$i)
                     ->setParameter('null', null);
             } else {
