@@ -101,7 +101,6 @@ class AssistanceMapper
             'assistance_type' => $assistance->getAssistanceType(),
             'target_type' => $assistance->getTargetType(),
             'commodities' => $assistance->getCommodities(),
-            // 'distribution_beneficiaries' => $assistance->getDistributionBeneficiaries(),
             'completed' => $assistance->getCompleted(),
             'beneficiaries_count' => $this->distributionBNFRepo->countActive($assistance),
         ];
