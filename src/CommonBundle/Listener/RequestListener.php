@@ -5,6 +5,7 @@ namespace CommonBundle\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
 use UserBundle\Entity\User;
@@ -62,11 +63,25 @@ class RequestListener
                     }
                 }
 
+                // hack to prevent E403 on old mobile app with countries sent by mistake before user can change country
+                $fallbackCountry = $countryISO3;
+                if (!$user->getCountries()->isEmpty()) {
+                    $fallbackCountry = $user->getCountries()->first()->getIso3();
+                } elseif (!$user->getProjects()->isEmpty()) {
+                    $fallbackCountry = $user->getProjects()->first()->getProject()->getIso3();
+                } elseif ($user->getRoles()[0] === "ROLE_VENDOR") {
+                    $fallbackCountry = $this->em->getRepository(Vendor::class)->getVendorCountry($user);
+                }
+
                 if ($user->getRoles()[0] == "ROLE_ADMIN" || $hasCountry) {
                     $event->getRequest()->request->add(["__country" => $countryISO3]);
                 } else {
-                    $response = new Response("You are not allowed to acces data for this country", Response::HTTP_FORBIDDEN);
-                    $event->setResponse($response);
+                    if ($fallbackCountry === $countryISO3) {
+                        $response = new Response("You are not allowed to access data for this country", Response::HTTP_FORBIDDEN);
+                        $event->setResponse($response);
+                    } else {
+                        $event->getRequest()->request->add(["__country" => $fallbackCountry]);
+                    }
                 }
             } else {
                 $event->getRequest()->request->add(["__country" => $countryISO3]);

@@ -237,12 +237,21 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get dateOfBirth.
      * @deprecated
-     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
      * @return DateTime|null
      */
-    public function getDateOfBirth(): ?\DateTimeInterface
+    public function getDateOfBirthObject(): ?\DateTimeInterface
     {
         return $this->person->getDateOfBirth();
+    }
+
+    /**
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
+     * @return string|null
+     */
+    public function getDateOfBirth(): ?string
+    {
+        return $this->person->getDateOfBirth() ? $this->person->getDateOfBirth()->format('d-m-Y') : null;
     }
 
     /**
@@ -662,7 +671,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "gender" => $valueGender,
             "head" => $this->getStatus() === true ? "true" : "false",
             "residencyStatus" => $this->getResidencyStatus(),
-            "dateOfBirth" => $this->getDateOfBirth()->format('d-m-Y'),
+            "dateOfBirth" => $this->getDateOfBirthObject()->format('d-m-Y'),
             "vulnerabilityCriteria" => $valuescriteria,
             "type phone 1" => $typephones[0],
             "prefix phone 1" => $prefixphones[0],
@@ -707,7 +716,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "English Given Name" => $this->getEnGivenName(),
             "English Family Name" => $this->getEnFamilyName(),
             "Gender" => $gender,
-            "Date Of Birth" => $this->getDateOfBirth()->format('d-m-Y'),
+            "Date Of Birth" => $this->getDateOfBirthObject()->format('d-m-Y'),
         ];
     }
 
@@ -805,9 +814,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      */
     public function getAge(): ?int
     {
-        if ($this->getDateOfBirth()) {
+        if ($this->getDateOfBirthObject()) {
             try {
-                return $this->getDateOfBirth()->diff(new DateTime('now'))->y;
+                return $this->getDateOfBirthObject()->diff(new DateTime('now'))->y;
             } catch (Exception $ex) {
                 return null;
             }

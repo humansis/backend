@@ -404,20 +404,13 @@ class AssistanceController extends Controller
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($assistance);
 
-        $dateCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []) {
-            return $innerObject instanceof \DateTime ? $innerObject->format('d-m-Y') : '';
-        };
-        $dateTimeCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []) {
-            return $innerObject instanceof \DateTime ? $innerObject->format('d-m-Y H:i:s') : '';
-        };
-
         $json = $this->get('serializer')
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
                 [
                     'groups' => ["ValidatedDistribution"],
-                    'datetime_format' => 'd-m-Y',
+                    'datetime_format' => 'd-m-Y H:i',
                 ]
             );
 

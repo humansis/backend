@@ -162,7 +162,7 @@ class DistributionCSVService
                     'enFamilyName' => $beneficiary->getEnFamilyName(),
                     'localGivenName' => $beneficiary->getLocalGivenName(),
                     'localFamilyName' => $beneficiary->getLocalFamilyName(),
-                    'dateOfBirth' => $beneficiary->getDateOfBirth()->format('d-m-Y'),
+                    'dateOfBirth' => $beneficiary->getDateOfBirthObject()->format('d-m-Y'),
                     'gender' => $beneficiary->getGender()
                 );
                 array_push($deleteArray, $beneficiaryToDelete);
