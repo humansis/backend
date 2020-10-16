@@ -63,11 +63,12 @@ class RequestListener
                     }
                 }
 
+                // hack to prevent E403 on old mobile app with countries sent by mistake before user can change country
                 $fallbackCountry = $countryISO3;
                 if (!$user->getCountries()->isEmpty()) {
                     $fallbackCountry = $user->getCountries()->first()->getIso3();
                 } elseif (!$user->getProjects()->isEmpty()) {
-                    $fallbackCountry = $user->getProjects()->first()->getIso3();
+                    $fallbackCountry = $user->getProjects()->first()->getProject()->getIso3();
                 } elseif ($user->getRoles()[0] === "ROLE_VENDOR") {
                     $fallbackCountry = $this->em->getRepository(Vendor::class)->getVendorCountry($user);
                 }
