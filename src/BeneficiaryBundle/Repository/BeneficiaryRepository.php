@@ -97,15 +97,23 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    /**
+     * Counts Household members in project
+     * @param Project $project
+     *
+     * @return int
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
     public function countAllInProject(Project $project): int
     {
         $qb = $this->createQueryBuilder('b');
         $qb
             ->select('COUNT(DISTINCT b)')
-            ->where(':project MEMBER OF b.projects')
+            ->join('b.household', 'hh')
+            ->where(':project MEMBER OF hh.projects')
             ->setParameter('project', $project)
-            ->andWhere('b.archived = 0')
-        ;
+            ->andWhere('b.archived = 0');
 
         return $qb->getQuery()->getSingleScalarResult();
     }

@@ -5,6 +5,8 @@ namespace BeneficiaryBundle\Repository;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use ProjectBundle\Entity\Project;
@@ -42,6 +44,23 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 ->andWhere("hh.archived = 0");
 
         return $q;
+    }
+
+    public function countUnarchivedByCountryProjects(string $iso3): int
+    {
+        $qb = $this->createQueryBuilder("hh");
+        $qb
+            ->select("COUNT(DISTINCT hh)")
+            ->leftJoin("hh.projects", "p")
+            ->where("p.iso3 = :country")
+            ->setParameter("country", $iso3)
+            ->andWhere("hh.archived = 0")
+        ;
+        try {
+            return $qb->getQuery()->getSingleScalarResult();
+        } catch (NoResultException $e) {
+            return 0;
+        }
     }
 
     public function countUnarchivedByProject(Project $project)

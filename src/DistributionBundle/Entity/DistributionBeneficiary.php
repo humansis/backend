@@ -79,6 +79,7 @@ class DistributionBeneficiary
      * @var SmartcardDeposit[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
+     * @ORM\OrderBy({"createdAt": "ASC"})
      */
     private $smartcardDeposits;
 
@@ -108,11 +109,6 @@ class DistributionBeneficiary
     private $removed;
 
     /**
-     * @var bool|null
-     */
-    private $smartcardDistributed;
-
-    /**
      * Get id.
      *
      * @return int
@@ -133,6 +129,20 @@ class DistributionBeneficiary
             if ('Smartcard' === $commodity->getModalityType()->getName()) {
                 return count($this->smartcardDeposits) > 0;
             }
+        }
+
+        return null;
+    }
+
+    /**
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     *
+     * @return \DateTimeInterface|null
+     */
+    public function getSmartcardDistributedAt(): ?\DateTimeInterface
+    {
+        foreach ($this->smartcardDeposits as $deposit) {
+            return $deposit->getCreatedAt();
         }
 
         return null;
