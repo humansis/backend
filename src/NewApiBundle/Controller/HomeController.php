@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class HomeController extends Controller
 {
     /**
-     * @Rest\Get("/home-summary", name="home-summary")
+     * @Rest\Get("/home-summary")
      * @param HomeService $homeService
      *
      * @return JsonResponse
@@ -26,7 +26,7 @@ class HomeController extends Controller
 
 
     /**
-     * @Rest\Get("/upcoming-assistances", name="home-summary")
+     * @Rest\Get("/upcoming-assistances")
      *
      * @param AssistanceRepository $assistanceRepository
      * @param AssistanceMapper     $mapper
