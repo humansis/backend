@@ -16,3 +16,4 @@ services:
       - NewApiBundle\Entity\Assistance
 
   NewApiBundle\Controller\HomeController:
+  NewApiBundle\Controller\AssistanceController:
