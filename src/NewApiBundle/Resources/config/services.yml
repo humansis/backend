@@ -5,4 +5,14 @@ services:
     public: false
 
   NewApiBundle\Model\HomeService:
+  NewApiBundle\Model\AssistanceService:
+
+  NewApiBundle\Mapper\AssistanceMapper:
+  NewApiBundle\Mapper\BeneficiaryMapper:
+
+  NewApiBundle\Repository\AssistanceRepository:
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+      - NewApiBundle\Entity\Assistance
+
   NewApiBundle\Controller\HomeController:
