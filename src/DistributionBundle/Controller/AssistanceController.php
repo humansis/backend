@@ -3,6 +3,7 @@
 namespace DistributionBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Mapper\AssistanceMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
 use DistributionBundle\Utils\DistributionService;
@@ -333,15 +334,11 @@ class AssistanceController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $assistanceFactory = $this->get('distribution.distribution_data_output_factory');
-        $data = [];
-        foreach ($distributions as $assistance) {
-            $data[] = $assistanceFactory->build($assistance, ['SmallDistribution']);
-        }
+        $assistanceMapper = $this->get(AssistanceMapper::class);
 
         $json = $this->get('serializer')
             ->serialize(
-                $data,
+                $assistanceMapper->toFullArrays($distributions),
                 'json',
                 ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
             );
@@ -368,10 +365,10 @@ class AssistanceController extends Controller
      */
     public function getOneAction(Assistance $assistance)
     {
-        $assistanceFactory = $this->get('distribution.distribution_data_output_factory');
+        $assistanceMapper = $this->get(AssistanceMapper::class);
         $json = $this->get('serializer')
             ->serialize(
-                $assistanceFactory->build($assistance, ['FullDistribution']),
+                $assistanceMapper->toFullArray($assistance),
                 'json',
                 ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
             );
@@ -597,11 +594,10 @@ class AssistanceController extends Controller
         return new Response($json, Response::HTTP_OK);
     }
 
-
     /**
      * Get distributions of one project.
      *
-     * @Rest\Get("/distributions/projects/{id}", name="get_distributions_of_project")
+     * @Rest\Get("/web-app/v1/distributions/projects/{id}", name="get_distributions_of_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
      *
      * @SWG\Tag(name="Distributions")
@@ -633,15 +629,59 @@ class AssistanceController extends Controller
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $assistanceFactory = $this->get('distribution.distribution_data_output_factory');
-        $data = [];
-        foreach ($filtered as $assistance) {
-            $data[] = $assistanceFactory->build($assistance, ['SmallDistribution']);
-        }
+        $assistanceMapper = $this->get(AssistanceMapper::class);
 
         $json = $this->get('serializer')
             ->serialize(
-                $data,
+                $assistanceMapper->toFullArrays($filtered),
+                'json',
+                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+            );
+
+        return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
+     * Get distributions of one project.
+     * @deprecated only for old mobile app
+     *
+     * @Rest\Get("/distributions/projects/{id}", name="get_distributions_of_project_mobile")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Project $project
+     *
+     * @return Response
+     */
+    public function getDistributionsForOldMobileAppAction(Project $project)
+    {
+        try {
+            $distributions = $project->getDistributions();
+            $filtered = $this->get('distribution.distribution_service')->filterDistributions($distributions);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $assistanceMapper = $this->get(AssistanceMapper::class);
+
+        $json = $this->get('serializer')
+            ->serialize(
+                $assistanceMapper->toOldMobileArrays($filtered),
                 'json',
                 ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
             );
