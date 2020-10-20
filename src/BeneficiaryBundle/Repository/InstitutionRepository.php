@@ -3,9 +3,11 @@
 namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\InstitutionLocation;
+use CommonBundle\Entity\Location;
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableFilterType;
 use CommonBundle\InputType\DataTableSorterType;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
@@ -18,20 +20,24 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
      * Get all Institution by country
-     * @param $iso3
+     *
+     * @param                     $country
      * @param $begin
      * @param $pageSize
      * @param DataTableSorterType $sort
      * @param DataTableFilterType $filterType
+     *
      * @return mixed
      */
-    public function getAllBy(Country $iso3, $begin, $pageSize, DataTableSorterType $sort = null, DataTableFilterType $filterType = null)
+    public function getAllBy(Country $country, $begin, $pageSize, DataTableSorterType $sort = null, DataTableFilterType $filterType = null)
     {
         // Recover global information for the page
         $qb = $this->createQueryBuilder("inst");
 
         // We join information that is needed for the filters
         $q = $qb->andWhere("inst.archived = 0");
+
+        $this->whereInstitutionInCountry($q, $country->getIso3());
 
         if (is_null($begin)) {
             $begin = 0;
@@ -51,5 +57,18 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
         $query->useResultCache(true,3600);
 
         return [count($paginator), $query->getResult()];
+    }
+
+    protected function getInstitutionLocation(QueryBuilder &$qb)
+    {
+        $qb->leftJoin("inst.address", "addr");
+        $qb->leftJoin("addr.location", "l");
+    }
+
+    public function whereInstitutionInCountry(QueryBuilder &$qb, $countryISO3)
+    {
+        $this->getInstitutionLocation($qb);
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($qb, $countryISO3);
     }
 }
