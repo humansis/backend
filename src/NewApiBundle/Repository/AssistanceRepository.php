@@ -12,7 +12,7 @@ class AssistanceRepository extends \DistributionBundle\Repository\AssistanceRepo
             ->leftJoin("dd.project", "p")
             ->where("p.id = :projectId")
             ->setParameter("projectId", $projectId);
-            //->andWhere("dd.archived = 0"); //TODO should be archived?
+            //->andWhere("dd.archived = 0"); //TODO should be archived? - TBD
         return $qb->getQuery()->getResult();
     }
 }

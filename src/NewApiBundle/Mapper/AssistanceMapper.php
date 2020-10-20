@@ -8,9 +8,14 @@ use NewApiBundle\Entity\Assistance;
 
 class AssistanceMapper extends \BeneficiaryBundle\Mapper\AssistanceMapper
 {
-    public function __construct(BeneficiaryMapper $beneficiaryMapper)
+    /** @var CommodityMapper */
+    private $commodityMapper;
+
+    public function __construct(BeneficiaryMapper $beneficiaryMapper, CommodityMapper $commodityMapper)
     {
         parent::__construct($beneficiaryMapper);
+
+        $this->commodityMapper = $commodityMapper;
     }
 
 
@@ -24,13 +29,13 @@ class AssistanceMapper extends \BeneficiaryBundle\Mapper\AssistanceMapper
             'id' => $assistance->getId(),
             'name' => $assistance->getName(),
             'date' => $assistance->getDateDistribution()->getTimestamp(),
-            'target' => $assistance->getTargetTypeString(), //TODO is it correct? (to string mapping - no individual)
+            'target' => $assistance->getTargetTypeString(),
             'type' => $assistance->getAssistanceType(),
             'province' => $assistance->getLocation()->getAdm1Name(),
             'district' => $assistance->getLocation()->getAdm2Name(),
             'commune' => $assistance->getLocation()->getAdm3Name(),
             'village' => $assistance->getLocation()->getAdm4Name(),
-            'commodity' => '' //TODO asiistance:commodity is 1:n - which one will be used?
+            'modality-icons' => $this->commodityMapper->toModalityIcons($assistance->getCommodities()),
         ];
     }
 

@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Assistance extends \DistributionBundle\Entity\Assistance
 {
     const TYPE_TO_STRING_MAPPING = [
-        self::TYPE_BENEFICIARY => 'beneficiary',
+        self::TYPE_BENEFICIARY => 'individual',
         self::TYPE_HOUSEHOLD => 'household',
     ];
 
