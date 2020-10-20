@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
+use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use VoucherBundle\Entity\Smartcard;
@@ -748,7 +749,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $livelihood = null;
         if (null !== $this->getHousehold()->getLivelihood()) {
-            $livelihood = Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()];
+            $livelihood = Livelihood::translate($this->getHousehold()->getLivelihood());
         }
 
         $assets = array_map(function ($value) {

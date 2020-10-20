@@ -27,7 +27,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
 
         $household = [
             "project" => $optionalNumeric,
-            "livelihood" => $numeric,
+            "livelihood" => $optionalString,
             "notes" => $string,
             "latitude" => $string,
             "longitude" => $string,
