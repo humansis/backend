@@ -6,8 +6,6 @@ use CommonBundle\DBAL\AbstractEnum;
 
 class AssistanceTypeEnum extends AbstractEnum
 {
-    protected $name = 'assistance_type_enum';
-
     const DISTRIBUTION = 'distribution';
     const ACTIVITY = 'activity';
 
@@ -15,6 +13,11 @@ class AssistanceTypeEnum extends AbstractEnum
         self::ACTIVITY,
         self::DISTRIBUTION,
     ];
+
+    public function getName()
+    {
+        return 'assistance_type_enum';
+    }
 
     public static function all(): array
     {

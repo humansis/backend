@@ -1,11 +1,11 @@
 <?php
+
 namespace ProjectBundle\DBAL;
 
 use CommonBundle\DBAL\AbstractEnum;
 
 class SectorEnum extends AbstractEnum
 {
-    protected $name = 'enum_sector';
     protected static $values = [
         self::FOOD_SECURITY,
         self::LIVELIHOODS,
@@ -41,6 +41,11 @@ class SectorEnum extends AbstractEnum
     const NON_SECTOR = "non_sector";
     const CAMP_MANAGEMENT = "camp_management";
     const EARLY_RECOVERY = "early_recovery";
+
+    public function getName()
+    {
+        return 'enum_sector';
+    }
 
     public static function all(): array
     {
