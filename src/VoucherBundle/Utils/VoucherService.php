@@ -8,12 +8,14 @@ use CommonBundle\InputType\RequestConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use VoucherBundle\DTO\RedemptionVoucherBatchCheck;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use VoucherBundle\Entity\VoucherRecord;
+use VoucherBundle\InputType\VoucherRedemptionBatch;
 
 class VoucherService
 {
@@ -115,6 +117,53 @@ class VoucherService
         $voucher->redeem();
         $this->em->persist($voucher);
         $this->em->flush();
+    }
+
+    /**
+     * @param VoucherRedemptionBatch $batch
+     *
+     * @return RedemptionVoucherBatchCheck
+     */
+    public function checkBatch(VoucherRedemptionBatch $batch): RedemptionVoucherBatchCheck
+    {
+        $ids = $batch->getVouchers();
+        $vouchers = $this->em->getRepository(Voucher::class)->findBy([
+            'id' => $ids,
+        ]);
+        $ids = array_flip($ids);
+
+        $check = new RedemptionVoucherBatchCheck();
+
+        /** @var Voucher $voucher */
+        foreach ($vouchers as $voucher) {
+            if (null === $voucher->getVoucherPurchase()) {
+                $check->addUnusedVoucher($voucher);
+            } elseif (null !== $voucher->getRedeemedAt()) {
+                $check->addAlreadyRedeemedVoucher($voucher);
+            } else {
+                $check->addValidVoucher($voucher);
+            }
+            unset($ids[$voucher->getId()]);
+        }
+        foreach (array_keys($ids) as $notExistedId) {
+            $check->addNotExistedId($notExistedId);
+        }
+
+        return $check;
+    }
+
+    public function redeemBatch(VoucherRedemptionBatch $batch): void
+    {
+        $check = $this->checkBatch($batch);
+
+        if ($check->hasInvalidVouchers()) {
+            throw new \InvalidArgumentException("Invalid voucher batch");
+        }
+
+        $redeemedAtDate = new \DateTime();
+        foreach ($check->getValidVouchers() as $voucher) {
+            $voucher->redeem($redeemedAtDate);
+        }
     }
 
     /**

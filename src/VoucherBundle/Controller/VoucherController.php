@@ -4,6 +4,8 @@ namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
@@ -19,9 +21,15 @@ use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Constraints\Valid;
 use VoucherBundle\Entity\Booklet;
+use VoucherBundle\Entity\SmartcardPurchase;
+use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
 use VoucherBundle\Entity\VoucherPurchaseRecord;
+use VoucherBundle\InputType\SmartcardRedemtionBatch;
 use VoucherBundle\InputType\VoucherPurchase;
+use VoucherBundle\InputType\VoucherRedemptionBatch;
+use VoucherBundle\Repository\SmartcardPurchaseRepository;
+use VoucherBundle\Repository\VoucherPurchaseRepository;
 use VoucherBundle\Repository\VoucherRepository;
 
 /**
@@ -375,6 +383,113 @@ class VoucherController extends Controller
 
         $json = $this->get('serializer')->serialize($voucher, 'json', ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']);
         return new Response($json);
+    }
+
+    /**
+     * Get vendor redeemed batches
+     *
+     * @Rest\Get("/vouchers/purchases/redeemed-batches/{id}", name="vouchers_redeemed_batches")
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @SWG\Tag(name="Vouchers")
+     * @SWG\Tag(name="Single Vendor")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All vendor redeemed vouchers",
+     * )
+     *
+     * @param Vendor $vendor
+     *
+     * @return Response
+     */
+    public function getRedeemedBatches(Vendor $vendor): Response
+    {
+        /** @var VoucherRepository $repository */
+        $repository = $this->getDoctrine()->getManager()->getRepository(Voucher::class);
+        $summaryBatches = $repository->getRedeemBatches($vendor);
+
+        return $this->json($summaryBatches);
+    }
+
+    /**
+     * Set vendor purchase as redeemed
+     *
+     * @Rest\Post("/vouchers/purchases/redeem-check/{id}", name="vouchers_redeem_batch_check")
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @SWG\Tag(name="Vouchers")
+     * @SWG\Tag(name="Single Vendor")
+     *
+     * @SWG\Parameter(
+     *     name="vendor",
+     *     in="body",
+     *     type="array",
+     *     required=true,
+     *     description="fields of the vendor voucher ids",
+     *     schema="int"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All vendor purchases"
+     * )
+     *
+     * @param Vendor                  $vendor
+     *
+     * @param VoucherRedemptionBatch  $newBatch
+     *
+     * @return Response
+     */
+    public function checkRedemptionBatch(Vendor $vendor, VoucherRedemptionBatch $newBatch): Response
+    {
+        $voucherService = $this->get('voucher.voucher_service');
+        return $this->json($voucherService->checkBatch($newBatch));
+    }
+
+    /**
+     * Set vendor purchase as redeemed
+     *
+     * @Rest\Post("/vouchers/purchases/redeem-batch/{id}", name="vouchers_redeem_batch")
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @SWG\Tag(name="Vouchers")
+     * @SWG\Tag(name="Single Vendor")
+     *
+     * @SWG\Parameter(
+     *     name="vendor",
+     *     in="body",
+     *     type="array",
+     *     required=true,
+     *     description="fields of the vendor voucher ids",
+     *     schema="int"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All vendor purchases"
+     * )
+     *
+     * @param Vendor                  $vendor
+     *
+     * @param VoucherRedemptionBatch  $newBatch
+     *
+     * @return Response
+     */
+    public function redeemBatch(Vendor $vendor, VoucherRedemptionBatch $newBatch): Response
+    {
+        $voucherService = $this->get('voucher.voucher_service');
+
+        $check = $voucherService->checkBatch($newBatch);
+
+        if ($check->hasInvalidVouchers()) {
+            $message = $check->jsonSerialize();
+            $message['message'] = "There are invalid vouchers";
+            return new Response(json_encode($message), Response::HTTP_BAD_REQUEST);
+        }
+
+        $voucherService->redeemBatch($newBatch);
+        return $this->json(true);
     }
 
     /**
