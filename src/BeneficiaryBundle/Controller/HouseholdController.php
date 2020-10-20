@@ -58,16 +58,19 @@ class HouseholdController extends Controller
      */
     public function showAction(Household $household, Request $request)
     {
+        if (true === $household->getArchived()) {
+            return new Response("Household was archived", Response::HTTP_NOT_FOUND);
+        }
+
         $allowedCountries = [];
         foreach ($household->getProjects() as $project) {
             $allowedCountries[] = $project->getIso3();
         }
 
         if (in_array($request->request->get('__country'), $allowedCountries)) {
-            throw $this->createAccessDeniedException('You do not have permission to access this resource.');
-        }
 
-        $json = $this->get('serializer')
+
+            $json = $this->get('serializer')
             ->serialize(
                 $household,
                 'json',
