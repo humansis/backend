@@ -68,9 +68,10 @@ class HouseholdController extends Controller
         }
 
         if (in_array($request->request->get('__country'), $allowedCountries)) {
+            throw $this->createAccessDeniedException('You do not have permission to access this resource.');
+        }
 
-
-            $json = $this->get('serializer')
+        $json = $this->get('serializer')
             ->serialize(
                 $household,
                 'json',
