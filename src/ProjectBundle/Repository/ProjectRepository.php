@@ -34,4 +34,17 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
 
         return $q->getQuery()->getResult();
     }
+
+    public function countActiveInCountry(string $iso3): int
+    {
+        $qb = $this->createQueryBuilder("p");
+        $qb->select('COUNT(p) as c')
+            ->where("p.iso3 = :iso3")
+            ->andWhere("p.archived = 0")
+            ->andWhere(":currentTime BETWEEN p.startDate AND p.endDate")
+            ->setParameter("iso3", $iso3)
+            ->setParameter("currentTime", new \DateTime());
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

@@ -85,6 +85,16 @@ class ProjectService
     }
 
     /**
+     * @param string $iso3
+     * @return int
+     */
+    public function countActive(string $iso3): int
+    {
+        $count = $this->em->getRepository(Project::class)->countActiveInCountry($iso3);
+        return $count;
+    }
+
+    /**
      * Create a project
      *
      * @param $countryISO3
