@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/humansis/api.svg?branch=dev)](https://travis-ci.com/humansis/api)
+[![Build Status](https://travis-ci.com/humansis/api.svg?branch=develop)](https://travis-ci.com/humansis/api)
 [![GitHub version](https://badge.fury.io/gh/humansis%2Fapi.svg)](https://badge.fury.io/gh/humansis%2Fapi)
 
 BENEFICIARY MANAGEMENT SYSTEM
