@@ -13,7 +13,9 @@ use CommonBundle\InputType as GeneralInputType;
 use BeneficiaryBundle\Form\CommunityConstraints;
 use CommonBundle\InputType\DataTableType;
 use CommonBundle\Utils\LocationService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -95,7 +97,7 @@ class CommunityService
         return [$length, $communities];
     }
 
-    public function create(GeneralInputType\Country $country, InputType\UpdateCommunityType $communityType): Community
+    public function create(GeneralInputType\Country $country, InputType\NewCommunityType $communityType): Community
     {
         $community = new Community();
         $community->setLongitude($communityType->getLongitude() ?? '');
@@ -125,6 +127,10 @@ class CommunityService
                 $addressType->getPostcode(),
                 $location
             ));
+        }
+
+        foreach ($communityType->getProjects() as $projectId) {
+            $community->addProject($this->em->getRepository(Project::class)->find($projectId));
         }
 
         return $community;
@@ -193,6 +199,13 @@ class CommunityService
                 $address->getPostcode(),
                 $location
             ));
+        }
+
+        if (null !== $communityType->getProjects()) {
+            $community->setProjects(new ArrayCollection());
+            foreach ($communityType->getProjects() as $projectId) {
+                $community->addProject($this->em->getRepository(Project::class)->find($projectId));
+            }
         }
 
         return $community;

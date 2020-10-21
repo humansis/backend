@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Controller;
 
+use BeneficiaryBundle\InputType\NewCommunityType;
 use BeneficiaryBundle\InputType\UpdateCommunityType;
 use BeneficiaryBundle\Mapper\CommunityMapper;
 use BeneficiaryBundle\Utils\CommunityService;
@@ -121,10 +122,10 @@ class CommunityController extends Controller
      *
      *
      * @param Country $country
-     * @param UpdateCommunityType $communityType
+     * @param NewCommunityType $communityType
      * @return Response
      */
-    public function createAction(Country $country, UpdateCommunityType $communityType)
+    public function createAction(Country $country, NewCommunityType $communityType)
     {
         /** @var CommunityService $communityService */
         $communityService = $this->get('beneficiary.community_service');
