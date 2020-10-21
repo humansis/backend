@@ -28,7 +28,7 @@ class LivelihoodController extends Controller
      *
      * @SWG\Response(
      *     response=200,
-     *     description="All Projects",
+     *     description="All livelihoods",
      *     @SWG\Schema(
      *          type="array"
      *     )
