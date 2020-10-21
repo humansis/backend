@@ -2,10 +2,12 @@
 
 namespace CommonBundle\Controller;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use BeneficiaryBundle\Entity\Household;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -94,5 +96,76 @@ class CommonController extends Controller
         $json = $this->get('serializer')->serialize($logs, 'json', ['groups' => ['FullLogs'], 'datetime_format' => 'd-m-Y H:i']);
         
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Get("/offline-app/v1/master-key")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Common")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK",
+     *     @SWG\Schema(
+     *          type="object",
+     *          @SWG\Property(
+     *             property="key",
+     *             type="string"
+     *         ),
+     *         @SWG\Property(
+     *             property="version",
+     *             type="string"
+     *         )
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="HTTP_BAD_REQUEST"
+     * )
+     *
+     * @return JsonResponse
+     */
+    public function masterKeyOfflineApp()
+    {
+        return $this->json([
+            'key' => $this->getParameter('mobile_app_master_key'),
+            'version' => $this->getParameter('mobile_app_version'),
+        ]);
+    }
+
+    /**
+     * @Rest\Get("/vendor-app/v1/master-key")
+     * @Security("is_granted('ROLE_VENDOR')")
+     *
+     * @SWG\Tag(name="Common")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK",
+     *     @SWG\Schema(
+     *          type="object",
+     *          @SWG\Property(
+     *             property="key",
+     *             type="string"
+     *         ),
+     *         @SWG\Property(
+     *             property="version",
+     *             type="string"
+     *         )
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="HTTP_BAD_REQUEST"
+     * )
+     *
+     * @return JsonResponse
+     */
+    public function masterKeyVendorApp()
+    {
+        return $this->masterKeyOfflineApp();
     }
 }
