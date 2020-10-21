@@ -12,12 +12,13 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class ProjectFixtures extends Fixture implements FixtureGroupInterface
 {
-    private $countries = ["KHM", "UKR", "SYR"];
+    private $countries = ["KHM", "UKR", "SYR", "ETH"];
 
     private $explicitTestProjects = [
         ['Dev KHM Project', 1, 1, 'notes', 'KHM'],
         ['Dev UKR Project', 1, 1, 'notes', 'UKR'],
         ['Dev SYR Project', 1, 1, 'notes', 'SYR'],
+        ['Dev ETH Project', 1, 1, 'notes', 'ETH'],
     ];
 
     private $countryProjectNameTemplate = "{adjective} test project";
@@ -25,6 +26,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
         'KHM' => 'Cambodian',
         'SYR' => 'Syrian',
         'UKR' => 'Ukrainian',
+        'ETH' => 'Ethiopian',
     ];
 
     private $kernel;
