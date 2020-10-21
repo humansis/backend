@@ -9,13 +9,15 @@ if [[ $TAG =~ ^v.*$ ]]; then
   BRANCH="master"
 elif [[ $TAG =~ ^deploy.*$ ]]; then
   BRANCH="dev deploy"
+elif [[ $TRAVIS_BRANCH == "develop" ]]; then
+  BRANCH="develop"
 else
   BRANCH=`git symbolic-ref HEAD | cut -d/ -f3-`
 fi
 
 if [[ $BRANCH == "master" ]]; then
     APPVERSION=$TAG
-elif [[ $BRANCH == "dev" ]]; then
+elif [[ $BRANCH == "develop" ]]; then
     APPVERSION=$COMMIT
 elif [[ $BRANCH =~ ^release\/.*$ ]]; then
     APPVERSION=$COMMIT
