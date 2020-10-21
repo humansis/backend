@@ -1,7 +1,9 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace BeneficiaryBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Institution;
+use ProjectBundle\Mapper\ProjectMapper;
 
 class InstitutionMapper
 {
@@ -11,19 +13,27 @@ class InstitutionMapper
     private $nationalIdMapper;
     /** @var PersonMapper */
     private $personMapper;
+    /** @var ProjectMapper */
+    private $projectMapper;
 
     /**
      * CommunityMapper constructor.
      *
-     * @param AddressMapper    $addressMapper
+     * @param AddressMapper $addressMapper
      * @param NationalIdMapper $nationalIdMapper
-     * @param PersonMapper     $personMapper
+     * @param PersonMapper $personMapper
+     * @param ProjectMapper $projectMapper
      */
-    public function __construct(AddressMapper $addressMapper, NationalIdMapper $nationalIdMapper, PersonMapper $personMapper)
-    {
+    public function __construct(
+        AddressMapper $addressMapper,
+        NationalIdMapper $nationalIdMapper,
+        PersonMapper $personMapper,
+        ProjectMapper $projectMapper
+    ) {
         $this->addressMapper = $addressMapper;
         $this->nationalIdMapper = $nationalIdMapper;
         $this->personMapper = $personMapper;
+        $this->projectMapper = $projectMapper;
     }
 
     /**
@@ -49,6 +59,7 @@ class InstitutionMapper
             "latitude" => $institution->getLatitude(),
             "longitude" => $institution->getLongitude(),
             "contact" => $this->personMapper->toFullArray($institution->getContact()),
+            "projects" => $this->projectMapper->toIdArray($institution->getProjects()),
         ];
     }
 

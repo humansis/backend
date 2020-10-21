@@ -46,6 +46,7 @@ class InstitutionConstraints extends RequestValidatorConstraints
             'phone_number' => $optionalString,
             'contact_name' => $optionalString,
             'contact_family_name' => $optionalString,
+            'projects' => $array,
         ];
 
         return [

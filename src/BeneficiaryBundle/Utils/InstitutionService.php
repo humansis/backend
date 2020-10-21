@@ -10,7 +10,9 @@ use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Form\InstitutionConstraints;
 use CommonBundle\Utils\LocationService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -130,6 +132,10 @@ class InstitutionService
                 ));
         }
 
+        foreach ($institutionType->getProjects() as $projectId) {
+            $institution->addProject($this->em->getRepository(Project::class)->find($projectId));
+        }
+
         return $institution;
     }
 
@@ -242,6 +248,13 @@ class InstitutionService
                 $address->getPostcode(),
                 $location
                 ));
+        }
+
+        if (null !== $institutionType->getProjects()) {
+            $institution->setProjects(new ArrayCollection());
+            foreach ($institutionType->getProjects() as $projectId) {
+                $institution->addProject($this->em->getRepository(Project::class)->find($projectId));
+            }
         }
 
         return $institution;
