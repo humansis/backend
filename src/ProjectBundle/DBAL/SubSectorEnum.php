@@ -1,11 +1,11 @@
 <?php
+
 namespace ProjectBundle\DBAL;
 
 use CommonBundle\DBAL\AbstractEnum;
 
 class SubSectorEnum extends AbstractEnum
 {
-    protected $name = 'enum_sub_sector';
     protected static $values = [
         self::FOOD_PARCELS_BASKETS,
         self::RTER,
@@ -60,15 +60,15 @@ class SubSectorEnum extends AbstractEnum
     const RTER = 'rter';
     const FOOD_VOUCHERS = 'food_vouchers';
     const CASH_FOR_WORK = 'cash_for_work';
-    
+
     const SKILLS_TRAINING = 'skills_training';
     const TECHNICAL_SUPPORT = 'technical_support';
     const DISTRIBUTION_OF_INPUTS = 'distribution_of_inputs';
     const BUSINESS_GRANTS = 'business_grants';
     const AGRICULTURAL_VOUCHERS = 'agricultural_vouchers';
-    
+
     const MULTI_PURPOSE_CASH_ASSISTANCE = 'multi_purpose_cash_assistance';
-    
+
     const REHABILITATION = 'rehabilitation';
     const CONSTRUCTION = 'construction';
     const SETTLEMENT_UPGRADES = 'settlement_upgrades';
@@ -77,7 +77,7 @@ class SubSectorEnum extends AbstractEnum
     const SHELTER_KITS = 'shelter_kits';
     const NFI_KITS = 'nfi_kits';
     const CASH_FOR_SHELTER = 'cash_for_shelter';
-    
+
     const WATER_POINT_REHABILITATION = 'water_point_rehabilitation';
     const WATER_POINT_CONSTRUCTION = 'water_point_construction';
     const WATER_TRUCKING = 'water_trucking';
@@ -88,19 +88,24 @@ class SubSectorEnum extends AbstractEnum
     const HYGIENE_PROMOTION = 'hygiene_promotion';
     const HYGIENE_KITS = 'hygiene_kits';
     const OPERATIONAL_SUPPLIES = 'operational_supplies';
-    
+
     const PROTECTION_PSYCHOSOCIAL_SUPPORT = 'protection_psychosocial_support';
     const INDIVIDUAL_PROTECTION_ASSISTANCE = 'individual_protection_assistance';
     const COMMUNITY_BASED_INTERVENTIONS = 'community_based_interventions';
     const PROTECTION_ADVOCACY = 'protection_advocacy';
     const CHILD_PROTECTION = 'child_protection';
     const GENDER_BASED_VIOLENCE_ACTIVITIES = 'gender_based_violence_activities';
-    
+
     const TEACHER_INCENTIVE_PAYMENTS = 'teacher_incentive_payments';
     const TEACHER_TRAINING = 'teacher_training';
     const LEARNING_MATERIALS = 'learning_materials';
     const EDUCATION_PSYCHOSOCIAL_SUPPORT = 'education_psychosocial_support';
     const EDUCATION_SERVICES = 'education_services';
+
+    public function getName()
+    {
+        return 'enum_sub_sector';
+    }
 
     public static function all(): array
     {

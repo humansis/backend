@@ -18,38 +18,6 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Household extends AbstractBeneficiary
 {
-
-    /**
-     * Mapping of possible household livelihood
-     */
-    const LIVELIHOOD = [
-        0 => 'Agriculture - Livestock',
-        1 => 'Agriculture - Crops',
-        2 => 'Agriculture – Fishing',
-        3 => 'Agriculture – Other',
-        4 => 'Mining',
-        5 => 'Construction',
-        6 => 'Manufacturing',
-        7 => 'Retail',
-        8 => 'Transportation',
-        9 => 'Education',
-        10 => 'Health Care',
-        11 => 'Hospitality and Tourism',
-        12 => 'Legal Services',
-        13 => 'Home Duties',
-        14 => 'Religious Service',
-        15 => 'IT and Telecommunications',
-        16 => 'Finance and Insurance',
-        17 => 'Manual Labour',
-        18 => 'NGO and Non Profit',
-        19 => 'Military or Police',
-        20 => 'Government and Public Enterprise',
-        21 => 'Garment Industry',
-        22 => 'Security Industry',
-        23 => 'Service Industry and Other Professionals',
-        24 => 'Other'
-    ];
-
     const ASSETS = [
         0 => 'A/C',
         1 => 'Agricultural Land',
@@ -89,9 +57,9 @@ class Household extends AbstractBeneficiary
     ];
 
     /**
-     * @var int
+     * @var string|null
      *
-     * @ORM\Column(name="livelihood", type="integer", nullable=true)
+     * @ORM\Column(name="livelihood", type="enum_livelihood", nullable=true)
      * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $livelihood;
@@ -261,11 +229,11 @@ class Household extends AbstractBeneficiary
     /**
      * Set livelihood.
      *
-     * @param int $livelihood
+     * @param string|null $livelihood
      *
-     * @return Household
+     * @return self
      */
-    public function setLivelihood($livelihood)
+    public function setLivelihood(?string $livelihood): self
     {
         $this->livelihood = $livelihood;
 
@@ -275,9 +243,9 @@ class Household extends AbstractBeneficiary
     /**
      * Get livelihood.
      *
-     * @return int
+     * @return string|null
      */
-    public function getLivelihood()
+    public function getLivelihood(): ?string
     {
         return $this->livelihood;
     }

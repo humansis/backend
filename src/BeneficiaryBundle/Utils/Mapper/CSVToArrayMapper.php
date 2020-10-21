@@ -13,6 +13,7 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use Doctrine\ORM\EntityManagerInterface;
+use ProjectBundle\Enum\Livelihood;
 
 class CSVToArrayMapper
 {
@@ -691,9 +692,9 @@ class CSVToArrayMapper
     {
         if ($formattedHouseholdArray['livelihood']) {
             $livelihood = null;
-            foreach (Household::LIVELIHOOD as $livelihoodId => $value) {
-                if (strcasecmp($value, $formattedHouseholdArray['livelihood']) === 0) {
-                    $livelihood = $livelihoodId;
+            foreach (Livelihood::values() as $value) {
+                if (0 === strcasecmp(Livelihood::translate($value), $formattedHouseholdArray['livelihood'])) {
+                    $livelihood = $value;
                 }
             }
             if ($livelihood !== null) {

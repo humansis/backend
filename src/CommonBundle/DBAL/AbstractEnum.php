@@ -7,14 +7,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 abstract class AbstractEnum extends Type
 {
-    protected $name;
-
-    protected static $values;
-
-    public static function all(): array
-    {
-        return self::$values ?? [];
-    }
+    abstract public static function all();
 
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
@@ -32,16 +25,11 @@ abstract class AbstractEnum extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (!in_array($value, $this::all())) {
-            throw new \InvalidArgumentException("Invalid '".$this->name."' value.");
+        if (null !== $value && !in_array($value, $this::all())) {
+            throw new \InvalidArgumentException("Invalid '".$this->getName()."' value.");
         }
 
         return $value;
-    }
-
-    public function getName()
-    {
-        return $this->name;
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform)
