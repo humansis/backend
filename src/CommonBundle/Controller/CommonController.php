@@ -46,7 +46,7 @@ class CommonController extends Controller
         
         try {
             $total_beneficiaries = $this->get('beneficiary.beneficiary_service')->countAll($country);
-            $active_projects = $this->get('project.project_service')->countAll($country);
+            $active_projects = $this->get('project.project_service')->countActive($country);
             $enrolled_households = $this->getDoctrine()->getRepository(Household::class)
                 ->countUnarchivedByCountryProjects($country);
 
