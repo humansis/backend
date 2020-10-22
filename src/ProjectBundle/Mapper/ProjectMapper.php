@@ -55,10 +55,6 @@ class ProjectMapper
             return null;
         }
         $bnfCount = $this->beneficiaryRepo->countAllInProject($project);
-        $sectors = [];
-        foreach ($project->getSectors() as $subSectorName) {
-            $sectors[] = $this->sectorService->findBySubSector($subSectorName);
-        }
         return [
             'id' => $project->getId(),
             'iso3' => $project->getIso3(),
@@ -69,7 +65,7 @@ class ProjectMapper
             'end_date' => $project->getEndDate()->format('d-m-Y'),
             'start_date' => $project->getStartDate()->format('d-m-Y'),
             'number_of_households' => $project->getNumberOfHouseholds(),
-            'sectors' => $this->sectorMapper->listToSubArrays($sectors),
+            'sectors' => $this->sectorMapper->toSectorArray($project->getSectors()),
             'reached_beneficiaries' => $bnfCount,
             'distributions' => $this->assistanceMapper->toMinimalArrays($project->getDistributions()),
         ];
