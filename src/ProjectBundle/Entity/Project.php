@@ -437,13 +437,13 @@ class Project implements ExportableInterface
     /**
      * Add sector.
      *
-     * @param \ProjectBundle\DTO\Sector $sector
+     * @param string $sectorId
      *
      * @return Project
      */
-    public function addSector(\ProjectBundle\DTO\Sector $sector)
+    public function addSector(string $sectorId)
     {
-        $this->sectors->add($sector);
+        $this->sectors->add(new ProjectSector($sectorId, $this));
 
         return $this;
     }
