@@ -120,6 +120,7 @@ services:
         arguments:
             - "%vulnerability_weightingFile%"
             - "%vulnerability_scoringFileTemplate%"
+            - "@beneficiary.repository"
         public: true
 
 
