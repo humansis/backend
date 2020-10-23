@@ -11,7 +11,11 @@ class RedemptionVoucherBatchCheck implements \JsonSerializable
     /** @var Voucher[] */
     private $alreadyRedeemedVouchers = [];
     /** @var Voucher[] */
+    private $unassignedVouchers = [];
+    /** @var Voucher[] */
     private $unusedVouchers = [];
+    /** @var Voucher[] */
+    private $vendorInconsistentVouchers = [];
     /** @var string[] */
     private $notExistedIds = [];
 
@@ -23,6 +27,16 @@ class RedemptionVoucherBatchCheck implements \JsonSerializable
     public function addAlreadyRedeemedVoucher(Voucher $voucher): void
     {
         $this->alreadyRedeemedVouchers[] = $voucher;
+    }
+
+    public function addVendorInconsistentVoucher(Voucher $voucher): void
+    {
+        $this->vendorInconsistentVouchers[] = $voucher;
+    }
+
+    public function addUnassignedVoucher(Voucher $voucher): void
+    {
+        $this->unassignedVouchers[] = $voucher;
     }
 
     public function addUnusedVoucher(Voucher $voucher): void
@@ -63,6 +77,8 @@ class RedemptionVoucherBatchCheck implements \JsonSerializable
     {
         return !empty($this->notExistedIds)
             || !empty($this->unusedVouchers)
+            || !empty($this->vendorInconsistentVouchers)
+            || !empty($this->unassignedVouchers)
             || !empty($this->alreadyRedeemedVouchers)
             ;
     }
@@ -71,8 +87,10 @@ class RedemptionVoucherBatchCheck implements \JsonSerializable
     {
         return [
             'valid' => $this->toIdArray($this->validVouchers),
+            'unassigned' => $this->toIdArray($this->unassignedVouchers),
             'unused' => $this->toIdArray($this->unusedVouchers),
             'redeemed' => $this->toIdArray($this->alreadyRedeemedVouchers),
+            'inconsistent' => $this->toIdArray($this->vendorInconsistentVouchers),
             'not_exists' => $this->notExistedIds,
         ];
     }

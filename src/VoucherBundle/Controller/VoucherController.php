@@ -444,7 +444,7 @@ class VoucherController extends Controller
     public function checkRedemptionBatch(Vendor $vendor, VoucherRedemptionBatch $newBatch): Response
     {
         $voucherService = $this->get('voucher.voucher_service');
-        return $this->json($voucherService->checkBatch($newBatch));
+        return $this->json($voucherService->checkBatch($newBatch, $vendor));
     }
 
     /**
@@ -480,11 +480,16 @@ class VoucherController extends Controller
     {
         $voucherService = $this->get('voucher.voucher_service');
 
-        $check = $voucherService->checkBatch($newBatch);
+        $check = $voucherService->checkBatch($newBatch, $vendor);
 
         if ($check->hasInvalidVouchers()) {
             $message = $check->jsonSerialize();
             $message['message'] = "There are invalid vouchers";
+            return new Response(json_encode($message), Response::HTTP_BAD_REQUEST);
+        }
+        if (count($check->getValidVouchers()) == 0) {
+            $message = $check->jsonSerialize();
+            $message['message'] = "There are no valid vouchers";
             return new Response(json_encode($message), Response::HTTP_BAD_REQUEST);
         }
 

@@ -276,14 +276,19 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $result = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertIsArray($result);
+
         $this->assertArrayHasKey('not_exists', $result);
         $this->assertArrayHasKey('redeemed', $result);
         $this->assertArrayHasKey('unused', $result);
+        $this->assertArrayHasKey('unassigned', $result);
+        $this->assertArrayHasKey('inconsistent', $result);
         $this->assertArrayHasKey('valid', $result);
 
         $this->assertCount(1, $result['not_exists']);
         $this->assertCount(0, $result['redeemed']);
         $this->assertCount(0, $result['unused']);
+        $this->assertCount(0, $result['unassigned']);
+        $this->assertCount(0, $result['inconsistent']);
         $this->assertCount(0, $result['valid']);
     }
 
@@ -296,8 +301,13 @@ class VoucherControllerTest extends BMSServiceTestCase
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc']);
         $vendorId = $vendor->getId();
+        $booklets = $this->em->getRepository(Booklet::class)->findBy([
+            'status' => Booklet::DISTRIBUTED,
+        ]);
         $vouchers = $this->em->getRepository(Voucher::class)->findBy([
             'redeemedAt' => null,
+            'voucherPurchase' => null,
+            'booklet' => $booklets,
         ]);
         $purchaseService = $this->container->get('voucher.purchase_service');
         $anyProduct = $this->em->getRepository(Product::class)->findOneBy([], ['id'=>'asc']);
@@ -316,6 +326,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $batchToRedeem = [
             "vouchers" => array_map(function (Voucher $voucher) { return $voucher->getId(); }, $vouchers),
         ];
+        // $batchToRedeem['vouchers'][] = -1;
 
         $crawler = $this->request('POST', '/api/wsse/vouchers/purchases/redeem-batch/' . $vendorId, $batchToRedeem);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
@@ -342,7 +353,22 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isClientError(), "Request should end with client error: " . $content);
         $this->assertFalse($this->client->getResponse()->isServerError(), "Request failed: " . $content);
         $result = json_decode($this->client->getResponse()->getContent(), true);
+
         $this->assertIsArray($result);
+
+        $this->assertArrayHasKey('not_exists', $result);
+        $this->assertArrayHasKey('redeemed', $result);
+        $this->assertArrayHasKey('unused', $result);
+        $this->assertArrayHasKey('unassigned', $result);
+        $this->assertArrayHasKey('inconsistent', $result);
+        $this->assertArrayHasKey('valid', $result);
+
+        $this->assertCount(1, $result['not_exists']);
+        $this->assertCount(0, $result['redeemed']);
+        $this->assertCount(0, $result['unused']);
+        $this->assertCount(0, $result['unassigned']);
+        $this->assertCount(0, $result['inconsistent']);
+        $this->assertCount(0, $result['valid']);
     }
 
     /**

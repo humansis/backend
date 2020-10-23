@@ -122,25 +122,54 @@ class VoucherService
     /**
      * @param VoucherRedemptionBatch $batch
      *
+     * @param Vendor|null            $vendor
+     *
      * @return RedemptionVoucherBatchCheck
      */
-    public function checkBatch(VoucherRedemptionBatch $batch): RedemptionVoucherBatchCheck
+    public function checkBatch(VoucherRedemptionBatch $batch, ?Vendor $vendor = null): RedemptionVoucherBatchCheck
     {
         $ids = $batch->getVouchers();
+
+        $check = new RedemptionVoucherBatchCheck();
+        if (empty($ids)) {
+            return $check;
+        }
+
         $vouchers = $this->em->getRepository(Voucher::class)->findBy([
             'id' => $ids,
         ]);
         $ids = array_flip($ids);
 
-        $check = new RedemptionVoucherBatchCheck();
-
         /** @var Voucher $voucher */
         foreach ($vouchers as $voucher) {
-            if (null === $voucher->getVoucherPurchase()) {
+            $error = false;
+            if (Booklet::UNASSIGNED == $voucher->getBooklet()->getStatus()
+                || null == $voucher->getBooklet()->getDistributionBeneficiary()) {
+                $check->addUnassignedVoucher($voucher);
+                $error = true;
+            }
+
+            if (Booklet::DISTRIBUTED == $voucher->getBooklet()->getStatus()
+                || null === $voucher->getVoucherPurchase()) {
                 $check->addUnusedVoucher($voucher);
-            } elseif (null !== $voucher->getRedeemedAt()) {
+                $error = true;
+            }
+
+            if (Booklet::USED == $voucher->getBooklet()->getStatus()
+                && null !== $voucher->getRedeemedAt()) {
                 $check->addAlreadyRedeemedVoucher($voucher);
-            } else {
+                $error = true;
+            }
+
+            if (Booklet::USED == $voucher->getBooklet()->getStatus()
+                && null !== $vendor
+                && null == $voucher->getRedeemedAt()
+                && $vendor !== $voucher->getVoucherPurchase()->getVendor()) {
+                $check->addVendorInconsistentVoucher($voucher);
+                $error = true;
+            }
+
+            if (!$error) {
                 $check->addValidVoucher($voucher);
             }
             unset($ids[$voucher->getId()]);

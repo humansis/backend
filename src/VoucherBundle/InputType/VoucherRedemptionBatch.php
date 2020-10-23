@@ -10,7 +10,6 @@ class VoucherRedemptionBatch implements InputTypeInterface
     /**
      * @var int[]
      *
-     * @Assert\Valid()
      * @Assert\NotBlank()
      * @Assert\All({
      *     @Assert\Type("int")
