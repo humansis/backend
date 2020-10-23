@@ -24,6 +24,10 @@ class CountryController extends Controller
             'name' => 'Ukraine',
             'iso3' => 'UKR',
             'currency' => 'UAH',
+        ], [
+            'name' => 'Ethiopia',
+            'iso3' => 'ETH',
+            'currency' => 'ETB',
         ],
     ];
 
