@@ -41,7 +41,7 @@ class SmartcardController extends Controller
      * Register smartcard to system and assign to beneficiary.
      *
      * @Rest\Post("/offline-app/v1/smartcards")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Offline App")
@@ -116,7 +116,7 @@ class SmartcardController extends Controller
      * Info about smartcard.
      *
      * @Rest\Get("/offline-app/v1/smartcards/{serialNumber}")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
      * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
@@ -195,7 +195,7 @@ class SmartcardController extends Controller
      * Update smartcard, typically its' state.
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
      * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
@@ -278,7 +278,7 @@ class SmartcardController extends Controller
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}/deposit")
      * @ParamConverter("smartcard")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER')")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
      *
      * @SWG\Tag(name="Smartcards")
      *
