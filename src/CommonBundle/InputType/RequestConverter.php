@@ -49,7 +49,14 @@ class RequestConverter implements ParamConverterInterface
             $messages = [];
             /** @var ConstraintViolationInterface $error */
             foreach ($errors as $error) {
-                $messages[] = $error->getMessage()." [{$error->getPropertyPath()} = {$error->getInvalidValue()}]";
+                if (is_array($error->getInvalidValue())) {
+                    $value = implode(', ', $error->getInvalidValue());
+                    $value = "[$value]";
+                } else {
+                    $value = $error->getInvalidValue();
+                }
+
+                $messages[] = $error->getMessage()." [{$error->getPropertyPath()} = $value]";
             }
             throw new BadRequestDataException("Bad request body: ".implode(' | ', $messages));
         }
