@@ -693,6 +693,8 @@ class Household extends AbstractBeneficiary
     public function setIncomeSpentOnFood(?int $incomeSpentOnFood): self
     {
         $this->incomeSpentOnFood = $incomeSpentOnFood;
+
+        return $this;
     }
 
     /**
@@ -721,5 +723,23 @@ class Household extends AbstractBeneficiary
     public function getHouseholdIncome(): ?int
     {
         return $this->householdIncome;
+    }
+
+
+    /**
+     * @return Beneficiary|null
+     */
+    public function getHouseholdHead(): ?Beneficiary
+    {
+        $householdHead = null;
+        /** @var Beneficiary $beneficiary */
+        foreach ($this->getBeneficiaries() as $beneficiary) {
+            if ($beneficiary->getStatus() === true) { //TODO value should be in constant
+                $householdHead = $beneficiary;
+                break;
+            }
+        }
+
+        return $householdHead;
     }
 }

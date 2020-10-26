@@ -1,3 +1,6 @@
+imports:
+    - { resource: parameters.yml }
+
 services:
     _defaults:
         autowire: true
@@ -111,6 +114,14 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@service_container"
+        public: true
+
+    beneficiary.vulnerability_resolver:
+        class: BeneficiaryBundle\Model\Vulnerability\Resolver
+        arguments:
+            - "%vulnerability_weightingFile%"
+            - "%vulnerability_scoringFileTemplate%"
+            - "@beneficiary.repository"
         public: true
 
 

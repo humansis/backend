@@ -613,4 +613,21 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         }
         $qb->setParameter(':vulnerability'.$i, $vulnerabilityName);
     }
+
+
+    /**
+     * @param Household $household
+     *
+     * @return int
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function countByHousehold(Household $household): int
+    {
+        return $this->createQueryBuilder('b')
+            ->select('COUNT(DISTINCT b)')
+            ->where('b.household = :household')
+            ->setParameter('household', $household)
+            ->getQuery()->getSingleScalarResult();
+    }
 }
