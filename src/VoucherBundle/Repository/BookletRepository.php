@@ -90,7 +90,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
                 ->where('b.status != :status')
                 ->andWhere('b.countryISO3 = :country')
                 ->setParameter('country', $countryISO3)
-                ->setParameter('status', 3);
+                ->setParameter('status', Booklet::DEACTIVATED);
           
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
         if (array_key_exists("sort", $sort) && array_key_exists("direction", $sort)) {
