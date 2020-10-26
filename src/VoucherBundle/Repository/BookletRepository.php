@@ -164,7 +164,6 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
                 } elseif ($category === "distribution" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        Dump($filterValue);
                         $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
                         $orStatement->add($q->expr()->eq("d.id", ":filter" . $indexFilter . $indexValue));
                     }
