@@ -5,6 +5,7 @@ namespace DistributionBundle\Controller;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\AssistanceMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
 use DistributionBundle\Utils\DistributionService;
 use DistributionBundle\Utils\DistributionCsvService;
@@ -252,28 +253,18 @@ class AssistanceController extends Controller
      */
     public function addBeneficiaryAction(Request $request, Assistance $assistance)
     {
+        $mapper = $this->get(AssistanceBeneficiaryMapper::class);
         $data = $request->request->all();
 
         try {
             /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
             $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-            $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiaries($assistance, $data);
+            $assistanceBeneficiary = $distributionBeneficiaryService->addBeneficiaries($assistance, $data);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('serializer')
-            ->serialize(
-                $distributionBeneficiary,
-                'json',
-                ['groups' => [
-                    'FullDistributionBeneficiary',
-                    'FullDistribution',
-                    'FullBeneficiary',
-                ]]
-            );
-
-        return new Response($json);
+        return $this->json($mapper->toMinimalArray($assistanceBeneficiary));
     }
 
     /**
