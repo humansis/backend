@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DistributionBundle\Utils;
 
@@ -123,84 +123,97 @@ class DistributionBeneficiaryService
      * Add either a beneficiary of a household(in this case, we assigned the head of the household) to a distribution
      *
      * @param Assistance $assistance
-     * @param array $beneficiariesArray
+     * @param array      $beneficiariesData
+     *
      * @return DistributionBeneficiary
      * @throws \Exception
      */
-    public function addBeneficiary(Assistance $assistance, array $beneficiariesData)
+    public function addBeneficiaries(Assistance $assistance, array $beneficiariesData)
     {
-        $beneficiary = null;
-
         $beneficiariesArray = $beneficiariesData['beneficiaries'];
+        $validBNFs = [];
+
+        if (empty($beneficiariesArray)) {
+            return null;
+        }
+
+        // id validation
+        foreach ($beneficiariesArray as $beneficiaryArray) {
+
+            if (!isset($beneficiaryArray["id"])) {
+                throw new \Exception("Beneficiary ID missing.");
+            }
+
+            // everything else is duplicity crap
+            $bnfId = (int) $beneficiaryArray["id"];
+
+            switch ($assistance->getTargetType()) {
+                case Assistance::TYPE_HOUSEHOLD:
+                    $household = $this->em->getRepository(Household::class)->find($bnfId);
+                    if (!$household instanceof Household) {
+                        throw new \Exception("Household {$bnfId} was not found.");
+                    }
+                    $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
+                    break;
+                case Assistance::TYPE_BENEFICIARY:
+                    $beneficiary = $this->em->getRepository(Beneficiary::class)->find($bnfId);
+                    if (!$beneficiary instanceof Beneficiary) {
+                        throw new \Exception("Beneficiary {$bnfId} was not found.");
+                    }
+                    break;
+                case Assistance::TYPE_COMMUNITY:
+                    $beneficiary = $this->em->getRepository(Community::class)->find($bnfId);
+                    if (!$beneficiary instanceof Community) {
+                        throw new \Exception("Community {$bnfId} was not found.");
+                    }
+                    break;
+                case Assistance::TYPE_INSTITUTION:
+                    $beneficiary = $this->em->getRepository(Institution::class)->find($bnfId);
+                    if (!$beneficiary instanceof Institution) {
+                        throw new \Exception("Institution {$bnfId} was not found.");
+                    }
+                    break;
+                default:
+                    throw new \Exception("The type of the distribution is undefined.");
+            }
+            $validBNFs[] = $beneficiary;
+        }
 
         $distributionBeneficiaries = [];
 
-        if ($beneficiariesArray && sizeof($beneficiariesArray) > 0) {
-            foreach ($beneficiariesArray as $beneficiaryArray) {
+        foreach ($validBNFs as $beneficiary) {
+            $distributionBeneficiary = new DistributionBeneficiary();
 
-                if ($beneficiaryArray !== $beneficiariesData["__country"]) {
-                    switch ($assistance->getTargetType()) {
-                        case Assistance::TYPE_HOUSEHOLD:
-                            $household = $this->em->getRepository(Household::class)->find($beneficiaryArray["id"]);
-                            if (!$household instanceof Household) {
-                                throw new \Exception("Household {$beneficiaryArray["id"]} was not found.");
-                            }
-                            $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
-                            break;
-                        case Assistance::TYPE_BENEFICIARY:
-                            $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
-                            if (!$beneficiary instanceof Beneficiary) {
-                                throw new \Exception("Beneficiary {$beneficiaryArray["id"]} was not found.");
-                            }
-                            break;
-                        case Assistance::TYPE_COMMUNITY:
-                            $beneficiary = $this->em->getRepository(Community::class)->find($beneficiaryArray["id"]);
-                            if (!$beneficiary instanceof Community) {
-                                throw new \Exception("Community {$beneficiaryArray["id"]} was not found.");
-                            }
-                            break;
-                        case Assistance::TYPE_INSTITUTION:
-                            $beneficiary = $this->em->getRepository(Institution::class)->find($beneficiaryArray["id"]);
-                            if (!$beneficiary instanceof Institution) {
-                                throw new \Exception("Institution {$beneficiaryArray["id"]} was not found.");
-                            }
-                            break;
-                        default:
-                            throw new \Exception("The type of the distribution is undefined.");
-                    }
-                    
-                    $distributionBeneficiary = new DistributionBeneficiary();
+            $sameDistributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
+                ->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
 
-                    $sameDistributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
-                        ->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
-                    // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
-                    if ($sameDistributionBeneficiary && sizeof($beneficiariesArray) <= 2 && !$sameDistributionBeneficiary->getRemoved()) {
-                        throw new \Exception('This beneficiary/household is already part of the distribution', Response::HTTP_BAD_REQUEST);
-                    } else if ($sameDistributionBeneficiary && sizeof($beneficiariesArray) <= 2 && $sameDistributionBeneficiary->getRemoved()) {
-                        $sameDistributionBeneficiary->setRemoved(0)
-                            ->setJustification($beneficiariesData['justification']);
-                        $this->em->persist($sameDistributionBeneficiary);
-                    } else if (!$sameDistributionBeneficiary) {
-                        $distributionBeneficiary->setAssistance($assistance)
-                            ->setBeneficiary($beneficiary)
-                            ->setRemoved(0)
-                            ->setJustification($beneficiariesData['justification']);
-                        $this->em->persist($distributionBeneficiary);
-                        array_push($distributionBeneficiaries, $distributionBeneficiary);
-                    }
-                }
+            // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
+            if ($sameDistributionBeneficiary && sizeof($validBNFs) <= 2 && !$sameDistributionBeneficiary->getRemoved()) {
+                throw new \Exception("Beneficiary/household {$beneficiary->getId()} is already part of the distribution", Response::HTTP_BAD_REQUEST);
+            } elseif ($sameDistributionBeneficiary && sizeof($validBNFs) <= 2 && $sameDistributionBeneficiary->getRemoved()) {
+                $sameDistributionBeneficiary->setRemoved(0)
+                    ->setJustification($beneficiariesData['justification']);
+                $this->em->persist($sameDistributionBeneficiary);
+            } elseif (!$sameDistributionBeneficiary) {
+                $distributionBeneficiary->setAssistance($assistance)
+                    ->setBeneficiary($beneficiary)
+                    ->setRemoved(0)
+                    ->setJustification($beneficiariesData['justification']);
+                $this->em->persist($distributionBeneficiary);
+                array_push($distributionBeneficiaries, $distributionBeneficiary);
             }
-            if ($assistance->getValidated()) {
-                $assistance = $this->container->get('distribution.distribution_service')->setCommoditiesToNewBeneficiaries($assistance, $distributionBeneficiaries);
-            }
-
-            $assistance->setUpdatedOn(new \DateTime());
-            $this->em->persist($assistance);
-
-            $this->em->flush();
-        } else {
-            return null;
         }
+
+        if ($assistance->getValidated()) {
+            $assistance = $this->container->get('distribution.distribution_service')->setCommoditiesToNewBeneficiaries($assistance,
+                $distributionBeneficiaries);
+        }
+
+        $assistance->setUpdatedOn(new \DateTime());
+        $this->em->persist($assistance);
+
+        $this->em->flush();
+
         return $distributionBeneficiary;
     }
 

@@ -243,7 +243,7 @@ class AssistanceController extends Controller
      *     @Model(type=DistributionBeneficiary::class)
      * )
      *
-     * @param Request          $request
+     * @param Request    $request
      * @param Assistance $assistance
      *
      * @return Response
@@ -257,7 +257,7 @@ class AssistanceController extends Controller
         try {
             /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
             $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-            $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiary($assistance, $data);
+            $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiaries($assistance, $data);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
