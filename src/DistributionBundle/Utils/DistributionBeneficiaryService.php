@@ -3,7 +3,10 @@
 namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\Institution;
+use DistributionBundle\DBAL\AssistanceTypeEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
@@ -137,16 +140,30 @@ class DistributionBeneficiaryService
 
                 if ($beneficiaryArray !== $beneficiariesData["__country"]) {
                     switch ($assistance->getTargetType()) {
-                        case 0:
-                            $headHousehold = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
-                            $household = $headHousehold->getHousehold();
+                        case Assistance::TYPE_HOUSEHOLD:
+                            $household = $this->em->getRepository(Household::class)->find($beneficiaryArray["id"]);
                             if (!$household instanceof Household) {
-                                throw new \Exception("This household was not found.");
+                                throw new \Exception("Household {$beneficiaryArray["id"]} was not found.");
                             }
                             $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
                             break;
-                        case 1:
+                        case Assistance::TYPE_BENEFICIARY:
                             $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
+                            if (!$beneficiary instanceof Beneficiary) {
+                                throw new \Exception("Beneficiary {$beneficiaryArray["id"]} was not found.");
+                            }
+                            break;
+                        case Assistance::TYPE_COMMUNITY:
+                            $beneficiary = $this->em->getRepository(Community::class)->find($beneficiaryArray["id"]);
+                            if (!$beneficiary instanceof Community) {
+                                throw new \Exception("Community {$beneficiaryArray["id"]} was not found.");
+                            }
+                            break;
+                        case Assistance::TYPE_INSTITUTION:
+                            $beneficiary = $this->em->getRepository(Institution::class)->find($beneficiaryArray["id"]);
+                            if (!$beneficiary instanceof Institution) {
+                                throw new \Exception("Institution {$beneficiaryArray["id"]} was not found.");
+                            }
                             break;
                         default:
                             throw new \Exception("The type of the distribution is undefined.");
