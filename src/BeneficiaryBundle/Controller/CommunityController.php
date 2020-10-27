@@ -135,6 +135,8 @@ class CommunityController extends Controller
             $community = $communityService->create($country, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
             $this->getDoctrine()->getManager()->flush();
+        } catch (\InvalidArgumentException $exception) {
+            return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
@@ -193,6 +195,8 @@ class CommunityController extends Controller
             $community = $communityService->update($country, $community, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
             $this->getDoctrine()->getManager()->flush();
+        } catch (\InvalidArgumentException $exception) {
+            return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {

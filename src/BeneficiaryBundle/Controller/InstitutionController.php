@@ -145,6 +145,8 @@ class InstitutionController extends Controller
             $institution = $institutionService->create($country, $newInstitution);
             $this->getDoctrine()->getManager()->persist($institution);
             $this->getDoctrine()->getManager()->flush();
+        } catch (\InvalidArgumentException $exception) {
+            return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
@@ -203,6 +205,8 @@ class InstitutionController extends Controller
             $institution = $institutionService->update($country, $institution, $institutionType);
             $this->getDoctrine()->getManager()->persist($institution);
             $this->getDoctrine()->getManager()->flush();
+        } catch (\InvalidArgumentException $exception) {
+            return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {

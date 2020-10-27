@@ -25,9 +25,7 @@ class NewInstitutionType extends UpdateInstitutionType implements InputTypeInter
     /**
      * @var int[]
      * @Assert\NotNull
-     * @Assert\All(
-     *     @Assert\GreaterThan(0)
-     * )
+     * @Assert\Count(min="1")
      */
     public $projects;
 }

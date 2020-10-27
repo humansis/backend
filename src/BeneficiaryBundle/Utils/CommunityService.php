@@ -16,6 +16,7 @@ use CommonBundle\Utils\LocationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
+use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -97,6 +98,13 @@ class CommunityService
         return [$length, $communities];
     }
 
+    /**
+     * @param GeneralInputType\Country   $country
+     * @param InputType\NewCommunityType $communityType
+     *
+     * @return Community
+     * @throws \InvalidArgumentException
+     */
     public function create(GeneralInputType\Country $country, InputType\NewCommunityType $communityType): Community
     {
         $community = new Community();
@@ -130,7 +138,11 @@ class CommunityService
         }
 
         foreach ($communityType->getProjects() as $projectId) {
-            $community->addProject($this->em->getRepository(Project::class)->find($projectId));
+            $project = $this->em->getRepository(Project::class)->find((int)$projectId);
+            if (null === $project) {
+                throw new \InvalidArgumentException("Project $projectId doesn't exist");
+            }
+            $community->addProject($project);
         }
 
         return $community;
@@ -153,9 +165,17 @@ class CommunityService
             $this->em->persist($community);
         }
         $this->em->flush();
-        return "Communitys have been archived";
+        return "Communities have been archived";
     }
 
+    /**
+     * @param GeneralInputType\Country      $country
+     * @param Community                     $community
+     * @param InputType\UpdateCommunityType $communityType
+     *
+     * @return Community
+     * @throws \InvalidArgumentException
+     */
     public function update(GeneralInputType\Country $country, Community $community, InputType\UpdateCommunityType $communityType): Community
     {
         if (null !== $newValue = $communityType->getLongitude()) {
@@ -204,7 +224,11 @@ class CommunityService
         if (null !== $communityType->getProjects()) {
             $community->setProjects(new ArrayCollection());
             foreach ($communityType->getProjects() as $projectId) {
-                $community->addProject($this->em->getRepository(Project::class)->find($projectId));
+                $project = $this->em->getRepository(Project::class)->find($projectId);
+                if (null === $project) {
+                    throw new \InvalidArgumentException("Project $projectId doesn't exist");
+                }
+                $community->addProject($project);
             }
         }
 

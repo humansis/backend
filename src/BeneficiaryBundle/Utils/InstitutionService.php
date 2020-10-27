@@ -13,6 +13,7 @@ use CommonBundle\Utils\LocationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
+use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -93,9 +94,11 @@ class InstitutionService
     }
 
     /**
-     * @param GlobalInputType\Country $country
+     * @param GlobalInputType\Country      $country
      * @param InputType\NewInstitutionType $institutionType
+     *
      * @return Institution
+     * @throws \InvalidArgumentException
      */
     public function create(GlobalInputType\Country $country, InputType\NewInstitutionType $institutionType): Institution
     {
@@ -133,7 +136,11 @@ class InstitutionService
         }
 
         foreach ($institutionType->getProjects() as $projectId) {
-            $institution->addProject($this->em->getRepository(Project::class)->find($projectId));
+            $project = $this->em->getRepository(Project::class)->find($projectId);
+            if (null === $project) {
+                throw new \InvalidArgumentException("Project $projectId doesn't exist");
+            }
+            $institution->addProject($project);
         }
 
         return $institution;
@@ -191,10 +198,12 @@ class InstitutionService
     }
 
     /**
-     * @param GlobalInputType\Country $iso3
-     * @param Institution $institution
+     * @param GlobalInputType\Country         $iso3
+     * @param Institution                     $institution
      * @param InputType\UpdateInstitutionType $institutionType
+     *
      * @return Institution
+     * @throws \InvalidArgumentException
      */
     public function update(GlobalInputType\Country $iso3, Institution $institution, InputType\UpdateInstitutionType $institutionType): Institution
     {
@@ -253,7 +262,11 @@ class InstitutionService
         if (null !== $institutionType->getProjects()) {
             $institution->setProjects(new ArrayCollection());
             foreach ($institutionType->getProjects() as $projectId) {
-                $institution->addProject($this->em->getRepository(Project::class)->find($projectId));
+                $project = $this->em->getRepository(Project::class)->find($projectId);
+                if (null === $project) {
+                    throw new \InvalidArgumentException("Project $projectId doesn't exist");
+                }
+                $institution->addProject($project);
             }
         }
 
