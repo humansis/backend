@@ -39,9 +39,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
-        $this->assertArrayHasKey('pageNumber', $result);
         $this->assertArrayHasKey('data', $result);
-        $this->assertEquals(1, $result['pageNumber']);
         $this->assertIsArray($result['data']);
         $this->assertEquals(count(Livelihood::values()), $result['totalCount']);
     }
@@ -63,9 +61,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
-        $this->assertArrayHasKey('pageNumber', $result);
         $this->assertArrayHasKey('data', $result);
-        $this->assertEquals(1, $result['pageNumber']);
         $this->assertIsArray($result['data']);
         $this->assertEquals(count(Household::ASSETS), $result['totalCount']);
     }

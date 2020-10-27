@@ -43,7 +43,6 @@ class Paginator implements \JsonSerializable
     {
         return [
             'totalCount' => $this->totalCount,
-            'pageNumber' => $this->page,
             'data' => $this->data,
         ];
     }
