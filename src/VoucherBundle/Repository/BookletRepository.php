@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Repository;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -85,12 +86,11 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         // We join information that is needed for the filters
         $q = $qb->leftJoin('b.distribution_beneficiary', 'db')
                 ->leftJoin('b.vouchers', 'v')
-                ->leftJoin('db.beneficiary', 'bf')
                 ->leftJoin('db.distributionData', 'd')
                 ->where('b.status != :status')
                 ->andWhere('b.countryISO3 = :country')
                 ->setParameter('country', $countryISO3)
-                ->setParameter('status', 3);
+                ->setParameter('status', Booklet::DEACTIVATED);
           
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
         if (array_key_exists("sort", $sort) && array_key_exists("direction", $sort)) {
@@ -119,11 +119,12 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
             }
             // If the field is the beneficiaries, we sort it by the direction sent
             elseif ($value == "beneficiary") {
-                $q->addGroupBy("d")->addOrderBy("d.name", $direction);
+                // this isn't good but it is too much work for hotfix
+                $q->addGroupBy("db.beneficiary")->addOrderBy("IDENTITY(db.beneficiary)", $direction);
             }
             // If the field is the distributions, we sort it by the direction sent
             elseif ($value == "distribution") {
-                $q->addGroupBy("bf")->addOrderBy("bf.localGivenName", $direction);
+                $q->addGroupBy("d")->addOrderBy("d.name", $direction);
             }
 
             $q->addGroupBy("b.id");
@@ -139,13 +140,26 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
 
                 if ($category === "any" && count($filterValues) > 0) {
                     foreach ($filterValues as $filterValue) {
+                        $subQueryForName = $this->_em->createQueryBuilder()
+                            ->select('p.id')
+                            ->from(Beneficiary::class, 'bnf')
+                            ->leftJoin('bnf.person', 'p')
+                            ->andWhere('bnf.id = IDENTITY(db.beneficiary)')
+                            ->andWhere("(
+                                p.localGivenName LIKE '%$filterValue%' OR
+                                p.localFamilyName LIKE '%$filterValue%' OR
+                                p.enGivenName LIKE '%$filterValue%' OR
+                                p.enFamilyName LIKE '%$filterValue%'
+                            ) ")
+                            ->setParameter('filter', strtolower($filterValue))
+                            ->getDQL()
+                        ;
                         $q->andWhere("CONCAT(
                             COALESCE(b.code, ''),
                             COALESCE(b.currency, ''),
                             COALESCE(b.status, ''),
-                            COALESCE(d.name, ''),
-                            COALESCE(bf.localGivenName, '')
-                        ) LIKE '%" . $filterValue . "%'");
+                            COALESCE(d.name, '')
+                        ) LIKE '%$filterValue%' OR EXISTS ($subQueryForName)");
                     }
                 } elseif ($category === "currency" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
@@ -164,7 +178,6 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
                 } elseif ($category === "distribution" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        Dump($filterValue);
                         $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
                         $orStatement->add($q->expr()->eq("d.id", ":filter" . $indexFilter . $indexValue));
                     }
