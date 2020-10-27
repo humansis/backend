@@ -128,7 +128,7 @@ class DistributionBeneficiaryService
      * @return DistributionBeneficiary
      * @throws \Exception
      */
-    public function addBeneficiaries(Assistance $assistance, array $beneficiariesData)
+    public function addBeneficiaries(Assistance $assistance, array $beneficiariesData): ?DistributionBeneficiary
     {
         $beneficiariesArray = $beneficiariesData['beneficiaries'];
         $validBNFs = [];
@@ -179,34 +179,34 @@ class DistributionBeneficiaryService
             $validBNFs[] = $beneficiary;
         }
 
-        $distributionBeneficiaries = [];
+        $assistanceBeneficiaries = [];
 
         foreach ($validBNFs as $beneficiary) {
-            $distributionBeneficiary = new DistributionBeneficiary();
+            $assistanceBeneficiary = new DistributionBeneficiary();
 
-            $sameDistributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
+            $sameAssistanceBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
                 ->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
 
             // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
-            if ($sameDistributionBeneficiary && sizeof($validBNFs) <= 2 && !$sameDistributionBeneficiary->getRemoved()) {
+            if ($sameAssistanceBeneficiary && sizeof($validBNFs) <= 2 && !$sameAssistanceBeneficiary->getRemoved()) {
                 throw new \Exception("Beneficiary/household {$beneficiary->getId()} is already part of the distribution", Response::HTTP_BAD_REQUEST);
-            } elseif ($sameDistributionBeneficiary && sizeof($validBNFs) <= 2 && $sameDistributionBeneficiary->getRemoved()) {
-                $sameDistributionBeneficiary->setRemoved(0)
+            } elseif ($sameAssistanceBeneficiary && sizeof($validBNFs) <= 2 && $sameAssistanceBeneficiary->getRemoved()) {
+                $sameAssistanceBeneficiary->setRemoved(0)
                     ->setJustification($beneficiariesData['justification']);
-                $this->em->persist($sameDistributionBeneficiary);
-            } elseif (!$sameDistributionBeneficiary) {
-                $distributionBeneficiary->setAssistance($assistance)
+                $this->em->persist($sameAssistanceBeneficiary);
+            } elseif (!$sameAssistanceBeneficiary) {
+                $assistanceBeneficiary->setAssistance($assistance)
                     ->setBeneficiary($beneficiary)
                     ->setRemoved(0)
                     ->setJustification($beneficiariesData['justification']);
-                $this->em->persist($distributionBeneficiary);
-                array_push($distributionBeneficiaries, $distributionBeneficiary);
+                $this->em->persist($assistanceBeneficiary);
+                array_push($assistanceBeneficiaries, $assistanceBeneficiary);
             }
         }
 
         if ($assistance->getValidated()) {
             $assistance = $this->container->get('distribution.distribution_service')->setCommoditiesToNewBeneficiaries($assistance,
-                $distributionBeneficiaries);
+                $assistanceBeneficiaries);
         }
 
         $assistance->setUpdatedOn(new \DateTime());
@@ -214,7 +214,7 @@ class DistributionBeneficiaryService
 
         $this->em->flush();
 
-        return $distributionBeneficiary;
+        return $assistanceBeneficiary;
     }
 
     /**
