@@ -252,6 +252,9 @@ class SectorService
         return $sectors;
     }
 
+    /**
+     * @return Sector[]
+     */
     public function getSubsBySector(): iterable
     {
         $sectors = [];
