@@ -114,6 +114,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ]
             ],
             "threshold"=> 1,
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_PARCELS_BASKETS,
         );
 
 

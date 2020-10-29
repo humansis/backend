@@ -10,6 +10,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -65,6 +66,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         ],
         'target_type' => Assistance::TYPE_BENEFICIARY,
         'assistance_type' => AssistanceTypeEnum::DISTRIBUTION,
+        'sector' => SectorEnum::FOOD_SECURITY,
+        'subsector' => null,
         'threshold' => 1,
     ];
 

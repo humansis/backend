@@ -616,7 +616,7 @@ class Assistance implements ExportableInterface
      */
     public function setSector(string $sector): void
     {
-        if (in_array($sector, SectorEnum::all())) {
+        if (!in_array($sector, SectorEnum::all())) {
             throw new InvalidArgumentException("Invalid sector: '$sector'");
         }
 
@@ -636,7 +636,7 @@ class Assistance implements ExportableInterface
      */
     public function setSubSector(?string $subSector): void
     {
-        if (null !== $subSector && in_array($subSector, SubSectorEnum::all())) {
+        if (null !== $subSector && !in_array($subSector, SubSectorEnum::all())) {
             throw new InvalidArgumentException("Invalid subBector: '$subSector'");
         }
 
