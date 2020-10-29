@@ -151,9 +151,6 @@ class DistributionService
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
 
-        $distributionArray['assistance_type'] = AssistanceType::DISTRIBUTION;
-        $distributionArray['target_type'] = $distributionArray['type'];
-        unset($distributionArray['type']);
         /** @var Assistance $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), Assistance::class, 'json', [
             \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
@@ -168,12 +165,7 @@ class DistributionService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        // TODO : make the front send 0 or 1 instead of Individual (Beneficiary comes from the import)
-        if ($distributionArray['target_type'] === "Beneficiary" || $distributionArray['target_type'] === "Individual" || $distributionArray['target_type'] === "1") {
-            $distribution->setTargetType(1);
-        } else {
-            $distribution->setTargetType(0);
-        }
+        $distribution->setTargetType($distributionArray['target_type']);
 
         $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
