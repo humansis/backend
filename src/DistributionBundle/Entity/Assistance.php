@@ -6,6 +6,7 @@ use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\Expr\Select;
 use ProjectBundle\Entity\Project;
@@ -40,10 +41,10 @@ class Assistance implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="assistance_type", type="assistance_type_enum")
+     * @ORM\Column(name="assistance_type", type="enum_assistance_type")
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "FullBooklet", "DistributionOverview"})
      */
-    private $assistanceType = AssistanceTypeEnum::DISTRIBUTION;
+    private $assistanceType = AssistanceType::DISTRIBUTION;
 
     /**
      * @var string
