@@ -364,17 +364,6 @@ class Assistance implements ExportableInterface
     }
 
     /**
-     * @return int
-     * @deprecated remove after FE edits done
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
-     *
-     */
-    public function getType(): int
-    {
-        return $this->targetType;
-    }
-
-    /**
      * Get type.
      *
      * @return string
