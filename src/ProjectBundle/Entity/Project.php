@@ -479,7 +479,7 @@ class Project implements ExportableInterface
     /**
      * Get sectors.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection|ProjectSector[]
      */
     public function getSectors()
     {
