@@ -156,6 +156,12 @@ class DistributionService
         $selectionCriteriaGroup = $distributionArray['selection_criteria'];
         unset($distributionArray['selection_criteria']);
 
+        $sector = $distributionArray['sector'];
+        unset($distributionArray['sector']);
+
+        $subsector = $distributionArray['subsector'] ?? null;
+        unset($distributionArray['subsector']);
+
         /** @var Assistance $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), Assistance::class, 'json', [
             \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
@@ -186,6 +192,8 @@ class DistributionService
             $distribution->setProject($projectTmp);
         }
 
+        $distribution->setSector($sector);
+        $distribution->setSubSector($subsector);
 
         foreach ($distribution->getCommodities() as $item) {
             $distribution->removeCommodity($item);
