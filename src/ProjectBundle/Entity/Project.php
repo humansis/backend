@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
+use ProjectBundle\DTO\Sector;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 use BeneficiaryBundle\Entity\Household;
@@ -437,13 +438,29 @@ class Project implements ExportableInterface
     /**
      * Add sector.
      *
-     * @param \ProjectBundle\DTO\Sector $sector
+     * @param Sector $sectorDTO
      *
      * @return Project
      */
-    public function addSector(\ProjectBundle\DTO\Sector $sector)
+    public function addSector(Sector $sectorDTO): self
     {
-        $this->sectors->add($sector);
+        $this->sectors->add(new ProjectSector($sectorDTO->getSectorName(), $this, $sectorDTO->getSubSectorName()));
+
+        return $this;
+    }
+
+    /**
+     * @param Sector[] $sectorDTOs
+     *
+     * @return Project
+     */
+    public function setSectors(iterable $sectorDTOs): self
+    {
+        $this->sectors->clear();
+
+        foreach ($sectorDTOs as $DTO) {
+            $this->addSector($DTO);
+        }
 
         return $this;
     }
@@ -451,11 +468,11 @@ class Project implements ExportableInterface
     /**
      * Remove sector.
      *
-     * @param \ProjectBundle\DTO\Sector $sector
+     * @param Sector $sector
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeSector(\ProjectBundle\DTO\Sector $sector)
+    public function removeSector(Sector $sector)
     {
         return $this->sectors->removeElement($sector);
     }
