@@ -12,6 +12,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -150,7 +151,7 @@ class DistributionService
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
 
-        $distributionArray['assistance_type'] = AssistanceTypeEnum::DISTRIBUTION;
+        $distributionArray['assistance_type'] = AssistanceType::DISTRIBUTION;
         $distributionArray['target_type'] = $distributionArray['type'];
         unset($distributionArray['type']);
 

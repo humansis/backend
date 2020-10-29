@@ -6,6 +6,7 @@ namespace CommonBundle\DataFixtures;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\DistributionService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -65,7 +66,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             ],
         ],
         'target_type' => AssistanceTargetType::INDIVIDUAL,
-        'assistance_type' => AssistanceTypeEnum::DISTRIBUTION,
+        'assistance_type' => AssistanceType::DISTRIBUTION,
         'sector' => SectorEnum::FOOD_SECURITY,
         'subsector' => null,
         'threshold' => 1,
