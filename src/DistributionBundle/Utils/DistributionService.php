@@ -11,6 +11,7 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\SelectionCriteria;
+use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -379,8 +380,8 @@ class DistributionService
             $femaleOver60years = $bnfRepo->countByAgeAndByGender($distribution, 0, 60, 200, $distribution->getDateDistribution());
             $maleTotal = $maleChildrenUnder23month + $maleChildrenUnder5years + $maleUnder17years + $maleUnder59years + $maleOver60years;
             $femaleTotal = $femaleChildrenUnder23month + $femaleChildrenUnder5years + $femaleUnder17years + $femaleUnder59years + $femaleOver60years;
-            $noFamilies = $distribution->getTargetType() === Assistance::TYPE_BENEFICIARY ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
-            $familySize = $distribution->getTargetType() === Assistance::TYPE_HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
+            $noFamilies = $distribution->getTargetType() === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
+            $familySize = $distribution->getTargetType() === AssistanceTargetType::HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
             $modalityType = $distribution->getCommodities()[0]->getModalityType()->getName();
             $beneficiaryServed =  $this->em->getRepository(Assistance::class)->getNoServed($distribution->getId(), $modalityType);
 

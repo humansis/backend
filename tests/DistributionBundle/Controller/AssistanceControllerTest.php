@@ -15,6 +15,7 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
+use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Utils\DistributionCSVService;
 use DistributionBundle\Utils\DistributionService;
 use ProjectBundle\Entity\Project;
@@ -61,7 +62,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "adm2"=> "",
             "adm3" => "",
             "adm4" => "",
-            "type" => Assistance::TYPE_HOUSEHOLD,
+            "target_type" => AssistanceTargetType::HOUSEHOLD,
             "commodities" => [
                 [
                     'id' => null,
