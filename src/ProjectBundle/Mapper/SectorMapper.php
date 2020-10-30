@@ -55,7 +55,7 @@ class SectorMapper
         return [
             'id' => $sector,
             'name' => $this->getLabel($sector),
-            'subSectors' => $subSectorMapped,
+            'subsectors' => $subSectorMapped,
         ];
     }
 
