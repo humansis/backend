@@ -80,7 +80,8 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "phones" => $array,
             "national_ids" => $array,
             "referral_type" => $optionalNumeric,
-            "referral_comment" => $optionalString
+            "referral_comment" => $optionalString,
+            "enumerator_name" => $optionalString,
         ];
         $profile = [
             "id" => $optionalNumeric,

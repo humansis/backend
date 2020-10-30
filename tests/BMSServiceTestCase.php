@@ -118,6 +118,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "status" => "1",
                 "residency_status" => "IDP",
                 "date_of_birth" => "10-06-1999",
+                "enumerator_name" => "ENUMERATOR_NAME_TEST",
                 "profile" => [
                     "photo" => "PHOTO_TEST"
                 ],
@@ -152,6 +153,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "status" => 0,
                 "residency_status" => "resident",
                 "date_of_birth" => "10-06-1976",
+                "enumerator_name" => "ENUMERATOR_NAME_TEST",
                 "profile" => [
                     "photo" => "PHOTO_TEST"
                 ],

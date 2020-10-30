@@ -74,6 +74,16 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      */
     private $smartcards;
 
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="enumerator_name", type="string", nullable=true)
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "SmallHousehold", "FullBeneficiary"})
+     */
+    private $enumeratorName = null;
+
+
     /**
      * Constructor.
      */
@@ -888,5 +898,27 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         $this->person->setEnParentsName($enParentsName);
 
         return $this;
+    }
+
+
+    /**
+     * @param string|null $enumeratorName
+     *
+     * @return Beneficiary
+     */
+    public function setEnumeratorName(?string $enumeratorName): self
+    {
+        $this->enumeratorName = $enumeratorName;
+
+        return $this;
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getEnumeratorName(): ?string
+    {
+        return $this->enumeratorName;
     }
 }
