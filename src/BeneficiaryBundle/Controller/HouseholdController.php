@@ -63,7 +63,7 @@ class HouseholdController extends Controller
             $allowedCountries[] = $project->getIso3();
         }
 
-        if (in_array($request->request->get('__country'), $allowedCountries)) {
+        if (!in_array($request->request->get('__country'), $allowedCountries)) {
             throw $this->createAccessDeniedException('You do not have permission to access this resource.');
         }
 
