@@ -213,17 +213,7 @@ class CSVToArrayMapper
                         throw new \Exception('There is missing/incorrect information at the column '.$mappingCSV['beneficiaries']['residency_status'].' at the line '.$lineNumber);
                     }
 
-                    // Check that residencyStatus has one of the authorized values
-                    $authorizedResidencyStatus = ['refugee', 'IDP', 'resident'];
-                    // Add case insensitivity
-                    $statusIsAuthorized = false;
-                    foreach ($authorizedResidencyStatus as $status) {
-                        if (strcasecmp($status, $residencyStatus)) {
-                            $residencyStatus = $status;
-                            $statusIsAuthorized = true;
-                        }
-                    }
-                    if (!$statusIsAuthorized) {
+                    if (!in_array($residencyStatus, ['refugee', 'IDP', 'resident'])) {
                         throw new \Exception('Your residency status must be either refugee, IDP or resident');
                     }
 
