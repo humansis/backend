@@ -63,7 +63,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByName(string $givenName, string $parentsName, string $familyName)
+    public function findByName(string $givenName, ?string $parentsName, string $familyName)
     {
         return $this->createQueryBuilder('b')
             ->leftJoin('b.household', 'hh')
