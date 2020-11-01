@@ -23,6 +23,11 @@ class Assistance implements ExportableInterface
     const TYPE_BENEFICIARY = 1;
     const TYPE_HOUSEHOLD = 0;
 
+    const TYPE_TO_STRING_MAPPING = [
+        self::TYPE_BENEFICIARY => 'individual',
+        self::TYPE_HOUSEHOLD => 'household',
+    ];
+
     const NAME_HEADER_ID = "ID SYNC";
 
     /**
@@ -718,5 +723,14 @@ class Assistance implements ExportableInterface
             $correspondingGeneralRelief = $distributionBeneficiary->getGeneralReliefs()[$commodityIndex];
             return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0);
         }
+    }
+
+    public function getTargetTypeString(): string
+    {
+        if (!isset(self::TYPE_TO_STRING_MAPPING[$this->getTargetType()])) {
+            return '';
+        }
+
+        return self::TYPE_TO_STRING_MAPPING[$this->getTargetType()];
     }
 }

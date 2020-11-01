@@ -217,4 +217,14 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('household', $household)
             ->getResult();
     }
+
+    public function getAllByProjectId(int $projectId)
+    {
+        $qb = $this->createQueryBuilder("dd")
+            ->leftJoin("dd.project", "p")
+            ->where("p.id = :projectId")
+            ->setParameter("projectId", $projectId);
+        //->andWhere("dd.archived = 0"); //TODO should be archived? - TBD later
+        return $qb->getQuery()->getResult();
+    }
 }

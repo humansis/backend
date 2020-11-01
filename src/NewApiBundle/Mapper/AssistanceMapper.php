@@ -4,20 +4,10 @@
 namespace NewApiBundle\Mapper;
 
 
-use NewApiBundle\Entity\Assistance;
+use DistributionBundle\Entity\Assistance;
 
 class AssistanceMapper extends \BeneficiaryBundle\Mapper\AssistanceMapper
 {
-    /** @var CommodityMapper */
-    private $commodityMapper;
-
-    public function __construct(BeneficiaryMapper $beneficiaryMapper, CommodityMapper $commodityMapper)
-    {
-        parent::__construct($beneficiaryMapper);
-
-        $this->commodityMapper = $commodityMapper;
-    }
-
 
     public function toFullArray(?Assistance $assistance): ?array
     {
@@ -35,7 +25,7 @@ class AssistanceMapper extends \BeneficiaryBundle\Mapper\AssistanceMapper
             'district' => $assistance->getLocation()->getAdm2Name(),
             'commune' => $assistance->getLocation()->getAdm3Name(),
             'village' => $assistance->getLocation()->getAdm4Name(),
-            'modality-icons' => $this->commodityMapper->toModalityIcons($assistance->getCommodities()),
+            'commodityIds' => [0, 1] //TODO implement
         ];
     }
 

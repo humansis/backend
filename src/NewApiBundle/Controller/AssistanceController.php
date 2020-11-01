@@ -3,26 +3,37 @@
 
 namespace NewApiBundle\Controller;
 
+use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Mapper\AssistanceMapper;
-use NewApiBundle\Repository\AssistanceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 
 class AssistanceController extends Controller
 {
+    /** @var AssistanceMapper */
+    private $assistanceMapper;
+
+
+    public function __construct(AssistanceMapper $mapper)
+    {
+        $this->assistanceMapper = $mapper;
+    }
+
+
     /**
      * @Rest\Get("/project/{projectId}/assistances", requirements={"projectId" = "\d+"})
      *
-     * @param Request              $request
-     * @param AssistanceRepository $assistanceRepository
-     * @param AssistanceMapper     $mapper
+     * @param int $projectId
      *
      * @return JsonResponse
      */
-    public function getProjectAssistances(Request $request, AssistanceRepository $assistanceRepository, AssistanceMapper $mapper): JsonResponse
+    public function getProjectAssistances(int $projectId): JsonResponse
     {
-        return $this->json($mapper->toFullArrays($assistanceRepository->getAllByProjectId($request->get('projectId'))));
+        /** @var AssistanceRepository $repository */
+        $repository = $this->getDoctrine()->getRepository(Assistance::class);
+
+        return $this->json($this->assistanceMapper->toFullArrays($repository->getAllByProjectId($projectId)));
     }
 }
