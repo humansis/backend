@@ -221,9 +221,9 @@ class CSVToArrayMapper
                     // Add case insensitivity
                     $statusIsAuthorized = false;
                     foreach ($authorizedResidencyStatus as $status) {
-                        if (strcasecmp($status, $residencyStatus)) {
-                            $residencyStatus = $status;
+                        if (strtolower(trim($status)) === strtolower($residencyStatus)) {
                             $statusIsAuthorized = true;
+                            break;
                         }
                     }
                     if (!$statusIsAuthorized) {

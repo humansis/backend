@@ -2219,6 +2219,7 @@
                 <adm4 name="Kampong Trom Kraom" code="KH03060509"/>
                 <adm4 name="Kampong Trom Leu" code="KH03060510"/>
             </adm3>
+<!-- duplicated ADM4
             <adm3 name="Koh Roka" code="KH030606">
                 <adm4 name="Kaoh Paen Ka" code="KH03060501"/>
                 <adm4 name="Kaoh Paen Kha" code="KH03060502"/>
@@ -2230,6 +2231,7 @@
                 <adm4 name="Kampong Trom Kraom" code="KH03060509"/>
                 <adm4 name="Kampong Trom Leu" code="KH03060510"/>
             </adm3>
+-->
             <adm3 name="Koh Samraong" code="KH030607">
                 <adm4 name="Phum Ti Muoy" code="KH03060701"/>
                 <adm4 name="Phum Ti Pir" code="KH03060702"/>
@@ -2674,6 +2676,7 @@
                 <adm4 name="Chambak Thma" code="KH03131007"/>
                 <adm4 name="Svay Reaks" code="KH03131008"/>
             </adm3>
+<!--
             <adm3 name="Samraong" code="KH031311">
                 <adm4 name="Srangae Cheung" code="KH03131201"/>
                 <adm4 name="Srangae Tboung" code="KH03131202"/>
@@ -2684,6 +2687,7 @@
                 <adm4 name="Trapeang Thum" code="KH03131207"/>
                 <adm4 name="Trapeang Rung" code="KH03131208"/>
             </adm3>
+!-->
             <adm3 name="Srangae" code="KH031312">
                 <adm4 name="Srangae Cheung" code="KH03131201"/>
                 <adm4 name="Srangae Tboung" code="KH03131202"/>
@@ -5897,6 +5901,7 @@
             </adm3>
         </adm2>
         <adm2 name="Santuk" code="KH0607">
+<!--
             <adm3 name="Boeng Lvea" code="KH060701">
                 <adm4 name="Ponlea Chey" code="KH06080101"/>
                 <adm4 name="Chanloh" code="KH06080102"/>
@@ -5914,6 +5919,7 @@
                 <adm4 name="Sraom Daek" code="KH06080114"/>
                 <adm4 name="Doun Pok" code="KH06080115"/>
             </adm3>
+!-->
             <adm3 name="Chroab" code="KH060702">
                 <adm4 name="Tuol Vihear" code="KH06070201"/>
                 <adm4 name="Chey Mongkol" code="KH06070202"/>
