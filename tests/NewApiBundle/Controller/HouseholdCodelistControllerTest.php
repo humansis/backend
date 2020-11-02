@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\BeneficiaryBundle\Controller;
+namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use Exception;
@@ -32,7 +32,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/wsse/households/livelihoods');
+        $this->request('GET', '/api/basic/households/livelihoods');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -54,7 +54,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/wsse/households/assets');
+        $this->request('GET', '/api/basic/households/assets');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

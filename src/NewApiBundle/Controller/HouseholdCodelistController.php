@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Controller;
+namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Pagination\Paginator;
