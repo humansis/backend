@@ -30425,11 +30425,13 @@
                 <adm4 name="Zadunaivka" code="UA5120482401"/>
             </adm3>
         </adm2>
+<!-- duplicated ADM4 UA5110200000
         <adm2 name="Baltska" code="UA51102">
             <adm3 name="Baltska" code="UA5110200000">
                 <adm4 name="Balta" code="UA5110200000"/>
             </adm3>
         </adm2>
+!-->
         <adm2 name="Baltskyi" code="UA51206">
             <adm3 name="Baltska" code="UA5110200000">
                 <adm4 name="Akulynivka" code="UA5120680802"/>
