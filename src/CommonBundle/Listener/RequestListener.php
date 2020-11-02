@@ -34,6 +34,18 @@ class RequestListener
         $disableListener = $event->getRequest()->attributes->get('disable-common-request-listener');
 
         if ($disableListener) {
+            /** @var User $user */
+            $user = $this->em->getRepository(User::class)->find($this->getUser());
+
+            foreach ($user->getRoles() as $role) {
+                if ($role === 'ROLE_ADMIN') {
+                    return;
+                }
+            }
+
+            $response = new Response("You need to be admin.", Response::HTTP_FORBIDDEN);
+            $event->setResponse($response);
+
             return;
         }
 
