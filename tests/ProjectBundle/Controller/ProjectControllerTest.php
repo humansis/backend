@@ -219,10 +219,12 @@ class ProjectControllerTest extends BMSServiceTestCase
         $project = $this->em->getRepository(Project::class)->findOneByName($projectName);
         if ($project instanceof Project) {
             $userProject = $this->em->getRepository(UserProject::class)->findOneByProject($project);
-            $this->em->remove($userProject);
-            $this->em->flush();
-            $this->em->remove($project);
-            $this->em->flush();
+            if ($userProject) {
+                $this->em->remove($userProject);
+                $this->em->flush();
+                $this->em->remove($project);
+                $this->em->flush();
+            }
         }
     }
 }

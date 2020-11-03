@@ -302,6 +302,9 @@ class ProjectService
 
         if (empty($assistance)) {
             try {
+                foreach ($project->getSectors()->getValues() as $projectSector) {
+                    $this->em->remove($projectSector);
+                }
                 $this->em->remove($project);
             } catch (\Exception $error) {
                 throw new \Exception("Error deleting project");
