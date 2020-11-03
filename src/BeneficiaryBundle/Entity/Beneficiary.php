@@ -74,7 +74,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      */
     private $smartcards;
 
-
     /**
      * Constructor.
      */
