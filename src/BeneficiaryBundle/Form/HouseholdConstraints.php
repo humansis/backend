@@ -44,6 +44,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "support_received_types" => $optionalArray,
             "support_date_received" => $optionalDate,
             "support_organization_name" => $optionalString,
+            "enumerator_name" => $optionalString,
         ];
         $householdLocation = [
             "location_group" => $string,
@@ -81,7 +82,6 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "national_ids" => $array,
             "referral_type" => $optionalNumeric,
             "referral_comment" => $optionalString,
-            "enumerator_name" => $optionalString,
         ];
         $profile = [
             "id" => $optionalNumeric,

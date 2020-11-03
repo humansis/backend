@@ -157,8 +157,7 @@ class BeneficiaryService
             ->setLocalGivenName($beneficiaryArray["local_given_name"])
             ->setStatus($beneficiaryArray["status"])
             ->setResidencyStatus($beneficiaryArray["residency_status"])
-            ->setUpdatedOn(new \DateTime())
-            ->setEnumeratorName($beneficiaryArray['enumerator_name'] ?? null);
+            ->setUpdatedOn(new \DateTime());
 
         $beneficiary->getPerson()
             ->setLocalParentsName($beneficiaryArray['local_parents_name'] ?? null)
