@@ -60,7 +60,7 @@ class ProjectSector
      * @param string|null $subSector
      * @param Project     $project
      */
-    public function __construct(string $sector, Project $project, ?string $subSector)
+    public function __construct(string $sector, Project $project, ?string $subSector = null)
     {
         $this->sector = $sector;
         $this->subSector = $subSector;

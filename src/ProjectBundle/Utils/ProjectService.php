@@ -150,10 +150,7 @@ class ProjectService
             $project->getSectors()->clear();
             /** @var Sector $sector */
             foreach ($sectorsId as $sectorId) {
-                $sectorTmp = $this->container->get('project.sector_service')->findBySubSector($sectorId);
-                if ($sectorTmp instanceof Sector) {
-                    $project->addSector($sectorTmp);
-                }
+                $project->addSector($sectorId);
             }
         } else {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'Project must have at least one sector');
@@ -211,10 +208,7 @@ class ProjectService
             if (null !== $sectors) {
                 $project->removeSectors();
                 foreach ($sectors as $sector) {
-                    $newSector = $this->container->get('project.sector_service')->getSubsBySector($sector);
-                    if ($newSector instanceof Sector) {
-                        $project->addSector($newSector);
-                    }
+                    $project->addSector($sector);
                 }
             }
 
