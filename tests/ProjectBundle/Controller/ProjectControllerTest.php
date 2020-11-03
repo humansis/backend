@@ -4,6 +4,7 @@
 namespace Tests\ProjectBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
+use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
@@ -20,7 +21,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         "end_date" => "01-05-2019",
         "target" => 5,
         "notes" => "This is a note",
-        "sectors" => [1, 2],
+        "sectors" => [SectorEnum::EDUCATION, SectorEnum::WASH],
         "donors" => [1, 2],
     ];
 

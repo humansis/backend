@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
+use ProjectBundle\DBAL\SectorEnum;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 use BeneficiaryBundle\Entity\Household;
@@ -443,6 +444,9 @@ class Project implements ExportableInterface
      */
     public function addSector(string $sectorId)
     {
+        if (!in_array($sectorId, SectorEnum::all())) {
+            throw new \InvalidArgumentException("Sector '$sectorId' isn't valid value. Valid are ".implode(', ', SectorEnum::all()));
+        }
         $this->sectors->add(new ProjectSector($sectorId, $this));
 
         return $this;
