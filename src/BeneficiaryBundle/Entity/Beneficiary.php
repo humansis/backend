@@ -781,6 +781,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "foodConsumptionScore" => $this->getHousehold()->getFoodConsumptionScore(),
             "copingStrategiesIndex" => $this->getHousehold()->getCopingStrategiesIndex(),
             "notes" => $this->getHousehold()->getNotes(),
+            "Enumerator name" => $this->getHousehold()->getEnumeratorName(),
             "latitude" => $this->getHousehold()->getLatitude(),
             "longitude" => $this->getHousehold()->getLongitude(),
             "Assets" => implode(', ', $assets),
