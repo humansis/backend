@@ -7,3 +7,7 @@ services:
   NewApiBundle\Mapper\AssistanceMapper:
 
   NewApiBundle\Controller\AssistanceController:
+
+  NewApiBundle\Controller\SectorsCodelistController:
+    arguments:
+      - "@project.sector_service"
