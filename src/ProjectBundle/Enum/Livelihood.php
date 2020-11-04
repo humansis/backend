@@ -6,8 +6,8 @@ namespace ProjectBundle\Enum;
 final class Livelihood
 {
     const DAILY_LABOUR = 'daily_labour';
-    const FARMING_ARGICULTURE = 'farming_argiculture';
-    const FARMING_LIVESTOCK = 'firming_livestock';
+    const FARMING_AGRICULTURE = 'farming_agriculture';
+    const FARMING_LIVESTOCK = 'farming_livestock';
     const GOVERNMENT = 'government';
     const HOME_DUTIES = 'home_duties';
     const TRADING = 'trading';
@@ -16,7 +16,7 @@ final class Livelihood
 
     private const TRANSLATIONS = [
         self::DAILY_LABOUR => 'Daily Labour',
-        self::FARMING_ARGICULTURE => 'Farming - Agriculture',
+        self::FARMING_AGRICULTURE => 'Farming - Agriculture',
         self::FARMING_LIVESTOCK => 'Farming - Livestock',
         self::GOVERNMENT => 'Government',
         self::HOME_DUTIES => 'Home Duties',
@@ -29,7 +29,7 @@ final class Livelihood
     {
         return [
             self::DAILY_LABOUR,
-            self::FARMING_ARGICULTURE,
+            self::FARMING_AGRICULTURE,
             self::FARMING_LIVESTOCK,
             self::GOVERNMENT,
             self::HOME_DUTIES,
