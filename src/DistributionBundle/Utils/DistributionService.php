@@ -358,23 +358,25 @@ class DistributionService
         $donors = implode(', ',
             array_map(function($donor) { return $donor->getShortname(); }, $project->getDonors()->toArray())
         );
-        
-        foreach ($distributions as $distribution) {
 
-            $idps = $this->em->getRepository(Assistance::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "IDP", $distribution->getAssistanceType());
-            $residents = $this->em->getRepository(Assistance::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "resident", $distribution->getAssistanceType());
-            $maleHHH = $this->em->getRepository(Assistance::class)->getNoHeadHouseholdsByGender($distribution->getId(), Person::GENDER_MALE);
-            $femaleHHH = $this->em->getRepository(Assistance::class)->getNoHeadHouseholdsByGender($distribution->getId(), Person::GENDER_FEMALE);
-            $maleChildrenUnder23month = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 0, 2, $distribution->getDateDistribution(), $distribution->getAssistanceType());
-            $femaleChildrenUnder23month = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 0, 2, $distribution->getDateDistribution(), $distribution->getAssistanceType());
-            $maleChildrenUnder5years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 2, 6, $distribution->getDateDistribution(), $distribution->getAssistanceType());
-            $femaleChildrenUnder5years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 2, 6, $distribution->getDateDistribution(), $distribution->getAssistanceType());
-            $maleUnder17years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 6, 18, $distribution->getDateDistribution(), $distribution->getAssistanceType());
-            $femaleUnder17years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 6, 18, $distribution->getDateDistribution(), $distribution->getAssistanceType());
-            $maleUnder59years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 18, 60, $distribution->getDateDistribution(), $distribution->getAssistanceType());
-            $femaleUnder59years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 18, 60, $distribution->getDateDistribution(), $distribution->getAssistanceType());
-            $maleOver60years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 60, 200, $distribution->getDateDistribution(), $distribution->getAssistanceType());
-            $femaleOver60years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 60, 200, $distribution->getDateDistribution(), $distribution->getAssistanceType());
+        $bnfRepo = $this->em->getRepository(Beneficiary::class);
+
+        foreach ($distributions as $distribution)
+        {
+            $idps = $bnfRepo->countByResidencyStatus($distribution, "IDP");
+            $residents = $bnfRepo->countByResidencyStatus($distribution, "resident");
+            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($distribution, Person::GENDER_MALE);
+            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($distribution, Person::GENDER_FEMALE);
+            $maleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($distribution, 1, 0, 2, $distribution->getDateDistribution());
+            $femaleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($distribution, 0, 0, 2, $distribution->getDateDistribution());
+            $maleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($distribution, 1, 2, 6, $distribution->getDateDistribution());
+            $femaleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($distribution, 0, 2, 6, $distribution->getDateDistribution());
+            $maleUnder17years = $bnfRepo->countByAgeAndByGender($distribution, 1, 6, 18, $distribution->getDateDistribution());
+            $femaleUnder17years = $bnfRepo->countByAgeAndByGender($distribution, 0, 6, 18, $distribution->getDateDistribution());
+            $maleUnder59years = $bnfRepo->countByAgeAndByGender($distribution, 1, 18, 60, $distribution->getDateDistribution());
+            $femaleUnder59years = $bnfRepo->countByAgeAndByGender($distribution, 0, 18, 60, $distribution->getDateDistribution());
+            $maleOver60years = $bnfRepo->countByAgeAndByGender($distribution, 1, 60, 200, $distribution->getDateDistribution());
+            $femaleOver60years = $bnfRepo->countByAgeAndByGender($distribution, 0, 60, 200, $distribution->getDateDistribution());
             $maleTotal = $maleChildrenUnder23month + $maleChildrenUnder5years + $maleUnder17years + $maleUnder59years + $maleOver60years;
             $femaleTotal = $femaleChildrenUnder23month + $femaleChildrenUnder5years + $femaleUnder17years + $femaleUnder59years + $femaleOver60years;
             $noFamilies = $distribution->getTargetType() === Assistance::TYPE_BENEFICIARY ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
@@ -752,43 +754,5 @@ class DistributionService
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
-    }
-
-    private function getBeneficiaryCountByResidencyStatus(Assistance $distribution, string $residencyStatus, int $type): int
-    {
-        if ($type === Assistance::TYPE_BENEFICIARY) {
-            return $this->em->getRepository(Beneficiary::class)->countByResidencyStatus($distribution, $residencyStatus);
-        } elseif ($type === Assistance::TYPE_HOUSEHOLD) {
-            return $this->em->getRepository(Household::class)->countBeneficiariesByResidencyStatus($distribution, $residencyStatus);
-        }
-        return 0;
-    }
-
-    /**
-     * @param Assistance $assistance
-     */
-    public function delete(Assistance $assistance)
-    {
-        if ($assistance->getValidated()) {
-            $this->archived($assistance);
-
-            return;
-        }
-
-        foreach ($assistance->getCommodities() as $commodity) {
-            $this->em->remove($commodity);
-        }
-        foreach ($assistance->getSelectionCriteria() as $criterion) {
-            $this->em->remove($criterion);
-        }
-        foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
-            foreach ($distributionBeneficiary->getGeneralReliefs() as $relief) {
-                $this->em->remove($relief);
-            }
-            $this->em->remove($distributionBeneficiary);
-        }
-
-        $this->em->remove($assistance);
-        $this->em->flush();
     }
 }
