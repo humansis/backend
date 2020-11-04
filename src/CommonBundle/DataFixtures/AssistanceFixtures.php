@@ -5,6 +5,8 @@ namespace CommonBundle\DataFixtures;
 
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\DistributionService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -20,7 +22,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         'adm2' => '',
         'adm3' => '',
         'adm4' => '',
-        'type' => Assistance::TYPE_BENEFICIARY,
         'commodities' => [
             0 => [
                 'modality' => 'CTP',
@@ -61,8 +62,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
                 'weight' => '1'
             ]
         ],
-        'target_type' => Assistance::TYPE_BENEFICIARY,
-        'assistance_type' => AssistanceTypeEnum::DISTRIBUTION,
+        'target_type' => AssistanceTargetType::INDIVIDUAL,
+        'assistance_type' => AssistanceType::DISTRIBUTION,
         'threshold' => 1,
     ];
 

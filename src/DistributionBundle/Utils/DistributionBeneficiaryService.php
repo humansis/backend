@@ -4,6 +4,7 @@ namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
+use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
@@ -137,7 +138,7 @@ class DistributionBeneficiaryService
 
                 if ($beneficiaryArray !== $beneficiariesData["__country"]) {
                     switch ($assistance->getTargetType()) {
-                        case 0:
+                        case AssistanceTargetType::INDIVIDUAL:
                             $headHousehold = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
                             $household = $headHousehold->getHousehold();
                             if (!$household instanceof Household) {
@@ -145,7 +146,7 @@ class DistributionBeneficiaryService
                             }
                             $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
                             break;
-                        case 1:
+                        case AssistanceTargetType::HOUSEHOLD:
                             $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
                             break;
                         default:

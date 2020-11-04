@@ -5,6 +5,8 @@ namespace DistributionBundle\Entity;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
+use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\Expr\Select;
 use ProjectBundle\Entity\Project;
@@ -20,9 +22,6 @@ use BeneficiaryBundle\Entity\Household;
  */
 class Assistance implements ExportableInterface
 {
-    const TYPE_BENEFICIARY = 1;
-    const TYPE_HOUSEHOLD = 0;
-
     const NAME_HEADER_ID = "ID SYNC";
 
     /**
@@ -39,10 +38,10 @@ class Assistance implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="assistance_type", type="assistance_type_enum")
+     * @ORM\Column(name="assistance_type", type="enum_assistance_type")
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "FullBooklet", "DistributionOverview"})
      */
-    private $assistanceType = AssistanceTypeEnum::DISTRIBUTION;
+    private $assistanceType = AssistanceType::DISTRIBUTION;
 
     /**
      * @var string
@@ -118,9 +117,9 @@ class Assistance implements ExportableInterface
     private $reportingDistribution;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="target_type", type="integer")
+     * @ORM\Column(name="target_type", type="enum_assistance_target_type")
      *
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
@@ -328,34 +327,27 @@ class Assistance implements ExportableInterface
     /**
      * Set type.
      *
-     * @param int $targetType
+     * @param string $targetType
      *
      * @return self
      */
-    public function setTargetType(int $targetType): self
+    public function setTargetType(string $targetType): self
     {
+        if (!in_array($targetType, AssistanceTargetType::values())) {
+            throw new \InvalidArgumentException("Wrong assistance target type: $targetType, allowed are: "
+                .implode(', ', AssistanceTargetType::values()));
+        }
         $this->targetType = $targetType;
 
         return $this;
     }
 
     /**
-     * @deprecated remove after FE edits done
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
-     *
-     * @return int
-     */
-    public function getType(): int
-    {
-        return $this->targetType;
-    }
-
-    /**
      * Get type.
      *
-     * @return int
+     * @return string
      */
-    public function getTargetType(): int
+    public function getTargetType(): string
     {
         return $this->targetType;
     }
@@ -645,7 +637,7 @@ class Assistance implements ExportableInterface
         }
        
         
-        $typeString = $this->getTargetType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
+        $typeString = $this->getTargetType() === AssistanceTargetType::INDIVIDUAL ? 'Beneficiaries' : 'Households';
 
         $adm1 = $this->getLocation()->getAdm1Name();
         $adm2 = $this->getLocation()->getAdm2Name();

@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\DistributedItem;
+use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
 use DistributionBundle\Entity\Assistance;
@@ -88,13 +89,13 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
     }
 
-    public function getNoBenificiaryByResidencyStatus(int $distributionId, string $residencyStatus, int $distributionType) {
+    public function getNoBenificiaryByResidencyStatus(int $distributionId, string $residencyStatus, string $distributionType) {
         $qb = $this->createQueryBuilder('dd');
         $qb
             ->andWhere('dd.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
             ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
-        if ($distributionType === Assistance::TYPE_BENEFICIARY) {
+        if ($distributionType === AssistanceTargetType::INDIVIDUAL) {
             $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus');
         } else {
             $qb->leftJoin('db.beneficiary', 'hhh')
@@ -130,7 +131,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge, DateTime $distributionDate, int $distributionType) {
+    public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge, DateTime $distributionDate, string $distributionType) {
         $maxDateOfBirth = clone $distributionDate;
         $minDateOfBirth = clone $distributionDate;
         $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
@@ -141,7 +142,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter('distributionId', $distributionId)
             ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
  
-        if ($distributionType === Assistance::TYPE_BENEFICIARY) {
+        if ($distributionType === AssistanceTargetType::INDIVIDUAL) {
             $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender');
         } else {
             $qb->leftJoin('db.beneficiary', 'hhh')
