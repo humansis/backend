@@ -53,7 +53,7 @@ class SectorControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('id', $sector);
             $this->assertContains($sector['id'], SectorEnum::all());
             $this->assertArrayHasKey('name', $sector, "Name missing in sector ".$sector['id']);
-            $this->assertArrayHasKey('subsectors', $sector, "SubSectors missing in sector ".$sector['id']);
+            $this->assertArrayHasKey('subSectors', $sector, "SubSectors missing in sector ".$sector['id']);
         }
         return true;
     }
@@ -73,7 +73,7 @@ class SectorControllerTest extends BMSServiceTestCase
         $sectors = json_decode($this->client->getResponse()->getContent(), true);
 
         foreach ($sectors as $sector) {
-            foreach ($sector['subsectors'] as $subSector) {
+            foreach ($sector['subSectors'] as $subSector) {
                 $where = "in sector ".$sector['id']." and subsector ".$subSector['id'];
                 $this->assertArrayHasKey('id', $subSector);
                 $this->assertContains($subSector['id'], SubSectorEnum::all());

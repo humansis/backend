@@ -6,7 +6,6 @@ use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\DistributionBeneficiaryRepository;
 
 class AssistanceMapper
@@ -98,7 +97,7 @@ class AssistanceMapper
             'archived' => $assistance->getArchived(),
             'validated' => $assistance->getValidated(),
             'reporting_distribution' => $assistance->getReportingDistribution(),
-            'type' => $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? 1 : 0,
+            'type' => $assistance->getTargetType(),
             'assistance_type' => $assistance->getAssistanceType(),
             'target_type' => $assistance->getTargetType(),
             'commodities' => $assistance->getCommodities(),
@@ -150,7 +149,7 @@ class AssistanceMapper
             'archived' => $assistance->getArchived(),
             'validated' => $assistance->getValidated(),
             'reporting_distribution' => $assistance->getReportingDistribution(),
-            'type' => $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? 1 : 0,
+            'type' => $assistance->getTargetType(),
             'assistance_type' => $assistance->getAssistanceType(),
             'target_type' => $assistance->getTargetType(),
             'commodities' => $assistance->getCommodities(),
