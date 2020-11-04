@@ -52,6 +52,11 @@ class HouseholdExportCSVService
         'Proxy phone 2' => '',
         'ID Type' => '',
         'ID Number' => '',
+        'Shelter status' => '',
+        'Assets' => '',
+        'Debt Level' => '',
+        'Support Received Types' => '',
+        'Support Date Received' => '',
         'F 0 - 2' => '',
         'F 2 - 5' => '',
         'F 6 - 17' => '',
@@ -62,11 +67,6 @@ class HouseholdExportCSVService
         'M 6 - 17' => '',
         'M 18 - 64' => '',
         'M 65+' => '',
-        'Shelter status' => '',
-        'Assets' => '',
-        'Debt Level' => '',
-        'Support Received Types' => '',
-        'Support Date Received' => '',
     ];
 
     private const MAPPING_HOUSEHOLD_HEAD = [
@@ -107,6 +107,11 @@ class HouseholdExportCSVService
         'Proxy phone 2' => 'N',
         'ID Type' => 'National ID',
         'ID Number' => '030617701',
+        'Shelter status' => '',
+        'Assets' => '',
+        'Debt Level' => '',
+        'Support Received Types' => '',
+        'Support Date Received' => '',
         'F 0 - 2' => 2,
         'F 2 - 5' => 0,
         'F 6 - 17' => 0,
@@ -117,11 +122,6 @@ class HouseholdExportCSVService
         'M 6 - 17' => 0,
         'M 18 - 64' => 0,
         'M 65+' => 0,
-        'Shelter status' => '',
-        'Assets' => '',
-        'Debt Level' => '',
-        'Support Received Types' => '',
-        'Support Date Received' => '',
     ];
 
     private const MAPPING_HOUSEHOLD_MEMBER = [
@@ -162,6 +162,11 @@ class HouseholdExportCSVService
         'Proxy phone 2' => 'Y',
         'ID Type' => '',
         'ID Number' => '',
+        'Shelter status' => '',
+        'Assets' => '',
+        'Debt Level' => '',
+        'Support Received Types' => '',
+        'Support Date Received' => '',
         'F 0 - 2' => '',
         'F 2 - 5' => '',
         'F 6 - 17' => '',
@@ -172,11 +177,6 @@ class HouseholdExportCSVService
         'M 6 - 17' => '',
         'M 18 - 64' => '',
         'M 65+' => '',
-        'Shelter status' => '',
-        'Assets' => '',
-        'Debt Level' => '',
-        'Support Received Types' => '',
-        'Support Date Received' => '',
     ];
 
     private const MAPPING_DETAILS = [
@@ -217,6 +217,11 @@ class HouseholdExportCSVService
         'Proxy phone 2' => 'Y / N (Proxy)',
         'ID Type' => '"TypeAsString"',
         'ID Number' => 'Number',
+        'Shelter status' => 'String',
+        'Assets' => 'Comma separated strings',
+        'Debt Level' => 'Number',
+        'Support Received Types' => 'Comma separated strings',
+        'Support Date Received' => 'DD-MM-YYYY',
         'F 0 - 2' => 'Number',
         'F 2 - 5' => 'Number',
         'F 6 - 17' => 'Number',
@@ -227,11 +232,6 @@ class HouseholdExportCSVService
         'M 6 - 17' => 'Number',
         'M 18 - 64' => 'Number',
         'M 65+' => 'Number',
-        'Shelter status' => 'String',
-        'Assets' => 'Comma separated strings',
-        'Debt Level' => 'Number',
-        'Support Received Types' => 'Comma separated strings',
-        'Support Date Received' => 'DD-MM-YYYY',
     ];
 
     private const MAPPING_HELP_HXL = [
