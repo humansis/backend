@@ -4,6 +4,7 @@
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
+use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
@@ -20,6 +21,18 @@ class AssistanceCodelistController extends Controller
     public function getTargets(): JsonResponse
     {
         $data = self::map(Assistance::TYPE_TO_STRING_MAPPING);
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/assistances/types")
+     *
+     * @return JsonResponse
+     */
+    public function getTypes(): JsonResponse
+    {
+        $data = self::map(AssistanceTypeEnum::all());
 
         return $this->json(new Paginator($data));
     }
