@@ -14,7 +14,7 @@ use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use BeneficiaryBundle\Entity\Camp;
 use CommonBundle\InputType\Country;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
@@ -211,8 +211,8 @@ class LocationService
     public function getCodeOfUpcomingDistribution(string $countryIso3)
     {
 
-        /** @var DistributionData[] $distributions */
-        $distributions = $this->em->getRepository(DistributionData::class)->getCodeOfUpcomingDistribution($countryIso3);
+        /** @var Assistance[] $distributions */
+        $distributions = $this->em->getRepository(Assistance::class)->getCodeOfUpcomingDistribution($countryIso3);
         $response = [];
 
         foreach ($distributions as $distribution) {

@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 
 class BeneficiaryService
 {
@@ -158,6 +158,10 @@ class BeneficiaryService
             ->setStatus($beneficiaryArray["status"])
             ->setResidencyStatus($beneficiaryArray["residency_status"])
             ->setUpdatedOn(new \DateTime());
+
+        $beneficiary->getPerson()
+            ->setLocalParentsName($beneficiaryArray['local_parents_name'] ?? null)
+            ->setEnParentsName($beneficiaryArray['en_parents_name'] ?? null);
 
         $errors = $this->validator->validate($beneficiary);
         if (count($errors) > 0) {
@@ -372,13 +376,13 @@ class BeneficiaryService
     }
 
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param string $type
      * @return mixed
      */
-    public function exportToCsvBeneficiariesInDistribution(DistributionData $distributionData, string $type)
+    public function exportToCsvBeneficiariesInDistribution(Assistance $assistance, string $type)
     {
-        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($distributionData);
+        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($assistance);
         return $this->container->get('export_csv_service')->export($beneficiaries, 'beneficiaryInDistribution', $type);
     }
 

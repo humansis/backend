@@ -4,6 +4,7 @@ namespace DistributionBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
+use DistributionBundle\DBAL\AssistanceTypeEnum;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\Expr\Select;
 use ProjectBundle\Entity\Project;
@@ -12,12 +13,12 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use BeneficiaryBundle\Entity\Household;
 
 /**
- * DistributionData
+ * Assistance
  *
- * @ORM\Table(name="distribution_data")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\DistributionDataRepository")
+ * @ORM\Table(name="assistance")
+ * @ORM\Entity(repositoryClass="DistributionBundle\Repository\AssistanceRepository")
  */
-class DistributionData implements ExportableInterface
+class Assistance implements ExportableInterface
 {
     const TYPE_BENEFICIARY = 1;
     const TYPE_HOUSEHOLD = 0;
@@ -34,6 +35,14 @@ class DistributionData implements ExportableInterface
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="assistance_type", type="assistance_type_enum")
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "FullBooklet", "DistributionOverview"})
+     */
+    private $assistanceType = AssistanceTypeEnum::DISTRIBUTION;
 
     /**
      * @var string
@@ -79,7 +88,7 @@ class DistributionData implements ExportableInterface
     private $project;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\SelectionCriteria", mappedBy="distributionData")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\SelectionCriteria", mappedBy="assistance")
      *
      * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
      */
@@ -111,20 +120,20 @@ class DistributionData implements ExportableInterface
     /**
      * @var int
      *
-     * @ORM\Column(type="integer", name="type_distribution")
+     * @ORM\Column(name="target_type", type="integer")
      *
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
-    private $type;
+    private $targetType;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="distributionData")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="assistance")
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $commodities;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="distributionData")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="assistance")
      *
      * @SymfonyGroups({"FullDistribution", "FullProject"})
      */
@@ -156,7 +165,7 @@ class DistributionData implements ExportableInterface
      * Set id.
      *
      * @param $id
-     * @return DistributionData
+     * @return Assistance
      */
     public function setId($id)
     {
@@ -176,11 +185,31 @@ class DistributionData implements ExportableInterface
     }
 
     /**
+     * @return string
+     */
+    public function getAssistanceType(): string
+    {
+        return $this->assistanceType;
+    }
+
+    /**
+     * @param string $assistanceType
+     *
+     * @return Assistance
+     */
+    public function setAssistanceType(string $assistanceType): self
+    {
+        $this->assistanceType = $assistanceType;
+
+        return $this;
+    }
+
+    /**
      * Set name.
      *
      * @param string $name
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function setName($name)
     {
@@ -204,7 +233,7 @@ class DistributionData implements ExportableInterface
      *
      * @param \DateTime $updatedOn
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function setUpdatedOn($updatedOn)
     {
@@ -229,7 +258,7 @@ class DistributionData implements ExportableInterface
      *
      * @param bool $archived
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function setArchived($archived)
     {
@@ -253,7 +282,7 @@ class DistributionData implements ExportableInterface
      *
      * @param bool $validated
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function setValidated($validated)
     {
@@ -277,7 +306,7 @@ class DistributionData implements ExportableInterface
      *
      * @param bool $completed
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function setCompleted($completed)
     {
@@ -299,15 +328,26 @@ class DistributionData implements ExportableInterface
     /**
      * Set type.
      *
-     * @param int $type
+     * @param int $targetType
      *
-     * @return DistributionData
+     * @return self
      */
-    public function setType($type)
+    public function setTargetType(int $targetType): self
     {
-        $this->type = $type;
+        $this->targetType = $targetType;
 
         return $this;
+    }
+
+    /**
+     * @deprecated remove after FE edits done
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     *
+     * @return int
+     */
+    public function getType(): int
+    {
+        return $this->targetType;
     }
 
     /**
@@ -315,9 +355,9 @@ class DistributionData implements ExportableInterface
      *
      * @return int
      */
-    public function getType(): int
+    public function getTargetType(): int
     {
-        return $this->type;
+        return $this->targetType;
     }
 
     /**
@@ -325,7 +365,7 @@ class DistributionData implements ExportableInterface
      *
      * @param \CommonBundle\Entity\Location|null $location
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function setLocation(\CommonBundle\Entity\Location $location = null)
     {
@@ -349,7 +389,7 @@ class DistributionData implements ExportableInterface
      *
      * @param \ProjectBundle\Entity\Project|null $project
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function setProject(\ProjectBundle\Entity\Project $project = null)
     {
@@ -373,7 +413,7 @@ class DistributionData implements ExportableInterface
      *
      * @param \DistributionBundle\Entity\SelectionCriteria $selectionCriterion
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function addSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
     {
@@ -412,7 +452,7 @@ class DistributionData implements ExportableInterface
      *
      * @param \ReportingBundle\Entity\ReportingDistribution $reportingDistribution
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function addReportingDistribution(\ReportingBundle\Entity\ReportingDistribution $reportingDistribution)
     {
@@ -448,7 +488,7 @@ class DistributionData implements ExportableInterface
      *
      * @param \DistributionBundle\Entity\Commodity $commodity
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function addCommodity(\DistributionBundle\Entity\Commodity $commodity)
     {
@@ -484,7 +524,7 @@ class DistributionData implements ExportableInterface
      *
      * @param \DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function addDistributionBeneficiary(\DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary)
     {
@@ -523,7 +563,7 @@ class DistributionData implements ExportableInterface
      *
      * @param \DateTimeInterface $dateDistribution
      *
-     * @return DistributionData
+     * @return Assistance
      */
     public function setDateDistribution(\DateTimeInterface $dateDistribution)
     {
@@ -557,7 +597,7 @@ class DistributionData implements ExportableInterface
 
             // Then we make the string coherent
             if ($field === 'livelihood') {
-                $value = Household::LIVELIHOOD[$value];
+                $value = \ProjectBundle\Enum\Livelihood::translate($value);
             } elseif ($field === 'camp Name') {
                 $field = 'camp Id';
             }
@@ -605,7 +645,7 @@ class DistributionData implements ExportableInterface
         }
        
         
-        $typeString = $this->getType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
+        $typeString = $this->getTargetType() === self::TYPE_BENEFICIARY ? 'Beneficiaries' : 'Households';
 
         $adm1 = $this->getLocation()->getAdm1Name();
         $adm2 = $this->getLocation()->getAdm2Name();

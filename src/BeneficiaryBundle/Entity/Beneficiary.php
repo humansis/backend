@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
+use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use VoucherBundle\Entity\Smartcard;
@@ -748,7 +749,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $livelihood = null;
         if (null !== $this->getHousehold()->getLivelihood()) {
-            $livelihood = Household::LIVELIHOOD[$this->getHousehold()->getLivelihood()];
+            $livelihood = Livelihood::translate($this->getHousehold()->getLivelihood());
         }
 
         $assets = array_map(function ($value) {
@@ -842,25 +843,49 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     }
 
     /**
-     * Get fathersName.
+     * Get localParentsName.
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
      * @return string|null
      */
-    public function getFathersName(): ?string
+    public function getLocalParentsName(): ?string
     {
-        return $this->person->getFathersName();
+        return $this->person->getLocalParentsName();
     }
 
     /**
-     * Set fathersName.
+     * Set localParentsName.
      * @deprecated
-     * @param string|null $fathersName
+     * @param string|null $localParentsName
      * @return Beneficiary
      */
-    public function setFathersName(?string $fathersName): self
+    public function setLocalParentsName(?string $localParentsName): self
     {
-        $this->person->setFathersName($fathersName);
+        $this->person->setLocalParentsName($localParentsName);
+
+        return $this;
+    }
+
+    /**
+     * Get enParentsName.
+     * @deprecated
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
+     * @return string|null
+     */
+    public function getEnParentsName(): ?string
+    {
+        return $this->person->getEnParentsName();
+    }
+
+    /**
+     * Set enParentsName.
+     * @param string|null $enParentsName
+     * @return Beneficiary
+     * @deprecated
+     */
+    public function setEnParentsName(?string $enParentsName): self
+    {
+        $this->person->setEnParentsName($enParentsName);
 
         return $this;
     }

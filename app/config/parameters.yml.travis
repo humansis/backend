@@ -18,3 +18,6 @@ parameters:
     aws_s3_bucket_name: files-testing.bmstaging.info
     humanitarian_secret: ""
     google_client: ""
+
+    mobile_app_master_key: "123456789ABCDEF"
+    mobile_app_version: "19700101"

@@ -6,8 +6,9 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Person;
 use CommonBundle\Utils\LocationService;
+use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
@@ -96,30 +97,30 @@ class DistributionService
 
 
     /**
-     * @param DistributionData $distributionData
-     * @return DistributionData
+     * @param Assistance $assistance
+     * @return Assistance
      * @throws \Exception
      */
-    public function validateDistribution(DistributionData $distributionData)
+    public function validateDistribution(Assistance $assistance)
     {
         try {
-            $distributionData->setValidated(true)
+            $assistance->setValidated(true)
                 ->setUpdatedOn(new \DateTime());
-            $beneficiaries = $distributionData->getDistributionBeneficiaries();
-            return $this->setCommoditiesToNewBeneficiaries($distributionData, $beneficiaries);
+            $beneficiaries = $assistance->getDistributionBeneficiaries();
+            return $this->setCommoditiesToNewBeneficiaries($assistance, $beneficiaries);
         } catch (\Exception $e) {
             throw $e;
         }
     }
 
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param $beneficiaries
-     * @return DistributionData
+     * @return Assistance
      * @throws \Exception
      */
-    public function setCommoditiesToNewBeneficiaries(DistributionData $distributionData, $beneficiaries) {
-        $commodities = $distributionData->getCommodities();
+    public function setCommoditiesToNewBeneficiaries(Assistance $assistance, $beneficiaries) {
+        $commodities = $assistance->getCommodities();
         foreach ($commodities as $commodity) {
             if ($commodity->getModalityType()->isGeneralRelief()) {
                 foreach ($beneficiaries as $beneficiary) {
@@ -131,7 +132,7 @@ class DistributionService
         }
         $this->em->flush();
 
-        return $distributionData;
+        return $assistance;
     }
 
     /**
@@ -147,11 +148,14 @@ class DistributionService
     {
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
-        /** @var DistributionData $distribution */
-        $distribution = $this->serializer->deserialize(json_encode($distributionArray), DistributionData::class, 'json', [
+
+        $distributionArray['assistance_type'] = AssistanceTypeEnum::DISTRIBUTION;
+        $distributionArray['target_type'] = $distributionArray['type'];
+        unset($distributionArray['type']);
+        /** @var Assistance $distribution */
+        $distribution = $this->serializer->deserialize(json_encode($distributionArray), Assistance::class, 'json', [
             \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
         ]);
-
         $distribution->setUpdatedOn(new \DateTime());
         $errors = $this->validator->validate($distribution);
         if (count($errors) > 0) {
@@ -163,10 +167,10 @@ class DistributionService
         }
 
         // TODO : make the front send 0 or 1 instead of Individual (Beneficiary comes from the import)
-        if ($distributionArray['type'] === "Beneficiary" || $distributionArray['type'] === "Individual" || $distributionArray['type'] === "1") {
-            $distribution->setType(1);
+        if ($distributionArray['target_type'] === "Beneficiary" || $distributionArray['target_type'] === "Individual" || $distributionArray['target_type'] === "1") {
+            $distribution->setTargetType(1);
         } else {
-            $distribution->setType(0);
+            $distribution->setTargetType(0);
         }
 
         $location = $this->locationService->getLocation($countryISO3, $location);
@@ -200,7 +204,7 @@ class DistributionService
 
         $this->em->persist($distribution);
 
-        $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['type'], $projectTmp, $threshold);
+        $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $threshold);
         $this->saveReceivers($distribution, $listReceivers);
 
         $this->em->flush();
@@ -226,15 +230,15 @@ class DistributionService
     }
 
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param array $listReceivers
      * @throws \Exception
      */
-    public function saveReceivers(DistributionData $distributionData, array $listReceivers)
+    public function saveReceivers(Assistance $assistance, array $listReceivers)
     {
         foreach ($listReceivers['finalArray'] as $receiver) {
         $distributionBeneficiary = new DistributionBeneficiary();
-        $distributionBeneficiary->setDistributionData($distributionData)
+        $distributionBeneficiary->setAssistance($assistance)
             ->setBeneficiary($this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver))
             ->setRemoved(0);
            
@@ -272,37 +276,37 @@ class DistributionService
      */
     public function findOneById(int $id)
     {
-        return $this->em->getRepository(DistributionData::class)->findOneBy(['id' => $id]);
+        return $this->em->getRepository(Assistance::class)->findOneBy(['id' => $id]);
     }
 
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return null|object|string
      */
-    public function archived(DistributionData $distributionData)
+    public function archived(Assistance $assistance)
     {
-        if (!empty($distributionData)) {
-            $distributionData->setArchived(1);
+        if (!empty($assistance)) {
+            $assistance->setArchived(1);
         }
 
-        $this->em->persist($distributionData);
+        $this->em->persist($assistance);
         $this->em->flush();
 
         return "Archived";
     }
 
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return null|object|string
      */
-    public function complete(DistributionData $distributionData)
+    public function complete(Assistance $assistance)
     {
-        if (!empty($distributionData)) {
-                $distributionData->setCompleted(1)
+        if (!empty($assistance)) {
+                $assistance->setCompleted(1)
                                 ->setUpdatedOn(new \DateTime);         
         }
 
-        $this->em->persist($distributionData);
+        $this->em->persist($assistance);
         $this->em->flush();
 
         return "Completed";
@@ -311,21 +315,21 @@ class DistributionService
     /**
      * Edit a distribution
      *
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param array $distributionArray
-     * @return DistributionData
+     * @return Assistance
      * @throws \Exception
      */
-    public function edit(DistributionData $distributionData, array $distributionArray)
+    public function edit(Assistance $assistance, array $distributionArray)
     {
-        $distributionData->setDateDistribution(\DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']))
+        $assistance->setDateDistribution(\DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']))
             ->setUpdatedOn(new \DateTime());
-        $distributionNameWithoutDate = explode('-', $distributionData->getName())[0];
+        $distributionNameWithoutDate = explode('-', $assistance->getName())[0];
         $newDistributionName = $distributionNameWithoutDate . '-' . $distributionArray['date_distribution'];
-        $distributionData->setName($newDistributionName);
+        $assistance->setName($newDistributionName);
 
         $this->em->flush();
-        return $distributionData;
+        return $assistance;
     }
 
 
@@ -336,7 +340,7 @@ class DistributionService
      */
     public function exportToCsv(int $projectId, string $type)
     {
-        $exportableTable = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId]);
+        $exportableTable = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId]);
         return $this->container->get('export_csv_service')->export($exportableTable, 'distributions', $type);
     }
 
@@ -347,8 +351,7 @@ class DistributionService
      */
     public function exportToOfficialCsv(int $projectId, string $type)
     {
-        /** @var DistributionData[] $distributions */
-        $distributions = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId]);
+        $distributions = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId]);
         $project = $this->em->getRepository(Project::class)->find($projectId);
         $exportableTable = [];
 
@@ -356,30 +359,28 @@ class DistributionService
             array_map(function($donor) { return $donor->getShortname(); }, $project->getDonors()->toArray())
         );
         
-        $bnfRepo = $this->em->getRepository(Beneficiary::class);
-        
-        foreach ($distributions as $distribution)
-        {
-            $idps = $this->getBeneficiaryCountByResidencyStatus($distribution, "IDP", $distribution->getType());
-            $residents = $this->getBeneficiaryCountByResidencyStatus($distribution, "resident", $distribution->getType());
-            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($distribution, Person::GENDER_MALE);
-            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($distribution, Person::GENDER_FEMALE);
-            $maleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($distribution, 1, 0, 2, $distribution->getDateDistribution());
-            $femaleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($distribution, 0, 0, 2, $distribution->getDateDistribution());
-            $maleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($distribution, 1, 2, 6, $distribution->getDateDistribution());
-            $femaleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($distribution, 0, 2, 6, $distribution->getDateDistribution());
-            $maleUnder17years = $bnfRepo->countByAgeAndByGender($distribution, 1, 6, 18, $distribution->getDateDistribution());
-            $femaleUnder17years = $bnfRepo->countByAgeAndByGender($distribution, 0, 6, 18, $distribution->getDateDistribution());
-            $maleUnder59years = $bnfRepo->countByAgeAndByGender($distribution, 1, 18, 60, $distribution->getDateDistribution());
-            $femaleUnder59years = $bnfRepo->countByAgeAndByGender($distribution, 0, 18, 60, $distribution->getDateDistribution());
-            $maleOver60years = $bnfRepo->countByAgeAndByGender($distribution, 1, 60, 200, $distribution->getDateDistribution());
-            $femaleOver60years = $bnfRepo->countByAgeAndByGender($distribution, 0, 60, 200, $distribution->getDateDistribution());
+        foreach ($distributions as $distribution) {
+
+            $idps = $this->em->getRepository(Assistance::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "IDP", $distribution->getAssistanceType());
+            $residents = $this->em->getRepository(Assistance::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "resident", $distribution->getAssistanceType());
+            $maleHHH = $this->em->getRepository(Assistance::class)->getNoHeadHouseholdsByGender($distribution->getId(), Person::GENDER_MALE);
+            $femaleHHH = $this->em->getRepository(Assistance::class)->getNoHeadHouseholdsByGender($distribution->getId(), Person::GENDER_FEMALE);
+            $maleChildrenUnder23month = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 0, 2, $distribution->getDateDistribution(), $distribution->getAssistanceType());
+            $femaleChildrenUnder23month = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 0, 2, $distribution->getDateDistribution(), $distribution->getAssistanceType());
+            $maleChildrenUnder5years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 2, 6, $distribution->getDateDistribution(), $distribution->getAssistanceType());
+            $femaleChildrenUnder5years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 2, 6, $distribution->getDateDistribution(), $distribution->getAssistanceType());
+            $maleUnder17years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 6, 18, $distribution->getDateDistribution(), $distribution->getAssistanceType());
+            $femaleUnder17years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 6, 18, $distribution->getDateDistribution(), $distribution->getAssistanceType());
+            $maleUnder59years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 18, 60, $distribution->getDateDistribution(), $distribution->getAssistanceType());
+            $femaleUnder59years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 18, 60, $distribution->getDateDistribution(), $distribution->getAssistanceType());
+            $maleOver60years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 60, 200, $distribution->getDateDistribution(), $distribution->getAssistanceType());
+            $femaleOver60years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 60, 200, $distribution->getDateDistribution(), $distribution->getAssistanceType());
             $maleTotal = $maleChildrenUnder23month + $maleChildrenUnder5years + $maleUnder17years + $maleUnder59years + $maleOver60years;
             $femaleTotal = $femaleChildrenUnder23month + $femaleChildrenUnder5years + $femaleUnder17years + $femaleUnder59years + $femaleOver60years;
-            $noFamilies = $distribution->getType() === DistributionData::TYPE_BENEFICIARY ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
-            $familySize = $distribution->getType() === DistributionData::TYPE_HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
+            $noFamilies = $distribution->getTargetType() === Assistance::TYPE_BENEFICIARY ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
+            $familySize = $distribution->getTargetType() === Assistance::TYPE_HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
             $modalityType = $distribution->getCommodities()[0]->getModalityType()->getName();
-            $beneficiaryServed =  $bnfRepo->countServed($distribution, $modalityType);
+            $beneficiaryServed =  $this->em->getRepository(Assistance::class)->getNoServed($distribution->getId(), $modalityType);
 
             $commodityNames = implode(', ',
                     array_map(
@@ -480,7 +481,7 @@ class DistributionService
      */
     public function getTotalValue(string $country)
     {
-        $value = (int) $this->em->getRepository(DistributionData::class)->getTotalValue($country);
+        $value = (int) $this->em->getRepository(Assistance::class)->getTotalValue($country);
         return $value;
     }
 
@@ -490,19 +491,19 @@ class DistributionService
      */
     public function countCompleted(string $country)
     {
-        $value = (int) $this->em->getRepository(DistributionData::class)->countCompleted($country);
+        $value = (int) $this->em->getRepository(Assistance::class)->countCompleted($country);
         return $value;
     }
 
     /**
-     * @param DistributionData[] $distributions
-     * @return DistributionData[]
+     * @param Assistance[] $distributions
+     * @return Assistance[]
      */
     public function filterDistributions($distributions)
     {
         $distributionArray = $distributions->getValues();
         $filteredArray = array();
-        /** @var DistributionData $key */
+        /** @var Assistance $key */
         foreach ($distributionArray as $key) {
             if (!$key->getArchived()) {
                 $filteredArray[] = $key;
@@ -536,22 +537,22 @@ class DistributionService
 
     /**
      * @param $country
-     * @return DistributionData[]
+     * @return Assistance[]
      */
     public function getActiveDistributions($country)
     {
-        $active = $this->em->getRepository(DistributionData::class)->getActiveByCountry($country);
+        $active = $this->em->getRepository(Assistance::class)->getActiveByCountry($country);
         return $active;
     }
     
     /**
      * Initialise GRI for a distribution
-     * @param  DistributionData $distributionData
+     * @param  Assistance $assistance
      * @return void
      */
-    public function createGeneralReliefItems(DistributionData $distributionData)
+    public function createGeneralReliefItems(Assistance $assistance)
     {
-        $distributionBeneficiaries = $distributionData->getDistributionBeneficiaries();
+        $distributionBeneficiaries = $assistance->getDistributionBeneficiaries();
         foreach ($distributionBeneficiaries as $index => $distributionBeneficiary) {
             $$index = new GeneralReliefItem();
             $$index->setDistributionBeneficiary($distributionBeneficiary);
@@ -604,24 +605,24 @@ class DistributionService
 
         // Checks if the distribution is completed
         $generalReliefItem = $this->em->getRepository(GeneralReliefItem::class)->find(array_pop($griIds));
-        $distributionData = $generalReliefItem->getDistributionBeneficiary()->getDistributionData();
-        $numberIncomplete = $this->em->getRepository(GeneralReliefItem::class)->countNonDistributed($distributionData);
+        $assistance = $generalReliefItem->getDistributionBeneficiary()->getAssistance();
+        $numberIncomplete = $this->em->getRepository(GeneralReliefItem::class)->countNonDistributed($assistance);
         
         if ($numberIncomplete === '0') {
-            $this->complete($distributionData);
+            $this->complete($assistance);
         }
         
         return array($successArray, $errorArray, $numberIncomplete);
     }
     
     /**
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param string $type
      * @return mixed
      */
-    public function exportGeneralReliefDistributionToCsv(DistributionData $distributionData, string $type)
+    public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByDistributionData($distributionData);
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByAssistance($assistance);
 
         $generalreliefs = array();
         $exportableTable = array();
@@ -638,7 +639,7 @@ class DistributionService
             $commodityNames = implode(', ',
                 array_map(
                     function($commodity) { return  $commodity->getModalityType()->getName(); }, 
-                    $distributionData->getCommodities()->toArray()
+                    $assistance->getCommodities()->toArray()
                 )
             );
 
@@ -646,7 +647,7 @@ class DistributionService
             $commodityValues = implode(', ',
                 array_map(
                     function($commodity) { return  $commodity->getValue() . ' ' . $commodity->getUnit(); }, 
-                    $distributionData->getCommodities()->toArray()
+                    $assistance->getCommodities()->toArray()
                 )
             );
 
@@ -675,7 +676,7 @@ class DistributionService
      */
     public function exportToPdf(int $projectId)
     {
-        $exportableTable = $this->em->getRepository(DistributionData::class)->findBy(['project' => $projectId, 'archived' => false]);
+        $exportableTable = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId, 'archived' => false]);
         $project = $this->em->getRepository(Project::class)->find($projectId);
 
         try {
@@ -703,7 +704,7 @@ class DistributionService
      */
     public function exportOneToPdf(int $distributionId)
     {
-        $exportableDistribution = $this->em->getRepository(DistributionData::class)->findOneBy(['id' => $distributionId, 'archived' => false]);
+        $exportableDistribution = $this->em->getRepository(Assistance::class)->findOneBy(['id' => $distributionId, 'archived' => false]);
 
         $booklets = [];
 
@@ -753,11 +754,11 @@ class DistributionService
         }
     }
 
-    private function getBeneficiaryCountByResidencyStatus(DistributionData $distribution, string $residencyStatus, int $type): int
+    private function getBeneficiaryCountByResidencyStatus(Assistance $distribution, string $residencyStatus, int $type): int
     {
-        if ($type === DistributionData::TYPE_BENEFICIARY) {
+        if ($type === Assistance::TYPE_BENEFICIARY) {
             return $this->em->getRepository(Beneficiary::class)->countByResidencyStatus($distribution, $residencyStatus);
-        } elseif ($type === DistributionData::TYPE_HOUSEHOLD) {
+        } elseif ($type === Assistance::TYPE_HOUSEHOLD) {
             return $this->em->getRepository(Household::class)->countBeneficiariesByResidencyStatus($distribution, $residencyStatus);
         }
         return 0;

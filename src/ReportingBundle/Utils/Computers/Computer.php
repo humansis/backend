@@ -7,7 +7,7 @@ use ReportingBundle\Utils\Model\IndicatorInterface;
 
 use ReportingBundle\Utils\DataRetrievers\CountryDataRetriever;
 use ReportingBundle\Utils\DataRetrievers\ProjectDataRetriever;
-use ReportingBundle\Utils\DataRetrievers\DistributionDataRetriever;
+use ReportingBundle\Utils\DataRetrievers\AssistanceRetriever;
 
 use Doctrine\ORM\EntityManager;
 
@@ -66,8 +66,8 @@ class Computer implements ComputerInterface
         }
 
         if (preg_match("#^BMS_D#", $indicator->getCode())) {
-            if (is_callable(array(new DistributionDataRetriever($this->em, $this->project), $indicator->getCode()))) {
-                return call_user_func_array([new DistributionDataRetriever($this->em, $this->project), $indicator->getCode()], [$filters]);
+            if (is_callable(array(new AssistanceRetriever($this->em, $this->project), $indicator->getCode()))) {
+                return call_user_func_array([new AssistanceRetriever($this->em, $this->project), $indicator->getCode()], [$filters]);
             }
         }
     }

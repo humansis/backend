@@ -36,10 +36,14 @@ class OrganizationControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->request('GET', '/api/wsse/organization');
-        $organization = json_decode($this->client->getResponse()->getContent(), true);
-        if (!empty($organization)) {
-            $this->assertArrayHasKey('name', $organization[0]);
-            $this->assertArrayHasKey('font', $organization[0]);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
+        $organizations = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertIsArray($organizations, "Organization should be array organization");
+
+        if (!empty($organizations)) {
+            $this->assertArrayHasKey('name', $organizations[0]);
+            $this->assertArrayHasKey('font', $organizations[0]);
 
         } else {
             $this->markTestIncomplete("The database is incomplete.");

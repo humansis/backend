@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * Smartcard purchase.
  *
  * @ORM\Table(name="smartcard_purchase")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardPurchaseRepository")
  */
 class SmartcardPurchase
 {
@@ -66,6 +66,15 @@ class SmartcardPurchase
      * @SymfonyGroups({"FullSmartcard"})
      */
     private $createdAt;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(name="redeemed_at", type="datetime", nullable=true)
+     *
+     * @SymfonyGroups({"FullSmartcard"})
+     */
+    private $redeemedAt;
 
     protected function __construct()
     {
@@ -135,4 +144,21 @@ class SmartcardPurchase
     {
         return $this->createdAt;
     }
+
+    /**
+     * @return DateTimeInterface|null
+     */
+    public function getRedeemedAt(): ?DateTimeInterface
+    {
+        return $this->redeemedAt;
+    }
+
+    /**
+     * @param DateTimeInterface|null $redeemedAt
+     */
+    public function setRedeemedAt(?DateTimeInterface $redeemedAt): void
+    {
+        $this->redeemedAt = $redeemedAt;
+    }
+
 }

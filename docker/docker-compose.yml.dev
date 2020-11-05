@@ -9,11 +9,11 @@ networks:
 services:
     php:
         build:
-            dockerfile: docker/prod/php/Dockerfile
+            dockerfile: docker/dev/php/Dockerfile
             context: .
         volumes:
             - .:/var/www/html
-            - ./docker/prod/php/php.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+            - ./docker/dev/php/php.ini:/usr/local/etc/php/conf.d/99-overrides.ini
         networks:
             - backend
 
@@ -23,8 +23,11 @@ services:
             - 8081:80
         networks:
             - pma
+        volumes:
+            - ./docker/dev/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
         environment:
-            PMA_HOST: humansis-demo.chezpnmoy3ob.eu-central-1.rds.amazonaws.com
+                PMA_HOST: %env(RDS_HOSTNAME)%
+                PMA_ABSOLUTE_URI: https://apidev.humansis.org/pma_yzixy37h/
 
     nginx:
         image: nginx
@@ -34,6 +37,6 @@ services:
             - php
         volumes:
             - .:/var/www/html
-            - ./docker/prod/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+            - ./docker/dev/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
         networks:
             - backend

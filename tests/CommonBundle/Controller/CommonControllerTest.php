@@ -1,24 +1,7 @@
 <?php
 
-
 namespace Tests\CommonBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use BeneficiaryBundle\Entity\Household;
-use CommonBundle\Entity\Adm4;
-use CommonBundle\Entity\Location;
-use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
-use DistributionBundle\Entity\ModalityType;
-use DistributionBundle\Entity\SelectionCriteria;
-use DistributionBundle\Utils\DistributionCSVService;
-use DistributionBundle\Utils\DistributionService;
-use ProjectBundle\Entity\Project;
-use Symfony\Component\BrowserKit\Client;
-use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
 use Tests\BMSServiceTestCase;
 
 class CommonControllerTest extends BMSServiceTestCase
@@ -54,5 +37,37 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $this->assertContainsOnly('int', $summary);
         $this->assertCount(5, $summary);
+    }
+
+    public function testMobileMasterKeyForOfflineAppExists()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/wsse/offline-app/v1/master-key');
+        $summary = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertIsArray($summary);
+        $this->assertArrayHasKey('key', $summary);
+        $this->assertArrayHasKey('version', $summary);
+    }
+
+    public function testMobileMasterKeyForVendorAppExists()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser('vendor@example.org');
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/wsse/vendor-app/v1/master-key');
+        $summary = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertIsArray($summary);
+        $this->assertArrayHasKey('key', $summary);
+        $this->assertArrayHasKey('version', $summary);
     }
 }

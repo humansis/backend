@@ -9,9 +9,10 @@ use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
+use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\DistributionCSVService;
@@ -27,7 +28,7 @@ use VoucherBundle\InputType\VoucherPurchase;
 use VoucherBundle\Model\PurchaseService;
 use VoucherBundle\Utils\BookletService;
 
-class DistributionControllerTest extends BMSServiceTestCase
+class AssistanceControllerTest extends BMSServiceTestCase
 {
     /** @var DistributionCSVService $distributionCSVService */
     private $distributionCSVService;
@@ -60,6 +61,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             "adm2"=> "",
             "adm3" => "",
             "adm4" => "",
+            "type" => Assistance::TYPE_HOUSEHOLD,
             "commodities" => [
                 [
                     'id' => null,
@@ -69,7 +71,7 @@ class DistributionControllerTest extends BMSServiceTestCase
                     ],
                     "type" => "Mobile Money",
                     "unit" => "USD",
-                    "value" => 150,
+                    "value" => 150.1,
                     "description" => null
                 ]
             ],
@@ -103,14 +105,13 @@ class DistributionControllerTest extends BMSServiceTestCase
                 [
                     "condition_string"=> "true",
                     "field_string"=> "disabled",
-                    "id_field"=> 1,
+                    "id_field"=> "1",
                     "target"=> "Beneficiary",
                     "table_string"=> "vulnerabilityCriteria",
-                    "weight"=> 1,
+                    "weight"=> "1"
                 ]
             ],
-            "type"=> DistributionData::TYPE_HOUSEHOLD,
-            "threshold"=> "1"
+            "threshold"=> 1,
         );
 
 
@@ -120,9 +121,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->request('PUT', '/api/wsse/distributions', $criteria);
-        $return = json_decode($this->client->getResponse()->getContent(), true);
-
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $return = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('distribution', $return);
         $this->assertArrayHasKey('data', $return);
@@ -130,6 +130,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         $distribution = $return['distribution'];
         $this->assertArrayHasKey('id', $distribution);
         $this->assertArrayHasKey('name', $distribution);
+        $this->assertArrayHasKey('type', $distribution);
+        $this->assertArrayHasKey('target_type', $distribution);
         $this->assertArrayHasKey('location', $distribution);
         $this->assertArrayHasKey('project', $distribution);
         $this->assertArrayHasKey('selection_criteria', $distribution);
@@ -159,8 +161,8 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         // Check if the second step succeed
-        $this->assertTrue(gettype($randomBenef[0]) == 'array');
-        $this->assertTrue(gettype($randomBenef[1]) == 'array');
+        $this->assertIsArray($randomBenef[0]);
+        $this->assertIsArray($randomBenef[1]);
     }
 
     /**
@@ -237,6 +239,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('GET', '/api/wsse/distributions');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $all = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -290,6 +293,40 @@ class DistributionControllerTest extends BMSServiceTestCase
 //        $this->assertArrayHasKey('distribution_beneficiaries', $one);
     }
 
+    /**
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testHouseholdSummary()
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $hh = $this->em->getRepository(Household::class)->findOneBy([]);
+        $hhId = $hh->getId();
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('GET', '/api/wsse/distributions/household/'. $hhId);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $hhsummaries = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($hhsummaries);
+        if (count($hhsummaries) < 1) {
+            $this->markTestSkipped("Warning: there are no Assistances for this HH");
+        }
+        $hhsummary = $hhsummaries[0];
+
+        // Check if the second step succeed
+        $this->assertArrayHasKey('id', $hhsummary);
+        $this->assertArrayHasKey('name', $hhsummary);
+        $this->assertArrayHasKey('date_distribution', $hhsummary);
+        $this->assertArrayHasKey('type', $hhsummary);
+        $this->assertArrayHasKey('commodities', $hhsummary);
+    }
+
 
     /**
      * @depends testCreateDistribution
@@ -337,7 +374,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $distributionRepo = $this->em->getRepository(DistributionBeneficiary::class);
-        $firstDistributionBeneficiary = $distributionRepo->findOneBy(['distributionData'=>$distribution['id']]);
+        $firstDistributionBeneficiary = $distributionRepo->findOneBy(['assistance'=>$distribution['id']]);
         $bnfId = $firstDistributionBeneficiary->getBeneficiary()->getId();
 
         $booklet = $bookletService->create('KHM', [
@@ -346,7 +383,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             'currency' => 'USD',
             'individual_values' => range(100, 110)
         ]);
-        $bookletService->assign($booklet, $firstDistributionBeneficiary->getDistributionData(), $firstDistributionBeneficiary->getBeneficiary());
+        $bookletService->assign($booklet, $firstDistributionBeneficiary->getAssistance(), $firstDistributionBeneficiary->getBeneficiary());
 
         $bookletBig = $bookletService->create('KHM', [
             'number_booklets' => 1,
@@ -354,7 +391,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             'currency' => 'EUR',
             'individual_values' => range(200, 220)
         ]);
-        $bookletService->assign($bookletBig, $firstDistributionBeneficiary->getDistributionData(), $firstDistributionBeneficiary->getBeneficiary());
+        $bookletService->assign($bookletBig, $firstDistributionBeneficiary->getAssistance(), $firstDistributionBeneficiary->getBeneficiary());
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([]);
 
@@ -487,11 +524,11 @@ class DistributionControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistribution
-     * @param $distribution
+     * @param $d
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function testGetDistributions($distribution)
+    public function testGetDistributionsForFrontend($d)
     {
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
@@ -500,23 +537,73 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/projects/'. $distribution['project']['id']);
+        $crawler = $this->request('GET', '/api/wsse/web-app/v1/distributions/projects/'. $d['project']['id']);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $distributions = json_decode($this->client->getResponse()->getContent(), true);
 
+        if (count($distributions) < 1) {
+            $this->markTestSkipped("Warning: there is no distribution to proper test endpoint");
+        }
+
+        $distribution = $distributions[0];
+
         // Check if the second step succeed
-        $this->assertTrue(gettype($distributions) == "array");
-        $this->assertArrayHasKey('id', $distributions[0]);
-        $this->assertArrayHasKey('updated_on', $distributions[0]);
-        $this->assertArrayHasKey('date_distribution', $distributions[0]);
-        $this->assertArrayHasKey('location', $distributions[0]);
-        $this->assertArrayHasKey('project', $distributions[0]);
-        $this->assertArrayHasKey('selection_criteria', $distributions[0]);
-        $this->assertArrayHasKey('archived', $distributions[0]);
-        $this->assertArrayHasKey('validated', $distributions[0]);
-        $this->assertArrayHasKey('type', $distributions[0]);
-        $this->assertArrayHasKey('commodities', $distributions[0]);
-        $this->assertArrayHasKey('beneficiaries_count', $distributions[0]);
+        $this->assertIsArray($distributions);
+        $this->assertArrayHasKey('id', $distribution);
+        $this->assertArrayHasKey('updated_on', $distribution);
+        $this->assertArrayHasKey('date_distribution', $distribution);
+        $this->assertArrayHasKey('location', $distribution);
+        $this->assertArrayHasKey('project', $distribution);
+        $this->assertArrayHasKey('selection_criteria', $distribution);
+        $this->assertArrayHasKey('archived', $distribution);
+        $this->assertArrayHasKey('validated', $distribution);
+        $this->assertArrayHasKey('type', $distribution);
+        $this->assertArrayHasKey('commodities', $distribution);
+        $this->assertArrayHasKey('beneficiaries_count', $distribution);
+        $this->assertArrayNotHasKey('distribution_beneficiaries', $distribution);
+    }
+
+    /**
+     * @depends testCreateDistribution
+     * @param $d
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testGetDistributionsForOldMobile($d)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('GET', '/api/wsse/distributions/projects/'. $d['project']['id']);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $distributions = json_decode($this->client->getResponse()->getContent(), true);
+
+        if (count($distributions) < 1) {
+            $this->markTestSkipped("Warning: there is no distribution to proper test endpoint");
+        }
+
+        $distribution = $distributions[0];
+
+        // Check if the second step succeed
+        $this->assertIsArray($distributions);
+        $this->assertArrayHasKey('id', $distribution);
+        $this->assertArrayHasKey('updated_on', $distribution);
+        $this->assertArrayHasKey('date_distribution', $distribution);
+        $this->assertArrayHasKey('location', $distribution);
+        $this->assertArrayHasKey('project', $distribution);
+        $this->assertArrayHasKey('selection_criteria', $distribution);
+        $this->assertArrayHasKey('archived', $distribution);
+        $this->assertArrayHasKey('validated', $distribution);
+        $this->assertArrayHasKey('type', $distribution);
+        $this->assertArrayHasKey('commodities', $distribution);
+        $this->assertArrayHasKey('beneficiaries_count', $distribution);
+        $this->assertArrayHasKey('distribution_beneficiaries', $distribution);
+        $this->assertIsArray($distribution['distribution_beneficiaries']);
+        $this->assertCount($distribution['beneficiaries_count'], $distribution['distribution_beneficiaries']);
     }
 
     /**
@@ -536,15 +623,15 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $countryIso3 = 'KHM';
 
-        //distributionData will be used in the function "parseCSV" to get all the beneficiaries in a project :
-        $distributionData = $this->em->getRepository(DistributionData::class)->findOneById($distribution['id']);
+        //assistance will be used in the function "parseCSV" to get all the beneficiaries in a project :
+        $assistance = $this->em->getRepository(Assistance::class)->findOneById($distribution['id']);
         $distributionBeneficiaryService = $this->container->get('distribution.distribution_beneficiary_service');
 
         //beneficiaries contains all beneficiaries in a distribution :
-        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($distributionData);
+        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($assistance);
         $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiariesInDistribution.csv', 'beneficiaryInDistribution.csv');
 
-        $import = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $distributionData, $uploadedFile);
+        $import = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $assistance, $uploadedFile);
 
         // Check if the second step succeed
         $this->assertTrue(gettype($import) == "array");
@@ -563,7 +650,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             $import[$justifiedType] = $justifiedBeneficiaries;
         }
 
-        $save = $distributionCSVService->saveCSV($countryIso3, $distributionData, $import);
+        $save = $distributionCSVService->saveCSV($countryIso3, $assistance, $import);
 
         $this->assertTrue(gettype($save) == "array");
         $this->assertArrayHasKey('result', $save);
@@ -680,17 +767,17 @@ class DistributionControllerTest extends BMSServiceTestCase
             $this->em->remove($commodity);
         }
 
-        $distribution = $this->em->getRepository(DistributionData::class)->find($distribution['id']);
-        if ($distribution instanceof DistributionData) {
+        $distribution = $this->em->getRepository(Assistance::class)->find($distribution['id']);
+        if ($distribution instanceof Assistance) {
             $distributionBeneficiaries = $this->em
-                ->getRepository(DistributionBeneficiary::class)->findByDistributionData($distribution);
+                ->getRepository(DistributionBeneficiary::class)->findByAssistance($distribution);
             foreach ($distributionBeneficiaries as $distributionBeneficiary) {
                 $transaction = $this->em->getRepository(Transaction::class)->findOneByDistributionBeneficiary($distributionBeneficiary);
                 $this->em->remove($transaction);
                 $this->em->remove($distributionBeneficiary);
             }
 
-            $selectionCriteria = $this->em->getRepository(SelectionCriteria::class)->findByDistributionData($distribution);
+            $selectionCriteria = $this->em->getRepository(SelectionCriteria::class)->findByAssistance($distribution);
             foreach ($selectionCriteria as $selectionCriterion) {
                 $this->em->remove($selectionCriterion);
             }

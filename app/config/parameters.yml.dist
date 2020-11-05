@@ -1,4 +1,3 @@
-
 parameters:
     database_driver: pdo_mysql
     database_host: '%env(RDS_HOSTNAME)%'
@@ -13,6 +12,7 @@ parameters:
     mailer_password: '%env(SES_PASSWORD)%'
     mailer_port: 587
     mailer_encryption: tls
+
     secret: ThisTokenIsNotSoSecretChangeIt
     aws_access_key_id: %env(AWS_ACCESS_KEY)%
     aws_secret_access_key: %env(AWS_SECRET_KEY)%
@@ -20,3 +20,6 @@ parameters:
     aws_s3_bucket_name: files-testing.bmstaging.info
     humanitarian_secret: %env(HID_SECRET)%
     google_client: %env(GOOGLE_CLIENT)%
+
+    mobile_app_master_key: '%env(MOBILE_MASTER_KEY)%'
+    mobile_app_version: '%env(MOBILE_MASTER_KEY_VERSION)%'

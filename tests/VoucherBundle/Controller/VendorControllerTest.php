@@ -2,7 +2,9 @@
 namespace VoucherBundle\Tests\Controller;
 
 use Tests\BMSServiceTestCase;
+use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\InputType\SmartcardPurchase;
 
 class VendorControllerTest extends BMSServiceTestCase
 {
@@ -79,6 +81,8 @@ class VendorControllerTest extends BMSServiceTestCase
         // Second step
         // Create the vendor with the email and the salted password. The user should be enable
         $crawler = $this->request('PUT', '/api/wsse/vendors', $vendor);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
         $vendor = json_decode($this->client->getResponse()->getContent(), true);
         // Check if the second step succeed
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
@@ -114,6 +118,7 @@ class VendorControllerTest extends BMSServiceTestCase
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('POST', '/api/wsse/vendor-app/v1/login', $body);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
@@ -135,6 +140,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->request('GET', '/api/wsse/vendors');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $vendors = json_decode($this->client->getResponse()->getContent(), true);
 
         if (!empty($vendors)) {
@@ -169,6 +175,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
 
         $crawler = $this->request('GET', '/api/wsse/vendors/' . $newVendor['id']);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $vendor = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('id', $vendor);
@@ -178,7 +185,6 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('address_number', $vendor);
         $this->assertArrayHasKey('address_postcode', $vendor);
     }
-
 
     /**
      * @depends testCreateVendor
@@ -216,6 +222,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->request('POST', '/api/wsse/vendors/' . $newVendor['id'], $body);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $newVendorReceived = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
@@ -243,8 +250,8 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $crawler = $this->request('POST', '/api/wsse/vendors/' . $vendor['id'] . '/archive');
-        $newVendorReceived = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $newVendorReceived = json_decode($this->client->getResponse()->getContent(), true);
 
         $vendorSearch = $this->em->getRepository(Vendor::class)->find($newVendorReceived['id']);
         $this->assertEquals($vendorSearch->getArchived(), true);
@@ -270,6 +277,7 @@ class VendorControllerTest extends BMSServiceTestCase
         // Second step
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('DELETE', '/api/wsse/vendors/' . $vendorToDelete['id']);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $success = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed

@@ -1,0 +1,42 @@
+version: '3.7'
+
+networks:
+    backend:
+        external: false
+    pma:
+        external: false
+
+services:
+    php:
+        build:
+            dockerfile: docker/stage/php/Dockerfile
+            context: .
+        volumes:
+            - .:/var/www/html
+            - ./docker/stage/php/php.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+        networks:
+            - backend
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - 8081:80
+        networks:
+            - pma
+        volumes:
+            - ./docker/stage/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+        environment:
+            PMA_HOST: %env(RDS_HOSTNAME)%
+            PMA_ABSOLUTE_URI: https://apistage.humansis.org/pma_yzixy37h/
+
+    nginx:
+        image: nginx
+        ports:
+            - 8087:80
+        depends_on:
+            - php
+        volumes:
+            - .:/var/www/html
+            - ./docker/stage/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - backend

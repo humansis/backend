@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\HouseholdLocation;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -551,16 +551,16 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $locationRepository->getCountry($qb);
     }
 
-    public function countBeneficiariesByResidencyStatus(DistributionData $distribution, string $residencyStatus): int
+    public function countBeneficiariesByResidencyStatus(Assistance $distribution, string $residencyStatus): int
     {
         $qb = $this->createQueryBuilder('h');
 
         $qb->select('COUNT(DISTINCT b)')
             ->leftJoin('h.beneficiaries', 'b')
             ->leftJoin('h.distributionBeneficiary', 'db')
-            ->leftJoin('db.distributionData', 'd')
+            ->leftJoin('db.assistance', 'd')
             ->andWhere('db.removed = 0')
-            ->andWhere('db.distributionData = :distribution')
+            ->andWhere('db.assistance = :distribution')
             ->andWhere('b.residencyStatus = :residencyStatus')
             ->andWhere('b.archived = 0')
             ->andWhere('h.archived = 0')

@@ -16,7 +16,7 @@ use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
- * Class CriteriaDistributionController
+ * Class CriteriaAssistanceController
  * @package DistributionBundle\Controller
  *
  * @SWG\Parameter(
@@ -26,12 +26,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  *     required=true
  * )
  */
-class CriteriaDistributionController extends Controller
+class CriteriaAssistanceController extends Controller
 {
 
     /**
      * @Rest\Get("/distributions/criteria", name="get_criteria_celection")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE') or is_granted('ROLE_DISTRIBUTION_CREATE')")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      *

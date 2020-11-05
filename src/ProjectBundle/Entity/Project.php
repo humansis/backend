@@ -108,7 +108,7 @@ class Project implements ExportableInterface
     private $donors;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Sector", inversedBy="projects", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="ProjectBundle\Entity\ProjectSector", mappedBy="project", cascade={"persist"})
      *
      * @SymfonyGroups({"FullProject", "FullDistribution", "SmallDistribution"})
      */
@@ -138,7 +138,7 @@ class Project implements ExportableInterface
     private $households;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionData", mappedBy="project")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Assistance", mappedBy="project")
      * @SymfonyGroups({"FullProject"})
      */
     private $distributions;
@@ -437,13 +437,13 @@ class Project implements ExportableInterface
     /**
      * Add sector.
      *
-     * @param \ProjectBundle\Entity\Sector $sector
+     * @param string $sectorId
      *
      * @return Project
      */
-    public function addSector(\ProjectBundle\Entity\Sector $sector)
+    public function addSector(string $sectorId)
     {
-        $this->sectors->add($sector);
+        $this->sectors->add(new ProjectSector($sectorId, $this));
 
         return $this;
     }
@@ -451,11 +451,11 @@ class Project implements ExportableInterface
     /**
      * Remove sector.
      *
-     * @param \ProjectBundle\Entity\Sector $sector
+     * @param \ProjectBundle\DTO\Sector $sector
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeSector(\ProjectBundle\Entity\Sector $sector)
+    public function removeSector(\ProjectBundle\DTO\Sector $sector)
     {
         return $this->sectors->removeElement($sector);
     }
@@ -591,11 +591,11 @@ class Project implements ExportableInterface
     /**
      * Add distribution.
      *
-     * @param \DistributionBundle\Entity\DistributionData $distribution
+     * @param \DistributionBundle\Entity\Assistance $distribution
      *
      * @return Project
      */
-    public function addDistribution(\DistributionBundle\Entity\DistributionData $distribution)
+    public function addDistribution(\DistributionBundle\Entity\Assistance $distribution)
     {
         $this->distributions[] = $distribution;
 
@@ -605,11 +605,11 @@ class Project implements ExportableInterface
     /**
      * Remove distribution.
      *
-     * @param \DistributionBundle\Entity\DistributionData $distribution
+     * @param \DistributionBundle\Entity\Assistance $distribution
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeDistribution(\DistributionBundle\Entity\DistributionData $distribution)
+    public function removeDistribution(\DistributionBundle\Entity\Assistance $distribution)
     {
         return $this->distributions->removeElement($distribution);
     }

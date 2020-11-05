@@ -54,13 +54,6 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
 
-    distribution.distribution_data_output_factory:
-        class: DistributionBundle\OutputType\Factory\DistributionDataFactory
-        public: true
-        arguments:
-            - "@=service('doctrine.orm.entity_manager').getRepository('DistributionBundle:DistributionBeneficiary')"
-            - '@serializer'
-
 #######################################################################################
 ##                                       CSV                                         ##
 #######################################################################################

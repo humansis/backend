@@ -7,8 +7,6 @@ use BeneficiaryBundle\Entity\Address;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Utils\HouseholdService;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
@@ -20,7 +18,6 @@ use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\HttpKernel\Kernel;
 
 class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
@@ -52,7 +49,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         ],
     ];
     private $householdTemplate = [
-        "livelihood" => "1",
+        "livelihood" => \ProjectBundle\Enum\Livelihood::GOVERNMENT,
         "income_level" => 3,
         "notes" => null,
         "latitude" => null,
@@ -79,7 +76,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
     ];
 
     private $householdService;
-    
+
     private $kernel;
 
     public function __construct(Kernel $kernel, HouseholdService $householdService)

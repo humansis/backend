@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\Household;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -63,15 +63,17 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByName(string $givenName, string $familyName)
+    public function findByName(string $givenName, string $parentsName, string $familyName)
     {
         return $this->createQueryBuilder('b')
             ->leftJoin('b.household', 'hh')
             ->join('b.person', 'p')
             ->andWhere('hh.archived = 0')
             ->andWhere('p.localGivenName = :givenName')
+            ->andWhere('p.localParentsName = :parentsName')
             ->andWhere('p.localFamilyName = :familyName')
             ->setParameter('givenName', $givenName)
+            ->setParameter('parentsName', $parentsName)
             ->setParameter('familyName', $familyName)
             ->getQuery()
             ->getResult();
@@ -116,23 +118,23 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getAllofDistribution(DistributionData $distributionData)
+    public function getAllofDistribution(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->leftJoin('b.distributionBeneficiary', 'db')
-            ->where('db.distributionData = :distributionData')
-            ->setParameter('distributionData', $distributionData);
+            ->where('db.assistance = :assistance')
+            ->setParameter('assistance', $assistance);
 
         return $q->getQuery()->getResult();
     }
 
-    public function getNotRemovedofDistribution(DistributionData $distributionData)
+    public function getNotRemovedofDistribution(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->leftJoin('b.distributionBeneficiary', 'db')
-            ->where('db.distributionData = :distributionData')
+            ->where('db.assistance = :assistance')
             ->andWhere('db.removed = 0')
-            ->setParameter('distributionData', $distributionData);
+            ->setParameter('assistance', $assistance);
 
         return $q->getQuery()->getResult();
     }
@@ -184,28 +186,28 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         }
     }
 
-    public function countByResidencyStatus(DistributionData $distributionData, string $residencyStatus): int
+    public function countByResidencyStatus(Assistance $assistance, string $residencyStatus): int
     {
         $qb = $this->createQueryBuilder('b');
         $qb->select('COUNT(DISTINCT b)');
-        $this->whereInDistribution($qb, $distributionData);
+        $this->whereInDistribution($qb, $assistance);
         $this->whereResidencyStatus($qb, $residencyStatus);
         $qb->andWhere('b.archived = 0');
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function countHouseholdHeadsByGender(DistributionData $distributionData, int $gender): int
+    public function countHouseholdHeadsByGender(Assistance $assistance, int $gender): int
     {
         $qb = $this->createQueryBuilder('b');
         $qb->select('COUNT(DISTINCT b)');
-        $this->whereInDistribution($qb, $distributionData);
+        $this->whereInDistribution($qb, $assistance);
         $this->whereHouseHoldHead($qb);
         $this->whereGender($qb, $gender);
         $qb->andWhere('b.archived = 0');
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function countByAgeAndByGender(DistributionData $distribution, int $gender, int $minAge, int $maxAge, \DateTimeInterface $distributionDate): int
+    public function countByAgeAndByGender(Assistance $distribution, int $gender, int $minAge, int $maxAge, \DateTimeInterface $distributionDate): int
     {
         $qb = $this->createQueryBuilder('b');
         $qb->select('COUNT(DISTINCT b)');
@@ -221,7 +223,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function countServed(DistributionData $distribution, string $modalityType): int
+    public function countServed(Assistance $distribution, string $modalityType): int
     {
         $qb = $this->createQueryBuilder('b');
         $qb->select('COUNT(DISTINCT b)');
@@ -261,7 +263,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb;
     }
 
-    protected function whereInDistribution(QueryBuilder $qb, DistributionData $distributionData)
+    protected function whereInDistribution(QueryBuilder $qb, Assistance $assistance)
     {
         if (!in_array('db', $qb->getAllAliases())) {
             $qb->leftJoin(
@@ -270,8 +272,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                 Join::WITH,
                 'db.removed = 0'
             );
-            $qb->andWhere('db.distributionData = :distribution');
-            $qb->setParameter('distribution', $distributionData);
+            $qb->andWhere('db.assistance = :distribution');
+            $qb->setParameter('distribution', $assistance);
         }
     }
 
@@ -548,7 +550,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             // The selection criteria is the last distribution
             if ($field === 'hasNotBeenInDistributionsSince') {
                 $qb->leftJoin('b.distributionBeneficiary', 'db'.$i)
-                    ->leftJoin('db'.$i . '.distributionData', 'd'.$i)
+                    ->leftJoin('db'.$i . '.assistance', 'd'.$i)
                     // If has criteria, add it to the select to calculate weight later
                     ->addSelect('(CASE WHEN d'.$i . '.dateDistribution < :parameter'.$i . ' THEN d'.$i . '.dateDistribution WHEN SIZE(b.distributionBeneficiary) = 0 THEN :noDistribution ELSE :null END)'. ' AS ' . $criterion['field_string'].$i)
                     ->setParameter('noDistribution', 'noDistribution')

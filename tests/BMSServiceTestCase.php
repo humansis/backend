@@ -13,7 +13,7 @@ use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\CommodityService;
 use DistributionBundle\Utils\ConfigurationLoader;
 use DistributionBundle\Utils\CriteriaDistributionService;
@@ -73,7 +73,7 @@ class BMSServiceTestCase extends KernelTestCase
     protected $namefullnameHousehold = "NOTES_TEST";
 
     protected $bodyHousehold = [
-        "livelihood" => 10,
+        "livelihood" => \ProjectBundle\Enum\Livelihood::FARMING_LIVESTOCK,
         "income_level" => 3,
         "notes" => "NOTES_TEST",
         "latitude" => "1.1544",
@@ -112,6 +112,8 @@ class BMSServiceTestCase extends KernelTestCase
                 "en_family_name" => "NAME_TEST",
                 "local_given_name" => "FIRSTNAME_TEST",
                 "local_family_name" => "NAME_TEST",
+                "en_parents_name" => "PARENTSNAME_TEST_EN",
+                "local_parents_name" => "PARENTSNAME_TEST_LOCAL",
                 "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
                 "status" => "1",
                 "residency_status" => "IDP",
@@ -144,6 +146,8 @@ class BMSServiceTestCase extends KernelTestCase
                 "en_family_name" => "FAMILYNAME_TEST",
                 "local_given_name" => "GIVENNAME_TEST",
                 "local_family_name" => "FAMILYNAME_TEST",
+                "en_parents_name" => "PARENTSNAME_TEST_EN",
+                "local_parents_name" => "PARENTSNAME_TEST_LOCAL",
                 "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
                 "status" => 0,
                 "residency_status" => "resident",

@@ -11,7 +11,7 @@ use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\DistributionBeneficiary;
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\DistributionCSVService;
@@ -21,7 +21,7 @@ use Symfony\Component\BrowserKit\Client;
 use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
 use Tests\BMSServiceTestCase;
 
-class CriteriaDistributionControllerTest extends BMSServiceTestCase
+class CriteriaAssistanceControllerTest extends BMSServiceTestCase
 {
     /**
      * @throws \Exception

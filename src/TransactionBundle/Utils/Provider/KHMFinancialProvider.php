@@ -5,7 +5,7 @@ namespace TransactionBundle\Utils\Provider;
 use CommonBundle\Entity\OrganizationServices;
 use DistributionBundle\Entity\DistributionBeneficiary;
 
-use DistributionBundle\Entity\DistributionData;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use TransactionBundle\Entity\Transaction;
@@ -46,11 +46,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider
 
     /**
      * Get token to connect to API
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @return object token
      * @throws \Exception
      */
-    public function getToken(DistributionData $distributionData)
+    public function getToken(Assistance $assistance)
     {
         $organizationWINGCashTransfer = $this->em->getRepository(OrganizationServices::class)->findOneByService("WING Cash Transfer");
 
@@ -80,7 +80,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         );
         
         try {
-            $this->token = $this->sendRequest($distributionData, "POST", $route, $body);
+            $this->token = $this->sendRequest($assistance, "POST", $route, $body);
             $this->lastTokenDate = new \DateTime();
             return $this->token;
         } catch (Exception $e) {
@@ -103,7 +103,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         float $amount,
         string $currency
     ) {
-        $distributionData = $distributionBeneficiary->getDistributionData();
+        $assistance = $distributionBeneficiary->getAssistance();
         $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
             "amount"          => $amount,
@@ -114,7 +114,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         );
         
         try {
-            $sent = $this->sendRequest($distributionData, "POST", $route, $body);
+            $sent = $this->sendRequest($assistance, "POST", $route, $body);
             if (property_exists($sent, 'error_code')) {
                 $transaction = $this->createTransaction(
                     $distributionBeneficiary,
@@ -132,7 +132,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         }
         
         try {
-            $response = $this->getStatus($distributionData, $sent->transaction_id);
+            $response = $this->getStatus($assistance, $sent->transaction_id);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -158,7 +158,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
     public function updateStatusTransaction(Transaction $transaction)
     {
         try {
-            $response = $this->getStatus($transaction->getDistributionBeneficiary()->getDistributionData(), $transaction->getTransactionId());
+            $response = $this->getStatus($transaction->getDistributionBeneficiary()->getAssistance(), $transaction->getTransactionId());
         } catch (\Exception $e) {
             throw $e;
         }
@@ -176,12 +176,12 @@ class KHMFinancialProvider extends DefaultFinancialProvider
 
     /**
      * Get status of transaction
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param  string $transaction_id
      * @return object
      * @throws \Exception
      */
-    public function getStatus(DistributionData $distributionData, string $transaction_id)
+    public function getStatus(Assistance $assistance, string $transaction_id)
     {
         $route = "/api/v1/sendmoney/nonwing/txn_inquiry";
         $body = array(
@@ -189,7 +189,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         );
         
         try {
-            $sent = $this->sendRequest($distributionData, "POST", $route, $body);
+            $sent = $this->sendRequest($assistance, "POST", $route, $body);
         } catch (Exception $e) {
             throw $e;
         }
@@ -198,14 +198,14 @@ class KHMFinancialProvider extends DefaultFinancialProvider
 
     /**
      * Send request to WING API for Cambodia
-     * @param DistributionData $distributionData
+     * @param Assistance $assistance
      * @param  string $type type of the request ("GET", "POST", etc.)
      * @param  string $route url of the request
      * @param  array $body body of the request (optional)
      * @return mixed  response
      * @throws \Exception
      */
-    public function sendRequest(DistributionData $distributionData, string $type, string $route, array $body = array())
+    public function sendRequest(Assistance $assistance, string $type, string $route, array $body = array())
     {
         $curl = curl_init();
 
@@ -215,7 +215,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         if (!preg_match('/\/oauth\/token/', $route)) {
             if (!$this->lastTokenDate ||
             (new \DateTime())->getTimestamp() - $this->lastTokenDate->getTimestamp() > $this->token->expires_in) {
-                $this->getToken($distributionData);
+                $this->getToken($assistance);
             }
             array_push($headers, "Authorization: Bearer " . $this->token->access_token, "Content-type: application/json");
             $body = json_encode((object) $body);
@@ -262,7 +262,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         }
 
         $data = [$this->from, (new \DateTime())->format('d-m-Y h:i:s'), $info['url'], $info['http_code'], $response, $err, $bodyString];
-        $this->recordTransaction($distributionData, $data);
+        $this->recordTransaction($assistance, $data);
     
         if ($err) {
             throw new \Exception($err);

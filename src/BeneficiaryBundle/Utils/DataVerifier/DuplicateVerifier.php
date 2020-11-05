@@ -46,6 +46,7 @@ class DuplicateVerifier extends AbstractVerifier
             /** @var Beneficiary[] $existingBeneficiaries */
             $existingBeneficiaries = $this->em->getRepository(Beneficiary::class)->findByName(
                 trim($newBeneficiary['local_given_name']),
+                trim($newBeneficiary['local_parents_name']),
                 trim($newBeneficiary['local_family_name'])
             );
 
