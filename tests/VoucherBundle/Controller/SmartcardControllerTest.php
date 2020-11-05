@@ -257,6 +257,35 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertIsNumeric($summary['value']);
     }
 
+    public function testGetUnredeemedPurchasesDetails(): void
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc']);
+
+        $crawler = $this->request('GET', '/api/wsse/smartcards/purchases/' . $vendor->getId() . '/details');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $details = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($details);
+        foreach ($details as $detail) {
+            $this->assertArrayHasKey('purchase_date', $detail);
+            $this->assertArrayHasKey('purchase_amount', $detail);
+            $this->assertArrayHasKey('beneficiary_id', $detail);
+            $this->assertArrayHasKey('beneficiary_local_name', $detail);
+            $this->assertArrayHasKey('beneficiary_en_name', $detail);
+
+            $this->assertIsNumeric($detail['purchase_amount']);
+            $this->assertIsNumeric($detail['purchase_amount']);
+            $this->assertRegExp('/\d\d-\d\d-\d\d\d\d/', $detail['purchase_date']);
+            $this->assertIsString($detail['beneficiary_local_name']);
+            $this->assertIsString($detail['beneficiary_en_name']);
+        }
+    }
+
     public function testGetRedeemedBatches(): void
     {
         // Log a user in order to go through the security firewall
