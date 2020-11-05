@@ -889,4 +889,17 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         return $this;
     }
+
+
+    public function hasVulnerabilityCriteria(string $vulnerabilityCriteria): bool
+    {
+        foreach ($this->getVulnerabilityCriteria() as $criterion) {
+            if ($criterion->getFieldString() === $vulnerabilityCriteria) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
