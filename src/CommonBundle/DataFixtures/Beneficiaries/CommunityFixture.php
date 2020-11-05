@@ -18,7 +18,7 @@ use ProjectBundle\Entity\Project;
 
 class CommunityFixture extends Fixture implements DependentFixtureInterface
 {
-    const COUNTRIES = ['KHM', 'SYR', 'UKR'];
+    const COUNTRIES = ['KHM', 'SYR', 'UKR', 'ETH'];
     const COMMUNITIES = [
         [
             'longitude' => '20,254871',
