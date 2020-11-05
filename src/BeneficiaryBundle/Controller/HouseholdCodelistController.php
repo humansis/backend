@@ -18,7 +18,10 @@ class HouseholdCodelistController extends Controller
      */
     public function getLivelihoods(): JsonResponse
     {
-        $data = self::map(Livelihood::values());
+        $data = [];
+        foreach (Livelihood::values() as $code) {
+            $data[] = ['code' => $code, 'value' => Livelihood::translate($code)];
+        }
 
         return $this->json(new Paginator($data));
     }
@@ -30,18 +33,11 @@ class HouseholdCodelistController extends Controller
      */
     public function getAssets(): JsonResponse
     {
-        $data = self::map(Household::ASSETS);
-
-        return $this->json(new Paginator($data));
-    }
-
-    private static function map(iterable $list): array
-    {
         $data = [];
-        foreach ($list as $key => $value) {
+        foreach (Household::ASSETS as $key => $value) {
             $data[] = ['code' => $key, 'value' => $value];
         }
 
-        return $data;
+        return $this->json(new Paginator($data));
     }
 }
