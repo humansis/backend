@@ -523,6 +523,35 @@ class AssistanceController extends Controller
     }
 
     /**
+     * Delete a distribution.
+     *
+     * @Rest\Delete("/distributions/{id}")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=204,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Assistance $assistance
+     *
+     * @return Response
+     */
+    public function delete(Assistance $assistance)
+    {
+        $this->get('distribution.distribution_service')->delete($assistance);
+
+        return $this->json([], Response::HTTP_NO_CONTENT);
+    }
+
+    /**
      * Archive a distribution.
      *
      * @Rest\Post("/distributions/{id}/archive", name="archived_project")

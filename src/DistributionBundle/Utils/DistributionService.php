@@ -764,4 +764,31 @@ class DistributionService
         return 0;
     }
 
+    /**
+     * @param Assistance $assistance
+     */
+    public function delete(Assistance $assistance)
+    {
+        if ($assistance->getValidated()) {
+            $this->archived($assistance);
+
+            return;
+        }
+
+        foreach ($assistance->getCommodities() as $commodity) {
+            $this->em->remove($commodity);
+        }
+        foreach ($assistance->getSelectionCriteria() as $criterion) {
+            $this->em->remove($criterion);
+        }
+        foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
+            foreach ($distributionBeneficiary->getGeneralReliefs() as $relief) {
+                $this->em->remove($relief);
+            }
+            $this->em->remove($distributionBeneficiary);
+        }
+
+        $this->em->remove($assistance);
+        $this->em->flush();
+    }
 }

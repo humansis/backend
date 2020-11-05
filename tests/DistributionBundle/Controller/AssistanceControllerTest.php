@@ -197,6 +197,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('type', $validate);
         $this->assertArrayHasKey('commodities', $validate);
         $this->assertArrayHasKey('distribution_beneficiaries', $validate);
+
+        return $distribution['id'];
     }
 
 
@@ -786,5 +788,114 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->em->flush();
         $this->removeHousehold($this->namefullnameHousehold);
+    }
+
+    public function testCreateDistributionToBeDeleted()
+    {
+        $body = [
+            'id' => null,
+            'adm1' => '',
+            'adm2' => '',
+            'adm3' => '',
+            'adm4' => '',
+            'type' => Assistance::TYPE_HOUSEHOLD,
+            'commodities' => [
+                [
+                    'id' => null,
+                    'modality' => 'Cash',
+                    'modality_type' => [
+                        'id' => 1,
+                    ],
+                    'type' => 'Mobile Money',
+                    'unit' => 'USD',
+                    'value' => 100,
+                    'description' => null,
+                ],
+            ],
+            'date_distribution' => '13-09-2018',
+            'location' => [
+                'adm1' => 1,
+                'adm2' => 1,
+                'adm3' => 1,
+                'adm4' => 1,
+                'country_iso3' => 'KHM',
+            ],
+            'country_specific_answers' => [
+                [
+                    'answer' => 'MY_ANSWER_TEST1',
+                    'country_specific' => [
+                        'id' => 1,
+                    ],
+                ],
+            ],
+            'location_name' => '',
+            'name' => 'DISTRIBUTION_TO_BE_DELETED_FROM_DB',
+            'project' => [
+                'donors' => [],
+                'donors_name' => [],
+                'id' => 1,
+                'name' => '',
+                'sectors' => [],
+                'sectors_name' => [],
+            ],
+            'selection_criteria' => [
+                [
+                    'condition_string' => 'true',
+                    'field_string' => 'disabled',
+                    'id_field' => '1',
+                    'target' => 'Beneficiary',
+                    'table_string' => 'vulnerabilityCriteria',
+                    'weight' => '1',
+                ],
+            ],
+            'threshold' => 1,
+        ];
+
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // preparation to test
+        $this->request('PUT', '/api/wsse/distributions', $body);
+        $assistanceData = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        return $assistanceData['distribution']['id'];
+    }
+
+    /**
+     * @depends testCreateDistributionToBeDeleted
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testDeleteUnvalidatedDistribution($id)
+    {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('DELETE', '/api/wsse/distributions/'.$id);
+        $this->assertEquals(204, $this->client->getResponse()->getStatusCode(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        $assistance = $this->em->getRepository(Assistance::class)->find($id);
+        $this->assertNull($assistance, 'Assistance should not exists in DB');
+    }
+
+    /**
+     * @depends testValidate
+     */
+    public function testDeleteValidatedDistribution($id)
+    {
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('DELETE', '/api/wsse/distributions/'.$id);
+        $this->assertEquals(204, $this->client->getResponse()->getStatusCode(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        $assistance = $this->em->getRepository(Assistance::class)->find($id);
+        $this->assertInstanceOf(Assistance::class, $assistance, 'Assistance should exists in DB');
+        $this->assertTrue((bool) $assistance->getArchived(), 'Assistance should be archived');
     }
 }
