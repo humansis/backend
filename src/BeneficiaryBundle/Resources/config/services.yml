@@ -59,6 +59,7 @@ services:
             - '@BeneficiaryBundle\Mapper\NationalIdMapper'
             - '@CommonBundle\Mapper\LocationMapper'
             - '@BeneficiaryBundle\Mapper\PersonMapper'
+            - '@ProjectBundle\Mapper\ProjectMapper'
         public: true
 
     BeneficiaryBundle\Mapper\InstitutionMapper:
@@ -66,6 +67,7 @@ services:
             - '@BeneficiaryBundle\Mapper\AddressMapper'
             - '@BeneficiaryBundle\Mapper\NationalIdMapper'
             - '@BeneficiaryBundle\Mapper\PersonMapper'
+            - '@ProjectBundle\Mapper\ProjectMapper'
         public: true
 
     BeneficiaryBundle\Mapper\AddressMapper:

@@ -7,6 +7,7 @@ use BeneficiaryBundle\InputType\LocationType;
 use BeneficiaryBundle\InputType\NewInstitutionType;
 use BeneficiaryBundle\Utils\InstitutionService;
 use CommonBundle\DataFixtures\LocationFixtures;
+use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\RequestConverter;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -21,6 +22,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         [
             'name' => 'Local mayor office',
             'type' => Institution::TYPE_GOVERNMENT,
+            'projects' => [1],
             'longitude' => '20,254871',
             'latitude' => '45,47854425',
             'address' => [
@@ -47,6 +49,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         [
             'name' => 'Food stores inc.',
             'type' => Institution::TYPE_COMMERCE,
+            'projects' => [1],
             'longitude' => '120,254871',
             'latitude' => '145,47854425',
             'address' => [
@@ -73,6 +76,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         [
             'name' => 'Best CISCO school LTD.',
             'type' => Institution::TYPE_SCHOOL,
+            'projects' => [3],
             'longitude' => '10,254871',
             'latitude' => '15,47854425',
             'address' => [
@@ -84,7 +88,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
                     'adm2' => 1,
                     'adm3' => 1,
                     'adm4' => 1,
-                    'country_iso3' => 'KHM',
+                    'country_iso3' => 'SYR',
                 ],
             ],
             'national_id' => [
@@ -136,6 +140,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
     {
         return [
             LocationFixtures::class,
+            ProjectFixtures::class,
         ];
     }
 }

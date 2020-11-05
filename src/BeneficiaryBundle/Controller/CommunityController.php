@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Controller;
 
+use BeneficiaryBundle\InputType\NewCommunityType;
 use BeneficiaryBundle\InputType\UpdateCommunityType;
 use BeneficiaryBundle\Mapper\CommunityMapper;
 use BeneficiaryBundle\Utils\CommunityService;
@@ -125,10 +126,10 @@ class CommunityController extends Controller
      *
      *
      * @param Country $country
-     * @param UpdateCommunityType $communityType
+     * @param NewCommunityType $communityType
      * @return Response
      */
-    public function createAction(Country $country, UpdateCommunityType $communityType)
+    public function createAction(Country $country, NewCommunityType $communityType)
     {
         /** @var CommunityService $communityService */
         $communityService = $this->get('beneficiary.community_service');
@@ -138,6 +139,8 @@ class CommunityController extends Controller
             $community = $communityService->create($country, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
             $this->getDoctrine()->getManager()->flush();
+        } catch (\InvalidArgumentException $exception) {
+            return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
@@ -196,6 +199,8 @@ class CommunityController extends Controller
             $community = $communityService->update($country, $community, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
             $this->getDoctrine()->getManager()->flush();
+        } catch (\InvalidArgumentException $exception) {
+            return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ProjectBundle\Mapper;
 
@@ -75,6 +75,13 @@ class ProjectMapper
     {
         foreach ($projects as $project) {
             yield $this->toFullArray($project);
+        }
+    }
+
+    public function toIdArray(iterable $projects): iterable
+    {
+        foreach ($projects as $project) {
+            yield $project->getId();
         }
     }
 }

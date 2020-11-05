@@ -44,6 +44,7 @@ class CommunityConstraints extends RequestValidatorConstraints
             'phone_prefix' => $optionalString,
             'phone_number' => $optionalString,
             'contact_name' => $optionalString,
+            'projects' => $array,
         ];
 
         return [
