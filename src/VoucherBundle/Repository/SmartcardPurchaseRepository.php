@@ -5,10 +5,10 @@ namespace VoucherBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use VoucherBundle\DTO\PurchaseDetail;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
 use VoucherBundle\DTO\PurchaseRedeemedBatch;
 use VoucherBundle\DTO\PurchaseSummary;
-use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Vendor;
 
@@ -33,8 +33,7 @@ class SmartcardPurchaseRepository extends EntityRepository
             ->join('p.vendor', 'v')
             ->where('p.vendor = :vendor')
             ->setParameter('vendor', $vendor)
-            ->groupBy('v.id')
-        ;
+            ->groupBy('v.id');
 
         try {
             $summary = $qb->getQuery()->getSingleResult();
@@ -105,5 +104,44 @@ class SmartcardPurchaseRepository extends EntityRepository
         }
 
         return $batches;
+    }
+
+    /**
+     * @param Vendor $vendor
+     *
+     * @return PurchaseDetail[]
+     */
+    public function getUsedUnredeemedDetails(Vendor $vendor): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select(
+                "p.id,
+                SUM(pr.value) as purchaseRecordsValue, 
+                p.createdAt as purchaseDate,
+                person.id as beneficiaryId,
+                CONCAT(person.enGivenName, ' ', person.enFamilyName) as beneficiaryEnName,
+                CONCAT(person.localGivenName, ' ', person.localFamilyName) as beneficiaryLocalName"
+            )
+            ->join('p.records', 'pr')
+            ->join('p.vendor', 'v')
+            ->join('p.smartcard', 's')
+            ->join('s.beneficiary', 'b')
+            ->join('b.person', 'person')
+            ->andWhere('p.vendor = :vendor')
+            ->setParameter('vendor', $vendor)
+            ->groupBy('p.id');
+
+        $details = [];
+        foreach ($qb->getQuery()->getResult() as $result) {
+            $details[] = new PurchaseDetail(
+                $result['purchaseDate'],
+                $result['beneficiaryId'],
+                $result['beneficiaryEnName'],
+                $result['beneficiaryLocalName'],
+                $result['purchaseRecordsValue']
+            );
+        }
+
+        return $details;
     }
 }
