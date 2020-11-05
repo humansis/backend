@@ -58,6 +58,10 @@ class HouseholdController extends Controller
      */
     public function showAction(Household $household, Request $request)
     {
+        if (true === $household->getArchived()) {
+            return new Response("Household was archived", Response::HTTP_NOT_FOUND);
+        }
+
         $allowedCountries = [];
         foreach ($household->getProjects() as $project) {
             $allowedCountries[] = $project->getIso3();

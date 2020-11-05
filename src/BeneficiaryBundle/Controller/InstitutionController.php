@@ -54,6 +54,10 @@ class InstitutionController extends Controller
      */
     public function showAction(Institution $institution)
     {
+        if (true === $institution->getArchived()) {
+            return new Response("Institution was archived", Response::HTTP_NOT_FOUND);
+        }
+
         /** @var InstitutionMapper $institutionMapper */
         $institutionMapper = $this->get(InstitutionMapper::class);
         return $this->json($institutionMapper->toFullArray($institution));

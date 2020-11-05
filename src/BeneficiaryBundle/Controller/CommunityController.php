@@ -43,6 +43,10 @@ class CommunityController extends Controller
      */
     public function showAction(Community $community)
     {
+        if (true === $community->getArchived()) {
+            return new Response("Community was archived", Response::HTTP_NOT_FOUND);
+        }
+
         /** @var CommunityMapper $communityMapper */
         $communityMapper = $this->get(CommunityMapper::class);
         return $this->json($communityMapper->toFullArray($community));
