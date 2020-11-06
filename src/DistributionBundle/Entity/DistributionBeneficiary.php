@@ -83,6 +83,13 @@ class DistributionBeneficiary
      */
     private $smartcardDeposits;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="content", type="json", nullable=true)
+     */
+    private $vulnerabilityScores;
+
     public function __construct()
     {
         $this->booklets = new ArrayCollection();
@@ -363,5 +370,23 @@ class DistributionBeneficiary
     public function getRemoved()
     {
         return $this->removed;
+    }
+
+    /**
+     * @return string|null valid JSON string
+     */
+    public function getVulnerabilityScores(): ?string
+    {
+        return $this->vulnerabilityScores;
+    }
+
+    /**
+     * @param string $vulnerabilityScores
+     */
+    public function setVulnerabilityScores(string $vulnerabilityScores): self
+    {
+        $this->vulnerabilityScores = $vulnerabilityScores;
+
+        return $this;
     }
 }

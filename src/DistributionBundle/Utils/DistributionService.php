@@ -5,6 +5,7 @@ namespace DistributionBundle\Utils;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Person;
+use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use CommonBundle\Utils\LocationService;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\DistributionBeneficiary;
@@ -213,7 +214,7 @@ class DistributionService
 
         $distributionArray['selection_criteria'] = $criteria;
         $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $threshold);
-        $this->saveReceivers($distribution, $listReceivers);
+        $this->saveReceivers($distribution, $listReceivers, $countryISO3);
 
         $this->em->flush();
 
@@ -239,17 +240,31 @@ class DistributionService
 
     /**
      * @param Assistance $assistance
-     * @param array $listReceivers
+     * @param array      $listReceivers
+     * @param string     $countryIso3
+     *
      * @throws \Exception
      */
-    public function saveReceivers(Assistance $assistance, array $listReceivers)
+    public function saveReceivers(Assistance $assistance, array $listReceivers, string $countryIso3)
     {
+        $resolver = $this->container->get('beneficiary.vulnerability_resolver');
+
         foreach ($listReceivers['finalArray'] as $receiver) {
-        $distributionBeneficiary = new DistributionBeneficiary();
-        $distributionBeneficiary->setAssistance($assistance)
-            ->setBeneficiary($this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver))
-            ->setRemoved(0);
-           
+            /** @var Beneficiary $beneficiary */
+            $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver);
+
+            $protocol = $resolver->compute($beneficiary->getHousehold(), $countryIso3, $assistance->getSector());
+            $scores = ['totalScore' => $protocol->getTotalScore()];
+            foreach (CategoryEnum::all() as $value) {
+                $scores[$value] = $protocol->getCategoryScore($value);
+            }
+
+            $distributionBeneficiary = (new DistributionBeneficiary())
+                ->setAssistance($assistance)
+                ->setBeneficiary($beneficiary)
+                ->setRemoved(0)
+                ->setVulnerabilityScores(json_encode($scores));
+
             $this->em->persist($distributionBeneficiary);
         }
     }
