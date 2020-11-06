@@ -438,13 +438,13 @@ class Project implements ExportableInterface
     /**
      * Add sector.
      *
-     * @param Sector $sectorDTO
+     * @param string $sectorId
      *
      * @return Project
      */
-    public function addSector(Sector $sectorDTO): self
+    public function addSector(string $sectorId)
     {
-        $this->sectors->add(new ProjectSector($sectorDTO->getSectorName(), $this, $sectorDTO->getSubSectorName()));
+        $this->sectors->add(new ProjectSector($sectorId, $this));
 
         return $this;
     }
