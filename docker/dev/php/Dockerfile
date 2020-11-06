@@ -28,7 +28,7 @@ RUN pecl install xdebug && \
     docker-php-ext-enable xdebug
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl -sS https://getcomposer.org/composer-1.phar | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Set timezone
 RUN rm /etc/localtime && \
