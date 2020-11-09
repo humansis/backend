@@ -6,6 +6,8 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
+use VoucherBundle\DTO\PurchaseRedeemedBatch;
+use VoucherBundle\DTO\PurchaseRedemptionBatch;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
@@ -327,6 +329,39 @@ class SmartcardControllerTest extends BMSServiceTestCase
             $this->assertRegExp('/\d\d-\d\d-\d\d\d\d \d\d:\d\d/', $batch['date'], "Wrong datetime format");
             $this->assertIsNumeric($batch['count']);
             $this->assertIsNumeric($batch['value']);
+        }
+    }
+
+    public function testGetBatchPurchasesDetails(): void
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc']);
+        /** @var PurchaseRedeemedBatch[] $redeemedBatches */
+        $redeemedBatches = $this->em->getRepository(SmartcardPurchase::class)->getRedeemBatches($vendor);
+        $batchTimestamp = $redeemedBatches[0]->getDate()->getTimestamp();
+
+        $crawler = $this->request('GET', '/api/wsse/smartcards/purchases/redeemed-batches/'.$vendor->getId().'/batch-details/'.$batchTimestamp);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $details = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($details);
+        foreach ($details as $detail) {
+            $this->assertArrayHasKey('purchase_datetime', $detail);
+            $this->assertArrayHasKey('purchase_date', $detail);
+            $this->assertArrayHasKey('purchase_amount', $detail);
+            $this->assertArrayHasKey('beneficiary_id', $detail);
+            $this->assertArrayHasKey('beneficiary_local_name', $detail);
+            $this->assertArrayHasKey('beneficiary_en_name', $detail);
+
+            $this->assertIsNumeric($detail['purchase_datetime']);
+            $this->assertIsNumeric($detail['purchase_amount']);
+            $this->assertRegExp('/\d\d-\d\d-\d\d\d\d/', $detail['purchase_date']);
+            $this->assertIsString($detail['beneficiary_local_name']);
+            $this->assertIsString($detail['beneficiary_en_name']);
         }
     }
 
