@@ -25,6 +25,7 @@ use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\SmartcardRedemtionBatch;
 use VoucherBundle\Mapper\SmartcardMapper;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
+use function Cassandra\Date;
 
 /**
  * @SWG\Parameter(
@@ -546,6 +547,35 @@ class SmartcardController extends Controller
         $summaryBatches = $repository->getRedeemBatches($vendor);
 
         return $this->json($summaryBatches);
+    }
+
+    /**
+     * Get vendor purchase batch details
+     *
+     * @Rest\Get("/smartcards/purchases/redeemed-batches/{id}/batch-details/{batchDate}", name="smarcards_redeemed_batches_details")
+     * @ParamConverter("batchDate", options={"format": "U"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @SWG\Tag(name="Smartcards")
+     * @SWG\Tag(name="Single Vendor")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All vendor purchases",
+     * )
+     *
+     * @param Vendor    $vendor
+     * @param \DateTime $batchDate
+     *
+     * @return Response
+     */
+    public function getRedeemBatchesDetails(Vendor $vendor, \DateTime $batchDate): Response
+    {
+        /** @var SmartcardPurchaseRepository $repository */
+        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
+        $details = $repository->getBatchDetails($vendor, $batchDate);
+
+        return $this->json($details);
     }
 
     /**

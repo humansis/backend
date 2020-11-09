@@ -107,6 +107,49 @@ class SmartcardPurchaseRepository extends EntityRepository
     }
 
     /**
+     * @param Vendor             $vendor
+     * @param \DateTimeInterface $batchDate
+     *
+     * @return PurchaseDetail[]
+     */
+    public function getBatchDetails(Vendor $vendor, \DateTimeInterface $batchDate): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select(
+                "p.id,
+                SUM(pr.value) as purchaseRecordsValue, 
+                p.createdAt as purchaseDate,
+                person.id as beneficiaryId,
+                CONCAT(person.enGivenName, ' ', person.enFamilyName) as beneficiaryEnName,
+                CONCAT(person.localGivenName, ' ', person.localFamilyName) as beneficiaryLocalName"
+            )
+            ->join('p.records', 'pr')
+            ->join('p.vendor', 'v')
+            ->join('p.smartcard', 's')
+            ->join('s.beneficiary', 'b')
+            ->join('b.person', 'person')
+            ->andWhere('p.vendor = :vendor')
+            ->andWhere('p.redeemedAt = :batch')
+            ->setParameter('vendor', $vendor)
+            ->setParameter('batch', $batchDate)
+            ->groupBy('p.id');
+
+        $details = [];
+        foreach ($qb->getQuery()->getResult() as $result) {
+            $details[] = new PurchaseDetail(
+                $result['purchaseDate'],
+                $result['beneficiaryId'],
+                $result['beneficiaryEnName'],
+                $result['beneficiaryLocalName'],
+                $result['purchaseRecordsValue']
+            );
+        }
+
+        return $details;
+    }
+
+
+    /**
      * @param Vendor $vendor
      *
      * @return PurchaseDetail[]

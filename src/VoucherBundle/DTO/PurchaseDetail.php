@@ -81,6 +81,7 @@ class PurchaseDetail implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
+            'purchase_datetime' => $this->getDate()->format('U'),
             'purchase_date' => $this->getDate()->format('d-m-Y'),
             'purchase_amount' => $this->getAmount(),
             'beneficiary_id' => $this->getBeneficiaryId(),
@@ -88,4 +89,5 @@ class PurchaseDetail implements \JsonSerializable
             'beneficiary_en_name' => $this->getBeneficiaryEnName(),
         ];
     }
+
 }
