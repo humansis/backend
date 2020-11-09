@@ -1,19 +1,16 @@
 <?php
 
-
 namespace NewApiBundle\Controller;
 
-
 use CommonBundle\Pagination\Paginator;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Exception\NotFoundException;
+use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\DBAL\SectorEnum;
-use ProjectBundle\DTO\Sector;
 use ProjectBundle\Utils\SectorService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Response;
-use NewApiBundle\Utils\CodeLists;
 
 class SectorsCodelistController extends Controller
 {
@@ -37,7 +34,6 @@ class SectorsCodelistController extends Controller
         return $this->json(new Paginator($data));
     }
 
-
     /**
      * @Rest\Get("/sectors/{code}/subsectors")
      *
@@ -52,10 +48,12 @@ class SectorsCodelistController extends Controller
 
             return $this->json(new Paginator($subSectors));
         } catch (NotFoundException $e) {
-            return $this->json([
-                'message' => $e->getMessage(),
-            ], Response::HTTP_NOT_FOUND);
+            return $this->json(
+                [
+                    'message' => $e->getMessage(),
+                ],
+                Response::HTTP_NOT_FOUND
+            );
         }
     }
-
 }

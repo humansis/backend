@@ -1,6 +1,5 @@
 <?php
 
-
 namespace NewApiBundle\Controller;
 
 use DistributionBundle\Entity\Assistance;
@@ -16,12 +15,10 @@ class AssistanceController extends Controller
     /** @var AssistanceMapper */
     private $assistanceMapper;
 
-
     public function __construct(AssistanceMapper $mapper)
     {
         $this->assistanceMapper = $mapper;
     }
-
 
     /**
      * @Rest\Get("/project/{projectId}/assistances", requirements={"projectId" = "\d+"})

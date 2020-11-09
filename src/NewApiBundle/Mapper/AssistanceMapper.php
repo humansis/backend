@@ -1,15 +1,12 @@
 <?php
 
-
 namespace NewApiBundle\Mapper;
-
 
 use DistributionBundle\Entity\Assistance;
 
 //TODO This is a draft
 class AssistanceMapper
 {
-
     public function toFullArray(?Assistance $assistance): ?array
     {
         if (!$assistance) {
@@ -26,10 +23,9 @@ class AssistanceMapper
             'district' => $assistance->getLocation()->getAdm2Name(),
             'commune' => $assistance->getLocation()->getAdm3Name(),
             'village' => $assistance->getLocation()->getAdm4Name(),
-            'commodityIds' => [0, 1] //TODO implement
+            'commodityIds' => [0, 1], //TODO implement
         ];
     }
-
 
     /**
      * @param iterable $assistances

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Tests\NewApiBundle\Controller;
-
 
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
@@ -38,14 +36,16 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
         $this->assertEquals(count(Assistance::TYPE_TO_STRING_MAPPING), $result['totalCount']);
     }
-
 
     /**
      * @throws Exception
@@ -61,7 +61,10 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);

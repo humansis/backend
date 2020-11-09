@@ -1,6 +1,5 @@
 <?php
 
-
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
