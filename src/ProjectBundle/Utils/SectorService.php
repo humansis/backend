@@ -4,6 +4,7 @@
 namespace ProjectBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Exception\NotFoundException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
@@ -264,5 +265,23 @@ class SectorService
             $sectors[$sectorDTO->getSectorName()][] = $sectorDTO;
         }
         return $sectors;
+    }
+
+
+    /**
+     * @param string $sector
+     *
+     * @return Sector[]
+     * @throws NotFoundException
+     */
+    public function findSubsSectorsBySector(string $sector): array
+    {
+        $sectors = $this->getSubsBySector();
+
+        if (!isset($sectors[$sector])) {
+            throw new NotFoundException('Sector not found');
+        }
+
+        return $sectors[$sector];
     }
 }

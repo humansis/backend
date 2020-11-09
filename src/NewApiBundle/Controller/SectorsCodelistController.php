@@ -5,12 +5,14 @@ namespace NewApiBundle\Controller;
 
 
 use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Exception\NotFoundException;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DTO\Sector;
 use ProjectBundle\Utils\SectorService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Symfony\Component\HttpFoundation\Response;
 
 class SectorsCodelistController extends Controller
 {
@@ -29,7 +31,7 @@ class SectorsCodelistController extends Controller
      */
     public function getSectors(): JsonResponse
     {
-        $data = self::map(SectorEnum::all());
+        $data = self::mapSectors(SectorEnum::all());
 
         return $this->json(new Paginator($data));
     }
@@ -38,39 +40,40 @@ class SectorsCodelistController extends Controller
     /**
      * @Rest\Get("/sectors/{code}/subsectors")
      *
-     * @param int $code
+     * @param string $code
      *
      * @return JsonResponse
      */
-    public function getSubsectors(int $code): JsonResponse
+    public function getSubSectors(string $code): JsonResponse
     {
-        $sector = SectorEnum::all()[$code];
+        try {
+            $subSectors = self::mapSubSectors($this->sectorService->findSubsSectorsBySector($code));
 
-        $subsectors = $this->sectorService->getSubsBySector()[$sector];
-
-        return $this->json(self::mapSubsectors($subsectors));
+            return $this->json(new Paginator($subSectors));
+        } catch (NotFoundException $e) {
+            return $this->json([
+                'message' => $e->getMessage(),
+            ], Response::HTTP_NOT_FOUND);
+        }
     }
 
-    private static function mapSubsectors(iterable $subsectors)
+    private static function mapSubSectors(iterable $subSectors)
     {
         $data = [];
 
-        /**
-         * @var int $key
-         * @var Sector $subsector
-         */
-        foreach ($subsectors as $key => $subsector) {
-            $data[] = ['code' => $key, 'value' => $subsector->getSubSectorName()];
+        /** @var Sector $subSector */
+        foreach ($subSectors as $subSector) {
+            $data[] = ['code' => $subSector->getSubSectorName(), 'value' => $subSector->getSubSectorName()];
         }
 
         return $data;
     }
 
-    private static function map(iterable $list): array
+    private static function mapSectors(iterable $list): array
     {
         $data = [];
-        foreach ($list as $key => $value) {
-            $data[] = ['code' => $key, 'value' => $value];
+        foreach ($list as $value) {
+            $data[] = ['code' => $value, 'value' => $value];
         }
 
         return $data;
