@@ -6,7 +6,8 @@ namespace NewApiBundle\Mapper;
 
 use DistributionBundle\Entity\Assistance;
 
-class AssistanceMapper extends \BeneficiaryBundle\Mapper\AssistanceMapper
+//TODO This is a draft
+class AssistanceMapper
 {
 
     public function toFullArray(?Assistance $assistance): ?array

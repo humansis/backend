@@ -10,6 +10,7 @@ use NewApiBundle\Mapper\AssistanceMapper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+//TODO This is draft how AssistanceController could look
 class AssistanceController extends Controller
 {
     /** @var AssistanceMapper */
