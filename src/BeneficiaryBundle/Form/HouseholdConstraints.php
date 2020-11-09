@@ -44,6 +44,8 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "support_received_types" => $optionalArray,
             "support_date_received" => $optionalDate,
             "support_organization_name" => $optionalString,
+            "income_spent_on_food" => $optionalNumeric,
+            "household_income" => $optionalNumeric,
         ];
         $householdLocation = [
             "location_group" => $string,

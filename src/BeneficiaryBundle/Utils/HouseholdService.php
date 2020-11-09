@@ -194,7 +194,9 @@ class HouseholdService
             ->setShelterStatus($householdArray["shelter_status"] ?? null)
             ->setDebtLevel($householdArray["debt_level"] ?? null)
             ->setSupportReceivedTypes($householdArray["support_received_types"] ?? [])
-            ->setSupportOrganizationName($householdArray["support_organization_name"] ?? null);
+            ->setSupportOrganizationName($householdArray["support_organization_name"] ?? null)
+            ->setIncomeSpentOnFood($householdArray["income_spent_on_food"] ?? null)
+            ->setHouseholdIncome($householdArray["household_income"] ?? null);
 
         $dateReceived = null;
         if (isset($householdArray["support_date_received"]) && $householdArray["support_date_received"]) {
