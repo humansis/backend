@@ -57,6 +57,7 @@ class PurchaseRedeemedBatch implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
+            'datetime' => $this->date ? $this->date->format('U') : null,
             'date' => $this->date ? $this->date->format('d-m-Y H:i') : null,
             'count' => $this->count,
             'value' => $this->value,
