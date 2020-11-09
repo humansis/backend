@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Response;
+use NewApiBundle\Utils\CodeLists;
 
 class SectorsCodelistController extends Controller
 {
@@ -31,7 +32,7 @@ class SectorsCodelistController extends Controller
      */
     public function getSectors(): JsonResponse
     {
-        $data = self::mapSectors(SectorEnum::all());
+        $data = CodeLists::mapEnum(SectorEnum::all());
 
         return $this->json(new Paginator($data));
     }
@@ -47,7 +48,7 @@ class SectorsCodelistController extends Controller
     public function getSubSectors(string $code): JsonResponse
     {
         try {
-            $subSectors = self::mapSubSectors($this->sectorService->findSubsSectorsBySector($code));
+            $subSectors = CodeLists::mapSubSectors($this->sectorService->findSubsSectorsBySector($code));
 
             return $this->json(new Paginator($subSectors));
         } catch (NotFoundException $e) {
@@ -55,28 +56,6 @@ class SectorsCodelistController extends Controller
                 'message' => $e->getMessage(),
             ], Response::HTTP_NOT_FOUND);
         }
-    }
-
-    private static function mapSubSectors(iterable $subSectors)
-    {
-        $data = [];
-
-        /** @var Sector $subSector */
-        foreach ($subSectors as $subSector) {
-            $data[] = ['code' => $subSector->getSubSectorName(), 'value' => $subSector->getSubSectorName()];
-        }
-
-        return $data;
-    }
-
-    private static function mapSectors(iterable $list): array
-    {
-        $data = [];
-        foreach ($list as $value) {
-            $data[] = ['code' => $value, 'value' => $value];
-        }
-
-        return $data;
     }
 
 }

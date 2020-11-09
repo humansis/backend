@@ -7,7 +7,7 @@ use CommonBundle\Pagination\Paginator;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
-
+use NewApiBundle\Utils\CodeLists;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -20,7 +20,7 @@ class AssistanceCodelistController extends Controller
      */
     public function getTargets(): JsonResponse
     {
-        $data = self::map(Assistance::TYPE_TO_STRING_MAPPING);
+        $data = CodeLists::mapArray(Assistance::TYPE_TO_STRING_MAPPING);
 
         return $this->json(new Paginator($data));
     }
@@ -32,18 +32,8 @@ class AssistanceCodelistController extends Controller
      */
     public function getTypes(): JsonResponse
     {
-        $data = self::map(AssistanceTypeEnum::all());
+        $data = CodeLists::mapEnum(AssistanceTypeEnum::all());
 
         return $this->json(new Paginator($data));
-    }
-
-    private static function map(iterable $list): array
-    {
-        $data = [];
-        foreach ($list as $key => $value) {
-            $data[] = ['code' => $key, 'value' => $value];
-        }
-
-        return $data;
     }
 }
