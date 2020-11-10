@@ -10,6 +10,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use ProjectBundle\Entity\Project;
 
 /**
  * AssistanceRepository
@@ -218,13 +219,13 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->getResult();
     }
 
-    public function getAllByProjectId(int $projectId)
+    public function getAllByProject(Project $project)
     {
-        $qb = $this->createQueryBuilder("dd")
-            ->leftJoin("dd.project", "p")
-            ->where("p.id = :projectId")
-            ->setParameter("projectId", $projectId);
-        //->andWhere("dd.archived = 0"); //TODO should be archived? - TBD later
+        $qb = $this->createQueryBuilder('dd')
+            ->where('dd.project = :project')
+            ->setParameter('project', $project)
+            ->andWhere('dd.archived = 0');
+
         return $qb->getQuery()->getResult();
     }
 }

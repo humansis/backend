@@ -6,6 +6,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Mapper\AssistanceMapper;
+use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -21,17 +22,17 @@ class AssistanceController extends Controller
     }
 
     /**
-     * @Rest\Get("/project/{projectId}/assistances", requirements={"projectId" = "\d+"})
+     * @Rest\Get("/project/{id}/assistances"})
      *
-     * @param int $projectId
+     * @param Project $project
      *
      * @return JsonResponse
      */
-    public function getProjectAssistances(int $projectId): JsonResponse
+    public function getProjectAssistances(Project $project): JsonResponse
     {
         /** @var AssistanceRepository $repository */
         $repository = $this->getDoctrine()->getRepository(Assistance::class);
 
-        return $this->json($this->assistanceMapper->toFullArrays($repository->getAllByProjectId($projectId)));
+        return $this->json($this->assistanceMapper->toFullArrays($repository->getAllByProject($project)));
     }
 }
