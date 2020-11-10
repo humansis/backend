@@ -22,7 +22,7 @@ class AssistanceController extends Controller
     }
 
     /**
-     * @Rest\Get("/project/{id}/assistances"})
+     * @Rest\Get("/project/{id}/assistances")
      *
      * @param Project $project
      *
