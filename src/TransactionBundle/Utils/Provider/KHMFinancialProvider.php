@@ -21,8 +21,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider
     /**
      * @var string
      */
-    protected $url = "http://110.74.218.219:8080/RestEngine";
-    protected $url_prod = "http://hir.wingmoney.com:8080/RestServer";
+    protected $url = "https://ir.wingmoney.com:9443/RestEngine";
+    protected $url_prod = "http://hir.wingmoney.com:9443/RestServer";
     /**
      * @var string
      */
