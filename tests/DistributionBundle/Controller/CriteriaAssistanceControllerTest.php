@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Tests\DistributionBundle\Controller;
 
 use Tests\BMSServiceTestCase;
@@ -13,7 +12,7 @@ class CriteriaAssistanceControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("serializer");
+        $this->setDefaultSerializerName('serializer');
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
@@ -22,6 +21,7 @@ class CriteriaAssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @return void
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -38,10 +38,7 @@ class CriteriaAssistanceControllerTest extends BMSServiceTestCase
         $criteria = json_decode($this->client->getResponse()->getContent(), true);
 
         // Check if the second step succeed
-        $this->assertTrue(gettype($criteria[0]) == 'array');
-        $this->assertTrue(gettype($criteria[1]) == 'array');
-        $this->assertTrue(gettype($criteria[2]) == 'array');
-        $this->assertTrue(gettype($criteria[3]) == 'array');
-        $this->assertTrue(gettype($criteria[4]) == 'array');
+        $this->assertIsArray($criteria);
+        $this->assertIsArray($criteria[0]);
     }
 }
