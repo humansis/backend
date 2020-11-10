@@ -1,6 +1,5 @@
 <?php
 
-
 namespace CommonBundle\DataFixtures;
 
 use BeneficiaryBundle\Entity\Address;
@@ -18,61 +17,64 @@ use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\HttpKernel\Kernel;
 
 class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
     private $householdTypes = [
-        "single male family" => ['M-25'],
-        "single female family" => ['F-25'],
-        "mother with kids" => ['F-20', 'F-1', 'F-5', 'M-15'],
-        "father with kids" => ['M-20', 'F-1', 'F-5', 'M-15'],
-        "old couple" => ['M-60', 'F-55'],
-        "grandparents with kids" => ['M-60', 'F-55', 'F-2', 'F-10'],
-        "big family" => ['M-20', 'F-18', 'F-1', 'F-5', 'M-15', 'M-60', 'F-55'],
+        'single male family' => ['M-25'],
+        'single female family' => ['F-25'],
+        'mother with kids' => ['F-20', 'F-1', 'F-5', 'M-15'],
+        'father with kids' => ['M-20', 'F-1', 'F-5', 'M-15'],
+        'old couple' => ['M-60', 'F-55'],
+        'grandparents with kids' => ['M-60', 'F-55', 'F-2', 'F-10'],
+        'big family' => ['M-20', 'F-18', 'F-1', 'F-5', 'M-15', 'M-60', 'F-55'],
     ];
+
     private $beneficiaryTemplate = [
-        "en_given_name" => "{gender} {age}",
-        "en_family_name" => "[{householdType} found by {project}]",
-        "local_given_name" => "{gender} {age}",
-        "local_family_name" => "{householdType} from {country}",
-        "gender" => "0",
-        "status" => "1",
-        "residency_status" => "resident",
-        "vulnerability_criteria" => [
+        'en_given_name' => '{gender} {age}',
+        'en_family_name' => '[{householdType} found by {project}]',
+        'local_given_name' => '{gender} {age}',
+        'local_family_name' => '{householdType} from {country}',
+        'gender' => '0',
+        'status' => '1',
+        'residency_status' => 'resident',
+        'vulnerability_criteria' => [
             [
-                "id" => 3
-            ]
+                'id' => 3,
+            ],
         ],
-        "profile" => [
-            "photo" => ""
+        'profile' => [
+            'photo' => '',
         ],
     ];
+
     private $householdTemplate = [
-        "livelihood" => \ProjectBundle\Enum\Livelihood::GOVERNMENT,
-        "income_level" => 3,
-        "notes" => null,
-        "latitude" => null,
-        "longitude" => null,
-        "coping_strategies_index" => "2",
-        "food_consumption_score" => "3",
-        "household_locations" => [],
-        "debt_level" => 1,
-        "country_specific_answers" => [
-          [
-            "answer" => "2",
-            "country_specific" => [
-                "id" => 1
+        'livelihood' => Livelihood::GOVERNMENT,
+        'income_level' => 3,
+        'notes' => null,
+        'latitude' => null,
+        'longitude' => null,
+        'coping_strategies_index' => '2',
+        'food_consumption_score' => '3',
+        'household_locations' => [],
+        'debt_level' => 1,
+        'country_specific_answers' => [
+            [
+                'answer' => '2',
+                'country_specific' => [
+                    'id' => 1,
+                ],
             ],
-          ],
-          [
-              "answer" => null,
-              "country_specific" => [
-                  "id" => 2
-              ],
-          ]
+            [
+                'answer' => null,
+                'country_specific' => [
+                    'id' => 2,
+                ],
+            ],
         ],
-        "beneficiaries" => [],
+        'beneficiaries' => [],
     ];
 
     private $householdService;
@@ -85,27 +87,28 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         $this->kernel = $kernel;
     }
 
-
     /**
-     * Load data fixtures with the passed EntityManager
+     * Load data fixtures with the passed EntityManager.
      *
      * @param ObjectManager $manager
      */
     public function load(ObjectManager $manager)
     {
-        if ($this->kernel->getEnvironment() === "prod") {
+        if ('prod' === $this->kernel->getEnvironment()) {
             echo "Can't run on production environment.";
+
             return;
         }
+
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
             echo "Project {$project->getName()}/{$project->getIso3()}";
             $locationIndex = 0;
-            foreach ($this->getTestingLocations($manager, (string)$project->getIso3()) as $location) {
-                $locationIndex++;
+            foreach ($this->getTestingLocations($manager, $project->getIso3()) as $location) {
                 $this->createHousehold($manager, $location, $project);
-                if (($locationIndex % 50) == 0) {
+                if (0 == (++$locationIndex % 5)) {
                     $manager->flush();
+                    break;
                 }
             }
             echo "\n";
@@ -118,28 +121,28 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
     {
         $adm1s = $manager->getRepository(Adm1::class)->findBy([
             'countryISO3' => $iso3,
-            'name' => [LocationTestFixtures::ADM1_1.$iso3, LocationTestFixtures::ADM1_2.$iso3]
+            'name' => [LocationTestFixtures::ADM1_1.$iso3, LocationTestFixtures::ADM1_2.$iso3],
         ]);
         foreach ($adm1s as $adm1) {
             yield $adm1->getLocation();
         }
         $adm2s = $manager->getRepository(Adm2::class)->findBy([
             'adm1' => $adm1s,
-            'name' => [LocationTestFixtures::ADM2_1.$iso3, LocationTestFixtures::ADM2_2.$iso3]
+            'name' => [LocationTestFixtures::ADM2_1.$iso3, LocationTestFixtures::ADM2_2.$iso3],
         ]);
         foreach ($adm2s as $adm2) {
             yield $adm2->getLocation();
         }
         $adm3s = $manager->getRepository(Adm3::class)->findBy([
             'adm2' => $adm2s,
-            'name' => [LocationTestFixtures::ADM3_1.$iso3, LocationTestFixtures::ADM3_2.$iso3]
+            'name' => [LocationTestFixtures::ADM3_1.$iso3, LocationTestFixtures::ADM3_2.$iso3],
         ]);
         foreach ($adm3s as $adm3) {
             yield $adm3->getLocation();
         }
         $adm4s = $manager->getRepository(Adm4::class)->findBy([
             'adm3' => $adm3s,
-            'name' => [LocationTestFixtures::ADM4_1.$iso3, LocationTestFixtures::ADM4_2.$iso3]
+            'name' => [LocationTestFixtures::ADM4_1.$iso3, LocationTestFixtures::ADM4_2.$iso3],
         ]);
         foreach ($adm4s as $adm4) {
             yield $adm4->getLocation();
@@ -148,11 +151,13 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
 
     /**
      * @param ObjectManager $manager
-     * @param Location $location
-     * @param Project $project
+     * @param Location      $location
+     * @param Project       $project
+     *
      * @throws \Exception
      */
-    private function createHousehold(ObjectManager $manager, Location $location, Project $project) {
+    private function createHousehold(ObjectManager $manager, Location $location, Project $project)
+    {
         foreach ($this->householdTypes as $typeName => $members) {
             $household = new Household();
 
@@ -168,7 +173,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
                 $bnfData = $this->replacePlaceholders($this->beneficiaryTemplate, [
                     '{age}' => $age,
                     '{project}' => $project->getName(),
-                    '{gender}' => $gender === 'F'? 'Female' : 'Male',
+                    '{gender}' => 'F' === $gender ? 'Female' : 'Male',
                     '{householdType}' => $typeName,
                     '{country}' => $project->getIso3(),
                 ]);
@@ -182,8 +187,8 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
                 $bnf->setEnGivenName($bnfData['en_given_name']);
                 $bnf->setLocalFamilyName($bnfData['local_family_name']);
                 $bnf->setLocalGivenName($bnfData['local_given_name']);
-                $bnf->setGender($gender === 'F'? 0 : 1);
-                $bnf->setStatus($household->getBeneficiaries()->count() == 0);
+                $bnf->setGender('F' === $gender ? 0 : 1);
+                $bnf->setStatus(0 == $household->getBeneficiaries()->count());
                 $bnf->setResidencyStatus($bnfData['residency_status']);
 
                 $household->addBeneficiary($bnf);
@@ -199,12 +204,13 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             $household->addProject($project);
 
             $manager->persist($household);
-            echo ".";
+            echo '.';
         }
         $manager->persist($project);
     }
 
-    private function replacePlaceholders(array $data, array $replaces) {
+    private function replacePlaceholders(array $data, array $replaces)
+    {
         foreach ($data as $key => $value) {
             $newValue = $value;
             foreach ($replaces as $placeholder => $replace) {
@@ -212,19 +218,20 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             }
             $data[$key] = $newValue;
         }
+
         return $data;
     }
 
     private function getHouseholdLocation(Location $location): HouseholdLocation
     {
         $hhLocation = new HouseholdLocation();
-        $hhLocation->setType("residence");
-        $hhLocation->setLocationGroup("current");
+        $hhLocation->setType('residence');
+        $hhLocation->setLocationGroup('current');
 
         $address = new Address();
         $address->setStreet(md5($location->getId().$location->getCode()));
         $address->setNumber($location->getId());
-        $address->setPostcode(($location->getId())*1024%10000);
+        $address->setPostcode(rand(10001, 99999));
         $address->setLocation($location);
         $hhLocation->setAddress($address);
 
