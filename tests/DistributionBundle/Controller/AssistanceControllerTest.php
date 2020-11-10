@@ -55,12 +55,14 @@ class AssistanceControllerTest extends BMSServiceTestCase
 //        $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
 
+        $adm2 = $this->container->get('doctrine')->getRepository(\CommonBundle\Entity\Adm2::class)->findOneBy([]);
+
         $criteria = array(
             "id" => null,
-            "adm1" => "",
-            "adm2"=> "",
-            "adm3" => "",
-            "adm4" => "",
+            'adm1' => $adm2->getAdm1()->getId(),
+            'adm2' => $adm2->getId(),
+            'adm3' => null,
+            'adm4' => null,
             "type" => Assistance::TYPE_HOUSEHOLD,
             "commodities" => [
                 [
@@ -77,10 +79,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             "date_distribution" => "13-09-2018",
             "location" => [
-                "adm1"=> 1,
-                "adm2"=> 1,
-                "adm3"=> 1,
-                "adm4"=> 1,
+                'adm1' => $adm2->getAdm1()->getId(),
+                'adm2' => $adm2->getId(),
+                'adm3' => null,
+                'adm4' => null,
                 "country_iso3"=> "KHM"
             ],
             "country_specific_answers" => [
@@ -136,6 +138,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('project', $distribution);
         $this->assertArrayHasKey('selection_criteria', $distribution);
         $this->assertArrayHasKey('validated', $distribution);
+
+        $this->assertEquals($distribution['name'], $adm2->getName().'-'.date('d-m-Y'));
 
         return $distribution;
     }

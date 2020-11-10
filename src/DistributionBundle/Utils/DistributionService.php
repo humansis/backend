@@ -175,6 +175,7 @@ class DistributionService
 
         $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
+        $distribution->setName(self::generateName($location));
 
         $project = $distribution->getProject();
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
@@ -790,5 +791,21 @@ class DistributionService
 
         $this->em->remove($assistance);
         $this->em->flush();
+    }
+
+    private function generateName(\CommonBundle\Entity\Location $location): string
+    {
+        $adm = '';
+        if ($location->getAdm4()) {
+            $adm = $location->getAdm4()->getName();
+        } elseif ($location->getAdm3()) {
+            $adm = $location->getAdm3()->getName();
+        } elseif ($location->getAdm2()) {
+            $adm = $location->getAdm2()->getName();
+        } elseif ($location->getAdm1()) {
+            $adm = $location->getAdm1()->getName();
+        }
+
+        return $adm.'-'.date('d-m-Y');
     }
 }
