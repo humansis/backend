@@ -168,10 +168,10 @@ abstract class DefaultFinancialProvider
     /**
      * Update distribution status (check if money has been picked up)
      * @param  Assistance $assistance
-     * @return void
+     * @return DistributionBeneficiary[]
      * @throws \Exception
      */
-    public function updateStatusDistribution(Assistance $assistance)
+    public function updateStatusDistribution(Assistance $assistance): array
     {
         $response = array();
 

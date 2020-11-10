@@ -152,10 +152,10 @@ class KHMFinancialProvider extends DefaultFinancialProvider
     /**
      * Update status of transaction (check if money has been picked up)
      * @param  Transaction $transaction
-     * @return object
+     * @return Transaction
      * @throws \Exception
      */
-    public function updateStatusTransaction(Transaction $transaction)
+    public function updateStatusTransaction(Transaction $transaction): Transaction
     {
         try {
             $response = $this->getStatus($transaction->getDistributionBeneficiary()->getAssistance(), $transaction->getTransactionId());

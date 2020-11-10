@@ -82,7 +82,7 @@ class Transaction
     private $message;
 
     /**
-     * @var float
+     * @var bool
      *
      * @ORM\Column(name="money_received", type="boolean", nullable=true)
      *
@@ -263,9 +263,9 @@ class Transaction
     /**
      * Get the value of Money Received
      *
-     * @return float
+     * @return bool
      */
-    public function getMoneyReceived()
+    public function getMoneyReceived(): ?bool
     {
         return $this->moneyReceived;
     }
