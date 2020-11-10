@@ -51,7 +51,7 @@ class DefaultVoter extends BMSVoter
      */
     protected function supports($attribute, $subject)
     {
-        return true;
+        return 'wsse' === $this->requestStack->getCurrentRequest()->attributes->get('firewall');
     }
 
     /**
