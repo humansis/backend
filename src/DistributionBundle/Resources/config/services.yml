@@ -54,6 +54,9 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
 
+    DistributionBundle\Mapper\AssistanceBeneficiaryMapper:
+        public: true
+
 #######################################################################################
 ##                                       CSV                                         ##
 #######################################################################################

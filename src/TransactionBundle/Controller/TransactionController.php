@@ -5,6 +5,7 @@ namespace TransactionBundle\Controller;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\Household;
+use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -119,11 +120,10 @@ class TransactionController extends Controller
     public function updateTransactionStatusAction(Request $request, Assistance $assistance)
     {
         $countryISO3 = $request->request->get('__country');
+        $assistanceBeneficiaryMapper = $this->get(AssistanceBeneficiaryMapper::class);
         try {
             $beneficiaries = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $assistance);
-            $json = $this->get('serializer')
-            ->serialize($beneficiaries, 'json');
-            return new Response($json);
+            return $this->json($assistanceBeneficiaryMapper->toMinimalTransactionArrays($beneficiaries));
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

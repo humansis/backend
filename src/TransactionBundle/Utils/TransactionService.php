@@ -213,10 +213,10 @@ class TransactionService
      * Update transaction status
      * @param $countryISO3
      * @param  Assistance $assistance
-     * @return array
+     * @return DistributionBeneficiary[]
      * @throws \Exception
      */
-    public function updateTransactionStatus(string $countryISO3, Assistance $assistance)
+    public function updateTransactionStatus(string $countryISO3, Assistance $assistance): array
     {
         try {
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
