@@ -464,6 +464,35 @@ class SmartcardController extends Controller
     }
 
     /**
+     * Get vendor purchase details
+     *
+     * @Rest\Get("/smartcards/purchases/{id}/details", name="smarcards_purchases_details")
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @SWG\Tag(name="Smartcards")
+     * @SWG\Tag(name="Single Vendor")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="All vendor unredeemed purchases"
+     * )
+     *
+     * @param Vendor $vendor
+     *
+     * @return Response
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function getPurchasesDetails(Vendor $vendor): Response
+    {
+        /** @var SmartcardPurchaseRepository $repository */
+        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
+        $details = $repository->getUsedUnredeemedDetails($vendor);
+
+        return $this->json($details);
+    }
+
+    /**
      * Get vendor purchases to redeem
      *
      * @Rest\Get("/smartcards/purchases/to-redemption/{id}", name="smarcards_purchases_to_redemtion")
