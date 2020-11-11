@@ -40,7 +40,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @ORM\Column(name="residency_status", type="string", length=20)
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance", "SmallHousehold", "FullBeneficiary"})
-     * @Assert\Regex("/^(refugee|IDP|resident)$/i")
+     * @Assert\Regex("/^(refugee|IDP|resident|returnee)$/i")
      */
     private $residencyStatus;
 
