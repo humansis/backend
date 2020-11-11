@@ -22,7 +22,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      * @var string
      */
     protected $url = "https://ir.wingmoney.com:9443/RestEngine";
-    protected $url_prod = "http://hir.wingmoney.com:9443/RestServer";
+    protected $url_prod = "https://api.wingmoney.com:8443/RestServer";
     /**
      * @var string
      */
@@ -226,7 +226,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         }
                 
         curl_setopt_array($curl, array(
-          CURLOPT_PORT           => "9443",
+          CURLOPT_PORT           => ($this->production ? "8443": "9443"),
           CURLOPT_URL            => ($this->production ? $this->url_prod : $this->url) . $route,
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_ENCODING       => "",
