@@ -4,8 +4,8 @@ namespace CommonBundle\DataFixtures;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use DateTimeImmutable;
-use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -44,8 +44,17 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         // set up seed will make random values will be same for each run of fixtures
         srand(42);
 
+        foreach ([VendorFixtures::REF_VENDOR_KHM, VendorFixtures::REF_VENDOR_SYR] as $i => $ref) {
+            $this->generateSeed($manager, $this->getReference($ref));
+        }
+
+        $manager->flush();
+    }
+
+    private function generateSeed(ObjectManager $manager, Vendor $vendor)
+    {
         for ($i = 0; $i < 20; ++$i) {
-            $serialNumber = self::generateSerialNumber($i);
+            $serialNumber = self::generateSerialNumber();
             if ($manager->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $serialNumber])) {
                 // fixtures already exists
                 return;
@@ -56,7 +65,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $smartcard->setState(self::generateState());
 
             for ($j = 0; $j < rand(0, 5); ++$j) {
-                $this->generatePurchase($j, $smartcard, $manager);
+                $this->generatePurchase($j, $smartcard, $vendor, $manager);
             }
 
             for ($j = 0; $j < rand(0, 5); ++$j) {
@@ -65,13 +74,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
             $manager->persist($smartcard);
         }
-
-        $manager->flush();
     }
 
-    private static function generateSerialNumber($seed)
+    private static function generateSerialNumber()
     {
-        return substr(md5($seed), 0, 7);
+        static $i = 0;
+
+        return substr(md5(++$i), 0, 7);
     }
 
     private static function generateState()
@@ -81,9 +90,9 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         return Smartcard::states()[$i];
     }
 
-    private function generatePurchase($seed, Smartcard $smartcard, ObjectManager $manager): SmartcardPurchase
+    private function generatePurchase($seed, Smartcard $smartcard, Vendor $vendor, ObjectManager $manager): SmartcardPurchase
     {
-        $purchase = SmartcardPurchase::create($smartcard, $this->randomEntity(Vendor::class, $manager), new DateTimeImmutable('now'));
+        $purchase = SmartcardPurchase::create($smartcard, $vendor, new DateTimeImmutable('now'));
 
         for ($j = 0; $j < rand(1, 3); ++$j) {
             $quantity = rand(1, 10000);
