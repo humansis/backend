@@ -307,13 +307,14 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $purchase->setCreatedAt(new \DateTime());
         $purchaseService = $this->container->get('voucher.purchase_service');
         $purchaseService->purchaseSmartcard($smartcard, $purchase);
+        /** @var SmartcardPurchase $p2 */
         $p2 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
         $p3 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
         $redemptionBatch = new SmartcardRedemptionBatch(
             $vendor,
             new \DateTime(),
             $user,
-            0,
+            $this->em->getRepository(SmartcardPurchase::class)->countPurchasesValue([$p2, $p3]),
             [$p2, $p3]
         );
         $p2->setRedemptionBatch($redemptionBatch);

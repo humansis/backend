@@ -45,6 +45,24 @@ class SmartcardPurchaseRepository extends EntityRepository
         return new PurchaseSummary($summary['purchaseCount'], $summary['purchaseRecordsValue'] ?? 0);
     }
 
+    public function countPurchasesValue(array $purchases)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('SUM(pr.value)')
+            ->join('p.records', 'pr')
+            ->where('p.id IN (:purchases)')
+            ->setParameter('purchases', $purchases)
+        ;
+
+        try {
+            return $qb->getQuery()->getSingleScalarResult();
+        } catch (NoResultException $e) {
+            return 0;
+        } catch (NonUniqueResultException $e) {
+            return 0;
+        }
+    }
+
     /**
      * @param Vendor $vendor
      *

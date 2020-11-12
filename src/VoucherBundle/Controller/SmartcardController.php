@@ -620,7 +620,7 @@ class SmartcardController extends Controller
             $vendor,
             new \DateTime(),
             $this->getUser(),
-            0,
+            $repository->countPurchasesValue($purchases),
             $purchases
         );
         foreach ($purchases as $purchase) {
