@@ -1,24 +1,24 @@
 <?php
+declare(strict_types=1);
 
 namespace VoucherBundle\Repository;
 
+use DateTimeInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use VoucherBundle\DTO\PurchaseDetail;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
-use VoucherBundle\DTO\PurchaseRedeemedBatch;
 use VoucherBundle\DTO\PurchaseSummary;
-use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
 
 /**
- * Class SmartcardPurchaseRepository.
+ * Class SmartcardRedemptionBatchRepository.
  *
- * @method SmartcardPurchase find($id)
+ * @method SmartcardRedemptionBatch find($id)
  */
-class SmartcardPurchaseRepository extends EntityRepository
+class SmartcardRedemptionBatchRepository extends EntityRepository
 {
     /**
      * @param Vendor $vendor
@@ -81,38 +81,12 @@ class SmartcardPurchaseRepository extends EntityRepository
     }
 
     /**
-     * @param Vendor $vendor
-     *
-     * @return PurchaseRedeemedBatch[]
-     */
-    public function getRedeemBatches(Vendor $vendor): array
-    {
-        $qb = $this->createQueryBuilder('p')
-            ->select('p.redeemedAt as batchDate, COUNT(p.id) as purchaseCount, SUM(pr.value) as purchaseRecordsValue')
-            ->join('p.records', 'pr')
-            ->where('p.vendor = :vendor')
-            ->andWhere('p.redeemedAt is not null')
-            ->setParameter('vendor', $vendor)
-            ->groupBy('p.redeemedAt');
-
-        $batches = [];
-        foreach ($qb->getQuery()->getResult() as $batch) {
-            $batches[] = new PurchaseRedeemedBatch(
-                $batch['batchDate'],
-                $batch['purchaseCount'],
-                $batch['purchaseRecordsValue']
-            );
-        }
-
-        return $batches;
-    }
-
-    /**
-     * @param SmartcardRedemptionBatch $batch
+     * @param Vendor             $vendor
+     * @param DateTimeInterface $batchDate
      *
      * @return PurchaseDetail[]
      */
-    public function getBatchDetails(SmartcardRedemptionBatch $batch): array
+    public function getBatchDetails(Vendor $vendor, DateTimeInterface $batchDate): array
     {
         $qb = $this->createQueryBuilder('p')
             ->select(
@@ -128,8 +102,10 @@ class SmartcardPurchaseRepository extends EntityRepository
             ->join('p.smartcard', 's')
             ->join('s.beneficiary', 'b')
             ->join('b.person', 'person')
-            ->andWhere('p.redemptionBatch = :batch')
-            ->setParameter('batch', $batch)
+            ->andWhere('p.vendor = :vendor')
+            ->andWhere('p.redeemedAt = :batch')
+            ->setParameter('vendor', $vendor)
+            ->setParameter('batch', $batchDate)
             ->groupBy('p.id');
 
         $details = [];
@@ -145,7 +121,6 @@ class SmartcardPurchaseRepository extends EntityRepository
 
         return $details;
     }
-
 
     /**
      * @param Vendor $vendor

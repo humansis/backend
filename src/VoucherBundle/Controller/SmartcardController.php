@@ -20,12 +20,12 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
+use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
-use VoucherBundle\InputType\SmartcardRedemtionBatch;
+use VoucherBundle\InputType\SmartcardRedemtionBatch as RedemptionBatchInput;
 use VoucherBundle\Mapper\SmartcardMapper;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
-use function Cassandra\Date;
 
 /**
  * @SWG\Parameter(
@@ -543,8 +543,10 @@ class SmartcardController extends Controller
     public function getRedeemBatches(Vendor $vendor): Response
     {
         /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $summaryBatches = $repository->getRedeemBatches($vendor);
+        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardRedemptionBatch::class);
+        $summaryBatches = $repository->findBy([
+            'vendor' => $vendor,
+        ]);
 
         return $this->json($summaryBatches);
     }
@@ -552,8 +554,7 @@ class SmartcardController extends Controller
     /**
      * Get vendor purchase batch details
      *
-     * @Rest\Get("/smartcards/purchases/redeemed-batches/{id}/batch-details/{batchDate}", name="smarcards_redeemed_batches_details")
-     * @ParamConverter("batchDate", options={"format": "U"})
+     * @Rest\Get("/smartcards/purchases/batche/{id}", name="smarcards_redeemed_batches_details")
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * @SWG\Tag(name="Smartcards")
@@ -564,16 +565,15 @@ class SmartcardController extends Controller
      *     description="All vendor purchases",
      * )
      *
-     * @param Vendor    $vendor
-     * @param \DateTime $batchDate
+     * @param SmartcardRedemptionBatch $batch
      *
      * @return Response
      */
-    public function getRedeemBatchesDetails(Vendor $vendor, \DateTime $batchDate): Response
+    public function getRedeemBatchesDetails(SmartcardRedemptionBatch $batch): Response
     {
         /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $details = $repository->getBatchDetails($vendor, $batchDate);
+        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardRedemptionBatch::class);
+        $details = $repository->getBatchDetails($batch);
 
         return $this->json($details);
     }
@@ -603,11 +603,11 @@ class SmartcardController extends Controller
      *
      * @param Vendor                  $vendor
      *
-     * @param SmartcardRedemtionBatch $newBatch
+     * @param RedemptionBatchInput $newBatch
      *
      * @return Response
      */
-    public function redeemBatch(Vendor $vendor, SmartcardRedemtionBatch $newBatch): Response
+    public function redeemBatch(Vendor $vendor, RedemptionBatchInput $newBatch): Response
     {
         /** @var SmartcardPurchaseRepository $repository */
         $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
