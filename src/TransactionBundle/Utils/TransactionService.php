@@ -19,6 +19,8 @@ use UserBundle\Entity\User;
  */
 class TransactionService
 {
+    /** @var string */
+    private $email;
 
     /** @var EntityManagerInterface $em */
     private $em;
@@ -38,6 +40,7 @@ class TransactionService
     {
         $this->em = $entityManager;
         $this->container = $container;
+        $this->container->getParameter('email');
     }
 
     /**
@@ -112,7 +115,7 @@ class TransactionService
         $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
 
         $message = (new \Swift_Message('Confirm transaction for distribution ' . $assistance->getName()))
-            ->setFrom('admin@bmstaging.info')
+            ->setFrom($this->email)
             ->setTo($user->getEmail())
             ->setBody(
                 $this->container->get('templating')->render(
@@ -148,7 +151,7 @@ class TransactionService
 
         if (is_file($file_record) && file_get_contents($file_record)) {
             $message = (new \Swift_Message('Transaction logs for ' . $assistance->getName()))
-                ->setFrom('admin@bmstaging.info')
+                ->setFrom($this->email)
                 ->setTo($user->getEmail())
                 ->setBody(
                     $this->container->get('templating')->render(
@@ -163,7 +166,7 @@ class TransactionService
             $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_' . $assistance->getId() . '.csv')->setFilename('logsTransaction.csv'));
         } else {
             $message = (new \Swift_Message('Transaction logs for ' . $assistance->getName()))
-                ->setFrom('admin@bmstaging.info')
+                ->setFrom($this->email)
                 ->setTo($user->getEmail())
                 ->setBody(
                     $this->container->get('templating')->render(

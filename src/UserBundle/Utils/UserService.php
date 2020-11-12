@@ -5,7 +5,7 @@ namespace UserBundle\Utils;
 use CommonBundle\Entity\Logs;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
-use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -22,6 +22,9 @@ use Symfony\Component\HttpClient\HttpClient;
  */
 class UserService
 {
+    /** @var string */
+    private $email;
+
     private $countryList = [
         "KHM",
         "SYR",
@@ -72,6 +75,7 @@ class UserService
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
+        $this->email = $this->container->getParameter('email');
     }
 
     /**
@@ -447,7 +451,7 @@ class UserService
 
         if (is_file($file_record) && file_get_contents($file_record)) {
             $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
-                ->setFrom('admin@bmstaging.info')
+                ->setFrom($this->email)
                 ->setTo($emailConnected->getEmail())
                 ->setBody(
                     $this->container->get('templating')->render(
@@ -462,7 +466,7 @@ class UserService
             $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_log-' . $user->getId() . '.csv')->setFilename('logs-'. $user->getEmail() .'.csv'));
         } else {
             $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
-                ->setFrom('admin@bmstaging.info')
+                ->setFrom($this->email)
                 ->setTo($emailConnected->getEmail())
                 ->setBody(
                     $this->container->get('templating')->render(

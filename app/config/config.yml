@@ -7,6 +7,7 @@ imports:
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
+    email: support@humansis.org
 
 framework:
     #esi: ~
@@ -111,7 +112,7 @@ fos_user:
     firewall_name: main
     user_class: UserBundle\Entity\User
     from_email:
-        address: "admin@bmstaging.info"
+        address: "%email%"
         sender_name: "BMS Support"
 
 fos_rest:
