@@ -556,7 +556,7 @@ class SmartcardController extends Controller
     /**
      * Get vendor purchase batch details.
      *
-     * @Rest\Get("/smartcards/purchases/batche/{id}", name="smarcards_redeemed_batches_details")
+     * @Rest\Get("/smartcards/purchases/batch/{id}", name="smarcards_redeemed_batches_details")
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * @SWG\Tag(name="Smartcards")
@@ -574,7 +574,7 @@ class SmartcardController extends Controller
     public function getRedeemBatchesDetails(SmartcardRedemptionBatch $batch): Response
     {
         /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardRedemptionBatch::class);
+        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
         $details = $repository->getBatchDetails($batch);
 
         return $this->json($details);
