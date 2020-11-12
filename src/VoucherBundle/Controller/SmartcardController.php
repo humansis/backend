@@ -3,8 +3,9 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\DistributionBeneficiary;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -110,6 +111,7 @@ class SmartcardController extends Controller
         $this->getDoctrine()->getManager()->flush();
 
         $mapper = $this->get(SmartcardMapper::class);
+
         return $this->json($mapper->toFullArray($smartcard));
     }
 
@@ -404,6 +406,8 @@ class SmartcardController extends Controller
      * @param Request $request
      *
      * @return Response
+     *
+     * @throws EntityNotFoundException
      */
     public function purchase(Request $request): Response
     {
@@ -434,9 +438,8 @@ class SmartcardController extends Controller
         return new Response($json);
     }
 
-
     /**
-     * Get vendor purchase counts
+     * Get vendor purchase counts.
      *
      * @Rest\Get("/smartcards/purchases/{id}", name="smarcards_purchases")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -452,7 +455,7 @@ class SmartcardController extends Controller
      * @param Vendor $vendor
      *
      * @return Response
-     * @throws NoResultException
+     *
      * @throws NonUniqueResultException
      */
     public function getPurchasesSummary(Vendor $vendor): Response
@@ -465,7 +468,7 @@ class SmartcardController extends Controller
     }
 
     /**
-     * Get vendor purchase details
+     * Get vendor purchase details.
      *
      * @Rest\Get("/smartcards/purchases/{id}/details", name="smarcards_purchases_details")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -481,8 +484,6 @@ class SmartcardController extends Controller
      * @param Vendor $vendor
      *
      * @return Response
-     * @throws NoResultException
-     * @throws NonUniqueResultException
      */
     public function getPurchasesDetails(Vendor $vendor): Response
     {
@@ -494,7 +495,7 @@ class SmartcardController extends Controller
     }
 
     /**
-     * Get vendor purchases to redeem
+     * Get vendor purchases to redeem.
      *
      * @Rest\Get("/smartcards/purchases/to-redemption/{id}", name="smarcards_purchases_to_redemtion")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -510,6 +511,7 @@ class SmartcardController extends Controller
      * @param Vendor $vendor
      *
      * @return Response
+     *
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -523,7 +525,7 @@ class SmartcardController extends Controller
     }
 
     /**
-     * Get vendor purchase counts
+     * Get vendor purchase counts.
      *
      * @Rest\Get("/smartcards/purchases/redeemed-batches/{id}", name="smarcards_redeemed_batches")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -552,7 +554,7 @@ class SmartcardController extends Controller
     }
 
     /**
-     * Get vendor purchase batch details
+     * Get vendor purchase batch details.
      *
      * @Rest\Get("/smartcards/purchases/batche/{id}", name="smarcards_redeemed_batches_details")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -579,7 +581,7 @@ class SmartcardController extends Controller
     }
 
     /**
-     * Set vendor purchase as redeemed
+     * Set vendor purchase as redeemed.
      *
      * @Rest\Post("/smartcards/purchases/redeem-batch/{id}", name="smarcards_redeem_batch")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -601,8 +603,7 @@ class SmartcardController extends Controller
      *     description="All vendor purchases"
      * )
      *
-     * @param Vendor                  $vendor
-     *
+     * @param Vendor               $vendor
      * @param RedemptionBatchInput $newBatch
      *
      * @return Response
@@ -615,18 +616,25 @@ class SmartcardController extends Controller
             'id' => $newBatch->getPurchases(),
         ]);
 
-        $redeemedAtDate = new \DateTime();
+        $redemptionBath = new SmartcardRedemptionBatch(
+            $vendor,
+            new \DateTime(),
+            $this->getUser(),
+            0,
+            $purchases
+        );
         foreach ($purchases as $purchase) {
             if ($purchase->getVendor()->getId() !== $vendor->getId()) {
                 return new Response("Inconsistent vendor and purchase' #{$purchase->getId()} vendor", Response::HTTP_BAD_REQUEST);
             }
-            if ($purchase->getRedeemedAt() !== null) {
-                return new Response("Purchase' #{$purchase->getId()} was already redeemed at " . $purchase->getRedeemedAt()->format('Y-m-d H:i:s'), Response::HTTP_BAD_REQUEST);
+            if (null !== $purchase->getRedeemedAt()) {
+                return new Response("Purchase' #{$purchase->getId()} was already redeemed at ".$purchase->getRedeemedAt()->format('Y-m-d H:i:s'), Response::HTTP_BAD_REQUEST);
             }
 
-            $purchase->setRedeemedAt($redeemedAtDate);
+            $purchase->setRedemptionBatch($redemptionBath);
         }
 
+        $this->getDoctrine()->getManager()->persist($redemptionBath);
         $this->getDoctrine()->getManager()->flush();
 
         return $this->json(true);

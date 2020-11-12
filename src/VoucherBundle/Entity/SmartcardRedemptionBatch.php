@@ -1,11 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace VoucherBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use UserBundle\Entity\User;
 
 /**
@@ -14,7 +18,7 @@ use UserBundle\Entity\User;
  * @ORM\Table(name="smartcard_redemption_batch")
  * @ORM\Entity(repositoryClass="\VoucherBundle\Repository\SmartcardRedemptionBatchRepository")
  */
-class SmartcardRedemptionBatch
+class SmartcardRedemptionBatch implements JsonSerializable
 {
     /**
      * @var int
@@ -56,19 +60,29 @@ class SmartcardRedemptionBatch
     private $value;
 
     /**
+     * @var Collection|SmartcardPurchase[]
+     *
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="redemptionBatch", cascade={"persist"}, orphanRemoval=false)
+     */
+    private $purchases;
+
+    /**
      * SmartcardPurchaseBatch constructor.
      *
      * @param Vendor   $vendor
      * @param DateTime $redeemedAt
      * @param User     $redeemedBy
      * @param mixed    $value
+     * @param iterable $purchases
      */
-    public function __construct(Vendor $vendor, DateTime $redeemedAt, User $redeemedBy, $value)
+    public function __construct(Vendor $vendor, DateTime $redeemedAt, User $redeemedBy, $value,
+                                iterable $purchases)
     {
         $this->vendor = $vendor;
         $this->redeemedAt = $redeemedAt;
         $this->redeemedBy = $redeemedBy;
         $this->value = $value;
+        $this->purchases = new ArrayCollection($purchases);
     }
 
     /**
@@ -135,5 +149,32 @@ class SmartcardRedemptionBatch
     public function setValue($value): void
     {
         $this->value = $value;
+    }
+
+    /**
+     * @return Collection|SmartcardPurchase[]
+     */
+    public function getPurchases(): Collection
+    {
+        return $this->purchases;
+    }
+
+    /**
+     * @param Collection|SmartcardPurchase[] $purchases
+     */
+    public function setPurchases($purchases): void
+    {
+        $this->purchases = $purchases;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'datetime' => $this->redeemedAt->format('U'),
+            'date' => $this->redeemedAt->format('d-m-Y H:i'),
+            'count' => $this->purchases->count(),
+            'value' => $this->value,
+        ];
     }
 }

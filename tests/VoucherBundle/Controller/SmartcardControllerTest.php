@@ -11,6 +11,7 @@ use VoucherBundle\DTO\PurchaseRedemptionBatch;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
+use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
 
 class SmartcardControllerTest extends BMSServiceTestCase
@@ -295,7 +296,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $vendorId = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc'])->getId();
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc']);
+        $vendorId = $vendor->getId();
         $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy([]);
         $purchase = new \VoucherBundle\InputType\SmartcardPurchase();
         $purchase->setProducts([[
@@ -309,8 +311,15 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $purchaseService->purchaseSmartcard($smartcard, $purchase);
         $p2 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
         $p3 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
-        $p2->setRedeemedAt(new \DateTime());
-        $p3->setRedeemedAt(new \DateTime());
+        $redemptionBatch = new SmartcardRedemptionBatch(
+            $vendor,
+            new \DateTime(),
+            $user,
+            0,
+            [$p2, $p3]
+        );
+        $p2->setRedemptionBatch($redemptionBatch);
+        $p3->setRedemptionBatch($redemptionBatch);
         $this->em->persist($p2);
         $this->em->persist($p3);
         $this->em->flush();
@@ -400,7 +409,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $vendorId = $vendor->getId();
         $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy([
             'vendor' => $vendor,
-            'redeemedAt' => null,
+            'redemptionBatch' => null,
         ]);
         $batchToRedeem = [
             "purchases" => array_map(function (\VoucherBundle\Entity\SmartcardPurchase $purchase) { return $purchase->getId(); }, $purchases),

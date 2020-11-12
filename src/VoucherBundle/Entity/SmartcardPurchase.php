@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace VoucherBundle\Entity;
 
@@ -8,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-
 
 /**
  * Smartcard purchase.
@@ -68,13 +68,12 @@ class SmartcardPurchase
     private $createdAt;
 
     /**
-     * @var DateTime
+     * @var SmartcardRedemptionBatch
      *
-     * @ORM\Column(name="redeemed_at", type="datetime", nullable=true)
-     *
-     * @SymfonyGroups({"FullSmartcard"})
+     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\SmartcardRedemptionBatch", inversedBy="purchases", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
      */
-    private $redeemedAt;
+    private $redemptionBatch;
 
     protected function __construct()
     {
@@ -128,7 +127,7 @@ class SmartcardPurchase
     }
 
     /**
-     * @param Product $product
+     * @param Product    $product
      * @param float|null $quantity
      * @param float|null $value
      */
@@ -146,19 +145,28 @@ class SmartcardPurchase
     }
 
     /**
+     * @SymfonyGroups({"FullSmartcard"})
      * @return DateTimeInterface|null
      */
     public function getRedeemedAt(): ?DateTimeInterface
     {
-        return $this->redeemedAt;
+        return $this->redemptionBatch ? $this->redemptionBatch->getRedeemedAt() : null;
     }
 
     /**
-     * @param DateTimeInterface|null $redeemedAt
+     * @return SmartcardRedemptionBatch
      */
-    public function setRedeemedAt(?DateTimeInterface $redeemedAt): void
+    public function getRedemptionBatch(): SmartcardRedemptionBatch
     {
-        $this->redeemedAt = $redeemedAt;
+        return $this->redemptionBatch;
+    }
+
+    /**
+     * @param SmartcardRedemptionBatch $redemptionBatch
+     */
+    public function setRedemptionBatch(SmartcardRedemptionBatch $redemptionBatch): void
+    {
+        $this->redemptionBatch = $redemptionBatch;
     }
 
 }
