@@ -113,7 +113,7 @@ class SmartcardPurchaseRepository extends EntityRepository
      *
      * @return PurchaseDetail[]
      */
-    public function getBatchDetails(SmartcardRedemptionBatch $batch): array
+    public function getDetailsByBatch(SmartcardRedemptionBatch $batch): array
     {
         $qb = $this->createQueryBuilder('p')
             ->select(

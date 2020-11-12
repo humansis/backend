@@ -575,7 +575,7 @@ class SmartcardController extends Controller
     {
         /** @var SmartcardPurchaseRepository $repository */
         $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $details = $repository->getBatchDetails($batch);
+        $details = $repository->getDetailsByBatch($batch);
 
         return $this->json($details);
     }
