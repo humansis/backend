@@ -3,6 +3,7 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\ORM\EntityNotFoundException;
@@ -14,9 +15,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
@@ -638,5 +642,45 @@ class SmartcardController extends Controller
         $this->getDoctrine()->getManager()->flush();
 
         return $this->json(true);
+    }
+
+    /**
+     * @Rest\Get("/smartcards/invoices/export/{id}")
+     *
+     * @SWG\Tag(name="Export")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="streamed file"
+     * )
+     *
+     * @SWG\Response(
+     *     response=404,
+     *     description="invalid redeemed batch"
+     * )
+     *
+     * @param SmartcardRedemptionBatch $batch
+     *
+     * @return Response
+     *
+     * @throws
+     */
+    public function export(SmartcardRedemptionBatch $batch): Response
+    {
+        // todo find organisation by relation to smartcard
+        $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
+
+        $filename = $this->get('distribution.export.smartcard_invoice')->export($batch, $organization);
+
+        $response = new BinaryFileResponse(getcwd().'/'.$filename);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
+        $response->deleteFileAfterSend(true);
+
+        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+        if ($mimeTypeGuesser->isSupported()) {
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd().'/'.$filename));
+        }
+
+        return $response;
     }
 }
