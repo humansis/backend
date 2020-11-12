@@ -27,9 +27,9 @@ class PurchaseDetail implements \JsonSerializable
      * @param int                $beneficiaryId
      * @param string             $beneficiaryEnName
      * @param string             $beneficiaryLocalName
-     * @param float              $amount
+     * @param mixed              $amount
      */
-    public function __construct(\DateTimeInterface $date, int $beneficiaryId, string $beneficiaryEnName, string $beneficiaryLocalName, float $amount)
+    public function __construct(\DateTimeInterface $date, int $beneficiaryId, string $beneficiaryEnName, string $beneficiaryLocalName, $amount)
     {
         $this->date = $date;
         $this->beneficiaryId = $beneficiaryId;
@@ -73,7 +73,7 @@ class PurchaseDetail implements \JsonSerializable
     /**
      * @return float
      */
-    public function getAmount(): float
+    public function getAmount()
     {
         return $this->amount;
     }

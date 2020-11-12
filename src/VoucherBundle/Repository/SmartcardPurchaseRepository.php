@@ -43,7 +43,7 @@ class SmartcardPurchaseRepository extends EntityRepository
             return new PurchaseSummary(0, 0);
         }
 
-        return new PurchaseSummary($summary['purchaseCount'], $summary['purchaseRecordsValue'] ?? 0);
+        return new PurchaseSummary((int) $summary['purchaseCount'], $summary['purchaseRecordsValue'] ?? 0);
     }
 
     /**
