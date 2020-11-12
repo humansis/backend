@@ -11,6 +11,7 @@ use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardControllerTest extends BMSServiceTestCase
 {
@@ -397,6 +398,28 @@ class SmartcardControllerTest extends BMSServiceTestCase
         foreach ($batch['purchases_ids'] as $id) {
             $this->assertIsInt($id);
         }
+    }
+
+    public function testConsistencyBatchToRedemptionWithSummary(): void
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
+        $vendorId = $vendor->getId();
+
+        $crawler = $this->request('GET', '/api/wsse/smartcards/purchases/to-redemption/'.$vendorId);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $batch = json_decode($this->client->getResponse()->getContent(), true);
+
+        /** @var SmartcardPurchaseRepository $repository */
+        $repository = $this->em->getRepository(SmartcardPurchase::class);
+        $summary = $repository->countPurchasesToRedeem($vendor);
+
+        $this->assertCount(count($summary->getPurchasesIds()), $batch['purchases_ids'], 'There is wrong count number in batch to redeem');
+        $this->assertEquals($summary->getValue(), $batch['value'], 'There is wrong value of batch to redeem');
     }
 
     public function testBatchRedemption(): void

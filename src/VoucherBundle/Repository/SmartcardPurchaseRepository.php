@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace VoucherBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
@@ -7,7 +9,6 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use VoucherBundle\DTO\PurchaseDetail;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
-use VoucherBundle\DTO\PurchaseRedeemedBatch;
 use VoucherBundle\DTO\PurchaseSummary;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
@@ -45,24 +46,6 @@ class SmartcardPurchaseRepository extends EntityRepository
         return new PurchaseSummary($summary['purchaseCount'], $summary['purchaseRecordsValue'] ?? 0);
     }
 
-    public function countPurchasesValue(array $purchases)
-    {
-        $qb = $this->createQueryBuilder('p')
-            ->select('SUM(pr.value)')
-            ->join('p.records', 'pr')
-            ->where('p.id IN (:purchases)')
-            ->setParameter('purchases', $purchases)
-        ;
-
-        try {
-            return $qb->getQuery()->getSingleScalarResult();
-        } catch (NoResultException $e) {
-            return 0;
-        } catch (NonUniqueResultException $e) {
-            return 0;
-        }
-    }
-
     /**
      * @param Vendor $vendor
      *
@@ -74,56 +57,38 @@ class SmartcardPurchaseRepository extends EntityRepository
         $idsQuery = $this->createQueryBuilder('p')
             ->select('p.id')
             ->where('p.vendor = :vendor')
-            ->andWhere('p.redemptionBatch is null')
+            ->andWhere('IDENTITY(p.redemptionBatch) is null')
             ->setParameter('vendor', $vendor);
+        $purchases = $idsQuery->getQuery()->getScalarResult();
 
         $ids = array_map(function ($result) {
             return (int) $result['id'];
-        }, $idsQuery->getQuery()->getScalarResult());
+        }, $purchases);
 
-        $valueQuery = $this->createQueryBuilder('p')
-            ->select('SUM(pr.value) as purchaseRecordsValue')
-            ->join('p.records', 'pr')
-            ->join('p.vendor', 'v')
-            ->where('p.id IN (:ids)')
-            ->setParameter('ids', $ids)
-            ->groupBy('v.id');
-
-        try {
-            $summary = $valueQuery->getQuery()->getSingleResult();
-        } catch (NoResultException $e) {
-            return new PurchaseRedemptionBatch(0, []);
+        if (empty($purchases)) {
+            return new PurchaseRedemptionBatch(0, $ids);
         }
 
-        return new PurchaseRedemptionBatch($summary['purchaseRecordsValue'], $ids);
+        $value = $this->countPurchasesValue($purchases);
+
+        return new PurchaseRedemptionBatch($value, $ids);
     }
 
-    /**
-     * @param Vendor $vendor
-     *
-     * @return PurchaseRedeemedBatch[]
-     */
-    public function getRedeemBatches(Vendor $vendor): array
+    public function countPurchasesValue(array $purchases)
     {
         $qb = $this->createQueryBuilder('p')
-            ->select('b.redeemedAt as batchDate, COUNT(p.id) as purchaseCount, SUM(pr.value) as purchaseRecordsValue')
-            ->join('p.redemptionBatch', 'b')
+            ->select('SUM(pr.value)')
             ->join('p.records', 'pr')
-            ->where('p.vendor = :vendor')
-            ->andWhere('p.redemptionBatch is not null')
-            ->setParameter('vendor', $vendor)
-            ->groupBy('b.id');
+            ->where('p.id IN (:purchases)')
+            ->setParameter('purchases', $purchases);
 
-        $batches = [];
-        foreach ($qb->getQuery()->getResult() as $batch) {
-            $batches[] = new PurchaseRedeemedBatch(
-                $batch['batchDate'],
-                $batch['purchaseCount'],
-                $batch['purchaseRecordsValue']
-            );
+        try {
+            return $qb->getQuery()->getSingleScalarResult();
+        } catch (NoResultException $e) {
+            return 0;
+        } catch (NonUniqueResultException $e) {
+            return 0;
         }
-
-        return $batches;
     }
 
     /**
@@ -164,7 +129,6 @@ class SmartcardPurchaseRepository extends EntityRepository
 
         return $details;
     }
-
 
     /**
      * @param Vendor $vendor
