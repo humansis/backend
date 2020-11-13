@@ -10,16 +10,16 @@ class PurchaseSummary
     /** @var int */
     private $count;
 
-    /** @var float */
+    /** @var string decimal */
     private $value;
 
     /**
      * SmartcardPurchaseSummary constructor.
      *
      * @param int   $count
-     * @param float $value
+     * @param mixed $value
      */
-    public function __construct(int $count, float $value)
+    public function __construct(int $count, $value)
     {
         $this->count = $count;
         $this->value = $value;
@@ -36,7 +36,7 @@ class PurchaseSummary
     /**
      * @return float
      */
-    public function getValue(): float
+    public function getValue()
     {
         return $this->value;
     }
