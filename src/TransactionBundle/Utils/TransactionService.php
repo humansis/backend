@@ -318,12 +318,14 @@ class TransactionService
         }
 
         foreach ($transactions as $transaction) {
-            if ($transaction->getTransactionStatus() == 0) {
+            if ($transaction->getTransactionStatus() == Transaction::SUCCESS) {
                 $status = "Success";
-            } elseif ($transaction->getTransactionStatus() == 1) {
+            } elseif ($transaction->getTransactionStatus() == Transaction::FAILURE) {
                 $status = "Error";
-            } else {
+            } elseif ($transaction->getTransactionStatus() == Transaction::NO_PHONE) {
                 $status = "No Phone";
+            } else {
+                $status = "Unknown error";
             }
 
             $beneficiary = $transaction->getDistributionBeneficiary()->getBeneficiary();
@@ -332,11 +334,11 @@ class TransactionService
             array_push($exportableTable,
                 array_merge($commonFields, array(
                 "Amount Sent" => $transaction->getAmountSent(),
-                "Sent At" => $transaction->getDateSent(),
+                "Sent At" => $transaction->getDateSent()->format('d-m-Y'),
                 "Transactios Status" => $status,
                 "Message" => $transaction->getMessage(),
                 "Money Received" => $transaction->getMoneyReceived(),
-                "Pickup Date" => $transaction->getPickupDate(),
+                "Pickup Date" => $transaction->getPickupDate()->format('d-m-Y'),
                 "Removed" => $transaction->getDistributionBeneficiary()->getRemoved() ? 'Yes' : 'No',
                 "Justification for adding/removing" => $transaction->getDistributionBeneficiary()->getJustification(),
                 ))
