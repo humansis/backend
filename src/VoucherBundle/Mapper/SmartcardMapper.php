@@ -18,6 +18,7 @@ class SmartcardMapper
         return [
             "id" => $smartcard->getId(),
             "serialNumber" => $smartcard->getSerialNumber(),
+            "currency" => $smartcard->getCurrency(),
             "state" => $smartcard->getState(),
         ];
     }

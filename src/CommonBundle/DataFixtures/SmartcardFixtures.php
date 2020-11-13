@@ -121,9 +121,10 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         if (null === $this->distributionBeneficiary) {
             $this->distributionBeneficiary = new DistributionBeneficiary();
             $this->distributionBeneficiary->setBeneficiary($this->randomEntity(Beneficiary::class, $manager));
-            $this->distributionBeneficiary->setAssistance($this->randomEntity(Assistance::class, $manager));
+            $this->distributionBeneficiary->setAssistance($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE));
             $this->distributionBeneficiary->setRemoved(false);
             $manager->persist($this->distributionBeneficiary);
+            $manager->flush();
         }
 
         return $this->distributionBeneficiary;
@@ -146,6 +147,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         return [
             BeneficiaryTestFixtures::class,
             VendorFixtures::class,
+            AssistanceFixtures::class,
         ];
     }
 }
