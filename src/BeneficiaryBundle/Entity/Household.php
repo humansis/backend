@@ -135,7 +135,7 @@ class Household extends AbstractBeneficiary
     private $archived = 0;
 
     /**
-     * @var int
+     * @var int|null
      *
      * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
@@ -493,11 +493,11 @@ class Household extends AbstractBeneficiary
     /**
      * Set incomeLevel.
      *
-     * @param int $incomeLevel
+     * @param int|null $incomeLevel
      *
      * @return Household
      */
-    public function setIncomeLevel($incomeLevel)
+    public function setIncomeLevel(?int $incomeLevel)
     {
         $this->incomeLevel = $incomeLevel;
 
@@ -507,9 +507,9 @@ class Household extends AbstractBeneficiary
     /**
      * Get incomeLevel.
      *
-     * @return int
+     * @return int|null
      */
-    public function getIncomeLevel()
+    public function getIncomeLevel(): ?int
     {
         return $this->incomeLevel;
     }
