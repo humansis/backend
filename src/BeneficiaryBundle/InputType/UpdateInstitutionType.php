@@ -59,7 +59,9 @@ class UpdateInstitutionType implements InputTypeInterface
      */
     private $contact_family_name;
     /**
-     * @var int[]|null
+     * @var int[]
+     * @Assert\NotNull
+     * @Assert\Count(min="1")
      */
     public $projects;
 

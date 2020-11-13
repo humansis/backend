@@ -221,15 +221,13 @@ class CommunityService
             ));
         }
 
-        if (null !== $communityType->getProjects()) {
-            $community->setProjects(new ArrayCollection());
-            foreach ($communityType->getProjects() as $projectId) {
-                $project = $this->em->getRepository(Project::class)->find($projectId);
-                if (null === $project) {
-                    throw new \InvalidArgumentException("Project $projectId doesn't exist");
-                }
-                $community->addProject($project);
+        $community->setProjects(new ArrayCollection());
+        foreach ($communityType->getProjects() as $projectId) {
+            $project = $this->em->getRepository(Project::class)->find($projectId);
+            if (null === $project) {
+                throw new \InvalidArgumentException("Project $projectId doesn't exist");
             }
+            $community->addProject($project);
         }
 
         return $community;
