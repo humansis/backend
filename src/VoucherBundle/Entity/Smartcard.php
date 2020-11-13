@@ -73,6 +73,14 @@ class Smartcard
     private $state;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="currency", type="string", length=3, nullable=true)
+     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     */
+    private $currency;
+
+    /**
      * @var \DateTimeInterface
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
@@ -173,6 +181,33 @@ class Smartcard
     public function getState(): string
     {
         return $this->state;
+    }
+
+    /**
+     * Currency used in smartcard.
+     * Currency is defined after deposit money into card.
+     *
+     * @return string|null
+     */
+    public function getCurrency(): ?string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     *
+     * @return $this
+     */
+    public function setCurrency(string $currency): self
+    {
+        if (null !== $this->currency) {
+            throw new \BadMethodCallException('Currency is already defined for smartcard #'.$this->getId());
+        }
+
+        $this->currency = $currency;
+
+        return $this;
     }
 
     /**
