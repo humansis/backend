@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace BeneficiaryBundle\InputType;
 
@@ -21,11 +23,4 @@ class NewInstitutionType extends UpdateInstitutionType implements InputTypeInter
      * @Assert\Choice(choices=BeneficiaryBundle\Entity\Institution::TYPE_ALL)
      */
     protected $type;
-
-    /**
-     * @var int[]
-     * @Assert\NotNull
-     * @Assert\Count(min="1")
-     */
-    public $projects;
 }

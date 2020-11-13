@@ -47,7 +47,9 @@ class UpdateCommunityType implements InputTypeInterface
      */
     public $contact_family_name;
     /**
-     * @var int[]|null
+     * @var int[]
+     * @Assert\NotNull
+     * @Assert\Count(min="1")
      */
     public $projects;
 

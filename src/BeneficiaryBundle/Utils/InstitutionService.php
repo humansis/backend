@@ -259,15 +259,13 @@ class InstitutionService
                 ));
         }
 
-        if (null !== $institutionType->getProjects()) {
-            $institution->setProjects(new ArrayCollection());
-            foreach ($institutionType->getProjects() as $projectId) {
-                $project = $this->em->getRepository(Project::class)->find($projectId);
-                if (null === $project) {
-                    throw new \InvalidArgumentException("Project $projectId doesn't exist");
-                }
-                $institution->addProject($project);
+        $institution->setProjects(new ArrayCollection());
+        foreach ($institutionType->getProjects() as $projectId) {
+            $project = $this->em->getRepository(Project::class)->find($projectId);
+            if (null === $project) {
+                throw new \InvalidArgumentException("Project $projectId doesn't exist");
             }
+            $institution->addProject($project);
         }
 
         return $institution;

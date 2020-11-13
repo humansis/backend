@@ -1,13 +1,12 @@
 <?php
+
 namespace CommonBundle\InputType;
 
 use CommonBundle\Exception\BadRequestDataException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -20,6 +19,7 @@ class RequestConverter implements ParamConverterInterface
 
     /**
      * RequestConverter constructor.
+     *
      * @param ValidatorInterface $validator
      */
     public function __construct(ValidatorInterface $validator)
@@ -30,9 +30,9 @@ class RequestConverter implements ParamConverterInterface
     public function apply(Request $request, ParamConverter $configuration)
     {
         $errors = [];
-        if ($configuration->getClass() === Country::class) {
+        if (Country::class === $configuration->getClass()) {
             if (!$request->request->has(Country::REQUEST_KEY)) {
-                throw new \InvalidArgumentException("Missing ".Country::REQUEST_KEY." in request body.");
+                throw new \InvalidArgumentException('Missing '.Country::REQUEST_KEY.' in request body.');
             }
             $country = new Country($request->request->get(Country::REQUEST_KEY));
             $errors = $this->validator->validate($country);
@@ -49,27 +49,39 @@ class RequestConverter implements ParamConverterInterface
             $messages = [];
             /** @var ConstraintViolationInterface $error */
             foreach ($errors as $error) {
-                if (is_array($error->getInvalidValue())) {
-                    $value = implode(', ', $error->getInvalidValue());
-                    $value = "[$value]";
-                } else {
-                    $value = $error->getInvalidValue();
-                }
-
-                $messages[] = $error->getMessage()." [{$error->getPropertyPath()} = $value]";
+                $value = $this->toString($error->getInvalidValue());
+                $messages[] = $error->getMessage()." {$error->getPropertyPath()} = $value";
             }
-            throw new BadRequestDataException("Bad request body: ".implode(' | ', $messages));
+            throw new BadRequestDataException('Bad request body: '.implode(' | ', $messages));
         }
+    }
+
+    private function toString($value): string
+    {
+        if (null == $value) {
+            return 'null';
+        }
+        if (is_object($value)) {
+            return $value->__toString();
+        }
+        if (is_array($value)) {
+            $values = array_map(function ($subvalue) { return $this->toString($subvalue); }, $value);
+
+            return '['.implode(', ', $values).']';
+        }
+
+        return $value;
     }
 
     public static function normalizeInputType($data, $class): object
     {
         $serializer = new Serializer([new ObjectNormalizer(null, null, null, new ReflectionExtractor())]);
+
         return $serializer->denormalize($data, $class);
     }
 
     public function supports(ParamConverter $configuration)
     {
-        return $configuration->getClass() !== null && in_array(InputTypeInterface::class, class_implements($configuration->getClass()));
+        return null !== $configuration->getClass() && in_array(InputTypeInterface::class, class_implements($configuration->getClass()));
     }
 }
