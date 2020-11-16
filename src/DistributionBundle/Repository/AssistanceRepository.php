@@ -204,9 +204,25 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         $sql = '
         SELECT '.$rsm->generateSelectClause().' FROM ( 
-            SELECT ass.*, db.beneficiary_id FROM assistance ass
+            SELECT
+                ass.id,
+                ass.name,
+                ass.target_type,
+                db.beneficiary_id,
+                CASE
+                    WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.used_at, "%Y-%m-%d")
+                    WHEN gri.id IS NOT NULL THEN gri.distributedAt
+                    WHEN t.id IS NOT NULL THEN t.date_sent
+                END AS date_distribution
+            FROM assistance ass
             JOIN distribution_beneficiary db ON ass.id=db.assistance_id
             JOIN beneficiary b ON b.id=db.beneficiary_id
+            -- smartcards
+            LEFT JOIN smartcard_deposit sd ON sd.distribution_beneficiary_id=db.id
+            -- mobile money
+            LEFT JOIN transaction t ON t.distribution_beneficiary_id=db.id
+            -- general reliefs
+            LEFT JOIN general_relief_item gri ON gri.distribution_beneficiary_id=db.id
             WHERE b.household_id = :household
         ) AS di
         ORDER BY di.date_distribution ASC
