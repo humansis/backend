@@ -45,4 +45,28 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result['data']);
         $this->assertEquals(count(ResidencyStatus::all()), $result['totalCount']);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetVulnerabilityCriterion()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/beneficiaries/vulnerability-criterias');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+    }
 }
