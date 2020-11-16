@@ -449,7 +449,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/'.$vendorId, $batchToRedeem);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $result = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($result);
+        $this->assertArrayHasKey('id', $result);
     }
 
     private function someSmartcardAssistance(): Assistance

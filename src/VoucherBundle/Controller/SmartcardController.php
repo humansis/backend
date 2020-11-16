@@ -641,7 +641,9 @@ class SmartcardController extends Controller
         $this->getDoctrine()->getManager()->persist($redemptionBath);
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->json(true);
+        return $this->json([
+            'id' => $redemptionBath->getId(),
+        ]);
     }
 
     /**
