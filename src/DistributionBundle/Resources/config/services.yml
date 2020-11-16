@@ -73,3 +73,7 @@ services:
             - '@validator'
             - "@request_validator"
             - "@beneficiary.csv_to_array_mapper"
+
+    distribution.export.smartcard_invoice:
+        class: DistributionBundle\Export\SmartcardInvoiceExport
+        public: true
