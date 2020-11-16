@@ -174,7 +174,7 @@ class SmartcardRedemptionBatch implements JsonSerializable
             'datetime' => $this->redeemedAt->format('U'),
             'date' => $this->redeemedAt->format('d-m-Y H:i'),
             'count' => $this->purchases->count(),
-            'value' => $this->value,
+            'value' => (float) $this->value,
         ];
     }
 }
