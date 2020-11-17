@@ -531,7 +531,7 @@ class SmartcardController extends Controller
     /**
      * Get vendor purchase counts.
      *
-     * @Rest\Get("/smartcards/purchases/redeemed-batches/{id}", name="smarcards_redeemed_batches")
+     * @Rest\Get("/smartcards/batch", name="smarcards_redeemed_batches")
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * @SWG\Tag(name="Smartcards")
@@ -542,12 +542,22 @@ class SmartcardController extends Controller
      *     description="All vendor purchases",
      * )
      *
-     * @param Vendor $vendor
+     * @param Request $request
      *
      * @return Response
      */
-    public function getRedeemBatches(Vendor $vendor): Response
+    public function getRedeemBatches(Request $request): Response
     {
+        $vendorId = $request->query->getInt('vendor');
+        if (!$vendorId) {
+            throw $this->createNotFoundException();
+        }
+
+        $vendor = $this->getDoctrine()->getRepository(Vendor::class)->find($vendorId);
+        if (!$vendor) {
+            throw $this->createNotFoundException('Vendor does not exists');
+        }
+
         /** @var SmartcardPurchaseRepository $repository */
         $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardRedemptionBatch::class);
         $summaryBatches = $repository->findBy([
@@ -558,9 +568,28 @@ class SmartcardController extends Controller
     }
 
     /**
+     * Get vendor purchase batch detail.
+     *
+     * @Rest\Get("/smartcards/batch/{id}")
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @SWG\Tag(name="Smartcards")
+     *
+     * @SWG\Response(response=200)
+     *
+     * @param SmartcardRedemptionBatch $batch
+     *
+     * @return Response
+     */
+    public function getBatchesDetails(SmartcardRedemptionBatch $batch): Response
+    {
+        return $this->json($batch);
+    }
+
+    /**
      * Get vendor purchase batch details.
      *
-     * @Rest\Get("/smartcards/purchases/batch/{id}", name="smarcards_redeemed_batches_details")
+     * @Rest\Get("/smartcards/batch/{id}/purchases", name="smarcards_redeemed_batches_details")
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * @SWG\Tag(name="Smartcards")
@@ -647,7 +676,7 @@ class SmartcardController extends Controller
     }
 
     /**
-     * @Rest\Get("/smartcards/invoices/export/{id}")
+     * @Rest\Get("/smartcards/batch/{id}/export")
      *
      * @SWG\Tag(name="Export")
      *

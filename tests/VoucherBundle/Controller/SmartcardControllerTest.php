@@ -329,7 +329,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->persist($p3);
         $this->em->flush();
 
-        $crawler = $this->request('GET', '/api/wsse/smartcards/purchases/redeemed-batches/'.$vendorId);
+        $crawler = $this->request('GET', '/api/wsse/smartcards/batch?vendor='.$vendorId);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $batches = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -360,7 +360,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'redeemedAt' => 'asc',
         ]);
 
-        $crawler = $this->request('GET', '/api/wsse/smartcards/purchases/batch/'.$batch->getId());
+        $crawler = $this->request('GET', '/api/wsse/smartcards/batch/'.$batch->getId().'/purchases');
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $details = json_decode($this->client->getResponse()->getContent(), true);
 
