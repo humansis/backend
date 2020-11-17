@@ -21,15 +21,15 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
     /**
      * Get all Institution by country
      *
-     * @param                     $country
-     * @param $begin
-     * @param $pageSize
-     * @param DataTableSorterType $sort
-     * @param DataTableFilterType $filterType
+     * @param Country                  $country
+     * @param                          $begin
+     * @param                          $pageSize
+     * @param DataTableSorterType|null $sort
+     * @param DataTableFilterType[]    $filters
      *
      * @return mixed
      */
-    public function getAllBy(Country $country, $begin, $pageSize, DataTableSorterType $sort = null, DataTableFilterType $filterType = null)
+    public function getAllBy(Country $country, $begin, $pageSize, DataTableSorterType $sort = null, array $filters = [])
     {
         // Recover global information for the page
         $qb = $this->createQueryBuilder("inst");
@@ -38,6 +38,16 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
         $q = $qb->andWhere("inst.archived = 0");
 
         $this->whereInstitutionInCountry($q, $country->getIso3());
+
+        foreach ($filters as $filter) {
+            switch ($filter['category']) {
+                case 'projectName':
+                    $q->join('inst.projects', 'project');
+                    $q->andWhere('project.name LIKE :projectName');
+                    $q->setParameter('projectName', $filter['filter']);
+                    break;
+            }
+        }
 
         if (is_null($begin)) {
             $begin = 0;
