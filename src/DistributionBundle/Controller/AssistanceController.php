@@ -259,12 +259,12 @@ class AssistanceController extends Controller
         try {
             /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
             $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-            $assistanceBeneficiary = $distributionBeneficiaryService->addBeneficiaries($assistance, $data);
+            $assistanceBeneficiaries = $distributionBeneficiaryService->addBeneficiaries($assistance, $data);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->json($mapper->toMinimalArray($assistanceBeneficiary));
+        return $this->json($mapper->toMinimalArrays($assistanceBeneficiaries));
     }
 
     /**

@@ -125,16 +125,16 @@ class DistributionBeneficiaryService
      * @param Assistance $assistance
      * @param array      $beneficiariesData
      *
-     * @return DistributionBeneficiary
+     * @return DistributionBeneficiary[]
      * @throws \Exception
      */
-    public function addBeneficiaries(Assistance $assistance, array $beneficiariesData): ?DistributionBeneficiary
+    public function addBeneficiaries(Assistance $assistance, array $beneficiariesData): array
     {
         $beneficiariesArray = $beneficiariesData['beneficiaries'];
         $validBNFs = [];
 
         if (empty($beneficiariesArray)) {
-            return null;
+            return [];
         }
 
         // id validation
@@ -214,7 +214,7 @@ class DistributionBeneficiaryService
 
         $this->em->flush();
 
-        return $assistanceBeneficiary;
+        return $assistanceBeneficiaries;
     }
 
     /**
