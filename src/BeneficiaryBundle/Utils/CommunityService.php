@@ -89,8 +89,8 @@ class CommunityService
             $country->getIso3(),
             $filters->getLimitMinimum(),
             $filters->getPageSize(),
-            $filters->getFilter(),
-            $filters->getSort()
+            $filters->getSort(),
+            $filters->getFilter()
         );
         $length = $communities[0];
         $communities = $communities[1];
