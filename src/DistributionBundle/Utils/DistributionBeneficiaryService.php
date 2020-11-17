@@ -6,17 +6,16 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
-use DistributionBundle\DBAL\AssistanceTypeEnum;
+use BeneficiaryBundle\Entity\ProjectBeneficiary;
+use DateTime;
+use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use DistributionBundle\Entity\Assistance;
-use BeneficiaryBundle\Entity\ProjectBeneficiary;
-use DistributionBundle\Entity\DistributionBeneficiary;
-use DateTime;
 
 /**
  * Class DistributionBeneficiaryService
@@ -51,7 +50,7 @@ class DistributionBeneficiaryService
         $this->validator = $validator;
         $this->container = $container;
     }
-    
+
     /**
      * Get all beneficiaries from a distribution
      *
@@ -63,7 +62,7 @@ class DistributionBeneficiaryService
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($assistance);
         return $beneficiaries;
     }
-    
+
     /**
      * Get all distribution beneficiaries from a distribution
      *
@@ -135,6 +134,10 @@ class DistributionBeneficiaryService
 
         if (empty($beneficiariesArray)) {
             return [];
+        }
+
+        if (!isset($beneficiariesData['justification']) || empty($beneficiariesData['justification'])) {
+            throw new \Exception('Justification missing.');
         }
 
         // id validation
