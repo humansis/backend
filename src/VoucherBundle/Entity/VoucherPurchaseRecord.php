@@ -9,11 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 /**
  * Voucher Purchase Record.
  *
- * @ORM\Table(name="voucher_purchase_record",
- *     uniqueConstraints={
- *         @ORM\UniqueConstraint(columns={"voucher_purchase_id", "product_id"})
- *     }
- * )
+ * @ORM\Table(name="voucher_purchase_record")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherPurchaseRecordRepository")
  */
 class VoucherPurchaseRecord
