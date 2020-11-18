@@ -8,6 +8,26 @@ use TransactionBundle\Entity\Transaction;
 
 class AssistanceBeneficiaryMapper
 {
+    public function toMinimalArray(?DistributionBeneficiary $assistanceBeneficiary): ?array
+    {
+        if (!$assistanceBeneficiary) {
+            return null;
+        }
+
+        return [
+            'id' => $assistanceBeneficiary->getId(),
+            'assistance' => $assistanceBeneficiary->getAssistance()->getId(),
+            'beneficiary' => $assistanceBeneficiary->getBeneficiary()->getId(),
+        ];
+    }
+
+    public function toMinimalArrays(iterable $beneficiaries): iterable
+    {
+        foreach ($beneficiaries as $assistanceBeneficiary) {
+            yield $this->toMinimalArray($assistanceBeneficiary);
+        }
+    }
+
     public function toMinimalTransactionArray(?DistributionBeneficiary $distributionBeneficiary): ?array
     {
         if (!$distributionBeneficiary) {

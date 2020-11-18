@@ -20,6 +20,8 @@ use BeneficiaryBundle\Entity\Household;
  */
 class Assistance implements ExportableInterface
 {
+    const TYPE_INSTITUTION = 3;
+    const TYPE_COMMUNITY = 2;
     const TYPE_BENEFICIARY = 1;
     const TYPE_HOUSEHOLD = 0;
 
