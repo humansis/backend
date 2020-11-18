@@ -86,13 +86,7 @@ class InstitutionService
     {
         $limitMinimum = $dataTableType->pageIndex * $dataTableType->pageSize;
 
-        $institutions = $this->em->getRepository(Institution::class)->getAllBy(
-            $country,
-            $limitMinimum,
-            $dataTableType->pageSize,
-            $dataTableType->getSort(),
-            $dataTableType->getFilter()
-        );
+        $institutions = $this->em->getRepository(Institution::class)->getAllBy($country, $limitMinimum, $dataTableType->pageSize, $dataTableType->getSort());
         $length = $institutions[0];
         $institutions = $institutions[1];
 
