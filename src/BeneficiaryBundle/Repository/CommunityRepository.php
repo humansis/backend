@@ -113,6 +113,16 @@ class CommunityRepository extends \Doctrine\ORM\EntityRepository
 
         $this->whereCommunityInCountry($q, $iso3);
 
+        foreach ($filters as $filter) {
+            switch ($filter['category']) {
+                case 'projectName':
+                    $q->join('comm.projects', 'project');
+                    $q->andWhere('project.name LIKE :projectName');
+                    $q->setParameter('projectName', $filter['filter']);
+                    break;
+            }
+        }
+
         if (is_null($begin)) {
             $begin = 0;
         }
