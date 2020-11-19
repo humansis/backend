@@ -89,7 +89,7 @@ class AssistanceMapper
         $assistanceArray = [
             'id' => $assistance->getId(),
             'name' => $assistance->getName(),
-            'updated_on' => $assistance->getUpdatedOn(),
+            'updated_on' => $assistance->getUpdatedOnDateTime()->format('d-m-Y H:i'),
             'date_distribution' => $assistance->getDateDistribution(),
             'location' => $assistance->getLocation(),
             'project' => $assistance->getProject(),
@@ -141,7 +141,7 @@ class AssistanceMapper
         $assistanceArray = [
             'id' => $assistance->getId(),
             'name' => $assistance->getName(),
-            'updated_on' => $assistance->getUpdatedOn(),
+            'updated_on' => $assistance->getUpdatedOnDateTime()->format('d-m-Y H:i'),
             'date_distribution' => $assistance->getDateDistribution(),
             'location' => $assistance->getLocation(),
             'project' => $assistance->getProject(),

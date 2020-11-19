@@ -255,6 +255,11 @@ class Assistance implements ExportableInterface
         return $this->updatedOn->format('Y-m-d H:i:s');
     }
 
+    public function getUpdatedOnDateTime(): \DateTime
+    {
+        return $this->updatedOn;
+    }
+
     /**
      * Set archived.
      *
