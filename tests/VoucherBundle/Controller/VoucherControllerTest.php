@@ -3,6 +3,7 @@ namespace VoucherBundle\Tests\Controller;
 
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
+use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
 use VoucherBundle\Entity\VoucherPurchase;
@@ -212,6 +213,162 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->assertFalse($this->client->getResponse()->isSuccessful(), "Request doesn't failed but it should: ".$this->client->getResponse()->getContent());
         $this->assertFalse($this->client->getResponse()->isServerError(), "Request should fail but it ends with server error: ".$this->client->getResponse()->getContent());
         $this->assertTrue($this->client->getResponse()->isClientError(), "Request should fail with client error: ".$this->client->getResponse()->getContent());
+    }
+
+    public function testGetRedeemedBatches(): void
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $voucher = $this->em->getRepository(Voucher::class)->findOneBy(['redeemedAt'=>null]);
+
+        $vendorId = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc'])->getId();
+        $purchase = new \VoucherBundle\InputType\VoucherPurchase();
+        $purchase->setProducts([[
+            'id' => 1,
+            'quantity' => 5.9,
+            'value' => 1000.05,
+        ]]);
+        $purchase->setVendorId($vendorId);
+        $purchase->setVouchers([$voucher]);
+        $purchase->setCreatedAt(new \DateTime());
+        $purchaseService = $this->container->get('voucher.purchase_service');
+        $p1 = $purchaseService->purchase($purchase);
+        $voucher->redeem();
+        $this->em->persist($p1);
+        $this->em->persist($p1);
+        $this->em->flush();
+
+        $crawler = $this->request('GET', '/api/wsse/vouchers/purchases/redeemed-batches/' . $vendorId);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $batches = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($batches);
+        foreach ($batches as $batch) {
+            $this->assertIsArray($batch);
+            $this->assertArrayHasKey('date', $batch);
+            $this->assertArrayHasKey('count', $batch);
+            $this->assertArrayHasKey('value', $batch);
+
+            $this->assertRegExp('/\d\d-\d\d-\d\d\d\d \d\d:\d\d/', $batch['date'], "Wrong datetime format");
+            $this->assertIsNumeric($batch['count']);
+            $this->assertIsNumeric($batch['value']);
+        }
+    }
+
+    public function testCheckBatchRedemption(): void
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc']);
+        $vendorId = $vendor->getId();
+
+        $batchToRedeemCheck = [
+            "vouchers" => [-1],
+        ];
+
+        $crawler = $this->request('POST', '/api/wsse/vouchers/purchases/redeem-check/' . $vendorId, $batchToRedeemCheck);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertIsArray($result);
+
+        $this->assertArrayHasKey('not_exists', $result);
+        $this->assertArrayHasKey('redeemed', $result);
+        $this->assertArrayHasKey('unused', $result);
+        $this->assertArrayHasKey('unassigned', $result);
+        $this->assertArrayHasKey('inconsistent', $result);
+        $this->assertArrayHasKey('valid', $result);
+
+        $this->assertCount(1, $result['not_exists']);
+        $this->assertCount(0, $result['redeemed']);
+        $this->assertCount(0, $result['unused']);
+        $this->assertCount(0, $result['unassigned']);
+        $this->assertCount(0, $result['inconsistent']);
+        $this->assertCount(0, $result['valid']);
+    }
+
+    public function testValidBatchRedemption(): void
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc']);
+        $vendorId = $vendor->getId();
+        $booklets = $this->em->getRepository(Booklet::class)->findBy([
+            'status' => Booklet::DISTRIBUTED,
+        ]);
+        $vouchers = $this->em->getRepository(Voucher::class)->findBy([
+            'redeemedAt' => null,
+            'voucherPurchase' => null,
+            'booklet' => $booklets,
+        ]);
+        $purchaseService = $this->container->get('voucher.purchase_service');
+        $anyProduct = $this->em->getRepository(Product::class)->findOneBy([], ['id'=>'asc']);
+        foreach ($vouchers as $voucher) {
+            $purchaseInput = new \VoucherBundle\InputType\VoucherPurchase();
+            $purchaseInput->setCreatedAt(new \DateTime());
+            $purchaseInput->setVouchers([$voucher]);
+            $purchaseInput->setVendorId($vendorId);
+            $purchaseInput->setProducts([[
+                'id' => $anyProduct->getId(),
+                'quantity' => 5.9,
+                'value' => 1000.05,
+            ]]);
+            $purchaseService->purchase($purchaseInput);
+        }
+        $batchToRedeem = [
+            "vouchers" => array_map(function (Voucher $voucher) { return $voucher->getId(); }, $vouchers),
+        ];
+        // $batchToRedeem['vouchers'][] = -1;
+
+        $crawler = $this->request('POST', '/api/wsse/vouchers/purchases/redeem-batch/' . $vendorId, $batchToRedeem);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($result);
+    }
+
+    public function testInvalidBatchRedemption(): void
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $anyVendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc']);
+        $vendorId = $anyVendor->getId();
+        $batchToRedeem = [
+            "vouchers" => [-1],
+        ];
+
+        $crawler = $this->request('POST', '/api/wsse/vouchers/purchases/redeem-batch/' . $vendorId, $batchToRedeem);
+        $content = $this->client->getResponse()->getContent();
+        $this->assertFalse($this->client->getResponse()->isSuccessful(), "Request shouldnt be successful: " . $content);
+        $this->assertTrue($this->client->getResponse()->isClientError(), "Request should end with client error: " . $content);
+        $this->assertFalse($this->client->getResponse()->isServerError(), "Request failed: " . $content);
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($result);
+
+        $this->assertArrayHasKey('not_exists', $result);
+        $this->assertArrayHasKey('redeemed', $result);
+        $this->assertArrayHasKey('unused', $result);
+        $this->assertArrayHasKey('unassigned', $result);
+        $this->assertArrayHasKey('inconsistent', $result);
+        $this->assertArrayHasKey('valid', $result);
+
+        $this->assertCount(1, $result['not_exists']);
+        $this->assertCount(0, $result['redeemed']);
+        $this->assertCount(0, $result['unused']);
+        $this->assertCount(0, $result['unassigned']);
+        $this->assertCount(0, $result['inconsistent']);
+        $this->assertCount(0, $result['valid']);
     }
 
     /**

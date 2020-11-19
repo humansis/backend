@@ -103,13 +103,15 @@ class CommunityRepository extends \Doctrine\ORM\EntityRepository
      * @param array $filters
      * @return mixed
      */
-    public function getAllBy($iso3, $begin, $pageSize, $sort, $filters = [])
+    public function getAllBy(string $iso3, $begin, $pageSize, $sort, $filters = [])
     {
         // Recover global information for the page
         $qb = $this->createQueryBuilder("comm");
 
         // We join information that is needed for the filters
         $q = $qb->andWhere("comm.archived = 0");
+
+        $this->whereCommunityInCountry($q, $iso3);
 
         if (is_null($begin)) {
             $begin = 0;
@@ -193,7 +195,8 @@ class CommunityRepository extends \Doctrine\ORM\EntityRepository
      */
     protected function getCommunityLocation(QueryBuilder &$qb)
     {
-        $qb->leftJoin("comm.location", "hl");
+        $qb->leftJoin("comm.address", "addr");
+        $qb->leftJoin("addr.location", "l");
     }
 
     /**

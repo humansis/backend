@@ -44,15 +44,18 @@ class CommunityControllerTest extends BMSServiceTestCase
                 'phone_number' => '123 456 789',
                 'contact_name' => 'Abdul Mohammad',
                 'contact_family_name' => 'Qousad',
+                'projects' => [1],
                 '__country' => 'KHM'
             ]],
             'minimalistic' => [[
-                '__country' => 'KHM'
+                '__country' => 'KHM',
+                'projects' => [1],
             ]],
             'minimalistic with street name' => [[
                 'address' => [
                     'street' => 'Street name',
                 ],
+                'projects' => [1],
             ]],
             'minimalistic with location' => [[
                 'address' => [
@@ -60,6 +63,7 @@ class CommunityControllerTest extends BMSServiceTestCase
                         'adm1' => 1,
                     ],
                 ],
+                'projects' => [1],
             ]],
         ];
     }
@@ -99,6 +103,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('contact_name', $community,"Part of answer missing: contact_name");
         $this->assertArrayHasKey('phone_prefix', $community,"Part of answer missing: phone_prefix");
         $this->assertArrayHasKey('phone_number', $community,"Part of answer missing: phone_number");
+        $this->assertArrayHasKey('projects', $community,"Part of answer missing: projects");
 
         $this->assertSame($community['contact_name'], $communityBody['contact_name'] ?? '', "Returned data are different than input: contact_name");
         $this->assertSame($community['contact_family_name'], $communityBody['contact_family_name'] ?? '', "Returned data are different than input: contact_name");
@@ -121,6 +126,9 @@ class CommunityControllerTest extends BMSServiceTestCase
             $this->assertSame($community['address']['number'], $communityBody['address']['number'] ?? null, "Returned data are different than input: address");
             $this->assertSame($community['address']['postcode'], $communityBody['address']['postcode'] ?? null, "Returned data are different than input: address");
         }
+
+        $this->assertIsArray($community['projects']);
+        $this->assertCount(1, $community['projects']);
 
         return $community;
     }
@@ -183,104 +191,4 @@ class CommunityControllerTest extends BMSServiceTestCase
         }
     }
 
-    /**
-     * @depends testCreateCommunity
-     * @param $community
-     */
-    public function testEditCommunityPosition()
-    {
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var Community $community */
-        $community = $this->em->getRepository(Community::class)->findOneBy([]);
-
-        $oldLongitude = $community->getLongitude();
-        $oldLatitude = $community->getLatitude();
-        $changes = [
-            'longitude' => '1'.$oldLongitude,
-            'latitude' => '1'.$oldLatitude,
-        ];
-
-        $crawler = $this->request('POST', '/api/wsse/communities/' . $community->getId(), $changes);
-        $communitiesArray = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-
-        $this->assertArrayHasKey('longitude', $communitiesArray,"Part of answer missing: longitude");
-        $this->assertArrayHasKey('latitude', $communitiesArray,"Part of answer missing: latitude");
-        $this->assertEquals($communitiesArray['longitude'], $changes['longitude'], "Longitude wasn't changed");
-        $this->assertEquals($communitiesArray['latitude'], $changes['latitude'], "Latitude wasn't changed");
-    }
-
-    /**
-     * @depends testCreateCommunity
-     * @param $community
-     */
-    public function testEditCommunityAddress()
-    {
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var Community $community */
-        $community = $this->em->getRepository(Community::class)->findOneBy([]);
-
-        $changes = [
-            'address' => [
-                'street' => 'changed street',
-                'number' => '123456789',
-                'postcode' => '987654321',
-            ],
-        ];
-
-        $crawler = $this->request('POST', '/api/wsse/communities/' . $community->getId(), $changes);
-        $communitiesArray = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-
-        $this->assertArrayHasKey('address', $communitiesArray,"Part of answer missing: address");
-        $this->assertEquals($communitiesArray['address']['street'], $changes['address']['street'], "Address[street] wasn't changed");
-        $this->assertEquals($communitiesArray['address']['number'], $changes['address']['number'], "Address[number] wasn't changed");
-        $this->assertEquals($communitiesArray['address']['postcode'], $changes['address']['postcode'], "Address[postcode] wasn't changed");
-    }
-
-    /**
-     * @depends testCreateCommunity
-     * @param $community
-     */
-    public function testEditCommunityLocation()
-    {
-        $this->markTestSkipped('Invalid address references');
-
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var Community $community */
-        $community = $this->em->getRepository(Community::class)->findOneBy([]);
-
-        $changes = [
-            'address' => [
-                'street' => 'changed street',
-                'number' => '123456789',
-                'postcode' => '987654321',
-                'location' => [
-                    'adm1' => 2,
-                    'adm2' => 2,
-                    'adm3' => 2,
-                    'adm4' => 2,
-                ]
-            ],
-        ];
-
-        $crawler = $this->request('POST', '/api/wsse/communities/' . $community->getId(), $changes);
-        $communitiesArray = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-
-        $this->assertArrayHasKey('address', $communitiesArray,"Part of answer missing: address");
-        $this->assertEquals($communitiesArray['address']['location']['adm1'], $changes['address']['location']['adm1'], "Address[location][adm1] wasn't changed");
-        $this->assertEquals($communitiesArray['address']['location']['adm2'], $changes['address']['location']['adm2'], "Address[location][adm2] wasn't changed");
-        $this->assertEquals($communitiesArray['address']['location']['adm3'], $changes['address']['location']['adm3'], "Address[location][adm3] wasn't changed");
-        $this->assertEquals($communitiesArray['address']['location']['adm4'], $changes['address']['location']['adm4'], "Address[location][adm4] wasn't changed");
-    }
 }

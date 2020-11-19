@@ -8,12 +8,14 @@ use CommonBundle\InputType\RequestConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use VoucherBundle\DTO\RedemptionVoucherBatchCheck;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use VoucherBundle\Entity\VoucherRecord;
+use VoucherBundle\InputType\VoucherRedemptionBatch;
 
 class VoucherService
 {
@@ -115,6 +117,82 @@ class VoucherService
         $voucher->redeem();
         $this->em->persist($voucher);
         $this->em->flush();
+    }
+
+    /**
+     * @param VoucherRedemptionBatch $batch
+     *
+     * @param Vendor|null            $vendor
+     *
+     * @return RedemptionVoucherBatchCheck
+     */
+    public function checkBatch(VoucherRedemptionBatch $batch, ?Vendor $vendor = null): RedemptionVoucherBatchCheck
+    {
+        $ids = $batch->getVouchers();
+
+        $check = new RedemptionVoucherBatchCheck();
+        if (empty($ids)) {
+            return $check;
+        }
+
+        $vouchers = $this->em->getRepository(Voucher::class)->findBy([
+            'id' => $ids,
+        ]);
+        $ids = array_flip($ids);
+
+        /** @var Voucher $voucher */
+        foreach ($vouchers as $voucher) {
+            $error = false;
+            if (Booklet::UNASSIGNED == $voucher->getBooklet()->getStatus()
+                || null == $voucher->getBooklet()->getDistributionBeneficiary()) {
+                $check->addUnassignedVoucher($voucher);
+                $error = true;
+            }
+
+            if (Booklet::DISTRIBUTED == $voucher->getBooklet()->getStatus()
+                || null === $voucher->getVoucherPurchase()) {
+                $check->addUnusedVoucher($voucher);
+                $error = true;
+            }
+
+            if (Booklet::USED == $voucher->getBooklet()->getStatus()
+                && null !== $voucher->getRedeemedAt()) {
+                $check->addAlreadyRedeemedVoucher($voucher);
+                $error = true;
+            }
+
+            if (Booklet::USED == $voucher->getBooklet()->getStatus()
+                && null !== $vendor
+                && null == $voucher->getRedeemedAt()
+                && $vendor !== $voucher->getVoucherPurchase()->getVendor()) {
+                $check->addVendorInconsistentVoucher($voucher);
+                $error = true;
+            }
+
+            if (!$error) {
+                $check->addValidVoucher($voucher);
+            }
+            unset($ids[$voucher->getId()]);
+        }
+        foreach (array_keys($ids) as $notExistedId) {
+            $check->addNotExistedId($notExistedId);
+        }
+
+        return $check;
+    }
+
+    public function redeemBatch(VoucherRedemptionBatch $batch): void
+    {
+        $check = $this->checkBatch($batch);
+
+        if ($check->hasInvalidVouchers()) {
+            throw new \InvalidArgumentException("Invalid voucher batch");
+        }
+
+        $redeemedAtDate = new \DateTime();
+        foreach ($check->getValidVouchers() as $voucher) {
+            $voucher->redeem($redeemedAtDate);
+        }
     }
 
     /**

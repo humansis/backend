@@ -144,6 +144,10 @@ class BeneficiaryController extends Controller
      */
     public function getOneAction(Beneficiary $Beneficiary)
     {
+        if (true === $Beneficiary->getArchived()) {
+            return new Response("Beneficiary was archived", Response::HTTP_NOT_FOUND);
+        }
+
         $json = $this->get('serializer')
         ->serialize(
             $Beneficiary,

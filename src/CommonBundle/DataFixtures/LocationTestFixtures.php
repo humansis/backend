@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class LocationTestFixtures extends Fixture implements FixtureGroupInterface
 {
-    private $countries = ["KHM", "SYR", "UKR"];
+    private $countries = ["KHM", "SYR", "UKR", 'ETH'];
 
     // code is suffixed by country code
     const ADM1_1 = 'ADM1Fst';

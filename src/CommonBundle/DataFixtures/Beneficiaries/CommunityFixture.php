@@ -4,11 +4,13 @@ namespace CommonBundle\DataFixtures\Beneficiaries;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\InputType\LocationType;
+use BeneficiaryBundle\InputType\NewCommunityType;
 use BeneficiaryBundle\InputType\NewInstitutionType;
 use BeneficiaryBundle\InputType\UpdateCommunityType;
 use BeneficiaryBundle\Utils\CommunityService;
 use BeneficiaryBundle\Utils\InstitutionService;
 use CommonBundle\DataFixtures\LocationFixtures;
+use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\RequestConverter;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -18,9 +20,10 @@ use ProjectBundle\Entity\Project;
 
 class CommunityFixture extends Fixture implements DependentFixtureInterface
 {
-    const COUNTRIES = ['KHM', 'SYR', 'UKR'];
+    const COUNTRIES = ['KHM', 'SYR', 'UKR', 'ETH'];
     const COMMUNITIES = [
         [
+            'projects' => [1],
             'longitude' => '20,254871',
             'latitude' => '45,47854425',
             'address' => [
@@ -45,6 +48,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             'contact_family_name' => 'Qousad',
          ],
         [
+            'projects' => [1],
             'longitude' => '120,254871',
             'latitude' => '145,47854425',
             'address' => [
@@ -69,6 +73,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             'contact_family_name' => 'Roubin',
         ],
         [
+            'projects' => [3],
             'longitude' => '10,254871',
             'latitude' => '15,47854425',
             'address' => [
@@ -80,7 +85,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
                     'adm2' => 1,
                     'adm3' => 1,
                     'adm4' => 1,
-                    'country_iso3' => 'KHM',
+                    'country_iso3' => 'SYR',
                 ],
             ],
             'national_id' => [
@@ -118,8 +123,8 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             return;
         }
         foreach (self::COMMUNITIES as $communityArray) {
-            /** @var UpdateCommunityType $communityType */
-            $communityType = RequestConverter::normalizeInputType($communityArray, UpdateCommunityType::class);
+            /** @var NewCommunityType $communityType */
+            $communityType = RequestConverter::normalizeInputType($communityArray, NewCommunityType::class);
             foreach (self::COUNTRIES as $COUNTRY) {
                 $institution = $this->communityService->create(new Country($COUNTRY), $communityType);
                 $manager->persist($institution);
@@ -134,6 +139,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
     {
         return [
             LocationFixtures::class,
+            ProjectFixtures::class,
         ];
     }
 }

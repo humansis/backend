@@ -5,6 +5,7 @@ namespace DistributionBundle\Controller;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\AssistanceMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
 use DistributionBundle\Utils\DistributionService;
 use DistributionBundle\Utils\DistributionCsvService;
@@ -243,7 +244,7 @@ class AssistanceController extends Controller
      *     @Model(type=DistributionBeneficiary::class)
      * )
      *
-     * @param Request          $request
+     * @param Request    $request
      * @param Assistance $assistance
      *
      * @return Response
@@ -252,28 +253,18 @@ class AssistanceController extends Controller
      */
     public function addBeneficiaryAction(Request $request, Assistance $assistance)
     {
+        $mapper = $this->get(AssistanceBeneficiaryMapper::class);
         $data = $request->request->all();
 
         try {
             /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
             $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-            $distributionBeneficiary = $distributionBeneficiaryService->addBeneficiary($assistance, $data);
+            $assistanceBeneficiaries = $distributionBeneficiaryService->addBeneficiaries($assistance, $data);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('serializer')
-            ->serialize(
-                $distributionBeneficiary,
-                'json',
-                ['groups' => [
-                    'FullDistributionBeneficiary',
-                    'FullDistribution',
-                    'FullBeneficiary',
-                ]]
-            );
-
-        return new Response($json);
+        return $this->json($mapper->toMinimalArrays($assistanceBeneficiaries));
     }
 
     /**
@@ -520,6 +511,35 @@ class AssistanceController extends Controller
         $json = $this->get('serializer')
             ->serialize($assistance, 'json', ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']);
         return new Response($json, Response::HTTP_OK);
+    }
+
+    /**
+     * Delete a distribution.
+     *
+     * @Rest\Delete("/distributions/{id}")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=204,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Assistance $assistance
+     *
+     * @return Response
+     */
+    public function delete(Assistance $assistance)
+    {
+        $this->get('distribution.distribution_service')->delete($assistance);
+
+        return $this->json([], Response::HTTP_NO_CONTENT);
     }
 
     /**

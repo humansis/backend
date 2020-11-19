@@ -21,8 +21,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider
     /**
      * @var string
      */
-    protected $url = "https://stageonline.wingmoney.com:8443/RestEngine";
-    protected $url_prod = "https://hir.wingmoney.com:8443/RestServer";
+    protected $url = "https://ir.wingmoney.com:9443/RestEngine";
+    protected $url_prod = "https://api.wingmoney.com:8443/RestServer";
     /**
      * @var string
      */
@@ -152,10 +152,10 @@ class KHMFinancialProvider extends DefaultFinancialProvider
     /**
      * Update status of transaction (check if money has been picked up)
      * @param  Transaction $transaction
-     * @return object
+     * @return Transaction
      * @throws \Exception
      */
-    public function updateStatusTransaction(Transaction $transaction)
+    public function updateStatusTransaction(Transaction $transaction): Transaction
     {
         try {
             $response = $this->getStatus($transaction->getDistributionBeneficiary()->getAssistance(), $transaction->getTransactionId());
@@ -226,7 +226,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         }
                 
         curl_setopt_array($curl, array(
-          CURLOPT_PORT           => "8443",
+          CURLOPT_PORT           => ($this->production ? "8443": "9443"),
           CURLOPT_URL            => ($this->production ? $this->url_prod : $this->url) . $route,
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_ENCODING       => "",

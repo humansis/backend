@@ -80,6 +80,8 @@ class BMSServiceTestCase extends KernelTestCase
         "longitude" => "120.12",
         "coping_strategies_index" => "6",
         "food_consumption_score" => "7",
+        "income_spent_on_food" => 1000,
+        "household_income" => 100000,
         "household_locations" => array(
             [
                 "location_group" => "current",

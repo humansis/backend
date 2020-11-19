@@ -46,11 +46,13 @@ class InstitutionControllerTest extends BMSServiceTestCase
                 'phone_number' => '123 456 789',
                 'contact_name' => 'Abdul Mohammad',
                 'contact_family_name' => 'Qousad',
-                '__country' => 'KHM'
+                '__country' => 'KHM',
+                'projects' => [1],
             ]],
             'minimalistic' => [[
                 'name' => 'Local mayor institution',
                 'type' => Institution::TYPE_GOVERNMENT,
+                'projects' => [1],
             ]],
             'minimalistic with street name' => [[
                 'name' => 'Local mayor institution',
@@ -58,6 +60,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
                 'address' => [
                     'street' => 'Street name',
                 ],
+                'projects' => [1],
             ]],
             'minimalistic with location' => [[
                 'name' => 'Local mayor institution',
@@ -67,6 +70,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
                         'adm1' => 1,
                     ],
                 ],
+                'projects' => [1],
             ]],
         ];
     }
@@ -109,6 +113,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('national_id', $institution,"Part of answer missing: national_id");
         $this->assertArrayHasKey('phone_prefix', $institution,"Part of answer missing: phone_prefix");
         $this->assertArrayHasKey('phone_number', $institution,"Part of answer missing: phone_number");
+        $this->assertArrayHasKey('projects', $institution,"Part of answer missing: projects");
 
         $this->assertSame($institution['name'], $institutionBody['name'], "Returned data are different than input: type");
         $this->assertSame($institution['type'], $institutionBody['type'], "Returned data are different than input: type");
@@ -131,6 +136,9 @@ class InstitutionControllerTest extends BMSServiceTestCase
             $this->assertSame($institution['address']['number'], $institutionBody['address']['number'] ?? null, "Returned data are different than input: address");
             $this->assertSame($institution['address']['postcode'], $institutionBody['address']['postcode'] ?? null, "Returned data are different than input: address");
         }
+
+        $this->assertIsArray($institution['projects']);
+        $this->assertCount(1, $institution['projects']);
 
         return $institution;
     }
@@ -202,92 +210,4 @@ class InstitutionControllerTest extends BMSServiceTestCase
         }
     }
 
-    /**
-     * @depends testCreateInstitution
-     * @param $institution
-     */
-    public function testEditInstitutionPosition()
-    {
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var Institution $institution */
-        $institution = $this->em->getRepository(Institution::class)->findOneBy([]);
-
-        $institution->setLatitude("10.123");
-        $institution->setLongitude("20.123");
-        $this->em->persist($institution);
-        $this->em->flush();
-
-        $changes = [
-            'longitude' => '123.10',
-            'latitude' => '321.20',
-        ];
-
-        $crawler = $this->request('POST', '/api/wsse/institutions/' . $institution->getId(), $changes);
-        $institutionsArray = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-
-        $this->assertArrayHasKey('longitude', $institutionsArray,"Part of answer missing: longitude");
-        $this->assertArrayHasKey('latitude', $institutionsArray,"Part of answer missing: latitude");
-        $this->assertEquals($institutionsArray['longitude'], $changes['longitude'], "Longitude wasn't changed");
-        $this->assertEquals($institutionsArray['latitude'], $changes['latitude'], "Latitude wasn't changed");
-    }
-
-    /**
-     * @depends testCreateInstitution
-     * @param $institution
-     */
-    public function testEditInstitutionType()
-    {
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var Institution $institution */
-        $institution = $this->em->getRepository(Institution::class)->findOneBy([]);
-
-        $changes = [
-            'type' => Institution::TYPE_COMMERCE,
-        ];
-
-        $crawler = $this->request('POST', '/api/wsse/institutions/' . $institution->getId(), $changes);
-        $institutionsArray = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-
-        $this->assertArrayHasKey('type', $institutionsArray,"Part of answer missing: type");
-        $this->assertEquals($institutionsArray['type'], $changes['type'], "Type wasn't changed");
-    }
-
-    /**
-     * @depends testCreateInstitution
-     * @param $institution
-     */
-    public function testEditInstitutionAddress()
-    {
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var Institution $institution */
-        $institution = $this->em->getRepository(Institution::class)->findOneBy([]);
-
-        $changes = [
-            'address' => [
-                'street' => 'changed street',
-                'number' => '123456789',
-                'postcode' => '987654321',
-            ],
-        ];
-
-        $crawler = $this->request('POST', '/api/wsse/institutions/' . $institution->getId(), $changes);
-        $institutionsArray = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-
-        $this->assertArrayHasKey('address', $institutionsArray,"Part of answer missing: address");
-        $this->assertEquals($institutionsArray['address']['street'], $changes['address']['street'], "Address[street] wasn't changed");
-        $this->assertEquals($institutionsArray['address']['number'], $changes['address']['number'], "Address[number] wasn't changed");
-        $this->assertEquals($institutionsArray['address']['postcode'], $changes['address']['postcode'], "Address[postcode] wasn't changed");
-    }
 }

@@ -1,27 +1,22 @@
 <?php
 
-
 namespace CommonBundle\DataFixtures;
 
+use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
-use VoucherBundle\Entity\Vendor;
-use UserBundle\Entity\User;
-use CommonBundle\Entity\Location;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\HttpKernel\Kernel;
+use VoucherBundle\Entity\Vendor;
 
 class VendorFixtures extends Fixture implements DependentFixtureInterface
 {
-    const VENDOR_EMAIL = 'vendor@example.org';
+    const REF_VENDOR_KHM = 'vendor_fixtures_khm';
+    const REF_VENDOR_SYR = 'vendor_fixtures_syr';
 
-    /** @var Kernel $kernel */
+    /** @var Kernel */
     private $kernel;
-
-    private $data = [
-        ['vendor', 'shop', '1', 'rue de la Paix', '75000', 0, self::VENDOR_EMAIL, 1]
-    ];
-
 
     public function __construct(Kernel $kernel)
     {
@@ -29,44 +24,75 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
     }
 
     /**
-     * Load data fixtures with the passed EntityManager
-     *
-     * @param ObjectManager $manager
+     * {@inheritdoc}
      */
     public function load(ObjectManager $manager)
     {
-        if ($this->kernel->getEnvironment() !== "prod") {
-            foreach ($this->data as $vendorData) {
-                $user = $manager->getRepository(User::class)->findOneByUsername($vendorData[6]);
-                if (!empty($manager->getRepository(Vendor::class)->getVendorByUser($user))) {
-                    echo "Vendor {$vendorData[0]} already exists. Ommiting.\n";
-                    continue;
-                }
-
-                $location = $manager->getRepository(Location::class)->find($vendorData[7]);
-                $vendor = new Vendor();
-                $vendor->setName($vendorData[0])
-                ->setShop($vendorData[1])
-                ->setAddressNumber($vendorData[2])
-                ->setAddressStreet($vendorData[3])
-                ->setAddressPostcode($vendorData[4])
-                ->setArchived($vendorData[5])
-                ->setUser($user)
-                ->setLocation($location);
-                $manager->persist($vendor);
-                $manager->flush();
-            }
+        if ('prod' === $this->kernel->getEnvironment()) {
+            return;
         }
+
+        $vendorSyr = $this->createSyrVendor($manager);
+        $vendorKhm = $this->createKhmVendor($manager);
+
+        $manager->persist($vendorSyr);
+        $manager->persist($vendorKhm);
+        $manager->flush();
+
+        $this->setReference(self::REF_VENDOR_SYR, $vendorSyr);
+        $this->setReference(self::REF_VENDOR_KHM, $vendorKhm);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getDependencies()
     {
         return [
             UserFixtures::class,
-            LocationFixtures::class
+            LocationFixtures::class,
         ];
+    }
+
+    private function createSyrVendor(ObjectManager $manager)
+    {
+        $user = $this->getReference(UserFixtures::REF_VENDOR_SYR);
+
+        $adm1 = $manager->getRepository(Adm1::class)->findOneBy(['countryISO3' => 'SYR']);
+        $adm2 = $manager->getRepository(Adm2::class)->findOneBy(['adm1' => $adm1]);
+
+        $vendor = new Vendor();
+        $vendor
+            ->setName('Vendor from Syria')
+            ->setShop('shop')
+            ->setAddressNumber('13')
+            ->setAddressStreet('Main street')
+            ->setAddressPostcode('12345')
+            ->setArchived(false)
+            ->setUser($user)
+            ->setLocation($adm2->getLocation());
+
+        return $vendor;
+    }
+
+    private function createKhmVendor(ObjectManager $manager)
+    {
+        $user = $this->getReference(UserFixtures::REF_VENDOR_KHM);
+
+        $adm1 = $manager->getRepository(Adm1::class)->findOneBy(['countryISO3' => 'KHM']);
+        $adm2 = $manager->getRepository(Adm2::class)->findOneBy(['adm1' => $adm1]);
+
+        $vendor = new Vendor();
+        $vendor
+            ->setName('Vendor from Cambodia')
+            ->setShop('market')
+            ->setAddressNumber('1')
+            ->setAddressStreet('Main boulevard')
+            ->setAddressPostcode('54321')
+            ->setArchived(false)
+            ->setUser($user)
+            ->setLocation($adm2->getLocation());
+
+        return $vendor;
     }
 }

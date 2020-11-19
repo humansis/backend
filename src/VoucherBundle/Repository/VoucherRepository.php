@@ -2,6 +2,9 @@
 
 namespace VoucherBundle\Repository;
 
+use VoucherBundle\DTO\PurchaseRedeemedBatch;
+use VoucherBundle\Entity\Vendor;
+
 /**
  * VoucherRepository
  *
@@ -59,4 +62,33 @@ class VoucherRepository extends \Doctrine\ORM\EntityRepository
 
         return $q->getQuery()->getSingleScalarResult();
     }
+
+    /**
+     * @param Vendor $vendor
+     *
+     * @return PurchaseRedeemedBatch[]
+     */
+    public function getRedeemBatches(Vendor $vendor): array
+    {
+        $qb = $this->createQueryBuilder('v')
+            ->select('v.redeemedAt as batchDate, COUNT(p.id) as purchaseCount, SUM(pr.value) as purchaseRecordsValue')
+            ->join('v.voucherPurchase', 'p')
+            ->join('p.records', 'pr')
+            ->where('p.vendor = :vendor')
+            ->andWhere('v.redeemedAt is not null')
+            ->setParameter('vendor', $vendor)
+            ->groupBy('v.redeemedAt, p.vendor');
+
+        $batches = [];
+        foreach ($qb->getQuery()->getResult() as $batch) {
+            $batches[] = new PurchaseRedeemedBatch(
+                $batch['batchDate'],
+                $batch['purchaseCount'],
+                $batch['purchaseRecordsValue']
+            );
+        }
+
+        return $batches;
+    }
+
 }

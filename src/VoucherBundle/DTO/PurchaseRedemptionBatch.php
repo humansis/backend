@@ -16,10 +16,10 @@ class PurchaseRedemptionBatch
     /**
      * PurchaseBatchToRedeem constructor.
      *
-     * @param float $value
+     * @param mixed $value
      * @param int[] $purchasesIds
      */
-    public function __construct(float $value, array $purchasesIds)
+    public function __construct($value, array $purchasesIds)
     {
         $this->value = $value;
         $this->purchasesIds = $purchasesIds;
@@ -28,7 +28,7 @@ class PurchaseRedemptionBatch
     /**
      * @return float
      */
-    public function getValue(): float
+    public function getValue()
     {
         return $this->value;
     }

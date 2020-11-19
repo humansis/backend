@@ -57,6 +57,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('household_income', $household);
             $this->assertArrayHasKey('support_organization_name', $household);
 
+            $this->assertEquals(1000, $household['income_spent_on_food']);
+            $this->assertEquals(100000, $household['household_income']);
+
             $beneficiary = current($household["beneficiaries"]);
 
             $this->assertArrayHasKey('local_parents_name', $beneficiary);
@@ -196,6 +199,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('support_organization_name', $householdsArray);
         $this->assertArrayHasKey('country_specific_answers', $householdsArray);
         $this->assertArrayHasKey('projects', $householdsArray);
+        $this->assertArrayHasKey('income_spent_on_food', $householdsArray);
+        $this->assertArrayHasKey('household_income', $householdsArray);
 
         $beneficiary = current($householdsArray["beneficiaries"]);
         $this->assertArrayHasKey('local_parents_name', $beneficiary);
@@ -240,6 +245,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('support_organization_name', $householdsArray);
         $this->assertArrayHasKey('country_specific_answers', $householdsArray);
         $this->assertArrayHasKey('projects', $householdsArray);
+        $this->assertArrayHasKey('income_spent_on_food', $householdsArray);
+        $this->assertArrayHasKey('household_income', $householdsArray);
 
         $beneficiary = current($householdsArray["beneficiaries"]);
         $this->assertArrayHasKey('local_parents_name', $beneficiary);

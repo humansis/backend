@@ -134,7 +134,7 @@ abstract class DefaultFinancialProvider
                         $amountSent = $cache->get($assistance->getId() . '-amount_sent');
                     }
                     // if the limit hasn't been reached
-                    if (empty($amountSent) || $amountSent + $amount <= 1000) {
+                    if (empty($amountSent) || $amountSent + $amount <= 10000) {
                         try {
                             $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary, $amount, $currency);
                             if ($transaction->getTransactionStatus() === 0) {
@@ -149,7 +149,7 @@ abstract class DefaultFinancialProvider
                             array_push($response['failure'], $distributionBeneficiary);
                         }
                     } else {
-                        $this->createTransaction($distributionBeneficiary, '', new \DateTime(), 0, 0, "The maximum amount that can be sent per distribution (USD 1000) has been reached");
+                        $this->createTransaction($distributionBeneficiary, '', new \DateTime(), 0, 0, "The maximum amount that can be sent per distribution (USD 10000) has been reached");
                     }
                 }
             } else {
@@ -168,10 +168,10 @@ abstract class DefaultFinancialProvider
     /**
      * Update distribution status (check if money has been picked up)
      * @param  Assistance $assistance
-     * @return void
+     * @return DistributionBeneficiary[]
      * @throws \Exception
      */
-    public function updateStatusDistribution(Assistance $assistance)
+    public function updateStatusDistribution(Assistance $assistance): array
     {
         $response = array();
 

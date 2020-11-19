@@ -63,7 +63,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByName(string $givenName, string $parentsName, string $familyName)
+    public function findByName(string $givenName, ?string $parentsName, string $familyName)
     {
         return $this->createQueryBuilder('b')
             ->leftJoin('b.household', 'hh')
@@ -188,11 +188,28 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
     public function countByResidencyStatus(Assistance $assistance, string $residencyStatus): int
     {
-        $qb = $this->createQueryBuilder('b');
-        $qb->select('COUNT(DISTINCT b)');
-        $this->whereInDistribution($qb, $assistance);
-        $this->whereResidencyStatus($qb, $residencyStatus);
-        $qb->andWhere('b.archived = 0');
+        if (Assistance::TYPE_HOUSEHOLD === $assistance->getTargetType()) {
+            $qb = $this->createQueryBuilder('hhm')
+                ->select('COUNT(hhm)')
+                ->join('hhm.household', 'h')
+                ->join('h.beneficiaries', 'hhh')
+                ->join('hhh.distributionBeneficiary', 'db', 'WITH', 'db.removed=0')
+                ->andWhere('db.assistance = :assistance')
+                ->andWhere('hhm.residencyStatus = :residencyStatus')
+                ->andWhere('hhm.archived = 0')
+                ->setParameter('assistance', $assistance)
+                ->setParameter('residencyStatus', $residencyStatus);
+        } else {
+            $qb = $this->createQueryBuilder('b')
+                ->select('COUNT(DISTINCT b)')
+                ->join('b.distributionBeneficiary', 'db', 'WITH', 'db.removed=0')
+                ->andWhere('db.assistance = :assistance')
+                ->andWhere('b.residencyStatus = :residencyStatus')
+                ->andWhere('b.archived = 0')
+                ->setParameter('assistance', $assistance)
+                ->setParameter('residencyStatus', $residencyStatus);
+        }
+
         return $qb->getQuery()->getSingleScalarResult();
     }
 
@@ -209,16 +226,36 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
     public function countByAgeAndByGender(Assistance $distribution, int $gender, int $minAge, int $maxAge, \DateTimeInterface $distributionDate): int
     {
-        $qb = $this->createQueryBuilder('b');
-        $qb->select('COUNT(DISTINCT b)');
-        $this->whereInDistribution($qb, $distribution);
-        $this->whereGender($qb, $gender);
-
         $maxDateOfBirth = clone $distributionDate;
         $minDateOfBirth = clone $distributionDate;
         $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
         $minDateOfBirth->sub(new \DateInterval('P'.$maxAge.'Y'));
-        $this->whereBornBetween($qb, $minDateOfBirth, $maxDateOfBirth);
+
+        if (Assistance::TYPE_HOUSEHOLD === $distribution->getTargetType()) {
+            $qb = $this->createQueryBuilder('hhm')
+                ->select('COUNT(hhm)')
+                ->join('hhm.person', 'p', 'WITH', 'p.gender = :g AND p.dateOfBirth >= :minDateOfBirth AND p.dateOfBirth < :maxDateOfBirth')
+                ->join('hhm.household', 'h')
+                ->join('h.beneficiaries', 'hhh')
+                ->join('hhh.distributionBeneficiary', 'db', 'WITH', 'db.removed=0')
+                ->andWhere('db.assistance = :assistance')
+                ->andWhere('hhm.archived = 0')
+                ->setParameter('assistance', $distribution)
+                ->setParameter('g', $gender)
+                ->setParameter('minDateOfBirth', $minDateOfBirth)
+                ->setParameter('maxDateOfBirth', $maxDateOfBirth);
+        } else {
+            $qb = $this->createQueryBuilder('b')
+                ->select('COUNT(b)')
+                ->join('b.person', 'p', 'WITH', 'p.gender = :g AND p.dateOfBirth >= :minDateOfBirth AND p.dateOfBirth < :maxDateOfBirth')
+                ->join('b.distributionBeneficiaries', 'db', 'WITH', 'db.removed=0')
+                ->andWhere('db.assistance = :assistance')
+                ->andWhere('b.archived = 0')
+                ->setParameter('assistance', $distribution)
+                ->setParameter('g', $gender)
+                ->setParameter('minDateOfBirth', $minDateOfBirth)
+                ->setParameter('maxDateOfBirth', $maxDateOfBirth);
+        }
 
         return $qb->getQuery()->getSingleScalarResult();
     }
@@ -232,7 +269,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         if ($modalityType === 'Mobile Money') {
             $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
         } else if ($modalityType === 'QR Code Voucher') {
-            $qb->innerJoin('db.booklets', 'b', Join::WITH, 'b.status = 1 OR b.status = 2');
+            $qb->innerJoin('db.booklets', 'bo', Join::WITH, 'bo.status = 1 OR bo.status = 2');
         } else {
             $qb->innerJoin('db.generalReliefs', 'gr', Join::WITH, 'gr.distributedAt IS NOT NULL');
         }
@@ -275,12 +312,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             $qb->andWhere('db.assistance = :distribution');
             $qb->setParameter('distribution', $assistance);
         }
-    }
-
-    protected function whereResidencyStatus(QueryBuilder $qb, string $residencyStatus)
-    {
-        $qb->andWhere('b.residencyStatus = :residencyStatus');
-        $qb->setParameter('residencyStatus', $residencyStatus);
     }
 
     protected function whereHouseHoldHead(QueryBuilder $qb)
@@ -612,5 +643,22 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->setParameter('null', null);
         }
         $qb->setParameter(':vulnerability'.$i, $vulnerabilityName);
+    }
+
+
+    /**
+     * @param Household $household
+     *
+     * @return int
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function countByHousehold(Household $household): int
+    {
+        return $this->createQueryBuilder('b')
+            ->select('COUNT(DISTINCT b)')
+            ->where('b.household = :household')
+            ->setParameter('household', $household)
+            ->getQuery()->getSingleScalarResult();
     }
 }

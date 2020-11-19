@@ -45,7 +45,7 @@ class PurchaseService
 
         foreach ($input->getProducts() as $item) {
             $product = $this->getProduct($item['id']);
-            $voucherPurchase->addRecord($product, $item['value'], $item['quantity']);
+            $voucherPurchase->addRecord($product, $item['quantity'], $item['value']);
         }
 
         $this->em->persist($voucherPurchase);

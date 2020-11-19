@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace BeneficiaryBundle\InputType;
 
 use CommonBundle\InputType\InputTypeInterface;
@@ -57,6 +58,12 @@ class UpdateInstitutionType implements InputTypeInterface
      * @Assert\Length(max="255")
      */
     private $contact_family_name;
+    /**
+     * @var int[]
+     * @Assert\NotNull
+     * @Assert\Count(min="1")
+     */
+    public $projects;
 
     /**
      * @return string|null
@@ -217,4 +224,21 @@ class UpdateInstitutionType implements InputTypeInterface
     {
         $this->contact_family_name = $contact_family_name;
     }
+
+    /**
+     * @return int[]|null
+     */
+    public function getProjects(): ?array
+    {
+        return $this->projects;
+    }
+
+    /**
+     * @param int[]|null $projects
+     */
+    public function setProjects(?array $projects): void
+    {
+        $this->projects = $projects;
+    }
+
 }

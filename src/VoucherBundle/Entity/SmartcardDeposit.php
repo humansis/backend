@@ -96,6 +96,10 @@ class SmartcardDeposit
 
         $smartcard->addDeposit($entity);
 
+        if (null === $smartcard->getCurrency()) {
+            $smartcard->setCurrency(self::findCurrency($distributionBeneficiary));
+        }
+
         return $entity;
     }
 
@@ -144,5 +148,17 @@ class SmartcardDeposit
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    private static function findCurrency(DistributionBeneficiary $distributionBeneficiary): string
+    {
+        foreach ($distributionBeneficiary->getAssistance()->getCommodities() as $commodity) {
+            /** @var \DistributionBundle\Entity\Commodity $commodity */
+            if ('Smartcard' === $commodity->getModalityType()->getName()) {
+                return $commodity->getUnit();
+            }
+        }
+
+        throw new \LogicException('Unable to find currency for DistributionBeneficiary #'.$distributionBeneficiary->getId());
     }
 }

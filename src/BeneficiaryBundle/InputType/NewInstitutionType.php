@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace BeneficiaryBundle\InputType;
 
 use CommonBundle\InputType\InputTypeInterface;
@@ -12,6 +15,7 @@ class NewInstitutionType extends UpdateInstitutionType implements InputTypeInter
      * @Assert\NotBlank()
      */
     protected $name;
+
     /**
      * @var string
      * @Assert\Length(max="255")

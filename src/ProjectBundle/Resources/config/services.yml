@@ -36,3 +36,8 @@ services:
         arguments:
             - '@translator'
         public: true
+
+    project.sector_mapper:
+        class: ProjectBundle\Mapper\SectorMapper
+        arguments: []
+        public: true

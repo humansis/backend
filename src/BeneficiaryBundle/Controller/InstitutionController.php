@@ -54,6 +54,10 @@ class InstitutionController extends Controller
      */
     public function showAction(Institution $institution)
     {
+        if (true === $institution->getArchived()) {
+            return new Response("Institution was archived", Response::HTTP_NOT_FOUND);
+        }
+
         /** @var InstitutionMapper $institutionMapper */
         $institutionMapper = $this->get(InstitutionMapper::class);
         return $this->json($institutionMapper->toFullArray($institution));
@@ -145,6 +149,8 @@ class InstitutionController extends Controller
             $institution = $institutionService->create($country, $newInstitution);
             $this->getDoctrine()->getManager()->persist($institution);
             $this->getDoctrine()->getManager()->flush();
+        } catch (\InvalidArgumentException $exception) {
+            return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
@@ -203,6 +209,8 @@ class InstitutionController extends Controller
             $institution = $institutionService->update($country, $institution, $institutionType);
             $this->getDoctrine()->getManager()->persist($institution);
             $this->getDoctrine()->getManager()->flush();
+        } catch (\InvalidArgumentException $exception) {
+            return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {

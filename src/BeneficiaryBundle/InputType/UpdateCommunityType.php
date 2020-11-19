@@ -46,6 +46,12 @@ class UpdateCommunityType implements InputTypeInterface
      * @Assert\Length(max="255")
      */
     public $contact_family_name;
+    /**
+     * @var int[]
+     * @Assert\NotNull
+     * @Assert\Count(min="1")
+     */
+    public $projects;
 
     /**
      * @return string|null
@@ -206,4 +212,21 @@ class UpdateCommunityType implements InputTypeInterface
     {
         $this->contact_family_name = $contact_family_name;
     }
+
+    /**
+     * @return int[]|null
+     */
+    public function getProjects(): ?array
+    {
+        return $this->projects;
+    }
+
+    /**
+     * @param int[] $projects
+     */
+    public function setProjects(array $projects): void
+    {
+        $this->projects = $projects;
+    }
+
 }

@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace BeneficiaryBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Community;
 use CommonBundle\Mapper\LocationMapper;
+use ProjectBundle\Mapper\ProjectMapper;
 
 class CommunityMapper
 {
@@ -14,26 +16,31 @@ class CommunityMapper
     private $locationMapper;
     /** @var PersonMapper */
     private $personMapper;
+    /** @var ProjectMapper */
+    private $projectMapper;
 
     /**
      * CommunityMapper constructor.
      *
-     * @param AddressMapper $addressMapper
+     * @param AddressMapper    $addressMapper
      * @param NationalIdMapper $nationalIdMapper
-     * @param LocationMapper $locationMapper
-     * @param PersonMapper $personMapper
+     * @param LocationMapper   $locationMapper
+     * @param PersonMapper     $personMapper
+     * @param ProjectMapper    $projectMapper
      */
     public function __construct(
         AddressMapper $addressMapper,
         NationalIdMapper $nationalIdMapper,
         LocationMapper $locationMapper,
-        PersonMapper $personMapper
+        PersonMapper $personMapper,
+        ProjectMapper $projectMapper
     )
     {
         $this->addressMapper = $addressMapper;
         $this->nationalIdMapper = $nationalIdMapper;
         $this->locationMapper = $locationMapper;
         $this->personMapper = $personMapper;
+        $this->projectMapper = $projectMapper;
     }
 
     /**
@@ -58,6 +65,7 @@ class CommunityMapper
             "latitude" => $community->getLatitude(),
             "longitude" => $community->getLongitude(),
             "contact" => $this->personMapper->toFullArray($community->getContact()),
+            "projects" => $this->projectMapper->toIdArray($community->getProjects()),
         ];
     }
 
