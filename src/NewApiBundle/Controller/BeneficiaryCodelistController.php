@@ -2,6 +2,7 @@
 
 namespace NewApiBundle\Controller;
 
+use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Pagination\Paginator;
@@ -44,5 +45,17 @@ class BeneficiaryCodelistController extends Controller
             ->findAll();
 
         return $this->json(new Paginator(CodeLists::mapCriterion($criterion)));
+    }
+
+    /**
+     * @Rest\Get("/beneficiaries/national-ids/types")
+     *
+     * @return JsonResponse
+     */
+    public function getNationalIdTypes(): JsonResponse
+    {
+        $data = CodeLists::mapEnum(NationalId::TYPE_ALL);
+
+        return $this->json(new Paginator($data));
     }
 }
