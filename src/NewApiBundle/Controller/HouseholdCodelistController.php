@@ -4,6 +4,7 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -37,6 +38,18 @@ class HouseholdCodelistController extends Controller
         foreach (Household::ASSETS as $key => $value) {
             $data[] = ['code' => $key, 'value' => $value];
         }
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/households/shelter-statuses")
+     *
+     * @return JsonResponse
+     */
+    public function getShelterStatuses(): JsonResponse
+    {
+        $data = CodeLists::mapArray(Household::SHELTER_STATUSES);
 
         return $this->json(new Paginator($data));
     }

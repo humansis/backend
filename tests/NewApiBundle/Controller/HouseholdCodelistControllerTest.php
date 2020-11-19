@@ -65,4 +65,26 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result['data']);
         $this->assertEquals(count(Household::ASSETS), $result['totalCount']);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetShelterStatuses()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/households/shelter-statuses');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertEquals(count(Household::SHELTER_STATUSES), $result['totalCount']);
+    }
 }
