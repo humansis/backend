@@ -3,6 +3,7 @@
 namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\HouseholdLocation;
 use Exception;
 use ProjectBundle\Enum\Livelihood;
 use Tests\BMSServiceTestCase;
@@ -86,5 +87,27 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
         $this->assertEquals(count(Household::SHELTER_STATUSES), $result['totalCount']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetLocationTypes()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/households/locations/types');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertEquals(count(HouseholdLocation::LOCATION_TYPES), $result['totalCount']);
     }
 }
