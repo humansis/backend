@@ -2,7 +2,9 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Tests\BMSServiceTestCase;
 
@@ -51,6 +53,9 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetVulnerabilityCriterion()
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -68,5 +73,8 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
+
+        $criterion = $em->getRepository(VulnerabilityCriterion::class)->findAll();
+        $this->assertEquals(count($criterion), $result['totalCount']);
     }
 }

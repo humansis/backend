@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 
@@ -33,6 +34,21 @@ class BeneficiaryController extends Controller
         $data = CodeLists::mapEnum(ResidencyStatus::all());
 
         return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/beneficiaries/vulnerability-criterias")
+     *
+     * @return JsonResponse
+     */
+    public function getVulnerabilityCriterion(): JsonResponse
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $criterion = $em->getRepository(VulnerabilityCriterion::class)
+            ->findAll();
+
+        return $this->json(new Paginator(CodeLists::mapCriterion($criterion)));
     }
 
     /**
