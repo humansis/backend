@@ -3,6 +3,7 @@
 namespace Tests\BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Utils\ExportService;
 use Tests\BMSServiceTestCase;
 
@@ -57,5 +58,27 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('field_string', $listCriterias[0]);
         
         return true;
+    }
+
+    public function testGetResidencyStatuses()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/wsse/beneficiaries/residency-statuses');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertEquals(count(ResidencyStatus::all()), $result['totalCount']);
     }
 }
