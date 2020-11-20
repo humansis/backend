@@ -183,12 +183,6 @@ class CriteriaAssistanceController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('serializer')
-            ->serialize(
-                $camps,
-                'json'
-            );
-
-        return new Response($json);
+        return $this->json($this->get(\DistributionBundle\Mapper\CampMapper::class)->toArrays($camps));
     }
 }
