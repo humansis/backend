@@ -182,6 +182,7 @@ class BMSServiceTestCase extends KernelTestCase
         "support_received_types" => null,
         "support_organization_name" => "Abcd Ltd.",
         "support_date_received" => "22-02-2020",
+        "enumerator_name" => "ENUMERATOR_NAME_TEST",
     ];
 
     /**

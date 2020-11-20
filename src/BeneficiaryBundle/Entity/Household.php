@@ -213,6 +213,14 @@ class Household extends AbstractBeneficiary
     private $householdIncome;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="enumerator_name", type="string", nullable=true)
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
+     */
+    private $enumeratorName = null;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -741,5 +749,25 @@ class Household extends AbstractBeneficiary
         }
 
         return $householdHead;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEnumeratorName(): ?string
+    {
+        return $this->enumeratorName;
+    }
+
+    /**
+     * @param string|null $enumeratorName
+     *
+     * @return Household
+     */
+    public function setEnumeratorName(?string $enumeratorName): Household
+    {
+        $this->enumeratorName = $enumeratorName;
+
+        return $this;
     }
 }

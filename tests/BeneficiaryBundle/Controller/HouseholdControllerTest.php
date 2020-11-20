@@ -60,6 +60,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
             $this->assertEquals(1000, $household['income_spent_on_food']);
             $this->assertEquals(100000, $household['household_income']);
 
+            $this->assertArrayHasKey('enumerator_name', $household);
+            $this->assertEquals('ENUMERATOR_NAME_TEST', $household['enumerator_name']);
+
             $beneficiary = current($household["beneficiaries"]);
 
             $this->assertArrayHasKey('local_parents_name', $beneficiary);
@@ -139,15 +142,19 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 $this->assertArrayHasKey('id', $household);
                 $this->assertArrayHasKey('household_locations', $household);
                 $this->assertArrayHasKey('beneficiaries', $household);
+                $this->assertArrayHasKey('enumerator_name', $household);
+
                 $householdLocation = $household["household_locations"][0];
                 $this->assertArrayHasKey('type', $householdLocation);
                 $this->assertArrayHasKey('location_group', $householdLocation);
+
                 $beneficiary = current($household["beneficiaries"]);
                 $this->assertArrayHasKey('local_given_name', $beneficiary);
                 $this->assertArrayHasKey('local_family_name', $beneficiary);
                 $this->assertArrayHasKey('vulnerability_criteria', $beneficiary);
                 $this->assertArrayHasKey('local_parents_name', $beneficiary);
                 $this->assertArrayHasKey('en_parents_name', $beneficiary);
+
                 $vulnerability_criterion = current($beneficiary["vulnerability_criteria"]);
                 if (is_array($vulnerability_criterion)) {
                     $this->assertArrayHasKey('id', $vulnerability_criterion);
@@ -199,6 +206,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('support_organization_name', $householdsArray);
         $this->assertArrayHasKey('country_specific_answers', $householdsArray);
         $this->assertArrayHasKey('projects', $householdsArray);
+        $this->assertArrayHasKey('enumerator_name', $householdsArray);
         $this->assertArrayHasKey('income_spent_on_food', $householdsArray);
         $this->assertArrayHasKey('household_income', $householdsArray);
 
@@ -247,6 +255,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('projects', $householdsArray);
         $this->assertArrayHasKey('income_spent_on_food', $householdsArray);
         $this->assertArrayHasKey('household_income', $householdsArray);
+        $this->assertArrayHasKey('enumerator_name', $householdsArray);
 
         $beneficiary = current($householdsArray["beneficiaries"]);
         $this->assertArrayHasKey('local_parents_name', $beneficiary);
