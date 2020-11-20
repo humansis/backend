@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ProjectBundle\DBAL;
 
 use CommonBundle\DBAL\AbstractEnum;
@@ -54,6 +56,16 @@ class SubSectorEnum extends AbstractEnum
         self::LEARNING_MATERIALS,
         self::EDUCATION_PSYCHOSOCIAL_SUPPORT,
         self::EDUCATION_SERVICES,
+
+        self::DEFAULT_EMERGENCY_TELCO,
+        self::DEFAULT_HEALTH,
+        self::DEFAULT_LOGISTICS,
+        self::DEFAULT_NUTRITION,
+        self::DEFAULT_MINE,
+        self::DEFAULT_DRR_RESILIENCE,
+        self::DEFAULT_NON_SECTOR,
+        self::DEFAULT_CAMP_MANAGEMENT,
+        self::DEFAULT_EARLY_RECOVERY,
     ];
 
     const FOOD_PARCELS_BASKETS = 'food_parcels_baskets';
@@ -101,6 +113,16 @@ class SubSectorEnum extends AbstractEnum
     const LEARNING_MATERIALS = 'learning_materials';
     const EDUCATION_PSYCHOSOCIAL_SUPPORT = 'education_psychosocial_support';
     const EDUCATION_SERVICES = 'education_services';
+
+    const DEFAULT_EMERGENCY_TELCO = 'emergency_telco';
+    const DEFAULT_HEALTH = 'health';
+    const DEFAULT_LOGISTICS = 'logistics';
+    const DEFAULT_NUTRITION = 'nutrition';
+    const DEFAULT_MINE = 'mine';
+    const DEFAULT_DRR_RESILIENCE = 'drr_resilience';
+    const DEFAULT_NON_SECTOR = 'non_sector';
+    const DEFAULT_CAMP_MANAGEMENT = 'camp_management';
+    const DEFAULT_EARLY_RECOVERY = 'early_recovery';
 
     public function getName()
     {

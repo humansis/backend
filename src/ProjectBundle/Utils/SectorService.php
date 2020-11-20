@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace ProjectBundle\Utils;
 
@@ -170,6 +171,22 @@ class SectorService
                 return $sector->setActivityAllowed()
                     ->setBeneficiaryAllowed()
                     ;
+            case SubSectorEnum::DEFAULT_EMERGENCY_TELCO:
+            case SubSectorEnum::DEFAULT_HEALTH:
+            case SubSectorEnum::DEFAULT_LOGISTICS:
+            case SubSectorEnum::DEFAULT_NUTRITION:
+            case SubSectorEnum::DEFAULT_MINE:
+            case SubSectorEnum::DEFAULT_DRR_RESILIENCE:
+            case SubSectorEnum::DEFAULT_NON_SECTOR:
+            case SubSectorEnum::DEFAULT_CAMP_MANAGEMENT:
+            case SubSectorEnum::DEFAULT_EARLY_RECOVERY:
+                return $sector->setActivityAllowed()
+                    ->setDistributionAllowed()
+                    ->setBeneficiaryAllowed()
+                    ->setHouseholdAllowed()
+                    ->setCommunityAllowed()
+                    ->setInstitutionAllowed()
+                    ;
             default:
                 return null;
         }
@@ -235,6 +252,33 @@ class SectorService
             case SubSectorEnum::EDUCATION_PSYCHOSOCIAL_SUPPORT:
             case SubSectorEnum::EDUCATION_SERVICES:
                 return new Sector(SectorEnum::EDUCATION, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_EMERGENCY_TELCO:
+                return new Sector(SectorEnum::EMERGENCY_TELCO, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_HEALTH:
+                return new Sector(SectorEnum::HEALTH, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_LOGISTICS:
+                return new Sector(SectorEnum::LOGISTICS, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_NUTRITION:
+                return new Sector(SectorEnum::NUTRITION, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_MINE:
+                return new Sector(SectorEnum::MINE, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_DRR_RESILIENCE:
+                return new Sector(SectorEnum::DRR_RESILIENCE, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_NON_SECTOR:
+                return new Sector(SectorEnum::NON_SECTOR, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_CAMP_MANAGEMENT:
+                return new Sector(SectorEnum::CAMP_MANAGEMENT, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_EARLY_RECOVERY:
+                return new Sector(SectorEnum::EARLY_RECOVERY, $subSectorName);
 
             default:
                 return null;
