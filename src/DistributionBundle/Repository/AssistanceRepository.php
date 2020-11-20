@@ -10,6 +10,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use ProjectBundle\Entity\Project;
 
 /**
  * AssistanceRepository
@@ -232,5 +233,15 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->createNativeQuery($sql, $rsm)
             ->setParameter('household', $household)
             ->getResult();
+    }
+
+    public function getAllByProject(Project $project)
+    {
+        $qb = $this->createQueryBuilder('dd')
+            ->where('dd.project = :project')
+            ->setParameter('project', $project)
+            ->andWhere('dd.archived = 0');
+
+        return $qb->getQuery()->getResult();
     }
 }

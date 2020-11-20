@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\BeneficiaryBundle\Controller;
+namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Household;
+use DistributionBundle\DBAL\AssistanceTypeEnum;
+use DistributionBundle\Entity\Assistance;
 use Exception;
-use ProjectBundle\Enum\Livelihood;
 use Tests\BMSServiceTestCase;
 
-class HouseholdCodelistControllerTest extends BMSServiceTestCase
+class AssistanceCodelistControllerTest extends BMSServiceTestCase
 {
     /**
      * @throws Exception
@@ -25,44 +25,50 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetLivelihoods()
+    public function testGetTargets()
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/wsse/households/livelihoods');
+        $this->request('GET', '/api/basic/assistances/targets');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
-        $this->assertEquals(count(Livelihood::values()), $result['totalCount']);
+        $this->assertEquals(count(Assistance::TYPE_TO_STRING_MAPPING), $result['totalCount']);
     }
 
     /**
      * @throws Exception
      */
-    public function testGetAssets()
+    public function testGetAssistanceTypes()
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/wsse/households/assets');
+        $this->request('GET', '/api/basic/assistances/types');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
-        $this->assertEquals(count(Household::ASSETS), $result['totalCount']);
+        $this->assertEquals(count(AssistanceTypeEnum::all()), $result['totalCount']);
     }
 }

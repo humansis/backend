@@ -31,7 +31,8 @@ class AppKernel extends Kernel
             new ReportingBundle\ReportingBundle(),
             new Jrk\LevenshteinBundle\JrkLevenshteinBundle(),
             new VoucherBundle\VoucherBundle(),
-            new Knp\Bundle\GaufretteBundle\KnpGaufretteBundle()
+            new Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
+            new NewApiBundle\NewApiBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
