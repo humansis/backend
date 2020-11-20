@@ -2,9 +2,11 @@
 
 namespace Tests\BeneficiaryBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
-use CommonBundle\Utils\ExportService;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Tests\BMSServiceTestCase;
 
 class BeneficiaryControllerTest extends BMSServiceTestCase
@@ -12,7 +14,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     public function setUp()
     {
         // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName("serializer");
+        $this->setDefaultSerializerName('serializer');
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
@@ -42,6 +44,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
 
         return true;*/
         $this->assertTrue(true);
+
         return true;
     }
 
@@ -53,10 +56,10 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $vulnerabilityCriteriaResponse = $this->request('GET', 'api/wsse/vulnerability_criteria');
         $listCriterias = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $listCriterias[0]);
         $this->assertArrayHasKey('field_string', $listCriterias[0]);
-        
+
         return true;
     }
 
@@ -80,5 +83,36 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
         $this->assertEquals(count(ResidencyStatus::all()), $result['totalCount']);
+    }
+
+    /**
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testGetVulnerabilityCriterion()
+    {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/wsse/beneficiaries/vulnerability-criterias');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+
+        $criterion = $em->getRepository(VulnerabilityCriterion::class)->findAll();
+        $this->assertEquals(count($criterion), $result['totalCount']);
     }
 }
