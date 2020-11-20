@@ -152,7 +152,8 @@ class DistributionBeneficiaryService
 
             switch ($assistance->getTargetType()) {
                 case Assistance::TYPE_HOUSEHOLD:
-                    $household = $this->em->getRepository(Household::class)->find($bnfId);
+                    $householdMember = $this->em->getRepository(Beneficiary::class)->find($bnfId);
+                    $household = $householdMember->getHousehold();
                     if (!$household instanceof Household) {
                         throw new \Exception("Household {$bnfId} was not found.");
                     }
