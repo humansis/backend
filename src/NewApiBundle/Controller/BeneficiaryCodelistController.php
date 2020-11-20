@@ -41,7 +41,7 @@ class BeneficiaryCodelistController extends Controller
     public function getVulnerabilityCriterion(): JsonResponse
     {
         $criterion = $this->entityManager->getRepository(VulnerabilityCriterion::class)
-            ->findAll();
+            ->findAllActive();
 
         return $this->json(new Paginator(CodeLists::mapCriterion($criterion)));
     }

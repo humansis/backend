@@ -46,7 +46,7 @@ class BeneficiaryController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $criterion = $em->getRepository(VulnerabilityCriterion::class)
-            ->findAll();
+            ->findAllActive();
 
         return $this->json(new Paginator(CodeLists::mapCriterion($criterion)));
     }
