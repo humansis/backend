@@ -40,7 +40,7 @@ class TransactionService
     {
         $this->em = $entityManager;
         $this->container = $container;
-        $this->container->getParameter('email');
+        $this->email = $this->container->getParameter('email');
     }
 
     /**
