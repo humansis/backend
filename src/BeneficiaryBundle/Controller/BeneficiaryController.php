@@ -4,11 +4,15 @@ namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 
+use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -19,6 +23,18 @@ use VoucherBundle\Entity\Smartcard;
 
 class BeneficiaryController extends Controller
 {
+    /**
+     * @Rest\Get("/beneficiaries/residency-statuses")
+     *
+     * @return JsonResponse
+     */
+    public function getResidencyStatuses(): JsonResponse
+    {
+        $data = CodeLists::mapEnum(ResidencyStatus::all());
+
+        return $this->json(new Paginator($data));
+    }
+
     /**
      * @Rest\Get("/vulnerability_criteria", name="get_all_vulnerability_criteria")
      * @SWG\Tag(name="Beneficiary")
