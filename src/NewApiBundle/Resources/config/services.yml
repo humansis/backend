@@ -21,5 +21,6 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             -
-    NewApiBundle\Request\ParamConverter\PaginationConverter:
+    NewApiBundle\Request\ParamConverter\:
+        resource: '../../Request/ParamConverter'
         tags: [ 'request.param_converter' ]
