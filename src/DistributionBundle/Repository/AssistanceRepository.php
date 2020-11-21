@@ -10,6 +10,9 @@ use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\AssistanceOrderInputType;
+use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 
 /**
@@ -235,13 +238,54 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->getResult();
     }
 
-    public function getAllByProject(Project $project)
+    /**
+     * @param Project                       $project
+     * @param AssistanceOrderInputType|null $orderBy
+     * @param Pagination|null               $pagination
+     *
+     * @return Paginator|Assistance[]
+     */
+    public function findByProject(Project $project, ?AssistanceOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
     {
         $qb = $this->createQueryBuilder('dd')
             ->where('dd.project = :project')
             ->setParameter('project', $project)
             ->andWhere('dd.archived = 0');
 
-        return $qb->getQuery()->getResult();
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case AssistanceOrderInputType::SORT_BY_ID:
+                        $qb->orderBy('dd.id', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_LOCATION:
+                        $qb->leftJoin('dd.location', 'l');
+                        $qb->orderBy('l.id', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_DATE:
+                        $qb->orderBy('dd.dateDistribution', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_NAME:
+                        $qb->orderBy('dd.name', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_TARGET:
+                        $qb->orderBy('dd.targetType', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
+                        $qb->select(['dd', 'bnfCount' => 'SIZE(dd.distributionBeneficiaries)']);
+                        $qb->orderBy('bnfCount', $direction);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                }
+            }
+        }
+
+        return new Paginator($qb);
     }
 }
