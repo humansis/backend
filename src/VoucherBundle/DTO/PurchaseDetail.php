@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace VoucherBundle\DTO;
@@ -11,11 +12,17 @@ class PurchaseDetail implements \JsonSerializable
     /** @var int */
     private $beneficiaryId;
 
-    /** @var string */
-    private $beneficiaryEnName;
+    /** @var string|null */
+    private $beneficiaryEnGivenName;
 
-    /** @var string */
-    private $beneficiaryLocalName;
+    /** @var string|null */
+    private $beneficiaryEnFamilyName;
+
+    /** @var string|null */
+    private $beneficiaryLocalGivenName;
+
+    /** @var string|null */
+    private $beneficiaryLocalFamilyName;
 
     /** @var float */
     private $amount;
@@ -25,16 +32,27 @@ class PurchaseDetail implements \JsonSerializable
      *
      * @param \DateTimeInterface $date
      * @param int                $beneficiaryId
-     * @param string             $beneficiaryEnName
-     * @param string             $beneficiaryLocalName
-     * @param mixed              $amount
+     * @param string|null        $beneficiaryEnGivenName
+     * @param string|null        $beneficiaryEnFamilyName
+     * @param string|null        $beneficiaryLocalGivenName
+     * @param string|null        $beneficiaryLocalFamilyName
+     * @param string             $amount
      */
-    public function __construct(\DateTimeInterface $date, int $beneficiaryId, string $beneficiaryEnName, string $beneficiaryLocalName, $amount)
-    {
+    public function __construct(
+        \DateTimeInterface $date,
+        int $beneficiaryId,
+        ?string $beneficiaryEnGivenName,
+        ?string $beneficiaryEnFamilyName,
+        ?string $beneficiaryLocalGivenName,
+        ?string $beneficiaryLocalFamilyName,
+        string $amount
+    ) {
         $this->date = $date;
         $this->beneficiaryId = $beneficiaryId;
-        $this->beneficiaryEnName = $beneficiaryEnName;
-        $this->beneficiaryLocalName = $beneficiaryLocalName;
+        $this->beneficiaryEnGivenName = $beneficiaryEnGivenName;
+        $this->beneficiaryEnFamilyName = $beneficiaryEnFamilyName;
+        $this->beneficiaryLocalGivenName = $beneficiaryLocalGivenName;
+        $this->beneficiaryLocalFamilyName = $beneficiaryLocalFamilyName;
         $this->amount = $amount;
     }
 
@@ -55,19 +73,35 @@ class PurchaseDetail implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getBeneficiaryEnName(): string
+    public function getBeneficiaryEnGivenName(): ?string
     {
-        return $this->beneficiaryEnName;
+        return $this->beneficiaryEnGivenName;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getBeneficiaryLocalName(): string
+    public function getBeneficiaryEnFamilyName(): ?string
     {
-        return $this->beneficiaryLocalName;
+        return $this->beneficiaryEnFamilyName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getBeneficiaryLocalGivenName(): ?string
+    {
+        return $this->beneficiaryLocalGivenName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getBeneficiaryLocalFamilyName(): ?string
+    {
+        return $this->beneficiaryLocalFamilyName;
     }
 
     /**
@@ -78,6 +112,19 @@ class PurchaseDetail implements \JsonSerializable
         return $this->amount;
     }
 
+    private function concateName(?string $givenName, ?string $familyname): string
+    {
+        $names = [];
+        if (!empty($givenName)) {
+            $names[] = $givenName;
+        }
+        if (!empty($familyname)) {
+            $names[] = $familyname;
+        }
+
+        return implode(' ', $names);
+    }
+
     public function jsonSerialize()
     {
         return [
@@ -85,9 +132,14 @@ class PurchaseDetail implements \JsonSerializable
             'purchase_date' => $this->getDate()->format('d-m-Y'),
             'purchase_amount' => (float) $this->getAmount(),
             'beneficiary_id' => $this->getBeneficiaryId(),
-            'beneficiary_local_name' => $this->getBeneficiaryLocalName(),
-            'beneficiary_en_name' => $this->getBeneficiaryEnName(),
+            'beneficiary_local_name' => $this->concateName(
+                $this->getBeneficiaryLocalGivenName(),
+                $this->getBeneficiaryLocalFamilyName()
+            ),
+            'beneficiary_en_name' => $this->concateName(
+                $this->getBeneficiaryEnGivenName(),
+                $this->getBeneficiaryEnFamilyName()
+            ),
         ];
     }
-
 }
