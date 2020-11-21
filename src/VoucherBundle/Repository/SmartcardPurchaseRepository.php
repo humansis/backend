@@ -25,6 +25,7 @@ class SmartcardPurchaseRepository extends EntityRepository
      * @param Vendor $vendor
      *
      * @return PurchaseSummary
+     *
      * @throws NonUniqueResultException
      */
     public function countPurchases(Vendor $vendor): PurchaseSummary
@@ -50,6 +51,7 @@ class SmartcardPurchaseRepository extends EntityRepository
      * @param Vendor $vendor
      *
      * @return PurchaseRedemptionBatch
+     *
      * @throws NonUniqueResultException
      */
     public function countPurchasesToRedeem(Vendor $vendor): PurchaseRedemptionBatch
@@ -100,12 +102,14 @@ class SmartcardPurchaseRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('p')
             ->select(
-                "p.id,
+                'p.id,
                 SUM(pr.value) as purchaseRecordsValue, 
                 p.createdAt as purchaseDate,
                 person.id as beneficiaryId,
-                CONCAT(person.enGivenName, ' ', person.enFamilyName) as beneficiaryEnName,
-                CONCAT(person.localGivenName, ' ', person.localFamilyName) as beneficiaryLocalName"
+                person.enGivenName,
+                person.enFamilyName,
+                person.localGivenName,
+                person.localFamilyName'
             )
             ->join('p.records', 'pr')
             ->join('p.vendor', 'v')
@@ -121,8 +125,10 @@ class SmartcardPurchaseRepository extends EntityRepository
             $details[] = new PurchaseDetail(
                 $result['purchaseDate'],
                 $result['beneficiaryId'],
-                $result['beneficiaryEnName'],
-                $result['beneficiaryLocalName'],
+                $result['enGivenName'],
+                $result['enFamilyName'],
+                $result['localGivenName'],
+                $result['localFamilyName'],
                 $result['purchaseRecordsValue']
             );
         }
@@ -139,12 +145,14 @@ class SmartcardPurchaseRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('p')
             ->select(
-                "p.id,
+                'p.id,
                 SUM(pr.value) as purchaseRecordsValue, 
                 p.createdAt as purchaseDate,
                 person.id as beneficiaryId,
-                CONCAT(person.enGivenName, ' ', person.enFamilyName) as beneficiaryEnName,
-                CONCAT(person.localGivenName, ' ', person.localFamilyName) as beneficiaryLocalName"
+                person.enGivenName,
+                person.enFamilyName,
+                person.localGivenName,
+                person.localFamilyName'
             )
             ->join('p.records', 'pr')
             ->join('p.vendor', 'v')
@@ -160,8 +168,10 @@ class SmartcardPurchaseRepository extends EntityRepository
             $details[] = new PurchaseDetail(
                 $result['purchaseDate'],
                 $result['beneficiaryId'],
-                $result['beneficiaryEnName'],
-                $result['beneficiaryLocalName'],
+                $result['enGivenName'],
+                $result['enFamilyName'],
+                $result['localGivenName'],
+                $result['localFamilyName'],
                 $result['purchaseRecordsValue']
             );
         }
