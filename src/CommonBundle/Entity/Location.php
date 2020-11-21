@@ -161,7 +161,54 @@ class Location
         return $this->adm4;
     }
 
-    
+    public function getAdm1Id(): ?int
+    {
+        if (null !== $this->getAdm1()) {
+            return $this->getAdm1()->getId();
+        } elseif (null !== $this->getAdm2()) {
+            return $this->getAdm2()->getAdm1()->getId();
+        } elseif (null !== $this->getAdm3()) {
+            return $this->getAdm3()->getAdm2()->getAdm1()->getId();
+        } elseif (null !== $this->getAdm4()) {
+            return $this->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId();
+        }
+
+        return null;
+    }
+
+    public function getAdm2Id(): ?int
+    {
+        if (null !== $this->getAdm2()) {
+            return $this->getAdm2()->getAdm1()->getId();
+        } elseif (null !== $this->getAdm3()) {
+            return $this->getAdm3()->getAdm2()->getAdm1()->getId();
+        } elseif (null !== $this->getAdm4()) {
+            return $this->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId();
+        }
+
+        return null;
+    }
+
+    public function getAdm3Id(): ?int
+    {
+        if (null !== $this->getAdm3()) {
+            return $this->getAdm3()->getAdm2()->getAdm1()->getId();
+        } elseif (null !== $this->getAdm4()) {
+            return $this->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId();
+        }
+
+        return null;
+    }
+
+    public function getAdm4Id(): ?int
+    {
+        if (null !== $this->getAdm4()) {
+            return $this->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId();
+        }
+
+        return null;
+    }
+
     public function getAdm1Name()
     {
         if (null !== $this->getAdm1()) {
