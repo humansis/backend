@@ -20,3 +20,6 @@ services:
     NewApiBundle\Controller\BeneficiaryCodelistController:
         arguments:
             - "@doctrine.orm.entity_manager"
+            -
+    NewApiBundle\Request\ParamConverter\PaginationConverter:
+        tags: [ 'request.param_converter' ]
