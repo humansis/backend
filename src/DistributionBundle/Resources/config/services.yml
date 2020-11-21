@@ -57,6 +57,9 @@ services:
     DistributionBundle\Mapper\AssistanceBeneficiaryMapper:
         public: true
 
+    DistributionBundle\Mapper\CampMapper:
+        public: true
+
 #######################################################################################
 ##                                       CSV                                         ##
 #######################################################################################
