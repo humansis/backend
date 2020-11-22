@@ -5,11 +5,10 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Pagination\Paginator;
 use ProjectBundle\Enum\Livelihood;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class HouseholdCodelistController extends Controller
+class HouseholdCodelistController extends AbstractController
 {
     /**
      * @Rest\Get("/households/livelihoods")
