@@ -1,41 +1,92 @@
 <?php
+declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
 use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Serializer\MapperInterface;
 
-//TODO This is a draft
-class AssistanceMapper
+class AssistanceMapper implements MapperInterface
 {
-    public function toFullArray(?Assistance $assistance): ?array
-    {
-        if (!$assistance) {
-            return null;
-        }
+    /** @var Assistance */
+    private $object;
 
-        return [
-            'id' => $assistance->getId(),
-            'name' => $assistance->getName(),
-            'date' => $assistance->getDateDistribution()->getTimestamp(),
-            'target' => $assistance->getTargetTypeString(),
-            'type' => $assistance->getAssistanceType(),
-            'province' => $assistance->getLocation()->getAdm1Name(),
-            'district' => $assistance->getLocation()->getAdm2Name(),
-            'commune' => $assistance->getLocation()->getAdm3Name(),
-            'village' => $assistance->getLocation()->getAdm4Name(),
-            'commodityIds' => [0, 1], //TODO implement
-        ];
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(object $object, $format = null, array $context = null): bool
+    {
+        return $object instanceof Assistance && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
     }
 
     /**
-     * @param iterable $assistances
-     *
-     * @return iterable
+     * {@inheritdoc}
      */
-    public function toFullArrays(iterable $assistances): iterable
+    public function populate(object $object)
     {
-        foreach ($assistances as $assistance) {
-            yield $this->toFullArray($assistance);
+        if ($object instanceof Assistance) {
+            $this->object = $object;
+
+            return;
         }
+
+        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Assistance::class.', '.get_class($object).' given.');
+    }
+
+    public function getId(): int
+    {
+        return $this->object->getId();
+    }
+
+    public function getName(): string
+    {
+        return $this->object->getName();
+    }
+
+    public function getDateDistribution(): string
+    {
+        return $this->object->getDateDistribution()->format('Y-m-d');
+    }
+
+    public function getProjectId(): int
+    {
+        return $this->object->getProject()->getId();
+    }
+
+    public function getTarget(): string
+    {
+        return $this->object->getTargetTypeString();
+    }
+
+    public function getType(): string
+    {
+        return $this->object->getAssistanceType();
+    }
+
+    public function getAdm1(): ?int
+    {
+        return $this->object->getLocation()->getAdm1Id() ?: null;
+    }
+
+    public function getAdm2(): ?int
+    {
+        return $this->object->getLocation()->getAdm2Id() ?: null;
+    }
+
+    public function getAdm3(): ?int
+    {
+        return $this->object->getLocation()->getAdm3Id() ?: null;
+    }
+
+    public function getAdm4(): ?int
+    {
+        return $this->object->getLocation()->getAdm4Id() ?: null;
+    }
+
+    public function getCommodityIds(): array
+    {
+        return array_map(function ($item) {
+            return $item->getId();
+        }, $this->object->getCommodities()->toArray());
     }
 }

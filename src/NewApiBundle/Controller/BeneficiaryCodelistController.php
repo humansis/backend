@@ -8,10 +8,9 @@ use CommonBundle\Pagination\Paginator;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Utils\CodeLists;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class BeneficiaryCodelistController extends Controller
+class BeneficiaryCodelistController extends AbstractController
 {
     /** @var EntityManagerInterface */
     private $entityManager;

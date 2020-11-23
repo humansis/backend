@@ -298,9 +298,10 @@ class ProjectService
      */
     public function delete(Project $project)
     {
+        /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
         $assistance = $this->em->getRepository(Assistance::class)->findByProject($project);
 
-        if (empty($assistance)) {
+        if (0 === $assistance->count()) {
             try {
                 foreach ($project->getSectors()->getValues() as $projectSector) {
                     $this->em->remove($projectSector);
@@ -330,12 +331,12 @@ class ProjectService
 
     /**
      * Check if all distributions allow for the project to be deleted
-     * @param Assistance $assistance
+     * @param Assistance[] $assistance
      * @return boolean
      */
-    private function checkIfAllDistributionClosed(array $assistance)
+    private function checkIfAllDistributionClosed(iterable $assistances)
     {
-        foreach ($assistance as $distributionDatum) {
+        foreach ($assistances as $distributionDatum) {
             if (!$distributionDatum->getArchived() && !$distributionDatum->getCompleted()) {
                 return false;
             }

@@ -7,10 +7,9 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Utils\SectorService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class SectorsCodelistController extends Controller
+class SectorsCodelistController extends AbstractController
 {
     /** @var SectorService */
     private $sectorService;

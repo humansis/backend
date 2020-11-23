@@ -7,10 +7,9 @@ use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Utils\CodeLists;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AssistanceCodelistController extends Controller
+class AssistanceCodelistController extends AbstractController
 {
     /**
      * @Rest\Get("/assistances/targets")
