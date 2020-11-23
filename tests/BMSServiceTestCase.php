@@ -124,7 +124,7 @@ class BMSServiceTestCase extends KernelTestCase
                 ],
                 "vulnerability_criteria" => [
                     [
-                        "id" => 1
+                        "id" => 2
                     ]
                 ],
                 "phones" => [
@@ -158,7 +158,7 @@ class BMSServiceTestCase extends KernelTestCase
                 ],
                 "vulnerability_criteria" => [
                     [
-                        "id" => 1
+                        "id" => 2
                     ]
                 ],
                 "phones" => [

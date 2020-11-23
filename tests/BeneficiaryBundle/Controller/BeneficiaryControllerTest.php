@@ -112,7 +112,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
 
-        $criterion = $em->getRepository(VulnerabilityCriterion::class)->findAll();
+        $criterion = $em->getRepository(VulnerabilityCriterion::class)->findAllActive();
         $this->assertEquals(count($criterion), $result['totalCount']);
     }
 }

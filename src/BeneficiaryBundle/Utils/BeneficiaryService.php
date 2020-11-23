@@ -71,7 +71,7 @@ class BeneficiaryService
      */
     public function getAllVulnerabilityCriteria()
     {
-        return $this->em->getRepository(VulnerabilityCriterion::class)->findAll();
+        return $this->em->getRepository(VulnerabilityCriterion::class)->findAllActive();
     }
 
     /**
