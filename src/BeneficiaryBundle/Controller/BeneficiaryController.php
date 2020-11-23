@@ -71,11 +71,16 @@ class BeneficiaryController extends Controller
      */
     public function updateAction(Request $request, Beneficiary $beneficiary)
     {
+        $this->container->get('logger')->error('beneficiary', [$beneficiary->getId()]);
+        $this->container->get('logger')->error('headers', $request->headers->all());
+        $this->container->get('logger')->error('content', [$request->getContent()]);
+
         $beneficiaryData = $request->request->all();
 
         try {
             $newBeneficiary = $this->get('beneficiary.beneficiary_service')->update($beneficiary, $beneficiaryData);
         } catch (\Exception $exception) {
+            $this->container->get('logger')->error('exception', [$exception->getMessage()]);
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         $json = $this->get('serializer')

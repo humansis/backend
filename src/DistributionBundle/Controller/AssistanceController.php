@@ -967,12 +967,16 @@ class AssistanceController extends Controller
      */
     public function setGeneralReliefItemsAsDistributedAction(Request $request)
     {
+        $this->container->get('logger')->error('headers', $request->headers->all());
+        $this->container->get('logger')->error('content', [$request->getContent()]);
+
         $griIds = $request->request->get('ids');
 
         try {
             $response = $this->get('distribution.distribution_service')
                 ->setGeneralReliefItemsAsDistributed($griIds);
         } catch (\Exception $e) {
+            $this->container->get('logger')->error('exception', [$e->getMessage()]);
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
