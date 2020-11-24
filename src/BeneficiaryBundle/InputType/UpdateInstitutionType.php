@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\InputType;
 
 use CommonBundle\InputType\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class UpdateInstitutionType implements InputTypeInterface
 {
@@ -41,8 +42,15 @@ class UpdateInstitutionType implements InputTypeInterface
     /**
      * @var string|null
      * @Assert\Length(max="255")
+     * @Assert\Expression("this.getPhoneNumber() == null or value != null")
      */
     private $phone_prefix;
+    /**
+     * @var string|null
+     * @Assert\Length(max="255")
+     * @Assert\Expression("this.getPhoneNumber() == null or value != null")
+     */
+    private $phone_type;
     /**
      * @var string|null
      * @Assert\Length(max="255")
@@ -180,6 +188,22 @@ class UpdateInstitutionType implements InputTypeInterface
     /**
      * @return string|null
      */
+    public function getPhoneType(): ?string
+    {
+        return $this->phone_type;
+    }
+
+    /**
+     * @param string|null $phone_type
+     */
+    public function setPhoneType(?string $phone_type): void
+    {
+        $this->phone_type = $phone_type;
+    }
+
+    /**
+     * @return string|null
+     */
     public function getPhoneNumber(): ?string
     {
         return $this->phone_number;
@@ -239,6 +263,26 @@ class UpdateInstitutionType implements InputTypeInterface
     public function setProjects(?array $projects): void
     {
         $this->projects = $projects;
+    }
+
+    public function validatePhonePrefix(ExecutionContextInterface $context)
+    {
+        die(__METHOD__);
+        if ($this->getPhoneNumber() && !$this->getPhonePrefix()) {
+            $context->buildViolation("Phone must have prefix and number in same time. 'phone_prefix' is empty.")
+                ->atPath('phone_prefix')
+                ->addViolation();
+        }
+    }
+
+    public function validatePhoneType(ExecutionContextInterface $context)
+    {
+        die(__METHOD__);
+        if ($this->getPhoneNumber() && !$this->getPhoneType()) {
+            $context->buildViolation("Phone must have type and number in same time. 'phone_type' is empty.")
+                ->atPath('phone_type')
+                ->addViolation();
+        }
     }
 
 }
