@@ -799,7 +799,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'adm2' => '',
             'adm3' => '',
             'adm4' => '',
-            'type' => Assistance::TYPE_HOUSEHOLD,
+            'target_type' => AssistanceTargetType::HOUSEHOLD,
             'commodities' => [
                 [
                     'id' => null,
