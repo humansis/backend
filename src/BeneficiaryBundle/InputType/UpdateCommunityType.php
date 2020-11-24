@@ -29,8 +29,15 @@ class UpdateCommunityType implements InputTypeInterface
     /**
      * @var string|null
      * @Assert\Length(max="255")
+     * @Assert\Expression("this.getPhoneNumber() == null or value != null")
      */
     public $phone_prefix;
+    /**
+     * @var string|null
+     * @Assert\Length(max="255")
+     * @Assert\Expression("this.getPhoneNumber() == null or value != null")
+     */
+    private $phone_type;
     /**
      * @var string|null
      * @Assert\Length(max="255")
@@ -163,6 +170,22 @@ class UpdateCommunityType implements InputTypeInterface
     public function setPhonePrefix(?string $phone_prefix): void
     {
         $this->phone_prefix = $phone_prefix;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPhoneType(): ?string
+    {
+        return $this->phone_type;
+    }
+
+    /**
+     * @param string|null $phone_type
+     */
+    public function setPhoneType(?string $phone_type): void
+    {
+        $this->phone_type = $phone_type;
     }
 
     /**
