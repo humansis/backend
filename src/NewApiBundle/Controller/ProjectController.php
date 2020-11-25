@@ -22,7 +22,7 @@ class ProjectController extends AbstractController
     {
         $repository = $this->getDoctrine()->getRepository(Project::class);
 
-        $projects = $repository->findAll($orderBy, $pagination);
+        $projects = $repository->getAll($orderBy, $pagination);
 
         return $this->json($projects);
     }

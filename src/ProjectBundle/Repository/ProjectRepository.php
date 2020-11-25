@@ -49,7 +49,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function findAll(?ProjectOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
+    public function getAll(?ProjectOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
     {
         $qb = $this->createQueryBuilder('dd')
             ->where('dd.archived = 0');
