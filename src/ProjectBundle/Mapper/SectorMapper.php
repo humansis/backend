@@ -1,6 +1,8 @@
 <?php
 namespace ProjectBundle\Mapper;
 
+use DistributionBundle\DBAL\AssistanceTypeEnum;
+use DistributionBundle\Enum\AssistanceTargetType;
 use ProjectBundle\DTO\Sector;
 use ProjectBundle\Entity\ProjectSector;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -33,16 +35,16 @@ class SectorMapper
                 'assistanceType' => '',
             ];
             if ($subSector->isCommunityAllowed()) {
-                $ss['availableTargets'][] = 'community';
+                $ss['availableTargets'][] = AssistanceTargetType::COMMUNITY;
             }
             if ($subSector->isInstitutionAllowed()) {
-                $ss['availableTargets'][] = 'institution';
+                $ss['availableTargets'][] = AssistanceTargetType::INSTITUTION;
             }
             if ($subSector->isHouseholdAllowed()) {
-                $ss['availableTargets'][] = 'household';
+                $ss['availableTargets'][] = AssistanceTargetType::HOUSEHOLD;
             }
             if ($subSector->isBeneficiaryAllowed()) {
-                $ss['availableTargets'][] = 'individual';
+                $ss['availableTargets'][] = AssistanceTargetType::INDIVIDUAL;
             }
             if ($subSector->isActivityAllowed()) {
                 $ss['assistanceType'] = 'activity';
@@ -54,7 +56,7 @@ class SectorMapper
         return [
             'id' => $sector,
             'name' => $this->getLabel($sector),
-            'subSectors' => $subSectorMapped,
+            'subsectors' => $subSectorMapped,
         ];
     }
 

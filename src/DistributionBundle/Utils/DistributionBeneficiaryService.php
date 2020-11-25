@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DistributionBundle\Utils;
 
@@ -10,6 +12,7 @@ use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
@@ -151,7 +154,7 @@ class DistributionBeneficiaryService
             $bnfId = (int) $beneficiaryArray["id"];
 
             switch ($assistance->getTargetType()) {
-                case Assistance::TYPE_HOUSEHOLD:
+                case AssistanceTargetType::HOUSEHOLD:
                     $householdMember = $this->em->getRepository(Beneficiary::class)->find($bnfId);
                     $household = $householdMember->getHousehold();
                     if (!$household instanceof Household) {
@@ -159,19 +162,19 @@ class DistributionBeneficiaryService
                     }
                     $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
                     break;
-                case Assistance::TYPE_BENEFICIARY:
+                case AssistanceTargetType::INDIVIDUAL:
                     $beneficiary = $this->em->getRepository(Beneficiary::class)->find($bnfId);
                     if (!$beneficiary instanceof Beneficiary) {
                         throw new \Exception("Beneficiary {$bnfId} was not found.");
                     }
                     break;
-                case Assistance::TYPE_COMMUNITY:
+                case AssistanceTargetType::COMMUNITY:
                     $beneficiary = $this->em->getRepository(Community::class)->find($bnfId);
                     if (!$beneficiary instanceof Community) {
                         throw new \Exception("Community {$bnfId} was not found.");
                     }
                     break;
-                case Assistance::TYPE_INSTITUTION:
+                case AssistanceTargetType::INSTITUTION:
                     $beneficiary = $this->em->getRepository(Institution::class)->find($bnfId);
                     if (!$beneficiary instanceof Institution) {
                         throw new \Exception("Institution {$bnfId} was not found.");

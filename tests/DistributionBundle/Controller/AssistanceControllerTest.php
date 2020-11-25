@@ -15,6 +15,7 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
+use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Utils\DistributionCSVService;
 use DistributionBundle\Utils\DistributionService;
 use ProjectBundle\Entity\Project;
@@ -61,7 +62,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "adm2"=> "",
             "adm3" => "",
             "adm4" => "",
-            "type" => Assistance::TYPE_HOUSEHOLD,
+            "target_type" => AssistanceTargetType::HOUSEHOLD,
             "commodities" => [
                 [
                     'id' => null,
@@ -130,8 +131,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $distribution = $return['distribution'];
         $this->assertArrayHasKey('id', $distribution);
         $this->assertArrayHasKey('name', $distribution);
-        $this->assertArrayHasKey('type', $distribution);
         $this->assertArrayHasKey('target_type', $distribution);
+        $this->assertArrayHasKey('assistance_type', $distribution);
         $this->assertArrayHasKey('location', $distribution);
         $this->assertArrayHasKey('project', $distribution);
         $this->assertArrayHasKey('selection_criteria', $distribution);
@@ -194,7 +195,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $validate);
         $this->assertArrayHasKey('archived', $validate);
         $this->assertArrayHasKey('validated', $validate);
-        $this->assertArrayHasKey('type', $validate);
+        $this->assertArrayHasKey('assistance_type', $validate);
+        $this->assertArrayHasKey('target_type', $validate);
         $this->assertArrayHasKey('commodities', $validate);
         $this->assertArrayHasKey('distribution_beneficiaries', $validate);
 
@@ -254,9 +256,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $all[0]);
         $this->assertArrayHasKey('archived', $all[0]);
         $this->assertArrayHasKey('validated', $all[0]);
-        $this->assertArrayHasKey('type', $all[0]);
+        $this->assertArrayHasKey('target_type', $all[0]);
+        $this->assertArrayHasKey('assistance_type', $all[0]);
         $this->assertArrayHasKey('commodities', $all[0]);
-//        $this->assertArrayHasKey('distribution_beneficiaries', $all[0]);
     }
 
 
@@ -290,9 +292,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $one);
         $this->assertArrayHasKey('archived', $one);
         $this->assertArrayHasKey('validated', $one);
-        $this->assertArrayHasKey('type', $one);
+        $this->assertArrayHasKey('target_type', $one);
+        $this->assertArrayHasKey('assistance_type', $one);
         $this->assertArrayHasKey('commodities', $one);
-//        $this->assertArrayHasKey('distribution_beneficiaries', $one);
     }
 
     /**
@@ -474,7 +476,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'name' => 'TEST_DISTRIBUTION_NAME_PHPUNIT',
             "project"=> $distribution['project'],
             "selection_criteria"=> $distribution['selection_criteria'],
-            'type' => 0,
+            'target_type' => AssistanceTargetType::HOUSEHOLD,
             'updated_on' => '28-11-2018 11:11:11',
             'validated' => false,
         );
@@ -494,8 +496,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $update);
         $this->assertArrayHasKey('archived', $update);
         $this->assertArrayHasKey('validated', $update);
-        // $this->assertArrayHasKey('reporting_distribution', $update); // Not in the group fullDistribution any more
-        $this->assertArrayHasKey('type', $update);
+        $this->assertArrayHasKey('target_type', $update);
         $this->assertArrayHasKey('commodities', $update);
         $this->assertArrayHasKey('distribution_beneficiaries', $update);
     }
@@ -559,7 +560,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $distribution);
         $this->assertArrayHasKey('archived', $distribution);
         $this->assertArrayHasKey('validated', $distribution);
-        $this->assertArrayHasKey('type', $distribution);
+        $this->assertArrayHasKey('target_type', $distribution);
         $this->assertArrayHasKey('commodities', $distribution);
         $this->assertArrayHasKey('beneficiaries_count', $distribution);
         $this->assertArrayNotHasKey('distribution_beneficiaries', $distribution);
@@ -798,7 +799,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'adm2' => '',
             'adm3' => '',
             'adm4' => '',
-            'type' => Assistance::TYPE_HOUSEHOLD,
+            'target_type' => AssistanceTargetType::HOUSEHOLD,
             'commodities' => [
                 [
                     'id' => null,
