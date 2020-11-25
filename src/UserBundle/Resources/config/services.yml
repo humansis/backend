@@ -17,7 +17,7 @@ services:
 
     wsse.security.authentication.provider:
         class: UserBundle\Security\Authentication\Provider\WsseProvider
-        arguments: ["@fos_user.user_provider.username", "%kernel.cache_dir%/security/nonces"]
+        arguments: ["@fos_user.user_provider.username", "%kernel.cache_dir%/security/nonces", "@logger"]
         public: false
 
     wsse.security.authentication.listener:
