@@ -40,6 +40,7 @@ class CommunityControllerTest extends BMSServiceTestCase
                     'type' => NationalId::TYPE_NATIONAL_ID,
                     'number' => '000-1234-5895-21',
                 ],
+                'phone_type' => 'Mobile',
                 'phone_prefix' => '+4234',
                 'phone_number' => '123 456 789',
                 'contact_name' => 'Abdul Mohammad',
