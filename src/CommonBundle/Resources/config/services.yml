@@ -175,6 +175,7 @@ services:
             - "@security.role_hierarchy"
             - "@doctrine.orm.entity_manager"
             - "@request_stack"
+            - "@logger"
         tags:
             - { name: security.voter }
 
@@ -183,6 +184,7 @@ services:
         arguments:
             - "@security.role_hierarchy"
             - "@doctrine.orm.entity_manager"
+            - "@logger"
         tags:
             - { name: security.voter }
 

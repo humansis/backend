@@ -19,10 +19,14 @@ class ProjectVoter extends BMSVoter
     /** @var EntityManagerInterface $em */
     private $em;
 
-    public function __construct(RoleHierarchy $roleHierarchy, EntityManagerInterface $entityManager)
+    /** @var \Monolog\Logger $logger */
+    private $logger;
+
+    public function __construct(RoleHierarchy $roleHierarchy, EntityManagerInterface $entityManager, \Monolog\Logger $logger)
     {
         parent::__construct($roleHierarchy);
         $this->em = $entityManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -70,6 +74,7 @@ class ProjectVoter extends BMSVoter
             return true;
         }
 
+        $this->logger->error('ProjectVoter - error', ['roles' => $roles, 'attribute' => $attribute, 'user' => $user->getUsername()]);
         return false;
     }
 }
