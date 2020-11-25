@@ -117,7 +117,7 @@ class InstitutionService
         $institution->setContactFamilyName($institutionType->getContactFamilyName());
         if ($institutionType->getPhoneNumber()) {
             $institution->setPhone(new Phone());
-            $institution->getPhone()->setType('Institution contact');
+            $institution->getPhone()->setType($institutionType->getPhoneType());
             $institution->getPhone()->setPrefix($institutionType->getPhonePrefix());
             $institution->getPhone()->setNumber($institutionType->getPhoneNumber());
         }
@@ -125,6 +125,7 @@ class InstitutionService
 
         if ($institutionType->getNationalId() !== null && !$institutionType->getNationalId()->isEmpty()) {
             $institution->setNationalId(new NationalId());
+            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getNumber());
             $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getNumber());
             $institution->getNationalId()->setIdType($institutionType->getNationalId()->getType());
         }
@@ -242,13 +243,13 @@ class InstitutionService
         if (null !== $newValue = $institutionType->getContactFamilyName()) {
             $institution->setContactFamilyName($newValue);
         }
-        if (null !== $newNumber = $institutionType->getPhoneNumber()) {
-            $newPrefix = $institutionType->getPhonePrefix();
+        if (null !== $institutionType->getPhoneNumber()) {
             if ($institution->getPhone() == null) {
                 $institution->setPhone(new Phone());
             }
-            $institution->getPhone()->setPrefix($newPrefix);
-            $institution->getPhone()->setNumber($newNumber);
+            $institution->getPhone()->setType($institutionType->getPhoneType());
+            $institution->getPhone()->setPrefix($institutionType->getPhonePrefix());
+            $institution->getPhone()->setNumber($institutionType->getPhoneNumber());
         }
 
         /** @var InputType\BeneficiaryAddressType $address */

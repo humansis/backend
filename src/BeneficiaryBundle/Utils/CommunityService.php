@@ -114,7 +114,7 @@ class CommunityService
         $community->setContactFamilyName($communityType->getContactFamilyName() ?? '');
         if ($communityType->getPhoneNumber()) {
             $community->setPhone(new Phone());
-            $community->getPhone()->setType('Community contact');
+            $community->getPhone()->setType($communityType->getPhoneType());
             $community->getPhone()->setPrefix($communityType->getPhonePrefix() ?? '');
             $community->getPhone()->setNumber($communityType->getPhoneNumber());
         }
@@ -198,13 +198,13 @@ class CommunityService
         if (null !== $newValue = $communityType->getContactFamilyName()) {
             $community->setContactFamilyName($newValue);
         }
-        if (null !== $newNumber = $communityType->getPhoneNumber()) {
-            $newPrefix = $communityType->getPhonePrefix();
+        if (null !== $communityType->getPhoneNumber()) {
             if ($community->getPhone() === null) {
                 $community->setPhone(new Phone());
             }
-            $community->getPhone()->setPrefix($newPrefix);
-            $community->getPhone()->setNumber($newNumber);
+            $community->getPhone()->setType($communityType->getPhoneType());
+            $community->getPhone()->setPrefix($communityType->getPhonePrefix());
+            $community->getPhone()->setNumber($communityType->getPhoneNumber());
         }
 
         /** @var InputType\BeneficiaryAddressType $address */
