@@ -46,7 +46,7 @@ class ProjectMapper implements MapperInterface
         return $this->object->getName();
     }
 
-    public function getNote(): ?string
+    public function getNotes(): ?string
     {
         return $this->object->getNotes();
     }
