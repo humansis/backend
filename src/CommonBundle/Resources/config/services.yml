@@ -62,6 +62,13 @@ services:
         tags:
             - { name: request.param_converter, converter: input_types_converter }
 
+    CommonBundle\Listener\LoggerSubscriber:
+        arguments:
+            - '@logger'
+        tags:
+            - { name: kernel.event_subscriber }
+
+
 #######################################################################################
 ##                                      FIXTURE                                      ##
 #######################################################################################
