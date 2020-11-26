@@ -114,15 +114,15 @@ class SubSectorEnum extends AbstractEnum
     const EDUCATION_PSYCHOSOCIAL_SUPPORT = 'education_psychosocial_support';
     const EDUCATION_SERVICES = 'education_services';
 
-    const DEFAULT_EMERGENCY_TELCO = 'emergency_telco';
-    const DEFAULT_HEALTH = 'health';
-    const DEFAULT_LOGISTICS = 'logistics';
-    const DEFAULT_NUTRITION = 'nutrition';
-    const DEFAULT_MINE = 'mine';
-    const DEFAULT_DRR_RESILIENCE = 'drr_resilience';
-    const DEFAULT_NON_SECTOR = 'non_sector';
-    const DEFAULT_CAMP_MANAGEMENT = 'camp_management';
-    const DEFAULT_EARLY_RECOVERY = 'early_recovery';
+    const DEFAULT_EMERGENCY_TELCO = 'default_emergency_telco';
+    const DEFAULT_HEALTH = 'default_health';
+    const DEFAULT_LOGISTICS = 'default_logistics';
+    const DEFAULT_NUTRITION = 'default_nutrition';
+    const DEFAULT_MINE = 'default_mine';
+    const DEFAULT_DRR_RESILIENCE = 'default_drr_resilience';
+    const DEFAULT_NON_SECTOR = 'default_non_sector';
+    const DEFAULT_CAMP_MANAGEMENT = 'default_camp_management';
+    const DEFAULT_EARLY_RECOVERY = 'default_early_recovery';
 
     public function getName()
     {
