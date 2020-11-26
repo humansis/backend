@@ -218,7 +218,7 @@ class CSVToArrayMapper
                     }
 
                     // Check that residencyStatus has one of the authorized values
-                    $authorizedResidencyStatus = ['refugee', 'IDP', 'resident'];
+                    $authorizedResidencyStatus = ['refugee', 'IDP', 'resident', 'returnee'];
                     // Add case insensitivity
                     $statusIsAuthorized = false;
                     foreach ($authorizedResidencyStatus as $status) {
@@ -228,7 +228,7 @@ class CSVToArrayMapper
                         }
                     }
                     if (!$statusIsAuthorized) {
-                        throw new \Exception('Your residency status must be either refugee, IDP or resident');
+                        throw new \Exception('Your residency status must be either refugee, IDP, resident or returnee');
                     }
 
                     // Check that the year of birth is between 1900 and today
