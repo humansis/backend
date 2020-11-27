@@ -68,7 +68,7 @@ class ProductController extends Controller
         $productData = $request->request->all();
 
         try {
-            $return = $this->get('voucher.product_service')->create($productData);
+            $return = $this->get('voucher.product_service')->createFromArray($productData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -202,7 +202,7 @@ class ProductController extends Controller
         $productData = $request->request->all();
 
         try {
-            $return = $this->get('voucher.product_service')->update($product, $productData);
+            $return = $this->get('voucher.product_service')->updateFromArray($product, $productData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

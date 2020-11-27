@@ -6,6 +6,8 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Logs;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\InputType\ProductCreateInputType;
+use NewApiBundle\InputType\ProductUpdateInputType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -44,11 +46,12 @@ class ProductService
     /**
      * Creates a new Product entity
      *
+     * @deprecated Use ProductService::create instead
      * @param array $productData
      * @return mixed
      * @throws \Exception
      */
-    public function create(array $productData)
+    public function createFromArray($productData)
     {
         try {
             $product = new Product();
@@ -69,6 +72,28 @@ class ProductService
     }
 
     /**
+     * Creates a new Product entity.
+     *
+     * @param ProductCreateInputType $productData
+     *
+     * @return Product
+     */
+    public function create(ProductCreateInputType $productData)
+    {
+        $product = (new Product())
+            ->setName($productData->getName())
+            ->setImage($productData->getImage())
+            ->setUnit($productData->getUnit())
+            ->setCountryISO3($productData->getIso3())
+            ->setArchived(false);
+
+        $this->em->persist($product);
+        $this->em->flush();
+
+        return $product;
+    }
+
+    /**
      * Returns all the products
      *
      * @return array
@@ -81,16 +106,37 @@ class ProductService
     /**
      * Updates a product according to the $productData
      *
+     * @deprecated Use ProductService::update instead
      * @param Product $product
      * @param array $productData
      * @return Product
      */
-    public function update(Product $product, array $productData)
+    public function updateFromArray(Product $product, array $productData)
     {
         $product->setUnit($productData['unit'])
             ->setImage($productData['image']);
 
         $this->em->merge($product);
+        $this->em->flush();
+
+        return $product;
+    }
+
+    /**
+     * Updates a product according to the $productData.
+     *
+     * @param Product                $product
+     * @param ProductUpdateInputType $productData
+     *
+     * @return Product
+     */
+    public function update(Product $product, ProductUpdateInputType $productData)
+    {
+        $product
+            ->setUnit($productData->getUnit())
+            ->setImage($productData->getImage());
+
+        $this->em->persist($product);
         $this->em->flush();
 
         return $product;
