@@ -9,6 +9,9 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\Expr\Select;
+use InvalidArgumentException;
+use ProjectBundle\DBAL\SectorEnum;
+use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -150,6 +153,23 @@ class Assistance implements ExportableInterface
      */
     private $completed = 0;
 
+    /**
+     * @var string
+     *
+     * @see SectorEnum
+     *
+     * @ORM\Column(name="sector", type="enum_sector", nullable=false)
+     */
+    private $sector;
+
+    /**
+     * @var string|null
+     *
+     * @see SubSectorEnum
+     *
+     * @ORM\Column(name="subsector", type="enum_sub_sector", nullable=true)
+     */
+    private $subSector;
 
     /**
      * Constructor
@@ -167,6 +187,7 @@ class Assistance implements ExportableInterface
      * Set id.
      *
      * @param $id
+     *
      * @return Assistance
      */
     public function setId($id)
@@ -577,6 +598,45 @@ class Assistance implements ExportableInterface
         return $this->dateDistribution;
     }
 
+    /**
+     * @return string
+     */
+    public function getSector(): string
+    {
+        return $this->sector;
+    }
+
+    /**
+     * @param string $sector
+     */
+    public function setSector(string $sector): void
+    {
+        if (!in_array($sector, SectorEnum::all())) {
+            throw new InvalidArgumentException("Invalid sector: '$sector'");
+        }
+
+        $this->sector = $sector;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSubSector(): ?string
+    {
+        return $this->subSector;
+    }
+
+    /**
+     * @param string|null $subSector
+     */
+    public function setSubSector(?string $subSector): void
+    {
+        if (null !== $subSector && !in_array($subSector, SubSectorEnum::all())) {
+            throw new InvalidArgumentException("Invalid subBector: '$subSector'");
+        }
+
+        $this->subSector = $subSector;
+    }
 
     public function getMappedValueForExport(): array
     {
@@ -598,13 +658,13 @@ class Assistance implements ExportableInterface
             }
 
             if ($field === 'gender' || $field === 'head Of Household Gender') {
-                $stringCriterion = $field . " " . $condition . ($value === '0' ? ' Female' : ' Male');
+                $stringCriterion = $field." ".$condition.($value === '0' ? ' Female' : ' Male');
             } elseif ($condition === 'true') {
                 $stringCriterion = $field;
             } elseif ($condition === 'false') {
-                $stringCriterion = 'not ' . $field;
+                $stringCriterion = 'not '.$field;
             } else {
-                $stringCriterion = $field . " " . $condition . " " . $value;
+                $stringCriterion = $field." ".$condition." ".$value;
             }
             array_push($valueselectioncriteria, $stringCriterion);
         }
@@ -613,13 +673,12 @@ class Assistance implements ExportableInterface
         // récuperer les valeurs des commodities depuis l'objet commodities
 
         $valuescommodities = [];
-        
+
         foreach ($this->getCommodities() as $commodity) {
-            $stringCommodity = $commodity->getModalityType()->getName() . " " . $commodity->getValue() . " " . $commodity->getUnit();
+            $stringCommodity = $commodity->getModalityType()->getName()." ".$commodity->getValue()." ".$commodity->getUnit();
             array_push($valuescommodities, $stringCommodity);
         }
         $valuescommodities = join(',', $valuescommodities);
-
 
         //récuperer les valeurs des distributions des beneficiaires depuis l'objet distribution
         // $valuesdistributionbeneficiaries = [];
@@ -633,13 +692,12 @@ class Assistance implements ExportableInterface
         foreach ($this->getCommodities() as $index => $commodity) {
             $percentage .= $index !== 0 ? ', ' : '';
             if ($this->getValidated()) {
-                $percentage .= $this->getPercentageValue($commodity) . '% ' . $commodity->getModalityType()->getName();
+                $percentage .= $this->getPercentageValue($commodity).'% '.$commodity->getModalityType()->getName();
             } else {
-                $percentage .= '0% ' . $commodity->getModalityType()->getName();
+                $percentage .= '0% '.$commodity->getModalityType()->getName();
             }
         }
-       
-        
+
         $typeString = $this->getTargetType() === AssistanceTargetType::INDIVIDUAL ? 'Beneficiaries' : 'Households';
 
         $adm1 = $this->getLocation()->getAdm1Name();
@@ -653,13 +711,13 @@ class Assistance implements ExportableInterface
             "type" => $typeString,
             // "Archived"=> $this->getArchived(),
             "adm1" => $adm1,
-            "adm2" =>$adm2,
-            "adm3" =>$adm3,
-            "adm4" =>$adm4,
+            "adm2" => $adm2,
+            "adm3" => $adm3,
+            "adm4" => $adm4,
             "Name" => $this->getName(),
             "Date of distribution " => $this->getDateDistribution(),
             "Update on " => $this->updatedOn,
-            "Selection criteria" =>  $valueselectioncriteria,
+            "Selection criteria" => $valueselectioncriteria,
             "Commodities " => $valuescommodities,
             "Number of beneficiaries" => count($this->getDistributionBeneficiaries()),
             "Percentage distributed" => $percentage,
@@ -679,9 +737,9 @@ class Assistance implements ExportableInterface
             $amountSent += $this->getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary);
         }
         $percentage = $amountSent / $totalCommodityValue * 100;
+
         return round($percentage * 100) / 100;
     }
-
 
     public function getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary)
     {
@@ -690,12 +748,13 @@ class Assistance implements ExportableInterface
             $numberOfTransactions = count($distributionBeneficiary->getTransactions());
             if (count($distributionBeneficiary->getTransactions()) > 0) {
                 $transaction = $distributionBeneficiary->getTransactions()[$numberOfTransactions - 1];
+
                 return ($transaction->getTransactionStatus() === 1 ? $commodity->getValue() : 0);
             } else {
                 return 0;
             }
         } elseif ($modalityType === 'QR Code Voucher') {
-            $booklets =  $distributionBeneficiary->getBooklets();
+            $booklets = $distributionBeneficiary->getBooklets();
             foreach ($booklets as $booklet) {
                 if ($booklet->getStatus() === 1 || $booklet->getStatus() === 2) {
                     return $booklet->getTotalValue();
@@ -711,6 +770,7 @@ class Assistance implements ExportableInterface
                 return 0;
             }
             $correspondingGeneralRelief = $distributionBeneficiary->getGeneralReliefs()[$commodityIndex];
+
             return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0);
         }
     }

@@ -8,7 +8,6 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\DistributionBeneficiary;

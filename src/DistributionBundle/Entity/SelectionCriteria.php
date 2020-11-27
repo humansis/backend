@@ -88,6 +88,14 @@ class SelectionCriteria
     private $weight;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="group_number", type="integer", nullable=false)
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     */
+    private $groupNumber;
+
+    /**
      * @return int
      */
     public function getWeight(): int
@@ -279,5 +287,25 @@ class SelectionCriteria
     public function getAssistance()
     {
         return $this->assistance;
+    }
+
+    /**
+     * @param int $groupNumber
+     *
+     * @return SelectionCriteria
+     */
+    public function setGroupNumber($groupNumber): self
+    {
+        $this->groupNumber = (int) $groupNumber;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getGroupNumber(): int
+    {
+        return $this->groupNumber;
     }
 }

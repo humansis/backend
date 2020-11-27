@@ -104,15 +104,19 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             "selection_criteria"=> [
                 [
-                    "condition_string"=> "true",
-                    "field_string"=> "disabled",
-                    "id_field"=> "1",
-                    "target"=> "Beneficiary",
-                    "table_string"=> "vulnerabilityCriteria",
-                    "weight"=> "1"
+                    [
+                        "condition_string"=> "true",
+                        "field_string"=> "disabled",
+                        "id_field"=> 1,
+                        "target"=> "Beneficiary",
+                        "table_string"=> "vulnerabilityCriteria",
+                        "weight"=> 1,
+                    ]
                 ]
             ],
             "threshold"=> 1,
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_PARCELS_BASKETS,
         );
 
 
@@ -841,15 +845,19 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             'selection_criteria' => [
                 [
-                    'condition_string' => 'true',
-                    'field_string' => 'disabled',
-                    'id_field' => '1',
-                    'target' => 'Beneficiary',
-                    'table_string' => 'vulnerabilityCriteria',
-                    'weight' => '1',
+                    [
+                        'condition_string' => 'true',
+                        'field_string' => 'disabled',
+                        'id_field' => 1,
+                        'target' => 'Beneficiary',
+                        'table_string' => 'vulnerabilityCriteria',
+                        'weight' => 1,
+                    ],
                 ],
             ],
             'threshold' => 1,
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_PARCELS_BASKETS,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);

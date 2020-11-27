@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\DistributionBeneficiaryRepository;
 
@@ -13,13 +14,14 @@ class AssistanceMapper
 {
     /** @var BeneficiaryMapper */
     private $beneficiaryMapper;
+
     /** @var DistributionBeneficiaryRepository */
     private $distributionBNFRepo;
 
     /**
      * AssistanceMapper constructor.
      *
-     * @param BeneficiaryMapper $beneficiaryMapper
+     * @param BeneficiaryMapper                 $beneficiaryMapper
      * @param DistributionBeneficiaryRepository $distributionBNFRepo
      */
     public function __construct(
@@ -94,7 +96,7 @@ class AssistanceMapper
             'date_distribution' => $assistance->getDateDistribution(),
             'location' => $assistance->getLocation(),
             'project' => $assistance->getProject(),
-            'selection_criteria' => $assistance->getSelectionCriteria(),
+            'selection_criteria' => $this->transformSelectionCriteria($assistance->getSelectionCriteria()),
             'archived' => $assistance->getArchived(),
             'validated' => $assistance->getValidated(),
             'reporting_distribution' => $assistance->getReportingDistribution(),
@@ -104,6 +106,8 @@ class AssistanceMapper
             'commodities' => $assistance->getCommodities(),
             'completed' => $assistance->getCompleted(),
             'beneficiaries_count' => $this->distributionBNFRepo->countActive($assistance),
+            'sector' => $assistance->getSector(),
+            'subsector' => $assistance->getSubSector(),
         ];
 
         return $assistanceArray;
@@ -129,8 +133,7 @@ class AssistanceMapper
         }
         /** @var AbstractBeneficiary[] $bnfs */
         $bnfs = [];
-        foreach ($assistance->getDistributionBeneficiaries() as $db)
-        {
+        foreach ($assistance->getDistributionBeneficiaries() as $db) {
             if ($db->getBeneficiary() instanceof Beneficiary
                 && !$db->getRemoved()
                 && !$db->getBeneficiary()->getArchived()
@@ -173,5 +176,19 @@ class AssistanceMapper
         foreach ($assistances as $assistance) {
             yield $this->toOldMobileArray($assistance);
         }
+    }
+
+    /**
+     * @param SelectionCriteria[] $criteria
+     */
+    private function transformSelectionCriteria(iterable $criteria)
+    {
+        $result = [];
+
+        foreach ($criteria as $criterion) {
+            $result[$criterion->getGroupNumber()][] = $criterion;
+        }
+
+        return $result;
     }
 }

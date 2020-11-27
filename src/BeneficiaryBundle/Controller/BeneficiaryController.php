@@ -9,6 +9,7 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 
 use CommonBundle\Pagination\Paginator;
+use DistributionBundle\Utils\CriteriaDistributionService;
 use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -68,6 +69,105 @@ class BeneficiaryController extends Controller
             ->serialize($vulnerabilityCriteria, 'json');
 
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Post("/beneficiaries/project/{id}")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
+     *
+     * @SWG\Tag(name="CriteriaDistributions")
+     * @SWG\Tag(name="Beneficiary")
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     required=true,
+     *     schema={}
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     type="integer"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="offset",
+     *     in="query",
+     *     type="integer"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Project $project
+     * @return Response
+     */
+    public function getBeneficiariesAction(Request $request, Project $project)
+    {
+        $filters = $request->request->all();
+        $filters['countryIso3'] = $filters['__country'];
+        $threshold = $filters['threshold'];
+
+        $limit = $request->query->getInt('limit', 1000);
+        $offset = $request->query->getInt('offset', 0);
+
+        /** @var CriteriaDistributionService $criteriaDistributionService */
+        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
+        $beneficiaries = $criteriaDistributionService->getList($filters, $project, $threshold, $limit, $offset);
+
+        $json = $this->get('serializer')->serialize($beneficiaries, 'json', ['groups' => ["SmallHousehold"]]);
+
+        return new Response($json);
+    }
+
+    /**
+     * @Rest\Post("/beneficiaries/project/{id}/number")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
+     *
+     * @SWG\Tag(name="CriteriaDistributions")
+     * @SWG\Tag(name="Beneficiary")
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     required=true,
+     *     schema={}
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Project $project
+     * @return Response
+     */
+    public function getBeneficiariesNumberAction(Request $request, Project $project)
+    {
+        $filters = $request->request->all();
+        $filters['countryIso3'] = $filters['__country'];
+        $threshold = $filters['threshold'];
+
+        /** @var CriteriaDistributionService $criteriaDistributionService */
+        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
+        $receivers = $criteriaDistributionService->load($filters, $project, $threshold, true);
+
+        return $this->json($receivers);
     }
 
      /**
