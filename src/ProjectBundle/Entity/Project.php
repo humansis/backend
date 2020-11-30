@@ -454,12 +454,12 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function setSectors(iterable $sectorDTOs): self
+    public function setSectors(iterable $sectorIDs): self
     {
         $this->sectors->clear();
 
-        foreach ($sectorDTOs as $DTO) {
-            $this->addSector($DTO);
+        foreach ($sectorIDs as $sectorID) {
+            $this->addSector($sectorID);
         }
 
         return $this;
