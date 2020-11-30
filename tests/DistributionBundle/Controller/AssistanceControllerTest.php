@@ -911,4 +911,144 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertInstanceOf(Assistance::class, $assistance, 'Assistance should exists in DB');
         $this->assertTrue((bool) $assistance->getArchived(), 'Assistance should be archived');
     }
+
+    public function testCreateDistributionForCommunity()
+    {
+        /** @var \BeneficiaryBundle\Repository\CommunityRepository $communityRepo */
+        $communityRepo = $this->container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Community::class);
+        $community = $communityRepo->findBy([])[0];
+
+        $body = [
+            'id' => null,
+            'adm1' => '',
+            'adm2' => '',
+            'adm3' => '',
+            'adm4' => '',
+            'target_type' => AssistanceTargetType::COMMUNITY,
+            'date_distribution' => '13-09-2018',
+            'location' => [
+                'adm1' => 1,
+                'adm2' => 1,
+                'adm3' => 1,
+                'adm4' => 1,
+                'country_iso3' => 'KHM',
+            ],
+            'commodities' => [
+                [
+                    'id' => null,
+                    'modality' => 'Cash',
+                    'modality_type' => [
+                        'id' => 1,
+                    ],
+                    'type' => 'Mobile Money',
+                    'unit' => 'USD',
+                    'value' => 100,
+                    'description' => null,
+                ],
+            ],
+            'country_specific_answers' => [
+                [
+                    'answer' => 'MY_ANSWER_TEST1',
+                    'country_specific' => [
+                        'id' => 1,
+                    ],
+                ],
+            ],
+            'location_name' => '',
+            'name' => 'DISTRIBUTION_FOR_COMMUNITY',
+            'project' => [
+                'donors' => [],
+                'donors_name' => [],
+                'id' => 1,
+                'name' => '',
+                'sectors' => [],
+                'sectors_name' => [],
+            ],
+            'community' => $community->getId(),
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_PARCELS_BASKETS,
+        ];
+
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // preparation to test
+        $this->request('PUT', '/api/wsse/distributions', $body);
+        $assistanceData = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        return $assistanceData['distribution']['id'];
+    }
+
+    public function testCreateDistributionForInstitution()
+    {
+        /** @var \BeneficiaryBundle\Repository\InstitutionRepository $institutionRepo */
+        $institutionRepo = $this->container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Institution::class);
+        $institution = $institutionRepo->findBy([])[0];
+
+        $body = [
+            'id' => null,
+            'adm1' => '',
+            'adm2' => '',
+            'adm3' => '',
+            'adm4' => '',
+            'target_type' => AssistanceTargetType::INSTITUTION,
+            'date_distribution' => '13-09-2018',
+            'location' => [
+                'adm1' => 1,
+                'adm2' => 1,
+                'adm3' => 1,
+                'adm4' => 1,
+                'country_iso3' => 'KHM',
+            ],
+            'commodities' => [
+                [
+                    'id' => null,
+                    'modality' => 'Cash',
+                    'modality_type' => [
+                        'id' => 1,
+                    ],
+                    'type' => 'Mobile Money',
+                    'unit' => 'USD',
+                    'value' => 100,
+                    'description' => null,
+                ],
+            ],
+            'country_specific_answers' => [
+                [
+                    'answer' => 'MY_ANSWER_TEST1',
+                    'country_specific' => [
+                        'id' => 1,
+                    ],
+                ],
+            ],
+            'location_name' => '',
+            'name' => 'DISTRIBUTION_FOR_INSTITUTION',
+            'project' => [
+                'donors' => [],
+                'donors_name' => [],
+                'id' => 1,
+                'name' => '',
+                'sectors' => [],
+                'sectors_name' => [],
+            ],
+            'institution' => $institution->getId(),
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_PARCELS_BASKETS,
+        ];
+
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // preparation to test
+        $this->request('PUT', '/api/wsse/distributions', $body);
+        $assistanceData = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        return $assistanceData['distribution']['id'];
+    }
 }
