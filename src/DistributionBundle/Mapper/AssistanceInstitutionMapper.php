@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DistributionBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Mapper\InstitutionMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
@@ -32,7 +31,8 @@ class AssistanceInstitutionMapper extends AssistanceBeneficiaryMapper
 
         $institution = $assistanceInstitution->getBeneficiary();
         if (!$institution instanceof Institution) {
-            return $this->toFlatArray($assistanceInstitution);
+            $class = get_class($assistanceInstitution);
+            throw new \InvalidArgumentException("DistributionBeneficiary #{$assistanceInstitution->getId()} is $class instead of ".Institution::class);
         }
 
         $flatBase = $this->toFlatArray($assistanceInstitution);
@@ -45,10 +45,7 @@ class AssistanceInstitutionMapper extends AssistanceBeneficiaryMapper
     public function toFullArrays(iterable $assistanceInstitutions): iterable
     {
         foreach ($assistanceInstitutions as $assistanceInstitution) {
-            $ac = $this->toFullArray($assistanceInstitution);
-            if ($ac) {
-                yield $ac;
-            }
+            $this->toFullArray($assistanceInstitution);
         }
     }
 }

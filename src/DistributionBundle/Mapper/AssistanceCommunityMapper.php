@@ -31,7 +31,8 @@ class AssistanceCommunityMapper extends AssistanceBeneficiaryMapper
 
         $community = $assistanceCommunity->getBeneficiary();
         if (!$community instanceof Community) {
-            return $this->toFlatArray($assistanceCommunity);;
+            $class = get_class($assistanceCommunity);
+            throw new \InvalidArgumentException("DistributionBeneficiary #{$assistanceCommunity->getId()} is $class instead of ".Community::class);
         }
 
         $flatBase = $this->toFlatArray($assistanceCommunity);
@@ -44,8 +45,7 @@ class AssistanceCommunityMapper extends AssistanceBeneficiaryMapper
     public function toFullArrays(iterable $assistanceCommunities): iterable
     {
         foreach ($assistanceCommunities as $assistanceCommunity) {
-            $ac = $this->toFullArray($assistanceCommunity);
-            if ($ac) yield $ac;
+            yield $this->toFullArray($assistanceCommunity);
         }
     }
 }
