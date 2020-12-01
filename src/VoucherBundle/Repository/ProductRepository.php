@@ -2,6 +2,11 @@
 
 namespace VoucherBundle\Repository;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\ProductOrderInputType;
+use NewApiBundle\Request\Pagination;
+use VoucherBundle\Entity\Product;
+
 /**
  * ProductRepository
  *
@@ -20,5 +25,45 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             ->select('DISTINCT p.name');
         
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param string                     $countryIso3
+     * @param ProductOrderInputType|null $orderBy
+     * @param Pagination|null            $pagination
+     *
+     * @return Paginator|Product[]
+     */
+    public function findByCountry(string $countryIso3, ?ProductOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->andWhere('p.archived = 0')
+            ->andWhere('p.countryISO3 = :countryIso3')
+            ->setParameter('countryIso3', $countryIso3);
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case ProductOrderInputType::SORT_BY_ID:
+                        $qb->orderBy('p.id', $direction);
+                        break;
+                    case ProductOrderInputType::SORT_BY_NAME:
+                        $qb->orderBy('p.name', $direction);
+                        break;
+                    case ProductOrderInputType::SORT_BY_UNIT:
+                        $qb->orderBy('p.unit', $direction);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException('Invalid order directive '.$name);
+                }
+            }
+        }
+
+        return new Paginator($qb);
     }
 }

@@ -4,10 +4,14 @@ namespace NewApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\ProductCreateInputType;
+use NewApiBundle\InputType\ProductOrderInputType;
 use NewApiBundle\InputType\ProductUpdateInputType;
+use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Product;
+use VoucherBundle\Repository\ProductRepository;
 
 class ProductController extends AbstractController
 {
@@ -25,6 +29,28 @@ class ProductController extends AbstractController
         }
 
         return $this->json($product);
+    }
+
+    /**
+     * @Rest\Get("/products")
+     *
+     * @param Request               $request
+     * @param Pagination            $pagination
+     * @param ProductOrderInputType $orderBy
+     *
+     * @return JsonResponse
+     */
+    public function list(Request $request, Pagination $pagination, ProductOrderInputType $orderBy): JsonResponse
+    {
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
+
+        /** @var ProductRepository $repository */
+        $repository = $this->getDoctrine()->getRepository(Product::class);
+        $data = $repository->findByCountry($request->headers->has('country'), $orderBy, $pagination);
+
+        return $this->json($data);
     }
 
     /**
