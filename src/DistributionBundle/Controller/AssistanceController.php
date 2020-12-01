@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\AssistanceMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
+use DistributionBundle\Mapper\AssistanceCommunityMapper;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
 use DistributionBundle\Utils\DistributionService;
 use DistributionBundle\Utils\DistributionCsvService;
@@ -403,6 +404,36 @@ class AssistanceController extends Controller
             );
 
         return new Response($json);
+    }
+
+    /**
+     * Get all beneficiaries of a distribution.
+     *
+     * @Rest\Get("/distributions/{id}/communities", name="get_communities_distribution", requirements={"id"="\d+"})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="beneficiaries for one distribution",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Beneficiary::class))
+     *     )
+     * )
+     *
+     * @param Assistance $assistance
+     * @return Response
+     */
+    public function getDistributionCommunitiesAction(Assistance $assistance)
+    {
+        /** @var DistributionBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        $assistanceCommunities = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
+
+        $mapper = $this->get(AssistanceCommunityMapper::class);
+        return $this->json($mapper->toFullArrays($assistanceCommunities));
     }
 
     /**
