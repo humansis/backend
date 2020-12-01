@@ -964,7 +964,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 'sectors' => [],
                 'sectors_name' => [],
             ],
-            'community' => $community->getId(),
+            'communities' => [$community->getId()],
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_PARCELS_BASKETS,
         ];
@@ -1034,7 +1034,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 'sectors' => [],
                 'sectors_name' => [],
             ],
-            'institution' => $institution->getId(),
+            'institutions' => [$institution->getId()],
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_PARCELS_BASKETS,
         ];

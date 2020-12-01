@@ -199,23 +199,27 @@ class DistributionService
         }
 
         if (AssistanceTargetType::COMMUNITY === $distribution->getTargetType()) {
-            $community = $this->container->get('doctrine')->getRepository(Community::class)->find($distributionArray['community']);
-            $distributionBeneficiary = (new DistributionBeneficiary())
-                ->setAssistance($distribution)
-                ->setBeneficiary($community)
-                ->setRemoved(0);
-            $this->em->persist($distributionBeneficiary);
+            foreach ($distributionArray['communities'] as $id) {
+                $community = $this->container->get('doctrine')->getRepository(Community::class)->find($id);
+                $distributionBeneficiary = (new DistributionBeneficiary())
+                    ->setAssistance($distribution)
+                    ->setBeneficiary($community)
+                    ->setRemoved(0);
 
-            $listReceivers[] = $community->getId();
+                $this->em->persist($distributionBeneficiary);
+                $listReceivers[] = $community->getId();
+            }
         } elseif (AssistanceTargetType::INSTITUTION === $distribution->getTargetType()) {
-            $institution = $this->container->get('doctrine')->getRepository(Institution::class)->find($distributionArray['institution']);
-            $distributionBeneficiary = (new DistributionBeneficiary())
-                ->setAssistance($distribution)
-                ->setBeneficiary($institution)
-                ->setRemoved(0);
-            $this->em->persist($distributionBeneficiary);
+            foreach ($distributionArray['institutions'] as $id) {
+                $institution = $this->container->get('doctrine')->getRepository(Institution::class)->find($id);
+                $distributionBeneficiary = (new DistributionBeneficiary())
+                    ->setAssistance($distribution)
+                    ->setBeneficiary($institution)
+                    ->setRemoved(0);
+                $this->em->persist($distributionBeneficiary);
 
-            $listReceivers[] = $institution->getId();
+                $listReceivers[] = $institution->getId();
+            }
         } else {
             $criteria = [];
             foreach ($selectionCriteriaGroup as $i => $criteriaData) {
