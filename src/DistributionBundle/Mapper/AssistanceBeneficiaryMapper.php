@@ -57,7 +57,7 @@ class AssistanceBeneficiaryMapper
         }
     }
 
-    public function toFlatArray(?DistributionBeneficiary $assistanceBeneficiary): ?array
+    public function toFullArray(?DistributionBeneficiary $assistanceBeneficiary): ?array
     {
         if (!$assistanceBeneficiary) {
             return null;
@@ -93,10 +93,10 @@ class AssistanceBeneficiaryMapper
         return $serializedAB;
     }
 
-    public function toFlatArrays(iterable $beneficiaries): iterable
+    public function toFullArrays(iterable $beneficiaries): iterable
     {
         foreach ($beneficiaries as $assistanceBeneficiary) {
-            yield $this->toFlatArray($assistanceBeneficiary);
+            yield $this->toFullArray($assistanceBeneficiary);
         }
     }
 }

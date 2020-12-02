@@ -35,7 +35,7 @@ class AssistanceInstitutionMapper extends AssistanceBeneficiaryMapper
             throw new \InvalidArgumentException("DistributionBeneficiary #{$assistanceInstitution->getId()} is $class instead of ".Institution::class);
         }
 
-        $flatBase = $this->toFlatArray($assistanceInstitution);
+        $flatBase = parent::toFullArray($assistanceInstitution);
 
         return array_merge($flatBase, [
             'institution' => $this->institutionMapper->toFullArray($institution),

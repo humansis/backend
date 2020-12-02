@@ -35,7 +35,7 @@ class AssistanceCommunityMapper extends AssistanceBeneficiaryMapper
             throw new \InvalidArgumentException("DistributionBeneficiary #{$assistanceCommunity->getId()} is $class instead of ".Community::class);
         }
 
-        $flatBase = $this->toFlatArray($assistanceCommunity);
+        $flatBase = parent::toFullArray($assistanceCommunity);
 
         return array_merge($flatBase, [
             'community' => $this->communityMapper->toFullArray($community),
