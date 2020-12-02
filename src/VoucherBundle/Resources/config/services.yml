@@ -36,3 +36,8 @@ services:
 
     VoucherBundle\Mapper\SmartcardMapper:
         public: true
+
+    VoucherBundle\Mapper\BookletMapper:
+        arguments:
+            - "@serializer"
+        public: true

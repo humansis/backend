@@ -7,20 +7,19 @@ namespace DistributionBundle\Mapper;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Mapper\InstitutionMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use TransactionBundle\Mapper\TransactionMapper;
+use VoucherBundle\Mapper\BookletMapper;
 
 class AssistanceInstitutionMapper extends AssistanceBeneficiaryMapper
 {
     /** @var InstitutionMapper */
     private $institutionMapper;
 
-    /**
-     * AssistanceInstitutionMapper constructor.
-     *
-     * @param InstitutionMapper $communityMapper
-     */
-    public function __construct(InstitutionMapper $communityMapper)
-    {
-        $this->institutionMapper = $communityMapper;
+    public function __construct(BookletMapper $bookletMapper, GeneralReliefItemMapper $generalReliefItemMapper, TransactionMapper $transactionMapper,
+                                InstitutionMapper $institutionMapper
+    ) {
+        parent::__construct($bookletMapper, $generalReliefItemMapper, $transactionMapper);
+        $this->institutionMapper = $institutionMapper;
     }
 
     public function toFullArray(?DistributionBeneficiary $assistanceInstitution): ?array
@@ -31,11 +30,11 @@ class AssistanceInstitutionMapper extends AssistanceBeneficiaryMapper
 
         $institution = $assistanceInstitution->getBeneficiary();
         if (!$institution instanceof Institution) {
-            $class = get_class($assistanceInstitution);
+            $class = get_class($institution);
             throw new \InvalidArgumentException("DistributionBeneficiary #{$assistanceInstitution->getId()} is $class instead of ".Institution::class);
         }
 
-        $flatBase = parent::toFullArray($assistanceInstitution);
+        $flatBase = $this->toBaseArray($assistanceInstitution);
 
         return array_merge($flatBase, [
             'institution' => $this->institutionMapper->toFullArray($institution),

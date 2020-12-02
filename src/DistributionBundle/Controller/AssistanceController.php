@@ -403,7 +403,10 @@ class AssistanceController extends Controller
                 ]
             );
 
-        return new Response($json);
+        $mapper = $this->get(AssistanceBeneficiaryMapper::class);
+        return $this->json($mapper->toFullArrays($distributionBeneficiaries));
+
+        // return new Response($json);
     }
 
     /**
