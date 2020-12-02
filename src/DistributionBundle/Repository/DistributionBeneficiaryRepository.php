@@ -110,16 +110,15 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         switch ($assistance->getTargetType()) {
             case AssistanceTargetType::INDIVIDUAL:
             case AssistanceTargetType::HOUSEHOLD:
+                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Beneficiary::class));
                 break;
+                // $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Household::class));
+                // break;
             case AssistanceTargetType::COMMUNITY:
-                $qb
-                    ->andWhere('beneficiary INSTANCE OF :targetType')
-                    ->setParameter('targetType', Community::class);
+                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Community::class));
                 break;
             case AssistanceTargetType::INSTITUTION:
-                $qb
-                    ->andWhere('beneficiary INSTANCE OF :targetType')
-                    ->setParameter('targetType', Institution::class);
+                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Institution::class));
                 break;
         }
 

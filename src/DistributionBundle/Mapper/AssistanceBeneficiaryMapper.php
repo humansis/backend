@@ -32,13 +32,13 @@ class AssistanceBeneficiaryMapper
      * @param BookletMapper           $bookletMapper
      * @param GeneralReliefItemMapper $generalReliefItemMapper
      * @param TransactionMapper       $transactionMapper
-     * @param BeneficiaryMapper       $beneficiaryMapper
+     * @param BeneficiaryMapper|null  $beneficiaryMapper
      */
     public function __construct(
         BookletMapper $bookletMapper,
         GeneralReliefItemMapper $generalReliefItemMapper,
         TransactionMapper $transactionMapper,
-        BeneficiaryMapper $beneficiaryMapper
+        ?BeneficiaryMapper $beneficiaryMapper
     ) {
         $this->bookletMapper = $bookletMapper;
         $this->generalReliefItemMapper = $generalReliefItemMapper;

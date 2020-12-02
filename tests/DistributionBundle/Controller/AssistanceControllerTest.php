@@ -367,52 +367,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('transactions', $beneficiaries[0]);
     }
 
-    public function testGetDistributionCommunities()
-    {
-        // TODO: Complete test after making community assistance creation
-        $this->markTestIncomplete('TODO: Complete test after making community assistance creation');
-
-        // Fake connection with a token for the user tester (ADMIN)
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        // Second step
-        // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/communities');
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-        $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
-
-        // Check if the second step succeed
-        $this->assertTrue(gettype($beneficiaries) == "array");
-        $this->assertArrayHasKey('id', $beneficiaries[0]);
-        $this->assertArrayHasKey('community', $beneficiaries[0]);
-        $this->assertArrayHasKey('transactions', $beneficiaries[0]);
-    }
-
-
-    public function testGetDistributionInstitutions()
-    {
-        // TODO: Complete test after making institution assistance creation
-        $this->markTestIncomplete('TODO: Complete test after making institution assistance creation');
-
-        // Fake connection with a token for the user tester (ADMIN)
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        // Second step
-        // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/institutions');
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-        $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
-
-        // Check if the second step succeed
-        $this->assertTrue(gettype($beneficiaries) == "array");
-        $this->assertArrayHasKey('id', $beneficiaries[0]);
-        $this->assertArrayHasKey('institution', $beneficiaries[0]);
-        $this->assertArrayHasKey('transactions', $beneficiaries[0]);
-    }
 
     /**
      * @depends testCreateDistribution
@@ -1098,5 +1052,60 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
 
         return $assistanceData['distribution']['id'];
+    }
+
+
+    /**
+     * @depends testCreateDistributionForCommunity
+     * @param $distributionId
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testGetDistributionCommunities($distributionId)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distributionId .'/communities');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertIsArray($beneficiaries);
+        $this->assertCount(1, $beneficiaries);
+        $this->assertArrayHasKey('id', $beneficiaries[0]);
+        $this->assertArrayHasKey('community', $beneficiaries[0]);
+        $this->assertArrayHasKey('transactions', $beneficiaries[0]);
+    }
+
+    /**
+     * @depends testCreateDistributionForInstitution
+     * @param $distributionId
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testGetDistributionInstitutions($distributionId)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distributionId .'/institutions');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertIsArray($beneficiaries);
+        $this->assertCount(1, $beneficiaries);
+        $this->assertArrayHasKey('id', $beneficiaries[0]);
+        $this->assertArrayHasKey('institution', $beneficiaries[0]);
+        $this->assertArrayHasKey('transactions', $beneficiaries[0]);
     }
 }

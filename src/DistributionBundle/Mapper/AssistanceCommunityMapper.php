@@ -18,7 +18,7 @@ class AssistanceCommunityMapper extends AssistanceBeneficiaryMapper
     public function __construct(BookletMapper $bookletMapper, GeneralReliefItemMapper $generalReliefItemMapper, TransactionMapper $transactionMapper,
                                 CommunityMapper $communityMapper
     ) {
-        parent::__construct($bookletMapper, $generalReliefItemMapper, $transactionMapper);
+        parent::__construct($bookletMapper, $generalReliefItemMapper, $transactionMapper, null);
         $this->communityMapper = $communityMapper;
     }
 
