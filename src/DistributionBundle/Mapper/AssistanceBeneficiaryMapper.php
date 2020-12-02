@@ -66,22 +66,28 @@ class AssistanceBeneficiaryMapper
         $serializedAB = [
             'id' => $assistanceBeneficiary->getId(),
             'transactions' => [],
-            'distributedItems' => [],
-            'smartcardDistributedAt' => null,
+            'booklets' => [],
+            'general_reliefs' => [],
+            'smartcard_distributed' => $assistanceBeneficiary->getSmartcardDistributed(),
+            'smartcard_distributed_at' => null,
             'justification' => $assistanceBeneficiary->getJustification(),
             'removed' => $assistanceBeneficiary->getRemoved(),
         ];
 
         if ($assistanceBeneficiary->getSmartcardDistributed()) {
-            $serializedAB['smartcardDistributedAt'] = $assistanceBeneficiary->getSmartcardDistributedAt()->format('d-m-Y H:i');
+            $serializedAB['smartcard_distributed_at'] = $assistanceBeneficiary->getSmartcardDistributedAt()->format('d-m-Y H:i');
         }
 
         foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
             $serializedAB['transactions'][] = $transaction->getId();
         }
 
+        foreach ($assistanceBeneficiary->getBooklets() as $booklet) {
+            $serializedAB['booklets'][] = $booklet->getId();
+        }
+
         foreach ($assistanceBeneficiary->getGeneralReliefs() as $item) {
-            $serializedAB['distributedItems'][] = $item->getId();
+            $serializedAB['general_reliefs'][] = $item->getId();
         }
 
         return $serializedAB;
