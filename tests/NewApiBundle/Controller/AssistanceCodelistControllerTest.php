@@ -4,6 +4,7 @@ namespace Tests\NewApiBundle\Controller;
 
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Enum\AssistanceTargetType;
 use Exception;
 use Tests\BMSServiceTestCase;
 
@@ -44,7 +45,7 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
-        $this->assertEquals(count(Assistance::TYPE_TO_STRING_MAPPING), $result['totalCount']);
+        $this->assertEquals(count(AssistanceTargetType::values()), $result['totalCount']);
     }
 
     /**
