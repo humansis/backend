@@ -182,11 +182,11 @@ class DistributionBeneficiary
     /**
      * Set beneficiary.
      *
-     * @param Beneficiary|null $beneficiary
+     * @param AbstractBeneficiary|null $beneficiary
      *
      * @return DistributionBeneficiary
      */
-    public function setBeneficiary(Beneficiary $beneficiary = null)
+    public function setBeneficiary(AbstractBeneficiary $beneficiary = null)
     {
         $this->beneficiary = $beneficiary;
 
@@ -196,7 +196,7 @@ class DistributionBeneficiary
     /**
      * Get beneficiary.
      *
-     * @return Beneficiary|null
+     * @return AbstractBeneficiary|null
      */
     public function getBeneficiary()
     {

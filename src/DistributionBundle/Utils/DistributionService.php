@@ -3,7 +3,9 @@
 namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use CommonBundle\Utils\LocationService;
@@ -143,16 +145,15 @@ class DistributionService
      *
      * @param $countryISO3
      * @param array $distributionArray
-     * @param int $threshold
      * @return array
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function create($countryISO3, array $distributionArray, int $threshold)
+    public function create($countryISO3, array $distributionArray)
     {
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
 
-        $selectionCriteriaGroup = $distributionArray['selection_criteria'];
+        $selectionCriteriaGroup = $distributionArray['selection_criteria'] ?? null;
         unset($distributionArray['selection_criteria']);
 
         $sector = $distributionArray['sector'];
@@ -197,26 +198,46 @@ class DistributionService
             $this->commodityService->create($distribution, $item, false);
         }
 
-        $criteria = [];
-        foreach ($selectionCriteriaGroup as $i => $criteriaData) {
-            foreach ($criteriaData as $j => $criterionArray) {
-                /** @var SelectionCriteria $criterion */
-                $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json');
-                $criterion->setGroupNumber($i);
-                $this->criteriaDistributionService->save($distribution, $criterion, false);
-                $criteria[$i][$j] = $criterionArray;
+        if (AssistanceTargetType::COMMUNITY === $distribution->getTargetType()) {
+            foreach ($distributionArray['communities'] as $id) {
+                $community = $this->container->get('doctrine')->getRepository(Community::class)->find($id);
+                $distributionBeneficiary = (new DistributionBeneficiary())
+                    ->setAssistance($distribution)
+                    ->setBeneficiary($community)
+                    ->setRemoved(0);
+
+                $this->em->persist($distributionBeneficiary);
+                $listReceivers[] = $community->getId();
             }
+        } elseif (AssistanceTargetType::INSTITUTION === $distribution->getTargetType()) {
+            foreach ($distributionArray['institutions'] as $id) {
+                $institution = $this->container->get('doctrine')->getRepository(Institution::class)->find($id);
+                $distributionBeneficiary = (new DistributionBeneficiary())
+                    ->setAssistance($distribution)
+                    ->setBeneficiary($institution)
+                    ->setRemoved(0);
+                $this->em->persist($distributionBeneficiary);
+
+                $listReceivers[] = $institution->getId();
+            }
+        } else {
+            $criteria = [];
+            foreach ($selectionCriteriaGroup as $i => $criteriaData) {
+                foreach ($criteriaData as $j => $criterionArray) {
+                    /** @var SelectionCriteria $criterion */
+                    $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json');
+                    $criterion->setGroupNumber($i);
+                    $this->criteriaDistributionService->save($distribution, $criterion, false);
+                    $criteria[$i][$j] = $criterionArray;
+                }
+            }
+
+            $distributionArray['selection_criteria'] = $criteria;
+            $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $distributionArray['threshold']);
+            $this->saveReceivers($distribution, $listReceivers, $countryISO3);
         }
 
         $this->em->persist($distribution);
-        $this->em->flush();
-
-        $this->em->persist($distribution);
-
-        $distributionArray['selection_criteria'] = $criteria;
-        $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $threshold);
-        $this->saveReceivers($distribution, $listReceivers, $countryISO3);
-
         $this->em->flush();
 
         return ["distribution" => $distribution, "data" => $listReceivers];
