@@ -57,6 +57,16 @@ services:
     DistributionBundle\Mapper\AssistanceBeneficiaryMapper:
         public: true
 
+    DistributionBundle\Mapper\AssistanceCommunityMapper:
+        arguments:
+            - "@BeneficiaryBundle\\Mapper\\CommunityMapper"
+        public: true
+
+    DistributionBundle\Mapper\AssistanceInstitutionMapper:
+        arguments:
+            - "@BeneficiaryBundle\\Mapper\\InstitutionMapper"
+        public: true
+
     DistributionBundle\Mapper\CampMapper:
         public: true
 
