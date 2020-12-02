@@ -3,6 +3,7 @@
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
+use DistributionBundle\DBAL\AssistanceTargetTypeEnum;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;

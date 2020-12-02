@@ -59,6 +59,7 @@ services:
             - "@VoucherBundle\\Mapper\\BookletMapper"
             - "@DistributionBundle\\Mapper\\GeneralReliefItemMapper"
             - "@TransactionBundle\\Mapper\\TransactionMapper"
+            - "@BeneficiaryBundle\\Mapper\\BeneficiaryMapper"
         public: true
 
     DistributionBundle\Mapper\AssistanceCommunityMapper:

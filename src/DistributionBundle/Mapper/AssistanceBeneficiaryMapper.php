@@ -6,6 +6,7 @@ namespace DistributionBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Mapper\BeneficiaryMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Mapper\TransactionMapper;
@@ -22,18 +23,27 @@ class AssistanceBeneficiaryMapper
     /** @var TransactionMapper */
     private $transactionMapper;
 
+    /** @var BeneficiaryMapper */
+    private $beneficiaryMapper;
+
     /**
      * AssistanceBeneficiaryMapper constructor.
      *
      * @param BookletMapper           $bookletMapper
      * @param GeneralReliefItemMapper $generalReliefItemMapper
      * @param TransactionMapper       $transactionMapper
+     * @param BeneficiaryMapper       $beneficiaryMapper
      */
-    public function __construct(BookletMapper $bookletMapper, GeneralReliefItemMapper $generalReliefItemMapper, TransactionMapper $transactionMapper)
-    {
+    public function __construct(
+        BookletMapper $bookletMapper,
+        GeneralReliefItemMapper $generalReliefItemMapper,
+        TransactionMapper $transactionMapper,
+        BeneficiaryMapper $beneficiaryMapper
+    ) {
         $this->bookletMapper = $bookletMapper;
         $this->generalReliefItemMapper = $generalReliefItemMapper;
         $this->transactionMapper = $transactionMapper;
+        $this->beneficiaryMapper = $beneficiaryMapper;
     }
 
     public function toMinimalArray(?DistributionBeneficiary $assistanceBeneficiary): ?array
@@ -123,7 +133,7 @@ class AssistanceBeneficiaryMapper
         $flatBase = $this->toBaseArray($distributionBeneficiary);
 
         return array_merge($flatBase, [
-            'beneficiary' => null,
+            'beneficiary' => $this->beneficiaryMapper->toFullBeneficiaryGroup($beneficiary),
         ]);
     }
 
