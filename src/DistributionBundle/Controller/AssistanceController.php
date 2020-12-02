@@ -393,20 +393,8 @@ class AssistanceController extends Controller
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($assistance);
 
-        $json = $this->get('serializer')
-            ->serialize(
-                $distributionBeneficiaries,
-                'json',
-                [
-                    'groups' => ["ValidatedDistribution"],
-                    'datetime_format' => 'd-m-Y H:i',
-                ]
-            );
-
         $mapper = $this->get(AssistanceBeneficiaryMapper::class);
         return $this->json($mapper->toFullArrays($distributionBeneficiaries));
-
-        // return new Response($json);
     }
 
     /**

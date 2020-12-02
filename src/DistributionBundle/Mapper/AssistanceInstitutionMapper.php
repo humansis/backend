@@ -44,7 +44,7 @@ class AssistanceInstitutionMapper extends AssistanceBeneficiaryMapper
     public function toFullArrays(iterable $assistanceInstitutions): iterable
     {
         foreach ($assistanceInstitutions as $assistanceInstitution) {
-            $this->toFullArray($assistanceInstitution);
+            yield $this->toFullArray($assistanceInstitution);
         }
     }
 }

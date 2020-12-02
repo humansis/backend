@@ -3,10 +3,13 @@
 namespace DistributionBundle\Repository;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Community;
+use BeneficiaryBundle\Entity\Institution;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\Household;
+use DistributionBundle\Enum\AssistanceTargetType;
 use VoucherBundle\Entity\Booklet;
 
 /**
@@ -94,5 +97,32 @@ class DistributionBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('beneficiary', $beneficiary);
 
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function findByAssistance(Assistance $assistance): iterable
+    {
+        $qb = $this->createQueryBuilder('db')
+            ->andWhere('db.assistance = :assistance')
+            ->setParameter('assistance', $assistance)
+            ->leftJoin("db.beneficiary", "beneficiary")
+            ;
+
+        switch ($assistance->getTargetType()) {
+            case AssistanceTargetType::INDIVIDUAL:
+            case AssistanceTargetType::HOUSEHOLD:
+                break;
+            case AssistanceTargetType::COMMUNITY:
+                $qb
+                    ->andWhere('beneficiary INSTANCE OF :targetType')
+                    ->setParameter('targetType', Community::class);
+                break;
+            case AssistanceTargetType::INSTITUTION:
+                $qb
+                    ->andWhere('beneficiary INSTANCE OF :targetType')
+                    ->setParameter('targetType', Institution::class);
+                break;
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }
