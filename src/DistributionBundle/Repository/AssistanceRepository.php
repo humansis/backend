@@ -216,8 +216,8 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 db.beneficiary_id,
                 CASE
                     WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.used_at, "%Y-%m-%d")
-                    WHEN gri.id IS NOT NULL THEN gri.distributedAt
-                    WHEN t.id IS NOT NULL THEN t.date_sent
+                    WHEN gri.id IS NOT NULL THEN DATE_FORMAT(gri.distributedAt, "%Y-%m-%d")
+                    WHEN t.id IS NOT NULL THEN DATE_FORMAT(t.date_sent, "%Y-%m-%d")
                 END AS date_distribution
             FROM assistance ass
             JOIN distribution_beneficiary db ON ass.id=db.assistance_id
