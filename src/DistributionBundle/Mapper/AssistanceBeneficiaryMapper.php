@@ -127,7 +127,7 @@ class AssistanceBeneficiaryMapper
         $beneficiary = $distributionBeneficiary->getBeneficiary();
         if (!$beneficiary instanceof Beneficiary && !$beneficiary instanceof Household) {
             $class = get_class($beneficiary);
-            throw new \InvalidArgumentException("DistributionBeneficiary #{$distributionBeneficiary->getId()} is $class instead of ".Institution::class);
+            throw new \InvalidArgumentException("DistributionBeneficiary #{$distributionBeneficiary->getId()} is $class instead of ".Beneficiary::class);
         }
 
         $flatBase = $this->toBaseArray($distributionBeneficiary);
