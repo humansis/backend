@@ -113,14 +113,24 @@ class CommunityRepository extends \Doctrine\ORM\EntityRepository
 
         $this->whereCommunityInCountry($q, $iso3);
 
+        $filterIndex = 0;
         foreach ($filters as $filter) {
+            if (is_array($filter['filter'])) {
+                $values = $filter['filter'];
+            } else {
+                $values = [$filter['filter']];
+            }
             switch ($filter['category']) {
                 case 'projectName':
-                    $q->join('comm.projects', 'project');
-                    $q->andWhere('project.name LIKE :projectName');
-                    $q->setParameter('projectName', $filter['filter']);
+                    $projectAlias = "project$filterIndex";
+                    $q->join('comm.projects', $projectAlias);
+                    foreach ($values as $value) {
+                        $q->orWhere("$projectAlias.name LIKE :projectName$filterIndex");
+                        $q->setParameter('projectName'.$filterIndex, $value);
+                    }
                     break;
             }
+            ++$filterIndex;
         }
 
         if (is_null($begin)) {

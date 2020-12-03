@@ -1,4 +1,5 @@
 <?php
+
 namespace CommonBundle\InputType;
 
 use Symfony\Component\Validator\Constraints as Assert;
@@ -10,8 +11,9 @@ class DataTableFilterType implements InputTypeInterface
      * @Assert\NotBlank()
      */
     public $category;
+
     /**
-     * @var string
+     * @var string|array
      * @Assert\NotBlank()
      */
     public $filter;
