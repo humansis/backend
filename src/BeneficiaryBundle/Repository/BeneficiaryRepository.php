@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\Household;
