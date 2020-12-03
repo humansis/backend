@@ -3,8 +3,10 @@
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
+use DistributionBundle\DBAL\AssistanceTargetTypeEnum;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Enum\AssistanceTargetType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Utils\CodeLists;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,7 +20,7 @@ class AssistanceCodelistController extends AbstractController
      */
     public function getTargets(): JsonResponse
     {
-        $data = CodeLists::mapArray(Assistance::TYPE_TO_STRING_MAPPING);
+        $data = CodeLists::mapArray(AssistanceTargetType::values());
 
         return $this->json(new Paginator($data));
     }

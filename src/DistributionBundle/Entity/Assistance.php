@@ -25,9 +25,6 @@ use BeneficiaryBundle\Entity\Household;
  */
 class Assistance implements ExportableInterface
 {
-    const TYPE_TO_STRING_MAPPING = [
-    ];
-
     const NAME_HEADER_ID = "ID SYNC";
 
     /**
@@ -775,12 +772,4 @@ class Assistance implements ExportableInterface
         }
     }
 
-    public function getTargetTypeString(): string
-    {
-        if (!isset(self::TYPE_TO_STRING_MAPPING[$this->getTargetType()])) {
-            return '';
-        }
-
-        return self::TYPE_TO_STRING_MAPPING[$this->getTargetType()];
-    }
 }

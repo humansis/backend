@@ -79,6 +79,8 @@ services:
         public: true
 
     BeneficiaryBundle\Mapper\BeneficiaryMapper:
+        arguments:
+            - "@serializer"
         public: true
 
     BeneficiaryBundle\Mapper\AssistanceMapper:

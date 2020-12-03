@@ -51,7 +51,7 @@ class DistributionBeneficiary
     private $beneficiary;
 
     /**
-     * @var Transaction
+     * @var Transaction[]
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
@@ -206,7 +206,7 @@ class DistributionBeneficiary
     /**
      * Get the value of Transaction.
      *
-     * @return Transaction
+     * @return Transaction[]
      */
     public function getTransactions()
     {

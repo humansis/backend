@@ -17,3 +17,8 @@ services:
     transaction.khm_financial_provider:
         class: TransactionBundle\Utils\Provider\KHMFinancialProvider
         parent: transaction.default_financial_provider
+
+    TransactionBundle\Mapper\TransactionMapper:
+        arguments:
+            - "@serializer"
+        public: true

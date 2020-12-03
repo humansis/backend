@@ -55,7 +55,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getTarget(): string
     {
-        return $this->object->getTargetTypeString();
+        return $this->object->getTargetType();
     }
 
     public function getType(): string

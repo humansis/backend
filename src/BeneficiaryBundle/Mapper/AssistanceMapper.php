@@ -4,14 +4,21 @@ namespace BeneficiaryBundle\Mapper;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\DistributionBeneficiaryRepository;
 
 class AssistanceMapper
 {
+    const TARGET_TYPE_TO_TYPE_MAPPING = [
+        AssistanceTargetType::INDIVIDUAL => 1,
+        AssistanceTargetType::HOUSEHOLD => 0,
+        AssistanceTargetType::COMMUNITY => 2,
+        AssistanceTargetType::INSTITUTION => 3,
+    ];
+
     /** @var BeneficiaryMapper */
     private $beneficiaryMapper;
 
@@ -100,7 +107,7 @@ class AssistanceMapper
             'archived' => $assistance->getArchived(),
             'validated' => $assistance->getValidated(),
             'reporting_distribution' => $assistance->getReportingDistribution(),
-            'type' => $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? 1 : 0,
+            'type' => self::TARGET_TYPE_TO_TYPE_MAPPING[$assistance->getTargetType()] ?? null,
             'assistance_type' => $assistance->getAssistanceType(),
             'target_type' => $assistance->getTargetType(),
             'commodities' => $assistance->getCommodities(),
@@ -124,6 +131,7 @@ class AssistanceMapper
      * @param Assistance|null $assistance
      *
      * @return array
+     *
      * @deprecated this is too big so dont use it
      */
     public function toOldMobileArray(?Assistance $assistance): ?array
@@ -140,7 +148,7 @@ class AssistanceMapper
             ) {
                 $bnfs[] = $db->getBeneficiary();
             }
-        };
+        }
 
         $assistanceArray = [
             'id' => $assistance->getId(),
@@ -153,7 +161,7 @@ class AssistanceMapper
             'archived' => $assistance->getArchived(),
             'validated' => $assistance->getValidated(),
             'reporting_distribution' => $assistance->getReportingDistribution(),
-            'type' => $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? 1 : 0,
+            'type' => AssistanceTargetType::INDIVIDUAL === $assistance->getTargetType() ? 1 : 0,
             'assistance_type' => $assistance->getAssistanceType(),
             'target_type' => $assistance->getTargetType(),
             'commodities' => $assistance->getCommodities(),
@@ -169,6 +177,7 @@ class AssistanceMapper
      * @param iterable $assistances
      *
      * @return iterable
+     *
      * @deprecated this is too big so dont use it
      */
     public function toOldMobileArrays(iterable $assistances): iterable
