@@ -64,6 +64,17 @@
       <trans-unit id="label_sector_learning_materials"><source>label_sector_learning_materials</source><target>Learning Materials</target></trans-unit>
       <trans-unit id="label_sector_education_psychosocial_support"><source>label_sector_education_psychosocial_support</source><target>Psychosocial Support</target></trans-unit>
       <trans-unit id="label_sector_education_services"><source>label_sector_education_services</source><target>Education Services</target></trans-unit>
+
+      <trans-unit id="label_sector_default_emergency_telco"><source>label_sector_default_emergency_telco</source><target>Default Emergency Telecomms</target></trans-unit>
+      <trans-unit id="label_sector_default_health"><source>label_sector_default_health</source><target>Default Health</target></trans-unit>
+      <trans-unit id="label_sector_default_logistics"><source>label_sector_default_logistics</source><target>Default Logistics</target></trans-unit>
+      <trans-unit id="label_sector_default_nutrition"><source>label_sector_default_nutrition</source><target>Default Nutrition</target></trans-unit>
+      <trans-unit id="label_sector_default_mine"><source>label_sector_default_mine</source><target>Default Mine Action</target></trans-unit>
+      <trans-unit id="label_sector_default_drr_resilience"><source>label_sector_default_drr_resilience</source><target>Default DRR &amp; Resilience</target></trans-unit>
+      <trans-unit id="label_sector_default_non_sector"><source>label_sector_default_non_sector</source><target>Default Non-Sector Specific</target></trans-unit>
+      <trans-unit id="label_sector_default_camp_management"><source>label_sector_default_camp_management</source><target>Default Camp Coordination and Management</target></trans-unit>
+      <trans-unit id="label_sector_default_early_recovery"><source>label_sector_default_early_recovery</source><target>Default Early Recovery</target></trans-unit>
+
     </body>
   </file>
 </xliff>

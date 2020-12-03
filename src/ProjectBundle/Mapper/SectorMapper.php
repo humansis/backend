@@ -1,8 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 namespace ProjectBundle\Mapper;
 
-use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use ProjectBundle\DTO\Sector;
 use ProjectBundle\Entity\ProjectSector;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -33,6 +36,7 @@ class SectorMapper
                 'name' => $this->getLabel($subSector->getSubSectorName()),
                 'availableTargets' => [],
                 'assistanceType' => '',
+                'assistanceTypes' => [],
             ];
             if ($subSector->isCommunityAllowed()) {
                 $ss['availableTargets'][] = AssistanceTargetType::COMMUNITY;
@@ -46,6 +50,16 @@ class SectorMapper
             if ($subSector->isBeneficiaryAllowed()) {
                 $ss['availableTargets'][] = AssistanceTargetType::INDIVIDUAL;
             }
+            if ($subSector->isDistributionAllowed()) {
+                $ss['assistanceTypes'][] = AssistanceType::DISTRIBUTION;
+            }
+            if ($subSector->isActivityAllowed()) {
+                $ss['assistanceTypes'][] = AssistanceType::ACTIVITY;
+            }
+
+            /*
+             * @deprecated shouldn't be used, remove right after FE starts use 'assistanceTypes'
+             */
             if ($subSector->isActivityAllowed()) {
                 $ss['assistanceType'] = 'activity';
             } elseif ($subSector->isDistributionAllowed()) {
@@ -53,6 +67,7 @@ class SectorMapper
             }
             $subSectorMapped[] = $ss;
         }
+
         return [
             'id' => $sector,
             'name' => $this->getLabel($sector),
@@ -81,8 +96,8 @@ class SectorMapper
     {
         foreach ($projectSectors as $projectSector) {
             yield [
-                "id" => $projectSector->getSector(),
-                "name" => $this->getLabel($projectSector->getSector()),
+                'id' => $projectSector->getSector(),
+                'name' => $this->getLabel($projectSector->getSector()),
             ];
         }
     }
