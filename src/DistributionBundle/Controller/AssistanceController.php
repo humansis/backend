@@ -5,6 +5,7 @@ namespace DistributionBundle\Controller;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\AssistanceMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use DistributionBundle\Mapper\AssistanceCommunityMapper;
 use DistributionBundle\Mapper\AssistanceInstitutionMapper;
@@ -389,6 +390,10 @@ class AssistanceController extends Controller
      */
     public function getDistributionBeneficiariesAction(Assistance $assistance)
     {
+        if (AssistanceTargetType::HOUSEHOLD !== $assistance->getTargetType()) {
+            throw new NotFoundHttpException('There is no Household assistance with #'.$assistance->getId());
+        }
+
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($assistance);
@@ -428,6 +433,10 @@ class AssistanceController extends Controller
      */
     public function getDistributionCommunitiesAction(Assistance $assistance)
     {
+        if (AssistanceTargetType::COMMUNITY !== $assistance->getTargetType()) {
+            throw new NotFoundHttpException('There is no Community assistance with #'.$assistance->getId());
+        }
+
         /** @var DistributionBeneficiaryService $assistanceBeneficiaryService */
         $assistanceBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $assistanceCommunities = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
@@ -458,6 +467,10 @@ class AssistanceController extends Controller
      */
     public function getDistributionInstitutionsAction(Assistance $assistance)
     {
+        if (AssistanceTargetType::INSTITUTION !== $assistance->getTargetType()) {
+            throw new NotFoundHttpException('There is no Institution assistance with #'.$assistance->getId());
+        }
+
         /** @var DistributionBeneficiaryService $assistanceBeneficiaryService */
         $assistanceBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $assistanceInstitutions = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
