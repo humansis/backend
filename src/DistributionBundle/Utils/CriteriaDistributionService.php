@@ -4,12 +4,14 @@
 namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use BeneficiaryBundle\Model\Vulnerability\Resolver;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\SelectionCriteria;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
 use BeneficiaryBundle\Entity\Camp;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * Class CriteriaDistributionService
@@ -27,6 +29,9 @@ class CriteriaDistributionService
     /** @var Resolver */
     private $resolver;
 
+    /** @var Serializer */
+    private $serializer;
+
     /**
      * CriteriaDistributionService constructor.
      * @param EntityManagerInterface $entityManager
@@ -37,11 +42,13 @@ class CriteriaDistributionService
     public function __construct(
         EntityManagerInterface $entityManager,
         ConfigurationLoader $configurationLoader,
-        Resolver $resolver
+        Resolver $resolver,
+        Serializer $serializer
     ) {
         $this->em = $entityManager;
         $this->configurationLoader = $configurationLoader;
         $this->resolver = $resolver;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -77,8 +84,13 @@ class CriteriaDistributionService
                 $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
 
                 $protocol = $this->resolver->compute($beneficiary->getHousehold(), $countryISO3, $sector);
+                $scores = ['totalScore' => $protocol->getTotalScore()];
+                foreach (CategoryEnum::all() as $value) {
+                    $scores[$value] = $protocol->getCategoryScore($value);
+                }
+
                 if ($protocol->getTotalScore() >= $threshold) {
-                    $reachedBeneficiaries[$beneficiary->getId()] = $protocol->getTotalScore();
+                    $reachedBeneficiaries[$beneficiary->getId()] = $scores;
                 }
             }
         }
@@ -88,7 +100,7 @@ class CriteriaDistributionService
             return ['number' =>  count($reachedBeneficiaries)];
         } else {
             // !!!! Those are ids, not directly beneficiaries !!!!
-            return ['finalArray' =>  array_keys($reachedBeneficiaries)];
+            return ['finalArray' => $reachedBeneficiaries];
         }
     }
 
@@ -106,7 +118,18 @@ class CriteriaDistributionService
     {
         $result = $this->load($filters, $project, $filters['sector'], $filters['subsector'], $threshold, false);
 
-        return $this->em->getRepository(Beneficiary::class)->findBy(['id' => $result['finalArray']], null, $limit, $offset);
+        $beneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(['id' => array_keys($result['finalArray'])], null, $limit, $offset);
+
+        $data = [];
+        foreach ($beneficiaries as $beneficiary) {
+            $serialized = $this->serializer->serialize($beneficiary, 'json', ['groups' => ['SmallHousehold']]);
+            $deserialized = json_decode($serialized, true);
+            $deserialized['scores'] = $result['finalArray'][$beneficiary->getId()];
+
+            $data[] = $deserialized;
+        }
+
+        return $data;
     }
 
     /**

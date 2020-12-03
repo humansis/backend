@@ -73,7 +73,7 @@ class BeneficiaryController extends Controller
 
     /**
      * @Rest\Post("/beneficiaries/project/{id}")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
+     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      * @SWG\Tag(name="Beneficiary")
@@ -122,16 +122,14 @@ class BeneficiaryController extends Controller
 
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        $beneficiaries = $criteriaDistributionService->getList($filters, $project, $threshold, $limit, $offset);
+        $data = $criteriaDistributionService->getList($filters, $project, $threshold, $limit, $offset);
 
-        $json = $this->get('serializer')->serialize($beneficiaries, 'json', ['groups' => ["SmallHousehold"]]);
-
-        return new Response($json);
+        return $this->json($data);
     }
 
     /**
      * @Rest\Post("/beneficiaries/project/{id}/number")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
+     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      * @SWG\Tag(name="Beneficiary")
