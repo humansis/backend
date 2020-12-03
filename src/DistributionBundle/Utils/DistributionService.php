@@ -233,7 +233,7 @@ class DistributionService
             }
 
             $distributionArray['selection_criteria'] = $criteria;
-            $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $distributionArray['threshold']);
+            $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $sector, $subsector, $distributionArray['threshold']);
             $this->saveReceivers($distribution, $listReceivers, $countryISO3);
         }
 
@@ -244,20 +244,23 @@ class DistributionService
     }
 
     /**
-     * @param array $criteria
-     * @param $countryISO3
-     * @param $type
+     * @param array   $criteria
+     * @param         $countryISO3
+     * @param         $type
      * @param Project $project
-     * @param int $threshold
+     * @param         $sector
+     * @param         $subsector
+     * @param int     $threshold
+     *
      * @return mixed
      */
-    public function guessBeneficiaries(array $criteria, $countryISO3, $type, Project $project, int $threshold)
+    public function guessBeneficiaries(array $criteria, $countryISO3, $type, Project $project, $sector, $subsector, int $threshold)
     {
         $criteria['criteria'] = $criteria['selection_criteria'];
         $criteria['countryIso3'] = $countryISO3;
         $criteria['distribution_type'] = $type;
 
-        return $this->container->get('distribution.criteria_distribution_service')->load($criteria, $project, $threshold, false);
+        return $this->container->get('distribution.criteria_distribution_service')->load($criteria, $project, $sector, $subsector, $threshold, false);
     }
 
     /**

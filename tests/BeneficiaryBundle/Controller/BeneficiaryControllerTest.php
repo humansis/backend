@@ -126,6 +126,8 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     {
         $criteria = [
             'distribution_type' => 'individual',
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => null,
             'threshold' => '0',
             'criteria' => [
                 [

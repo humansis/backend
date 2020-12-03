@@ -34,6 +34,7 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@distribution.configuration_loader'
+            - '@beneficiary.vulnerability_resolver'
 
     distribution.configuration_loader:
         class: DistributionBundle\Utils\ConfigurationLoader

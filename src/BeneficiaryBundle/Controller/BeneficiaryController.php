@@ -162,10 +162,12 @@ class BeneficiaryController extends Controller
         $filters = $request->request->all();
         $filters['countryIso3'] = $filters['__country'];
         $threshold = $filters['threshold'];
+        $sector = $filters['sector'];
+        $subSector = $filters['subsector'];
 
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        $receivers = $criteriaDistributionService->load($filters, $project, $threshold, true);
+        $receivers = $criteriaDistributionService->load($filters, $project, $sector, $subSector, $threshold, true);
 
         return $this->json($receivers);
     }
