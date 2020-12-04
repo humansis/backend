@@ -54,11 +54,15 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
                     foreach ($values as $value) {
                         $q->orWhere("$projectAlias.name LIKE :projectName$filterIndex");
                         $q->setParameter('projectName'.$filterIndex, $value);
+                        ++$filterIndex;
                     }
                     break;
                 case 'name':
-                    $q->andWhere('inst.name LIKE :name');
-                    $q->setParameter('name', $filter['filter']);
+                    foreach ($values as $value) {
+                        $q->andWhere('inst.name LIKE :name'.$filterIndex);
+                        $q->setParameter('name'.$filterIndex, $value);
+                        ++$filterIndex;
+                    }
                     break;
             }
             ++$filterIndex;
