@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DistributionBundle\Utils;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
@@ -228,7 +229,7 @@ class DistributionBeneficiaryService
      * @param Beneficiary $beneficiary
      * @return bool
      */
-    public function removeBeneficiaryInDistribution(Assistance $assistance, Beneficiary $beneficiary, $deletionData)
+    public function removeBeneficiaryInDistribution(Assistance $assistance, AbstractBeneficiary $beneficiary, $deletionData)
     {
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'assistance' => $assistance->getId()]);
 

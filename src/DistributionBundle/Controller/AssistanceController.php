@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Controller;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\AssistanceMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
@@ -288,7 +289,7 @@ class AssistanceController extends Controller
      *
      * @return Response
      */
-    public function removeOneBeneficiaryAction(Request $request, Assistance $distribution, Beneficiary $beneficiary)
+    public function removeOneBeneficiaryAction(Request $request, Assistance $distribution, AbstractBeneficiary $beneficiary)
     {
         $deletionData = $request->request->all();
 
