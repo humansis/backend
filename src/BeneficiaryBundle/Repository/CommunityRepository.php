@@ -129,6 +129,10 @@ class CommunityRepository extends \Doctrine\ORM\EntityRepository
                         $q->setParameter('projectName'.$filterIndex, $value);
                     }
                     break;
+                case 'name':
+                    $q->andWhere('comm.name LIKE :name');
+                    $q->setParameter('name', $filter['filter']);
+                    break;
             }
             ++$filterIndex;
         }
