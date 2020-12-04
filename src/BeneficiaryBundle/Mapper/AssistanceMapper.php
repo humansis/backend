@@ -195,7 +195,7 @@ class AssistanceMapper
         $result = [];
 
         foreach ($criteria as $criterion) {
-            $result[$criterion->getGroupNumber()][] = $criterion;
+            $result[][] = $criterion;
         }
 
         return $result;
