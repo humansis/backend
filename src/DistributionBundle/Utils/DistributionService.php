@@ -233,8 +233,8 @@ class DistributionService
             }
 
             $distributionArray['selection_criteria'] = $criteria;
-            $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $distributionArray['threshold']);
-            $this->saveReceivers($distribution, $listReceivers, $countryISO3);
+            $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $sector, $subsector, $distributionArray['threshold']);
+            $this->saveReceivers($distribution, $listReceivers);
         }
 
         $this->em->persist($distribution);
@@ -244,42 +244,36 @@ class DistributionService
     }
 
     /**
-     * @param array $criteria
-     * @param $countryISO3
-     * @param $type
+     * @param array   $criteria
+     * @param         $countryISO3
+     * @param         $type
      * @param Project $project
-     * @param int $threshold
+     * @param         $sector
+     * @param         $subsector
+     * @param int     $threshold
+     *
      * @return mixed
      */
-    public function guessBeneficiaries(array $criteria, $countryISO3, $type, Project $project, int $threshold)
+    public function guessBeneficiaries(array $criteria, $countryISO3, $type, Project $project, $sector, $subsector, int $threshold)
     {
         $criteria['criteria'] = $criteria['selection_criteria'];
         $criteria['countryIso3'] = $countryISO3;
         $criteria['distribution_type'] = $type;
 
-        return $this->container->get('distribution.criteria_distribution_service')->load($criteria, $project, $threshold, false);
+        return $this->container->get('distribution.criteria_distribution_service')->load($criteria, $project, $sector, $subsector, $threshold, false);
     }
 
     /**
      * @param Assistance $assistance
      * @param array      $listReceivers
-     * @param string     $countryIso3
      *
      * @throws \Exception
      */
-    public function saveReceivers(Assistance $assistance, array $listReceivers, string $countryIso3)
+    public function saveReceivers(Assistance $assistance, array $listReceivers)
     {
-        $resolver = $this->container->get('beneficiary.vulnerability_resolver');
-
-        foreach ($listReceivers['finalArray'] as $receiver) {
+        foreach ($listReceivers['finalArray'] as $receiver => $scores) {
             /** @var Beneficiary $beneficiary */
             $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver);
-
-            $protocol = $resolver->compute($beneficiary->getHousehold(), $countryIso3, $assistance->getSector());
-            $scores = ['totalScore' => $protocol->getTotalScore()];
-            foreach (CategoryEnum::all() as $value) {
-                $scores[$value] = $protocol->getCategoryScore($value);
-            }
 
             $distributionBeneficiary = (new DistributionBeneficiary())
                 ->setAssistance($assistance)
