@@ -418,7 +418,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
 
-    public function getDistributionBeneficiaries(array $criteria, Project $project, string $country, int $threshold, string $distributionTarget)
+    public function getDistributionBeneficiaries(array $criteria, Project $project)
     {
         $hhRepository = $this->getEntityManager()->getRepository(Household::class);
         $qb = $hhRepository->getUnarchivedByProject($project);

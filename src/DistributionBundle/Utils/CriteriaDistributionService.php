@@ -64,7 +64,6 @@ class CriteriaDistributionService
     public function load(array $filters, Project $project, string $sector, ?string $subsector, int $threshold, bool $isCount)
     {
         $countryISO3 = $filters['countryIso3'];
-        $distributionType = $filters['distribution_type'];
 
         $reachedBeneficiaries = [];
 
@@ -77,7 +76,7 @@ class CriteriaDistributionService
             }
 
             $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
-                ->getDistributionBeneficiaries($group, $project, $countryISO3, $threshold, $distributionType);
+                ->getDistributionBeneficiaries($group, $project);
 
             foreach ($selectableBeneficiaries as $bnf) {
                 /** @var Beneficiary $beneficiary */
