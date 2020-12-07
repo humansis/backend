@@ -97,7 +97,7 @@ class SectorControllerTest extends BMSServiceTestCase
             $this->assertContains($subSector['id'], SubSectorEnum::all());
             $this->assertArrayHasKey('name', $subSector, "Name missing $where");
             $this->assertArrayHasKey('availableTargets', $subSector, "Available targets missing $where");
-            $this->assertArrayHasKey('assistanceType', $subSector, "Assistance type missing $where");
+            $this->assertArrayHasKey('assistanceTypes', $subSector, "Assistance type missing $where");
         }
         return true;
     }
@@ -123,7 +123,7 @@ class SectorControllerTest extends BMSServiceTestCase
                 $this->assertContains($subSector['id'], SubSectorEnum::all());
                 $this->assertArrayHasKey('name', $subSector, "Name missing $where");
                 $this->assertArrayHasKey('availableTargets', $subSector, "Available targets missing $where");
-                $this->assertArrayHasKey('assistanceType', $subSector, "Assistance type missing $where");
+                $this->assertArrayHasKey('assistanceTypes', $subSector, "Assistance type missing $where");
 
                 $availableTargets = $subSector['availableTargets'];
                 $this->assertIsArray($availableTargets);
@@ -131,9 +131,11 @@ class SectorControllerTest extends BMSServiceTestCase
                     $this->assertTrue(in_array($target, ['household', 'individual', 'institution', 'community']), "Wrong target type");
                 }
 
-                $assistanceType = $subSector['assistanceType'];
-                $this->assertIsNotArray($assistanceType);
-                $this->assertTrue(in_array($assistanceType, ['distribution', 'activity']), "Wrong assistance type");
+                $assistanceTypes = $subSector['assistanceTypes'];
+                $this->assertIsArray($assistanceTypes);
+                foreach ($assistanceTypes as $assistanceType) {
+                    $this->assertTrue(in_array($assistanceType, ['distribution', 'activity']), "Wrong assistance type");
+                }
 
             }
         }

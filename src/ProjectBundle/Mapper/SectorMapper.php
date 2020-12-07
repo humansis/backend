@@ -35,7 +35,6 @@ class SectorMapper
                 'id' => $subSector->getSubSectorName(),
                 'name' => $this->getLabel($subSector->getSubSectorName()),
                 'availableTargets' => [],
-                'assistanceType' => '',
                 'assistanceTypes' => [],
             ];
             if ($subSector->isCommunityAllowed()) {
@@ -57,14 +56,6 @@ class SectorMapper
                 $ss['assistanceTypes'][] = AssistanceType::ACTIVITY;
             }
 
-            /*
-             * @deprecated shouldn't be used, remove right after FE starts use 'assistanceTypes'
-             */
-            if ($subSector->isActivityAllowed()) {
-                $ss['assistanceType'] = 'activity';
-            } elseif ($subSector->isDistributionAllowed()) {
-                $ss['assistanceType'] = 'distribution';
-            }
             $subSectorMapped[] = $ss;
         }
 
