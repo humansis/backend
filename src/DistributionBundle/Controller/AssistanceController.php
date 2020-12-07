@@ -391,10 +391,6 @@ class AssistanceController extends Controller
      */
     public function getDistributionBeneficiariesAction(Assistance $assistance)
     {
-        if (AssistanceTargetType::HOUSEHOLD !== $assistance->getTargetType()) {
-            throw new NotFoundHttpException('There is no Household assistance with #'.$assistance->getId());
-        }
-
         /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
         $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($assistance);
