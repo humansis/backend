@@ -156,7 +156,6 @@ class CommunityRepository extends \Doctrine\ORM\EntityRepository
         $paginator = new Paginator($q, true);
 
         $query = $q->getQuery();
-        $query->useResultCache(true,3600);
 
         return [count($paginator), $query->getResult()];
     }
