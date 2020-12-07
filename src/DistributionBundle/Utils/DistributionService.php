@@ -18,6 +18,7 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
@@ -388,77 +389,84 @@ class DistributionService
      */
     public function exportToOfficialCsv(int $projectId, string $type)
     {
-        $distributions = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId]);
         $project = $this->em->getRepository(Project::class)->find($projectId);
+
+        if (!$project) {
+            throw new NotFoundHttpException("Project #$projectId missing");
+        }
+
+        $assistances = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId]);
         $exportableTable = [];
 
         $donors = implode(', ',
             array_map(function($donor) { return $donor->getShortname(); }, $project->getDonors()->toArray())
         );
 
-        foreach ($distributions as $distribution) {
+        $bnfRepo = $this->em->getRepository(Beneficiary::class);
 
-            $idps = $this->em->getRepository(Assistance::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "IDP", $distribution->getTargetType());
-            $residents = $this->em->getRepository(Assistance::class)->getNoBenificiaryByResidencyStatus($distribution->getId(), "resident", $distribution->getTargetType());
-            $maleHHH = $this->em->getRepository(Assistance::class)->getNoHeadHouseholdsByGender($distribution->getId(), Person::GENDER_MALE);
-            $femaleHHH = $this->em->getRepository(Assistance::class)->getNoHeadHouseholdsByGender($distribution->getId(), Person::GENDER_FEMALE);
-            $maleChildrenUnder23month = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 0, 2, $distribution->getDateDistribution(), $distribution->getTargetType());
-            $femaleChildrenUnder23month = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 0, 2, $distribution->getDateDistribution(), $distribution->getTargetType());
-            $maleChildrenUnder5years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 2, 6, $distribution->getDateDistribution(), $distribution->getTargetType());
-            $femaleChildrenUnder5years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 2, 6, $distribution->getDateDistribution(), $distribution->getTargetType());
-            $maleUnder17years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 6, 18, $distribution->getDateDistribution(), $distribution->getTargetType());
-            $femaleUnder17years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 6, 18, $distribution->getDateDistribution(), $distribution->getTargetType());
-            $maleUnder59years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 18, 60, $distribution->getDateDistribution(), $distribution->getTargetType());
-            $femaleUnder59years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 18, 60, $distribution->getDateDistribution(), $distribution->getTargetType());
-            $maleOver60years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 1, 60, 200, $distribution->getDateDistribution(), $distribution->getTargetType());
-            $femaleOver60years = $this->em->getRepository(Assistance::class)->getNoBenificiaryByAgeAndByGender($distribution->getId(), 0, 60, 200, $distribution->getDateDistribution(), $distribution->getTargetType());
+        foreach ($assistances as $assistance)
+        {
+            $idps = $bnfRepo->countByResidencyStatus($assistance, "IDP");
+            $residents = $bnfRepo->countByResidencyStatus($assistance, "resident");
+            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, Person::GENDER_MALE);
+            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, Person::GENDER_FEMALE);
+            $maleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 1, 0, 2, $assistance->getDateDistribution());
+            $femaleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 0, 0, 2, $assistance->getDateDistribution());
+            $maleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($assistance, 1, 2, 6, $assistance->getDateDistribution());
+            $femaleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($assistance, 0, 2, 6, $assistance->getDateDistribution());
+            $maleUnder17years = $bnfRepo->countByAgeAndByGender($assistance, 1, 6, 18, $assistance->getDateDistribution());
+            $femaleUnder17years = $bnfRepo->countByAgeAndByGender($assistance, 0, 6, 18, $assistance->getDateDistribution());
+            $maleUnder59years = $bnfRepo->countByAgeAndByGender($assistance, 1, 18, 60, $assistance->getDateDistribution());
+            $femaleUnder59years = $bnfRepo->countByAgeAndByGender($assistance, 0, 18, 60, $assistance->getDateDistribution());
+            $maleOver60years = $bnfRepo->countByAgeAndByGender($assistance, 1, 60, 200, $assistance->getDateDistribution());
+            $femaleOver60years = $bnfRepo->countByAgeAndByGender($assistance, 0, 60, 200, $assistance->getDateDistribution());
             $maleTotal = $maleChildrenUnder23month + $maleChildrenUnder5years + $maleUnder17years + $maleUnder59years + $maleOver60years;
             $femaleTotal = $femaleChildrenUnder23month + $femaleChildrenUnder5years + $femaleUnder17years + $femaleUnder59years + $femaleOver60years;
-            $noFamilies = $distribution->getTargetType() === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
-            $familySize = $distribution->getTargetType() === AssistanceTargetType::HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
-            $modalityType = $distribution->getCommodities()[0]->getModalityType()->getName();
-            $beneficiaryServed =  $this->em->getRepository(Assistance::class)->getNoServed($distribution->getId(), $modalityType);
+            $noFamilies = $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
+            $familySize = $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
+            $modalityType = $assistance->getCommodities()[0]->getModalityType()->getName();
+            $beneficiaryServed =  $this->em->getRepository(Assistance::class)->getNoServed($assistance->getId(), $modalityType);
 
             $commodityNames = implode(', ',
                     array_map(
                         function($commodity) { return  $commodity->getModalityType()->getName(); }, 
-                        $distribution->getCommodities()->toArray()
+                        $assistance->getCommodities()->toArray()
                     )
                 );
             $commodityUnit = implode(', ',
                 array_map(
                     function($commodity) { return  $commodity->getUnit(); }, 
-                    $distribution->getCommodities()->toArray()
+                    $assistance->getCommodities()->toArray()
                 )
             );
             $numberOfUnits = implode(', ',
                 array_map(
                     function($commodity) { return  $commodity->getValue(); }, 
-                    $distribution->getCommodities()->toArray()
+                    $assistance->getCommodities()->toArray()
                 )
             );
             
             $totalAmount = implode(', ',
                 array_map(
                     function($commodity) use($noFamilies) { return  $commodity->getValue() * $noFamilies . ' ' . $commodity->getUnit(); }, 
-                    $distribution->getCommodities()->toArray()
+                    $assistance->getCommodities()->toArray()
                 )
             );
 
             
             
             $row = [
-                "Navi/Elo number" => $distribution->getProject()->getInternalId() ?? " ",
-                "DISTR. NO." => $distribution->getId(),
+                "Navi/Elo number" => $assistance->getProject()->getInternalId() ?? " ",
+                "DISTR. NO." => $assistance->getId(),
                 "Distributed by" => " ",
                 "Round" => " ",
                 "Donor" => $donors,
-                "Starting Date" => $distribution->getDateDistribution(),
-                "Ending Date" => $distribution->getCompleted() ? $distribution->getUpdatedOn() : " - ",
-                "Governorate" => $distribution->getLocation()->getAdm1Name(),
-                "District" => $distribution->getLocation()->getAdm2Name(),
-                "Sub-District" => $distribution->getLocation()->getAdm3Name(),
-                "Town, Village" => $distribution->getLocation()->getAdm4Name(),
+                "Starting Date" => $assistance->getDateDistribution(),
+                "Ending Date" => $assistance->getCompleted() ? $assistance->getUpdatedOn() : " - ",
+                "Governorate" => $assistance->getLocation()->getAdm1Name(),
+                "District" => $assistance->getLocation()->getAdm2Name(),
+                "Sub-District" => $assistance->getLocation()->getAdm3Name(),
+                "Town, Village" => $assistance->getLocation()->getAdm4Name(),
                 "Location = School/Camp" => " ",
                 "Neighbourhood (Camp Name)" => " ",
                 "Latitude" => " ",
