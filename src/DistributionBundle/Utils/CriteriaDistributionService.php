@@ -128,6 +128,10 @@ class CriteriaDistributionService
             $data[] = $deserialized;
         }
 
+        uasort($data, function ($a, $b) {
+            return $b['scores']['totalScore'] <=> $a['scores']['totalScore'];
+        });
+
         return $data;
     }
 
