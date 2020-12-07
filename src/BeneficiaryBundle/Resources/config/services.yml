@@ -45,6 +45,7 @@ services:
             - "@location_service"
             - "@validator"
             - "@service_container"
+            - "@CommonBundle\\Mapper\\LocationMapper"
         public: true
 
     beneficiary.repository:

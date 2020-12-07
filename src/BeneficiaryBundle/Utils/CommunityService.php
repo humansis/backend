@@ -1,64 +1,65 @@
 <?php
 
-
 namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\Address;
 use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\InputType;
 use CommonBundle\InputType as GeneralInputType;
-use BeneficiaryBundle\Form\CommunityConstraints;
 use CommonBundle\InputType\DataTableType;
+use CommonBundle\Mapper\LocationMapper;
 use CommonBundle\Utils\LocationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
 use ProjectBundle\Entity\Project;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class CommunityService
- * @package BeneficiaryBundle\Utils
+ * Class CommunityService.
  */
 class CommunityService
 {
-    /** @var EntityManagerInterface $em */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /** @var Serializer $serializer */
+    /** @var Serializer */
     private $serializer;
 
-    /** @var BeneficiaryService $beneficiaryService */
+    /** @var BeneficiaryService */
     private $beneficiaryService;
 
-    /** @var RequestValidator $requestValidator */
+    /** @var RequestValidator */
     private $requestValidator;
 
-    /** @var LocationService $locationService */
+    /** @var LocationService */
     private $locationService;
 
-    /** @var ValidatorInterface $validator */
+    /** @var ValidatorInterface */
     private $validator;
 
-    /** @var ContainerInterface $container */
-    private $container;
+    /** @var LocationMapper */
+    private $locationMapper;
 
+    /** @var ContainerInterface */
+    private $container;
 
     /**
      * CommunityService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param BeneficiaryService $beneficiaryService
-     * @param RequestValidator $requestValidator
-     * @param LocationService $locationService
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param Serializer             $serializer
+     * @param BeneficiaryService     $beneficiaryService
+     * @param RequestValidator       $requestValidator
+     * @param LocationService        $locationService
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param LocationMapper         $locationMapper
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -67,7 +68,8 @@ class CommunityService
         RequestValidator $requestValidator,
         LocationService $locationService,
         ValidatorInterface $validator,
-        ContainerInterface $container
+        ContainerInterface $container,
+        LocationMapper $locationMapper
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -75,12 +77,14 @@ class CommunityService
         $this->requestValidator = $requestValidator;
         $this->locationService = $locationService;
         $this->validator = $validator;
-        $this->container= $container;
+        $this->container = $container;
+        $this->locationMapper = $locationMapper;
     }
 
     /**
      * @param GeneralInputType\Country $country
-     * @param DataTableType $filters
+     * @param DataTableType            $filters
+     *
      * @return mixed
      */
     public function getAll(GeneralInputType\Country $country, DataTableType $filters)
@@ -103,7 +107,8 @@ class CommunityService
      * @param InputType\NewCommunityType $communityType
      *
      * @return Community
-     * @throws \InvalidArgumentException
+     *
+     * @throws InvalidArgumentException
      */
     public function create(GeneralInputType\Country $country, InputType\NewCommunityType $communityType): Community
     {
@@ -119,13 +124,13 @@ class CommunityService
             $community->getPhone()->setNumber($communityType->getPhoneNumber());
         }
 
-        if ($communityType->getNationalId() !== null && !$communityType->getNationalId()->isEmpty()) {
+        if (null !== $communityType->getNationalId() && !$communityType->getNationalId()->isEmpty()) {
             $community->setNationalId(new NationalId());
             $community->getNationalId()->setIdNumber($communityType->getNationalId()->getNumber());
             $community->getNationalId()->setIdType($communityType->getNationalId()->getType());
         }
 
-        if ($communityType->getAddress() !== null) {
+        if (null !== $communityType->getAddress()) {
             $addressType = $communityType->getAddress();
             $location = $this->locationService->getLocationByInputType($country, $addressType->getLocation());
 
@@ -137,10 +142,16 @@ class CommunityService
             ));
         }
 
+        if ($community->getAddress() && $community->getAddress()->getLocation()) {
+            $community->setName($this->locationMapper->toName($community->getAddress()->getLocation()));
+        } else {
+            $community->setName('global community');
+        }
+
         foreach ($communityType->getProjects() as $projectId) {
-            $project = $this->em->getRepository(Project::class)->find((int)$projectId);
+            $project = $this->em->getRepository(Project::class)->find((int) $projectId);
             if (null === $project) {
-                throw new \InvalidArgumentException("Project $projectId doesn't exist");
+                throw new InvalidArgumentException("Project $projectId doesn't exist");
             }
             $community->addProject($project);
         }
@@ -165,7 +176,8 @@ class CommunityService
             $this->em->persist($community);
         }
         $this->em->flush();
-        return "Communities have been archived";
+
+        return 'Communities have been archived';
     }
 
     /**
@@ -174,7 +186,8 @@ class CommunityService
      * @param InputType\UpdateCommunityType $communityType
      *
      * @return Community
-     * @throws \InvalidArgumentException
+     *
+     * @throws InvalidArgumentException
      */
     public function update(GeneralInputType\Country $country, Community $community, InputType\UpdateCommunityType $communityType): Community
     {
@@ -185,8 +198,8 @@ class CommunityService
             $community->setLatitude($newValue);
         }
 
-        if ($communityType->getNationalId() !== null) {
-            if ($community->getNationalId() == null) {
+        if (null !== $communityType->getNationalId()) {
+            if (null == $community->getNationalId()) {
                 $community->setNationalId(new NationalId());
             }
             $community->getNationalId()->setIdType($communityType->getNationalId()->getType());
@@ -199,7 +212,7 @@ class CommunityService
             $community->setContactFamilyName($newValue);
         }
         if (null !== $communityType->getPhoneNumber()) {
-            if ($community->getPhone() === null) {
+            if (null === $community->getPhone()) {
                 $community->setPhone(new Phone());
             }
             $community->getPhone()->setType($communityType->getPhoneType());
@@ -210,9 +223,10 @@ class CommunityService
         /** @var InputType\BeneficiaryAddressType $address */
         if (null !== $address = $communityType->getAddress()) {
             $location = null;
-            if ($address->getLocation() !== null) {
+            if (null !== $address->getLocation()) {
                 $location = $this->locationService->getLocationByInputType($country, $address->getLocation());
             }
+
             $this->updateAddress($community, Address::create(
                 $address->getStreet(),
                 $address->getNumber(),
@@ -221,11 +235,17 @@ class CommunityService
             ));
         }
 
+        if ($community->getAddress() && $community->getAddress()->getLocation()) {
+            $community->setName($this->locationMapper->toName($community->getAddress()->getLocation()));
+        } else {
+            $community->setName('global community');
+        }
+
         $community->setProjects(new ArrayCollection());
         foreach ($communityType->getProjects() as $projectId) {
             $project = $this->em->getRepository(Project::class)->find($projectId);
             if (null === $project) {
-                throw new \InvalidArgumentException("Project $projectId doesn't exist");
+                throw new InvalidArgumentException("Project $projectId doesn't exist");
             }
             $community->addProject($project);
         }
@@ -237,9 +257,10 @@ class CommunityService
     {
         if (null === $community->getAddress()) {
             $community->setAddress($newAddress);
+
             return;
         }
-        if (! $community->getAddress()->equals($newAddress)) {
+        if (!$community->getAddress()->equals($newAddress)) {
             $this->em->remove($community->getAddress());
             $community->setAddress($newAddress);
         }
