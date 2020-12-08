@@ -50,7 +50,6 @@ class SectorService
         }
         switch ($sector->getSubSectorName()) {
             case SubSectorEnum::FOOD_DISTRIBUTIONS:
-            case SubSectorEnum::RTER:
             case SubSectorEnum::FOOD_VOUCHERS:
                 return $sector->setDistributionAllowed()
                     ->setHouseholdAllowed()
@@ -201,7 +200,6 @@ class SectorService
     {
         switch ($subSectorName) {
             case SubSectorEnum::FOOD_DISTRIBUTIONS:
-            case SubSectorEnum::RTER:
             case SubSectorEnum::FOOD_VOUCHERS:
             case SubSectorEnum::CASH_FOR_WORK:
                 return new Sector(SectorEnum::FOOD_SECURITY, $subSectorName);
