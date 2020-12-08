@@ -9,7 +9,7 @@ use CommonBundle\DBAL\AbstractEnum;
 class SubSectorEnum extends AbstractEnum
 {
     protected static $values = [
-        self::FOOD_PARCELS_BASKETS,
+        self::FOOD_DISTRIBUTIONS,
         self::RTER,
         self::FOOD_VOUCHERS,
         self::CASH_FOR_WORK,
@@ -68,7 +68,7 @@ class SubSectorEnum extends AbstractEnum
         self::DEFAULT_EARLY_RECOVERY,
     ];
 
-    const FOOD_PARCELS_BASKETS = 'food_parcels_baskets';
+    const FOOD_DISTRIBUTIONS = 'food_parcels_baskets';
     const RTER = 'rter';
     const FOOD_VOUCHERS = 'food_vouchers';
     const CASH_FOR_WORK = 'cash_for_work';

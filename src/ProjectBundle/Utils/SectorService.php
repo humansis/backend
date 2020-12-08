@@ -49,7 +49,7 @@ class SectorService
             return null;
         }
         switch ($sector->getSubSectorName()) {
-            case SubSectorEnum::FOOD_PARCELS_BASKETS:
+            case SubSectorEnum::FOOD_DISTRIBUTIONS:
             case SubSectorEnum::RTER:
             case SubSectorEnum::FOOD_VOUCHERS:
                 return $sector->setDistributionAllowed()
@@ -200,7 +200,7 @@ class SectorService
     private function findSector($subSectorName): ?Sector
     {
         switch ($subSectorName) {
-            case SubSectorEnum::FOOD_PARCELS_BASKETS:
+            case SubSectorEnum::FOOD_DISTRIBUTIONS:
             case SubSectorEnum::RTER:
             case SubSectorEnum::FOOD_VOUCHERS:
             case SubSectorEnum::CASH_FOR_WORK:
