@@ -164,7 +164,7 @@ class DistributionService
         $subsector = $distributionArray['subsector'] ?? null;
         unset($distributionArray['subsector']);
 
-        if (in_array($distributionArray['target_type'], [AssistanceTargetType::COMMUNITY, AssistanceTargetType::INSTITUTION])) {
+        if (isset($distributionArray['assistance_type']) && AssistanceType::ACTIVITY === $distributionArray['assistance_type']) {
             unset($distributionArray['commodities']);
 
             // ignore user defined commodities and create some generic instead
