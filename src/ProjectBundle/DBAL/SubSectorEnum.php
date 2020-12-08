@@ -68,7 +68,7 @@ class SubSectorEnum extends AbstractEnum
         self::DEFAULT_EARLY_RECOVERY,
     ];
 
-    const FOOD_DISTRIBUTIONS = 'food_parcels_baskets';
+    const FOOD_DISTRIBUTIONS = 'food_distribution';
     const FOOD_VOUCHERS = 'food_vouchers';
     const CASH_FOR_WORK = 'cash_for_work';
 

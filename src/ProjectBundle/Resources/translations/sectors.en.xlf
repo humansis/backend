@@ -19,7 +19,7 @@
       <trans-unit id="label_sector_camp_management"><source>label_sector_camp_management</source><target>Camp Coordination and Management</target></trans-unit>
       <trans-unit id="label_sector_early_recovery"><source>label_sector_early_recovery</source><target>Early Recovery</target></trans-unit>
 
-      <trans-unit id="label_sector_food_parcels_baskets"><source>label_sector_food_parcels_baskets</source><target>Food Parcels/Baskets</target></trans-unit>
+      <trans-unit id="label_sector_food_distribution"><source>label_sector_food_distribution</source><target>Food distribution</target></trans-unit>
       <trans-unit id="label_sector_food_vouchers"><source>label_sector_food_vouchers</source><target>Food Vouchers</target></trans-unit>
       <trans-unit id="label_sector_cash_for_work"><source>label_sector_cash_for_work</source><target>Cash for Work</target></trans-unit>
 
