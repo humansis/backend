@@ -56,7 +56,7 @@ class SectorService
                     ->setHouseholdAllowed()
                     ->setBeneficiaryAllowed()
                     ;
-            case SubSectorEnum::CASH_FOR_WORK:
+            case SubSectorEnum::FOOD_CASH_FOR_WORK:
                 return $sector->setActivityAllowed()
                     ->setBeneficiaryAllowed()
                     ;
@@ -203,7 +203,7 @@ class SectorService
             case SubSectorEnum::FOOD_DISTRIBUTIONS:
             case SubSectorEnum::CASH_GRANTS:
             case SubSectorEnum::FOOD_VOUCHERS:
-            case SubSectorEnum::CASH_FOR_WORK:
+            case SubSectorEnum::FOOD_CASH_FOR_WORK:
                 return new Sector(SectorEnum::FOOD_SECURITY, $subSectorName);
 
             case SubSectorEnum::SKILLS_TRAINING:

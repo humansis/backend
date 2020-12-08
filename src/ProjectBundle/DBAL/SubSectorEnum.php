@@ -12,7 +12,7 @@ class SubSectorEnum extends AbstractEnum
         self::FOOD_DISTRIBUTIONS,
         self::CASH_GRANTS,
         self::FOOD_VOUCHERS,
-        self::CASH_FOR_WORK,
+        self::FOOD_CASH_FOR_WORK,
 
         self::SKILLS_TRAINING,
         self::TECHNICAL_SUPPORT,
@@ -71,7 +71,7 @@ class SubSectorEnum extends AbstractEnum
     const FOOD_DISTRIBUTIONS = 'food_distribution';
     const FOOD_VOUCHERS = 'food_vouchers';
     const CASH_GRANTS = 'food_cash_grants';
-    const CASH_FOR_WORK = 'cash_for_work';
+    const FOOD_CASH_FOR_WORK = 'food_cash_for_work';
 
     const SKILLS_TRAINING = 'skills_training';
     const TECHNICAL_SUPPORT = 'technical_support';
