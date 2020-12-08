@@ -841,6 +841,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             'location_name' => '',
             'name' => 'DISTRIBUTION_TO_BE_DELETED_FROM_DB',
+            'description' => 'some description',
             'project' => [
                 'donors' => [],
                 'donors_name' => [],
@@ -967,6 +968,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 'sectors_name' => [],
             ],
             'communities' => [$community->getId()],
+            'households_targeted' => 3,
+            'individuals_targeted' => 5,
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_PARCELS_BASKETS,
         ];

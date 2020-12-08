@@ -169,6 +169,33 @@ class Assistance implements ExportableInterface
     private $subSector;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="description", type="text", nullable=true)
+     *
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     */
+    private $description;
+
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     *
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     */
+    private $householdsTargeted;
+
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     *
+     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     */
+    private $individualsTargeted;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -626,6 +653,58 @@ class Assistance implements ExportableInterface
     public function getSubSector(): ?string
     {
         return $this->subSector;
+    }
+
+    /**
+     * @param string|null $description
+     *
+     * @return $this
+     */
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getHouseholdsTargeted(): ?int
+    {
+        return $this->householdsTargeted;
+    }
+
+    /**
+     * @param int|null $householdsTargeted
+     */
+    public function setHouseholdsTargeted(?int $householdsTargeted): void
+    {
+        $this->householdsTargeted = $householdsTargeted;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getIndividualsTargeted(): ?int
+    {
+        return $this->individualsTargeted;
+    }
+
+    /**
+     * @param int|null $individualsTargeted
+     */
+    public function setIndividualsTargeted(?int $individualsTargeted): void
+    {
+        $this->individualsTargeted = $individualsTargeted;
     }
 
     /**
