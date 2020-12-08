@@ -17,6 +17,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\DistributionCSVService;
 use DistributionBundle\Utils\DistributionService;
 use ProjectBundle\Entity\Project;
@@ -935,6 +936,19 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 'adm4' => 1,
                 'country_iso3' => 'KHM',
             ],
+            'commodities' => [
+                [
+                    'id' => null,
+                    'modality' => 'Cash',
+                    'modality_type' => [
+                        'id' => 1,
+                    ],
+                    'type' => 'Mobile Money',
+                    'unit' => 'USD',
+                    'value' => 100,
+                    'description' => null,
+                ],
+            ],
             'country_specific_answers' => [
                 [
                     'answer' => 'MY_ANSWER_TEST1',
@@ -984,6 +998,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'adm3' => '',
             'adm4' => '',
             'target_type' => AssistanceTargetType::INSTITUTION,
+            'assistance_type' => AssistanceType::ACTIVITY,
             'date_distribution' => '13-09-2018',
             'location' => [
                 'adm1' => 1,
