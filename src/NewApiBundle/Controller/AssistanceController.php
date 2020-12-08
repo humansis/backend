@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class AssistanceController extends AbstractController
 {
     /**
-     * @Rest\Get("/project/{id}/assistances")
+     * @Rest\Get("/projects/{id}/assistances")
      *
      * @param Project                  $project
      * @param Pagination               $pagination
