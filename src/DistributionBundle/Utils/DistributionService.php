@@ -13,6 +13,7 @@ use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\GeneralReliefItem;
+use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
@@ -162,6 +163,14 @@ class DistributionService
 
         $subsector = $distributionArray['subsector'] ?? null;
         unset($distributionArray['subsector']);
+
+        if (in_array($distributionArray['target_type'], [AssistanceTargetType::COMMUNITY, AssistanceTargetType::INSTITUTION])) {
+            unset($distributionArray['commodities']);
+
+            // ignore user defined commodities and create some generic instead
+            $modalityType = $this->em->getRepository(ModalityType::class)->findOneBy(['name' => 'Activity item']);
+            $distributionArray['commodities'][] = ['value' => 1, 'unit' => 'activity', 'description' => null, 'modality_type' => ['id' => $modalityType->getId()]];
+        }
 
         /** @var Assistance $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), Assistance::class, 'json', [

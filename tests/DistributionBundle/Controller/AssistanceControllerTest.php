@@ -935,19 +935,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 'adm4' => 1,
                 'country_iso3' => 'KHM',
             ],
-            'commodities' => [
-                [
-                    'id' => null,
-                    'modality' => 'Cash',
-                    'modality_type' => [
-                        'id' => 1,
-                    ],
-                    'type' => 'Mobile Money',
-                    'unit' => 'USD',
-                    'value' => 100,
-                    'description' => null,
-                ],
-            ],
             'country_specific_answers' => [
                 [
                     'answer' => 'MY_ANSWER_TEST1',
@@ -1004,19 +991,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 'adm3' => 1,
                 'adm4' => 1,
                 'country_iso3' => 'KHM',
-            ],
-            'commodities' => [
-                [
-                    'id' => null,
-                    'modality' => 'Cash',
-                    'modality_type' => [
-                        'id' => 1,
-                    ],
-                    'type' => 'Mobile Money',
-                    'unit' => 'USD',
-                    'value' => 100,
-                    'description' => null,
-                ],
             ],
             'country_specific_answers' => [
                 [
