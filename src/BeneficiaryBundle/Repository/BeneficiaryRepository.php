@@ -37,15 +37,19 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     public function getAllOfProject(int $project, string $target)
     {
         $qb = $this->createQueryBuilder('b');
-        if ('Household' == $target) {
+        if (AssistanceTargetType::HOUSEHOLD === $target) {
             $q = $qb->leftJoin('b.household', 'hh')
                 ->where(':project MEMBER OF hh.projects')
                 ->andWhere('b.status = 1')
+                ->andWhere('b.archived = 0')
+                ->setParameter('project', $project);
+        } elseif (AssistanceTargetType::INDIVIDUAL === $target) {
+            $q = $qb->leftJoin('b.household', 'hh')
+                ->andWhere(':project MEMBER OF hh.projects')
+                ->andWhere('b.archived = 0')
                 ->setParameter('project', $project);
         } else {
-            $q = $qb->leftJoin('b.household', 'hh')
-                ->where(':project MEMBER OF hh.projects')
-                ->setParameter('project', $project);
+            return [];
         }
 
         return $q->getQuery()->getResult();

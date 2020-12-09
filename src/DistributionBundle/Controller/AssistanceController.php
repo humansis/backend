@@ -966,6 +966,7 @@ class AssistanceController extends Controller
         }
 
         $target = $request->request->get('target');
+        $target = strtolower($target);
 
         try {
             $beneficiariesInProject = $distributionBeneficiaryService->getAllBeneficiariesInProject($project, $target);
