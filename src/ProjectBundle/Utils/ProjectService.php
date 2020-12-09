@@ -309,7 +309,7 @@ class ProjectService
             'iso3' => $inputType->getIso3(),
         ]);
 
-        if (!empty($existingProjects) && $existingProjects->get(0)->getId() !== $project->getId()) {
+        if (!empty($existingProjects) && $existingProjects[0]->getId() !== $project->getId()) {
             throw new \RuntimeException('Project with the name '.$project->getName().' already exists');
         }
 

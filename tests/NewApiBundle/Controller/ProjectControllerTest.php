@@ -94,8 +94,6 @@ class ProjectControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('code', $item);
             $this->assertArrayHasKey('value', $item);
         }
-
-        return $result['id'];
     }
 
     /**
