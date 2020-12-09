@@ -78,6 +78,7 @@ class SubSectorEnum extends AbstractEnum
     const DISTRIBUTION_OF_INPUTS = 'distribution_of_inputs';
     const BUSINESS_GRANTS = 'business_grants';
     const AGRICULTURAL_VOUCHERS = 'agricultural_vouchers';
+    const LIVELIHOOD_CASH_FOR_WORK = 'livelihood_cash_for_work';
 
     const MULTI_PURPOSE_CASH_ASSISTANCE = 'multi_purpose_cash_assistance';
 
@@ -113,6 +114,8 @@ class SubSectorEnum extends AbstractEnum
     const LEARNING_MATERIALS = 'learning_materials';
     const EDUCATION_PSYCHOSOCIAL_SUPPORT = 'education_psychosocial_support';
     const EDUCATION_SERVICES = 'education_services';
+    const EDUCATION_CASH_FOR_WORK = 'education_cash_for_work';
+    const PARENT_SESSIONS = 'education_parent_sessions';
 
     const DEFAULT_EMERGENCY_TELCO = 'default_emergency_telco';
     const DEFAULT_HEALTH = 'default_health';
