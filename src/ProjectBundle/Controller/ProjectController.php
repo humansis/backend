@@ -139,7 +139,7 @@ class ProjectController extends Controller
         $user = $this->getUser();
 
         try {
-            $project = $this->get('project.project_service')->create($country, $projectArray, $user);
+            $project = $this->get('project.project_service')->createFromArray($country, $projectArray, $user);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
