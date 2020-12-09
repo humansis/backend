@@ -28,7 +28,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/assistances', [], [], ['country' => 'KHM']);
+        $this->request('GET', '/api/basic/assistances');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

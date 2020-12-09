@@ -250,7 +250,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
      */
     public function findByParams(
         ?Project $project,
-        ?string $iso3,
+        ?string $iso3 = null,
         ?bool $upcoming = null,
         ?AssistanceOrderInputType $orderBy = null,
         ?Pagination $pagination = null
@@ -270,7 +270,8 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if (null !== $upcoming) {
-            $qb->andWhere('p.startDate > NOW()');
+            $qb->andWhere('p.startDate > :now')
+            ->setParameter('now', new DateTime('now'));
         }
 
         if ($pagination) {

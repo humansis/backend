@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class AssistanceController extends AbstractController
 {
     /**
-     * @Rest\Get("/projects")
+     * @Rest\Get("/assistances")
      *
      * @param Request                  $request
      * @param Pagination               $pagination
