@@ -37,6 +37,7 @@ class ModalityFixtures extends Fixture
                 'Hygiene kit',
                 'Dignity kit',
                 'Other NFI',
+                'Activity item',
             ],
         ],
         [
