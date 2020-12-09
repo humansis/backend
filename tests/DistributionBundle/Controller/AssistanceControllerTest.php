@@ -686,7 +686,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $body = array(
-            'target' => 'Households'
+            'target' => 'Household'
         );
         // Second step
         // Create the user with the email and the salted password. The user should be enable
