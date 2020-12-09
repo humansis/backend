@@ -299,7 +299,7 @@ class ProjectService
     public function delete(Project $project)
     {
         /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
-        $assistance = $this->em->getRepository(Assistance::class)->findByProject($project);
+        $assistance = $this->em->getRepository(Assistance::class)->findByParams($project);
 
         if (0 === $assistance->count()) {
             try {

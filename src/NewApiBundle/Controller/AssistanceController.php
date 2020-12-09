@@ -9,9 +9,34 @@ use NewApiBundle\InputType\AssistanceOrderInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AssistanceController extends AbstractController
 {
+    /**
+     * @Rest\Get("/projects")
+     *
+     * @param Request                  $request
+     * @param Pagination               $pagination
+     * @param AssistanceOrderInputType $orderBy
+     *
+     * @return JsonResponse
+     */
+    public function assistances(Request $request, Pagination $pagination, AssistanceOrderInputType $orderBy): JsonResponse
+    {
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
+        }
+
+        $upcoming = ($request->query->has('upcoming') && $request->query->getBoolean('upcoming'));
+
+        $assistances = $this->getDoctrine()->getRepository(Assistance::class)->findByParams(null, $countryIso3, $upcoming, $orderBy, $pagination);
+
+        return $this->json($assistances);
+    }
+
     /**
      * @Rest\Get("/projects/{id}/assistances")
      *
@@ -26,7 +51,7 @@ class AssistanceController extends AbstractController
         /** @var AssistanceRepository $repository */
         $repository = $this->getDoctrine()->getRepository(Assistance::class);
 
-        $assistances = $repository->findByProject($project, $orderBy, $pagination);
+        $assistances = $repository->findByParams($project, null, null, $orderBy, $pagination);
 
         return $this->json($assistances);
     }
