@@ -115,6 +115,9 @@ class AssistanceMapper
             'beneficiaries_count' => $this->distributionBNFRepo->countActive($assistance),
             'sector' => $assistance->getSector(),
             'subsector' => $assistance->getSubSector(),
+            'description' => $assistance->getDescription(),
+            'households_targeted' => $assistance->getHouseholdsTargeted(),
+            'individuals_targeted' => $assistance->getIndividualsTargeted(),
         ];
 
         return $assistanceArray;
@@ -168,6 +171,9 @@ class AssistanceMapper
             'distribution_beneficiaries' => $this->beneficiaryMapper->toOldMobileArrays($bnfs),
             'completed' => $assistance->getCompleted(),
             'beneficiaries_count' => $this->distributionBNFRepo->countActive($assistance),
+            'description' => $assistance->getDescription(),
+            'households_targeted' => $assistance->getHouseholdsTargeted(),
+            'individuals_targeted' => $assistance->getIndividualsTargeted(),
         ];
 
         return $assistanceArray;
