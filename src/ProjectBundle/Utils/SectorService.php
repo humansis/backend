@@ -65,10 +65,25 @@ class SectorService
                     ->setBeneficiaryAllowed()
                     ;
             case SubSectorEnum::TECHNICAL_SUPPORT:
+                return $sector->setActivityAllowed()
+                    ->setHouseholdAllowed()
+                    ->setBeneficiaryAllowed()
+                    ->setCommunityAllowed()
+                    ->setInstitutionAllowed()
+                    ;
             case SubSectorEnum::DISTRIBUTION_OF_INPUTS:
+                return $sector->setDistributionAllowed()
+                    ->setHouseholdAllowed()
+                    ->setBeneficiaryAllowed()
+                    ;
             case SubSectorEnum::BUSINESS_GRANTS:
+                return $sector->setDistributionAllowed()
+                    ->setBeneficiaryAllowed()
+                    ;
             case SubSectorEnum::AGRICULTURAL_VOUCHERS:
                 return $sector->setDistributionAllowed()
+                    ->setHouseholdAllowed()
+                    ->setBeneficiaryAllowed()
                     ;
             case SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE:
                 return $sector->setDistributionAllowed()
@@ -83,7 +98,7 @@ class SectorService
             case SubSectorEnum::SETTLEMENT_UPGRADES:
                 return $sector->setActivityAllowed()
                     ->setCommunityAllowed()
-                    ->setHouseholdAllowed()
+                    ->setInstitutionAllowed()
                     ;
             case SubSectorEnum::WINTERIZATION_KITS:
                 return $sector->setDistributionAllowed()
