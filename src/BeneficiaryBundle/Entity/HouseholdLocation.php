@@ -21,6 +21,12 @@ class HouseholdLocation
     const LOCATION_TYPE_RESIDENCE = 'residence';
     const LOCATION_TYPE_CAMP = 'camp';
 
+    const LOCATION_TYPES = [
+        self::LOCATION_TYPE_CAMP,
+        self::LOCATION_TYPE_RESIDENCE,
+        self::LOCATION_TYPE_SETTLEMENT,
+    ];
+
     /**
      * @var int
      *
