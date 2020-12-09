@@ -41,6 +41,11 @@ class Purchase implements \JsonSerializable
     private $value;
 
     /**
+     * @ORM\Column(name="currency", type="string")
+     */
+    private $currency;
+
+    /**
      * @ORM\Column(name="quantity", type="decimal")
      */
     private $quantity;
@@ -71,6 +76,7 @@ class Purchase implements \JsonSerializable
             'productName' => $this->product->getName(),
             'unit' => $this->product->getUnit(),
             'value' => $this->value,
+            'currency' => $this->currency,
             'quantity' => $this->quantity,
             'source' => $this->source,
             'usedAt' => $this->usedAt,
