@@ -806,7 +806,23 @@ class AssistanceController extends Controller
      */
     public function offlineGetDistributionsAction(Project $project)
     {
-        return $this->getDistributionsAction($project);
+        try {
+            $distributions = $project->getDistributions();
+            $filtered = $this->get('distribution.distribution_service')->filterDistributions($distributions);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $assistanceMapper = $this->get(AssistanceMapper::class);
+
+        $json = $this->get('serializer')
+            ->serialize(
+                $assistanceMapper->toOldMobileArrays($filtered),
+                'json',
+                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+            );
+
+        return new Response($json, Response::HTTP_OK);
     }
 
     /**
