@@ -240,18 +240,39 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param Project                       $project
+     * @param Project|null                  $project
+     * @param string|null                   $iso3
+     * @param bool|null                     $upcoming
      * @param AssistanceOrderInputType|null $orderBy
      * @param Pagination|null               $pagination
      *
      * @return Paginator|Assistance[]
      */
-    public function findByProject(Project $project, ?AssistanceOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
-    {
+    public function findByParams(
+        ?Project $project,
+        ?string $iso3 = null,
+        ?bool $upcoming = null,
+        ?AssistanceOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator {
         $qb = $this->createQueryBuilder('dd')
-            ->where('dd.project = :project')
-            ->setParameter('project', $project)
             ->andWhere('dd.archived = 0');
+
+        if ($project) {
+            $qb->andWhere('dd.project = :project')
+                ->setParameter('project', $project);
+        }
+
+        if ($iso3) {
+            $qb->leftJoin('dd.project', 'p')
+                ->andWhere('p.iso3 = :iso3')
+                ->setParameter('iso3', $iso3);
+        }
+
+        if (null !== $upcoming) {
+            $qb->andWhere('p.startDate > :now')
+            ->setParameter('now', new DateTime('now'));
+        }
 
         if ($pagination) {
             $qb->setMaxResults($pagination->getLimit());
