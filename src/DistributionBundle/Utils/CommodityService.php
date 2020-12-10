@@ -46,9 +46,8 @@ class CommodityService
             )
             ->setDescription($commodityArray["description"]);
 
-        $this->em->persist($commodity);
-
         if ($flush) {
+            $this->em->persist($commodity);
             $this->em->flush();
         }
 

@@ -205,7 +205,7 @@ class DistributionService
             $distribution->removeCommodity($item);
         }
         foreach ($distributionArray['commodities'] as $item) {
-            $this->commodityService->create($distribution, $item, false);
+            $distribution->addCommodity($this->commodityService->create($distribution, $item, false));
         }
 
         if (AssistanceTargetType::COMMUNITY === $distribution->getTargetType()) {
