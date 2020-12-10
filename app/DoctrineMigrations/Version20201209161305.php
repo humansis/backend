@@ -89,10 +89,12 @@ final class Version20201209161305 extends AbstractMigration
         $this->addSql("UPDATE project_sector SET subsector_new='food_distribution' WHERE subsector='food_parcels_baskets'");
         $this->addSql("UPDATE project_sector SET subsector_new='food_cash_for_work' WHERE subsector='cash_for_work'");
 
-        $this->addSql("ALTER TABLE project_sector DROP COLUMN subsector;");
-        $this->addSql("ALTER TABLE assistance DROP COLUMN subsector;");
-
+        $this->addSql('ALTER TABLE project_sector DROP INDEX uniq_sector_project;');
+        $this->addSql('ALTER TABLE project_sector DROP COLUMN subsector;');
         $this->addSql("ALTER TABLE project_sector CHANGE subsector_new subsector $subsectorsEnum;");
+        $this->addSql('ALTER TABLE project_sector ADD UNIQUE `uniq_sector_project` (`sector`, `subsector`, `project_id`); ');
+
+        $this->addSql('ALTER TABLE assistance DROP COLUMN subsector;');
         $this->addSql("ALTER TABLE assistance CHANGE subsector_new subsector $subsectorsEnum;");
     }
 
