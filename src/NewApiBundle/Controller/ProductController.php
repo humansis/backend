@@ -48,7 +48,7 @@ class ProductController extends AbstractController
 
         /** @var ProductRepository $repository */
         $repository = $this->getDoctrine()->getRepository(Product::class);
-        $data = $repository->findByCountry($request->headers->has('country'), $orderBy, $pagination);
+        $data = $repository->findByCountry($request->headers->get('country'), $orderBy, $pagination);
 
         return $this->json($data);
     }
