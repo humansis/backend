@@ -394,7 +394,7 @@ class VoucherController extends Controller
      * Get vendor redeemed batches
      *
      * @Rest\Get("/vouchers/purchases/redeemed-batches/{id}", name="vouchers_redeemed_batches")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Vouchers")
      * @SWG\Tag(name="Single Vendor")
@@ -421,7 +421,7 @@ class VoucherController extends Controller
      * Set vendor purchase as redeemed
      *
      * @Rest\Post("/vouchers/purchases/redeem-check/{id}", name="vouchers_redeem_batch_check")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Vouchers")
      * @SWG\Tag(name="Single Vendor")
@@ -456,7 +456,7 @@ class VoucherController extends Controller
      * Set vendor purchase as redeemed
      *
      * @Rest\Post("/vouchers/purchases/redeem-batch/{id}", name="vouchers_redeem_batch")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Vouchers")
      * @SWG\Tag(name="Single Vendor")

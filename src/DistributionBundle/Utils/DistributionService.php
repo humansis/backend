@@ -3,16 +3,23 @@
 namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\Person;
+use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use CommonBundle\Utils\LocationService;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\GeneralReliefItem;
+use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
+use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
@@ -140,18 +147,31 @@ class DistributionService
      *
      * @param $countryISO3
      * @param array $distributionArray
-     * @param int $threshold
      * @return array
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function create($countryISO3, array $distributionArray, int $threshold)
+    public function create($countryISO3, array $distributionArray)
     {
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
 
-        $distributionArray['assistance_type'] = AssistanceTypeEnum::DISTRIBUTION;
-        $distributionArray['target_type'] = $distributionArray['type'];
-        unset($distributionArray['type']);
+        $selectionCriteriaGroup = $distributionArray['selection_criteria'] ?? null;
+        unset($distributionArray['selection_criteria']);
+
+        $sector = $distributionArray['sector'];
+        unset($distributionArray['sector']);
+
+        $subsector = $distributionArray['subsector'] ?? null;
+        unset($distributionArray['subsector']);
+
+        if (isset($distributionArray['assistance_type']) && AssistanceType::ACTIVITY === $distributionArray['assistance_type']) {
+            unset($distributionArray['commodities']);
+
+            // ignore user defined commodities and create some generic instead
+            $modalityType = $this->em->getRepository(ModalityType::class)->findOneBy(['name' => 'Activity item']);
+            $distributionArray['commodities'][] = ['value' => 1, 'unit' => 'activity', 'description' => null, 'modality_type' => ['id' => $modalityType->getId()]];
+        }
+
         /** @var Assistance $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), Assistance::class, 'json', [
             \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
@@ -166,15 +186,11 @@ class DistributionService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        // TODO : make the front send 0 or 1 instead of Individual (Beneficiary comes from the import)
-        if ($distributionArray['target_type'] === "Beneficiary" || $distributionArray['target_type'] === "Individual" || $distributionArray['target_type'] === "1") {
-            $distribution->setTargetType(1);
-        } else {
-            $distribution->setTargetType(0);
-        }
+        $distribution->setTargetType($distributionArray['target_type']);
 
         $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
+        $distribution->setName(self::generateName($location));
 
         $project = $distribution->getProject();
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
@@ -182,6 +198,8 @@ class DistributionService
             $distribution->setProject($projectTmp);
         }
 
+        $distribution->setSector($sector);
+        $distribution->setSubSector($subsector);
 
         foreach ($distribution->getCommodities() as $item) {
             $distribution->removeCommodity($item);
@@ -189,59 +207,88 @@ class DistributionService
         foreach ($distributionArray['commodities'] as $item) {
             $this->commodityService->create($distribution, $item, false);
         }
-        $criteria = [];
-        foreach ($distribution->getSelectionCriteria() as $item) {
-            $distribution->removeSelectionCriterion($item);
-            if ($item->getTableString() == null) {
-                $item->setTableString("Beneficiary");
+
+        if (AssistanceTargetType::COMMUNITY === $distribution->getTargetType()) {
+            foreach ($distributionArray['communities'] as $id) {
+                $community = $this->container->get('doctrine')->getRepository(Community::class)->find($id);
+                $distributionBeneficiary = (new DistributionBeneficiary())
+                    ->setAssistance($distribution)
+                    ->setBeneficiary($community)
+                    ->setRemoved(0);
+
+                $this->em->persist($distributionBeneficiary);
+                $listReceivers[] = $community->getId();
+            }
+        } elseif (AssistanceTargetType::INSTITUTION === $distribution->getTargetType()) {
+            foreach ($distributionArray['institutions'] as $id) {
+                $institution = $this->container->get('doctrine')->getRepository(Institution::class)->find($id);
+                $distributionBeneficiary = (new DistributionBeneficiary())
+                    ->setAssistance($distribution)
+                    ->setBeneficiary($institution)
+                    ->setRemoved(0);
+                $this->em->persist($distributionBeneficiary);
+
+                $listReceivers[] = $institution->getId();
+            }
+        } else {
+            $criteria = [];
+            foreach ($selectionCriteriaGroup as $i => $criteriaData) {
+                foreach ($criteriaData as $j => $criterionArray) {
+                    /** @var SelectionCriteria $criterion */
+                    $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json');
+                    $criterion->setGroupNumber($i);
+                    $this->criteriaDistributionService->save($distribution, $criterion, false);
+                    $criteria[$i][$j] = $criterionArray;
+                }
             }
 
-            $criteria[] = $this->criteriaDistributionService->save($distribution, $item, false);
+            $distributionArray['selection_criteria'] = $criteria;
+            $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $projectTmp, $sector, $subsector, $distributionArray['threshold']);
+            $this->saveReceivers($distribution, $listReceivers);
         }
 
         $this->em->persist($distribution);
-        $this->em->flush();
-
-        $this->em->persist($distribution);
-
-        $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $distributionArray['target_type'], $projectTmp, $threshold);
-        $this->saveReceivers($distribution, $listReceivers);
-
         $this->em->flush();
 
         return ["distribution" => $distribution, "data" => $listReceivers];
     }
 
     /**
-     * @param array $criteria
-     * @param $countryISO3
-     * @param $type
+     * @param array   $criteria
+     * @param         $countryISO3
      * @param Project $project
-     * @param int $threshold
+     * @param         $sector
+     * @param         $subsector
+     * @param int     $threshold
+     *
      * @return mixed
      */
-    public function guessBeneficiaries(array $criteria, $countryISO3, $type, Project $project, int $threshold)
+    public function guessBeneficiaries(array $criteria, $countryISO3, Project $project, $sector, $subsector, int $threshold)
     {
         $criteria['criteria'] = $criteria['selection_criteria'];
         $criteria['countryIso3'] = $countryISO3;
-        $criteria['distribution_type'] = $type;
 
-        return $this->container->get('distribution.criteria_distribution_service')->load($criteria, $project, $threshold, false);
+        return $this->container->get('distribution.criteria_distribution_service')->load($criteria, $project, $sector, $subsector, $threshold, false);
     }
 
     /**
      * @param Assistance $assistance
-     * @param array $listReceivers
+     * @param array      $listReceivers
+     *
      * @throws \Exception
      */
     public function saveReceivers(Assistance $assistance, array $listReceivers)
     {
-        foreach ($listReceivers['finalArray'] as $receiver) {
-        $distributionBeneficiary = new DistributionBeneficiary();
-        $distributionBeneficiary->setAssistance($assistance)
-            ->setBeneficiary($this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver))
-            ->setRemoved(0);
-           
+        foreach ($listReceivers['finalArray'] as $receiver => $scores) {
+            /** @var Beneficiary $beneficiary */
+            $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver);
+
+            $distributionBeneficiary = (new DistributionBeneficiary())
+                ->setAssistance($assistance)
+                ->setBeneficiary($beneficiary)
+                ->setRemoved(0)
+                ->setVulnerabilityScores(json_encode($scores));
+
             $this->em->persist($distributionBeneficiary);
         }
     }
@@ -351,8 +398,13 @@ class DistributionService
      */
     public function exportToOfficialCsv(int $projectId, string $type)
     {
-        $distributions = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId]);
         $project = $this->em->getRepository(Project::class)->find($projectId);
+
+        if (!$project) {
+            throw new NotFoundHttpException("Project #$projectId missing");
+        }
+
+        $assistances = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId]);
         $exportableTable = [];
 
         $donors = implode(', ',
@@ -361,69 +413,69 @@ class DistributionService
 
         $bnfRepo = $this->em->getRepository(Beneficiary::class);
 
-        foreach ($distributions as $distribution)
+        foreach ($assistances as $assistance)
         {
-            $idps = $bnfRepo->countByResidencyStatus($distribution, "IDP");
-            $residents = $bnfRepo->countByResidencyStatus($distribution, "resident");
-            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($distribution, Person::GENDER_MALE);
-            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($distribution, Person::GENDER_FEMALE);
-            $maleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($distribution, 1, 0, 2, $distribution->getDateDistribution());
-            $femaleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($distribution, 0, 0, 2, $distribution->getDateDistribution());
-            $maleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($distribution, 1, 2, 6, $distribution->getDateDistribution());
-            $femaleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($distribution, 0, 2, 6, $distribution->getDateDistribution());
-            $maleUnder17years = $bnfRepo->countByAgeAndByGender($distribution, 1, 6, 18, $distribution->getDateDistribution());
-            $femaleUnder17years = $bnfRepo->countByAgeAndByGender($distribution, 0, 6, 18, $distribution->getDateDistribution());
-            $maleUnder59years = $bnfRepo->countByAgeAndByGender($distribution, 1, 18, 60, $distribution->getDateDistribution());
-            $femaleUnder59years = $bnfRepo->countByAgeAndByGender($distribution, 0, 18, 60, $distribution->getDateDistribution());
-            $maleOver60years = $bnfRepo->countByAgeAndByGender($distribution, 1, 60, 200, $distribution->getDateDistribution());
-            $femaleOver60years = $bnfRepo->countByAgeAndByGender($distribution, 0, 60, 200, $distribution->getDateDistribution());
+            $idps = $bnfRepo->countByResidencyStatus($assistance, "IDP");
+            $residents = $bnfRepo->countByResidencyStatus($assistance, "resident");
+            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, Person::GENDER_MALE);
+            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, Person::GENDER_FEMALE);
+            $maleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 1, 0, 2, $assistance->getDateDistribution());
+            $femaleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 0, 0, 2, $assistance->getDateDistribution());
+            $maleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($assistance, 1, 2, 6, $assistance->getDateDistribution());
+            $femaleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($assistance, 0, 2, 6, $assistance->getDateDistribution());
+            $maleUnder17years = $bnfRepo->countByAgeAndByGender($assistance, 1, 6, 18, $assistance->getDateDistribution());
+            $femaleUnder17years = $bnfRepo->countByAgeAndByGender($assistance, 0, 6, 18, $assistance->getDateDistribution());
+            $maleUnder59years = $bnfRepo->countByAgeAndByGender($assistance, 1, 18, 60, $assistance->getDateDistribution());
+            $femaleUnder59years = $bnfRepo->countByAgeAndByGender($assistance, 0, 18, 60, $assistance->getDateDistribution());
+            $maleOver60years = $bnfRepo->countByAgeAndByGender($assistance, 1, 60, 200, $assistance->getDateDistribution());
+            $femaleOver60years = $bnfRepo->countByAgeAndByGender($assistance, 0, 60, 200, $assistance->getDateDistribution());
             $maleTotal = $maleChildrenUnder23month + $maleChildrenUnder5years + $maleUnder17years + $maleUnder59years + $maleOver60years;
             $femaleTotal = $femaleChildrenUnder23month + $femaleChildrenUnder5years + $femaleUnder17years + $femaleUnder59years + $femaleOver60years;
-            $noFamilies = $distribution->getTargetType() === Assistance::TYPE_BENEFICIARY ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
-            $familySize = $distribution->getTargetType() === Assistance::TYPE_HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
-            $modalityType = $distribution->getCommodities()[0]->getModalityType()->getName();
-            $beneficiaryServed =  $this->em->getRepository(Assistance::class)->getNoServed($distribution->getId(), $modalityType);
+            $noFamilies = $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
+            $familySize = $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
+            $modalityType = $assistance->getCommodities()[0]->getModalityType()->getName();
+            $beneficiaryServed =  $this->em->getRepository(Assistance::class)->getNoServed($assistance->getId(), $modalityType);
 
             $commodityNames = implode(', ',
                     array_map(
                         function($commodity) { return  $commodity->getModalityType()->getName(); }, 
-                        $distribution->getCommodities()->toArray()
+                        $assistance->getCommodities()->toArray()
                     )
                 );
             $commodityUnit = implode(', ',
                 array_map(
                     function($commodity) { return  $commodity->getUnit(); }, 
-                    $distribution->getCommodities()->toArray()
+                    $assistance->getCommodities()->toArray()
                 )
             );
             $numberOfUnits = implode(', ',
                 array_map(
                     function($commodity) { return  $commodity->getValue(); }, 
-                    $distribution->getCommodities()->toArray()
+                    $assistance->getCommodities()->toArray()
                 )
             );
             
             $totalAmount = implode(', ',
                 array_map(
                     function($commodity) use($noFamilies) { return  $commodity->getValue() * $noFamilies . ' ' . $commodity->getUnit(); }, 
-                    $distribution->getCommodities()->toArray()
+                    $assistance->getCommodities()->toArray()
                 )
             );
 
             
             
             $row = [
-                "Navi/Elo number" => $distribution->getProject()->getInternalId() ?? " ",
-                "DISTR. NO." => $distribution->getId(),
+                "Navi/Elo number" => $assistance->getProject()->getInternalId() ?? " ",
+                "DISTR. NO." => $assistance->getId(),
                 "Distributed by" => " ",
                 "Round" => " ",
                 "Donor" => $donors,
-                "Starting Date" => $distribution->getDateDistribution(),
-                "Ending Date" => $distribution->getCompleted() ? $distribution->getUpdatedOn() : " - ",
-                "Governorate" => $distribution->getLocation()->getAdm1Name(),
-                "District" => $distribution->getLocation()->getAdm2Name(),
-                "Sub-District" => $distribution->getLocation()->getAdm3Name(),
-                "Town, Village" => $distribution->getLocation()->getAdm4Name(),
+                "Starting Date" => $assistance->getDateDistribution(),
+                "Ending Date" => $assistance->getCompleted() ? $assistance->getUpdatedOn() : " - ",
+                "Governorate" => $assistance->getLocation()->getAdm1Name(),
+                "District" => $assistance->getLocation()->getAdm2Name(),
+                "Sub-District" => $assistance->getLocation()->getAdm3Name(),
+                "Town, Village" => $assistance->getLocation()->getAdm4Name(),
                 "Location = School/Camp" => " ",
                 "Neighbourhood (Camp Name)" => " ",
                 "Latitude" => " ",
@@ -782,5 +834,21 @@ class DistributionService
 
         $this->em->remove($assistance);
         $this->em->flush();
+    }
+
+    private function generateName(\CommonBundle\Entity\Location $location): string
+    {
+        $adm = '';
+        if ($location->getAdm4()) {
+            $adm = $location->getAdm4()->getName();
+        } elseif ($location->getAdm3()) {
+            $adm = $location->getAdm3()->getName();
+        } elseif ($location->getAdm2()) {
+            $adm = $location->getAdm2()->getName();
+        } elseif ($location->getAdm1()) {
+            $adm = $location->getAdm1()->getName();
+        }
+
+        return $adm.'-'.date('d-m-Y');
     }
 }

@@ -239,6 +239,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 if ($category === "any" && count($filterValues) > 0) {
                     foreach ($filterValues as $filterValue) {
                         $q->andWhere("CONCAT(
+                            COALESCE(hh.id, ''),
                             COALESCE(per.enFamilyName, ''),
                             COALESCE(per.enGivenName, ''),
                             COALESCE(per.localFamilyName, ''),

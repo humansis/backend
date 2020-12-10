@@ -8,6 +8,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 
@@ -31,6 +32,22 @@ class RequestListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
+        if (HttpKernelInterface::SUB_REQUEST === $event->getRequestType()) {
+            return;
+        }
+
+        $disableListener = $event->getRequest()->attributes->get('disable-common-request-listener');
+
+        if ($disableListener) {
+            $isAdmin = $this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN');
+            if (!$isAdmin) {
+                $response = new Response('You need to be admin.', Response::HTTP_FORBIDDEN);
+                $event->setResponse($response);
+            }
+
+            return;
+        }
+
         if ($event->getRequest()->headers->has('country')) {
             $countryISO3 = $event->getRequest()->headers->get('country');
             

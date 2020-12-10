@@ -51,7 +51,7 @@ class DistributionBeneficiary
     private $beneficiary;
 
     /**
-     * @var Transaction
+     * @var Transaction[]
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
@@ -82,6 +82,13 @@ class DistributionBeneficiary
      * @ORM\OrderBy({"createdAt": "ASC"})
      */
     private $smartcardDeposits;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="content", type="json", nullable=true)
+     */
+    private $vulnerabilityScores;
 
     public function __construct()
     {
@@ -175,11 +182,11 @@ class DistributionBeneficiary
     /**
      * Set beneficiary.
      *
-     * @param Beneficiary|null $beneficiary
+     * @param AbstractBeneficiary|null $beneficiary
      *
      * @return DistributionBeneficiary
      */
-    public function setBeneficiary(Beneficiary $beneficiary = null)
+    public function setBeneficiary(AbstractBeneficiary $beneficiary = null)
     {
         $this->beneficiary = $beneficiary;
 
@@ -189,7 +196,7 @@ class DistributionBeneficiary
     /**
      * Get beneficiary.
      *
-     * @return Beneficiary|null
+     * @return AbstractBeneficiary|null
      */
     public function getBeneficiary()
     {
@@ -199,7 +206,7 @@ class DistributionBeneficiary
     /**
      * Get the value of Transaction.
      *
-     * @return Transaction
+     * @return Transaction[]
      */
     public function getTransactions()
     {
@@ -363,5 +370,23 @@ class DistributionBeneficiary
     public function getRemoved()
     {
         return $this->removed;
+    }
+
+    /**
+     * @return string|null valid JSON string
+     */
+    public function getVulnerabilityScores(): ?string
+    {
+        return $this->vulnerabilityScores;
+    }
+
+    /**
+     * @param string $vulnerabilityScores
+     */
+    public function setVulnerabilityScores(string $vulnerabilityScores): self
+    {
+        $this->vulnerabilityScores = $vulnerabilityScores;
+
+        return $this;
     }
 }

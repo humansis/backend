@@ -73,7 +73,11 @@ elif [[ $2 == "database" ]]; then
   # run database migrations
   migrations="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
   ssh -i ec2_bms.pem ubuntu@$ec2_host $migrations
-elif [[ $2 != "false" ]]; then
+elif [[ $2 == "false" ]]; then
+  # run database migrations
+  migrations="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
+  ssh -i ec2_bms.pem ubuntu@$ec2_host $migrations
+else
   echo "Wrong clean database parameter. Options are: [true, false, database]"
   exit 1
 fi

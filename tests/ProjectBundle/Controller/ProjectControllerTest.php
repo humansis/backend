@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Tests\ProjectBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
@@ -44,6 +43,8 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testCreateProject()
     {
+        $this->remove($this->name);
+
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -218,13 +219,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->em->clear();
         $project = $this->em->getRepository(Project::class)->findOneByName($projectName);
         if ($project instanceof Project) {
-            $userProject = $this->em->getRepository(UserProject::class)->findOneByProject($project);
-            if ($userProject) {
-                $this->em->remove($userProject);
-                $this->em->flush();
-                $this->em->remove($project);
-                $this->em->flush();
-            }
+            $this->container->get('project.project_service')->delete($project);
         }
     }
 }

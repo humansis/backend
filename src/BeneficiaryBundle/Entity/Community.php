@@ -16,6 +16,12 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class Community extends AbstractBeneficiary
 {
     /**
+     * @var string
+     * @ORM\Column(name="name", type="string", length=100, nullable=false)
+     */
+    private $name;
+
+    /**
      * @var Person|null
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="contact_person_id", referencedColumnName="id", nullable=true)
@@ -51,6 +57,22 @@ class Community extends AbstractBeneficiary
     {
         parent::__construct();
         $this->contact = new Person();
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
     }
 
     /**

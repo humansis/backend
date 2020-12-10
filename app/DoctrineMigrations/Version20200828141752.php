@@ -15,7 +15,7 @@ final class Version20200828141752 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE distribution_data ADD assistance_type ENUM(\'activity\', \'distribution\') NOT NULL DEFAULT \'distribution\' COMMENT \'(DC2Type:assistance_type_enum)\'');
+        $this->addSql('ALTER TABLE distribution_data ADD assistance_type ENUM(\'activity\', \'distribution\') NOT NULL DEFAULT \'distribution\' COMMENT \'(DC2Type:enum_assistance_type)\'');
         $this->addSql('ALTER TABLE distribution_data CHANGE type_distribution target_type INT DEFAULT NULL');
     }
 

@@ -4,12 +4,15 @@ namespace CommonBundle\DataFixtures;
 
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Utils\DistributionService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -22,7 +25,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         'adm2' => '',
         'adm3' => '',
         'adm4' => '',
-        'type' => Assistance::TYPE_BENEFICIARY,
         'commodities' => [
             0 => [
                 'modality' => 'CTP',
@@ -55,16 +57,20 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         ],
         'selection_criteria' => [
             0 => [
-                'condition_string' => 'true',
-                'field_string' => 'disabled',
-                'id_field' => 1,
-                'target' => 'Beneficiary',
-                'table_string' => 'vulnerabilityCriteria',
-                'weight' => '1',
+                0 => [
+                    'condition_string' => 'true',
+                    'field_string' => 'disabled',
+                    'id_field' => 1,
+                    'target' => 'Beneficiary',
+                    'table_string' => 'vulnerabilityCriteria',
+                    'weight' => 1,
+                ],
             ],
         ],
-        'target_type' => Assistance::TYPE_BENEFICIARY,
-        'assistance_type' => AssistanceTypeEnum::DISTRIBUTION,
+        'target_type' => AssistanceTargetType::INDIVIDUAL,
+        'assistance_type' => AssistanceType::DISTRIBUTION,
+        'sector' => SectorEnum::FOOD_SECURITY,
+        'subsector' => null,
         'threshold' => 1,
     ];
 
@@ -138,13 +144,15 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         ];
         $data['selection_criteria'] = [
             0 => [
-                'condition_string' => '=',
-                'field_string' => 'gender',
-                'table_string' => 'Personnal',
-                'target' => 'Beneficiary',
-                'type' => 'table_field',
-                'value_string' => '0',
-                'weight' => 1,
+                0 => [
+                    'condition_string' => '=',
+                    'field_string' => 'gender',
+                    'table_string' => 'Personnal',
+                    'target' => 'Beneficiary',
+                    'type' => 'table_field',
+                    'value_string' => '0',
+                    'weight' => 1,
+                ],
             ],
         ];
 

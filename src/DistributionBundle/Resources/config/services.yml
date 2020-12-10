@@ -34,6 +34,8 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@distribution.configuration_loader'
+            - '@beneficiary.vulnerability_resolver'
+            - '@serializer'
 
     distribution.configuration_loader:
         class: DistributionBundle\Utils\ConfigurationLoader
@@ -55,6 +57,35 @@ services:
             - '@doctrine.orm.entity_manager'
 
     DistributionBundle\Mapper\AssistanceBeneficiaryMapper:
+        arguments:
+            - "@VoucherBundle\\Mapper\\BookletMapper"
+            - "@DistributionBundle\\Mapper\\GeneralReliefItemMapper"
+            - "@TransactionBundle\\Mapper\\TransactionMapper"
+            - "@BeneficiaryBundle\\Mapper\\BeneficiaryMapper"
+        public: true
+
+    DistributionBundle\Mapper\AssistanceCommunityMapper:
+        arguments:
+            - "@VoucherBundle\\Mapper\\BookletMapper"
+            - "@DistributionBundle\\Mapper\\GeneralReliefItemMapper"
+            - "@TransactionBundle\\Mapper\\TransactionMapper"
+            - "@BeneficiaryBundle\\Mapper\\CommunityMapper"
+        public: true
+
+    DistributionBundle\Mapper\AssistanceInstitutionMapper:
+        arguments:
+            - "@VoucherBundle\\Mapper\\BookletMapper"
+            - "@DistributionBundle\\Mapper\\GeneralReliefItemMapper"
+            - "@TransactionBundle\\Mapper\\TransactionMapper"
+            - "@BeneficiaryBundle\\Mapper\\InstitutionMapper"
+        public: true
+
+    DistributionBundle\Mapper\CampMapper:
+        public: true
+
+    DistributionBundle\Mapper\GeneralReliefItemMapper:
+        arguments:
+            - "@serializer"
         public: true
 
     DistributionBundle\Mapper\CampMapper:

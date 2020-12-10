@@ -2,10 +2,14 @@
 
 namespace DistributionBundle\Controller;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\AssistanceMapper;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
+use DistributionBundle\Mapper\AssistanceCommunityMapper;
+use DistributionBundle\Mapper\AssistanceInstitutionMapper;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
 use DistributionBundle\Utils\DistributionService;
 use DistributionBundle\Utils\DistributionCsvService;
@@ -99,7 +103,7 @@ class AssistanceController extends Controller
      * @param Household $household
      * @return Response
      */
-    public function distributionsToHousehold(Household $household)
+    public function assistancesToHousehold(Household $household)
     {
         $distributions = $this->getDoctrine()->getRepository(Assistance::class)->findDistributedToHousehold($household);
 
@@ -213,11 +217,10 @@ class AssistanceController extends Controller
     public function createAction(Request $request)
     {
         $distributionArray = $request->request->all();
-        $threshold = $distributionArray['threshold'];
 
         try {
             $listReceivers = $this->get('distribution.distribution_service')
-                ->create($distributionArray['__country'], $distributionArray, $threshold);
+                ->create($distributionArray['__country'], $distributionArray);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -286,7 +289,7 @@ class AssistanceController extends Controller
      *
      * @return Response
      */
-    public function removeOneBeneficiaryAction(Request $request, Assistance $distribution, Beneficiary $beneficiary)
+    public function removeOneBeneficiaryAction(Request $request, Assistance $distribution, AbstractBeneficiary $beneficiary)
     {
         $deletionData = $request->request->all();
 
@@ -403,6 +406,74 @@ class AssistanceController extends Controller
             );
 
         return new Response($json);
+    }
+
+    /**
+     * Get all communities of a distribution.
+     *
+     * @Rest\Get("/distributions/{id}/communities", name="get_communities_distribution", requirements={"id"="\d+"})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="communities for one distribution",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Community::class))
+     *     )
+     * )
+     *
+     * @param Assistance $assistance
+     * @return Response
+     */
+    public function getDistributionCommunitiesAction(Assistance $assistance)
+    {
+        if (AssistanceTargetType::COMMUNITY !== $assistance->getTargetType()) {
+            throw new NotFoundHttpException('There is no Community assistance with #'.$assistance->getId());
+        }
+
+        /** @var DistributionBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        $assistanceCommunities = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
+
+        $mapper = $this->get(AssistanceCommunityMapper::class);
+        return $this->json($mapper->toFullArrays($assistanceCommunities));
+    }
+
+    /**
+     * Get all institutions of a distribution.
+     *
+     * @Rest\Get("/distributions/{id}/institutions", name="get_institutions_distribution", requirements={"id"="\d+"})
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="institutions for one distribution",
+     *     @SWG\Schema(
+     *          type="array",
+     *          @SWG\Items(ref=@Model(type=Institution::class))
+     *     )
+     * )
+     *
+     * @param Assistance $assistance
+     * @return Response
+     */
+    public function getDistributionInstitutionsAction(Assistance $assistance)
+    {
+        if (AssistanceTargetType::INSTITUTION !== $assistance->getTargetType()) {
+            throw new NotFoundHttpException('There is no Institution assistance with #'.$assistance->getId());
+        }
+
+        /** @var DistributionBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        $assistanceInstitutions = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
+
+        $mapper = $this->get(AssistanceInstitutionMapper::class);
+        return $this->json($mapper->toFullArrays($assistanceInstitutions));
     }
 
     /**
@@ -735,7 +806,30 @@ class AssistanceController extends Controller
      */
     public function offlineGetDistributionsAction(Project $project)
     {
-        return $this->getDistributionsAction($project);
+        $filtered = [];
+
+        try {
+            foreach ($project->getDistributions() as $assistance) {
+                /** @var Assistance $assistance */
+                if (!$assistance->getArchived() && in_array($assistance->getTargetType(),
+                        [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])) {
+                    $filtered[] = $assistance;
+                }
+            }
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $assistanceMapper = $this->get(AssistanceMapper::class);
+
+        $json = $this->get('serializer')
+            ->serialize(
+                $assistanceMapper->toOldMobileArrays($filtered),
+                'json',
+                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+            );
+
+        return new Response($json, Response::HTTP_OK);
     }
 
     /**
@@ -895,6 +989,7 @@ class AssistanceController extends Controller
         }
 
         $target = $request->request->get('target');
+        $target = strtolower($target);
 
         try {
             $beneficiariesInProject = $distributionBeneficiaryService->getAllBeneficiariesInProject($project, $target);

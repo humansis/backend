@@ -4,15 +4,14 @@
 namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
+use BeneficiaryBundle\Model\Vulnerability\Resolver;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\SelectionCriteria;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
 use BeneficiaryBundle\Entity\Camp;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * Class CriteriaDistributionService
@@ -27,113 +26,71 @@ class CriteriaDistributionService
     /** @var ConfigurationLoader $configurationLoader */
     private $configurationLoader;
 
+    /** @var Resolver */
+    private $resolver;
+
+    /** @var Serializer */
+    private $serializer;
 
     /**
      * CriteriaDistributionService constructor.
      * @param EntityManagerInterface $entityManager
-     * @param ConfigurationLoader $configurationLoader
+     * @param ConfigurationLoader    $configurationLoader
+     * @param Resolver               $resolver
      * @throws \Exception
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ConfigurationLoader $configurationLoader
+        ConfigurationLoader $configurationLoader,
+        Resolver $resolver,
+        Serializer $serializer
     ) {
         $this->em = $entityManager;
         $this->configurationLoader = $configurationLoader;
+        $this->resolver = $resolver;
+        $this->serializer = $serializer;
     }
 
-
     /**
-     * @param array $filters
+     * @param array   $filters
      * @param Project $project
-     * @param int $threshold
-     * @param $isCount
-     * @return mixed
-     * @throws \Exception
+     * @param string  $sector
+     * @param string  $subsector
+     * @param int     $threshold
+     * @param bool    $isCount
+     *
+     * @return array
      */
-    public function load(array $filters, Project $project, int $threshold, bool $isCount)
+    public function load(array $filters, Project $project, string $sector, ?string $subsector, int $threshold, bool $isCount)
     {
         $countryISO3 = $filters['countryIso3'];
-        $distributionType = $filters['distribution_type'];
-        $criteria = $filters['criteria'];
 
-        foreach ($criteria as $index => $criterion) {
-            if ($criterion['table_string'] === 'Personnal') {
-                $criterion['type'] = $this->configurationLoader->criteria[$criterion['field_string']]['type'];
-                $criteria[$index] = $criterion;
-            }
-        }
-
-        $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
-                ->getDistributionBeneficiaries($criteria, $project, $countryISO3, $threshold, $distributionType);
-
-        $beneficiaryScores = [];
         $reachedBeneficiaries = [];
 
-        $vulnerabilityCriteria = [];
-        $alreadyPassedOnce = [];
-
-        // 1. Calculate the selection score foreach beneficiary
-        foreach ($selectableBeneficiaries as $beneficiary) {
-            $score = 0;
-
-            // 1.1 Update the score foreach selection criterion
-            foreach ($criteria as $index => $criterion) {
-                $fieldString = $criterion['field_string'];
-
-                // If the distribution type is Household and the beneficiary is not the head, count only the criteria targetting the beneficiaries
-                if ($distributionType !== '0' || $beneficiary['headId'] === $beneficiary['id'] || $criterion['target'] === 'Beneficiary') {
-    
-                    // In the case of vulnerabilityCriteria, dql forces us to add a b or a hhh in front of the key for it to be unique
-                    if ($criterion['table_string'] === 'vulnerabilityCriteria') {
-                        $fieldString = 'b' . $fieldString; // fieldString = bdisabled/blactating etc
-                    } if ($criterion['field_string'] === 'disabledHeadOfHousehold') {
-                        $fieldString = 'hhh'.$index.'disabled';
-                    }
-                    
-                    if (array_key_exists($fieldString.$index, $beneficiary) && !is_null($beneficiary[$fieldString.$index])) {
-                        // Sometimes the vulnerability criteria are counted several times
-                        if ($criterion['table_string'] === 'vulnerabilityCriteria') {
-                            if (array_key_exists($beneficiary['id'], $vulnerabilityCriteria)) {
-                                if (!in_array($fieldString, $vulnerabilityCriteria[$beneficiary['id']])) {
-                                    array_push($vulnerabilityCriteria[$beneficiary['id']], $fieldString);
-                                    $score += $criterion['weight'];
-                                }
-                            } else {
-                                $vulnerabilityCriteria[$beneficiary['id']] = [$fieldString];
-                                $score += $criterion['weight'];
-                            }
-                        }
-                        // If it exists, it means we are in one of the duplicates from the vulnerability criteria bug
-                        else if (!in_array($beneficiary['id'], $alreadyPassedOnce)) {
-                            $score += $criterion['weight'];
-                        }
-                    }
+        foreach ($filters['criteria'] as $group) {
+            foreach ($group as $index => $criterion) {
+                if ($criterion['table_string'] === 'Personnal') {
+                    $criterion['type'] = $this->configurationLoader->criteria[$criterion['field_string']]['type'];
+                    $group[$index] = $criterion;
                 }
             }
 
-            array_push($alreadyPassedOnce, $beneficiary['id']);
+            $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
+                ->getDistributionBeneficiaries($group, $project);
 
-            // 1.2. In case it is a distribution targetting households, gather the score to the head, else just store it
-            if ($distributionType === '0') {
-                if (!array_key_exists($beneficiary['headId'], $beneficiaryScores)) {
-                    $beneficiaryScores[$beneficiary['headId']] = $score;
-                } else {
-                    $beneficiaryScores[$beneficiary['headId']] = intval($beneficiaryScores[$beneficiary['headId']]) + $score;
+            foreach ($selectableBeneficiaries as $bnf) {
+                /** @var Beneficiary $beneficiary */
+                $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
+
+                $protocol = $this->resolver->compute($beneficiary->getHousehold(), $countryISO3, $sector);
+                $scores = ['totalScore' => $protocol->getTotalScore()];
+                foreach (CategoryEnum::all() as $value) {
+                    $scores[$value] = $protocol->getCategoryScore($value);
                 }
-            } else {
-                if (!array_key_exists($beneficiary['id'], $beneficiaryScores)) {
-                    $beneficiaryScores[$beneficiary['id']] = $score;
-                } else {
-                    $beneficiaryScores[$beneficiary['id']] = intval($beneficiaryScores[$beneficiary['id']]) + $score;
+
+                if ($protocol->getTotalScore() >= $threshold) {
+                    $reachedBeneficiaries[$beneficiary->getId()] = $scores;
                 }
-            }
-        }
-        
-        // 2. Verify who is above the threshold 
-        foreach ($beneficiaryScores as $selectableBeneficiaryId => $score) {
-            if ($score >= $threshold) {
-                array_push($reachedBeneficiaries, $selectableBeneficiaryId);
             }
         }
         
@@ -142,8 +99,40 @@ class CriteriaDistributionService
             return ['number' =>  count($reachedBeneficiaries)];
         } else {
             // !!!! Those are ids, not directly beneficiaries !!!!
-            return ['finalArray' =>  $reachedBeneficiaries];
+            return ['finalArray' => $reachedBeneficiaries];
         }
+    }
+
+    /**
+     * @param array   $filters
+     * @param Project $project
+     * @param int     $threshold
+     * @param int     $limit
+     * @param int     $offset
+     *
+     * @return Beneficiary[]
+     * @throws \Exception
+     */
+    public function getList(array $filters, Project $project, int $threshold, int $limit, int $offset)
+    {
+        $result = $this->load($filters, $project, $filters['sector'], $filters['subsector'], $threshold, false);
+
+        $beneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(['id' => array_keys($result['finalArray'])], null, $limit, $offset);
+
+        $data = [];
+        foreach ($beneficiaries as $beneficiary) {
+            $serialized = $this->serializer->serialize($beneficiary, 'json', ['groups' => ['SmallHousehold']]);
+            $deserialized = json_decode($serialized, true);
+            $deserialized['scores'] = $result['finalArray'][$beneficiary->getId()];
+
+            $data[] = $deserialized;
+        }
+
+        usort($data, function ($a, $b) {
+            return $b['scores']['totalScore'] <=> $a['scores']['totalScore'];
+        });
+
+        return $data;
     }
 
     /**

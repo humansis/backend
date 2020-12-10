@@ -74,7 +74,6 @@ class BMSServiceTestCase extends KernelTestCase
 
     protected $bodyHousehold = [
         "livelihood" => \ProjectBundle\Enum\Livelihood::FARMING_LIVESTOCK,
-        "income_level" => 3,
         "notes" => "NOTES_TEST",
         "latitude" => "1.1544",
         "longitude" => "120.12",
@@ -125,7 +124,7 @@ class BMSServiceTestCase extends KernelTestCase
                 ],
                 "vulnerability_criteria" => [
                     [
-                        "id" => 1
+                        "id" => 2
                     ]
                 ],
                 "phones" => [
@@ -159,7 +158,7 @@ class BMSServiceTestCase extends KernelTestCase
                 ],
                 "vulnerability_criteria" => [
                     [
-                        "id" => 1
+                        "id" => 2
                     ]
                 ],
                 "phones" => [
@@ -183,6 +182,7 @@ class BMSServiceTestCase extends KernelTestCase
         "support_received_types" => null,
         "support_organization_name" => "Abcd Ltd.",
         "support_date_received" => "22-02-2020",
+        "enumerator_name" => "ENUMERATOR_NAME_TEST",
     ];
 
     /**

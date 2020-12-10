@@ -7,6 +7,9 @@ use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use dateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
+use NewApiBundle\InputType\ProjectCreateInputType;
+use NewApiBundle\InputType\ProjectUpdateInputType;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Donor;
 use ProjectBundle\Entity\Project;
@@ -103,7 +106,7 @@ class ProjectService
      * @return Project
      * @throws \Exception
      */
-    public function create($countryISO3, array $projectArray, User $user)
+    public function createFromArray($countryISO3, array $projectArray, User $user)
     {
         /** @var Project $project */
 
@@ -165,6 +168,51 @@ class ProjectService
                 if ($donorTmp instanceof Donor) {
                     $project->addDonor($donorTmp);
                 }
+            }
+        }
+
+        $this->em->persist($project);
+        $this->em->flush();
+
+        $this->addUser($project, $user);
+
+        return $project;
+    }
+
+    /**
+     * @param ProjectCreateInputType $inputType
+     * @param User                   $user
+     *
+     * @return Project
+     * @throws EntityNotFoundException
+     */
+    public function create(ProjectCreateInputType $inputType, User $user): Project
+    {
+        $existingProjects = $this->em->getRepository(Project::class)->findBy([
+            'name' => $inputType->getName(),
+            'iso3' => $inputType->getIso3(),
+        ]);
+
+        if (!empty($existingProjects)) {
+            throw new \RuntimeException('Project with the name '.$inputType->getName().' already exists');
+        }
+
+        $project = (new Project())
+            ->setName($inputType->getName())
+            ->setInternalId($inputType->getInternalId())
+            ->setStartDate($inputType->getStartDate())
+            ->setEndDate($inputType->getEndDate())
+            ->setIso3($inputType->getIso3())
+            ->setTarget($inputType->getTarget())
+            ->setNotes($inputType->getNotes())
+            ->setSectors($inputType->getSectors());
+
+        foreach ($inputType->getDonorIds() as $id) {
+            $donor = $this->em->getRepository(Donor::class)->find($id);
+            if ($donor instanceof Donor) {
+                $project->addDonor($donor);
+            } else {
+                throw new EntityNotFoundException("Donor with ID #$id does not exists.");
             }
         }
 
@@ -248,6 +296,50 @@ class ProjectService
     }
 
     /**
+     * @param Project                $project
+     * @param ProjectUpdateInputType $inputType
+     *
+     * @return Project
+     * @throws EntityNotFoundException
+     */
+    public function update(Project $project, ProjectUpdateInputType $inputType)
+    {
+        $existingProjects = $this->em->getRepository(Project::class)->findBy([
+            'name' => $inputType->getName(),
+            'iso3' => $inputType->getIso3(),
+        ]);
+
+        if (!empty($existingProjects) && $existingProjects[0]->getId() !== $project->getId()) {
+            throw new \RuntimeException('Project with the name '.$project->getName().' already exists');
+        }
+
+        $project
+            ->setName($inputType->getName())
+            ->setInternalId($inputType->getInternalId())
+            ->setStartDate($inputType->getStartDate())
+            ->setEndDate($inputType->getEndDate())
+            ->setIso3($inputType->getIso3())
+            ->setTarget($inputType->getTarget())
+            ->setNotes($inputType->getNotes())
+            ->setSectors($inputType->getSectors());
+
+        $project->removeDonors();
+        foreach ($inputType->getDonorIds() as $id) {
+            $donor = $this->em->getRepository(Donor::class)->find($id);
+            if ($donor instanceof Donor) {
+                $project->addDonor($donor);
+            } else {
+                throw new EntityNotFoundException("Donor with ID #$id does not exists.");
+            }
+        }
+
+        $this->em->persist($project);
+        $this->em->flush();
+
+        return $project;
+    }
+
+    /**
      * Add multiple households to project.
      *
      * @param Project $project
@@ -298,9 +390,10 @@ class ProjectService
      */
     public function delete(Project $project)
     {
-        $assistance = $this->em->getRepository(Assistance::class)->findByProject($project);
+        /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
+        $assistance = $this->em->getRepository(Assistance::class)->findByParams($project);
 
-        if (empty($assistance)) {
+        if (0 === $assistance->count()) {
             try {
                 foreach ($project->getSectors()->getValues() as $projectSector) {
                     $this->em->remove($projectSector);
@@ -330,12 +423,12 @@ class ProjectService
 
     /**
      * Check if all distributions allow for the project to be deleted
-     * @param Assistance $assistance
+     * @param Assistance[] $assistance
      * @return boolean
      */
-    private function checkIfAllDistributionClosed(array $assistance)
+    private function checkIfAllDistributionClosed(iterable $assistances)
     {
-        foreach ($assistance as $distributionDatum) {
+        foreach ($assistances as $distributionDatum) {
             if (!$distributionDatum->getArchived() && !$distributionDatum->getCompleted()) {
                 return false;
             }

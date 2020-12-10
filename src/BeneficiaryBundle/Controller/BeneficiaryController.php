@@ -4,11 +4,17 @@ namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 
+use CommonBundle\Pagination\Paginator;
+use DistributionBundle\Utils\CriteriaDistributionService;
+use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -19,6 +25,33 @@ use VoucherBundle\Entity\Smartcard;
 
 class BeneficiaryController extends Controller
 {
+    /**
+     * @Rest\Get("/beneficiaries/residency-statuses")
+     *
+     * @return JsonResponse
+     */
+    public function getResidencyStatuses(): JsonResponse
+    {
+        $data = CodeLists::mapEnum(ResidencyStatus::all());
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/beneficiaries/vulnerability-criterias")
+     *
+     * @return JsonResponse
+     */
+    public function getVulnerabilityCriterion(): JsonResponse
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $criterion = $em->getRepository(VulnerabilityCriterion::class)
+            ->findAllActive();
+
+        return $this->json(new Paginator(CodeLists::mapCriterion($criterion)));
+    }
+
     /**
      * @Rest\Get("/vulnerability_criteria", name="get_all_vulnerability_criteria")
      * @SWG\Tag(name="Beneficiary")
@@ -36,6 +69,105 @@ class BeneficiaryController extends Controller
             ->serialize($vulnerabilityCriteria, 'json');
 
         return new Response($json);
+    }
+
+    /**
+     * @Rest\Post("/beneficiaries/project/{id}")
+     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
+     *
+     * @SWG\Tag(name="CriteriaDistributions")
+     * @SWG\Tag(name="Beneficiary")
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     required=true,
+     *     schema={}
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     type="integer"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="offset",
+     *     in="query",
+     *     type="integer"
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Project $project
+     * @return Response
+     */
+    public function getBeneficiariesAction(Request $request, Project $project)
+    {
+        $filters = $request->request->all();
+        $filters['countryIso3'] = $filters['__country'];
+        $threshold = $filters['threshold'];
+
+        $limit = $request->query->getInt('limit', 1000);
+        $offset = $request->query->getInt('offset', 0);
+
+        /** @var CriteriaDistributionService $criteriaDistributionService */
+        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
+        $data = $criteriaDistributionService->getList($filters, $project, $threshold, $limit, $offset);
+
+        return $this->json($data);
+    }
+
+    /**
+     * @Rest\Post("/beneficiaries/project/{id}/number")
+     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
+     *
+     * @SWG\Tag(name="CriteriaDistributions")
+     * @SWG\Tag(name="Beneficiary")
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     required=true,
+     *     schema={}
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Request $request
+     * @param Project $project
+     * @return Response
+     */
+    public function getBeneficiariesNumberAction(Request $request, Project $project)
+    {
+        $filters = $request->request->all();
+        $filters['countryIso3'] = $filters['__country'];
+        $threshold = $filters['threshold'];
+        $sector = $filters['sector'];
+        $subSector = $filters['subsector'];
+
+        /** @var CriteriaDistributionService $criteriaDistributionService */
+        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
+        $receivers = $criteriaDistributionService->load($filters, $project, $sector, $subSector, $threshold, true);
+
+        return $this->json($receivers);
     }
 
      /**

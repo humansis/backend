@@ -1,6 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 namespace ProjectBundle\Mapper;
 
+use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use ProjectBundle\DTO\Sector;
 use ProjectBundle\Entity\ProjectSector;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -30,31 +35,34 @@ class SectorMapper
                 'id' => $subSector->getSubSectorName(),
                 'name' => $this->getLabel($subSector->getSubSectorName()),
                 'availableTargets' => [],
-                'assistanceType' => '',
+                'assistanceTypes' => [],
             ];
             if ($subSector->isCommunityAllowed()) {
-                $ss['availableTargets'][] = 'community';
+                $ss['availableTargets'][] = AssistanceTargetType::COMMUNITY;
             }
             if ($subSector->isInstitutionAllowed()) {
-                $ss['availableTargets'][] = 'institution';
+                $ss['availableTargets'][] = AssistanceTargetType::INSTITUTION;
             }
             if ($subSector->isHouseholdAllowed()) {
-                $ss['availableTargets'][] = 'household';
+                $ss['availableTargets'][] = AssistanceTargetType::HOUSEHOLD;
             }
             if ($subSector->isBeneficiaryAllowed()) {
-                $ss['availableTargets'][] = 'individual';
+                $ss['availableTargets'][] = AssistanceTargetType::INDIVIDUAL;
+            }
+            if ($subSector->isDistributionAllowed()) {
+                $ss['assistanceTypes'][] = AssistanceType::DISTRIBUTION;
             }
             if ($subSector->isActivityAllowed()) {
-                $ss['assistanceType'] = 'activity';
-            } elseif ($subSector->isDistributionAllowed()) {
-                $ss['assistanceType'] = 'distribution';
+                $ss['assistanceTypes'][] = AssistanceType::ACTIVITY;
             }
+
             $subSectorMapped[] = $ss;
         }
+
         return [
             'id' => $sector,
             'name' => $this->getLabel($sector),
-            'subSectors' => $subSectorMapped,
+            'subsectors' => $subSectorMapped,
         ];
     }
 
@@ -79,8 +87,8 @@ class SectorMapper
     {
         foreach ($projectSectors as $projectSector) {
             yield [
-                "id" => $projectSector->getSector(),
-                "name" => $this->getLabel($projectSector->getSector()),
+                'id' => $projectSector->getSector(),
+                'name' => $this->getLabel($projectSector->getSector()),
             ];
         }
     }

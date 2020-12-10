@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Tests\DistributionBundle\Controller;
 
@@ -15,6 +16,8 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
+use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\DistributionCSVService;
 use DistributionBundle\Utils\DistributionService;
 use ProjectBundle\Entity\Project;
@@ -55,13 +58,15 @@ class AssistanceControllerTest extends BMSServiceTestCase
 //        $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
 
+        $adm2 = $this->container->get('doctrine')->getRepository(\CommonBundle\Entity\Adm2::class)->findOneBy([]);
+
         $criteria = array(
             "id" => null,
-            "adm1" => "",
-            "adm2"=> "",
-            "adm3" => "",
-            "adm4" => "",
-            "type" => Assistance::TYPE_HOUSEHOLD,
+            'adm1' => $adm2->getAdm1()->getId(),
+            'adm2' => $adm2->getId(),
+            'adm3' => null,
+            'adm4' => null,
+            "target_type" => AssistanceTargetType::HOUSEHOLD,
             "commodities" => [
                 [
                     'id' => null,
@@ -77,10 +82,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             "date_distribution" => "13-09-2018",
             "location" => [
-                "adm1"=> 1,
-                "adm2"=> 1,
-                "adm3"=> 1,
-                "adm4"=> 1,
+                'adm1' => $adm2->getAdm1()->getId(),
+                'adm2' => $adm2->getId(),
+                'adm3' => null,
+                'adm4' => null,
                 "country_iso3"=> "KHM"
             ],
             "country_specific_answers" => [
@@ -103,15 +108,19 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             "selection_criteria"=> [
                 [
-                    "condition_string"=> "true",
-                    "field_string"=> "disabled",
-                    "id_field"=> "1",
-                    "target"=> "Beneficiary",
-                    "table_string"=> "vulnerabilityCriteria",
-                    "weight"=> "1"
+                    [
+                        "condition_string"=> "true",
+                        "field_string"=> "disabled",
+                        "id_field"=> 1,
+                        "target"=> "Beneficiary",
+                        "table_string"=> "vulnerabilityCriteria",
+                        "weight"=> 1,
+                    ]
                 ]
             ],
             "threshold"=> 1,
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
         );
 
 
@@ -130,12 +139,14 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $distribution = $return['distribution'];
         $this->assertArrayHasKey('id', $distribution);
         $this->assertArrayHasKey('name', $distribution);
-        $this->assertArrayHasKey('type', $distribution);
         $this->assertArrayHasKey('target_type', $distribution);
+        $this->assertArrayHasKey('assistance_type', $distribution);
         $this->assertArrayHasKey('location', $distribution);
         $this->assertArrayHasKey('project', $distribution);
         $this->assertArrayHasKey('selection_criteria', $distribution);
         $this->assertArrayHasKey('validated', $distribution);
+
+        $this->assertEquals($distribution['name'], $adm2->getName().'-'.date('d-m-Y'));
 
         return $distribution;
     }
@@ -194,7 +205,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $validate);
         $this->assertArrayHasKey('archived', $validate);
         $this->assertArrayHasKey('validated', $validate);
-        $this->assertArrayHasKey('type', $validate);
+        $this->assertArrayHasKey('assistance_type', $validate);
+        $this->assertArrayHasKey('target_type', $validate);
         $this->assertArrayHasKey('commodities', $validate);
         $this->assertArrayHasKey('distribution_beneficiaries', $validate);
 
@@ -254,9 +266,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $all[0]);
         $this->assertArrayHasKey('archived', $all[0]);
         $this->assertArrayHasKey('validated', $all[0]);
-        $this->assertArrayHasKey('type', $all[0]);
+        $this->assertArrayHasKey('target_type', $all[0]);
+        $this->assertArrayHasKey('assistance_type', $all[0]);
         $this->assertArrayHasKey('commodities', $all[0]);
-//        $this->assertArrayHasKey('distribution_beneficiaries', $all[0]);
     }
 
 
@@ -290,9 +302,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $one);
         $this->assertArrayHasKey('archived', $one);
         $this->assertArrayHasKey('validated', $one);
-        $this->assertArrayHasKey('type', $one);
+        $this->assertArrayHasKey('target_type', $one);
+        $this->assertArrayHasKey('assistance_type', $one);
         $this->assertArrayHasKey('commodities', $one);
-//        $this->assertArrayHasKey('distribution_beneficiaries', $one);
     }
 
     /**
@@ -355,6 +367,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('beneficiary', $beneficiaries[0]);
         $this->assertArrayHasKey('transactions', $beneficiaries[0]);
     }
+
 
     /**
      * @depends testCreateDistribution
@@ -474,7 +487,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'name' => 'TEST_DISTRIBUTION_NAME_PHPUNIT',
             "project"=> $distribution['project'],
             "selection_criteria"=> $distribution['selection_criteria'],
-            'type' => 0,
+            'target_type' => AssistanceTargetType::HOUSEHOLD,
             'updated_on' => '28-11-2018 11:11:11',
             'validated' => false,
         );
@@ -494,8 +507,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $update);
         $this->assertArrayHasKey('archived', $update);
         $this->assertArrayHasKey('validated', $update);
-        // $this->assertArrayHasKey('reporting_distribution', $update); // Not in the group fullDistribution any more
-        $this->assertArrayHasKey('type', $update);
+        $this->assertArrayHasKey('target_type', $update);
         $this->assertArrayHasKey('commodities', $update);
         $this->assertArrayHasKey('distribution_beneficiaries', $update);
     }
@@ -559,7 +571,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $distribution);
         $this->assertArrayHasKey('archived', $distribution);
         $this->assertArrayHasKey('validated', $distribution);
-        $this->assertArrayHasKey('type', $distribution);
+        $this->assertArrayHasKey('target_type', $distribution);
         $this->assertArrayHasKey('commodities', $distribution);
         $this->assertArrayHasKey('beneficiaries_count', $distribution);
         $this->assertArrayNotHasKey('distribution_beneficiaries', $distribution);
@@ -674,7 +686,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $body = array(
-            'target' => 'Households'
+            'target' => 'Household'
         );
         // Second step
         // Create the user with the email and the salted password. The user should be enable
@@ -798,7 +810,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'adm2' => '',
             'adm3' => '',
             'adm4' => '',
-            'type' => Assistance::TYPE_HOUSEHOLD,
+            'target_type' => AssistanceTargetType::HOUSEHOLD,
             'commodities' => [
                 [
                     'id' => null,
@@ -830,6 +842,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             'location_name' => '',
             'name' => 'DISTRIBUTION_TO_BE_DELETED_FROM_DB',
+            'description' => 'some description',
             'project' => [
                 'donors' => [],
                 'donors_name' => [],
@@ -840,15 +853,19 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             'selection_criteria' => [
                 [
-                    'condition_string' => 'true',
-                    'field_string' => 'disabled',
-                    'id_field' => '1',
-                    'target' => 'Beneficiary',
-                    'table_string' => 'vulnerabilityCriteria',
-                    'weight' => '1',
+                    [
+                        'condition_string' => 'true',
+                        'field_string' => 'disabled',
+                        'id_field' => 1,
+                        'target' => 'Beneficiary',
+                        'table_string' => 'vulnerabilityCriteria',
+                        'weight' => 1,
+                    ],
                 ],
             ],
             'threshold' => 1,
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
@@ -897,5 +914,190 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $assistance = $this->em->getRepository(Assistance::class)->find($id);
         $this->assertInstanceOf(Assistance::class, $assistance, 'Assistance should exists in DB');
         $this->assertTrue((bool) $assistance->getArchived(), 'Assistance should be archived');
+    }
+
+    public function testCreateDistributionForCommunity()
+    {
+        /** @var \BeneficiaryBundle\Repository\CommunityRepository $communityRepo */
+        $communityRepo = $this->container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Community::class);
+        $community = $communityRepo->findBy([])[0];
+
+        $body = [
+            'id' => null,
+            'adm1' => '',
+            'adm2' => '',
+            'adm3' => '',
+            'adm4' => '',
+            'target_type' => AssistanceTargetType::COMMUNITY,
+            'date_distribution' => '13-09-2018',
+            'location' => [
+                'adm1' => 1,
+                'adm2' => 1,
+                'adm3' => 1,
+                'adm4' => 1,
+                'country_iso3' => 'KHM',
+            ],
+            'commodities' => [
+                [
+                    'id' => null,
+                    'modality' => 'Cash',
+                    'modality_type' => [
+                        'id' => 1,
+                    ],
+                    'type' => 'Mobile Money',
+                    'unit' => 'USD',
+                    'value' => 100,
+                    'description' => null,
+                ],
+            ],
+            'country_specific_answers' => [
+                [
+                    'answer' => 'MY_ANSWER_TEST1',
+                    'country_specific' => [
+                        'id' => 1,
+                    ],
+                ],
+            ],
+            'location_name' => '',
+            'name' => 'DISTRIBUTION_FOR_COMMUNITY',
+            'project' => [
+                'donors' => [],
+                'donors_name' => [],
+                'id' => 1,
+                'name' => '',
+                'sectors' => [],
+                'sectors_name' => [],
+            ],
+            'communities' => [$community->getId()],
+            'households_targeted' => 3,
+            'individuals_targeted' => 5,
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+        ];
+
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // preparation to test
+        $this->request('PUT', '/api/wsse/distributions', $body);
+        $assistanceData = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        return $assistanceData['distribution']['id'];
+    }
+
+    public function testCreateDistributionForInstitution()
+    {
+        /** @var \BeneficiaryBundle\Repository\InstitutionRepository $institutionRepo */
+        $institutionRepo = $this->container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Institution::class);
+        $institution = $institutionRepo->findBy([])[0];
+
+        $body = [
+            'id' => null,
+            'adm1' => '',
+            'adm2' => '',
+            'adm3' => '',
+            'adm4' => '',
+            'target_type' => AssistanceTargetType::INSTITUTION,
+            'assistance_type' => AssistanceType::ACTIVITY,
+            'date_distribution' => '13-09-2018',
+            'location' => [
+                'adm1' => 1,
+                'adm2' => 1,
+                'adm3' => 1,
+                'adm4' => 1,
+                'country_iso3' => 'KHM',
+            ],
+            'country_specific_answers' => [
+                [
+                    'answer' => 'MY_ANSWER_TEST1',
+                    'country_specific' => [
+                        'id' => 1,
+                    ],
+                ],
+            ],
+            'location_name' => '',
+            'name' => 'DISTRIBUTION_FOR_INSTITUTION',
+            'project' => [
+                'donors' => [],
+                'donors_name' => [],
+                'id' => 1,
+                'name' => '',
+                'sectors' => [],
+                'sectors_name' => [],
+            ],
+            'institutions' => [$institution->getId()],
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+        ];
+
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // preparation to test
+        $this->request('PUT', '/api/wsse/distributions', $body);
+        $assistanceData = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        return $assistanceData['distribution']['id'];
+    }
+
+
+    /**
+     * @depends testCreateDistributionForCommunity
+     * @param $distributionId
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testGetDistributionCommunities($distributionId)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distributionId .'/communities');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertIsArray($beneficiaries);
+        $this->assertCount(1, $beneficiaries);
+        $this->assertArrayHasKey('id', $beneficiaries[0]);
+        $this->assertArrayHasKey('community', $beneficiaries[0]);
+        $this->assertArrayHasKey('transactions', $beneficiaries[0]);
+    }
+
+    /**
+     * @depends testCreateDistributionForInstitution
+     * @param $distributionId
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testGetDistributionInstitutions($distributionId)
+    {
+        // Fake connection with a token for the user tester (ADMIN)
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        // Second step
+        // Create the user with the email and the salted password. The user should be enable
+        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distributionId .'/institutions');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Check if the second step succeed
+        $this->assertIsArray($beneficiaries);
+        $this->assertCount(1, $beneficiaries);
+        $this->assertArrayHasKey('id', $beneficiaries[0]);
+        $this->assertArrayHasKey('institution', $beneficiaries[0]);
+        $this->assertArrayHasKey('transactions', $beneficiaries[0]);
     }
 }

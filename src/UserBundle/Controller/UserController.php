@@ -648,7 +648,7 @@ class UserController extends Controller
         $userJson = $this->get('serializer')->serialize(
             $user,
             'json',
-            [['FullUser']]
+            ['groups' => ['FullUser']]
         );
 
         return new Response($userJson);

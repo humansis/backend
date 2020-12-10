@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
 
 namespace ProjectBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
@@ -47,14 +49,14 @@ class SectorService
             return null;
         }
         switch ($sector->getSubSectorName()) {
-            case SubSectorEnum::FOOD_PARCELS_BASKETS:
-            case SubSectorEnum::RTER:
+            case SubSectorEnum::FOOD_DISTRIBUTIONS:
+            case SubSectorEnum::CASH_GRANTS:
             case SubSectorEnum::FOOD_VOUCHERS:
                 return $sector->setDistributionAllowed()
                     ->setHouseholdAllowed()
                     ->setBeneficiaryAllowed()
                     ;
-            case SubSectorEnum::CASH_FOR_WORK:
+            case SubSectorEnum::FOOD_CASH_FOR_WORK:
                 return $sector->setActivityAllowed()
                     ->setBeneficiaryAllowed()
                     ;
@@ -63,10 +65,29 @@ class SectorService
                     ->setBeneficiaryAllowed()
                     ;
             case SubSectorEnum::TECHNICAL_SUPPORT:
+                return $sector->setActivityAllowed()
+                    ->setHouseholdAllowed()
+                    ->setBeneficiaryAllowed()
+                    ->setCommunityAllowed()
+                    ->setInstitutionAllowed()
+                    ;
             case SubSectorEnum::DISTRIBUTION_OF_INPUTS:
+                return $sector->setDistributionAllowed()
+                    ->setHouseholdAllowed()
+                    ->setBeneficiaryAllowed()
+                    ;
             case SubSectorEnum::BUSINESS_GRANTS:
+                return $sector->setDistributionAllowed()
+                    ->setBeneficiaryAllowed()
+                    ;
             case SubSectorEnum::AGRICULTURAL_VOUCHERS:
                 return $sector->setDistributionAllowed()
+                    ->setHouseholdAllowed()
+                    ->setBeneficiaryAllowed()
+                    ;
+            case SubSectorEnum::LIVELIHOOD_CASH_FOR_WORK:
+                return $sector->setActivityAllowed()
+                    ->setBeneficiaryAllowed()
                     ;
             case SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE:
                 return $sector->setDistributionAllowed()
@@ -76,12 +97,13 @@ class SectorService
             case SubSectorEnum::CONSTRUCTION:
                 return $sector->setActivityAllowed()
                     ->setInstitutionAllowed()
+                    ->setCommunityAllowed()
                     ->setHouseholdAllowed()
                     ;
             case SubSectorEnum::SETTLEMENT_UPGRADES:
                 return $sector->setActivityAllowed()
                     ->setCommunityAllowed()
-                    ->setHouseholdAllowed()
+                    ->setInstitutionAllowed()
                     ;
             case SubSectorEnum::WINTERIZATION_KITS:
                 return $sector->setDistributionAllowed()
@@ -166,8 +188,26 @@ class SectorService
                     ;
             case SubSectorEnum::EDUCATION_PSYCHOSOCIAL_SUPPORT:
             case SubSectorEnum::EDUCATION_SERVICES:
+            case SubSectorEnum::EDUCATION_CASH_FOR_WORK:
+            case SubSectorEnum::PARENT_SESSIONS:
                 return $sector->setActivityAllowed()
                     ->setBeneficiaryAllowed()
+                    ;
+            case SubSectorEnum::DEFAULT_EMERGENCY_TELCO:
+            case SubSectorEnum::DEFAULT_HEALTH:
+            case SubSectorEnum::DEFAULT_LOGISTICS:
+            case SubSectorEnum::DEFAULT_NUTRITION:
+            case SubSectorEnum::DEFAULT_MINE:
+            case SubSectorEnum::DEFAULT_DRR_RESILIENCE:
+            case SubSectorEnum::DEFAULT_NON_SECTOR:
+            case SubSectorEnum::DEFAULT_CAMP_MANAGEMENT:
+            case SubSectorEnum::DEFAULT_EARLY_RECOVERY:
+                return $sector->setActivityAllowed()
+                    ->setDistributionAllowed()
+                    ->setBeneficiaryAllowed()
+                    ->setHouseholdAllowed()
+                    ->setCommunityAllowed()
+                    ->setInstitutionAllowed()
                     ;
             default:
                 return null;
@@ -182,10 +222,10 @@ class SectorService
     private function findSector($subSectorName): ?Sector
     {
         switch ($subSectorName) {
-            case SubSectorEnum::FOOD_PARCELS_BASKETS:
-            case SubSectorEnum::RTER:
+            case SubSectorEnum::FOOD_DISTRIBUTIONS:
+            case SubSectorEnum::CASH_GRANTS:
             case SubSectorEnum::FOOD_VOUCHERS:
-            case SubSectorEnum::CASH_FOR_WORK:
+            case SubSectorEnum::FOOD_CASH_FOR_WORK:
                 return new Sector(SectorEnum::FOOD_SECURITY, $subSectorName);
 
             case SubSectorEnum::SKILLS_TRAINING:
@@ -193,6 +233,7 @@ class SectorService
             case SubSectorEnum::DISTRIBUTION_OF_INPUTS:
             case SubSectorEnum::BUSINESS_GRANTS:
             case SubSectorEnum::AGRICULTURAL_VOUCHERS:
+            case SubSectorEnum::LIVELIHOOD_CASH_FOR_WORK:
                 return new Sector(SectorEnum::LIVELIHOODS, $subSectorName);
 
             case SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE:
@@ -233,7 +274,36 @@ class SectorService
             case SubSectorEnum::LEARNING_MATERIALS:
             case SubSectorEnum::EDUCATION_PSYCHOSOCIAL_SUPPORT:
             case SubSectorEnum::EDUCATION_SERVICES:
+            case SubSectorEnum::EDUCATION_CASH_FOR_WORK:
+            case SubSectorEnum::PARENT_SESSIONS:
                 return new Sector(SectorEnum::EDUCATION, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_EMERGENCY_TELCO:
+                return new Sector(SectorEnum::EMERGENCY_TELCO, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_HEALTH:
+                return new Sector(SectorEnum::HEALTH, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_LOGISTICS:
+                return new Sector(SectorEnum::LOGISTICS, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_NUTRITION:
+                return new Sector(SectorEnum::NUTRITION, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_MINE:
+                return new Sector(SectorEnum::MINE, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_DRR_RESILIENCE:
+                return new Sector(SectorEnum::DRR_RESILIENCE, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_NON_SECTOR:
+                return new Sector(SectorEnum::NON_SECTOR, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_CAMP_MANAGEMENT:
+                return new Sector(SectorEnum::CAMP_MANAGEMENT, $subSectorName);
+
+            case SubSectorEnum::DEFAULT_EARLY_RECOVERY:
+                return new Sector(SectorEnum::EARLY_RECOVERY, $subSectorName);
 
             default:
                 return null;
@@ -252,6 +322,9 @@ class SectorService
         return $sectors;
     }
 
+    /**
+     * @return Sector[]
+     */
     public function getSubsBySector(): iterable
     {
         $sectors = [];
@@ -264,5 +337,22 @@ class SectorService
             $sectors[$sectorDTO->getSectorName()][] = $sectorDTO;
         }
         return $sectors;
+    }
+
+    /**
+     * @param string $sector
+     * @return Sector[]
+     *
+     * @throws InvalidArgumentException
+     */
+    public function findSubsSectorsBySector(string $sector): array
+    {
+        $sectors = $this->getSubsBySector();
+
+        if (!isset($sectors[$sector])) {
+            throw new InvalidArgumentException('Sector not found');
+        }
+
+        return $sectors[$sector];
     }
 }

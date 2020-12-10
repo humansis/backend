@@ -132,25 +132,29 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         }
 
         // If there is a filter array in the request
+        $subSelectIndex = 0;
         if (count($filters) > 0) {
             // For each filter in our array, we recover an index (to avoid parameters' repetitions in the WHERE clause) and the filters
             foreach ($filters as $indexFilter => $filter) {
                 // We recover the category of the filter chosen and the value of the filter
                 $category = $filter["category"];
+                /** @var string[] $filterValues */
                 $filterValues = $filter["filter"];
 
                 if ($category === "any" && count($filterValues) > 0) {
                     foreach ($filterValues as $filterValue) {
+                        $aliasBnf = 'bnf'.++$subSelectIndex;
+                        $aliasPerson = 'p'.$subSelectIndex;
                         $subQueryForName = $this->_em->createQueryBuilder()
-                            ->select('p.id')
-                            ->from(Beneficiary::class, 'bnf')
-                            ->leftJoin('bnf.person', 'p')
-                            ->andWhere('bnf.id = IDENTITY(db.beneficiary)')
+                            ->select("$aliasPerson.id")
+                            ->from(Beneficiary::class, $aliasBnf)
+                            ->leftJoin("$aliasBnf.person", $aliasPerson)
+                            ->andWhere("$aliasBnf.id = IDENTITY(db.beneficiary)")
                             ->andWhere("(
-                                p.localGivenName LIKE '%$filterValue%' OR
-                                p.localFamilyName LIKE '%$filterValue%' OR
-                                p.enGivenName LIKE '%$filterValue%' OR
-                                p.enFamilyName LIKE '%$filterValue%'
+                                $aliasPerson.localGivenName LIKE '%$filterValue%' OR
+                                $aliasPerson.localFamilyName LIKE '%$filterValue%' OR
+                                $aliasPerson.enGivenName LIKE '%$filterValue%' OR
+                                $aliasPerson.enFamilyName LIKE '%$filterValue%'
                             ) ")
                             ->setParameter('filter', strtolower($filterValue))
                             ->getDQL()

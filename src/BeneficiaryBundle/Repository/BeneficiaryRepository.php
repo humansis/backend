@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Repository;
 use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
+use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping;
@@ -28,23 +29,27 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     /**
      * Get all beneficiaries in a selected project.
      *
-     * @param int $project
-     *
+     * @param int    $project
      * @param string $target
+     *
      * @return mixed
      */
     public function getAllOfProject(int $project, string $target)
     {
         $qb = $this->createQueryBuilder('b');
-        if ($target == 'Household') {
+        if (AssistanceTargetType::HOUSEHOLD === $target) {
             $q = $qb->leftJoin('b.household', 'hh')
                 ->where(':project MEMBER OF hh.projects')
                 ->andWhere('b.status = 1')
+                ->andWhere('b.archived = 0')
+                ->setParameter('project', $project);
+        } elseif (AssistanceTargetType::INDIVIDUAL === $target) {
+            $q = $qb->leftJoin('b.household', 'hh')
+                ->andWhere(':project MEMBER OF hh.projects')
+                ->andWhere('b.archived = 0')
                 ->setParameter('project', $project);
         } else {
-            $q = $qb->leftJoin('b.household', 'hh')
-                ->where(':project MEMBER OF hh.projects')
-                ->setParameter('project', $project);
+            return [];
         }
 
         return $q->getQuery()->getResult();
@@ -54,10 +59,10 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->leftJoin('b.household', 'hh')
-                ->where('hh.archived = 0');
+            ->where('hh.archived = 0');
         foreach ($byArray as $key => $value) {
-            $q = $q->andWhere('b.' . $key . ' = :value' . $key)
-                    ->setParameter('value' . $key, $value);
+            $q = $q->andWhere('b.'.$key.' = :value'.$key)
+                ->setParameter('value'.$key, $value);
         }
 
         return $q->getQuery()->getResult();
@@ -79,7 +84,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->getResult();
     }
 
-    public function getAllInCountry(string $iso3) {
+    public function getAllInCountry(string $iso3)
+    {
         $qb = $this->createQueryBuilder('b');
         $this->beneficiariesInCountry($qb, $iso3);
         $qb->andWhere('hh.archived = 0');
@@ -98,10 +104,12 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
     /**
-     * Counts Household members in project
+     * Counts Household members in project.
+     *
      * @param Project $project
      *
      * @return int
+     *
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -188,7 +196,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
     public function countByResidencyStatus(Assistance $assistance, string $residencyStatus): int
     {
-        if (Assistance::TYPE_HOUSEHOLD === $assistance->getTargetType()) {
+        if (AssistanceTargetType::HOUSEHOLD === $assistance->getTargetType()) {
             $qb = $this->createQueryBuilder('hhm')
                 ->select('COUNT(hhm)')
                 ->join('hhm.household', 'h')
@@ -231,7 +239,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
         $minDateOfBirth->sub(new \DateInterval('P'.$maxAge.'Y'));
 
-        if (Assistance::TYPE_HOUSEHOLD === $distribution->getTargetType()) {
+        if (AssistanceTargetType::HOUSEHOLD === $distribution->getTargetType()) {
             $qb = $this->createQueryBuilder('hhm')
                 ->select('COUNT(hhm)')
                 ->join('hhm.person', 'p', 'WITH', 'p.gender = :g AND p.dateOfBirth >= :minDateOfBirth AND p.dateOfBirth < :maxDateOfBirth')
@@ -266,19 +274,20 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->select('COUNT(DISTINCT b)');
         $this->whereInDistribution($qb, $distribution);
 
-        if ($modalityType === 'Mobile Money') {
+        if ('Mobile Money' === $modalityType) {
             $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
         } else if ($modalityType === 'QR Code Voucher') {
             $qb->innerJoin('db.booklets', 'bo', Join::WITH, 'bo.status = 1 OR bo.status = 2');
         } else {
             $qb->innerJoin('db.generalReliefs', 'gr', Join::WITH, 'gr.distributedAt IS NOT NULL');
         }
+
         return $qb->getQuery()->getSingleScalarResult();
     }
 
     /**
-     * @param $onlyCount
-     * @param $countryISO3
+     * @param         $onlyCount
+     * @param         $countryISO3
      * @param Project $project
      *
      * @return QueryBuilder|void
@@ -345,9 +354,9 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      * The household must have at least one beneficiary with the condition respected ($field $operator $value / Example: gender = 0).
      *
      * @param QueryBuilder $qb
-     * @param $i
-     * @param $countryISO3
-     * @param array $filters
+     * @param              $i
+     * @param              $countryISO3
+     * @param array        $filters
      */
     public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
@@ -413,7 +422,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
 
-    public function getDistributionBeneficiaries(array $criteria, Project $project, string $country, int $threshold, string $distributionTarget)
+    public function getDistributionBeneficiaries(array $criteria, Project $project)
     {
         $hhRepository = $this->getEntityManager()->getRepository(Household::class);
         $qb = $hhRepository->getUnarchivedByProject($project);
@@ -426,30 +435,29 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->addSelect('head.id AS headId');
 
         // If a beneficiary has a criterion, they are selectable, therefore every criterion has to go in a orX()
-        $orStatement = $qb->expr()->orX();
+        $userConditionsStatement = $qb->expr()->andX();
         foreach ($criteria as $index => $criterion) {
             $condition = $criterion['condition_string'];
             $field = $criterion['field_string'];
             $condition = $condition === '!=' ? '<>' : $condition;
 
-            if ($criterion['target'] == "Household") {
-                $this->getHouseholdWithCriterion($qb, $field, $condition, $criterion, $index, $orStatement);
-            } elseif ($criterion['target'] == "Beneficiary") {
-                $this->getBeneficiaryWithCriterion($qb, $field, $condition, $criterion, $index, $orStatement);
-            } elseif ($criterion['target'] == "Head") {
-                $this->getHeadWithCriterion($qb, $field, $condition, $criterion, $index, $orStatement);
+            if ('Household' == $criterion['target']) {
+                $this->getHouseholdWithCriterion($qb, $field, $condition, $criterion, $index, $userConditionsStatement);
+            } elseif ('Beneficiary' == $criterion['target']) {
+                $this->getBeneficiaryWithCriterion($qb, $field, $condition, $criterion, $index, $userConditionsStatement);
+            } elseif ('Head' == $criterion['target']) {
+                $this->getHeadWithCriterion($qb, $field, $condition, $criterion, $index, $userConditionsStatement);
             }
             if (array_key_exists('value_string', $criterion) && !is_null($criterion['value_string'])) {
-                $qb->setParameter('parameter' . $index, $criterion['value_string']);
+                $qb->setParameter('parameter'.$index, $criterion['value_string']);
             }
         }
-        $qb->andWhere($orStatement);
+        $qb->andWhere($userConditionsStatement);
 
         return $qb->getQuery()->getResult();
     }
 
-
-    private function getHouseholdWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$orStatement)
+    private function getHouseholdWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$userConditionsStatement)
     {
         // The selection criteria is a country Specific
         if ($criterion['table_string'] === 'countrySpecific') {
@@ -461,26 +469,26 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             $andStatement = $qb->expr()->andX();
             $andStatement->add('cs'.$i . '.fieldString = :csName'.$i);
             $andStatement->add('csa'.$i . '.answer ' . $condition . ' :parameter'.$i);
-            $orStatement->add($andStatement);
+            $userConditionsStatement->add($andStatement);
             $qb->addSelect('cs'.$i . '.fieldString');
         }
 
         // The selection criteria is directly a field in the Household table
         elseif ($criterion['type'] === 'table_field') {
-            $orStatement->add('hh.' . $field . $condition . ' :parameter'.$i);
+            $userConditionsStatement->add('hh.' . $field . $condition . ' :parameter'.$i);
             $qb->addSelect('(CASE WHEN hh.' . $field . $condition . ' :parameter'.$i . ' THEN hh. ' . $field . ' ELSE :null END) AS ' . $field.$i)
                 ->setParameter('null', null);
         } elseif ($criterion['type'] === 'other') {
             // The selection criteria is the size of the household
             if ($field === 'householdSize') {
-                $orStatement->add('SIZE(hh.beneficiaries) ' . $condition . ' :parameter'.$i);
+                $userConditionsStatement->add('SIZE(hh.beneficiaries) ' . $condition . ' :parameter'.$i);
                 $qb->addSelect('(CASE WHEN SIZE(hh.beneficiaries) ' . $condition . ' :parameter'.$i .' THEN SIZE(hh.beneficiaries) ELSE :null END) AS ' . $field.$i)
                     ->setParameter('null', null);
             }
             // The selection criteria is the location type (residence, camp...)
             elseif ($field === 'locationType') {
                 $qb->leftJoin('hh.householdLocations', 'hl'.$i, Join::WITH, 'hl'.$i . '.type ' . $condition . ' :parameter'.$i);
-                $orStatement->add('hl'.$i . '.type ' . $condition . ' :parameter'.$i);
+                $userConditionsStatement->add('hl'.$i . '.type ' . $condition . ' :parameter'.$i);
                 $qb->addSelect('hl'.$i . '.type AS ' . $field.$i);
             }
             // The selection criteria is the name of the camp in which the household lives
@@ -489,7 +497,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                     ->leftJoin('hl' . $i . '.campAddress', 'ca'.$i)
                     ->leftJoin('ca'.$i.'.camp', 'c'.$i, Join::WITH, 'c'.$i . '.id = :parameter'.$i)
                     ->setParameter('camp', 'camp');
-                $orStatement->add('c'.$i . '.id = :parameter'.$i);
+                $userConditionsStatement->add('c'.$i . '.id = :parameter'.$i);
                 $qb->addSelect('c'.$i . '.id AS ' . $field.$i);
             } elseif ($field === 'currentAdm1' || $field === 'currentAdm2' || $field === 'currentAdm3' || $field === 'currentAdm4') {
                 $qb->leftJoin('hh.householdLocations', 'hl'.$i)
@@ -500,66 +508,66 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                         Location::class,
                         'l'.$i,
                         Join::WITH,
-                        "l".$i.".id = COALESCE(IDENTITY(c".$i.".location, 'id'), IDENTITY(ad".$i.".location, 'id'))"
+                        'l'.$i.'.id = COALESCE(IDENTITY(c'.$i.".location, 'id'), IDENTITY(ad".$i.".location, 'id'))"
                     );
                 $andStatement = $qb->expr()->andX();
                 $andStatement->add('hl'.$i.'.locationGroup = :current');
                 $qb->setParameter('current', 'current');
 
-                if ($field === 'currentAdm1') {
+                if ('currentAdm1' === $field) {
                     $qb->leftJoin('l'.$i.'.adm4', 'adm4'.$i)
                         ->leftJoin('l'.$i.'.adm3', 'locAdm3'.$i)
                         ->leftJoin('l'.$i.'.adm2', 'locAdm2'.$i)
                         ->leftJoin('l'.$i.'.adm1', 'locAdm1'.$i)
-                        ->leftJoin(Adm3::class, 'adm3'.$i, Join::WITH, "adm3".$i.".id = COALESCE(IDENTITY(adm4".$i.".adm3, 'id'), locAdm3".$i.".id)")
-                        ->leftJoin(Adm2::class, 'adm2'.$i, Join::WITH, "adm2".$i.".id = COALESCE(IDENTITY(adm3".$i.".adm2, 'id'), locAdm2".$i.".id)")
+                        ->leftJoin(Adm3::class, 'adm3'.$i, Join::WITH, 'adm3'.$i.'.id = COALESCE(IDENTITY(adm4'.$i.".adm3, 'id'), locAdm3".$i.'.id)')
+                        ->leftJoin(Adm2::class, 'adm2'.$i, Join::WITH, 'adm2'.$i.'.id = COALESCE(IDENTITY(adm3'.$i.".adm2, 'id'), locAdm2".$i.'.id)')
                         ->leftJoin(
                             Adm1::class,
                             'adm1'.$i,
                             Join::WITH,
-                            "adm1".$i.".id = COALESCE(IDENTITY(adm2".$i.".adm1, 'id'), locAdm1".$i.".id) AND adm1".$i.".id " . $condition . " :parameter".$i
+                            'adm1'.$i.'.id = COALESCE(IDENTITY(adm2'.$i.".adm1, 'id'), locAdm1".$i.'.id) AND adm1'.$i.'.id '.$condition.' :parameter'.$i
                         );
-                    $andStatement->add('adm1'.$i.'.id ' . $condition . ' :parameter'.$i);
-                    $qb->addSelect('adm1'.$i.'.id AS ' . $field.$i);
-                } elseif ($field === 'currentAdm2') {
+                    $andStatement->add('adm1'.$i.'.id '.$condition.' :parameter'.$i);
+                    $qb->addSelect('adm1'.$i.'.id AS '.$field.$i);
+                } elseif ('currentAdm2' === $field) {
                     $qb->leftJoin('l'.$i.'.adm4', 'adm4'.$i)
                         ->leftJoin('l'.$i.'.adm3', 'locAdm3'.$i)
                         ->leftJoin('l'.$i.'.adm2', 'locAdm2'.$i)
-                        ->leftJoin(Adm3::class, 'adm3'.$i, Join::WITH, "adm3".$i.".id = COALESCE(IDENTITY(adm4".$i.".adm3, 'id'), locAdm3".$i.".id)")
+                        ->leftJoin(Adm3::class, 'adm3'.$i, Join::WITH, 'adm3'.$i.'.id = COALESCE(IDENTITY(adm4'.$i.".adm3, 'id'), locAdm3".$i.'.id)')
                         ->leftJoin(
                             Adm2::class,
                             'adm2'.$i,
                             Join::WITH,
-                            "adm2".$i.".id = COALESCE(IDENTITY(adm3".$i.".adm2, 'id'), locAdm2".$i.".id) AND adm2".$i.".id " . $condition . " :parameter".$i
+                            'adm2'.$i.'.id = COALESCE(IDENTITY(adm3'.$i.".adm2, 'id'), locAdm2".$i.'.id) AND adm2'.$i.'.id '.$condition.' :parameter'.$i
                         );
-                    $andStatement->add('adm2'.$i.'.id ' . $condition . ' :parameter'.$i);
-                    $qb->addSelect('adm2'.$i.'.id AS ' . $field.$i);
-                } elseif ($field === 'currentAdm3') {
+                    $andStatement->add('adm2'.$i.'.id '.$condition.' :parameter'.$i);
+                    $qb->addSelect('adm2'.$i.'.id AS '.$field.$i);
+                } elseif ('currentAdm3' === $field) {
                     $qb->leftJoin('l'.$i.'.adm4', 'adm4'.$i)
                         ->leftJoin('l'.$i.'.adm3', 'locAdm3'.$i)
                         ->leftJoin(
                             Adm3::class,
                             'adm3'.$i,
                             Join::WITH,
-                            "adm3".$i.".id = COALESCE(IDENTITY(adm4".$i.".adm3, 'id'), locAdm3".$i.".id) AND adm3".$i.".id " . $condition . " :parameter".$i
+                            'adm3'.$i.'.id = COALESCE(IDENTITY(adm4'.$i.".adm3, 'id'), locAdm3".$i.'.id) AND adm3'.$i.'.id '.$condition.' :parameter'.$i
                         );
-                    $andStatement->add('adm3'.$i.'.id ' . $condition . ' :parameter'.$i);
-                    $qb->addSelect('adm3'.$i.'.id AS ' . $field.$i);
-                } elseif ($field === 'currentAdm4') {
-                    $qb->leftJoin('l'.$i.'.adm4', 'adm4'.$i, Join::WITH, 'adm4'.$i.'.id ' . $condition . ' :parameter'.$i);
-                    $andStatement->add('adm4'.$i.'.id ' . $condition . ' :parameter'.$i);
-                    $qb->addSelect('adm4'.$i.'.id AS ' . $field.$i);
+                    $andStatement->add('adm3'.$i.'.id '.$condition.' :parameter'.$i);
+                    $qb->addSelect('adm3'.$i.'.id AS '.$field.$i);
+                } elseif ('currentAdm4' === $field) {
+                    $qb->leftJoin('l'.$i.'.adm4', 'adm4'.$i, Join::WITH, 'adm4'.$i.'.id '.$condition.' :parameter'.$i);
+                    $andStatement->add('adm4'.$i.'.id '.$condition.' :parameter'.$i);
+                    $qb->addSelect('adm4'.$i.'.id AS '.$field.$i);
                 }
-                $orStatement->add($andStatement);
+                $userConditionsStatement->add($andStatement);
             }
         }
     }
 
-    private function getBeneficiaryWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$orStatement)
+    private function getBeneficiaryWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$userConditionsStatement)
     {
         // The selection criteria is a vulnerability criterion
         if ($criterion['table_string'] === 'vulnerabilityCriteria') {
-            $this->hasVulnerabilityCriterion($qb, 'b', $condition, $field, $orStatement, $i);
+            $this->hasVulnerabilityCriterion($qb, 'b', $condition, $field, $userConditionsStatement, $i);
         }
         // The selection criteria is directly a field in the Beneficiary table
         else if ($criterion['type'] === 'table_field') {
@@ -568,88 +576,86 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                     $qb->join('b.person', 'prsn');
                 }
 
-                $orStatement->add('prsn.' . $field . $condition . ' :parameter'.$i);
-                $qb->addSelect('(CASE WHEN prsn.' . $field . $condition . ' :parameter'.$i . ' THEN prsn.' . $field . ' ELSE :null END) AS ' . $field.$i)
+                $userConditionsStatement->add('prsn.'.$field.$condition.' :parameter'.$i);
+                $qb->addSelect('(CASE WHEN prsn.'.$field.$condition.' :parameter'.$i.' THEN prsn.'.$field.' ELSE :null END) AS '.$field.$i)
                     ->setParameter('null', null);
             } else {
-                $orStatement->add('b.' . $field . $condition . ' :parameter'.$i);
-                $qb->addSelect('(CASE WHEN b.' . $field . $condition . ' :parameter'.$i . ' THEN b.' . $field . ' ELSE :null END) AS ' . $field.$i)
+                $userConditionsStatement->add('b.'.$field.$condition.' :parameter'.$i);
+                $qb->addSelect('(CASE WHEN b.'.$field.$condition.' :parameter'.$i.' THEN b.'.$field.' ELSE :null END) AS '.$field.$i)
                     ->setParameter('null', null);
             }
-        }
-        else if ($criterion['type'] === 'other') {
+        } elseif ('other' === $criterion['type']) {
             // The selection criteria is the last distribution
-            if ($field === 'hasNotBeenInDistributionsSince') {
+            if ('hasNotBeenInDistributionsSince' === $field) {
                 $qb->leftJoin('b.distributionBeneficiary', 'db'.$i)
-                    ->leftJoin('db'.$i . '.assistance', 'd'.$i)
+                    ->leftJoin('db'.$i.'.assistance', 'd'.$i)
                     // If has criteria, add it to the select to calculate weight later
-                    ->addSelect('(CASE WHEN d'.$i . '.dateDistribution < :parameter'.$i . ' THEN d'.$i . '.dateDistribution WHEN SIZE(b.distributionBeneficiary) = 0 THEN :noDistribution ELSE :null END)'. ' AS ' . $criterion['field_string'].$i)
+                    ->addSelect('(CASE WHEN d'.$i.'.dateDistribution < :parameter'.$i.' THEN d'.$i.'.dateDistribution WHEN SIZE(b.distributionBeneficiary) = 0 THEN :noDistribution ELSE :null END)'.' AS '.$criterion['field_string'].$i)
                     ->setParameter('noDistribution', 'noDistribution')
                     ->setParameter('null', null);
                 // The beneficiary answers the criteria if they didn't have a distribution after this date or if they never had a distribution at all
-                $orStatement->add($qb->expr()->eq('SIZE(b.distributionBeneficiary)', '0'));
-                $orStatement->add($qb->expr()->lte('d'.$i . '.dateDistribution', ':parameter'.$i));
+                $userConditionsStatement->add($qb->expr()->eq('SIZE(b.distributionBeneficiary)', '0'));
+                $userConditionsStatement->add($qb->expr()->lte('d'.$i.'.dateDistribution', ':parameter'.$i));
             }
         }
     }
 
-    private function getHeadWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$orStatement)
-    {
-        $qb->leftJoin('hh.beneficiaries', 'hhh'.$i)
-            ->andWhere('hhh'.$i . '.status = 1');
-        $qb->join('hhh'.$i.'.person', 'prsn'.$i);
-
-        // The selection criteria is directly a field in the Beneficiary table
-        if ($criterion['type'] === 'table_field') {
-            // The criterion name identifies the criterion (eg. headOfHouseholdDateOfBirth) whereas the field is gonna identify the table field (eg. dateOfBirth) in the Beneficiary table
-            $criterionName = $field;
-            if ($field === 'headOfHouseholdDateOfBirth') {
-                $orStatement->add('prsn'.$i.'.dateOfBirth ' . $condition . ' :parameter'.$i);
-                $qb->addSelect('(CASE WHEN prsn'.$i.'.dateOfBirth ' . $condition . ' :parameter'.$i . ' THEN prsn'.$i.'.dateOfBirth ELSE :null END) AS ' . $criterionName.$i)
-                    ->setParameter('null', null);
-            } else if ($field === 'headOfHouseholdGender') {
-                $orStatement->add('prsn'.$i.'.gender ' . $condition . ' :parameter'.$i);
-                $qb->addSelect('(CASE WHEN prsn'.$i.'.gender ' . $condition . ' :parameter'.$i . ' THEN prsn'.$i.'.gender ELSE :null END) AS ' . $criterionName.$i)
-                    ->setParameter('null', null);
-            } else {
-                $orStatement->add('hhh'.$i . '.' . $field . $condition . ' :parameter'.$i);
-                $qb->addSelect('(CASE WHEN hhh'.$i . '.' . $field . $condition . ' :parameter'.$i . ' THEN hhh'.$i . '.' . $field . ' ELSE :null END) AS ' . $criterionName.$i)
-                    ->setParameter('null', null);
-            }
-        }
-        else if ($criterion['type'] === 'other') {
-            if ($field === 'disabledHeadOfHousehold') {
-                $this->hasVulnerabilityCriterion($qb, 'hhh'.$i, $condition, 'disabled', $orStatement, $i);
-            }
-        }
-    }
-
-    private function hasVulnerabilityCriterion(&$qb, $on, $conditionString, $vulnerabilityName, &$orStatement, int $i)
+    private function hasVulnerabilityCriterion(&$qb, $on, $conditionString, $vulnerabilityName, &$userConditionsStatement, int $i)
     {
         // Find a way to act directly on the join table beneficiary_vulnerability
-        if ($conditionString == "true") {
-            $qb->leftJoin($on . '.vulnerabilityCriteria', 'vc'.$i, Join::WITH, 'vc'.$i . '.fieldString = :vulnerability'.$i);
-            $orStatement->add($qb->expr()->eq('vc'.$i . '.fieldString', ':vulnerability'.$i));
+        if ('true' == $conditionString) {
+            $qb->leftJoin($on.'.vulnerabilityCriteria', 'vc'.$i, Join::WITH, 'vc'.$i.'.fieldString = :vulnerability'.$i);
+            $userConditionsStatement->add($qb->expr()->eq('vc'.$i.'.fieldString', ':vulnerability'.$i));
             // If has criteria, add it to the select to calculate weight later
-            $qb->addSelect('vc'.$i . '.fieldString AS ' . $on . $vulnerabilityName.$i);
+            $qb->addSelect('vc'.$i.'.fieldString AS '.$on.$vulnerabilityName.$i);
         } else {
-            $qb->leftJoin($on . '.vulnerabilityCriteria', 'vc'.$i, Join::WITH, 'vc'.$i . '.fieldString <> :vulnerability'.$i);
-            $orStatement->add($qb->expr()->eq('SIZE(' . $on . '.vulnerabilityCriteria)', 0))
-            ->add($qb->expr()->neq('vc'.$i . '.fieldString', ':vulnerability'.$i));
+            $qb->leftJoin($on.'.vulnerabilityCriteria', 'vc'.$i, Join::WITH, 'vc'.$i.'.fieldString <> :vulnerability'.$i);
+            $userConditionsStatement->add($qb->expr()->eq('SIZE('.$on.'.vulnerabilityCriteria)', 0))
+                ->add($qb->expr()->neq('vc'.$i.'.fieldString', ':vulnerability'.$i));
             // The beneficiary doesn't have a vulnerability A if all their vulnerabilities are != A or if they have no vulnerabilities
             // If has criteria, add it to the select to calculate weight later
-            $qb->addSelect('(CASE WHEN vc'.$i . '.fieldString <> :vulnerability'.$i . ' THEN vc'.$i . '.fieldString WHEN SIZE(' . $on . '.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS ' . $on . $vulnerabilityName.$i)
-            ->setParameter('noCriteria', 'noCriteria')
-            ->setParameter('null', null);
+            $qb->addSelect('(CASE WHEN vc'.$i.'.fieldString <> :vulnerability'.$i.' THEN vc'.$i.'.fieldString WHEN SIZE('.$on.'.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS '.$on.$vulnerabilityName.$i)
+                ->setParameter('noCriteria', 'noCriteria')
+                ->setParameter('null', null);
         }
         $qb->setParameter(':vulnerability'.$i, $vulnerabilityName);
     }
 
+    private function getHeadWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$userConditionsStatement)
+    {
+        $qb->leftJoin('hh.beneficiaries', 'hhh'.$i)
+            ->andWhere('hhh'.$i.'.status = 1');
+        $qb->join('hhh'.$i.'.person', 'prsn'.$i);
+
+        // The selection criteria is directly a field in the Beneficiary table
+        if ('table_field' === $criterion['type']) {
+            // The criterion name identifies the criterion (eg. headOfHouseholdDateOfBirth) whereas the field is gonna identify the table field (eg. dateOfBirth) in the Beneficiary table
+            $criterionName = $field;
+            if ('headOfHouseholdDateOfBirth' === $field) {
+                $userConditionsStatement->add('prsn'.$i.'.dateOfBirth '.$condition.' :parameter'.$i);
+                $qb->addSelect('(CASE WHEN prsn'.$i.'.dateOfBirth '.$condition.' :parameter'.$i.' THEN prsn'.$i.'.dateOfBirth ELSE :null END) AS '.$criterionName.$i)
+                    ->setParameter('null', null);
+            } elseif ('headOfHouseholdGender' === $field) {
+                $userConditionsStatement->add('prsn'.$i.'.gender '.$condition.' :parameter'.$i);
+                $qb->addSelect('(CASE WHEN prsn'.$i.'.gender '.$condition.' :parameter'.$i.' THEN prsn'.$i.'.gender ELSE :null END) AS '.$criterionName.$i)
+                    ->setParameter('null', null);
+            } else {
+                $userConditionsStatement->add('hhh'.$i.'.'.$field.$condition.' :parameter'.$i);
+                $qb->addSelect('(CASE WHEN hhh'.$i.'.'.$field.$condition.' :parameter'.$i.' THEN hhh'.$i.'.'.$field.' ELSE :null END) AS '.$criterionName.$i)
+                    ->setParameter('null', null);
+            }
+        } elseif ('other' === $criterion['type']) {
+            if ('disabledHeadOfHousehold' === $field) {
+                $this->hasVulnerabilityCriterion($qb, 'hhh'.$i, $condition, 'disabled', $userConditionsStatement, $i);
+            }
+        }
+    }
 
     /**
      * @param Household $household
      *
      * @return int
+     *
      * @throws NoResultException
      * @throws NonUniqueResultException
      */

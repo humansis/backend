@@ -1,15 +1,18 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DistributionBundle\Utils;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
@@ -71,7 +74,7 @@ class DistributionBeneficiaryService
      */
     public function getDistributionBeneficiaries(Assistance $assistance)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['assistance' => $assistance]);
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByAssistance($assistance);
         return $distributionBeneficiaries;
     }
 
@@ -151,26 +154,27 @@ class DistributionBeneficiaryService
             $bnfId = (int) $beneficiaryArray["id"];
 
             switch ($assistance->getTargetType()) {
-                case Assistance::TYPE_HOUSEHOLD:
-                    $household = $this->em->getRepository(Household::class)->find($bnfId);
+                case AssistanceTargetType::HOUSEHOLD:
+                    $householdMember = $this->em->getRepository(Beneficiary::class)->find($bnfId);
+                    $household = $householdMember->getHousehold();
                     if (!$household instanceof Household) {
                         throw new \Exception("Household {$bnfId} was not found.");
                     }
                     $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
                     break;
-                case Assistance::TYPE_BENEFICIARY:
+                case AssistanceTargetType::INDIVIDUAL:
                     $beneficiary = $this->em->getRepository(Beneficiary::class)->find($bnfId);
                     if (!$beneficiary instanceof Beneficiary) {
                         throw new \Exception("Beneficiary {$bnfId} was not found.");
                     }
                     break;
-                case Assistance::TYPE_COMMUNITY:
+                case AssistanceTargetType::COMMUNITY:
                     $beneficiary = $this->em->getRepository(Community::class)->find($bnfId);
                     if (!$beneficiary instanceof Community) {
                         throw new \Exception("Community {$bnfId} was not found.");
                     }
                     break;
-                case Assistance::TYPE_INSTITUTION:
+                case AssistanceTargetType::INSTITUTION:
                     $beneficiary = $this->em->getRepository(Institution::class)->find($bnfId);
                     if (!$beneficiary instanceof Institution) {
                         throw new \Exception("Institution {$bnfId} was not found.");
@@ -225,7 +229,7 @@ class DistributionBeneficiaryService
      * @param Beneficiary $beneficiary
      * @return bool
      */
-    public function removeBeneficiaryInDistribution(Assistance $assistance, Beneficiary $beneficiary, $deletionData)
+    public function removeBeneficiaryInDistribution(Assistance $assistance, AbstractBeneficiary $beneficiary, $deletionData)
     {
         $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'assistance' => $assistance->getId()]);
 

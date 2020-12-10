@@ -55,7 +55,8 @@ class DefaultVoter extends BMSVoter
      */
     protected function supports($attribute, $subject)
     {
-        return true;
+        // default Voter is not supported by new API
+        return !$this->requestStack->getCurrentRequest()->attributes->get('disable-common-request-listener', false);
     }
 
     /**

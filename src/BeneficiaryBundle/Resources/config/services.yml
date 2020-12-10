@@ -45,6 +45,7 @@ services:
             - "@location_service"
             - "@validator"
             - "@service_container"
+            - "@CommonBundle\\Mapper\\LocationMapper"
         public: true
 
     beneficiary.repository:
@@ -79,6 +80,8 @@ services:
         public: true
 
     BeneficiaryBundle\Mapper\BeneficiaryMapper:
+        arguments:
+            - "@serializer"
         public: true
 
     BeneficiaryBundle\Mapper\AssistanceMapper:

@@ -187,7 +187,7 @@ class HouseholdService
             ->setLivelihood($householdArray["livelihood"])
             ->setLongitude($householdArray["longitude"])
             ->setLatitude($householdArray["latitude"])
-            ->setIncomeLevel($householdArray["income_level"])
+            ->setIncomeLevel($householdArray["income_level"] ?? null)
             ->setCopingStrategiesIndex($householdArray["coping_strategies_index"])
             ->setFoodConsumptionScore($householdArray["food_consumption_score"])
             ->setAssets($householdArray["assets"] ?? [])
@@ -196,7 +196,8 @@ class HouseholdService
             ->setSupportReceivedTypes($householdArray["support_received_types"] ?? [])
             ->setSupportOrganizationName($householdArray["support_organization_name"] ?? null)
             ->setIncomeSpentOnFood($householdArray["income_spent_on_food"] ?? null)
-            ->setHouseholdIncome($householdArray["household_income"] ?? null);
+            ->setHouseholdIncome($householdArray["household_income"] ?? null)
+            ->setEnumeratorName($householdArray["enumerator_name"] ?? null);
 
         $dateReceived = null;
         if (isset($householdArray["support_date_received"]) && $householdArray["support_date_received"]) {

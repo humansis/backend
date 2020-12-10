@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\InputType;
 
 use CommonBundle\InputType\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class UpdateInstitutionType implements InputTypeInterface
 {
@@ -41,8 +42,15 @@ class UpdateInstitutionType implements InputTypeInterface
     /**
      * @var string|null
      * @Assert\Length(max="255")
+     * @Assert\Expression("this.getPhoneNumber() == null or value != null")
      */
     private $phone_prefix;
+    /**
+     * @var string|null
+     * @Assert\Length(max="255")
+     * @Assert\Expression("this.getPhoneNumber() == null or value != null")
+     */
+    private $phone_type;
     /**
      * @var string|null
      * @Assert\Length(max="255")
@@ -175,6 +183,22 @@ class UpdateInstitutionType implements InputTypeInterface
     public function setPhonePrefix(?string $phone_prefix): void
     {
         $this->phone_prefix = $phone_prefix;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPhoneType(): ?string
+    {
+        return $this->phone_type;
+    }
+
+    /**
+     * @param string|null $phone_type
+     */
+    public function setPhoneType(?string $phone_type): void
+    {
+        $this->phone_type = $phone_type;
     }
 
     /**

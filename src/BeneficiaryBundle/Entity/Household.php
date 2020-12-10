@@ -135,7 +135,7 @@ class Household extends AbstractBeneficiary
     private $archived = 0;
 
     /**
-     * @var int
+     * @var int|null
      *
      * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
@@ -211,6 +211,14 @@ class Household extends AbstractBeneficiary
      * @SymfonyGroups({"FullHousehold"})
      */
     private $householdIncome;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="enumerator_name", type="string", nullable=true)
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
+     */
+    private $enumeratorName = null;
 
     /**
      * Constructor
@@ -493,11 +501,11 @@ class Household extends AbstractBeneficiary
     /**
      * Set incomeLevel.
      *
-     * @param int $incomeLevel
+     * @param int|null $incomeLevel
      *
      * @return Household
      */
-    public function setIncomeLevel($incomeLevel)
+    public function setIncomeLevel(?int $incomeLevel)
     {
         $this->incomeLevel = $incomeLevel;
 
@@ -507,9 +515,9 @@ class Household extends AbstractBeneficiary
     /**
      * Get incomeLevel.
      *
-     * @return int
+     * @return int|null
      */
-    public function getIncomeLevel()
+    public function getIncomeLevel(): ?int
     {
         return $this->incomeLevel;
     }
@@ -741,5 +749,25 @@ class Household extends AbstractBeneficiary
         }
 
         return $householdHead;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEnumeratorName(): ?string
+    {
+        return $this->enumeratorName;
+    }
+
+    /**
+     * @param string|null $enumeratorName
+     *
+     * @return Household
+     */
+    public function setEnumeratorName(?string $enumeratorName): Household
+    {
+        $this->enumeratorName = $enumeratorName;
+
+        return $this;
     }
 }

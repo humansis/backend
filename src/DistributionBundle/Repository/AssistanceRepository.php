@@ -6,10 +6,15 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\DistributedItem;
+use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\AssistanceOrderInputType;
+use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Project;
 
 /**
  * AssistanceRepository
@@ -88,13 +93,13 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
     }
 
-    public function getNoBenificiaryByResidencyStatus(int $distributionId, string $residencyStatus, int $distributionType) {
+    public function getNoBenificiaryByResidencyStatus(int $distributionId, string $residencyStatus, string $distributionType) {
         $qb = $this->createQueryBuilder('dd');
         $qb
             ->andWhere('dd.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
             ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
-        if ($distributionType === Assistance::TYPE_BENEFICIARY) {
+        if ($distributionType === AssistanceTargetType::INDIVIDUAL) {
             $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus');
         } else {
             $qb->leftJoin('db.beneficiary', 'hhh')
@@ -130,7 +135,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge, DateTime $distributionDate, int $distributionType) {
+    public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge, DateTime $distributionDate, string $distributionType) {
         $maxDateOfBirth = clone $distributionDate;
         $minDateOfBirth = clone $distributionDate;
         $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
@@ -141,7 +146,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter('distributionId', $distributionId)
             ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
  
-        if ($distributionType === Assistance::TYPE_BENEFICIARY) {
+        if ($distributionType === AssistanceTargetType::INDIVIDUAL) {
             $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender');
         } else {
             $qb->leftJoin('db.beneficiary', 'hhh')
@@ -211,8 +216,8 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 db.beneficiary_id,
                 CASE
                     WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.used_at, "%Y-%m-%d")
-                    WHEN gri.id IS NOT NULL THEN gri.distributedAt
-                    WHEN t.id IS NOT NULL THEN t.date_sent
+                    WHEN gri.id IS NOT NULL THEN DATE_FORMAT(gri.distributedAt, "%Y-%m-%d")
+                    WHEN t.id IS NOT NULL THEN DATE_FORMAT(t.date_sent, "%Y-%m-%d")
                 END AS date_distribution
             FROM assistance ass
             JOIN distribution_beneficiary db ON ass.id=db.assistance_id
@@ -232,5 +237,77 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->createNativeQuery($sql, $rsm)
             ->setParameter('household', $household)
             ->getResult();
+    }
+
+    /**
+     * @param Project|null                  $project
+     * @param string|null                   $iso3
+     * @param bool|null                     $upcoming
+     * @param AssistanceOrderInputType|null $orderBy
+     * @param Pagination|null               $pagination
+     *
+     * @return Paginator|Assistance[]
+     */
+    public function findByParams(
+        ?Project $project,
+        ?string $iso3 = null,
+        ?bool $upcoming = null,
+        ?AssistanceOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator {
+        $qb = $this->createQueryBuilder('dd')
+            ->andWhere('dd.archived = 0');
+
+        if ($project) {
+            $qb->andWhere('dd.project = :project')
+                ->setParameter('project', $project);
+        }
+
+        if ($iso3) {
+            $qb->leftJoin('dd.project', 'p')
+                ->andWhere('p.iso3 = :iso3')
+                ->setParameter('iso3', $iso3);
+        }
+
+        if (null !== $upcoming) {
+            $qb->andWhere('p.startDate > :now')
+            ->setParameter('now', new DateTime('now'));
+        }
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case AssistanceOrderInputType::SORT_BY_ID:
+                        $qb->orderBy('dd.id', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_LOCATION:
+                        $qb->leftJoin('dd.location', 'l');
+                        $qb->orderBy('l.id', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_DATE:
+                        $qb->orderBy('dd.dateDistribution', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_NAME:
+                        $qb->orderBy('dd.name', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_TARGET:
+                        $qb->orderBy('dd.targetType', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
+                        $qb->select(['dd', 'bnfCount' => 'SIZE(dd.distributionBeneficiaries)']);
+                        $qb->orderBy('bnfCount', $direction);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                }
+            }
+        }
+
+        return new Paginator($qb);
     }
 }

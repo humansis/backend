@@ -460,7 +460,7 @@ class SmartcardController extends Controller
      * Get vendor purchase counts.
      *
      * @Rest\Get("/smartcards/purchases/{id}", name="smarcards_purchases")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Single Vendor")
@@ -489,7 +489,7 @@ class SmartcardController extends Controller
      * Get vendor purchase details.
      *
      * @Rest\Get("/smartcards/purchases/{id}/details", name="smarcards_purchases_details")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Single Vendor")
@@ -516,7 +516,7 @@ class SmartcardController extends Controller
      * Get vendor purchases to redeem.
      *
      * @Rest\Get("/smartcards/purchases/to-redemption/{id}", name="smarcards_purchases_to_redemtion")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Single Vendor")
@@ -546,7 +546,7 @@ class SmartcardController extends Controller
      * Get vendor purchase counts.
      *
      * @Rest\Get("/smartcards/batch", name="smarcards_redeemed_batches")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Single Vendor")
@@ -585,7 +585,7 @@ class SmartcardController extends Controller
      * Get vendor purchase batch detail.
      *
      * @Rest\Get("/smartcards/batch/{id}")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Smartcards")
      *
@@ -604,7 +604,7 @@ class SmartcardController extends Controller
      * Get vendor purchase batch details.
      *
      * @Rest\Get("/smartcards/batch/{id}/purchases", name="smarcards_redeemed_batches_details")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Single Vendor")
@@ -631,7 +631,7 @@ class SmartcardController extends Controller
      * Set vendor purchase as redeemed.
      *
      * @Rest\Post("/smartcards/purchases/redeem-batch/{id}", name="smarcards_redeem_batch")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Single Vendor")

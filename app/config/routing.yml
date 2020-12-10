@@ -31,3 +31,8 @@ rest:
     resource: "routing_rest.yml"
     requirements:
         firewall: wsse
+
+rest-new:
+    type: rest
+    prefix: /api/basic
+    resource: "@NewApiBundle/Resources/config/routing.yml"

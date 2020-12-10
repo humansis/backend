@@ -1,13 +1,12 @@
 <?php
 
-namespace Tests\BeneficiaryBundle\Controller;
+namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Household;
 use Exception;
-use ProjectBundle\Enum\Livelihood;
+use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
-class HouseholdCodelistControllerTest extends BMSServiceTestCase
+class AssistanceControllerTest extends BMSServiceTestCase
 {
     /**
      * @throws Exception
@@ -22,47 +21,45 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
         $this->client = $this->container->get('test.client');
     }
 
-    /**
-     * @throws Exception
-     */
-    public function testGetLivelihoods()
+    public function testList()
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/wsse/households/livelihoods');
+        $this->request('GET', '/api/basic/assistances');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
-        $this->assertIsArray($result['data']);
-        $this->assertEquals(count(Livelihood::values()), $result['totalCount']);
     }
 
-    /**
-     * @throws Exception
-     */
-    public function testGetAssets()
+    public function testAsisstancesByProject()
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/wsse/households/assets');
+        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+
+        $this->request('GET', '/api/basic/projects/'.$project->getId().'/assistances', [], [], ['country' => 'KHM']);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
-        $this->assertIsArray($result['data']);
-        $this->assertEquals(count(Household::ASSETS), $result['totalCount']);
     }
 }

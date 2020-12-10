@@ -3,24 +3,17 @@
 namespace DistributionBundle\DBAL;
 
 use CommonBundle\DBAL\AbstractEnum;
+use DistributionBundle\Enum\AssistanceType;
 
 class AssistanceTypeEnum extends AbstractEnum
 {
-    const DISTRIBUTION = 'distribution';
-    const ACTIVITY = 'activity';
-
-    protected static $values = [
-        self::ACTIVITY,
-        self::DISTRIBUTION,
-    ];
-
     public function getName()
     {
-        return 'assistance_type_enum';
+        return 'enum_assistance_type';
     }
 
     public static function all(): array
     {
-        return self::$values;
+        return AssistanceType::values();
     }
 }

@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
-use ProjectBundle\DBAL\SectorEnum;
+use ProjectBundle\DTO\Sector;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 use BeneficiaryBundle\Entity\Household;
@@ -217,6 +217,8 @@ class Project implements ExportableInterface
     public function setInternalId($internalId)
     {
         $this->internalId = $internalId;
+
+        return $this;
     }
 
     /**
@@ -444,10 +446,23 @@ class Project implements ExportableInterface
      */
     public function addSector(string $sectorId)
     {
-        if (!in_array($sectorId, SectorEnum::all())) {
-            throw new \InvalidArgumentException("Sector '$sectorId' isn't valid value. Valid are ".implode(', ', SectorEnum::all()));
-        }
         $this->sectors->add(new ProjectSector($sectorId, $this));
+
+        return $this;
+    }
+
+    /**
+     * @param Sector[] $sectorDTOs
+     *
+     * @return Project
+     */
+    public function setSectors(iterable $sectorIDs): self
+    {
+        $this->sectors->clear();
+
+        foreach ($sectorIDs as $sectorID) {
+            $this->addSector($sectorID);
+        }
 
         return $this;
     }
@@ -455,11 +470,11 @@ class Project implements ExportableInterface
     /**
      * Remove sector.
      *
-     * @param \ProjectBundle\DTO\Sector $sector
+     * @param Sector $sector
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeSector(\ProjectBundle\DTO\Sector $sector)
+    public function removeSector(Sector $sector)
     {
         return $this->sectors->removeElement($sector);
     }
@@ -479,7 +494,7 @@ class Project implements ExportableInterface
     /**
      * Get sectors.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection|ProjectSector[]
      */
     public function getSectors()
     {
@@ -663,8 +678,12 @@ class Project implements ExportableInterface
             "is archived" => $this->getArchived(),
         ];
     }
-    
-    /** @ORM\PostLoad */
+
+    /**
+     * @ORM\PostLoad
+     * @ORM\PostPersist
+     * @ORM\PostUpdate
+     */
     public function updateNumberOfHouseholds(LifecycleEventArgs $args)
     {
         $em = $args->getEntityManager();

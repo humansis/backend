@@ -7,6 +7,10 @@ security:
             entity:
                 class: UserBundle:User
                 property: id
+        basic-auth-provider:
+            entity:
+                class: UserBundle:User
+                property: username
 
     firewalls:
         dev:
@@ -35,6 +39,13 @@ security:
         tester_offline_login_app:
             pattern:    ^/api/wsse/offline-app/v[0-9]+/login
             security:   false
+
+        basic_auth:
+            pattern: ^/api/basic/
+            stateless: true
+            http_basic:
+                realm: Secured Areaa
+            provider: basic-auth-provider
 
         #WSSE
         wsse_secured:

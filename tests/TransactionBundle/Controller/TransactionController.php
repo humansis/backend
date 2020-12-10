@@ -62,6 +62,7 @@ class TransactionController extends BMSServiceTestCase
             $this->assertArrayHasKey('productId', $criterion);
             $this->assertArrayHasKey('productName', $criterion);
             $this->assertArrayHasKey('value', $criterion);
+            $this->assertArrayHasKey('currency', $criterion);
             $this->assertArrayHasKey('quantity', $criterion);
             $this->assertArrayHasKey('source', $criterion);
             $this->assertArrayHasKey('usedAt', $criterion);

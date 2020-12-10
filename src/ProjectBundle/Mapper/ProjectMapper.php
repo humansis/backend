@@ -61,6 +61,7 @@ class ProjectMapper
             'name' => $project->getName(),
             'notes' => $project->getNotes(),
             'target' => $project->getTarget(),
+            'internal_id' => $project->getInternalId(),
             'donors' => $this->donorMapper->toMinimalArrays($project->getDonors()),
             'end_date' => $project->getEndDate()->format('d-m-Y'),
             'start_date' => $project->getStartDate()->format('d-m-Y'),
