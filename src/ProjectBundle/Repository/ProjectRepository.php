@@ -2,6 +2,9 @@
 
 namespace ProjectBundle\Repository;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\ProjectOrderInputType;
+use NewApiBundle\Request\Pagination;
 use UserBundle\Entity\User;
 use ProjectBundle\Entity\Project;
 use BeneficiaryBundle\Entity\Household;
@@ -46,5 +49,58 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter("currentTime", new \DateTime());
 
         return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @param string|null                $iso3
+     * @param ProjectOrderInputType|null $orderBy
+     * @param Pagination|null            $pagination
+     *
+     * @return Paginator
+     */
+    public function findByParams(?string $iso3, ?ProjectOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->andWhere('p.archived = 0');
+
+        if ($iso3) {
+            $qb->andWhere('p.iso3 = :iso3');
+            $qb->setParameter('iso3', $iso3);
+        }
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case ProjectOrderInputType::SORT_BY_ID:
+                        $qb->orderBy('p.id', $direction);
+                        break;
+                    case ProjectOrderInputType::SORT_BY_NAME:
+                        $qb->orderBy('p.name', $direction);
+                        break;
+                    case ProjectOrderInputType::SORT_BY_INTERNAL_ID:
+                        $qb->orderBy('p.internalId', $direction);
+                        break;
+                    case ProjectOrderInputType::SORT_BY_START_DATE:
+                        $qb->orderBy('p.startDate', $direction);
+                        break;
+                    case ProjectOrderInputType::SORT_BY_END_DATE:
+                        $qb->orderBy('p.endDate', $direction);
+                        break;
+                    case ProjectOrderInputType::SORT_BY_NUMBER_OF_HOUSEHOLDS:
+                        $qb->select(['p', 'hhCount' => 'SIZE(p.households)']);
+                        $qb->orderBy('hhCount', $direction);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                }
+            }
+        }
+
+        return new Paginator($qb);
     }
 }

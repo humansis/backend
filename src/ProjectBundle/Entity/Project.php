@@ -217,6 +217,8 @@ class Project implements ExportableInterface
     public function setInternalId($internalId)
     {
         $this->internalId = $internalId;
+
+        return $this;
     }
 
     /**
@@ -676,8 +678,12 @@ class Project implements ExportableInterface
             "is archived" => $this->getArchived(),
         ];
     }
-    
-    /** @ORM\PostLoad */
+
+    /**
+     * @ORM\PostLoad
+     * @ORM\PostPersist
+     * @ORM\PostUpdate
+     */
     public function updateNumberOfHouseholds(LifecycleEventArgs $args)
     {
         $em = $args->getEntityManager();
