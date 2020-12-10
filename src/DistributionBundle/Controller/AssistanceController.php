@@ -806,9 +806,16 @@ class AssistanceController extends Controller
      */
     public function offlineGetDistributionsAction(Project $project)
     {
+        $filtered = [];
+
         try {
-            $distributions = $project->getDistributions();
-            $filtered = $this->get('distribution.distribution_service')->filterDistributions($distributions);
+            foreach ($project->getDistributions() as $assistance) {
+                /** @var Assistance $assistance */
+                if (!$assistance->getArchived() && in_array($assistance->getTargetType(),
+                        [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])) {
+                    $filtered[] = $assistance;
+                }
+            }
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
