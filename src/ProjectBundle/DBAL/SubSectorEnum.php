@@ -9,10 +9,10 @@ use CommonBundle\DBAL\AbstractEnum;
 class SubSectorEnum extends AbstractEnum
 {
     protected static $values = [
-        self::FOOD_PARCELS_BASKETS,
-        self::RTER,
+        self::FOOD_DISTRIBUTIONS,
+        self::CASH_GRANTS,
         self::FOOD_VOUCHERS,
-        self::CASH_FOR_WORK,
+        self::FOOD_CASH_FOR_WORK,
 
         self::SKILLS_TRAINING,
         self::TECHNICAL_SUPPORT,
@@ -68,16 +68,17 @@ class SubSectorEnum extends AbstractEnum
         self::DEFAULT_EARLY_RECOVERY,
     ];
 
-    const FOOD_PARCELS_BASKETS = 'food_parcels_baskets';
-    const RTER = 'rter';
+    const FOOD_DISTRIBUTIONS = 'food_distribution';
     const FOOD_VOUCHERS = 'food_vouchers';
-    const CASH_FOR_WORK = 'cash_for_work';
+    const CASH_GRANTS = 'food_cash_grants';
+    const FOOD_CASH_FOR_WORK = 'food_cash_for_work';
 
     const SKILLS_TRAINING = 'skills_training';
     const TECHNICAL_SUPPORT = 'technical_support';
     const DISTRIBUTION_OF_INPUTS = 'distribution_of_inputs';
     const BUSINESS_GRANTS = 'business_grants';
     const AGRICULTURAL_VOUCHERS = 'agricultural_vouchers';
+    const LIVELIHOOD_CASH_FOR_WORK = 'livelihood_cash_for_work';
 
     const MULTI_PURPOSE_CASH_ASSISTANCE = 'multi_purpose_cash_assistance';
 
@@ -113,6 +114,8 @@ class SubSectorEnum extends AbstractEnum
     const LEARNING_MATERIALS = 'learning_materials';
     const EDUCATION_PSYCHOSOCIAL_SUPPORT = 'education_psychosocial_support';
     const EDUCATION_SERVICES = 'education_services';
+    const EDUCATION_CASH_FOR_WORK = 'education_cash_for_work';
+    const PARENT_SESSIONS = 'education_parent_sessions';
 
     const DEFAULT_EMERGENCY_TELCO = 'default_emergency_telco';
     const DEFAULT_HEALTH = 'default_health';
