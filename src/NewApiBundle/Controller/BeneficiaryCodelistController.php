@@ -54,7 +54,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getNationalIdTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(NationalId::TYPE_ALL);
+        $data = CodeLists::mapEnum(NationalId::types());
 
         return $this->json(new Paginator($data));
     }
