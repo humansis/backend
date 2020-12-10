@@ -110,7 +110,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->orderBy("levenshtein", "ASC");
 
         $query = $q->getQuery();
-        $query->useResultCache(true,3600);
+        $query->useResultCache(true,600);
 
         return $query->getResult();
     }
@@ -152,7 +152,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->orderBy("levenshtein", "ASC");
 
         $query = $q->getQuery();
-        $query->useResultCache(true,3600);
+        $query->useResultCache(true,600);
 
         return $query->getResult();
     }
@@ -324,10 +324,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         $paginator = new Paginator($q, $fetchJoinCellection = true);
 
-        $query = $q->getQuery();
-        $query->useResultCache(true,3600);
-
-        return [count($paginator), $query->getResult()];
+        return [count($paginator), $q->getQuery()->getResult()];
     }
 
     /**
@@ -393,7 +390,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ;
         }
 
-        return $qb->getQuery()->useResultCache(true, 600)->getOneOrNullResult();
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     /**
