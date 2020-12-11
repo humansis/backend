@@ -2,6 +2,8 @@
 
 namespace CommonBundle\Repository;
 
+use CommonBundle\Entity\Adm3;
+
 /**
  * Adm4Repository
  *
@@ -10,4 +12,8 @@ namespace CommonBundle\Repository;
  */
 class Adm4Repository extends \Doctrine\ORM\EntityRepository
 {
+    public function findByAdm3(Adm3 $adm1): array
+    {
+        return $this->findBy(['adm3' => $adm1], ['name' => 'ASC']);
+    }
 }
