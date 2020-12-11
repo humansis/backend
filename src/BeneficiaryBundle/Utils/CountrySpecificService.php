@@ -33,6 +33,9 @@ class CountrySpecificService
         return $this->em->getRepository(CountrySpecific::class)->findBy(["countryIso3" => $countryIso3]);
     }
 
+    /**
+     * @deprecated
+     */
     public function create($countryIso3, array $countrySpecificArray)
     {
         $countrySpecific = new CountrySpecific($countrySpecificArray["field"], strtolower($countrySpecificArray["type"]), $countryIso3);
@@ -42,6 +45,10 @@ class CountrySpecificService
  
         return $countrySpecific;
     }
+
+    /**
+     * @deprecated
+     */
     public function update(CountrySpecific $countrySpecific, $countryIso3, array $countrySpecificArray)
     {
         $countrySpecific->setType($countrySpecificArray["type"])
