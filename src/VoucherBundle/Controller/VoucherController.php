@@ -332,7 +332,7 @@ class VoucherController extends Controller
 
     /**
      * @Rest\Get("/vouchers/purchases/redemption-batch/{id}", name="voucher_redemption_batch")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @param \VoucherBundle\Entity\VoucherRedemptionBatch $redemptionBatch
      * @return JsonResponse
