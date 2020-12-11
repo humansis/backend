@@ -205,7 +205,7 @@ class DistributionService
             $distribution->removeCommodity($item);
         }
         foreach ($distributionArray['commodities'] as $item) {
-            $this->commodityService->create($distribution, $item, false);
+            $distribution->addCommodity($this->commodityService->create($distribution, $item, false));
         }
 
         if (AssistanceTargetType::COMMUNITY === $distribution->getTargetType()) {
@@ -235,7 +235,9 @@ class DistributionService
             foreach ($selectionCriteriaGroup as $i => $criteriaData) {
                 foreach ($criteriaData as $j => $criterionArray) {
                     /** @var SelectionCriteria $criterion */
-                    $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json');
+                    $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json', [
+                        \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
+                    ]);
                     $criterion->setGroupNumber($i);
                     $this->criteriaDistributionService->save($distribution, $criterion, false);
                     $criteria[$i][$j] = $criterionArray;

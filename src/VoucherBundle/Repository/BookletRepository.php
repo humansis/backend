@@ -212,10 +212,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
 
         $paginator = new Paginator($q, $fetchJoinCellection = true);
 
-        $query = $q->getQuery();
-        $query->useResultCache(true,3600);
-
-        return [count($paginator), $query->getResult()];
+        return [count($paginator), $q->getQuery()->getResult()];
     }
 
     public function getInsertedBooklets($countryISO3, $lastId) {

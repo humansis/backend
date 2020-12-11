@@ -19,6 +19,7 @@ class SubSectorEnum extends AbstractEnum
         self::DISTRIBUTION_OF_INPUTS,
         self::BUSINESS_GRANTS,
         self::AGRICULTURAL_VOUCHERS,
+        self::LIVELIHOOD_CASH_FOR_WORK,
 
         self::MULTI_PURPOSE_CASH_ASSISTANCE,
 
@@ -56,6 +57,8 @@ class SubSectorEnum extends AbstractEnum
         self::LEARNING_MATERIALS,
         self::EDUCATION_PSYCHOSOCIAL_SUPPORT,
         self::EDUCATION_SERVICES,
+        self::EDUCATION_CASH_FOR_WORK,
+        self::PARENT_SESSIONS,
 
         self::DEFAULT_EMERGENCY_TELCO,
         self::DEFAULT_HEALTH,
