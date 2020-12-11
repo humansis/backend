@@ -10,4 +10,8 @@ namespace CommonBundle\Repository;
  */
 class Adm1Repository extends \Doctrine\ORM\EntityRepository
 {
+    public function findByCountry(string $iso3): array
+    {
+        return $this->findBy(['countryISO3' => $iso3], ['name' => 'ASC']);
+    }
 }
