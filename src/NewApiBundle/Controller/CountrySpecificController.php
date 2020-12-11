@@ -43,7 +43,7 @@ class CountrySpecificController extends AbstractController
         }
 
         $countrySpecifics = $this->getDoctrine()->getRepository(CountrySpecific::class)
-            ->findByParams($request->headers->has('country'), $orderBy, $pagination);
+            ->findByParams($request->headers->get('country'), $orderBy, $pagination);
 
         return $this->json($countrySpecifics);
     }
