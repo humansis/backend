@@ -129,7 +129,7 @@ class Assistance implements ExportableInterface
     private $targetType;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="assistance")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="assistance", cascade={"persist"})
      * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
      */
     private $commodities;
