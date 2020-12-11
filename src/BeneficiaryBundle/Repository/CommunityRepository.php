@@ -88,10 +88,7 @@ class CommunityRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter("minimumTolerance", $minimumTolerance)
             ->orderBy("levenshtein", "ASC");
 
-        $query = $q->getQuery();
-        $query->useResultCache(true,3600);
-
-        return $query->getResult();
+        return $q->getQuery()->getResult();
     }
 
     /**
@@ -212,7 +209,7 @@ class CommunityRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('number', $number)
         ;
 
-        return $qb->getQuery()->useResultCache(true, 600)->getOneOrNullResult();
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     /**
