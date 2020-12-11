@@ -104,6 +104,10 @@ class Voucher implements ExportableInterface
         return $this->value;
     }
 
+    /**
+     * @return DateTimeInterface|null
+     * @SymfonyGroups({"FullVoucher", "ValidatedDistribution"})
+     */
     public function getRedeemedAt(): ?DateTimeInterface
     {
         if (null !== $this->redemptionBatch) {

@@ -325,6 +325,28 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result['voucherIds']);
     }
 
+    /**
+     * @depends testValidBatchRedemption
+     *
+     * @param array $newBatchRedemption
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testRedeemedVoucherReturnsRedeemedAt(array $newBatchRedemption)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $voucherId = current($newBatchRedemption['voucherIds']);
+
+        $this->request('GET', '/api/wsse/vouchers/'.$voucherId);
+        $voucher = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertNotNull($voucher['redeemed_at'], 'Redeemed voucher with id '.$voucherId.' should have redeemedAt not null');
+    }
+
     public function testInvalidBatchRedemption(): void
     {
         // Log a user in order to go through the security firewall
