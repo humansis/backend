@@ -4,6 +4,9 @@ namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\CountrySpecificOrderInputType;
+use NewApiBundle\Request\Pagination;
 
 /**
  * CountrySpecificRepository.
@@ -18,5 +21,37 @@ class CountrySpecificRepository extends EntityRepository
     public function findForCriteria(string $countryISO3)
     {
         return $this->findBy(['countryIso3' => $countryISO3]);
+    }
+
+    public function findByParams(string $countryIso3, ?CountrySpecificOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
+    {
+        $qb = $this->createQueryBuilder('cs')
+            ->andWhere('cs.countryIso3 = :iso3')
+            ->setParameter('iso3', $countryIso3);
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case CountrySpecificOrderInputType::SORT_BY_ID:
+                        $qb->orderBy('cs.id', $direction);
+                        break;
+                    case CountrySpecificOrderInputType::SORT_BY_FIELD:
+                        $qb->orderBy('cs.fieldString', $direction);
+                        break;
+                    case CountrySpecificOrderInputType::SORT_BY_TYPE:
+                        $qb->orderBy('cs.type', $direction);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                }
+            }
+        }
+
+        return new Paginator($qb);
     }
 }
