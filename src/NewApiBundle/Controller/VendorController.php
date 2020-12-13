@@ -105,4 +105,18 @@ class VendorController extends AbstractController
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
+
+    /**
+     * @Rest\Get("/vendors/{id}/invoice")
+     *
+     * @param Vendor $vendor
+     *
+     * @return Response
+     *
+     * @throws Exception
+     */
+    public function invoice(Vendor $vendor): Response
+    {
+        return $this->get('voucher.vendor_service')->printInvoice($vendor);
+    }
 }
