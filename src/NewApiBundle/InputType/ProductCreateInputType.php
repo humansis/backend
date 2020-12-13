@@ -10,7 +10,7 @@ class ProductCreateInputType extends ProductUpdateInputType
 {
     /**
      * @Assert\Type("string")
-     * @Assert\LessThanOrEqual(255)
+     * @Assert\Length(max="255")
      * @Assert\NotBlank
      * @Assert\NotNull
      */

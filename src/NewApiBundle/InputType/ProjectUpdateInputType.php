@@ -15,7 +15,7 @@ class ProjectUpdateInputType implements InputTypeInterface
 {
     /**
      * @Assert\Type("string")
-     * @Assert\LessThanOrEqual(255)
+     * @Assert\Length(max="255")
      * @Assert\NotBlank
      * @Assert\NotNull
      */
@@ -23,7 +23,7 @@ class ProjectUpdateInputType implements InputTypeInterface
 
     /**
      * @Assert\Type("string")
-     * @Assert\LessThanOrEqual(255)
+     * @Assert\Length(max="255")
      */
     private $internalId;
 
