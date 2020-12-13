@@ -8,6 +8,8 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use NewApiBundle\InputType\VendorCreateInputType;
+use NewApiBundle\InputType\VendorUpdateInputType;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -63,7 +65,7 @@ class VendorService
      * @return mixed
      * @throws \Exception
      */
-    public function create($countryISO3, array $vendorData)
+    public function createFromArray($countryISO3, array $vendorData)
     {
         $username = $vendorData['username'];
         $userSaved = $this->em->getRepository(User::class)->findOneByUsername($username);
@@ -107,6 +109,45 @@ class VendorService
         }
     }
 
+    public function create(VendorCreateInputType $inputType): Vendor
+    {
+        $userSaved = $this->em->getRepository(User::class)->findOneByUsername($inputType->getUsername());
+        $vendorSaved = $userSaved instanceof User ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
+
+        if ($vendorSaved instanceof Vendor) {
+            throw new \RuntimeException('Vendor with username '.$inputType->getUsername().' already exists');
+        }
+
+        $user = $this->container->get('user.user_service')->create(
+            [
+                'username' => $inputType->getUsername(),
+                'email' => $inputType->getUsername(),
+                'roles' => ['ROLE_VENDOR'],
+                'password' => $inputType->getPassword(),
+                'salt' => $inputType->getSalt(),
+                'change_password' => false,
+                'phone_prefix' => '+34',
+                'phone_number' => '675676767',
+                'two_factor_authentication' => false,
+            ]
+        );
+
+        $vendor = new Vendor();
+        $vendor->setName($inputType->getName())
+            ->setShop($inputType->getShop())
+            ->setAddressStreet($inputType->getAddressStreet())
+            ->setAddressNumber($inputType->getAddressNumber())
+            ->setAddressPostcode($inputType->getAddressPostcode())
+            ->setLocation(null) //TODO
+            ->setArchived(false)
+            ->setUser($user);
+
+        $this->em->persist($vendor);
+        $this->em->flush();
+
+        return $vendor;
+    }
+
     /**
      * Returns all the vendors
      *
@@ -126,7 +167,7 @@ class VendorService
      * @param array $vendorData
      * @return Vendor
      */
-    public function update($countryISO3, Vendor $vendor, array $vendorData)
+    public function updateFromArray($countryISO3, Vendor $vendor, array $vendorData)
     {
         try {
             $user = $vendor->getUser();
@@ -163,6 +204,26 @@ class VendorService
         return $vendor;
     }
 
+    public function update(Vendor $vendor, VendorUpdateInputType $inputType): Vendor
+    {
+        $vendor->setShop($inputType->getShop())
+            ->setName($inputType->getName())
+            ->setAddressStreet($inputType->getAddressStreet())
+            ->setAddressNumber($inputType->getAddressNumber())
+            ->setAddressPostcode($inputType->getAddressPostcode());
+
+        $user = $vendor->getUser();
+        $user->setUsername($inputType->getUsername());
+
+        if (null !== $inputType->getPassword()) {
+            $user->setPassword($inputType->getPassword())
+                ->setSalt($inputType->getSalt());
+        }
+
+        //TODO location
+
+        return $vendor;
+    }
 
     /**
      * Archives Vendor
