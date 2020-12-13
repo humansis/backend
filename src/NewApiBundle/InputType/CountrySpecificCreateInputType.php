@@ -9,7 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CountrySpecificCreateInputType extends CountrySpecificUpdateInputType
 {
     /**
-     * @var string
      * @Assert\Choice({"KHM", "SYR", "UKR", "ETH"})
      * @Assert\NotBlank
      * @Assert\NotNull
@@ -19,15 +18,12 @@ class CountrySpecificCreateInputType extends CountrySpecificUpdateInputType
     /**
      * @return string
      */
-    public function getIso3(): string
+    public function getIso3()
     {
         return $this->iso3;
     }
 
-    /**
-     * @param string $iso3
-     */
-    public function setIso3(string $iso3): void
+    public function setIso3($iso3)
     {
         $this->iso3 = $iso3;
     }

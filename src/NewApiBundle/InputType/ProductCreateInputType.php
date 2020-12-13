@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ProductCreateInputType extends ProductUpdateInputType
 {
     /**
-     * @var string
+     * @Assert\Type("string")
      * @Assert\LessThanOrEqual(255)
      * @Assert\NotBlank
      * @Assert\NotNull
@@ -17,7 +17,6 @@ class ProductCreateInputType extends ProductUpdateInputType
     private $name;
 
     /**
-     * @var string
      * @Assert\Choice({"KHM", "SYR", "UKR", "ETH"})
      * @Assert\NotBlank
      * @Assert\NotNull
@@ -27,15 +26,12 @@ class ProductCreateInputType extends ProductUpdateInputType
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName(string $name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -43,15 +39,12 @@ class ProductCreateInputType extends ProductUpdateInputType
     /**
      * @return string
      */
-    public function getIso3(): string
+    public function getIso3()
     {
         return $this->iso3;
     }
 
-    /**
-     * @param string $iso3
-     */
-    public function setIso3(string $iso3): void
+    public function setIso3($iso3)
     {
         $this->iso3 = $iso3;
     }
