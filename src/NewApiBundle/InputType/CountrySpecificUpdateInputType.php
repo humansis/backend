@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CountrySpecificUpdateInputType implements \CommonBundle\InputType\InputTypeInterface
+class CountrySpecificUpdateInputType implements InputTypeInterface
 {
     /**
-     * @var string
+     * @Assert\Type("string")
      * @Assert\LessThanOrEqual(45)
      * @Assert\NotBlank
      * @Assert\NotNull
@@ -17,7 +18,6 @@ class CountrySpecificUpdateInputType implements \CommonBundle\InputType\InputTyp
     private $field;
 
     /**
-     * @var string
      * @Assert\NotBlank
      * @Assert\NotNull
      * @Assert\Choice({"number", "text"})
@@ -27,31 +27,25 @@ class CountrySpecificUpdateInputType implements \CommonBundle\InputType\InputTyp
     /**
      * @return string
      */
-    public function getField(): string
+    public function getField()
     {
         return $this->field;
     }
 
-    /**
-     * @param string $field
-     */
-    public function setField(string $field): void
+    public function setField($field)
     {
         $this->field = $field;
     }
 
     /**
-     * @return string
+     * @return string one of number|text
      */
-    public function getType(): string
+    public function getType()
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
-    public function setType(string $type): void
+    public function setType($type)
     {
         $this->type = $type;
     }

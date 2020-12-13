@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class ProductUpdateInputType implements \CommonBundle\InputType\InputTypeInterface
+class ProductUpdateInputType implements InputTypeInterface
 {
     /**
      * @var string|null
