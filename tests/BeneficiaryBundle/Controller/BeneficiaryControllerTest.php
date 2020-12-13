@@ -4,6 +4,7 @@ namespace Tests\BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
+use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -125,7 +126,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetBeneficiariesNumberAction()
     {
         $criteria = [
-            'distribution_type' => 'individual',
+            'target_type' => AssistanceTargetType::INDIVIDUAL,
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => null,
             'threshold' => '0',
