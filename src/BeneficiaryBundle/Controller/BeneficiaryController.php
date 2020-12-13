@@ -136,7 +136,7 @@ class BeneficiaryController extends Controller
 
     /**
      * @Rest\Post("/beneficiaries/project/{id}/number")
-     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE', project)")
      *
      * @SWG\Tag(name="CriteriaDistributions")
      * @SWG\Tag(name="Beneficiary")
