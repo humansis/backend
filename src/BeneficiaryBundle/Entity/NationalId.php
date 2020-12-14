@@ -14,25 +14,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class NationalId
 {
-    const TYPE_NATIONAL_ID = 'national_id';
-    const TYPE_PASSPORT = 'passport';
-    const TYPE_FAMILY = 'family_registration';
-    const TYPE_BIRTH_CERTIFICATE = 'birth_certificate';
-    const TYPE_DRIVERS_LICENSE = 'drivers_license';
-    const TYPE_CAMP_ID = 'camp_id';
-    const TYPE_SOCIAL_SERVICE_ID = 'social_service_card';
-    const TYPE_OTHER = 'other';
-
-    const TYPE_ALL = [
-        self::TYPE_NATIONAL_ID,
-        self::TYPE_PASSPORT,
-        self::TYPE_FAMILY,
-        self::TYPE_BIRTH_CERTIFICATE,
-        self::TYPE_DRIVERS_LICENSE,
-        self::TYPE_CAMP_ID,
-        self::TYPE_SOCIAL_SERVICE_ID,
-        self::TYPE_OTHER,
-    ];
+    const TYPE_NATIONAL_ID = 'National ID';
+    const TYPE_PASSPORT = 'Passport';
+    const TYPE_FAMILY = 'Family Registration';
+    const TYPE_BIRTH_CERTIFICATE = 'Birth Certificate';
+    const TYPE_DRIVERS_LICENSE = 'Driver’s License';
+    const TYPE_CAMP_ID = 'Camp ID';
+    const TYPE_SOCIAL_SERVICE_ID = 'Social Service Card';
+    const TYPE_OTHER = 'Other';
 
     /**
      * @var int
@@ -57,7 +46,7 @@ class NationalId
      *
      * @ORM\Column(name="id_type", type="string", length=45)
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "FullInstitution"})
-     * @Assert\Choice(choices=BeneficiaryBundle\Entity\NationalId::TYPE_ALL)
+     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId", "types"})
      */
     private $idType;
 
@@ -67,6 +56,20 @@ class NationalId
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Person", inversedBy="nationalIds")
      */
     private $person;
+
+    public static function types()
+    {
+        return [
+            self::TYPE_NATIONAL_ID,
+            self::TYPE_PASSPORT,
+            self::TYPE_FAMILY,
+            self::TYPE_BIRTH_CERTIFICATE,
+            self::TYPE_DRIVERS_LICENSE,
+            self::TYPE_CAMP_ID,
+            self::TYPE_SOCIAL_SERVICE_ID,
+            self::TYPE_OTHER,
+        ];
+    }
 
     /**
      * Get id.

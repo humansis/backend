@@ -102,7 +102,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
-        $this->assertEquals(count(NationalId::TYPE_ALL), $result['totalCount']);
+        $this->assertEquals(count(NationalId::types()), $result['totalCount']);
     }
 
     /**
