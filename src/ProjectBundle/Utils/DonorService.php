@@ -3,6 +3,8 @@
 namespace ProjectBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\InputType\DonorCreateInputType;
+use NewApiBundle\InputType\DonorUpdateInputType;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Donor;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,8 +62,9 @@ class DonorService
      * @param array $donorArray
      * @return mixed
      * @throws \Exception
+     * @deprecated
      */
-    public function create(array $donorArray)
+    public function createFromArray(array $donorArray)
     {
         $donor = new Donor();
 
@@ -87,11 +90,39 @@ class DonorService
         return $donor;
     }
 
+    public function create(DonorCreateInputType $inputType): Donor
+    {
+        $donor = (new Donor())
+            ->setFullname($inputType->getFullname())
+            ->setShortname($inputType->getShortname())
+            ->setNotes($inputType->getNotes())
+            ->setLogo($inputType->getLogo())
+            ->setDateAdded(new \DateTime());
+
+        $this->em->persist($donor);
+        $this->em->flush();
+
+        return $donor;
+    }
+
+    public function update(Donor $donor, DonorUpdateInputType $inputType): void
+    {
+        $donor
+            ->setFullname($inputType->getFullname())
+            ->setShortname($inputType->getShortname())
+            ->setNotes($inputType->getNotes())
+            ->setLogo($inputType->getLogo());
+
+        $this->em->persist($donor);
+        $this->em->flush();
+    }
+
     /**
      * @param Donor $donor
      * @param array $donorArray
      * @return Donor
      * @throws \Exception
+     * @deprecated
      */
     public function edit(Donor $donor, array $donorArray)
     {
