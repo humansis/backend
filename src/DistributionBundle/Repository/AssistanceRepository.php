@@ -228,7 +228,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             LEFT JOIN transaction t ON t.distribution_beneficiary_id=db.id
             -- general reliefs
             LEFT JOIN general_relief_item gri ON gri.distribution_beneficiary_id=db.id
-            WHERE b.household_id = :household
+            WHERE b.household_id = :household AND (sd.id IS NOT NULL OR gri.id IS NOT NULL OR t.id IS NOT NULL)
         ) AS di
         ORDER BY di.date_distribution ASC
         ';
