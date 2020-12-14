@@ -2,6 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use CommonBundle\Entity\Adm1;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
@@ -9,7 +10,14 @@ use Tests\BMSServiceTestCase;
 
 class VendorControllerTest extends BMSServiceTestCase
 {
-    private const VENDOR_USERNAME = 'testvendor@example.org';
+    private $vendorUsername;
+
+    public function __construct($name = null, array $data = [], $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+
+        $this->vendorUsername = time().'-testvendor@example.org';
+    }
 
     /**
      * @throws Exception
@@ -26,7 +34,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
     public function testInitializeVendorUser(): string
     {
-        $this->request('GET', '/api/wsse/initialize/'.self::VENDOR_USERNAME);
+        $this->request('GET', '/api/wsse/initialize/'.$this->vendorUsername);
 
         $response = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
@@ -52,22 +60,29 @@ class VendorControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
+        $adm1Results = $this->em->getRepository(Adm1::class)->findAll();
+
+        if (0 === empty($adm1Results)) {
+            $this->markTestSkipped('To perform VendorController CRUD tests, you need to have at least one Adm1 record in database.');
+        }
+
         $this->request('POST', '/api/basic/vendors', [
             'shop' => 'test shop',
             'name' => 'test name',
-            'username' => self::VENDOR_USERNAME,
+            'username' => $this->vendorUsername,
             'salt' => $salt,
             'password' => 'vendor-password',
             'addressStreet' => 'test street',
             'addressNumber' => '1234566',
             'addressPostcode' => '039 98',
+            'locationId' => $adm1Results[0]->getId(),
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed (status code '.$this->client->getResponse()->getStatusCode().'): '.$this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -75,35 +90,38 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('shop', $result);
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('username', $result);
+        $this->assertArrayHasKey('salt', $result);
         $this->assertArrayHasKey('addressStreet', $result);
         $this->assertArrayHasKey('addressNumber', $result);
         $this->assertArrayHasKey('addressPostcode', $result);
+        $this->assertArrayHasKey('locationId', $result);
 
-        return $result['id'];
+        return $result;
     }
 
     /**
      * @depends testCreate
      *
-     * @param int $id
+     * @param array $vendor
      * @return mixed
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function testUpdate(int $id)
+    public function testUpdate(array $vendor)
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('PUT', '/api/basic/vendors/'.$id, [
+        $this->request('PUT', '/api/basic/vendors/'.$vendor['id'], [
             'shop' => 'edited',
-            'name' => 'test name',
-            'username' => self::VENDOR_USERNAME,
-            'addressStreet' => 'test street',
-            'addressNumber' => '1234',
+            'name' => $vendor['name'],
+            'salt' => $vendor['salt'],
+            'addressStreet' => $vendor['addressStreet'],
+            'addressNumber' => $vendor['addressNumber'],
             'addressPostcode' => '0000',
+            'locationId' => $vendor['locationId'],
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -118,9 +136,11 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('shop', $result);
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('username', $result);
+        $this->assertArrayHasKey('salt', $result);
         $this->assertArrayHasKey('addressStreet', $result);
         $this->assertArrayHasKey('addressNumber', $result);
         $this->assertArrayHasKey('addressPostcode', $result);
+        $this->assertArrayHasKey('locationId', $result);
 
         $this->assertEquals('edited', $result['shop']);
         $this->assertEquals('0000', $result['addressPostcode']);
@@ -157,15 +177,20 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('shop', $result);
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('username', $result);
+        $this->assertArrayHasKey('salt', $result);
         $this->assertArrayHasKey('addressStreet', $result);
         $this->assertArrayHasKey('addressNumber', $result);
         $this->assertArrayHasKey('addressPostcode', $result);
+        $this->assertArrayHasKey('locationId', $result);
 
         return $id;
     }
 
     /**
      * @depends testUpdate
+     *
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testList()
     {

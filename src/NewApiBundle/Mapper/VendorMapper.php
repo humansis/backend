@@ -47,6 +47,11 @@ class VendorMapper implements MapperInterface
         return $this->object->getUser()->getUsername();
     }
 
+    public function getSalt(): ?string
+    {
+        return $this->object->getUser()->getSalt();
+    }
+
     public function getAddressStreet(): ?string
     {
         return $this->object->getAddressStreet();
@@ -62,39 +67,12 @@ class VendorMapper implements MapperInterface
         return $this->object->getAddressPostcode();
     }
 
-    public function getAdm1Id(): ?int
+    public function getLocationId(): ?int
     {
-        if (null == $this->object->getLocation()) {
+        if (null === $this->object->getLocation()) {
             return null;
         }
 
-        return $this->object->getLocation()->getAdm1Id();
-    }
-
-    public function getAdm2Id(): ?int
-    {
-        if (null == $this->object->getLocation()) {
-            return null;
-        }
-
-        return $this->object->getLocation()->getAdm2Id();
-    }
-
-    public function getAdm3Id(): ?int
-    {
-        if (null == $this->object->getLocation()) {
-            return null;
-        }
-
-        return $this->object->getLocation()->getAdm3Id();
-    }
-
-    public function getAdm4Id(): ?int
-    {
-        if (null == $this->object->getLocation()) {
-            return null;
-        }
-
-        return $this->object->getLocation()->getAdm4Id();
+        return $this->object->getLocation()->getId();
     }
 }

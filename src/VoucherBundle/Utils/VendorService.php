@@ -2,14 +2,17 @@
 
 namespace VoucherBundle\Utils;
 
+use CommonBundle\Entity\Location;
 use CommonBundle\Entity\Logs;
 use CommonBundle\Utils\LocationService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use NewApiBundle\InputType\VendorCreateInputType;
 use NewApiBundle\InputType\VendorUpdateInputType;
+use RuntimeException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -109,13 +112,18 @@ class VendorService
         }
     }
 
+    /**
+     * @param VendorCreateInputType $inputType
+     * @return Vendor
+     * @throws EntityNotFoundException
+     */
     public function create(VendorCreateInputType $inputType): Vendor
     {
         $userSaved = $this->em->getRepository(User::class)->findOneByUsername($inputType->getUsername());
         $vendorSaved = $userSaved instanceof User ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
 
         if ($vendorSaved instanceof Vendor) {
-            throw new \RuntimeException('Vendor with username '.$inputType->getUsername().' already exists');
+            throw new RuntimeException('Vendor with username '.$inputType->getUsername().' already exists');
         }
 
         $user = $this->container->get('user.user_service')->create(
@@ -132,13 +140,19 @@ class VendorService
             ]
         );
 
+        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
+
+        if (!($location instanceof Location)) {
+            throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
+        }
+
         $vendor = new Vendor();
         $vendor->setName($inputType->getName())
             ->setShop($inputType->getShop())
             ->setAddressStreet($inputType->getAddressStreet())
             ->setAddressNumber($inputType->getAddressNumber())
             ->setAddressPostcode($inputType->getAddressPostcode())
-            ->setLocation(null) //TODO
+            ->setLocation($location)
             ->setArchived(false)
             ->setUser($user);
 
@@ -204,6 +218,12 @@ class VendorService
         return $vendor;
     }
 
+    /**
+     * @param Vendor                $vendor
+     * @param VendorUpdateInputType $inputType
+     * @return Vendor
+     * @throws EntityNotFoundException
+     */
     public function update(Vendor $vendor, VendorUpdateInputType $inputType): Vendor
     {
         $vendor->setShop($inputType->getShop())
@@ -212,15 +232,21 @@ class VendorService
             ->setAddressNumber($inputType->getAddressNumber())
             ->setAddressPostcode($inputType->getAddressPostcode());
 
-        $user = $vendor->getUser();
-        $user->setUsername($inputType->getUsername());
+        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
 
-        if (null !== $inputType->getPassword()) {
-            $user->setPassword($inputType->getPassword())
-                ->setSalt($inputType->getSalt());
+        if (!($location instanceof Location)) {
+            throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
         }
 
-        //TODO location
+        $user = $vendor->getUser();
+        $user->setSalt($inputType->getSalt());
+
+        if (null !== $inputType->getPassword()) {
+            $user->setPassword($inputType->getPassword());
+        }
+
+        $this->em->persist($vendor);
+        $this->em->flush();
 
         return $vendor;
     }

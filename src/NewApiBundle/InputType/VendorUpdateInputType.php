@@ -2,65 +2,65 @@
 
 namespace NewApiBundle\InputType;
 
-use CommonBundle\InputType\InputTypeInterface;
+use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class VendorUpdateInputType implements InputTypeInterface
 {
     /**
-     * @var string|null
+     * @Assert\Type("string")
      * @Assert\Length(max=255)
      */
     private $shop;
 
     /**
-     * @var string
+     * @Assert\Type("string")
      * @Assert\Length(max=255)
      * @Assert\NotNull
      */
     private $name;
 
     /**
-     * @var string
-     * @Assert\Length(max=180)
-     * @Assert\NotNull
-     */
-    private $username;
-
-    /**
-     * @var string|null
+     * @Assert\Type("string")
      * @Assert\Length(max=255)
+     * @Assert\NotNull
      */
     private $salt;
 
     /**
-     * @var string|null
+     * @Assert\Type("string")
      * @Assert\Length(max=255)
      */
     private $password;
 
     /**
-     * @var string|null
+     * @Assert\Type("string")
      * @Assert\Length(max=255)
      */
     private $addressStreet;
 
     /**
-     * @var string|null
+     * @Assert\Type("string")
      * @Assert\Length(max=255)
      */
     private $addressNumber;
 
     /**
-     * @var string|null
+     * @Assert\Type("string")
      * @Assert\Length(max=255)
      */
     private $addressPostcode;
 
     /**
+     * @Assert\Type("integer")
+     * @Assert\NotNull
+     */
+    private $locationId;
+
+    /**
      * @return string|null
      */
-    public function getShop(): ?string
+    public function getShop()
     {
         return $this->shop;
     }
@@ -68,7 +68,7 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
@@ -76,15 +76,7 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @return string
      */
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSalt(): ?string
+    public function getSalt()
     {
         return $this->salt;
     }
@@ -92,7 +84,7 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @return string|null
      */
-    public function getPassword(): ?string
+    public function getPassword()
     {
         return $this->password;
     }
@@ -100,7 +92,7 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @return string|null
      */
-    public function getAddressStreet(): ?string
+    public function getAddressStreet()
     {
         return $this->addressStreet;
     }
@@ -108,7 +100,7 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @return string|null
      */
-    public function getAddressNumber(): ?string
+    public function getAddressNumber()
     {
         return $this->addressNumber;
     }
@@ -116,7 +108,7 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @return string|null
      */
-    public function getAddressPostcode(): ?string
+    public function getAddressPostcode()
     {
         return $this->addressPostcode;
     }
@@ -124,7 +116,7 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @param string|null $shop
      */
-    public function setShop(?string $shop): void
+    public function setShop($shop)
     {
         $this->shop = $shop;
     }
@@ -132,23 +124,15 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @param string $name
      */
-    public function setName(string $name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
 
     /**
-     * @param string $username
+     * @param string $salt
      */
-    public function setUsername(string $username): void
-    {
-        $this->username = $username;
-    }
-
-    /**
-     * @param string|null $salt
-     */
-    public function setSalt(?string $salt): void
+    public function setSalt($salt)
     {
         $this->salt = $salt;
     }
@@ -156,7 +140,7 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @param string|null $password
      */
-    public function setPassword(?string $password): void
+    public function setPassword($password)
     {
         $this->password = $password;
     }
@@ -164,7 +148,7 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @param string|null $addressStreet
      */
-    public function setAddressStreet(?string $addressStreet): void
+    public function setAddressStreet($addressStreet)
     {
         $this->addressStreet = $addressStreet;
     }
@@ -172,7 +156,7 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @param string|null $addressNumber
      */
-    public function setAddressNumber(?string $addressNumber): void
+    public function setAddressNumber($addressNumber)
     {
         $this->addressNumber = $addressNumber;
     }
@@ -180,9 +164,24 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @param string|null $addressPostcode
      */
-    public function setAddressPostcode(?string $addressPostcode): void
+    public function setAddressPostcode($addressPostcode)
     {
         $this->addressPostcode = $addressPostcode;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getLocationId()
+    {
+        return $this->locationId;
+    }
+
+    /**
+     * @param mixed $locationId
+     */
+    public function setLocationId($locationId): void
+    {
+        $this->locationId = $locationId;
+    }
 }
