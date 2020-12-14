@@ -92,6 +92,9 @@ class SmartcardController extends Controller
      */
     public function register(Request $request): Response
     {
+        $this->container->get('logger')->error('headers', $request->headers->all());
+        $this->container->get('logger')->error('content', [$request->getContent()]);
+
         $serialNumber = strtoupper($request->get('serialNumber'));
 
         /** @var Smartcard $smartcard */
@@ -253,6 +256,10 @@ class SmartcardController extends Controller
      */
     public function change(Smartcard $smartcard, Request $request): Response
     {
+        $this->container->get('logger')->error('Smartcard', [$smartcard->getId()]);
+        $this->container->get('logger')->error('headers', $request->headers->all());
+        $this->container->get('logger')->error('content', [$request->getContent()]);
+
         $newState = $smartcard->getState();
         if ($request->request->has('state')) {
             $newState = $request->request->get('state');
@@ -334,6 +341,9 @@ class SmartcardController extends Controller
      */
     public function deposit(Request $request): Response
     {
+        $this->container->get('logger')->error('headers', $request->headers->all());
+        $this->container->get('logger')->error('content', [$request->getContent()]);
+
         $serialNumber = $request->get('serialNumber');
 
         $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
@@ -415,11 +425,15 @@ class SmartcardController extends Controller
      */
     public function purchase(Request $request): Response
     {
+        $this->container->get('logger')->error('headers', $request->headers->all());
+        $this->container->get('logger')->error('content', [$request->getContent()]);
+
         /** @var SmartcardPurchaseInput $data */
         $data = $this->get('serializer')->deserialize($request->getContent(), SmartcardPurchaseInput::class, 'json');
 
         $errors = $this->get('validator')->validate($data);
         if (count($errors) > 0) {
+            $this->container->get('logger')->error('validation errors: '.((string) $errors));
             throw new \RuntimeException((string) $errors);
         }
 

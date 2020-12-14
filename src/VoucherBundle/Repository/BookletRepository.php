@@ -86,6 +86,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         // We join information that is needed for the filters
         $q = $qb->leftJoin('b.distribution_beneficiary', 'db')
                 ->leftJoin('b.vouchers', 'v')
+                ->leftJoin('db.beneficiary', 'bf')
                 ->leftJoin('db.assistance', 'd')
                 ->where('b.status != :status')
                 ->andWhere('b.countryISO3 = :country')

@@ -8,7 +8,9 @@ use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use BeneficiaryBundle\Model\Vulnerability\Resolver;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\SelectionCriteria;
+use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
 use ProjectBundle\Entity\Project;
 use BeneficiaryBundle\Entity\Camp;
 use Symfony\Component\Serializer\Serializer;
@@ -52,18 +54,30 @@ class CriteriaDistributionService
     }
 
     /**
-     * @param array   $filters
-     * @param Project $project
-     * @param string  $sector
-     * @param string  $subsector
-     * @param int     $threshold
-     * @param bool    $isCount
+     * @param array       $filters
+     * @param Project     $project
+     * @param string      $targetType
+     * @param string      $sector
+     * @param string|null $subsector
+     * @param int         $threshold
+     * @param bool        $isCount
      *
      * @return array
+     * @throws \BeneficiaryBundle\Exception\CsvParserException
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
      */
-    public function load(array $filters, Project $project, string $sector, ?string $subsector, int $threshold, bool $isCount)
+    public function load(array $filters, Project $project, string $targetType, string $sector, ?string $subsector, int $threshold, bool $isCount)
     {
         $countryISO3 = $filters['countryIso3'];
+
+        if (!in_array($targetType, [
+            AssistanceTargetType::INDIVIDUAL,
+            AssistanceTargetType::HOUSEHOLD,
+        ])) {
+            throw new InvalidArgumentException('Beneficiary list cannot be made by criteria for '.$targetType);
+        }
 
         $reachedBeneficiaries = [];
 
@@ -89,7 +103,13 @@ class CriteriaDistributionService
                 }
 
                 if ($protocol->getTotalScore() >= $threshold) {
-                    $reachedBeneficiaries[$beneficiary->getId()] = $scores;
+                    if (AssistanceTargetType::INDIVIDUAL === $targetType) {
+                        $BNFId = $beneficiary->getId();
+                        $reachedBeneficiaries[$BNFId] = $scores;
+                    } elseif (AssistanceTargetType::HOUSEHOLD === $targetType) {
+                        $HHHId = $beneficiary->getHousehold()->getHouseholdHead()->getId();
+                        $reachedBeneficiaries[$HHHId] = $scores;
+                    }
                 }
             }
         }
@@ -106,16 +126,20 @@ class CriteriaDistributionService
     /**
      * @param array   $filters
      * @param Project $project
+     * @param string  $targetType
      * @param int     $threshold
      * @param int     $limit
      * @param int     $offset
      *
      * @return Beneficiary[]
-     * @throws \Exception
+     * @throws \BeneficiaryBundle\Exception\CsvParserException
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
      */
-    public function getList(array $filters, Project $project, int $threshold, int $limit, int $offset)
+    public function getList(array $filters, Project $project, string $targetType, int $threshold, int $limit, int $offset)
     {
-        $result = $this->load($filters, $project, $filters['sector'], $filters['subsector'], $threshold, false);
+        $result = $this->load($filters, $project, $targetType, $filters['sector'], $filters['subsector'], $threshold, false);
 
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(['id' => array_keys($result['finalArray'])], null, $limit, $offset);
 

@@ -62,6 +62,13 @@ services:
         tags:
             - { name: request.param_converter, converter: input_types_converter }
 
+    CommonBundle\Listener\LoggerSubscriber:
+        arguments:
+            - '@logger'
+        tags:
+            - { name: kernel.event_subscriber }
+
+
 #######################################################################################
 ##                                      FIXTURE                                      ##
 #######################################################################################
@@ -175,6 +182,7 @@ services:
             - "@security.role_hierarchy"
             - "@doctrine.orm.entity_manager"
             - "@request_stack"
+            - "@logger"
         tags:
             - { name: security.voter }
 
@@ -183,6 +191,7 @@ services:
         arguments:
             - "@security.role_hierarchy"
             - "@doctrine.orm.entity_manager"
+            - "@logger"
         tags:
             - { name: security.voter }
 

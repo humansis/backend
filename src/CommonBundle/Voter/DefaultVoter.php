@@ -27,18 +27,22 @@ class DefaultVoter extends BMSVoter
     /** @var RequestStack $requestStack */
     private $requestStack;
 
+    /** @var \Monolog\Logger $logger */
+    private $logger;
 
     /**
      * DefaultVoter constructor.
      * @param RoleHierarchy $roleHierarchy
      * @param EntityManagerInterface $entityManager
      * @param RequestStack $requestStack
+     * @param \Monolog\Logger $logger
      */
-    public function __construct(RoleHierarchy $roleHierarchy, EntityManagerInterface $entityManager, RequestStack $requestStack)
+    public function __construct(RoleHierarchy $roleHierarchy, EntityManagerInterface $entityManager, RequestStack $requestStack, \Monolog\Logger $logger)
     {
         parent::__construct($roleHierarchy);
         $this->em = $entityManager;
         $this->requestStack = $requestStack;
+        $this->logger = $logger;
     }
 
     /**
@@ -69,21 +73,25 @@ class DefaultVoter extends BMSVoter
     {
         $user = $token->getUser();
         if (!$user instanceof User) {
+            $this->logger->error('DefaultVoter - no user');
             return false;
         }
         /**
          * @var User $user
          */
         if (!$this->hasRole($user->getRoles(), $attribute)) {
+            $this->logger->error('DefaultVoter - has not roles', ['roles' => $user->getRoles(), 'attribute' => $attribute]);
             return false;
         }
 
         if (!$this->requestStack->getCurrentRequest()->request->has('__country')) {
+            $this->logger->error('DefaultVoter - has not country', ['request' => $this->requestStack->getCurrentRequest()->request->all()]);
             return false;
         }
 
         $countryISO3 = $this->requestStack->getCurrentRequest()->request->get('__country');
         if (!$this->hasCountry($user, $countryISO3)) {
+            $this->logger->error('DefaultVoter - has wrong country', ['request' => $this->requestStack->getCurrentRequest()->request->all(), 'country' => $countryISO3]);
             return false;
         }
 
