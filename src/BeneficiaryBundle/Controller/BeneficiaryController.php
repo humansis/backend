@@ -9,6 +9,7 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 
 use CommonBundle\Pagination\Paginator;
+use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Utils\CriteriaDistributionService;
 use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Entity\Project;
@@ -21,6 +22,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use VoucherBundle\Entity\Smartcard;
 
 class BeneficiaryController extends Controller
@@ -116,13 +118,18 @@ class BeneficiaryController extends Controller
         $filters = $request->request->all();
         $filters['countryIso3'] = $filters['__country'];
         $threshold = $filters['threshold'];
+        $targetType = $filters['target_type'] ?? null;
+
+        if (!in_array($targetType, AssistanceTargetType::values())) {
+            throw new BadRequestHttpException('Nonexistent assistance target type: '.$targetType);
+        }
 
         $limit = $request->query->getInt('limit', 1000);
         $offset = $request->query->getInt('offset', 0);
 
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        $data = $criteriaDistributionService->getList($filters, $project, $threshold, $limit, $offset);
+        $data = $criteriaDistributionService->getList($filters, $project, $targetType, $threshold, $limit, $offset);
 
         return $this->json($data);
     }
@@ -162,10 +169,15 @@ class BeneficiaryController extends Controller
         $threshold = $filters['threshold'];
         $sector = $filters['sector'];
         $subSector = $filters['subsector'];
+        $targetType = $filters['target_type'] ?? null;
+
+        if (!in_array($targetType, AssistanceTargetType::values())) {
+            throw new BadRequestHttpException('Nonexistent assistance target type: '.$targetType);
+        }
 
         /** @var CriteriaDistributionService $criteriaDistributionService */
         $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        $receivers = $criteriaDistributionService->load($filters, $project, $sector, $subSector, $threshold, true);
+        $receivers = $criteriaDistributionService->load($filters, $project, $targetType, $sector, $subSector, $threshold, true);
 
         return $this->json($receivers);
     }
