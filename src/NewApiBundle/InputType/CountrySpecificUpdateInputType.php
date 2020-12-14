@@ -11,7 +11,7 @@ class CountrySpecificUpdateInputType implements InputTypeInterface
 {
     /**
      * @Assert\Type("string")
-     * @Assert\LessThanOrEqual(45)
+     * @Assert\Length(max="45")
      * @Assert\NotBlank
      * @Assert\NotNull
      */

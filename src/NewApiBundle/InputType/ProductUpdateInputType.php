@@ -10,14 +10,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ProductUpdateInputType implements InputTypeInterface
 {
     /**
-     * @var string|null
-     * @Assert\LessThanOrEqual(20)
+     * @Assert\Type("string")
+     * @Assert\Length(max="20")
      */
     private $unit;
 
     /**
-     * @var string|null
-     * @Assert\LessThanOrEqual(255)
+     * @Assert\Type("string")
+     * @Assert\Length(max="255")
      * @Assert\NotBlank
      * @Assert\NotNull
      */
@@ -26,15 +26,12 @@ class ProductUpdateInputType implements InputTypeInterface
     /**
      * @return string|null
      */
-    public function getUnit(): ?string
+    public function getUnit()
     {
         return $this->unit;
     }
 
-    /**
-     * @param string|null $unit
-     */
-    public function setUnit(?string $unit): void
+    public function setUnit($unit)
     {
         $this->unit = $unit;
     }
@@ -42,15 +39,12 @@ class ProductUpdateInputType implements InputTypeInterface
     /**
      * @return string|null
      */
-    public function getImage(): ?string
+    public function getImage()
     {
         return $this->image;
     }
 
-    /**
-     * @param string|null $image
-     */
-    public function setImage(?string $image): void
+    public function setImage($image)
     {
         $this->image = $image;
     }
