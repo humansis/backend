@@ -157,7 +157,7 @@ class HouseholdCSVService
         $rowHeader = $sheetArray[1];
         $sheetArray = array_slice($sheetArray, count($headers) + 1);
 
-        $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $rowHeader, $countryIso3, $mappingCSV);
+        $listHouseholdsArray = $this->CSVToArrayMapper->fromCSVToArray($sheetArray, $rowHeader, $countryIso3, $mappingCSV, count($headers) + 1);
 
         return $this->foundErrors($countryIso3, $project, $listHouseholdsArray, null, $email);
     }

@@ -130,7 +130,7 @@ class CSVToArrayMapper
      *
      * @throws \Exception
      */
-    public function fromCSVToArray(array $sheetArray, array $rowHeader, $countryIso3, $mappingCSV)
+    public function fromCSVToArray(array $sheetArray, array $rowHeader, $countryIso3, $mappingCSV, $lineShift)
     {
         // Get the mapping for the current country
         $listHouseholdArray = [];
@@ -143,7 +143,7 @@ class CSVToArrayMapper
             }
 
             // Load the household array for the current row
-            $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $indexRow, $row, $rowHeader);
+            $formattedHouseholdArray = $this->mappingCSV($mappingCSV, $countryIso3, $indexRow + $lineShift + 1, $row, $rowHeader);
 
             // Check if it's a new household or just a new beneficiary in the current household
             // If address_street exists it's a new household
