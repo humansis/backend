@@ -308,11 +308,11 @@ class TransactionService
      */
     public function exportToCsv(Assistance $assistance, string $type)
     {
-        $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
 
         $transactions = array();
         $exportableTable = array();
-        foreach ($distributionBeneficiary as $db) {
+        foreach ($assistanceBeneficiary as $db) {
             $transaction = $this->em->getRepository(Transaction::class)->findOneByAssistanceBeneficiary($db);
 
             if ($transaction) {

@@ -282,8 +282,8 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['status' => Booklet::UNASSIGNED]);
         $distribution = $this->em->getRepository(Assistance::class)->findOneBy([]);
-        $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findAssignable($distribution)[0];
-        $beneficiary = $distributionBeneficiary->getBeneficiary();
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findAssignable($distribution)[0];
+        $beneficiary = $assistanceBeneficiary->getBeneficiary();
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);

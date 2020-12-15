@@ -70,7 +70,7 @@ class AssistanceMapper
             }
         );
         $dbs = [];
-        foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
+        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             $dbs[] = [
                 'beneficiary' => $this->beneficiaryMapper->toMinimalArrays($bnfs),
             ];

@@ -57,7 +57,7 @@ class SmartcardDeposit
      *
      * @SymfonyGroups({"FullSmartcard"})
      */
-    private $distributionBeneficiary;
+    private $assistanceBeneficiary;
 
     /**
      * @var float
@@ -83,13 +83,13 @@ class SmartcardDeposit
     public static function create(
         Smartcard $smartcard,
         User $depositor,
-        AssistanceBeneficiary $distributionBeneficiary,
+        AssistanceBeneficiary $assistanceBeneficiary,
         $value,
         DateTimeInterface $createdAt
     ) {
         $entity = new self();
         $entity->depositor = $depositor;
-        $entity->distributionBeneficiary = $distributionBeneficiary;
+        $entity->assistanceBeneficiary = $assistanceBeneficiary;
         $entity->value = $value;
         $entity->createdAt = $createdAt;
         $entity->smartcard = $smartcard;
@@ -97,7 +97,7 @@ class SmartcardDeposit
         $smartcard->addDeposit($entity);
 
         if (null === $smartcard->getCurrency()) {
-            $smartcard->setCurrency(self::findCurrency($distributionBeneficiary));
+            $smartcard->setCurrency(self::findCurrency($assistanceBeneficiary));
         }
 
         return $entity;
@@ -134,7 +134,7 @@ class SmartcardDeposit
      */
     public function getAssistanceBeneficiary(): AssistanceBeneficiary
     {
-        return $this->distributionBeneficiary;
+        return $this->assistanceBeneficiary;
     }
 
     public function getValue(): float
@@ -150,15 +150,15 @@ class SmartcardDeposit
         return $this->createdAt;
     }
 
-    private static function findCurrency(AssistanceBeneficiary $distributionBeneficiary): string
+    private static function findCurrency(AssistanceBeneficiary $assistanceBeneficiary): string
     {
-        foreach ($distributionBeneficiary->getAssistance()->getCommodities() as $commodity) {
+        foreach ($assistanceBeneficiary->getAssistance()->getCommodities() as $commodity) {
             /** @var \DistributionBundle\Entity\Commodity $commodity */
             if ('Smartcard' === $commodity->getModalityType()->getName()) {
                 return $commodity->getUnit();
             }
         }
 
-        throw new \LogicException('Unable to find currency for AssistanceBeneficiary #'.$distributionBeneficiary->getId());
+        throw new \LogicException('Unable to find currency for AssistanceBeneficiary #'.$assistanceBeneficiary->getId());
     }
 }

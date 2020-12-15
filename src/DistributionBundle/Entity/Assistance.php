@@ -565,32 +565,32 @@ class Assistance implements ExportableInterface
     }
 
     /**
-     * Add distributionBeneficiary.
+     * Add assistanceBeneficiary.
      *
-     * @param \DistributionBundle\Entity\AssistanceBeneficiary $distributionBeneficiary
+     * @param \DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary
      *
      * @return Assistance
      */
-    public function addAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $distributionBeneficiary)
+    public function addAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary)
     {
         if (null === $this->distributionBeneficiaries) {
             $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
         }
-        $this->distributionBeneficiaries[] = $distributionBeneficiary;
+        $this->distributionBeneficiaries[] = $assistanceBeneficiary;
 
         return $this;
     }
 
     /**
-     * Remove distributionBeneficiary.
+     * Remove assistanceBeneficiary.
      *
-     * @param \DistributionBundle\Entity\AssistanceBeneficiary $distributionBeneficiary
+     * @param \DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $distributionBeneficiary)
+    public function removeAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary)
     {
-        return $this->distributionBeneficiaries->removeElement($distributionBeneficiary);
+        return $this->distributionBeneficiaries->removeElement($assistanceBeneficiary);
     }
 
     /**
@@ -814,28 +814,28 @@ class Assistance implements ExportableInterface
         }
 
         $amountSent = 0;
-        foreach ($this->getDistributionBeneficiaries() as $distributionBeneficiary) {
-            $amountSent += $this->getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary);
+        foreach ($this->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            $amountSent += $this->getCommoditySentAmountFromBeneficiary($commodity, $assistanceBeneficiary);
         }
         $percentage = $amountSent / $totalCommodityValue * 100;
 
         return round($percentage * 100) / 100;
     }
 
-    public function getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary)
+    public function getCommoditySentAmountFromBeneficiary($commodity, $assistanceBeneficiary)
     {
         $modalityType = $this->getCommodities()[0]->getModalityType()->getName();
         if ($modalityType === 'Mobile Money') {
-            $numberOfTransactions = count($distributionBeneficiary->getTransactions());
-            if (count($distributionBeneficiary->getTransactions()) > 0) {
-                $transaction = $distributionBeneficiary->getTransactions()[$numberOfTransactions - 1];
+            $numberOfTransactions = count($assistanceBeneficiary->getTransactions());
+            if (count($assistanceBeneficiary->getTransactions()) > 0) {
+                $transaction = $assistanceBeneficiary->getTransactions()[$numberOfTransactions - 1];
 
                 return ($transaction->getTransactionStatus() === 1 ? $commodity->getValue() : 0);
             } else {
                 return 0;
             }
         } elseif ($modalityType === 'QR Code Voucher') {
-            $booklets = $distributionBeneficiary->getBooklets();
+            $booklets = $assistanceBeneficiary->getBooklets();
             foreach ($booklets as $booklet) {
                 if ($booklet->getStatus() === 1 || $booklet->getStatus() === 2) {
                     return $booklet->getTotalValue();
@@ -847,10 +847,10 @@ class Assistance implements ExportableInterface
                     $commodityIndex = $index;
                 }
             }
-            if (!$distributionBeneficiary->getGeneralReliefs()) {
+            if (!$assistanceBeneficiary->getGeneralReliefs()) {
                 return 0;
             }
-            $correspondingGeneralRelief = $distributionBeneficiary->getGeneralReliefs()[$commodityIndex];
+            $correspondingGeneralRelief = $assistanceBeneficiary->getGeneralReliefs()[$commodityIndex];
 
             return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0);
         }

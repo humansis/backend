@@ -66,22 +66,22 @@ class AssistanceBeneficiaryMapper
         }
     }
 
-    public function toMinimalTransactionArray(?AssistanceBeneficiary $distributionBeneficiary): ?array
+    public function toMinimalTransactionArray(?AssistanceBeneficiary $assistanceBeneficiary): ?array
     {
-        if (!$distributionBeneficiary) {
+        if (!$assistanceBeneficiary) {
             return null;
         }
 
         $moneyRecieved = false;
         /** @var Transaction $transaction */
-        foreach ($distributionBeneficiary->getTransactions() as $transaction) {
+        foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
             $moneyRecieved = $moneyRecieved || $transaction->getMoneyReceived();
         }
 
         return [
-            'id' => $distributionBeneficiary->getId(),
+            'id' => $assistanceBeneficiary->getId(),
             'beneficiary' => [
-                'id' => $distributionBeneficiary->getBeneficiary()->getId(),
+                'id' => $assistanceBeneficiary->getBeneficiary()->getId(),
             ],
             'moneyRecieved' => (bool) $moneyRecieved,
         ];
@@ -89,8 +89,8 @@ class AssistanceBeneficiaryMapper
 
     public function toMinimalTransactionArrays(iterable $distributionBeneficiaries): iterable
     {
-        foreach ($distributionBeneficiaries as $distributionBeneficiary) {
-            yield $this->toMinimalTransactionArray($distributionBeneficiary);
+        foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
+            yield $this->toMinimalTransactionArray($assistanceBeneficiary);
         }
     }
 
@@ -118,19 +118,19 @@ class AssistanceBeneficiaryMapper
         return $serializedAB;
     }
 
-    public function toFullArray(?AssistanceBeneficiary $distributionBeneficiary): ?array
+    public function toFullArray(?AssistanceBeneficiary $assistanceBeneficiary): ?array
     {
-        if (!$distributionBeneficiary) {
+        if (!$assistanceBeneficiary) {
             return null;
         }
 
-        $beneficiary = $distributionBeneficiary->getBeneficiary();
+        $beneficiary = $assistanceBeneficiary->getBeneficiary();
         if (!$beneficiary instanceof Beneficiary && !$beneficiary instanceof Household) {
             $class = get_class($beneficiary);
-            throw new \InvalidArgumentException("AssistanceBeneficiary #{$distributionBeneficiary->getId()} is $class instead of ".Beneficiary::class);
+            throw new \InvalidArgumentException("AssistanceBeneficiary #{$assistanceBeneficiary->getId()} is $class instead of ".Beneficiary::class);
         }
 
-        $flatBase = $this->toBaseArray($distributionBeneficiary);
+        $flatBase = $this->toBaseArray($assistanceBeneficiary);
 
         return array_merge($flatBase, [
             'beneficiary' => $this->beneficiaryMapper->toFullBeneficiaryGroup($beneficiary),

@@ -231,14 +231,14 @@ class AssistanceBeneficiaryService
      */
     public function removeBeneficiaryInDistribution(Assistance $assistance, AbstractBeneficiary $beneficiary, $deletionData)
     {
-        $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'assistance' => $assistance->getId()]);
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'assistance' => $assistance->getId()]);
 
         // Update updatedOn datetime
         $assistance->setUpdatedOn(new DateTime());
 
-        $distributionBeneficiary->setRemoved(1)
+        $assistanceBeneficiary->setRemoved(1)
             ->setJustification($deletionData['justification']);
-        $this->em->persist($distributionBeneficiary);
+        $this->em->persist($assistanceBeneficiary);
         $this->em->flush();
         return true;
     }

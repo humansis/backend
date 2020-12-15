@@ -57,11 +57,11 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getResult();
     }
 
-    public function getActiveBookletsByAssistanceBeneficiary(int $distributionBeneficiaryId) {
+    public function getActiveBookletsByAssistanceBeneficiary(int $assistanceBeneficiaryId) {
         $qb = $this->createQueryBuilder('b');
         
         $qb->andWhere('db.id = :id')
-                ->setParameter('id', $distributionBeneficiaryId)
+                ->setParameter('id', $assistanceBeneficiaryId)
                 ->leftJoin('b.distribution_beneficiary', 'db')
                 ->andWhere('b.status != :status')
                     ->setParameter('status', 3);

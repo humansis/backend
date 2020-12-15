@@ -148,14 +148,14 @@ class DistributionCSVService
                 }
             }
 
-            $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)
+            $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)
             ->findOneBy(
                 [
                     'beneficiary' => $beneficiary,
                     'assistance' => $assistance
                 ]
             );
-            if (! $inFile && !$distributionBeneficiary->getRemoved()) {
+            if (! $inFile && !$assistanceBeneficiary->getRemoved()) {
                 $beneficiaryToDelete = array(
                     'id' => $beneficiary->getId(),
                     'enGivenName' => $beneficiary->getEnGivenName(),
@@ -396,12 +396,12 @@ class DistributionCSVService
                 $household->addProject($distributionProject);
                 $this->em->persist($household);
             }
-            $distributionBeneficiary = new AssistanceBeneficiary();
-            $distributionBeneficiary->setBeneficiary($beneficiaryToAdd)
+            $assistanceBeneficiary = new AssistanceBeneficiary();
+            $assistanceBeneficiary->setBeneficiary($beneficiaryToAdd)
                 ->setAssistance($assistance)
                 ->setRemoved(0)
                 ->setJustification($justification);
-            $this->em->persist($distributionBeneficiary);
+            $this->em->persist($assistanceBeneficiary);
         }
 
         // Delete
@@ -424,7 +424,7 @@ class DistributionCSVService
             $toUpdate = $this->em->getRepository(Beneficiary::class)
                 ->find($beneficiaryToUpdate['id']);
 
-            $distributionBeneficiaryToUpdate = $this->em->getRepository(AssistanceBeneficiary::class)
+            $assistanceBeneficiaryToUpdate = $this->em->getRepository(AssistanceBeneficiary::class)
                 ->findOneBy(
                     [
                         'beneficiary' => $toUpdate,
@@ -432,10 +432,10 @@ class DistributionCSVService
                     ]
                 );
             
-            if ($distributionBeneficiaryToUpdate->getRemoved()) {
-                $distributionBeneficiaryToUpdate->setRemoved(0)
+            if ($assistanceBeneficiaryToUpdate->getRemoved()) {
+                $assistanceBeneficiaryToUpdate->setRemoved(0)
                     ->setJustification('');
-                $this->em->merge($distributionBeneficiaryToUpdate);
+                $this->em->merge($assistanceBeneficiaryToUpdate);
             }
             $toUpdate->setEnGivenName($beneficiaryToUpdate['enGivenName']);
             $toUpdate->setEnFamilyName($beneficiaryToUpdate['enFamilyName']);

@@ -57,47 +57,47 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $this->markTestIncomplete("There is no distribution with the ID specified to execute the test.");
         }
 
-        // If everything is ok, we create a new distributionBeneficiary
-        $distributionBeneficiary = new AssistanceBeneficiary();
-        $distributionBeneficiary->setBeneficiary($beneficiary[0])
+        // If everything is ok, we create a new assistanceBeneficiary
+        $assistanceBeneficiary = new AssistanceBeneficiary();
+        $assistanceBeneficiary->setBeneficiary($beneficiary[0])
             ->setAssistance($assistance[0])
             ->setRemoved(0);
 
-        $this->em->persist($distributionBeneficiary);
+        $this->em->persist($assistanceBeneficiary);
 
         $this->em->flush();
 
-        $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->find($distributionBeneficiary->getId());
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->find($assistanceBeneficiary->getId());
 
-        if (!$distributionBeneficiary) {
-            print_r("\nThere was an error while creating the new distributionBeneficiary during the test.\n");
-            $this->markTestIncomplete("There was an error while creating the new distributionBeneficiary during the test.");
+        if (!$assistanceBeneficiary) {
+            print_r("\nThere was an error while creating the new assistanceBeneficiary during the test.\n");
+            $this->markTestIncomplete("There was an error while creating the new assistanceBeneficiary during the test.");
         }
 
         try {
-            $this->assertTrue($distributionBeneficiary instanceof AssistanceBeneficiary);
+            $this->assertTrue($assistanceBeneficiary instanceof AssistanceBeneficiary);
         } catch (\Exception $exception) {
-            $this->em->remove($distributionBeneficiary);
+            $this->em->remove($assistanceBeneficiary);
             $this->em->flush();
 
             $this->fail("\nThe mapping of fields of AssistanceBeneficiary entity is not correct (1).\n");
             return false;
         }
 
-        return $distributionBeneficiary;
+        return $assistanceBeneficiary;
     }
 
     /**
-     * @param AssistanceBeneficiary $distributionBeneficiary
+     * @param AssistanceBeneficiary $assistanceBeneficiary
      * @return bool
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @depends testCreateAssistanceBeneficiary
      */
-    public function testRemoveAssistanceBeneficiary(AssistanceBeneficiary $distributionBeneficiary)
+    public function testRemoveAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary)
     {
-        $beneficiaryId = $distributionBeneficiary->getBeneficiary()->getId();
-        $distributionId = $distributionBeneficiary->getAssistance()->getId();
+        $beneficiaryId = $assistanceBeneficiary->getBeneficiary()->getId();
+        $distributionId = $assistanceBeneficiary->getAssistance()->getId();
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);

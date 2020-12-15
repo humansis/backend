@@ -147,47 +147,47 @@
                         <th>Value</th>
                     {% endif %}
                 </tr>
-                {% for distributionBeneficiary in distribution.distributionBeneficiaries %}
-                    {% if not distributionBeneficiary.removed %}
+                {% for assistanceBeneficiary in distribution.distributionBeneficiaries %}
+                    {% if not assistanceBeneficiary.removed %}
                         <tr>
-                            <td>{{ distributionBeneficiary.beneficiary.localFamilyName }} </td>
-                            <td>{{ distributionBeneficiary.beneficiary.localGivenName }} </td>
+                            <td>{{ assistanceBeneficiary.beneficiary.localFamilyName }} </td>
+                            <td>{{ assistanceBeneficiary.beneficiary.localGivenName }} </td>
                             {% if not distribution.validated %}
                                 <td>
-                                    {% if distributionBeneficiary.beneficiary.gender == constant('BeneficiaryBundle\Entity\Person::GENDER_FEMALE') %}
+                                    {% if assistanceBeneficiary.beneficiary.gender == constant('BeneficiaryBundle\Entity\Person::GENDER_FEMALE') %}
                                         Female
-                                    {% elseif distributionBeneficiary.beneficiary.gender == constant('BeneficiaryBundle\Entity\Person::GENDER_MALE') %}
+                                    {% elseif assistanceBeneficiary.beneficiary.gender == constant('BeneficiaryBundle\Entity\Person::GENDER_MALE') %}
                                         Male
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {{ distributionBeneficiary.beneficiary.dateOfBirth | date("m/d/Y") }}
+                                    {{ assistanceBeneficiary.beneficiary.dateOfBirth | date("m/d/Y") }}
                                 </td>
                                 <td>
-                                    {{ distributionBeneficiary.beneficiary.residencyStatus }}
+                                    {{ assistanceBeneficiary.beneficiary.residencyStatus }}
                                 </td>
                                 <td>
-                                    {% for vulnerability in distributionBeneficiary.beneficiary.vulnerabilityCriteria %}
+                                    {% for vulnerability in assistanceBeneficiary.beneficiary.vulnerabilityCriteria %}
                                         <span> {{ vulnerability.fieldString }} </span>
                                     {% endfor %}
                                 </td>
                             {% elseif distribution.commodities[0].modalityType.name == 'QR Code Voucher' %}
                                 <td>
-                                    {% if booklets[distributionBeneficiary.id] is defined %}
-                                        {{ booklets[distributionBeneficiary.id].code }}
+                                    {% if booklets[assistanceBeneficiary.id] is defined %}
+                                        {{ booklets[assistanceBeneficiary.id].code }}
                                     {% else %}
                                         None
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if booklets[distributionBeneficiary.id]  is defined %}
-                                        {% if booklets[distributionBeneficiary.id].status == 0 %}
+                                    {% if booklets[assistanceBeneficiary.id]  is defined %}
+                                        {% if booklets[assistanceBeneficiary.id].status == 0 %}
                                             Unassigned
-                                        {% elseif booklets[distributionBeneficiary.id].status == 1 %}
+                                        {% elseif booklets[assistanceBeneficiary.id].status == 1 %}
                                             Distributed
-                                        {% elseif booklets[distributionBeneficiary.id].status == 2 %}
+                                        {% elseif booklets[assistanceBeneficiary.id].status == 2 %}
                                             Used
-                                        {% elseif booklets[distributionBeneficiary.id].status == 3 %}
+                                        {% elseif booklets[assistanceBeneficiary.id].status == 3 %}
                                             Deactivated
                                         {% endif %}
                                     {% else %}
@@ -195,23 +195,23 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if booklets[distributionBeneficiary.id] is defined and booklets[distributionBeneficiary.id].usedAt %}
-                                        {{ booklets[distributionBeneficiary.id].usedAt | date("m/d/Y") }}
+                                    {% if booklets[assistanceBeneficiary.id] is defined and booklets[assistanceBeneficiary.id].usedAt %}
+                                        {{ booklets[assistanceBeneficiary.id].usedAt | date("m/d/Y") }}
                                     {% else %}
                                         None
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if booklets[distributionBeneficiary.id] is defined %}
-                                        {{ booklets[distributionBeneficiary.id].value }}{{ booklets[distributionBeneficiary.id].currency }}
+                                    {% if booklets[assistanceBeneficiary.id] is defined %}
+                                        {{ booklets[assistanceBeneficiary.id].value }}{{ booklets[assistanceBeneficiary.id].currency }}
                                     {% else %}
                                         None
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if booklets[distributionBeneficiary.id] is defined and booklets[distributionBeneficiary.id].products|length > 0 %}
+                                    {% if booklets[assistanceBeneficiary.id] is defined and booklets[assistanceBeneficiary.id].products|length > 0 %}
                                         <p>
-                                            {{ booklets[distributionBeneficiary.id].products }}
+                                            {{ booklets[assistanceBeneficiary.id].products }}
                                         </p>
                                     {% else %}
                                         None
@@ -220,28 +220,28 @@
                             {% elseif distribution.commodities[0].modalityType.name == 'Mobile Money' %}
                                 <td>
                                     <p>
-                                        {% if distributionBeneficiary.beneficiary.phones|length == 0 %}
+                                        {% if assistanceBeneficiary.beneficiary.phones|length == 0 %}
                                             None
                                         {% endif %}
-                                        {% for phone in distributionBeneficiary.beneficiary.phones %}
+                                        {% for phone in assistanceBeneficiary.beneficiary.phones %}
                                             {{ phone.prefix }}{{ phone.number }} <br>
                                         {% endfor %}
                                     </p>
                                 </td>
                                 <td>
-                                    {% if distributionBeneficiary.transactions|length > 0 %}
-                                        {{ distributionBeneficiary.transactions[0].id }}
+                                    {% if assistanceBeneficiary.transactions|length > 0 %}
+                                        {{ assistanceBeneficiary.transactions[0].id }}
                                     {% else %}
                                         Not Yet Defined
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if distributionBeneficiary.transactions|length > 0 %}
-                                        {% if distributionBeneficiary.transactions[0].transactionStatus == 0 %}
+                                    {% if assistanceBeneficiary.transactions|length > 0 %}
+                                        {% if assistanceBeneficiary.transactions[0].transactionStatus == 0 %}
                                             Failed
-                                        {% elseif distributionBeneficiary.transactions[0].transactionStatus == 1 %}
+                                        {% elseif assistanceBeneficiary.transactions[0].transactionStatus == 1 %}
                                             Sent
-                                        {% elseif distributionBeneficiary.transactions[0].transactionStatus == 2 %}
+                                        {% elseif assistanceBeneficiary.transactions[0].transactionStatus == 2 %}
                                             No Phone  
                                         {% else %}
                                             Not Sent
@@ -256,10 +256,10 @@
                             {% else %}
                                 <td>
                                     <p>
-                                        {% if distributionBeneficiary.generalReliefs|length == 0 or not distributionBeneficiary.generalReliefs[0].distributedAt %}
+                                        {% if assistanceBeneficiary.generalReliefs|length == 0 or not assistanceBeneficiary.generalReliefs[0].distributedAt %}
                                             Not Distributed
                                         {% else %}
-                                            {{ distributionBeneficiary.generalReliefs[0].distributedAt | date("m/d/Y") }}
+                                            {{ assistanceBeneficiary.generalReliefs[0].distributedAt | date("m/d/Y") }}
                                         {% endif %}
                                     </p>
                                 </td>

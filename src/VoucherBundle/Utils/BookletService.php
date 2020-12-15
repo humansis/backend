@@ -443,10 +443,10 @@ class BookletService
             throw new \Exception("This booklet has already been distributed, used or is actually deactivated");
         }
 
-        $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(
             ['beneficiary' => $beneficiary, "assistance" => $assistance]
         );
-        $booklet->setAssistanceBeneficiary($distributionBeneficiary)
+        $booklet->setAssistanceBeneficiary($assistanceBeneficiary)
             ->setStatus(Booklet::DISTRIBUTED);
         $this->em->merge($booklet);
 
@@ -609,9 +609,9 @@ class BookletService
 
         $beneficiaries = array();
         $exportableTable = array();
-        foreach ($distributionBeneficiaries as $distributionBeneficiary) {
-            $beneficiary = $distributionBeneficiary->getBeneficiary();
-            $booklets = $distributionBeneficiary->getBooklets();
+        foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
+            $beneficiary = $assistanceBeneficiary->getBeneficiary();
+            $booklets = $assistanceBeneficiary->getBooklets();
             $transactionBooklet = null;
             if (count($booklets) > 0) {
                 foreach ($booklets as $booklet) {
@@ -647,8 +647,8 @@ class BookletService
                     "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
                     "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
                     "Purchased items" => $products,
-                    "Removed" => $distributionBeneficiary->getRemoved() ? 'Yes' : 'No',
-                    "Justification for adding/removing" => $distributionBeneficiary->getJustification(),
+                    "Removed" => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
+                    "Justification for adding/removing" => $assistanceBeneficiary->getJustification(),
                 ))
             );
         }

@@ -785,10 +785,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
         if ($distribution instanceof Assistance) {
             $distributionBeneficiaries = $this->em
                 ->getRepository(AssistanceBeneficiary::class)->findByAssistance($distribution);
-            foreach ($distributionBeneficiaries as $distributionBeneficiary) {
-                $transaction = $this->em->getRepository(Transaction::class)->findOneByAssistanceBeneficiary($distributionBeneficiary);
+            foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
+                $transaction = $this->em->getRepository(Transaction::class)->findOneByAssistanceBeneficiary($assistanceBeneficiary);
                 $this->em->remove($transaction);
-                $this->em->remove($distributionBeneficiary);
+                $this->em->remove($assistanceBeneficiary);
             }
 
             $selectionCriteria = $this->em->getRepository(SelectionCriteria::class)->findByAssistance($distribution);

@@ -44,7 +44,7 @@ class AssistanceBeneficiary
     /**
      * @var AbstractBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="distributionBeneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="assistanceBeneficiary")
      * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet", "FullProject"})
      * @SymfonyMaxDepth(3)
      */
@@ -53,7 +53,7 @@ class AssistanceBeneficiary
     /**
      * @var Transaction[]
      *
-     * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      * @SymfonyMaxDepth(1)
      */
@@ -70,7 +70,7 @@ class AssistanceBeneficiary
     /**
      * @var GeneralReliefItem
      *
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $generalReliefs;
@@ -78,7 +78,7 @@ class AssistanceBeneficiary
     /**
      * @var SmartcardDeposit[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @ORM\OrderBy({"createdAt": "ASC"})
      */
     private $smartcardDeposits;

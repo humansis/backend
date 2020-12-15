@@ -21,7 +21,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     /** @var string */
     private $enviroment;
 
-    private $distributionBeneficiary;
+    private $assistanceBeneficiary;
 
     /**
      * @param string $environment
@@ -118,13 +118,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private function getAssistanceBeneficiary(ObjectManager $manager)
     {
-        if (null === $this->distributionBeneficiary) {
+        if (null === $this->assistanceBeneficiary) {
             /** @var Assistance $assistance */
             $assistance = $this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE);
-            $this->distributionBeneficiary = $assistance->getDistributionBeneficiaries()->get(0);
+            $this->assistanceBeneficiary = $assistance->getDistributionBeneficiaries()->get(0);
         }
 
-        return $this->distributionBeneficiary;
+        return $this->assistanceBeneficiary;
     }
 
     private function randomEntity($classname, ObjectManager $manager)

@@ -52,9 +52,9 @@ abstract class AbstractBeneficiary
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      * @SymfonyGroups({"FullReceivers", "FullBeneficiary"})
      *
-     * @var AssistanceBeneficiary $distributionBeneficiary
+     * @var AssistanceBeneficiary $assistanceBeneficiary
      */
-    private $distributionBeneficiary;
+    private $assistanceBeneficiary;
 
     /**
      * @var boolean

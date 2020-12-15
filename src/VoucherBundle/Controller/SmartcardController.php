@@ -362,7 +362,7 @@ class SmartcardController extends Controller
             throw new BadRequestHttpException('Distribution does not exists.');
         }
 
-        $distributionBeneficiary = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
+        $assistanceBeneficiary = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
             $distribution,
             $smartcard->getBeneficiary()
         );
@@ -370,7 +370,7 @@ class SmartcardController extends Controller
         $deposit = SmartcardDeposit::create(
             $smartcard,
             $this->getUser(),
-            $distributionBeneficiary,
+            $assistanceBeneficiary,
             (float) $request->request->get('value'),
             \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))
         );

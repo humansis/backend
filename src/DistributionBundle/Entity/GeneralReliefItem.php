@@ -48,7 +48,7 @@ class GeneralReliefItem
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="generalReliefs", cascade={"persist"})
      */
-    private $distributionBeneficiary;
+    private $assistanceBeneficiary;
 
 
     /**
@@ -130,19 +130,19 @@ class GeneralReliefItem
      */
     public function getAssistanceBeneficiary()
     {
-        return $this->distributionBeneficiary;
+        return $this->assistanceBeneficiary;
     }
  
     /**
      * Set the value of Distribution Beneficiary
      *
-     * @param AssistanceBeneficiary distributionBeneficiary
+     * @param AssistanceBeneficiary assistanceBeneficiary
      *
      * @return self
      */
-    public function setAssistanceBeneficiary(AssistanceBeneficiary $distributionBeneficiary)
+    public function setAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary)
     {
-        $this->distributionBeneficiary = $distributionBeneficiary;
+        $this->assistanceBeneficiary = $assistanceBeneficiary;
  
         return $this;
     }

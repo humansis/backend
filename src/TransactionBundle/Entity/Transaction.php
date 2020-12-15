@@ -104,7 +104,7 @@ class Transaction
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="transactions", cascade={"persist"})
      */
-    private $distributionBeneficiary;
+    private $assistanceBeneficiary;
 
     /**
      * @var \DateTime|null
@@ -316,19 +316,19 @@ class Transaction
      */
     public function getAssistanceBeneficiary()
     {
-        return $this->distributionBeneficiary;
+        return $this->assistanceBeneficiary;
     }
  
     /**
      * Set the value of Distribution Beneficiary
      *
-     * @param AssistanceBeneficiary distributionBeneficiary
+     * @param AssistanceBeneficiary assistanceBeneficiary
      *
      * @return self
      */
-    public function setAssistanceBeneficiary(AssistanceBeneficiary $distributionBeneficiary)
+    public function setAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary)
     {
-        $this->distributionBeneficiary = $distributionBeneficiary;
+        $this->assistanceBeneficiary = $assistanceBeneficiary;
  
         return $this;
     }

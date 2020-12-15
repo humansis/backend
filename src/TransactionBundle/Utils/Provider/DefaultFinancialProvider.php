@@ -56,7 +56,7 @@ abstract class DefaultFinancialProvider
     /**
      * Send money to one beneficiary
      * @param  string $phoneNumber
-     * @param  AssistanceBeneficiary $distributionBeneficiary
+     * @param  AssistanceBeneficiary $assistanceBeneficiary
      * @param  float $amount
      * @param  string $currency
      * @return void
@@ -64,7 +64,7 @@ abstract class DefaultFinancialProvider
      */
     public function sendMoneyToOne(
         string $phoneNumber,
-        AssistanceBeneficiary $distributionBeneficiary,
+        AssistanceBeneficiary $assistanceBeneficiary,
         float $amount,
         string $currency
     ) {
@@ -104,16 +104,16 @@ abstract class DefaultFinancialProvider
         );
 
         $count = 0;
-        foreach ($distributionBeneficiaries as $distributionBeneficiary) {
+        foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
             $cache->set($this->from . '-progression-' . $assistance->getId(), $count);
-            $beneficiary = $distributionBeneficiary->getBeneficiary();
+            $beneficiary = $assistanceBeneficiary->getBeneficiary();
 
             if ($beneficiary->getArchived() == true) {
-                array_push($response['failure'], $distributionBeneficiary);
+                array_push($response['failure'], $assistanceBeneficiary);
                 continue;
             }
             
-            $transactions = $distributionBeneficiary->getTransactions();
+            $transactions = $assistanceBeneficiary->getTransactions();
             if (! $transactions->isEmpty()) {
                 // if this beneficiary already has transactions
                 // filter out the one that is a success (if it exists)
@@ -135,7 +135,7 @@ abstract class DefaultFinancialProvider
             if ($phoneNumber) {
                 // if a successful transaction already exists
                 if (! $transactions->isEmpty()) {
-                    array_push($response['already_sent'], $distributionBeneficiary);
+                    array_push($response['already_sent'], $assistanceBeneficiary);
                 } else {
                     if ($cache->has($assistance->getId() . '-amount_sent')) {
                         $amountSent = $cache->get($assistance->getId() . '-amount_sent');
@@ -143,25 +143,25 @@ abstract class DefaultFinancialProvider
                     // if the limit hasn't been reached
                     if (empty($amountSent) || $amountSent + $amount <= 10000) {
                         try {
-                            $transaction = $this->sendMoneyToOne($phoneNumber, $distributionBeneficiary, $amount, $currency);
+                            $transaction = $this->sendMoneyToOne($phoneNumber, $assistanceBeneficiary, $amount, $currency);
                             if ($transaction->getTransactionStatus() === 0) {
-                                array_push($response['failure'], $distributionBeneficiary);
+                                array_push($response['failure'], $assistanceBeneficiary);
                             } else {
                                 // add amount to amount sent
                                 $cache->set($assistance->getId() . '-amount_sent', $amountSent + $amount);
-                                array_push($response['sent'], $distributionBeneficiary);
+                                array_push($response['sent'], $assistanceBeneficiary);
                             }
                         } catch (Exception $e) {
-                            $this->createTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2, $e->getMessage());
-                            array_push($response['failure'], $distributionBeneficiary);
+                            $this->createTransaction($assistanceBeneficiary, '', new \DateTime(), 0, 2, $e->getMessage());
+                            array_push($response['failure'], $assistanceBeneficiary);
                         }
                     } else {
-                        $this->createTransaction($distributionBeneficiary, '', new \DateTime(), 0, 0, "The maximum amount that can be sent per distribution (USD 10000) has been reached");
+                        $this->createTransaction($assistanceBeneficiary, '', new \DateTime(), 0, 0, "The maximum amount that can be sent per distribution (USD 10000) has been reached");
                     }
                 }
             } else {
-                $this->createTransaction($distributionBeneficiary, '', new \DateTime(), 0, 2, "No Phone");
-                array_push($response['no_mobile'], $distributionBeneficiary);
+                $this->createTransaction($assistanceBeneficiary, '', new \DateTime(), 0, 2, "No Phone");
+                array_push($response['no_mobile'], $assistanceBeneficiary);
             }
 
             $count++;
@@ -184,17 +184,17 @@ abstract class DefaultFinancialProvider
 
         $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findBy(['assistance' => $assistance]);
         
-        foreach ($distributionBeneficiaries as $distributionBeneficiary) {
+        foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
             $successfulTransaction = $this->em->getRepository(Transaction::class)->findOneBy(
                 [
-                    'distributionBeneficiary' => $distributionBeneficiary,
+                    'assistanceBeneficiary' => $assistanceBeneficiary,
                     'transactionStatus'       => 1
                 ]
             );
             if ($successfulTransaction) {
                 try {
                     $this->updateStatusTransaction($successfulTransaction);
-                    array_push($response, $distributionBeneficiary);
+                    array_push($response, $assistanceBeneficiary);
                 } catch (\Exception $e) {
                     throw $e;
                 }
@@ -205,7 +205,7 @@ abstract class DefaultFinancialProvider
 
     /**
      * Create transaction
-     * @param  AssistanceBeneficiary $distributionBeneficiary
+     * @param  AssistanceBeneficiary $assistanceBeneficiary
      * @param  string $transactionId
      * @param \DateTime $dateSent
      * @param string $amountSent
@@ -214,7 +214,7 @@ abstract class DefaultFinancialProvider
      * @return Transaction
      */
     public function createTransaction(
-        AssistanceBeneficiary $distributionBeneficiary,
+        AssistanceBeneficiary $assistanceBeneficiary,
         string $transactionId,
         \DateTime $dateSent,
         string $amountSent,
@@ -224,7 +224,7 @@ abstract class DefaultFinancialProvider
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         
         $transaction = new Transaction();
-        $transaction->setAssistanceBeneficiary($distributionBeneficiary);
+        $transaction->setAssistanceBeneficiary($assistanceBeneficiary);
         $transaction->setDateSent($dateSent);
         $transaction->setTransactionId($transactionId);
         $transaction->setAmountSent($amountSent);
@@ -232,11 +232,11 @@ abstract class DefaultFinancialProvider
         $transaction->setMessage($message);
         $transaction->setSentBy($user);
         
-        $distributionBeneficiary->addTransaction($transaction);
+        $assistanceBeneficiary->addTransaction($transaction);
         $user->addTransaction($transaction);
         
         $this->em->persist($transaction);
-        $this->em->merge($distributionBeneficiary);
+        $this->em->merge($assistanceBeneficiary);
         $this->em->merge($user);
         $this->em->flush();
         

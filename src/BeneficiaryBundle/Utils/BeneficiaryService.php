@@ -53,7 +53,7 @@ class BeneficiaryService
         RequestValidator $requestValidator,
         ValidatorInterface $validator,
         ContainerInterface $container,
-        AssistanceBeneficiaryService $distributionBeneficiary
+        AssistanceBeneficiaryService $assistanceBeneficiary
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -61,7 +61,7 @@ class BeneficiaryService
         $this->validator = $validator;
         $this->container = $container;
         $this->beneficiary = new Beneficiary();
-        $this->dbs = $distributionBeneficiary;
+        $this->dbs = $assistanceBeneficiary;
     }
 
 

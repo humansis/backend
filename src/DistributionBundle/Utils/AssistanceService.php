@@ -211,22 +211,22 @@ class AssistanceService
         if (AssistanceTargetType::COMMUNITY === $distribution->getTargetType()) {
             foreach ($distributionArray['communities'] as $id) {
                 $community = $this->container->get('doctrine')->getRepository(Community::class)->find($id);
-                $distributionBeneficiary = (new AssistanceBeneficiary())
+                $assistanceBeneficiary = (new AssistanceBeneficiary())
                     ->setAssistance($distribution)
                     ->setBeneficiary($community)
                     ->setRemoved(0);
 
-                $this->em->persist($distributionBeneficiary);
+                $this->em->persist($assistanceBeneficiary);
                 $listReceivers[] = $community->getId();
             }
         } elseif (AssistanceTargetType::INSTITUTION === $distribution->getTargetType()) {
             foreach ($distributionArray['institutions'] as $id) {
                 $institution = $this->container->get('doctrine')->getRepository(Institution::class)->find($id);
-                $distributionBeneficiary = (new AssistanceBeneficiary())
+                $assistanceBeneficiary = (new AssistanceBeneficiary())
                     ->setAssistance($distribution)
                     ->setBeneficiary($institution)
                     ->setRemoved(0);
-                $this->em->persist($distributionBeneficiary);
+                $this->em->persist($assistanceBeneficiary);
 
                 $listReceivers[] = $institution->getId();
             }
@@ -286,13 +286,13 @@ class AssistanceService
             /** @var Beneficiary $beneficiary */
             $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver);
 
-            $distributionBeneficiary = (new AssistanceBeneficiary())
+            $assistanceBeneficiary = (new AssistanceBeneficiary())
                 ->setAssistance($assistance)
                 ->setBeneficiary($beneficiary)
                 ->setRemoved(0)
                 ->setVulnerabilityScores(json_encode($scores));
 
-            $this->em->persist($distributionBeneficiary);
+            $this->em->persist($assistanceBeneficiary);
         }
     }
 
@@ -610,13 +610,13 @@ class AssistanceService
     public function createGeneralReliefItems(Assistance $assistance)
     {
         $distributionBeneficiaries = $assistance->getDistributionBeneficiaries();
-        foreach ($distributionBeneficiaries as $index => $distributionBeneficiary) {
+        foreach ($distributionBeneficiaries as $index => $assistanceBeneficiary) {
             $$index = new GeneralReliefItem();
-            $$index->setAssistanceBeneficiary($distributionBeneficiary);
-            $distributionBeneficiary->addGeneralRelief($$index);
+            $$index->setAssistanceBeneficiary($assistanceBeneficiary);
+            $assistanceBeneficiary->addGeneralRelief($$index);
 
             $this->em->persist($$index);
-            $this->em->merge($distributionBeneficiary);
+            $this->em->merge($assistanceBeneficiary);
         }
         $this->em->flush();
     }
@@ -766,8 +766,8 @@ class AssistanceService
         $booklets = [];
 
         if ($exportableDistribution->getCommodities()[0]->getModalityType()->getName() === 'QR Code Voucher') {
-            foreach ($exportableDistribution->getDistributionBeneficiaries() as $distributionBeneficiary) {
-                    $activatedBooklets = $this->em->getRepository(Booklet::class)->getActiveBookletsByAssistanceBeneficiary($distributionBeneficiary->getId());
+            foreach ($exportableDistribution->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+                    $activatedBooklets = $this->em->getRepository(Booklet::class)->getActiveBookletsByAssistanceBeneficiary($assistanceBeneficiary->getId());
                     if (count($activatedBooklets) > 0) {
                         $products = $this->em->getRepository(Product::class)->getNameByBooklet($activatedBooklets[0]->getId());
                         $products = array_map(
@@ -783,7 +783,7 @@ class AssistanceService
                             "currency" => $activatedBooklets[0]->getCurrency(),
                             "usedAt" => $activatedBooklets[0]->getUsedAt()
                         ];
-                        $booklets[$distributionBeneficiary->getId()] = $booklet;
+                        $booklets[$assistanceBeneficiary->getId()] = $booklet;
                     }
             }
         }
@@ -828,11 +828,11 @@ class AssistanceService
         foreach ($assistance->getSelectionCriteria() as $criterion) {
             $this->em->remove($criterion);
         }
-        foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
-            foreach ($distributionBeneficiary->getGeneralReliefs() as $relief) {
+        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            foreach ($assistanceBeneficiary->getGeneralReliefs() as $relief) {
                 $this->em->remove($relief);
             }
-            $this->em->remove($distributionBeneficiary);
+            $this->em->remove($assistanceBeneficiary);
         }
 
         $this->em->remove($assistance);
