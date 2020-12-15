@@ -35,7 +35,7 @@ class BeneficiaryCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/vulnerability-criterias")
+     * @Rest\Get("/beneficiaries/vulnerability-criteria")
      *
      * @return JsonResponse
      */
