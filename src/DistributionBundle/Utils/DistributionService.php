@@ -190,7 +190,7 @@ class DistributionService
 
         $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
-        $distribution->setName(self::generateName($location));
+        $distribution->setName(self::generateName($location, $distribution->getDateDistribution()));
 
         $project = $distribution->getProject();
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
@@ -839,7 +839,7 @@ class DistributionService
         $this->em->flush();
     }
 
-    private function generateName(\CommonBundle\Entity\Location $location): string
+    private function generateName(\CommonBundle\Entity\Location $location, ?\DateTimeInterface $date = null): string
     {
         $adm = '';
         if ($location->getAdm4()) {
@@ -852,6 +852,10 @@ class DistributionService
             $adm = $location->getAdm1()->getName();
         }
 
-        return $adm.'-'.date('d-m-Y');
+        if ($date) {
+            return $adm.'-'.$date->format('d-m-Y');
+        } else {
+            return $adm.'-'.date('d-m-Y');
+        }
     }
 }
