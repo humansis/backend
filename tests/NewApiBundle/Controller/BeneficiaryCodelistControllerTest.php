@@ -63,7 +63,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/beneficiaries/vulnerability-criterias');
+        $this->request('GET', '/api/basic/beneficiaries/vulnerability-criteria');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
