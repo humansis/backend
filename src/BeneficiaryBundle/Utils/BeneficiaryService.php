@@ -20,7 +20,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
-use DistributionBundle\Utils\DistributionBeneficiaryService;
+use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Entity\Assistance;
 
 class BeneficiaryService
@@ -43,7 +43,7 @@ class BeneficiaryService
     /** @var Beneficiary $beneficiary */
     private $beneficiary;
 
-    /** @var DistributionBeneficiaryService $dbs */
+    /** @var AssistanceBeneficiaryService $dbs */
     private $dbs;
 
 
@@ -53,7 +53,7 @@ class BeneficiaryService
         RequestValidator $requestValidator,
         ValidatorInterface $validator,
         ContainerInterface $container,
-        DistributionBeneficiaryService $distributionBeneficiary
+        AssistanceBeneficiaryService $distributionBeneficiary
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;

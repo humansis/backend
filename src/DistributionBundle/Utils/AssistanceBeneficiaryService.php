@@ -21,10 +21,10 @@ use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class DistributionBeneficiaryService
+ * Class AssistanceBeneficiaryService
  * @package DistributionBundle\Utils
  */
-class DistributionBeneficiaryService
+class AssistanceBeneficiaryService
 {
     /** @var EntityManagerInterface $em */
     private $em;
@@ -40,7 +40,7 @@ class DistributionBeneficiaryService
 
 
     /**
-     * DistributionBeneficiaryService constructor.
+     * AssistanceBeneficiaryService constructor.
      * @param EntityManagerInterface $entityManager
      * @param Serializer $serializer
      * @param ValidatorInterface $validator

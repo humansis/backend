@@ -20,7 +20,7 @@ services:
             - '@service_container'
 
     distribution.assistance_beneficiary_service:
-        class: DistributionBundle\Utils\DistributionBeneficiaryService
+        class: DistributionBundle\Utils\AssistanceBeneficiaryService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'

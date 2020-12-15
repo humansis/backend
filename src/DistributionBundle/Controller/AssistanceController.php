@@ -10,7 +10,7 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use DistributionBundle\Mapper\AssistanceCommunityMapper;
 use DistributionBundle\Mapper\AssistanceInstitutionMapper;
-use DistributionBundle\Utils\DistributionBeneficiaryService;
+use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\AssistanceService;
 use DistributionBundle\Utils\DistributionCsvService;
 
@@ -132,7 +132,7 @@ class AssistanceController extends Controller
         if ($request->query->get("size")) {
             $numberToDisplay = $request->query->get("size");
 
-            /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+            /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
             $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
             $receivers = $distributionBeneficiaryService->getRandomBeneficiaries($assistance, $numberToDisplay);
 
@@ -260,7 +260,7 @@ class AssistanceController extends Controller
         $data = $request->request->all();
 
         try {
-            /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+            /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
             $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
             $assistanceBeneficiaries = $distributionBeneficiaryService->addBeneficiaries($assistance, $data);
         } catch (\Exception $exception) {
@@ -293,7 +293,7 @@ class AssistanceController extends Controller
     {
         $deletionData = $request->request->all();
 
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
 
         $return = $distributionBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
@@ -391,7 +391,7 @@ class AssistanceController extends Controller
      */
     public function getDistributionBeneficiariesAction(Assistance $assistance)
     {
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
         $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($assistance);
 
@@ -434,7 +434,7 @@ class AssistanceController extends Controller
             throw new NotFoundHttpException('There is no Community assistance with #'.$assistance->getId());
         }
 
-        /** @var DistributionBeneficiaryService $assistanceBeneficiaryService */
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
         $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
         $assistanceCommunities = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
 
@@ -468,7 +468,7 @@ class AssistanceController extends Controller
             throw new NotFoundHttpException('There is no Institution assistance with #'.$assistance->getId());
         }
 
-        /** @var DistributionBeneficiaryService $assistanceBeneficiaryService */
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
         $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
         $assistanceInstitutions = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
 
@@ -524,7 +524,7 @@ class AssistanceController extends Controller
      */
     public function getDistributionAssignableBeneficiariesAction(Assistance $assistance)
     {
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
         $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionAssignableBeneficiaries($assistance);
         
@@ -911,7 +911,7 @@ class AssistanceController extends Controller
      */
     public function importBeneficiariesAction(Request $request, Assistance $assistance)
     {
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
         $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($assistance);
 
@@ -982,7 +982,7 @@ class AssistanceController extends Controller
      */
     public function getBeneficiariesInProjectAction(Project $project, Request $request)
     {
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
+        /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
         $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
         if (!$request->request->has('target')) {
             return new Response('You must defined a target', 500);
