@@ -38,6 +38,14 @@ class ModalityType
     private $modality;
 
     /**
+     * Internal modality types shold not be presented to FE.
+     *
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    private $internal = false;
+
+    /**
      * Get id.
      *
      * @return int
@@ -93,6 +101,11 @@ class ModalityType
     public function getModality()
     {
         return $this->modality;
+    }
+
+    public function isInternal(): bool
+    {
+        return $this->internal;
     }
 
     public function isGeneralRelief(): bool
