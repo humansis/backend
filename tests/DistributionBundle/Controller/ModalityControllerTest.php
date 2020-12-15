@@ -10,7 +10,7 @@ use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;

@@ -6,7 +6,7 @@ namespace DistributionBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Mapper\InstitutionMapper;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use TransactionBundle\Mapper\TransactionMapper;
 use VoucherBundle\Mapper\BookletMapper;
 
@@ -22,7 +22,7 @@ class AssistanceInstitutionMapper extends AssistanceBeneficiaryMapper
         $this->institutionMapper = $institutionMapper;
     }
 
-    public function toFullArray(?DistributionBeneficiary $assistanceInstitution): ?array
+    public function toFullArray(?AssistanceBeneficiary $assistanceInstitution): ?array
     {
         if (!$assistanceInstitution) {
             return null;
@@ -31,7 +31,7 @@ class AssistanceInstitutionMapper extends AssistanceBeneficiaryMapper
         $institution = $assistanceInstitution->getBeneficiary();
         if (!$institution instanceof Institution) {
             $class = get_class($institution);
-            throw new \InvalidArgumentException("DistributionBeneficiary #{$assistanceInstitution->getId()} is $class instead of ".Institution::class);
+            throw new \InvalidArgumentException("AssistanceBeneficiary #{$assistanceInstitution->getId()} is $class instead of ".Institution::class);
         }
 
         $flatBase = $this->toBaseArray($assistanceInstitution);

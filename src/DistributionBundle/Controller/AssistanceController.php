@@ -5,7 +5,7 @@ namespace DistributionBundle\Controller;
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\AssistanceMapper;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use DistributionBundle\Mapper\AssistanceCommunityMapper;
@@ -244,7 +244,7 @@ class AssistanceController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="The object distribution beneficiary added",
-     *     @Model(type=DistributionBeneficiary::class)
+     *     @Model(type=AssistanceBeneficiary::class)
      * )
      *
      * @param Request    $request

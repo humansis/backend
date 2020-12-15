@@ -2,7 +2,7 @@
 
 namespace TransactionBundle\Entity;
 
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use UserBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 // use Symfony\Component\Serializer\Annotation as JMS_Type;
@@ -100,9 +100,9 @@ class Transaction
     private $pickupDate;
 
     /**
-     * @var DistributionBeneficiary
+     * @var AssistanceBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="transactions", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="transactions", cascade={"persist"})
      */
     private $distributionBeneficiary;
 
@@ -312,9 +312,9 @@ class Transaction
     /**
      * Get the value of Distribution Beneficiary
      *
-     * @return DistributionBeneficiary
+     * @return AssistanceBeneficiary
      */
-    public function getDistributionBeneficiary()
+    public function getAssistanceBeneficiary()
     {
         return $this->distributionBeneficiary;
     }
@@ -322,11 +322,11 @@ class Transaction
     /**
      * Set the value of Distribution Beneficiary
      *
-     * @param DistributionBeneficiary distributionBeneficiary
+     * @param AssistanceBeneficiary distributionBeneficiary
      *
      * @return self
      */
-    public function setDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
+    public function setAssistanceBeneficiary(AssistanceBeneficiary $distributionBeneficiary)
     {
         $this->distributionBeneficiary = $distributionBeneficiary;
  

@@ -5,7 +5,7 @@ namespace TransactionBundle\Utils\Provider;
 use Doctrine\ORM\EntityManagerInterface;
 use TransactionBundle\Entity\Transaction;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 
@@ -56,7 +56,7 @@ abstract class DefaultFinancialProvider
     /**
      * Send money to one beneficiary
      * @param  string $phoneNumber
-     * @param  DistributionBeneficiary $distributionBeneficiary
+     * @param  AssistanceBeneficiary $distributionBeneficiary
      * @param  float $amount
      * @param  string $currency
      * @return void
@@ -64,7 +64,7 @@ abstract class DefaultFinancialProvider
      */
     public function sendMoneyToOne(
         string $phoneNumber,
-        DistributionBeneficiary $distributionBeneficiary,
+        AssistanceBeneficiary $distributionBeneficiary,
         float $amount,
         string $currency
     ) {
@@ -90,7 +90,7 @@ abstract class DefaultFinancialProvider
         }
 
         $this->from = $from;
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
             ->findBy([
                 'assistance' => $assistance,
                 'removed' => 0,
@@ -175,14 +175,14 @@ abstract class DefaultFinancialProvider
     /**
      * Update distribution status (check if money has been picked up)
      * @param  Assistance $assistance
-     * @return DistributionBeneficiary[]
+     * @return AssistanceBeneficiary[]
      * @throws \Exception
      */
     public function updateStatusDistribution(Assistance $assistance): array
     {
         $response = array();
 
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['assistance' => $assistance]);
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findBy(['assistance' => $assistance]);
         
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
             $successfulTransaction = $this->em->getRepository(Transaction::class)->findOneBy(
@@ -205,7 +205,7 @@ abstract class DefaultFinancialProvider
 
     /**
      * Create transaction
-     * @param  DistributionBeneficiary $distributionBeneficiary
+     * @param  AssistanceBeneficiary $distributionBeneficiary
      * @param  string $transactionId
      * @param \DateTime $dateSent
      * @param string $amountSent
@@ -214,7 +214,7 @@ abstract class DefaultFinancialProvider
      * @return Transaction
      */
     public function createTransaction(
-        DistributionBeneficiary $distributionBeneficiary,
+        AssistanceBeneficiary $distributionBeneficiary,
         string $transactionId,
         \DateTime $dateSent,
         string $amountSent,
@@ -224,7 +224,7 @@ abstract class DefaultFinancialProvider
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         
         $transaction = new Transaction();
-        $transaction->setDistributionBeneficiary($distributionBeneficiary);
+        $transaction->setAssistanceBeneficiary($distributionBeneficiary);
         $transaction->setDateSent($dateSent);
         $transaction->setTransactionId($transactionId);
         $transaction->setAmountSent($amountSent);

@@ -12,7 +12,7 @@ use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
@@ -388,9 +388,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $distributionRepo = $this->em->getRepository(DistributionBeneficiary::class);
-        $firstDistributionBeneficiary = $distributionRepo->findOneBy(['assistance'=>$distribution['id']]);
-        $bnfId = $firstDistributionBeneficiary->getBeneficiary()->getId();
+        $distributionRepo = $this->em->getRepository(AssistanceBeneficiary::class);
+        $firstAssistanceBeneficiary = $distributionRepo->findOneBy(['assistance'=>$distribution['id']]);
+        $bnfId = $firstAssistanceBeneficiary->getBeneficiary()->getId();
 
         $booklet = $bookletService->create('KHM', [
             'number_booklets' => 1,
@@ -398,7 +398,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'currency' => 'USD',
             'individual_values' => range(100, 110)
         ]);
-        $bookletService->assign($booklet, $firstDistributionBeneficiary->getAssistance(), $firstDistributionBeneficiary->getBeneficiary());
+        $bookletService->assign($booklet, $firstAssistanceBeneficiary->getAssistance(), $firstAssistanceBeneficiary->getBeneficiary());
 
         $bookletBig = $bookletService->create('KHM', [
             'number_booklets' => 1,
@@ -406,7 +406,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'currency' => 'EUR',
             'individual_values' => range(200, 220)
         ]);
-        $bookletService->assign($bookletBig, $firstDistributionBeneficiary->getAssistance(), $firstDistributionBeneficiary->getBeneficiary());
+        $bookletService->assign($bookletBig, $firstAssistanceBeneficiary->getAssistance(), $firstAssistanceBeneficiary->getBeneficiary());
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([]);
 
@@ -784,9 +784,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $distribution = $this->em->getRepository(Assistance::class)->find($distribution['id']);
         if ($distribution instanceof Assistance) {
             $distributionBeneficiaries = $this->em
-                ->getRepository(DistributionBeneficiary::class)->findByAssistance($distribution);
+                ->getRepository(AssistanceBeneficiary::class)->findByAssistance($distribution);
             foreach ($distributionBeneficiaries as $distributionBeneficiary) {
-                $transaction = $this->em->getRepository(Transaction::class)->findOneByDistributionBeneficiary($distributionBeneficiary);
+                $transaction = $this->em->getRepository(Transaction::class)->findOneByAssistanceBeneficiary($distributionBeneficiary);
                 $this->em->remove($transaction);
                 $this->em->remove($distributionBeneficiary);
             }

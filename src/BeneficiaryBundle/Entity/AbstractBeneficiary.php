@@ -1,7 +1,7 @@
 <?php
 namespace BeneficiaryBundle\Entity;
 
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -42,17 +42,17 @@ abstract class AbstractBeneficiary
     private $projects;
 
     /**
-     * @var DistributionBeneficiary[]|Collection
+     * @var AssistanceBeneficiary[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      */
     private $distributionBeneficiaries;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="beneficiary", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      * @SymfonyGroups({"FullReceivers", "FullBeneficiary"})
      *
-     * @var DistributionBeneficiary $distributionBeneficiary
+     * @var AssistanceBeneficiary $distributionBeneficiary
      */
     private $distributionBeneficiary;
 
@@ -130,15 +130,15 @@ abstract class AbstractBeneficiary
     }
 
     /**
-     * @return DistributionBeneficiary
+     * @return AssistanceBeneficiary
      */
-    public function getDistributionBeneficiary(): DistributionBeneficiary
+    public function getAssistanceBeneficiary(): AssistanceBeneficiary
     {
         return $this->distributionBeneficiaries->getIterator()->current();
     }
 
     /**
-     * @return DistributionBeneficiary[]|Collection
+     * @return AssistanceBeneficiary[]|Collection
      */
     public function getDistributionBeneficiaries(): Collection
     {
@@ -146,7 +146,7 @@ abstract class AbstractBeneficiary
     }
 
     /**
-     * @param DistributionBeneficiary[]|Collection $distributionBeneficiaries
+     * @param AssistanceBeneficiary[]|Collection $distributionBeneficiaries
      */
     public function setDistributionBeneficiaries(array $distributionBeneficiaries): void
     {

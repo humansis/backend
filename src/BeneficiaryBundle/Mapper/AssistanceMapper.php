@@ -5,10 +5,10 @@ namespace BeneficiaryBundle\Mapper;
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Repository\DistributionBeneficiaryRepository;
+use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 
 class AssistanceMapper
 {
@@ -22,18 +22,18 @@ class AssistanceMapper
     /** @var BeneficiaryMapper */
     private $beneficiaryMapper;
 
-    /** @var DistributionBeneficiaryRepository */
+    /** @var AssistanceBeneficiaryRepository */
     private $distributionBNFRepo;
 
     /**
      * AssistanceMapper constructor.
      *
      * @param BeneficiaryMapper                 $beneficiaryMapper
-     * @param DistributionBeneficiaryRepository $distributionBNFRepo
+     * @param AssistanceBeneficiaryRepository $distributionBNFRepo
      */
     public function __construct(
         BeneficiaryMapper $beneficiaryMapper,
-        DistributionBeneficiaryRepository $distributionBNFRepo
+        AssistanceBeneficiaryRepository $distributionBNFRepo
     ) {
         $this->beneficiaryMapper = $beneficiaryMapper;
         $this->distributionBNFRepo = $distributionBNFRepo;
@@ -65,7 +65,7 @@ class AssistanceMapper
         }
         /** @var AbstractBeneficiary[] $bnfs */
         $bnfs = $assistance->getDistributionBeneficiaries()->map(
-            function (DistributionBeneficiary $db) {
+            function (AssistanceBeneficiary $db) {
                 return $db->getBeneficiary();
             }
         );

@@ -135,7 +135,7 @@ class Assistance implements ExportableInterface
     private $commodities;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="assistance")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="assistance")
      *
      * @SymfonyGroups({"FullDistribution", "FullProject"})
      */
@@ -567,11 +567,11 @@ class Assistance implements ExportableInterface
     /**
      * Add distributionBeneficiary.
      *
-     * @param \DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary
+     * @param \DistributionBundle\Entity\AssistanceBeneficiary $distributionBeneficiary
      *
      * @return Assistance
      */
-    public function addDistributionBeneficiary(\DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary)
+    public function addAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $distributionBeneficiary)
     {
         if (null === $this->distributionBeneficiaries) {
             $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
@@ -584,11 +584,11 @@ class Assistance implements ExportableInterface
     /**
      * Remove distributionBeneficiary.
      *
-     * @param \DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary
+     * @param \DistributionBundle\Entity\AssistanceBeneficiary $distributionBeneficiary
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeDistributionBeneficiary(\DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary)
+    public function removeAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $distributionBeneficiary)
     {
         return $this->distributionBeneficiaries->removeElement($distributionBeneficiary);
     }

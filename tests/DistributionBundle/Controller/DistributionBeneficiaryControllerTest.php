@@ -10,7 +10,7 @@ use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
@@ -21,7 +21,7 @@ use Symfony\Component\BrowserKit\Client;
 use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
 use Tests\BMSServiceTestCase;
 
-class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
+class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
 {
     /**
      * @throws \Exception
@@ -39,7 +39,7 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
-    public function testCreateDistributionBeneficiary()
+    public function testCreateAssistanceBeneficiary()
     {
         //We check if there is an user in the Beneficiary to use him for the test :
         $beneficiary = $this->em->getRepository(Beneficiary::class)->findAll();
@@ -58,7 +58,7 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
         }
 
         // If everything is ok, we create a new distributionBeneficiary
-        $distributionBeneficiary = new DistributionBeneficiary();
+        $distributionBeneficiary = new AssistanceBeneficiary();
         $distributionBeneficiary->setBeneficiary($beneficiary[0])
             ->setAssistance($assistance[0])
             ->setRemoved(0);
@@ -67,7 +67,7 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
 
         $this->em->flush();
 
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->find($distributionBeneficiary->getId());
+        $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->find($distributionBeneficiary->getId());
 
         if (!$distributionBeneficiary) {
             print_r("\nThere was an error while creating the new distributionBeneficiary during the test.\n");
@@ -75,12 +75,12 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
         }
 
         try {
-            $this->assertTrue($distributionBeneficiary instanceof DistributionBeneficiary);
+            $this->assertTrue($distributionBeneficiary instanceof AssistanceBeneficiary);
         } catch (\Exception $exception) {
             $this->em->remove($distributionBeneficiary);
             $this->em->flush();
 
-            $this->fail("\nThe mapping of fields of DistributionBeneficiary entity is not correct (1).\n");
+            $this->fail("\nThe mapping of fields of AssistanceBeneficiary entity is not correct (1).\n");
             return false;
         }
 
@@ -88,13 +88,13 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @param DistributionBeneficiary $distributionBeneficiary
+     * @param AssistanceBeneficiary $distributionBeneficiary
      * @return bool
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @depends testCreateDistributionBeneficiary
+     * @depends testCreateAssistanceBeneficiary
      */
-    public function testRemoveDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
+    public function testRemoveAssistanceBeneficiary(AssistanceBeneficiary $distributionBeneficiary)
     {
         $beneficiaryId = $distributionBeneficiary->getBeneficiary()->getId();
         $distributionId = $distributionBeneficiary->getAssistance()->getId();
@@ -109,7 +109,7 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('POST', '/api/wsse/distributions/'. $distributionId .'/beneficiaries/'. $beneficiaryId .'/remove', $body);
         
-        $listDistributionBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
+        $listAssistanceBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 

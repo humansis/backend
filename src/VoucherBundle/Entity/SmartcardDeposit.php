@@ -4,7 +4,7 @@ namespace VoucherBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
@@ -50,9 +50,9 @@ class SmartcardDeposit
     private $depositor;
 
     /**
-     * @var DistributionBeneficiary
+     * @var AssistanceBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="smartcardDeposits")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="smartcardDeposits")
      * @ORM\JoinColumn(nullable=false)
      *
      * @SymfonyGroups({"FullSmartcard"})
@@ -83,7 +83,7 @@ class SmartcardDeposit
     public static function create(
         Smartcard $smartcard,
         User $depositor,
-        DistributionBeneficiary $distributionBeneficiary,
+        AssistanceBeneficiary $distributionBeneficiary,
         $value,
         DateTimeInterface $createdAt
     ) {
@@ -130,9 +130,9 @@ class SmartcardDeposit
     }
 
     /**
-     * @return DistributionBeneficiary
+     * @return AssistanceBeneficiary
      */
-    public function getDistributionBeneficiary(): DistributionBeneficiary
+    public function getAssistanceBeneficiary(): AssistanceBeneficiary
     {
         return $this->distributionBeneficiary;
     }
@@ -150,7 +150,7 @@ class SmartcardDeposit
         return $this->createdAt;
     }
 
-    private static function findCurrency(DistributionBeneficiary $distributionBeneficiary): string
+    private static function findCurrency(AssistanceBeneficiary $distributionBeneficiary): string
     {
         foreach ($distributionBeneficiary->getAssistance()->getCommodities() as $commodity) {
             /** @var \DistributionBundle\Entity\Commodity $commodity */
@@ -159,6 +159,6 @@ class SmartcardDeposit
             }
         }
 
-        throw new \LogicException('Unable to find currency for DistributionBeneficiary #'.$distributionBeneficiary->getId());
+        throw new \LogicException('Unable to find currency for AssistanceBeneficiary #'.$distributionBeneficiary->getId());
     }
 }

@@ -3,7 +3,7 @@
 namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
@@ -443,14 +443,14 @@ class BookletService
             throw new \Exception("This booklet has already been distributed, used or is actually deactivated");
         }
 
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(
+        $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(
             ['beneficiary' => $beneficiary, "assistance" => $assistance]
         );
-        $booklet->setDistributionBeneficiary($distributionBeneficiary)
+        $booklet->setAssistanceBeneficiary($distributionBeneficiary)
             ->setStatus(Booklet::DISTRIBUTED);
         $this->em->merge($booklet);
 
-        $beneficiariesWithoutBooklets = $this->em->getRepository(DistributionBeneficiary::class)->countWithoutBooklet($assistance);
+        $beneficiariesWithoutBooklets = $this->em->getRepository(AssistanceBeneficiary::class)->countWithoutBooklet($assistance);
 
         if ($beneficiariesWithoutBooklets === '1') {
             $assistance->setCompleted(true);
@@ -540,8 +540,8 @@ class BookletService
 
     public function getPdfHtml(Booklet $booklet, string $voucherHtmlSeparation)
     {
-        $name = $booklet->getDistributionBeneficiary() ?
-            $booklet->getDistributionBeneficiary()->getBeneficiary()->getLocalFamilyName() :
+        $name = $booklet->getAssistanceBeneficiary() ?
+            $booklet->getAssistanceBeneficiary()->getBeneficiary()->getLocalFamilyName() :
             '_______';
         $currency = $booklet->getCurrency();
         $bookletQrCode = $booklet->getCode();
@@ -604,7 +604,7 @@ class BookletService
      */
     public function exportVouchersDistributionToCsv(Assistance $assistance, string $type)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
             ->findByAssistance($assistance);
 
         $beneficiaries = array();

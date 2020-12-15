@@ -15,12 +15,12 @@ use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
- * DistributionBeneficiary.
+ * AssistanceBeneficiary.
  *
  * @ORM\Table(name="distribution_beneficiary")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\DistributionBeneficiaryRepository")
+ * @ORM\Entity(repositoryClass="DistributionBundle\Repository\AssistanceBeneficiaryRepository")
  */
-class DistributionBeneficiary
+class AssistanceBeneficiary
 {
     /**
      * @var int
@@ -28,7 +28,7 @@ class DistributionBeneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet"})
+     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet"})
      */
     private $id;
 
@@ -37,7 +37,7 @@ class DistributionBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="distributionBeneficiaries")
      * @ORM\JoinColumn(name="assistance_id")
-     * @SymfonyGroups({"FullDistributionBeneficiary", "FullBooklet"})
+     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullBooklet"})
      */
     private $assistance;
 
@@ -45,7 +45,7 @@ class DistributionBeneficiary
      * @var AbstractBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="distributionBeneficiary")
-     * @SymfonyGroups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
+     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
      * @SymfonyMaxDepth(3)
      */
     private $beneficiary;
@@ -160,7 +160,7 @@ class DistributionBeneficiary
      *
      * @param Assistance|null $assistance
      *
-     * @return DistributionBeneficiary
+     * @return AssistanceBeneficiary
      */
     public function setAssistance(Assistance $assistance = null)
     {
@@ -184,7 +184,7 @@ class DistributionBeneficiary
      *
      * @param AbstractBeneficiary|null $beneficiary
      *
-     * @return DistributionBeneficiary
+     * @return AssistanceBeneficiary
      */
     public function setBeneficiary(AbstractBeneficiary $beneficiary = null)
     {
@@ -267,7 +267,7 @@ class DistributionBeneficiary
     {
         if (!$this->booklets->contains($booklet)) {
             $this->booklets[] = $booklet;
-            $booklet->setDistributionBeneficiary($this);
+            $booklet->setAssistanceBeneficiary($this);
         }
 
         return $this;
@@ -278,8 +278,8 @@ class DistributionBeneficiary
         if ($this->booklets->contains($booklet)) {
             $this->booklets->removeElement($booklet);
             // set the owning side to null (unless already changed)
-            if ($booklet->getDistributionBeneficiary() === $this) {
-                $booklet->setDistributionBeneficiary(null);
+            if ($booklet->getAssistanceBeneficiary() === $this) {
+                $booklet->setAssistanceBeneficiary(null);
             }
         }
 

@@ -3,7 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 
@@ -44,9 +44,9 @@ class GeneralReliefItem
     private $notes;
     
     /**
-     * @var DistributionBeneficiary
+     * @var AssistanceBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="generalReliefs", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="generalReliefs", cascade={"persist"})
      */
     private $distributionBeneficiary;
 
@@ -126,9 +126,9 @@ class GeneralReliefItem
     /**
      * Get the value of Distribution Beneficiary
      *
-     * @return DistributionBeneficiary
+     * @return AssistanceBeneficiary
      */
-    public function getDistributionBeneficiary()
+    public function getAssistanceBeneficiary()
     {
         return $this->distributionBeneficiary;
     }
@@ -136,11 +136,11 @@ class GeneralReliefItem
     /**
      * Set the value of Distribution Beneficiary
      *
-     * @param DistributionBeneficiary distributionBeneficiary
+     * @param AssistanceBeneficiary distributionBeneficiary
      *
      * @return self
      */
-    public function setDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
+    public function setAssistanceBeneficiary(AssistanceBeneficiary $distributionBeneficiary)
     {
         $this->distributionBeneficiary = $distributionBeneficiary;
  

@@ -7,7 +7,7 @@ namespace DistributionBundle\Mapper;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\BeneficiaryMapper;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Mapper\TransactionMapper;
 use VoucherBundle\Mapper\BookletMapper;
@@ -46,7 +46,7 @@ class AssistanceBeneficiaryMapper
         $this->beneficiaryMapper = $beneficiaryMapper;
     }
 
-    public function toMinimalArray(?DistributionBeneficiary $assistanceBeneficiary): ?array
+    public function toMinimalArray(?AssistanceBeneficiary $assistanceBeneficiary): ?array
     {
         if (!$assistanceBeneficiary) {
             return null;
@@ -66,7 +66,7 @@ class AssistanceBeneficiaryMapper
         }
     }
 
-    public function toMinimalTransactionArray(?DistributionBeneficiary $distributionBeneficiary): ?array
+    public function toMinimalTransactionArray(?AssistanceBeneficiary $distributionBeneficiary): ?array
     {
         if (!$distributionBeneficiary) {
             return null;
@@ -94,7 +94,7 @@ class AssistanceBeneficiaryMapper
         }
     }
 
-    protected function toBaseArray(?DistributionBeneficiary $assistanceBeneficiary): ?array
+    protected function toBaseArray(?AssistanceBeneficiary $assistanceBeneficiary): ?array
     {
         if (!$assistanceBeneficiary) {
             return null;
@@ -118,7 +118,7 @@ class AssistanceBeneficiaryMapper
         return $serializedAB;
     }
 
-    public function toFullArray(?DistributionBeneficiary $distributionBeneficiary): ?array
+    public function toFullArray(?AssistanceBeneficiary $distributionBeneficiary): ?array
     {
         if (!$distributionBeneficiary) {
             return null;
@@ -127,7 +127,7 @@ class AssistanceBeneficiaryMapper
         $beneficiary = $distributionBeneficiary->getBeneficiary();
         if (!$beneficiary instanceof Beneficiary && !$beneficiary instanceof Household) {
             $class = get_class($beneficiary);
-            throw new \InvalidArgumentException("DistributionBeneficiary #{$distributionBeneficiary->getId()} is $class instead of ".Beneficiary::class);
+            throw new \InvalidArgumentException("AssistanceBeneficiary #{$distributionBeneficiary->getId()} is $class instead of ".Beneficiary::class);
         }
 
         $flatBase = $this->toBaseArray($distributionBeneficiary);

@@ -11,7 +11,7 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
 use DateTime;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
@@ -74,7 +74,7 @@ class AssistanceBeneficiaryService
      */
     public function getDistributionBeneficiaries(Assistance $assistance)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByAssistance($assistance);
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
         return $distributionBeneficiaries;
     }
 
@@ -86,7 +86,7 @@ class AssistanceBeneficiaryService
      */
     public function getDistributionAssignableBeneficiaries(Assistance $assistance)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findAssignable($assistance);
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findAssignable($assistance);
         return $distributionBeneficiaries;
     }
 
@@ -127,7 +127,7 @@ class AssistanceBeneficiaryService
      * @param Assistance $assistance
      * @param array      $beneficiariesData
      *
-     * @return DistributionBeneficiary[]
+     * @return AssistanceBeneficiary[]
      * @throws \Exception
      */
     public function addBeneficiaries(Assistance $assistance, array $beneficiariesData): array
@@ -189,9 +189,9 @@ class AssistanceBeneficiaryService
         $assistanceBeneficiaries = [];
 
         foreach ($validBNFs as $beneficiary) {
-            $assistanceBeneficiary = new DistributionBeneficiary();
+            $assistanceBeneficiary = new AssistanceBeneficiary();
 
-            $sameAssistanceBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
+            $sameAssistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)
                 ->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
 
             // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
@@ -231,7 +231,7 @@ class AssistanceBeneficiaryService
      */
     public function removeBeneficiaryInDistribution(Assistance $assistance, AbstractBeneficiary $beneficiary, $deletionData)
     {
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'assistance' => $assistance->getId()]);
+        $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'assistance' => $assistance->getId()]);
 
         // Update updatedOn datetime
         $assistance->setUpdatedOn(new DateTime());

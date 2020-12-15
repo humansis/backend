@@ -10,7 +10,7 @@ use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use CommonBundle\Utils\LocationService;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\ModalityType;
@@ -132,7 +132,7 @@ class AssistanceService
             if ($commodity->getModalityType()->isGeneralRelief()) {
                 foreach ($beneficiaries as $beneficiary) {
                     $generalRelief = new GeneralReliefItem();
-                    $generalRelief->setDistributionBeneficiary($beneficiary);
+                    $generalRelief->setAssistanceBeneficiary($beneficiary);
                     $this->em->persist($generalRelief);
                 }
             }
@@ -211,7 +211,7 @@ class AssistanceService
         if (AssistanceTargetType::COMMUNITY === $distribution->getTargetType()) {
             foreach ($distributionArray['communities'] as $id) {
                 $community = $this->container->get('doctrine')->getRepository(Community::class)->find($id);
-                $distributionBeneficiary = (new DistributionBeneficiary())
+                $distributionBeneficiary = (new AssistanceBeneficiary())
                     ->setAssistance($distribution)
                     ->setBeneficiary($community)
                     ->setRemoved(0);
@@ -222,7 +222,7 @@ class AssistanceService
         } elseif (AssistanceTargetType::INSTITUTION === $distribution->getTargetType()) {
             foreach ($distributionArray['institutions'] as $id) {
                 $institution = $this->container->get('doctrine')->getRepository(Institution::class)->find($id);
-                $distributionBeneficiary = (new DistributionBeneficiary())
+                $distributionBeneficiary = (new AssistanceBeneficiary())
                     ->setAssistance($distribution)
                     ->setBeneficiary($institution)
                     ->setRemoved(0);
@@ -286,7 +286,7 @@ class AssistanceService
             /** @var Beneficiary $beneficiary */
             $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver);
 
-            $distributionBeneficiary = (new DistributionBeneficiary())
+            $distributionBeneficiary = (new AssistanceBeneficiary())
                 ->setAssistance($assistance)
                 ->setBeneficiary($beneficiary)
                 ->setRemoved(0)
@@ -528,7 +528,7 @@ class AssistanceService
      */
     public function countAllBeneficiaries(string $country)
     {
-        $count = (int) $this->em->getRepository(DistributionBeneficiary::class)->countAll($country);
+        $count = (int) $this->em->getRepository(AssistanceBeneficiary::class)->countAll($country);
         return $count;
     }
     
@@ -612,7 +612,7 @@ class AssistanceService
         $distributionBeneficiaries = $assistance->getDistributionBeneficiaries();
         foreach ($distributionBeneficiaries as $index => $distributionBeneficiary) {
             $$index = new GeneralReliefItem();
-            $$index->setDistributionBeneficiary($distributionBeneficiary);
+            $$index->setAssistanceBeneficiary($distributionBeneficiary);
             $distributionBeneficiary->addGeneralRelief($$index);
 
             $this->em->persist($$index);
@@ -662,7 +662,7 @@ class AssistanceService
 
         // Checks if the distribution is completed
         $generalReliefItem = $this->em->getRepository(GeneralReliefItem::class)->find(array_pop($griIds));
-        $assistance = $generalReliefItem->getDistributionBeneficiary()->getAssistance();
+        $assistance = $generalReliefItem->getAssistanceBeneficiary()->getAssistance();
         $numberIncomplete = $this->em->getRepository(GeneralReliefItem::class)->countNonDistributed($assistance);
         
         if ($numberIncomplete === '0') {
@@ -679,12 +679,12 @@ class AssistanceService
      */
     public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByAssistance($assistance);
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
 
         $generalreliefs = array();
         $exportableTable = array();
         foreach ($distributionBeneficiaries as $db) {
-            $generalrelief = $this->em->getRepository(GeneralReliefItem::class)->findOneByDistributionBeneficiary($db);
+            $generalrelief = $this->em->getRepository(GeneralReliefItem::class)->findOneByAssistanceBeneficiary($db);
 
             if ($generalrelief) {
                 array_push($generalreliefs, $generalrelief);
@@ -692,7 +692,7 @@ class AssistanceService
         }
 
         foreach ($generalreliefs as $generalrelief) {
-            $beneficiary = $generalrelief->getDistributionBeneficiary()->getBeneficiary();
+            $beneficiary = $generalrelief->getAssistanceBeneficiary()->getBeneficiary();
             $commodityNames = implode(', ',
                 array_map(
                     function($commodity) { return  $commodity->getModalityType()->getName(); }, 
@@ -716,8 +716,8 @@ class AssistanceService
                     "Value" => $commodityValues,
                     "Distributed At" => $generalrelief->getDistributedAt(),
                     "Notes Distribution" => $generalrelief->getNotes(),
-                    "Removed" => $generalrelief->getDistributionBeneficiary()->getRemoved() ? 'Yes' : 'No',
-                    "Justification for adding/removing" => $generalrelief->getDistributionBeneficiary()->getJustification(),
+                    "Removed" => $generalrelief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
+                    "Justification for adding/removing" => $generalrelief->getAssistanceBeneficiary()->getJustification(),
                 ))
             );
         }
@@ -767,7 +767,7 @@ class AssistanceService
 
         if ($exportableDistribution->getCommodities()[0]->getModalityType()->getName() === 'QR Code Voucher') {
             foreach ($exportableDistribution->getDistributionBeneficiaries() as $distributionBeneficiary) {
-                    $activatedBooklets = $this->em->getRepository(Booklet::class)->getActiveBookletsByDistributionBeneficiary($distributionBeneficiary->getId());
+                    $activatedBooklets = $this->em->getRepository(Booklet::class)->getActiveBookletsByAssistanceBeneficiary($distributionBeneficiary->getId());
                     if (count($activatedBooklets) > 0) {
                         $products = $this->em->getRepository(Product::class)->getNameByBooklet($activatedBooklets[0]->getId());
                         $products = array_map(

@@ -4,7 +4,7 @@ namespace TransactionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
@@ -213,7 +213,7 @@ class TransactionService
      * Update transaction status
      * @param $countryISO3
      * @param  Assistance $assistance
-     * @return DistributionBeneficiary[]
+     * @return AssistanceBeneficiary[]
      * @throws \Exception
      */
     public function updateTransactionStatus(string $countryISO3, Assistance $assistance): array
@@ -308,12 +308,12 @@ class TransactionService
      */
     public function exportToCsv(Assistance $assistance, string $type)
     {
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findByAssistance($assistance);
+        $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
 
         $transactions = array();
         $exportableTable = array();
         foreach ($distributionBeneficiary as $db) {
-            $transaction = $this->em->getRepository(Transaction::class)->findOneByDistributionBeneficiary($db);
+            $transaction = $this->em->getRepository(Transaction::class)->findOneByAssistanceBeneficiary($db);
 
             if ($transaction) {
                 array_push($transactions, $transaction);
@@ -331,7 +331,7 @@ class TransactionService
                 $status = "Unknown error";
             }
 
-            $beneficiary = $transaction->getDistributionBeneficiary()->getBeneficiary();
+            $beneficiary = $transaction->getAssistanceBeneficiary()->getBeneficiary();
             $commonFields = $beneficiary->getCommonExportFields();
 
             array_push($exportableTable,
@@ -342,8 +342,8 @@ class TransactionService
                 "Message" => $transaction->getMessage(),
                 "Money Received" => $transaction->getMoneyReceived(),
                 "Pickup Date" => $transaction->getPickupDate() ? $transaction->getPickupDate()->format('d-m-Y') : null,
-                "Removed" => $transaction->getDistributionBeneficiary()->getRemoved() ? 'Yes' : 'No',
-                "Justification for adding/removing" => $transaction->getDistributionBeneficiary()->getJustification(),
+                "Removed" => $transaction->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
+                "Justification for adding/removing" => $transaction->getAssistanceBeneficiary()->getJustification(),
                 ))
             );
         }

@@ -2,7 +2,7 @@
 namespace VoucherBundle\Tests\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
@@ -282,7 +282,7 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['status' => Booklet::UNASSIGNED]);
         $distribution = $this->em->getRepository(Assistance::class)->findOneBy([]);
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findAssignable($distribution)[0];
+        $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findAssignable($distribution)[0];
         $beneficiary = $distributionBeneficiary->getBeneficiary();
 
         // Fake connection with a token for the user tester (ADMIN)

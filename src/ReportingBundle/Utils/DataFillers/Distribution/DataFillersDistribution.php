@@ -9,7 +9,7 @@ use ReportingBundle\Utils\DataFillers\DataFillers;
 use ReportingBundle\Entity\ReportingIndicator;
 use ReportingBundle\Entity\ReportingValue;
 use ReportingBundle\Entity\ReportingDistribution;
-use \DistributionBundle\Entity\DistributionBeneficiary;
+use \DistributionBundle\Entity\AssistanceBeneficiary;
 use \DistributionBundle\Entity\Assistance;
 use \DistributionBundle\Entity\Commodity;
 use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
@@ -63,7 +63,7 @@ class DataFillersDistribution extends DataFillers
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+            $this->repository = $this->em->getRepository(AssistanceBeneficiary::class);
             $qb = $this->repository->createQueryBuilder('db')
                                    ->leftjoin('db.assistance', 'dd')
                                    ->select('count(db.id) AS value', 'dd.id as distribution')
@@ -202,7 +202,7 @@ class DataFillersDistribution extends DataFillers
     public function BMS_Distribution_AB()
     {
         //Get all distribution beneficiary
-        $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+        $this->repository = $this->em->getRepository(AssistanceBeneficiary::class);
         $beneficiaries = $this->repository->findAll();
 
         //Get all distribution
@@ -214,7 +214,7 @@ class DataFillersDistribution extends DataFillers
             $results = [];
             foreach ($beneficiaries as $beneficiary) {
                 if ($distribution->getId() === $beneficiary->getAssistance()->getId()) {
-                    $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+                    $this->repository = $this->em->getRepository(AssistanceBeneficiary::class);
                     $qb = $this->repository->createQueryBuilder('db')
                                         ->leftjoin('db.beneficiary', 'b')
                                         ->leftjoin('db.assistance', 'dd')
@@ -270,7 +270,7 @@ class DataFillersDistribution extends DataFillers
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+            $this->repository = $this->em->getRepository(AssistanceBeneficiary::class);
             $qb = $this->repository->createQueryBuilder('db')
                                    ->leftjoin('db.beneficiary', 'b')
                                    ->leftjoin('db.assistance', 'dd')
@@ -314,7 +314,7 @@ class DataFillersDistribution extends DataFillers
     {
         $this->em->getConnection()->beginTransaction();
         try {
-            $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+            $this->repository = $this->em->getRepository(AssistanceBeneficiary::class);
             $qb = $this->repository->createQueryBuilder('db')
                                    ->leftjoin('db.beneficiary', 'b')
                                    ->leftjoin('db.assistance', 'dd')
@@ -363,7 +363,7 @@ class DataFillersDistribution extends DataFillers
 
 
         //Get all dsitribution beneficiary
-        $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+        $this->repository = $this->em->getRepository(AssistanceBeneficiary::class);
         $beneficiaries = $this->repository->findAll();
 
         //Get all distribution
@@ -376,7 +376,7 @@ class DataFillersDistribution extends DataFillers
         foreach ($distributions as $distribution) {
             foreach ($beneficiaries as $beneficiary) {
                 if ($distribution->getId() === $beneficiary->getAssistance()->getId()) {
-                    $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+                    $this->repository = $this->em->getRepository(AssistanceBeneficiary::class);
                     $qb = $this->repository->createQueryBuilder('db')
                                             ->leftjoin('db.beneficiary', 'b')
                                             ->leftjoin('db.assistance', 'dd')
@@ -445,7 +445,7 @@ class DataFillersDistribution extends DataFillers
         $vulnerabilityCriterion = $this->repository->findAll();
 
         //get all distribution beneficiary
-        $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+        $this->repository = $this->em->getRepository(AssistanceBeneficiary::class);
         $beneficiaries = $this->repository->findAll();
 
         //get all distribution
@@ -459,7 +459,7 @@ class DataFillersDistribution extends DataFillers
             $byDistribution = [];
             foreach ($beneficiaries as $beneficiary) {
                 if ($distribution->getId() === $beneficiary->getAssistance()->getId()) {
-                    $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+                    $this->repository = $this->em->getRepository(AssistanceBeneficiary::class);
                     $qb = $this->repository->createQueryBuilder('db')
                                         ->leftjoin('db.beneficiary', 'b')
                                         ->leftjoin('db.assistance', 'dd')

@@ -12,7 +12,7 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
@@ -148,7 +148,7 @@ class DistributionCSVService
                 }
             }
 
-            $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
+            $distributionBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)
             ->findOneBy(
                 [
                     'beneficiary' => $beneficiary,
@@ -370,12 +370,12 @@ class DistributionCSVService
             $this->em->persist($toCreate);
             
             // Add created beneficiary to distribution
-            $newDistributionBeneficiary = new DistributionBeneficiary();
-            $newDistributionBeneficiary->setBeneficiary($toCreate)
+            $newAssistanceBeneficiary = new AssistanceBeneficiary();
+            $newAssistanceBeneficiary->setBeneficiary($toCreate)
                 ->setAssistance($assistance)
                 ->setRemoved(0)
                 ->setJustification($beneficiaryToCreate['justification']);
-            $this->em->persist($newDistributionBeneficiary);
+            $this->em->persist($newAssistanceBeneficiary);
         }
         
         // Add
@@ -396,7 +396,7 @@ class DistributionCSVService
                 $household->addProject($distributionProject);
                 $this->em->persist($household);
             }
-            $distributionBeneficiary = new DistributionBeneficiary();
+            $distributionBeneficiary = new AssistanceBeneficiary();
             $distributionBeneficiary->setBeneficiary($beneficiaryToAdd)
                 ->setAssistance($assistance)
                 ->setRemoved(0)
@@ -407,7 +407,7 @@ class DistributionCSVService
         // Delete
         foreach ($data['deleted'] as $beneficiaryToRemove) {
             $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryToRemove['id']);
-            $toRemove = $this->em->getRepository(DistributionBeneficiary::class)
+            $toRemove = $this->em->getRepository(AssistanceBeneficiary::class)
                 ->findOneBy(
                     [
                         'beneficiary' => $beneficiary,
@@ -424,7 +424,7 @@ class DistributionCSVService
             $toUpdate = $this->em->getRepository(Beneficiary::class)
                 ->find($beneficiaryToUpdate['id']);
 
-            $distributionBeneficiaryToUpdate = $this->em->getRepository(DistributionBeneficiary::class)
+            $distributionBeneficiaryToUpdate = $this->em->getRepository(AssistanceBeneficiary::class)
                 ->findOneBy(
                     [
                         'beneficiary' => $toUpdate,

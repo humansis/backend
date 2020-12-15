@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Entity;
 
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -88,7 +88,7 @@ class Booklet implements ExportableInterface
     private $vouchers;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="booklets")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="booklets")
      * @SymfonyGroups({"FullBooklet"})
      */
     private $distribution_beneficiary;
@@ -288,12 +288,12 @@ class Booklet implements ExportableInterface
         return $this;
     }
 
-    public function getDistributionBeneficiary(): ?DistributionBeneficiary
+    public function getAssistanceBeneficiary(): ?AssistanceBeneficiary
     {
         return $this->distribution_beneficiary;
     }
 
-    public function setDistributionBeneficiary(DistributionBeneficiary $distribution_beneficiary): self
+    public function setAssistanceBeneficiary(AssistanceBeneficiary $distribution_beneficiary): self
     {
         $this->distribution_beneficiary = $distribution_beneficiary;
 
@@ -317,11 +317,11 @@ class Booklet implements ExportableInterface
         }
 
         $password = empty($this->getPassword()) ? 'No' : 'Yes';
-        $distribution = $this->getDistributionBeneficiary() ?
-            $this->getDistributionBeneficiary()->getAssistance()->getName() :
+        $distribution = $this->getAssistanceBeneficiary() ?
+            $this->getAssistanceBeneficiary()->getAssistance()->getName() :
             null;
-        $beneficiary = $this->getDistributionBeneficiary() ?
-            $this->getDistributionBeneficiary()->getBeneficiary()->getLocalGivenName() :
+        $beneficiary = $this->getAssistanceBeneficiary() ?
+            $this->getAssistanceBeneficiary()->getBeneficiary()->getLocalGivenName() :
             null;
 
         $finalArray = [
