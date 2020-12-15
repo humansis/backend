@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 use ReportingBundle\Utils\DataFillers\DataFillers;
 use ReportingBundle\Entity\ReportingIndicator;
 use ReportingBundle\Entity\ReportingValue;
-use ReportingBundle\Entity\ReportingDistribution;
+use ReportingBundle\Entity\ReportingAssistance;
 use \DistributionBundle\Entity\AssistanceBeneficiary;
 use \DistributionBundle\Entity\Assistance;
 use \DistributionBundle\Entity\Commodity;
@@ -57,7 +57,7 @@ class DataFillersDistribution extends DataFillers
     }
 
     /**
-     * Fill in ReportingValue and ReportingDistribution with total of enrolled beneficiaires
+     * Fill in ReportingValue and ReportingAssistance with total of enrolled beneficiaires
      */
     public function BMS_Distribution_NEB()
     {
@@ -82,7 +82,7 @@ class DataFillersDistribution extends DataFillers
                 $this->repository = $this->em->getRepository(Assistance::class);
                 $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
-                $new_reportingDistribution = new ReportingDistribution();
+                $new_reportingDistribution = new ReportingAssistance();
                 $new_reportingDistribution->setIndicator($reference);
                 $new_reportingDistribution->setValue($new_value);
                 $new_reportingDistribution->setDistribution($distribution);
@@ -98,7 +98,7 @@ class DataFillersDistribution extends DataFillers
     }
 
     /**
-    * Fill in ReportingValue and ReportingDistribution with total value of distribution
+    * Fill in ReportingValue and ReportingAssistance with total value of distribution
     */
     public function BMS_Distribution_TDV()
     {
@@ -139,7 +139,7 @@ class DataFillersDistribution extends DataFillers
                 $this->repository = $this->em->getRepository(Assistance::class);
                 $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
-                $new_reportingDistribution = new ReportingDistribution();
+                $new_reportingDistribution = new ReportingAssistance();
                 $new_reportingDistribution->setIndicator($reference);
                 $new_reportingDistribution->setValue($new_value);
                 $new_reportingDistribution->setDistribution($distribution);
@@ -155,7 +155,7 @@ class DataFillersDistribution extends DataFillers
     }
 
     /**
-     * Fill in ReportingValue and ReportingDistribution with modality
+     * Fill in ReportingValue and ReportingAssistance with modality
      */
     public function BMS_Distribution_M()
     {
@@ -181,7 +181,7 @@ class DataFillersDistribution extends DataFillers
                 $this->repository = $this->em->getRepository(Assistance::class);
                 $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
-                $new_reportingDistribution = new ReportingDistribution();
+                $new_reportingDistribution = new ReportingAssistance();
                 $new_reportingDistribution->setIndicator($reference);
                 $new_reportingDistribution->setValue($new_value);
                 $new_reportingDistribution->setDistribution($distribution);
@@ -197,7 +197,7 @@ class DataFillersDistribution extends DataFillers
     }
 
     /**
-     * Fill in ReportingValue and ReportingDistribution with age breakdown
+     * Fill in ReportingValue and ReportingAssistance with age breakdown
      */
     public function BMS_Distribution_AB()
     {
@@ -247,7 +247,7 @@ class DataFillersDistribution extends DataFillers
                     $this->repository = $this->em->getRepository(Assistance::class);
                     $distribution = $this->repository->findOneBy(['id' => $results[0][0]['distribution']]);
 
-                    $new_reportingDistribution = new ReportingDistribution();
+                    $new_reportingDistribution = new ReportingAssistance();
                     $new_reportingDistribution->setIndicator($reference);
                     $new_reportingDistribution->setValue($new_value);
                     $new_reportingDistribution->setDistribution($distribution);
@@ -264,7 +264,7 @@ class DataFillersDistribution extends DataFillers
     }
 
     /**
-     * Fill in ReportingValue and ReportingDistribution with number of men
+     * Fill in ReportingValue and ReportingAssistance with number of men
      */
     public function BMSU_Distribution_NM()
     {
@@ -292,7 +292,7 @@ class DataFillersDistribution extends DataFillers
                 $this->repository = $this->em->getRepository(Assistance::class);
                 $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
-                $new_reportingDistribution = new ReportingDistribution();
+                $new_reportingDistribution = new ReportingAssistance();
                 $new_reportingDistribution->setIndicator($reference);
                 $new_reportingDistribution->setValue($new_value);
                 $new_reportingDistribution->setDistribution($distribution);
@@ -308,7 +308,7 @@ class DataFillersDistribution extends DataFillers
     }
 
     /**
-    * Fill in ReportingValue and ReportingDistribution with number of women
+    * Fill in ReportingValue and ReportingAssistance with number of women
     */
     public function BMSU_Distribution_NW()
     {
@@ -336,7 +336,7 @@ class DataFillersDistribution extends DataFillers
                 $this->repository = $this->em->getRepository(Assistance::class);
                 $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
 
-                $new_reportingDistribution = new ReportingDistribution();
+                $new_reportingDistribution = new ReportingAssistance();
                 $new_reportingDistribution->setIndicator($reference);
                 $new_reportingDistribution->setValue($new_value);
                 $new_reportingDistribution->setDistribution($distribution);
@@ -352,7 +352,7 @@ class DataFillersDistribution extends DataFillers
     }
 
     /**
-    * Fill in ReportingValue and ReportingDistribution with total of vulnerability served
+    * Fill in ReportingValue and ReportingAssistance with total of vulnerability served
     */
     public function BMSU_Distribution_TVS()
     {
@@ -417,7 +417,7 @@ class DataFillersDistribution extends DataFillers
                     $this->repository = $this->em->getRepository(Assistance::class);
                     $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
     
-                    $new_reportingDistribution = new ReportingDistribution();
+                    $new_reportingDistribution = new ReportingAssistance();
                     $new_reportingDistribution->setIndicator($reference);
                     $new_reportingDistribution->setValue($new_value);
                     $new_reportingDistribution->setDistribution($distribution);
@@ -435,7 +435,7 @@ class DataFillersDistribution extends DataFillers
     }
 
     /**
-     * Fill in ReportingValue and ReportingDistribution with total of vulnerability served by vulnerability
+     * Fill in ReportingValue and ReportingAssistance with total of vulnerability served by vulnerability
      */
     public function BMSU_Distribution_TVSV()
     {
@@ -516,7 +516,7 @@ class DataFillersDistribution extends DataFillers
                     $this->repository = $this->em->getRepository(Assistance::class);
                     $distribution = $this->repository->findOneBy(['id' => $result['distribution']]);
     
-                    $new_reportingDistribution = new ReportingDistribution();
+                    $new_reportingDistribution = new ReportingAssistance();
                     $new_reportingDistribution->setIndicator($reference);
                     $new_reportingDistribution->setValue($new_value);
                     $new_reportingDistribution->setDistribution($distribution);

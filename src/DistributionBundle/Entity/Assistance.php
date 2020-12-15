@@ -115,7 +115,7 @@ class Assistance implements ExportableInterface
     private $validated = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingDistribution", mappedBy="distribution", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingAssistance", mappedBy="distribution", cascade={"persist", "remove"})
      **/
     private $reportingDistribution;
 
@@ -495,11 +495,11 @@ class Assistance implements ExportableInterface
     /**
      * Add reportingDistribution.
      *
-     * @param \ReportingBundle\Entity\ReportingDistribution $reportingDistribution
+     * @param \ReportingBundle\Entity\ReportingAssistance $reportingDistribution
      *
      * @return Assistance
      */
-    public function addReportingDistribution(\ReportingBundle\Entity\ReportingDistribution $reportingDistribution)
+    public function addReportingAssistance(\ReportingBundle\Entity\ReportingAssistance $reportingDistribution)
     {
         $this->reportingDistribution[] = $reportingDistribution;
 
@@ -509,11 +509,11 @@ class Assistance implements ExportableInterface
     /**
      * Remove reportingDistribution.
      *
-     * @param \ReportingBundle\Entity\ReportingDistribution $reportingDistribution
+     * @param \ReportingBundle\Entity\ReportingAssistance $reportingDistribution
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeReportingDistribution(\ReportingBundle\Entity\ReportingDistribution $reportingDistribution)
+    public function removeReportingAssistance(\ReportingBundle\Entity\ReportingAssistance $reportingDistribution)
     {
         return $this->reportingDistribution->removeElement($reportingDistribution);
     }
@@ -523,7 +523,7 @@ class Assistance implements ExportableInterface
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getReportingDistribution()
+    public function getReportingAssistance()
     {
         return $this->reportingDistribution;
     }
