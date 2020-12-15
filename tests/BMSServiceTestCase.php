@@ -16,7 +16,7 @@ use DistributionBundle\Entity\DistributionBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\CommodityService;
 use DistributionBundle\Utils\ConfigurationLoader;
-use DistributionBundle\Utils\CriteriaDistributionService;
+use DistributionBundle\Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityManager;
 
 use ProjectBundle\Entity\Project;
@@ -62,7 +62,7 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var ConfigurationLoader $configurationLoader */
     protected $configurationLoader;
 
-    /** @var CriteriaDistributionService $criteriaDistributionService */
+    /** @var CriteriaAssistanceService $criteriaDistributionService */
     protected $criteriaDistributionService;
 
     // VARIABLES

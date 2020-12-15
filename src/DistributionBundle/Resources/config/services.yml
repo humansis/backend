@@ -15,7 +15,7 @@ services:
             - '@location_service'
             - '@distribution.commodity_service'
             - '@distribution.configuration_loader'
-            - '@distribution.criteria_distribution_service'
+            - '@distribution.criteria_assistance_service'
             - '%distribution.retriever%'
             - '@service_container'
 
@@ -28,8 +28,8 @@ services:
             - '@validator'
             - '@service_container'
 
-    distribution.criteria_distribution_service:
-        class: DistributionBundle\Utils\CriteriaDistributionService
+    distribution.criteria_assistance_service:
+        class: DistributionBundle\Utils\CriteriaAssistanceService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'

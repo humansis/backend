@@ -53,7 +53,7 @@ class DistributionService
     /** @var ConfigurationLoader $configurationLoader */
     private $configurationLoader;
 
-    /** @var CriteriaDistributionService $criteriaDistributionService */
+    /** @var CriteriaAssistanceService $criteriaDistributionService */
     private $criteriaDistributionService;
 
     /** @var AbstractRetriever $retriever */
@@ -70,7 +70,7 @@ class DistributionService
      * @param LocationService $locationService
      * @param CommodityService $commodityService
      * @param ConfigurationLoader $configurationLoader
-     * @param CriteriaDistributionService $criteriaDistributionService
+     * @param CriteriaAssistanceService $criteriaDistributionService
      * @param string $classRetrieverString
      * @param ContainerInterface $container
      * @throws \Exception
@@ -82,7 +82,7 @@ class DistributionService
         LocationService $locationService,
         CommodityService $commodityService,
         ConfigurationLoader $configurationLoader,
-        CriteriaDistributionService $criteriaDistributionService,
+        CriteriaAssistanceService $criteriaDistributionService,
         string $classRetrieverString,
         ContainerInterface $container
     ) {
@@ -271,7 +271,7 @@ class DistributionService
         $criteria['criteria'] = $criteria['selection_criteria'];
         $criteria['countryIso3'] = $countryISO3;
 
-        return $this->container->get('distribution.criteria_distribution_service')->load($criteria, $project, $targetType, $sector, $subsector, $threshold, false);
+        return $this->container->get('distribution.criteria_assistance_service')->load($criteria, $project, $targetType, $sector, $subsector, $threshold, false);
     }
 
     /**

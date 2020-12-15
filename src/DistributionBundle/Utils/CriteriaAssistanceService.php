@@ -16,10 +16,10 @@ use BeneficiaryBundle\Entity\Camp;
 use Symfony\Component\Serializer\Serializer;
 
 /**
- * Class CriteriaDistributionService
+ * Class CriteriaAssistanceService
  * @package DistributionBundle\Utils
  */
-class CriteriaDistributionService
+class CriteriaAssistanceService
 {
 
     /** @var EntityManagerInterface $em */
@@ -35,7 +35,7 @@ class CriteriaDistributionService
     private $serializer;
 
     /**
-     * CriteriaDistributionService constructor.
+     * CriteriaAssistanceService constructor.
      * @param EntityManagerInterface $entityManager
      * @param ConfigurationLoader    $configurationLoader
      * @param Resolver               $resolver
