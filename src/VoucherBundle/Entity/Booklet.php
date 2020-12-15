@@ -89,6 +89,7 @@ class Booklet implements ExportableInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="booklets")
+     * @ORM\JoinColumn(name="distribution_beneficiary_id")
      * @SymfonyGroups({"FullBooklet"})
      */
     private $distribution_beneficiary;

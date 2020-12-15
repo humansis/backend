@@ -50,6 +50,7 @@ abstract class AbstractBeneficiary
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
+     * @ORM\JoinColumn(name="distribution_beneficiary_id")
      * @SymfonyGroups({"FullReceivers", "FullBeneficiary"})
      *
      * @var AssistanceBeneficiary $assistanceBeneficiary

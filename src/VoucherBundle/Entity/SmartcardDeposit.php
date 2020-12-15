@@ -53,7 +53,7 @@ class SmartcardDeposit
      * @var AssistanceBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="smartcardDeposits")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(name="distribution_beneficiary_id", nullable=false)
      *
      * @SymfonyGroups({"FullSmartcard"})
      */

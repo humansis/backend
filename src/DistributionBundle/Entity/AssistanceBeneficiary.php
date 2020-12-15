@@ -45,6 +45,7 @@ class AssistanceBeneficiary
      * @var AbstractBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="assistanceBeneficiary")
+     * @ORM\JoinColumn(name="beneficiary_id")
      * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet", "FullProject"})
      * @SymfonyMaxDepth(3)
      */

@@ -103,6 +103,7 @@ class Transaction
      * @var AssistanceBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="transactions", cascade={"persist"})
+     * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
     private $assistanceBeneficiary;
 

@@ -47,6 +47,7 @@ class GeneralReliefItem
      * @var AssistanceBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="generalReliefs", cascade={"persist"})
+     * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
     private $assistanceBeneficiary;
 
