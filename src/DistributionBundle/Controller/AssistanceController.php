@@ -11,7 +11,7 @@ use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use DistributionBundle\Mapper\AssistanceCommunityMapper;
 use DistributionBundle\Mapper\AssistanceInstitutionMapper;
 use DistributionBundle\Utils\DistributionBeneficiaryService;
-use DistributionBundle\Utils\DistributionService;
+use DistributionBundle\Utils\AssistanceService;
 use DistributionBundle\Utils\DistributionCsvService;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -173,7 +173,7 @@ class AssistanceController extends Controller
      */
     public function validateAction(Assistance $assistance)
     {
-        /** @var DistributionService $distributionService */
+        /** @var AssistanceService $distributionService */
         $distributionService = $this->get('distribution.distribution_service');
         $assistance = $distributionService->validateDistribution($assistance);
 

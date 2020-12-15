@@ -29,10 +29,10 @@ use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 
 /**
- * Class DistributionService
+ * Class AssistanceService
  * @package DistributionBundle\Utils
  */
-class DistributionService
+class AssistanceService
 {
 
     /** @var EntityManagerInterface $em */
@@ -63,7 +63,7 @@ class DistributionService
     private $container;
 
     /**
-     * DistributionService constructor.
+     * AssistanceService constructor.
      * @param EntityManagerInterface $entityManager
      * @param Serializer $serializer
      * @param ValidatorInterface $validator

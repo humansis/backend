@@ -19,7 +19,7 @@ use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\DistributionCSVService;
-use DistributionBundle\Utils\DistributionService;
+use DistributionBundle\Utils\AssistanceService;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\File\UploadedFile;

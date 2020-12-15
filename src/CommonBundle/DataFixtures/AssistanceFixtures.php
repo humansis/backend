@@ -7,7 +7,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Entity\ModalityType;
-use DistributionBundle\Utils\DistributionService;
+use DistributionBundle\Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -78,7 +78,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
     private $kernel;
 
-    public function __construct(Kernel $kernel, DistributionService $distributionService)
+    public function __construct(Kernel $kernel, AssistanceService $distributionService)
     {
         $this->distributionService = $distributionService;
         $this->kernel = $kernel;

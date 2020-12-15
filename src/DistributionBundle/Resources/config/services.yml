@@ -6,7 +6,7 @@ services:
 #######################################################################################
 
     distribution.distribution_service:
-        class: DistributionBundle\Utils\DistributionService
+        class: DistributionBundle\Utils\AssistanceService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'

@@ -15,7 +15,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\DistributionCSVService;
-use DistributionBundle\Utils\DistributionService;
+use DistributionBundle\Utils\AssistanceService;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
