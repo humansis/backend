@@ -34,7 +34,7 @@ class Assistance implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
     private $id;
 
@@ -42,7 +42,7 @@ class Assistance implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="assistance_type", type="enum_assistance_type")
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "FullBooklet", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "FullBooklet", "AssistanceOverview"})
      */
     private $assistanceType = AssistanceType::DISTRIBUTION;
 
@@ -51,7 +51,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=45)
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "FullBooklet", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "FullBooklet", "AssistanceOverview"})
      */
     private $name;
 
@@ -67,7 +67,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="date_distribution", type="date")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
     private $dateDistribution;
 
@@ -76,7 +76,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $location;
 
@@ -85,14 +85,14 @@ class Assistance implements ExportableInterface
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="distributions")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $project;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\SelectionCriteria", mappedBy="assistance")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $selectionCriteria;
 
@@ -101,7 +101,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $archived = 0;
 
@@ -110,7 +110,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="validated", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $validated = 0;
 
@@ -124,20 +124,20 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="target_type", type="enum_assistance_target_type")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
     private $targetType;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="assistance", cascade={"persist"})
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
     private $commodities;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="assistance")
      *
-     * @SymfonyGroups({"FullDistribution", "FullProject"})
+     * @SymfonyGroups({"FullAssistance", "FullProject"})
      */
     private $distributionBeneficiaries;
 
@@ -146,7 +146,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="completed", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $completed = 0;
 
@@ -173,7 +173,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="description", type="text", nullable=true)
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $description;
 
@@ -182,7 +182,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(type="integer", nullable=true)
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $householdsTargeted;
 
@@ -191,7 +191,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(type="integer", nullable=true)
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $individualsTargeted;
 
@@ -291,7 +291,7 @@ class Assistance implements ExportableInterface
 
     /**
      * Get updatedOn.
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      *
      * @return string
      */

@@ -902,7 +902,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testValidate
      */
-    public function testDeleteValidatedDistribution($id)
+    public function testDeleteValidatedAssistance($id)
     {
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);

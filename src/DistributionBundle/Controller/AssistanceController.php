@@ -59,7 +59,7 @@ class AssistanceController extends Controller
      *     description="List of distributed items to beneficiary",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=Assistance::class, groups={"DistributionOverview"}))
+     *         @SWG\Items(ref=@Model(type=Assistance::class, groups={"AssistanceOverview"}))
      *     )
      * )
      * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
@@ -72,7 +72,7 @@ class AssistanceController extends Controller
         $distributions = $this->getDoctrine()->getRepository(Assistance::class)->findDistributedToBeneficiary($beneficiary);
 
         $json = $this->get('serializer')
-            ->serialize($distributions, 'json', ['groups' => ["DistributionOverview"]]);
+            ->serialize($distributions, 'json', ['groups' => ["AssistanceOverview"]]);
 
         return new Response($json);
     }
@@ -95,7 +95,7 @@ class AssistanceController extends Controller
      *     description="List of distributed items to household",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=Assistance::class, groups={"DistributionOverview"}))
+     *         @SWG\Items(ref=@Model(type=Assistance::class, groups={"AssistanceOverview"}))
      *     )
      * )
      * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
@@ -181,7 +181,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistance,
                 'json',
-                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['FullAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -229,7 +229,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $listReceivers,
                 'json',
-                ['groups' => ['FullReceivers', 'FullDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['FullReceivers', 'FullAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -312,7 +312,7 @@ class AssistanceController extends Controller
      *     description="Filtered distributions",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallAssistance"}))
      *     )
      * )
      *
@@ -334,7 +334,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistanceMapper->toFullArrays($distributions),
                 'json',
-                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['SmallAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -350,7 +350,7 @@ class AssistanceController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="one distribution",
-     *     @Model(type=Assistance::class, groups={"SmallDistribution"})
+     *     @Model(type=Assistance::class, groups={"SmallAssistance"})
      * )
      *
      * @param Assistance $assistance
@@ -364,7 +364,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistanceMapper->toFullArray($assistance),
                 'json',
-                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['FullAssistance'], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -400,7 +400,7 @@ class AssistanceController extends Controller
                 $distributionBeneficiaries,
                 'json',
                 [
-                    'groups' => ["ValidatedDistribution"],
+                    'groups' => ["ValidatedAssistance"],
                     'datetime_format' => 'd-m-Y H:i',
                 ]
             );
@@ -532,7 +532,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
-                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y H:m:i']
+                ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']
             );
 
         return new Response($json);
@@ -580,7 +580,7 @@ class AssistanceController extends Controller
         }
 
         $json = $this->get('serializer')
-            ->serialize($assistance, 'json', ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']);
+            ->serialize($assistance, 'json', ['groups' => ['FullAssistance'], 'datetime_format' => 'd-m-Y']);
         return new Response($json, Response::HTTP_OK);
     }
 
@@ -698,7 +698,7 @@ class AssistanceController extends Controller
      *     description="OK",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallAssistance"}))
      *     )
      * )
      *
@@ -726,7 +726,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistanceMapper->toFullArrays($filtered),
                 'json',
-                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['SmallAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -746,7 +746,7 @@ class AssistanceController extends Controller
      *     description="OK",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallAssistance"}))
      *     )
      * )
      *
@@ -774,7 +774,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistanceMapper->toOldMobileArrays($filtered),
                 'json',
-                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['SmallAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -794,7 +794,7 @@ class AssistanceController extends Controller
      *     description="OK",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallAssistance"}))
      *     )
      * )
      *
@@ -826,7 +826,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistanceMapper->toOldMobileArrays($filtered),
                 'json',
-                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['SmallAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -867,7 +867,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $filtered,
                 'json',
-                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['FullAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -1079,7 +1079,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $response,
                 'json',
-                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y H:m:i']
+                ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']
             );
 
         return new Response($json, Response::HTTP_OK);

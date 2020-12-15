@@ -150,7 +150,7 @@ class VoucherController extends Controller
      *     description="List of purchased vouchers",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=VoucherPurchaseRecord::class, groups={"ValidatedDistribution"}))
+     *         @SWG\Items(ref=@Model(type=VoucherPurchaseRecord::class, groups={"ValidatedAssistance"}))
      *     )
      * )
      * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
@@ -164,7 +164,7 @@ class VoucherController extends Controller
         $vouchers = $this->getDoctrine()->getRepository(VoucherPurchaseRecord::class)->findPurchasedByBeneficiary($beneficiary);
 
         $json = $this->get('serializer')
-            ->serialize($vouchers, 'json', ['groups' => ['ValidatedDistribution'], 'datetime_format' => 'd-m-Y H:m:i']);
+            ->serialize($vouchers, 'json', ['groups' => ['ValidatedAssistance'], 'datetime_format' => 'd-m-Y H:m:i']);
 
         return new Response($json);
     }

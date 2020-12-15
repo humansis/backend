@@ -22,7 +22,7 @@ class GeneralReliefItem
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class GeneralReliefItem
      * @var \DateTime|null
      *
      * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $distributedAt;
 
@@ -39,7 +39,7 @@ class GeneralReliefItem
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $notes;
     

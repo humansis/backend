@@ -28,7 +28,7 @@ class AssistanceBeneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet"})
+     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet"})
      */
     private $id;
 
@@ -45,7 +45,7 @@ class AssistanceBeneficiary
      * @var AbstractBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="distributionBeneficiary")
-     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
+     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet", "FullProject"})
      * @SymfonyMaxDepth(3)
      */
     private $beneficiary;
@@ -54,7 +54,7 @@ class AssistanceBeneficiary
      * @var Transaction[]
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      * @SymfonyMaxDepth(1)
      */
     private $transactions;
@@ -63,7 +63,7 @@ class AssistanceBeneficiary
      * @var Booklet
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $booklets;
 
@@ -71,7 +71,7 @@ class AssistanceBeneficiary
      * @var GeneralReliefItem
      *
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $generalReliefs;
 
@@ -102,7 +102,7 @@ class AssistanceBeneficiary
      *
      * @ORM\Column(name="justification", type="string", length=511, nullable=true)
      *
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $justification;
 
@@ -111,7 +111,7 @@ class AssistanceBeneficiary
      *
      * @ORM\Column(name="removed", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $removed;
 
@@ -126,7 +126,7 @@ class AssistanceBeneficiary
     }
 
     /**
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      * @return bool|null true, if smartcard money was already distributed/deposited to beneficiary. Null, if distribution is not about smartcard.
      */
     public function getSmartcardDistributed(): ?bool
@@ -142,7 +142,7 @@ class AssistanceBeneficiary
     }
 
     /**
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      *
      * @return \DateTimeInterface|null
      */
