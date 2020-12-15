@@ -252,13 +252,7 @@ class ProjectService
                 $project->setInternalId($projectArray["internal_id"]);
             }
 
-            $sectors = $projectArray['sectors'];
-            if (null !== $sectors) {
-                $project->removeSectors();
-                foreach ($sectors as $sector) {
-                    $project->addSector($sector);
-                }
-            }
+            $project->setSectors($projectArray['sectors'] ?? []);
 
             $donors = $projectArray['donors'];
 
@@ -282,7 +276,7 @@ class ProjectService
                 throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
             }
 
-            $this->em->merge($project);
+            $this->em->persist($project);
             try {
                 $this->em->flush();
             } catch (\Exception $e) {
