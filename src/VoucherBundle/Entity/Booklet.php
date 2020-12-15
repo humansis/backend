@@ -90,7 +90,6 @@ class Booklet implements ExportableInterface
     /**
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="booklets")
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
-     * @SymfonyGroups({"FullBooklet"})
      */
     private $distribution_beneficiary;
 
@@ -107,6 +106,15 @@ class Booklet implements ExportableInterface
         $this->vouchers = new ArrayCollection();
     }
 
+    /**
+     * @deprecated use getAssistanceBeneficiary instead if you can
+     * @SymfonyGroups({"FullBooklet"})
+     * @return AssistanceBeneficiary|null
+     */
+    public function getDistributionBeneficiary(): ?AssistanceBeneficiary
+    {
+        return $this->getAssistanceBeneficiary();
+    }
 
     /**
      * Get id.
@@ -294,9 +302,9 @@ class Booklet implements ExportableInterface
         return $this->distribution_beneficiary;
     }
 
-    public function setAssistanceBeneficiary(AssistanceBeneficiary $distribution_beneficiary): self
+    public function setAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary): self
     {
-        $this->distribution_beneficiary = $distribution_beneficiary;
+        $this->distribution_beneficiary = $assistanceBeneficiary;
 
         return $this;
     }
