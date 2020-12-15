@@ -41,6 +41,8 @@ class ModalityService
      */
     public function getAllModalityTypes(Modality $modality)
     {
-        return $modality->getModalityTypes();
+        return $modality->getModalityTypes()->filter(function (ModalityType $mt) {
+            return !$mt->isInternal();
+        });
     }
 }
