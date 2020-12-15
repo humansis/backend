@@ -132,9 +132,9 @@ class AssistanceController extends Controller
         if ($request->query->get("size")) {
             $numberToDisplay = $request->query->get("size");
 
-            /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
-            $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-            $receivers = $distributionBeneficiaryService->getRandomBeneficiaries($assistance, $numberToDisplay);
+            /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+            $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+            $receivers = $assistanceBeneficiaryService->getRandomBeneficiaries($assistance, $numberToDisplay);
 
             $json = $this->get('serializer')
                 ->serialize(
@@ -260,9 +260,9 @@ class AssistanceController extends Controller
         $data = $request->request->all();
 
         try {
-            /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
-            $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-            $assistanceBeneficiaries = $distributionBeneficiaryService->addBeneficiaries($assistance, $data);
+            /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+            $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+            $assistanceBeneficiaries = $assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -293,10 +293,10 @@ class AssistanceController extends Controller
     {
         $deletionData = $request->request->all();
 
-        /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
 
-        $return = $distributionBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
+        $return = $assistanceBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
 
         return new Response(json_encode($return));
     }
@@ -391,9 +391,9 @@ class AssistanceController extends Controller
      */
     public function getDistributionBeneficiariesAction(Assistance $assistance)
     {
-        /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-        $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($assistance);
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        $distributionBeneficiaries = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
 
         $json = $this->get('serializer')
             ->serialize(
@@ -524,9 +524,9 @@ class AssistanceController extends Controller
      */
     public function getDistributionAssignableBeneficiariesAction(Assistance $assistance)
     {
-        /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-        $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionAssignableBeneficiaries($assistance);
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        $distributionBeneficiaries = $assistanceBeneficiaryService->getDistributionAssignableBeneficiaries($assistance);
         
         $json = $this->get('serializer')
             ->serialize(
@@ -911,9 +911,9 @@ class AssistanceController extends Controller
      */
     public function importBeneficiariesAction(Request $request, Assistance $assistance)
     {
-        /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($assistance);
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        $beneficiaries = $assistanceBeneficiaryService->getBeneficiaries($assistance);
 
         $countryIso3 =  $request->request->get('__country');
 
@@ -982,8 +982,8 @@ class AssistanceController extends Controller
      */
     public function getBeneficiariesInProjectAction(Project $project, Request $request)
     {
-        /** @var AssistanceBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
         if (!$request->request->has('target')) {
             return new Response('You must defined a target', 500);
         }
@@ -992,7 +992,7 @@ class AssistanceController extends Controller
         $target = strtolower($target);
 
         try {
-            $beneficiariesInProject = $distributionBeneficiaryService->getAllBeneficiariesInProject($project, $target);
+            $beneficiariesInProject = $assistanceBeneficiaryService->getAllBeneficiariesInProject($project, $target);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

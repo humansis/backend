@@ -639,10 +639,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         //assistance will be used in the function "parseCSV" to get all the beneficiaries in a project :
         $assistance = $this->em->getRepository(Assistance::class)->findOneById($distribution['id']);
-        $distributionBeneficiaryService = $this->container->get('distribution.assistance_beneficiary_service');
+        $assistanceBeneficiaryService = $this->container->get('distribution.assistance_beneficiary_service');
 
         //beneficiaries contains all beneficiaries in a distribution :
-        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($assistance);
+        $beneficiaries = $assistanceBeneficiaryService->getBeneficiaries($assistance);
         $uploadedFile = new UploadedFile(__DIR__.'/../Resources/beneficiariesInDistribution.csv', 'beneficiaryInDistribution.csv');
 
         $import = $distributionCSVService->parseCSV($countryIso3, $beneficiaries, $assistance, $uploadedFile);
