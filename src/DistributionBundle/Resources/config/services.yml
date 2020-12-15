@@ -19,7 +19,7 @@ services:
             - '%distribution.retriever%'
             - '@service_container'
 
-    distribution.distribution_beneficiary_service:
+    distribution.assistance_beneficiary_service:
         class: DistributionBundle\Utils\DistributionBeneficiaryService
         public: true
         arguments:
