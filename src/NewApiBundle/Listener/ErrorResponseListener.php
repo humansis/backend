@@ -57,6 +57,6 @@ class ErrorResponseListener
             $data['debug'] = $flattenException->toArray();
         }
 
-        $event->setResponse(JsonResponse::create($data));
+        $event->setResponse(JsonResponse::create($data, $data['code']));
     }
 }
