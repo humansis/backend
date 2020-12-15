@@ -37,7 +37,10 @@ final class Version20201202150426 extends AbstractMigration
         //link redeemed voucher to voucher redemption
         $this->addSql('
             UPDATE voucher
-                inner join voucher_redemption_batch ON voucher.redeemed_at = voucher_redemption_batch.redeemed_at
+                inner join voucher_purchase vp on voucher.voucher_purchase_id = vp.id
+                inner join voucher_redemption_batch
+                    ON voucher.redeemed_at = voucher_redemption_batch.redeemed_at
+                           AND voucher_redemption_batch.vendor_id = vp.vendor_id
             SET redemption_batch_id = voucher_redemption_batch.id
         ');
 
