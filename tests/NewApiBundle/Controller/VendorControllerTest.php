@@ -62,7 +62,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
         $adm1Results = $this->em->getRepository(Adm1::class)->findAll();
 
-        if (0 === empty($adm1Results)) {
+        if (empty($adm1Results)) {
             $this->markTestSkipped('To perform VendorController CRUD tests, you need to have at least one Adm1 record in database.');
         }
 
