@@ -2,6 +2,11 @@
 
 namespace ProjectBundle\Repository;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\DonorOrderInputType;
+use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Donor;
+
 /**
  * DonorRepository
  *
@@ -10,4 +15,42 @@ namespace ProjectBundle\Repository;
  */
 class DonorRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param DonorOrderInputType|null $orderBy
+     * @param Pagination|null          $pagination
+     *
+     * @return Paginator|Donor[]
+     */
+    public function findByParams(DonorOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
+    {
+        $qb = $this->createQueryBuilder('d');
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case DonorOrderInputType::SORT_BY_ID:
+                        $qb->orderBy('d.id', $direction);
+                        break;
+                    case DonorOrderInputType::SORT_BY_FULLNAME:
+                        $qb->orderBy('d.fullname', $direction);
+                        break;
+                    case DonorOrderInputType::SORT_BY_SHORTNAME:
+                        $qb->orderBy('d.shortname', $direction);
+                        break;
+                    case DonorOrderInputType::SORT_BY_DATE_ADDED:
+                        $qb->orderBy('d.dateAdded', $direction);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                }
+            }
+        }
+
+        return new Paginator($qb);
+    }
 }
