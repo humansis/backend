@@ -174,7 +174,7 @@ class AssistanceController extends Controller
     public function validateAction(Assistance $assistance)
     {
         /** @var AssistanceService $distributionService */
-        $distributionService = $this->get('distribution.distribution_service');
+        $distributionService = $this->get('distribution.assistance_service');
         $assistance = $distributionService->validateDistribution($assistance);
 
         $json = $this->get('serializer')
@@ -219,7 +219,7 @@ class AssistanceController extends Controller
         $distributionArray = $request->request->all();
 
         try {
-            $listReceivers = $this->get('distribution.distribution_service')
+            $listReceivers = $this->get('distribution.assistance_service')
                 ->create($distributionArray['__country'], $distributionArray);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
@@ -323,7 +323,7 @@ class AssistanceController extends Controller
     {
         $country = $request->request->get('__country');
         try {
-            $distributions = $this->get('distribution.distribution_service')->getActiveDistributions($country);
+            $distributions = $this->get('distribution.assistance_service')->getActiveDistributions($country);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -573,7 +573,7 @@ class AssistanceController extends Controller
     {
         $distributionArray = $request->request->all();
         try {
-            $assistance = $this->get('distribution.distribution_service')
+            $assistance = $this->get('distribution.assistance_service')
                 ->edit($assistance, $distributionArray);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
@@ -608,7 +608,7 @@ class AssistanceController extends Controller
      */
     public function delete(Assistance $assistance)
     {
-        $this->get('distribution.distribution_service')->delete($assistance);
+        $this->get('distribution.assistance_service')->delete($assistance);
 
         return $this->json([], Response::HTTP_NO_CONTENT);
     }
@@ -638,7 +638,7 @@ class AssistanceController extends Controller
     public function archiveAction(Assistance $distribution)
     {
         try {
-            $archivedDistribution = $this->get('distribution.distribution_service')
+            $archivedDistribution = $this->get('distribution.assistance_service')
                 ->archived($distribution);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
@@ -674,7 +674,7 @@ class AssistanceController extends Controller
     public function completeAction(Assistance $distribution)
     {
         try {
-            $completedDistribution = $this->get('distribution.distribution_service')
+            $completedDistribution = $this->get('distribution.assistance_service')
                 ->complete($distribution);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
@@ -715,7 +715,7 @@ class AssistanceController extends Controller
     {
         try {
             $distributions = $project->getDistributions();
-            $filtered = $this->get('distribution.distribution_service')->filterDistributions($distributions);
+            $filtered = $this->get('distribution.assistance_service')->filterDistributions($distributions);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -763,7 +763,7 @@ class AssistanceController extends Controller
     {
         try {
             $distributions = $project->getDistributions();
-            $filtered = $this->get('distribution.distribution_service')->filterDistributions($distributions);
+            $filtered = $this->get('distribution.assistance_service')->filterDistributions($distributions);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -858,7 +858,7 @@ class AssistanceController extends Controller
     {
         try {
             $distributions = $project->getDistributions();
-            $filtered = $this->get('distribution.distribution_service')->filterQrVoucherDistributions($distributions);
+            $filtered = $this->get('distribution.assistance_service')->filterQrVoucherDistributions($distributions);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -1029,7 +1029,7 @@ class AssistanceController extends Controller
         $generalReliefs = $request->request->get('generalReliefs');
         try {
             foreach ($generalReliefs as $generalRelief) {
-                $this->get('distribution.distribution_service')
+                $this->get('distribution.assistance_service')
                 ->editGeneralReliefItemNotes($generalRelief['id'], $generalRelief['notes']);
             }
         } catch (\Exception $e) {
@@ -1068,7 +1068,7 @@ class AssistanceController extends Controller
         $griIds = $request->request->get('ids');
 
         try {
-            $response = $this->get('distribution.distribution_service')
+            $response = $this->get('distribution.assistance_service')
                 ->setGeneralReliefItemsAsDistributed($griIds);
         } catch (\Exception $e) {
             $this->container->get('logger')->error('exception', [$e->getMessage()]);

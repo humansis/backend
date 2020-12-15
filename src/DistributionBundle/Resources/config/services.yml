@@ -5,7 +5,7 @@ services:
 ##                                       CRUD                                        ##
 #######################################################################################
 
-    distribution.distribution_service:
+    distribution.assistance_service:
         class: DistributionBundle\Utils\AssistanceService
         public: true
         arguments:

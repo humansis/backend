@@ -212,7 +212,7 @@ class DistributionBeneficiaryService
         }
 
         if ($assistance->getValidated()) {
-            $assistance = $this->container->get('distribution.distribution_service')->setCommoditiesToNewBeneficiaries($assistance,
+            $assistance = $this->container->get('distribution.assistance_service')->setCommoditiesToNewBeneficiaries($assistance,
                 $assistanceBeneficiaries);
         }
 
