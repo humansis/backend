@@ -53,8 +53,8 @@ class DistributionService
     /** @var ConfigurationLoader $configurationLoader */
     private $configurationLoader;
 
-    /** @var CriteriaAssistanceService $criteriaDistributionService */
-    private $criteriaDistributionService;
+    /** @var CriteriaAssistanceService $criteriaAssistanceService */
+    private $criteriaAssistanceService;
 
     /** @var AbstractRetriever $retriever */
     private $retriever;
@@ -70,7 +70,7 @@ class DistributionService
      * @param LocationService $locationService
      * @param CommodityService $commodityService
      * @param ConfigurationLoader $configurationLoader
-     * @param CriteriaAssistanceService $criteriaDistributionService
+     * @param CriteriaAssistanceService $criteriaAssistanceService
      * @param string $classRetrieverString
      * @param ContainerInterface $container
      * @throws \Exception
@@ -82,7 +82,7 @@ class DistributionService
         LocationService $locationService,
         CommodityService $commodityService,
         ConfigurationLoader $configurationLoader,
-        CriteriaAssistanceService $criteriaDistributionService,
+        CriteriaAssistanceService $criteriaAssistanceService,
         string $classRetrieverString,
         ContainerInterface $container
     ) {
@@ -92,7 +92,7 @@ class DistributionService
         $this->locationService = $locationService;
         $this->commodityService = $commodityService;
         $this->configurationLoader = $configurationLoader;
-        $this->criteriaDistributionService = $criteriaDistributionService;
+        $this->criteriaAssistanceService = $criteriaAssistanceService;
         $this->container = $container;
         try {
             $class = new \ReflectionClass($classRetrieverString);
@@ -239,7 +239,7 @@ class DistributionService
                         \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
                     ]);
                     $criterion->setGroupNumber($i);
-                    $this->criteriaDistributionService->save($distribution, $criterion, false);
+                    $this->criteriaAssistanceService->save($distribution, $criterion, false);
                     $criteria[$i][$j] = $criterionArray;
                 }
             }

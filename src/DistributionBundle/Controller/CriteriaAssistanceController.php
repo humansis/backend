@@ -80,11 +80,11 @@ class CriteriaAssistanceController extends Controller
      */
     public function getCriteriaAction(Request $request)
     {
-        /** @var CriteriaAssistanceService $criteriaDistributionService */
-        $criteriaDistributionService = $this->get('distribution.criteria_assistance_service');
+        /** @var CriteriaAssistanceService $criteriaAssistanceService */
+        $criteriaAssistanceService = $this->get('distribution.criteria_assistance_service');
         $filters = $request->request->all();
         $countryISO3 = $filters['__country'];
-        $criteria = $criteriaDistributionService->getAll($countryISO3);
+        $criteria = $criteriaAssistanceService->getAll($countryISO3);
 
         $json = $this->get('serializer')
             ->serialize(
@@ -158,10 +158,10 @@ class CriteriaAssistanceController extends Controller
         $data = $request->request->all();
         $countryIso3 = $data['__country'];
 
-        /** @var CriteriaAssistanceService $criteriaDistributionService */
+        /** @var CriteriaAssistanceService $criteriaAssistanceService */
         try {
-            $criteriaDistributionService = $this->get('distribution.criteria_assistance_service');
-            $camps = $criteriaDistributionService->getCamps($countryIso3);
+            $criteriaAssistanceService = $this->get('distribution.criteria_assistance_service');
+            $camps = $criteriaAssistanceService->getCamps($countryIso3);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

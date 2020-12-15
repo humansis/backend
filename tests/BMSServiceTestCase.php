@@ -62,8 +62,8 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var ConfigurationLoader $configurationLoader */
     protected $configurationLoader;
 
-    /** @var CriteriaAssistanceService $criteriaDistributionService */
-    protected $criteriaDistributionService;
+    /** @var CriteriaAssistanceService $criteriaAssistanceService */
+    protected $criteriaAssistanceService;
 
     // VARIABLES
 
