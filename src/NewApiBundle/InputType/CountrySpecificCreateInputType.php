@@ -6,35 +6,14 @@ namespace NewApiBundle\InputType;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class ProductCreateInputType extends ProductUpdateInputType
+class CountrySpecificCreateInputType extends CountrySpecificUpdateInputType
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
-    private $name;
-
     /**
      * @Assert\Choice({"KHM", "SYR", "UKR", "ETH"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
     private $iso3;
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
 
     /**
      * @return string

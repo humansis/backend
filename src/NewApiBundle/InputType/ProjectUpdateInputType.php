@@ -4,27 +4,30 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\DateGreaterThan;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterface
+/**
+ * @Assert\GroupSequence({"ProjectUpdateInputType", "Strict"})
+ */
+class ProjectUpdateInputType implements InputTypeInterface
 {
     /**
-     * @var string
-     * @Assert\LessThanOrEqual(255)
+     * @Assert\Type("string")
+     * @Assert\Length(max="255")
      * @Assert\NotBlank
      * @Assert\NotNull
      */
     private $name; // todo check unique name
 
     /**
-     * @var string|null
-     * @Assert\LessThanOrEqual(255)
+     * @Assert\Type("string")
+     * @Assert\Length(max="255")
      */
     private $internalId;
 
     /**
-     * @var string
      * @Assert\Choice({"KHM", "SYR", "UKR", "ETH"})
      * @Assert\NotBlank
      * @Assert\NotNull
@@ -32,12 +35,12 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     private $iso3;
 
     /**
-     * @var string|null
+     * @Assert\Type("string")
      */
     private $notes;
 
     /**
-     * @var int
+     * @Assert\Type("integer")
      * @Assert\GreaterThan(0)
      * @Assert\NotBlank
      * @Assert\NotNull
@@ -45,7 +48,6 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     private $target;
 
     /**
-     * @var string
      * @Assert\Date
      * @Assert\NotBlank
      * @Assert\NotNull
@@ -53,27 +55,32 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     private $startDate;
 
     /**
-     * @var string
      * @Assert\Date
      * @Assert\NotBlank
      * @Assert\NotNull
-     * @DateGreaterThan(propertyPath="startDate")
+     * @DateGreaterThan(propertyPath="startDate", groups={"Strict"})
      */
     private $endDate;
 
     /**
-     * @var array
-     * @Assert\Count(min=1)
+     * @Assert\Type("array")
+     * @Assert\Count(min=1, groups={"Strict"})
      * @Assert\All(
-     *     @Assert\Choice(callback={"ProjectBundle\DBAL\SectorEnum", "all"})
+     *     constraints={
+     *         @Assert\Choice(callback={"ProjectBundle\DBAL\SectorEnum", "all"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
      * )
      */
     private $sectors = [];
 
     /**
-     * @var array
+     * @Assert\Type("array")
      * @Assert\All(
-     *     @Assert\Type("integer")
+     *     constraints={
+     *         @Assert\Type("integer")
+     *     },
+     *     groups={"Strict"}
      * )
      */
     private $donorIds = [];
@@ -81,7 +88,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
@@ -89,7 +96,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @param string $name
      */
-    public function setName(string $name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -97,7 +104,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @return string
      */
-    public function getInternalId(): ?string
+    public function getInternalId()
     {
         return $this->internalId;
     }
@@ -105,7 +112,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @param string $internalId
      */
-    public function setInternalId(?string $internalId): void
+    public function setInternalId($internalId)
     {
         $this->internalId = $internalId;
     }
@@ -113,15 +120,12 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @return string
      */
-    public function getIso3(): string
+    public function getIso3()
     {
         return $this->iso3;
     }
 
-    /**
-     * @param string $iso3
-     */
-    public function setIso3(string $iso3): void
+    public function setIso3($iso3)
     {
         $this->iso3 = $iso3;
     }
@@ -129,7 +133,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @return string|null
      */
-    public function getNotes(): ?string
+    public function getNotes()
     {
         return $this->notes;
     }
@@ -137,7 +141,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @param string|null $notes
      */
-    public function setNotes(?string $notes): void
+    public function setNotes($notes)
     {
         $this->notes = $notes;
     }
@@ -145,7 +149,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @return int
      */
-    public function getTarget(): int
+    public function getTarget()
     {
         return $this->target;
     }
@@ -153,7 +157,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @param int $target
      */
-    public function setTarget(int $target): void
+    public function setTarget($target)
     {
         $this->target = $target;
     }
@@ -161,7 +165,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @return \DateTimeInterface
      */
-    public function getStartDate(): \DateTimeInterface
+    public function getStartDate()
     {
         return new \DateTime($this->startDate);
     }
@@ -169,7 +173,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @param string $startDate
      */
-    public function setStartDate(string $startDate): void
+    public function setStartDate($startDate)
     {
         $this->startDate = $startDate;
     }
@@ -177,7 +181,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @return \DateTimeInterface
      */
-    public function getEndDate(): \DateTimeInterface
+    public function getEndDate()
     {
         return new \DateTime($this->endDate);
     }
@@ -185,7 +189,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @param string $endDate
      */
-    public function setEndDate(string $endDate): void
+    public function setEndDate($endDate)
     {
         $this->endDate = $endDate;
     }
@@ -193,7 +197,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @return array|string[]
      */
-    public function getSectors(): array
+    public function getSectors()
     {
         return $this->sectors;
     }
@@ -201,7 +205,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @param array $sectors
      */
-    public function setSectors(array $sectors): void
+    public function setSectors($sectors)
     {
         $this->sectors = $sectors;
     }
@@ -209,7 +213,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @return array|int[]
      */
-    public function getDonorIds(): array
+    public function getDonorIds()
     {
         return $this->donorIds;
     }
@@ -217,7 +221,7 @@ class ProjectUpdateInputType implements \CommonBundle\InputType\InputTypeInterfa
     /**
      * @param array $donorIds
      */
-    public function setDonorIds(array $donorIds): void
+    public function setDonorIds($donorIds)
     {
         $this->donorIds = $donorIds;
     }

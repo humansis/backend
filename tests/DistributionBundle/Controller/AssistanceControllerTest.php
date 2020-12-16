@@ -146,7 +146,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('selection_criteria', $distribution);
         $this->assertArrayHasKey('validated', $distribution);
 
-        $this->assertEquals($distribution['name'], $adm2->getName().'-'.date('d-m-Y'));
+        $this->assertEquals($distribution['name'], $adm2->getName().'-'.$criteria['date_distribution']);
 
         return $distribution;
     }

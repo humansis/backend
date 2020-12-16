@@ -24,3 +24,8 @@ services:
     NewApiBundle\Request\ParamConverter\:
         resource: '../../Request/ParamConverter'
         tags: [ 'request.param_converter' ]
+
+    NewApiBundle\Listener\ErrorResponseListener:
+        arguments: [ '%kernel.debug%' ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, priority: -100 }

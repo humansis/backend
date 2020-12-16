@@ -3,9 +3,7 @@
 namespace TransactionBundle\Utils\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
-
 use TransactionBundle\Entity\Transaction;
-use TransactionBundle\TransactionBundle;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\DistributionBeneficiary;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -92,7 +90,11 @@ abstract class DefaultFinancialProvider
         }
 
         $this->from = $from;
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findBy(['assistance' => $assistance]);
+        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)
+            ->findBy([
+                'assistance' => $assistance,
+                'removed' => 0,
+                ]);
 
         $response = array(
             'sent'          => array(),
@@ -105,6 +107,11 @@ abstract class DefaultFinancialProvider
         foreach ($distributionBeneficiaries as $distributionBeneficiary) {
             $cache->set($this->from . '-progression-' . $assistance->getId(), $count);
             $beneficiary = $distributionBeneficiary->getBeneficiary();
+
+            if ($beneficiary->getArchived() == true) {
+                array_push($response['failure'], $distributionBeneficiary);
+                continue;
+            }
             
             $transactions = $distributionBeneficiary->getTransactions();
             if (! $transactions->isEmpty()) {

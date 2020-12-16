@@ -78,7 +78,7 @@ class DonorController extends Controller
         $donorArray = $request->request->all();
 
         try {
-            $donor = $this->get('project.donor_service')->create($donorArray);
+            $donor = $this->get('project.donor_service')->createFromArray($donorArray);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

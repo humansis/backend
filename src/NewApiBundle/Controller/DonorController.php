@@ -1,0 +1,92 @@
+<?php
+
+namespace NewApiBundle\Controller;
+
+use BeneficiaryBundle\Entity\CountrySpecific;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\InputType\CountrySpecificCreateInputType;
+use NewApiBundle\InputType\CountrySpecificOrderInputType;
+use NewApiBundle\InputType\CountrySpecificUpdateInputType;
+use NewApiBundle\InputType\DonorCreateInputType;
+use NewApiBundle\InputType\DonorOrderInputType;
+use NewApiBundle\InputType\DonorUpdateInputType;
+use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Donor;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
+class DonorController extends AbstractController
+{
+    /**
+     * @Rest\Get("/donors/{id}")
+     *
+     * @param Donor $object
+     *
+     * @return JsonResponse
+     */
+    public function item(Donor $object): JsonResponse
+    {
+        return $this->json($object);
+    }
+
+    /**
+     * @Rest\Get("/donors")
+     *
+     * @param Pagination          $pagination
+     * @param DonorOrderInputType $orderBy
+     *
+     * @return JsonResponse
+     */
+    public function list(Pagination $pagination, DonorOrderInputType $orderBy): JsonResponse
+    {
+        $countrySpecifics = $this->getDoctrine()->getRepository(Donor::class)
+            ->findByParams($orderBy, $pagination);
+
+        return $this->json($countrySpecifics);
+    }
+
+    /**
+     * @Rest\Post("/donors")
+     *
+     * @param DonorCreateInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function create(DonorCreateInputType $inputType): JsonResponse
+    {
+        $donor = $this->get('project.donor_service')->create($inputType);
+
+        return $this->json($donor);
+    }
+
+    /**
+     * @Rest\Put("/donors/{id}")
+     *
+     * @param Donor                $donor
+     * @param DonorUpdateInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function update(Donor $donor, DonorUpdateInputType $inputType): JsonResponse
+    {
+        $this->get('project.donor_service')->update($donor, $inputType);
+
+        return $this->json($donor);
+    }
+
+    /**
+     * @Rest\Delete("/donors/{id}")
+     *
+     * @param Donor $object
+     *
+     * @return JsonResponse
+     */
+    public function delete(Donor $object): JsonResponse
+    {
+        $this->get('project.donor_service')->delete($object);
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+}

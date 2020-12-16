@@ -16,6 +16,8 @@ class LocationTestFixtures extends Fixture implements FixtureGroupInterface
 {
     private $countries = ["KHM", "SYR", "UKR", 'ETH'];
 
+    private $counter = 0;
+
     // code is suffixed by country code
     const ADM1_1 = 'ADM1Fst';
     const ADM1_2 = 'ADM1Snd';
@@ -70,6 +72,7 @@ class LocationTestFixtures extends Fixture implements FixtureGroupInterface
         foreach ($names as $name) {
             $adm1 = new Adm1();
             $adm1->setCountryISO3($country)
+                ->setCode(sprintf('%.2s%03d', $country, ++$this->counter))
                 ->setName($name);
             $manager->persist($adm1);
 
@@ -81,6 +84,7 @@ class LocationTestFixtures extends Fixture implements FixtureGroupInterface
         foreach ($names as $name) {
             $adm2 = new Adm2();
             $adm2->setAdm1($adm1)
+                ->setCode(sprintf('%.2s%06d', $adm1->getCountryISO3(), ++$this->counter))
                 ->setName($name);
             $manager->persist($adm2);
 
@@ -92,6 +96,7 @@ class LocationTestFixtures extends Fixture implements FixtureGroupInterface
         foreach ($names as $name) {
             $adm3 = new Adm3();
             $adm3->setAdm2($adm2)
+                ->setCode(sprintf('%.2s%09d', $adm2->getAdm1()->getCountryISO3(), ++$this->counter))
                 ->setName($name);
             $manager->persist($adm3);
 
@@ -103,6 +108,7 @@ class LocationTestFixtures extends Fixture implements FixtureGroupInterface
         foreach ($names as $name) {
             $adm4 = new Adm4();
             $adm4->setAdm3($adm3)
+                ->setCode(sprintf('%.2s%012d', $adm3->getAdm2()->getAdm1()->getCountryISO3(), ++$this->counter))
                 ->setName($name);
             $manager->persist($adm4);
         }

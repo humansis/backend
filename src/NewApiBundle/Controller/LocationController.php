@@ -1,0 +1,153 @@
+<?php
+
+namespace NewApiBundle\Controller;
+
+use CommonBundle\Controller\CountryController;
+use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Adm3;
+use CommonBundle\Entity\Adm4;
+use CommonBundle\Pagination\Paginator;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
+class LocationController extends AbstractController
+{
+    /**
+     * @Rest\Get("/countries/{iso3}")
+     *
+     * @param string $iso3
+     *
+     * @return JsonResponse
+     */
+    public function country(string $iso3): JsonResponse
+    {
+        foreach (CountryController::COUNTRIES as $country) {
+            if ($iso3 === $country['iso3']) {
+                return $this->json($country);
+            }
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    /**
+     * @Rest\Get("/countries")
+     *
+     * @return JsonResponse
+     */
+    public function countries(): JsonResponse
+    {
+        return $this->json(new Paginator(CountryController::COUNTRIES));
+    }
+
+    /**
+     * @Rest\Get("/adm1/{id}")
+     *
+     * @param Adm1 $adm1
+     *
+     * @return JsonResponse
+     */
+    public function adm1(Adm1 $adm1): JsonResponse
+    {
+        return $this->json($adm1);
+    }
+
+    /**
+     * @Rest\Get("/adm2/{id}")
+     *
+     * @param Adm2 $adm2
+     *
+     * @return JsonResponse
+     */
+    public function adm2(Adm2 $adm2): JsonResponse
+    {
+        return $this->json($adm2);
+    }
+
+    /**
+     * @Rest\Get("/adm3/{id}")
+     *
+     * @param Adm3 $adm3
+     *
+     * @return JsonResponse
+     */
+    public function adm3(Adm3 $adm3): JsonResponse
+    {
+        return $this->json($adm3);
+    }
+
+    /**
+     * @Rest\Get("/adm4/{id}")
+     *
+     * @param Adm4 $adm4
+     *
+     * @return JsonResponse
+     */
+    public function adm4(Adm4 $adm4): JsonResponse
+    {
+        return $this->json($adm4);
+    }
+
+    /**
+     * @Rest\Get("/adm1")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function adm1List(Request $request): JsonResponse
+    {
+        if (!$request->headers->has('country')) {
+            throw new BadRequestHttpException('Missing header attribute country');
+        }
+
+        $data = $this->getDoctrine()->getRepository(Adm1::class)->findByCountry($request->headers->get('country'));
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/adm1/{id}/adm2")
+     *
+     * @param Adm1 $adm1
+     *
+     * @return JsonResponse
+     */
+    public function adm2List(Adm1 $adm1): JsonResponse
+    {
+        $data = $this->getDoctrine()->getRepository(Adm2::class)->findByAdm1($adm1);
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/adm2/{id}/adm3")
+     *
+     * @param Adm2 $adm2
+     *
+     * @return JsonResponse
+     */
+    public function adm3List(Adm2 $adm2): JsonResponse
+    {
+        $data = $this->getDoctrine()->getRepository(Adm3::class)->findByAdm2($adm2);
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/adm3/{id}/adm4")
+     *
+     * @param Adm3 $adm3
+     *
+     * @return JsonResponse
+     */
+    public function adm4List(Adm3 $adm3): JsonResponse
+    {
+        $data = $this->getDoctrine()->getRepository(Adm4::class)->findByAdm3($adm3);
+
+        return $this->json(new Paginator($data));
+    }
+}

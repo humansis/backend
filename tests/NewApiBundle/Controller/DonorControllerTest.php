@@ -2,15 +2,10 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Enum\ResidencyStatus;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use NewApiBundle\Enum\PhoneTypes;
 use Tests\BMSServiceTestCase;
 
-class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
+class DonorControllerTest extends BMSServiceTestCase
 {
     /**
      * @throws Exception
@@ -25,17 +20,17 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
         $this->client = $this->container->get('test.client');
     }
 
-    /**
-     * @throws Exception
-     */
-    public function testGetResidencyStatuses()
+    public function testCreate()
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/beneficiaries/residency-statuses');
+        $this->request('POST', '/api/basic/donors', [
+            'fullname' => 'Test Donor',
+            'shortname' => 'TD',
+        ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -44,26 +39,30 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
-        $this->assertArrayHasKey('totalCount', $result);
-        $this->assertArrayHasKey('data', $result);
-        $this->assertIsArray($result['data']);
-        $this->assertEquals(count(ResidencyStatus::all()), $result['totalCount']);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('fullname', $result);
+        $this->assertArrayHasKey('shortname', $result);
+        $this->assertArrayHasKey('notes', $result);
+        $this->assertArrayHasKey('logo', $result);
+
+        return $result['id'];
     }
 
     /**
-     * @throws Exception
+     * @depends testCreate
      */
-    public function testGetVulnerabilityCriterion()
+    public function testUpdate(int $id)
     {
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/beneficiaries/vulnerability-criteria');
+        $this->request('PUT', '/api/basic/donors/'.$id, [
+            'fullname' => 'Test Donor',
+            'shortname' => 'TD',
+            'notes' => 'some note',
+        ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -72,25 +71,26 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
-        $this->assertArrayHasKey('totalCount', $result);
-        $this->assertArrayHasKey('data', $result);
-        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('fullname', $result);
+        $this->assertArrayHasKey('shortname', $result);
+        $this->assertArrayHasKey('notes', $result);
+        $this->assertArrayHasKey('logo', $result);
 
-        $criterion = $em->getRepository(VulnerabilityCriterion::class)->findAllActive();
-        $this->assertEquals(count($criterion), $result['totalCount']);
+        return $id;
     }
 
     /**
-     * @throws Exception
+     * @depends testUpdate
      */
-    public function testGetNationalIdsTypes()
+    public function testGet(int $id)
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/beneficiaries/national-ids/types');
+        $this->request('GET', '/api/basic/donors/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -99,23 +99,26 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
-        $this->assertArrayHasKey('totalCount', $result);
-        $this->assertArrayHasKey('data', $result);
-        $this->assertIsArray($result['data']);
-        $this->assertEquals(count(NationalId::types()), $result['totalCount']);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('fullname', $result);
+        $this->assertArrayHasKey('shortname', $result);
+        $this->assertArrayHasKey('notes', $result);
+        $this->assertArrayHasKey('logo', $result);
+
+        return $id;
     }
 
     /**
-     * @throws Exception
+     * @depends testUpdate
      */
-    public function testGetPhoneTypes()
+    public function testList()
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/beneficiaries/phones/types');
+        $this->request('GET', '/api/basic/donors?sort[]=fullname.asc');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -126,7 +129,37 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
-        $this->assertIsArray($result['data']);
-        $this->assertEquals(count(PhoneTypes::values()), $result['totalCount']);
+    }
+
+    /**
+     * @depends testGet
+     */
+    public function testDelete(int $id)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('DELETE', '/api/basic/donors/'.$id);
+
+        $this->assertTrue($this->client->getResponse()->isEmpty());
+
+        return $id;
+    }
+
+    /**
+     * @depends testDelete
+     */
+    public function testGetNotexists(int $id)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/donors/'.$id);
+
+        $this->assertTrue($this->client->getResponse()->isNotFound());
     }
 }
