@@ -270,4 +270,22 @@ class Location
         }
 
     }
+
+    /**
+     * @return Adm1|Adm2|Adm3|Adm4|null
+     */
+    public function getAdm()
+    {
+        if ($this->getAdm1()) {
+            return $this->getAdm1();
+        } elseif ($this->getAdm2()) {
+            return $this->getAdm2();
+        } elseif ($this->getAdm3()) {
+            return $this->getAdm3();
+        } elseif ($this->getAdm4()) {
+            return $this->getAdm4();
+        }
+
+        return null;
+    }
 }

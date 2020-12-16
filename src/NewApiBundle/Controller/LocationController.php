@@ -7,6 +7,7 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -149,5 +150,16 @@ class LocationController extends AbstractController
         $data = $this->getDoctrine()->getRepository(Adm4::class)->findByAdm3($adm3);
 
         return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/locations/{id}")
+     *
+     * @param Location $location
+     * @return JsonResponse
+     */
+    public function item(Location $location)
+    {
+        return $this->json($location->getAdm());
     }
 }

@@ -1,14 +1,13 @@
 <?php
-declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm4;
 use NewApiBundle\Serializer\MapperInterface;
 
-class Adm1Mapper implements MapperInterface
+class Adm4Mapper implements MapperInterface
 {
-    /** @var Adm1 */
+    /** @var Adm4 */
     private $object;
 
     /**
@@ -16,7 +15,7 @@ class Adm1Mapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Adm1 && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        return $object instanceof Adm4 && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
     }
 
     /**
@@ -24,13 +23,13 @@ class Adm1Mapper implements MapperInterface
      */
     public function populate(object $object)
     {
-        if ($object instanceof Adm1) {
+        if ($object instanceof Adm4) {
             $this->object = $object;
 
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Adm1::class.', '.get_class($object).' given.');
+        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Adm4::class.', '.get_class($object).' given.');
     }
 
     public function getId(): int
@@ -48,9 +47,9 @@ class Adm1Mapper implements MapperInterface
         return $this->object->getCode();
     }
 
-    public function getCountryIso3(): string
+    public function getAdm3Id(): int
     {
-        return $this->object->getCountryISO3();
+        return $this->object->getAdm3()->getId();
     }
 
     public function getLocationId(): int
