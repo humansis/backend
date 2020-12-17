@@ -142,7 +142,7 @@ class VendorService
 
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
 
-        if (!($location instanceof Location)) {
+        if (!$location instanceof Location) {
             throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
         }
 

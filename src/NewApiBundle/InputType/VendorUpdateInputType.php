@@ -66,59 +66,19 @@ class VendorUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSalt()
-    {
-        return $this->salt;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAddressStreet()
-    {
-        return $this->addressStreet;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAddressNumber()
-    {
-        return $this->addressNumber;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAddressPostcode()
-    {
-        return $this->addressPostcode;
-    }
-
-    /**
      * @param string|null $shop
      */
     public function setShop($shop)
     {
         $this->shop = $shop;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -130,11 +90,27 @@ class VendorUpdateInputType implements InputTypeInterface
     }
 
     /**
+     * @return string
+     */
+    public function getSalt()
+    {
+        return $this->salt;
+    }
+
+    /**
      * @param string $salt
      */
     public function setSalt($salt)
     {
         $this->salt = $salt;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPassword()
+    {
+        return $this->password;
     }
 
     /**
@@ -146,11 +122,27 @@ class VendorUpdateInputType implements InputTypeInterface
     }
 
     /**
+     * @return string|null
+     */
+    public function getAddressStreet()
+    {
+        return $this->addressStreet;
+    }
+
+    /**
      * @param string|null $addressStreet
      */
     public function setAddressStreet($addressStreet)
     {
         $this->addressStreet = $addressStreet;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAddressNumber()
+    {
+        return $this->addressNumber;
     }
 
     /**
@@ -162,6 +154,14 @@ class VendorUpdateInputType implements InputTypeInterface
     }
 
     /**
+     * @return string|null
+     */
+    public function getAddressPostcode()
+    {
+        return $this->addressPostcode;
+    }
+
+    /**
      * @param string|null $addressPostcode
      */
     public function setAddressPostcode($addressPostcode)
@@ -170,7 +170,7 @@ class VendorUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getLocationId()
     {
@@ -178,9 +178,9 @@ class VendorUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @param mixed $locationId
+     * @param int $locationId
      */
-    public function setLocationId($locationId): void
+    public function setLocationId($locationId)
     {
         $this->locationId = $locationId;
     }
