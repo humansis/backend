@@ -93,6 +93,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
         $this->assertArrayHasKey('countryIso3', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
 
         return $result['data'][0]['id'];
     }
@@ -120,6 +121,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('code', $result);
         $this->assertArrayHasKey('countryIso3', $result);
+        $this->assertArrayHasKey('locationId', $result);
     }
 
     /**
@@ -147,6 +149,8 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result['data'][0]);
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
+        $this->assertArrayHasKey('adm1Id', $result['data'][0]);
 
         return $result['data'][0]['id'];
     }
@@ -173,6 +177,8 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('code', $result);
+        $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
     }
 
     /**
@@ -200,6 +206,8 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result['data'][0]);
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
+        $this->assertArrayHasKey('adm2Id', $result['data'][0]);
 
         return $result['data'][0]['id'];
     }
@@ -226,6 +234,8 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('code', $result);
+        $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
     }
 
     /**
@@ -253,6 +263,8 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result['data'][0]);
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
+        $this->assertArrayHasKey('adm3Id', $result['data'][0]);
 
         return $result['data'][0]['id'];
     }
@@ -279,5 +291,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('code', $result);
+        $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
     }
 }
