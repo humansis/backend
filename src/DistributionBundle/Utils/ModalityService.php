@@ -37,12 +37,12 @@ class ModalityService
 
     /**
      * @param Modality $modality
-     * @return \Doctrine\Common\Collections\Collection
+     * @return array
      */
     public function getAllModalityTypes(Modality $modality)
     {
         return $modality->getModalityTypes()->filter(function (ModalityType $mt) {
             return !$mt->isInternal();
-        });
+        })->getValues();
     }
 }
