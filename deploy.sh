@@ -16,6 +16,8 @@ if [[ $1 == "prod" ]]; then
   mv docker/docker-compose.yml.prod docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_PROD} ${RDS_DB_NAME_PROD} ${RDS_USERNAME_PROD} ${RDS_PASSWORD_PROD} ${MOBILE_KEY_PROD} ${MOBILE_KEY_VERSION_PROD}
 elif [[ $1 == "demo" ]]; then
+  echo "Demo environment is currently not supported"
+  exit 0
   ec2_host="api-demo.humansis.org"
   mv docker/docker-compose.yml.demo docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_DEMO} ${RDS_DB_NAME_DEMO} ${RDS_USERNAME_DEMO} ${RDS_PASSWORD_DEMO} ${MOBILE_KEY_DEMO} ${MOBILE_KEY_VERSION_DEMO}
@@ -38,7 +40,7 @@ fi
 echo "...done"
 
 # add host to known_hosts
-if [ -z `ssh-keygen -F $ec2_host` ]; then
+if [[ -z `ssh-keygen -F $ec2_host` ]]; then
   ssh-keyscan -H $ec2_host >> ~/.ssh/known_hosts
 fi
 
@@ -49,34 +51,34 @@ echo "...done"
 
 # deploy files to host
 echo "Upload application files to remote server"
-rsync --progress -avz -e "ssh -i ec2_bms.pem" --exclude 'ec2_bms.pem' --exclude-from='sync_excludes' ./* ubuntu@$ec2_host:/var/www/html/bms_api/ --delete
+rsync --progress -avz -e "ssh" --exclude 'ec2_bms.pem' --exclude-from='sync_excludes' ./* ubuntu@$ec2_host:/var/www/html/bms_api/ --delete
 echo "...done"
 echo "Starting application containers"
 start_app="cd /var/www/html/bms_api && sudo docker-compose up -d"
-ssh -i ec2_bms.pem ubuntu@$ec2_host $start_app
+ssh ubuntu@$ec2_host $start_app
 echo "...done"
 echo "Loading composer files"
 load_composer="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'composer install'"
-ssh -i ec2_bms.pem ubuntu@$ec2_host $load_composer
+ssh ubuntu@$ec2_host $load_composer
 echo "...done"
 
 # clean database
 echo "Cleaning database"
 if [[ $2 == "true" ]]; then
   clean_database="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'bash clean_database.sh migrations'"
-  ssh -i ec2_bms.pem ubuntu@$ec2_host $clean_database
+  ssh ubuntu@$ec2_host $clean_database
 elif [[ $2 == "database" ]]; then
   clean_database="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'bash clean_database.sh'"
-  ssh -i ec2_bms.pem ubuntu@$ec2_host $clean_database
+  ssh ubuntu@$ec2_host $clean_database
   # get database
   bash get_db.sh "$1"
   # run database migrations
   migrations="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
-  ssh -i ec2_bms.pem ubuntu@$ec2_host $migrations
+  ssh ubuntu@$ec2_host $migrations
 elif [[ $2 == "false" ]]; then
   # run database migrations
   migrations="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
-  ssh -i ec2_bms.pem ubuntu@$ec2_host $migrations
+  ssh ubuntu@$ec2_host $migrations
 else
   echo "Wrong clean database parameter. Options are: [true, false, database]"
   exit 1
@@ -95,7 +97,7 @@ if [[ $3 != "false" ]]; then
     exit 1
   fi
   if [[ ! -z $load_fixtures ]]; then
-    ssh -i ec2_bms.pem ubuntu@$ec2_host $load_fixtures
+    ssh ubuntu@$ec2_host $load_fixtures
   fi
 fi
 echo "...done"
@@ -105,5 +107,5 @@ echo "...done"
 # aggressive: normal + rm ./var/cache/* + docker restart php_container
 echo "Clearing cache"
 cache_clear="bash /var/www/html/bms_api/clear_cache.sh $4"
-ssh -i ec2_bms.pem ubuntu@$ec2_host $cache_clear
+ssh ubuntu@$ec2_host $cache_clear
 echo "...done"

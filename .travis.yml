@@ -43,27 +43,3 @@ jobs:
         - php bin/console doctrine:fixtures:load -n --env=dev
       script: ./vendor/bin/phpunit
       fast_finish: true
-    - stage: deploy
-      if: branch = develop AND NOT type = "pull_request"
-      install:
-        - openssl aes-256-cbc -K $encrypted_473c1532d197_key -iv $encrypted_473c1532d197_iv -in ec2_bms.enc -out ec2_bms.pem -d
-        - chmod 400 ./ec2_bms.pem
-      script: ./deploy.sh test true dev aggressive
-    - stage: deploy
-      if: tag IS present AND tag =~ /^deploy.*$/ AND NOT type = "pull_request"
-      install:
-        - openssl aes-256-cbc -K $encrypted_473c1532d197_key -iv $encrypted_473c1532d197_iv -in ec2_bms.enc -out ec2_bms.pem -d
-        - chmod 400 ./ec2_bms.pem
-      script: ./deploy.sh dev true dev aggressive
-    - stage: deploy
-      if: branch =~ /^release\/.*$/ AND NOT type = "pull_request"
-      install:
-        - openssl aes-256-cbc -K $encrypted_473c1532d197_key -iv $encrypted_473c1532d197_iv -in ec2_bms.enc -out ec2_bms.pem -d
-        - chmod 400 ./ec2_bms.pem
-      script: ./deploy.sh stage false false aggressive
-    - stage: deploy
-      if: tag IS present AND tag =~ /^v.*$/ AND NOT type = "pull_request"
-      install:
-        - openssl aes-256-cbc -K $encrypted_473c1532d197_key -iv $encrypted_473c1532d197_iv -in ec2_bms.enc -out ec2_bms.pem -d
-        - chmod 400 ./ec2_bms.pem
-      script: ./deploy.sh prod false false aggressive
