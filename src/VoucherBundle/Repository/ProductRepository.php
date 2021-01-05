@@ -15,15 +15,18 @@ use VoucherBundle\Entity\Product;
  */
 class ProductRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getNameByBooklet(int $bookletId) {
-        $qb = $this->createQueryBuilder('p');
-        
-        $qb->leftJoin('p.vouchers', 'v')
-            ->leftJoin('v.booklet', 'b')
+    public function getNameByBooklet(int $bookletId)
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('DISTINCT p.name')
+            ->from(\VoucherBundle\Entity\Booklet::class, 'b')
+            ->join('b.vouchers', 'v')
+            ->join('v.voucherPurchase', 'vp')
+            ->join('vp.records', 'vpr')
+            ->join('vpr.product', 'p')
             ->where('b.id = :id')
-                ->setParameter('id', $bookletId)
-            ->select('DISTINCT p.name');
-        
+            ->setParameter('id', $bookletId);
+
         return $qb->getQuery()->getResult();
     }
 

@@ -108,6 +108,11 @@ services:
             - "@request_validator"
             - "@beneficiary.csv_to_array_mapper"
 
+    distribution.export.smartcard:
+        class: DistributionBundle\Export\SmartcardExport
+        arguments: [ '@export_csv_service', '@doctrine.orm.entity_manager', '@templating' , '@pdf_service' ]
+        public: true
+
     distribution.export.smartcard_invoice:
         class: DistributionBundle\Export\SmartcardInvoiceExport
         public: true
