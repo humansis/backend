@@ -453,7 +453,7 @@ class BookletService
         $beneficiariesWithoutBooklets = $this->em->getRepository(AssistanceBeneficiary::class)->countWithoutBooklet($assistance);
 
         if ($beneficiariesWithoutBooklets === '1') {
-            $assistance->setCompleted(true);
+            $assistance->setCompleted();
             $this->em->merge($assistance);
         }
 

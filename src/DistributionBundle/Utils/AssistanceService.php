@@ -352,7 +352,7 @@ class AssistanceService
     public function complete(Assistance $assistance)
     {
         if (!empty($assistance)) {
-                $assistance->setCompleted(1)
+                $assistance->setCompleted()
                                 ->setUpdatedOn(new \DateTime);         
         }
 
