@@ -11,7 +11,7 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
 use DateTime;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
@@ -21,10 +21,10 @@ use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class DistributionBeneficiaryService
+ * Class AssistanceBeneficiaryService
  * @package DistributionBundle\Utils
  */
-class DistributionBeneficiaryService
+class AssistanceBeneficiaryService
 {
     /** @var EntityManagerInterface $em */
     private $em;
@@ -40,7 +40,7 @@ class DistributionBeneficiaryService
 
 
     /**
-     * DistributionBeneficiaryService constructor.
+     * AssistanceBeneficiaryService constructor.
      * @param EntityManagerInterface $entityManager
      * @param Serializer $serializer
      * @param ValidatorInterface $validator
@@ -74,7 +74,7 @@ class DistributionBeneficiaryService
      */
     public function getDistributionBeneficiaries(Assistance $assistance)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByAssistance($assistance);
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
         return $distributionBeneficiaries;
     }
 
@@ -86,7 +86,7 @@ class DistributionBeneficiaryService
      */
     public function getDistributionAssignableBeneficiaries(Assistance $assistance)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findAssignable($assistance);
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findAssignable($assistance);
         return $distributionBeneficiaries;
     }
 
@@ -127,7 +127,7 @@ class DistributionBeneficiaryService
      * @param Assistance $assistance
      * @param array      $beneficiariesData
      *
-     * @return DistributionBeneficiary[]
+     * @return AssistanceBeneficiary[]
      * @throws \Exception
      */
     public function addBeneficiaries(Assistance $assistance, array $beneficiariesData): array
@@ -189,9 +189,9 @@ class DistributionBeneficiaryService
         $assistanceBeneficiaries = [];
 
         foreach ($validBNFs as $beneficiary) {
-            $assistanceBeneficiary = new DistributionBeneficiary();
+            $assistanceBeneficiary = new AssistanceBeneficiary();
 
-            $sameAssistanceBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)
+            $sameAssistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)
                 ->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
 
             // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
@@ -212,7 +212,7 @@ class DistributionBeneficiaryService
         }
 
         if ($assistance->getValidated()) {
-            $assistance = $this->container->get('distribution.distribution_service')->setCommoditiesToNewBeneficiaries($assistance,
+            $assistance = $this->container->get('distribution.assistance_service')->setCommoditiesToNewBeneficiaries($assistance,
                 $assistanceBeneficiaries);
         }
 
@@ -231,14 +231,14 @@ class DistributionBeneficiaryService
      */
     public function removeBeneficiaryInDistribution(Assistance $assistance, AbstractBeneficiary $beneficiary, $deletionData)
     {
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'assistance' => $assistance->getId()]);
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'assistance' => $assistance->getId()]);
 
         // Update updatedOn datetime
         $assistance->setUpdatedOn(new DateTime());
 
-        $distributionBeneficiary->setRemoved(1)
+        $assistanceBeneficiary->setRemoved(1)
             ->setJustification($deletionData['justification']);
-        $this->em->persist($distributionBeneficiary);
+        $this->em->persist($assistanceBeneficiary);
         $this->em->flush();
         return true;
     }

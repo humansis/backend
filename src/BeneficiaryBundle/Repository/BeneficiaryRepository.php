@@ -129,7 +129,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     public function getAllofDistribution(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder('b');
-        $q = $qb->leftJoin('b.distributionBeneficiary', 'db')
+        $q = $qb->leftJoin('b.assistanceBeneficiary', 'db')
             ->where('db.assistance = :assistance')
             ->setParameter('assistance', $assistance);
 
@@ -139,7 +139,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     public function getNotRemovedofDistribution(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder('b');
-        $q = $qb->leftJoin('b.distributionBeneficiary', 'db')
+        $q = $qb->leftJoin('b.assistanceBeneficiary', 'db')
             ->where('db.assistance = :assistance')
             ->andWhere('db.removed = 0')
             ->setParameter('assistance', $assistance);
@@ -201,7 +201,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                 ->select('COUNT(hhm)')
                 ->join('hhm.household', 'h')
                 ->join('h.beneficiaries', 'hhh')
-                ->join('hhh.distributionBeneficiary', 'db', 'WITH', 'db.removed=0')
+                ->join('hhh.assistanceBeneficiary', 'db', 'WITH', 'db.removed=0')
                 ->andWhere('db.assistance = :assistance')
                 ->andWhere('hhm.residencyStatus = :residencyStatus')
                 ->andWhere('hhm.archived = 0')
@@ -210,7 +210,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         } else {
             $qb = $this->createQueryBuilder('b')
                 ->select('COUNT(DISTINCT b)')
-                ->join('b.distributionBeneficiary', 'db', 'WITH', 'db.removed=0')
+                ->join('b.assistanceBeneficiary', 'db', 'WITH', 'db.removed=0')
                 ->andWhere('db.assistance = :assistance')
                 ->andWhere('b.residencyStatus = :residencyStatus')
                 ->andWhere('b.archived = 0')
@@ -245,7 +245,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                 ->join('hhm.person', 'p', 'WITH', 'p.gender = :g AND p.dateOfBirth >= :minDateOfBirth AND p.dateOfBirth < :maxDateOfBirth')
                 ->join('hhm.household', 'h')
                 ->join('h.beneficiaries', 'hhh')
-                ->join('hhh.distributionBeneficiary', 'db', 'WITH', 'db.removed=0')
+                ->join('hhh.assistanceBeneficiary', 'db', 'WITH', 'db.removed=0')
                 ->andWhere('db.assistance = :assistance')
                 ->andWhere('hhm.archived = 0')
                 ->setParameter('assistance', $distribution)
@@ -404,7 +404,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $this->beneficiariesInCountry($qb, $iso3);
 
         $qb->select('COUNT(DISTINCT b)')
-            ->leftJoin('b.distributionBeneficiary', 'db')
+            ->leftJoin('b.assistanceBeneficiary', 'db')
             ->leftJoin('db.booklets', 'bk')
             ->leftJoin('db.transactions', 't')
             ->leftJoin('db.generalReliefs', 'gri')
@@ -587,14 +587,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         } elseif ('other' === $criterion['type']) {
             // The selection criteria is the last distribution
             if ('hasNotBeenInDistributionsSince' === $field) {
-                $qb->leftJoin('b.distributionBeneficiary', 'db'.$i)
+                $qb->leftJoin('b.assistanceBeneficiary', 'db'.$i)
                     ->leftJoin('db'.$i.'.assistance', 'd'.$i)
                     // If has criteria, add it to the select to calculate weight later
-                    ->addSelect('(CASE WHEN d'.$i.'.dateDistribution < :parameter'.$i.' THEN d'.$i.'.dateDistribution WHEN SIZE(b.distributionBeneficiary) = 0 THEN :noDistribution ELSE :null END)'.' AS '.$criterion['field_string'].$i)
+                    ->addSelect('(CASE WHEN d'.$i.'.dateDistribution < :parameter'.$i.' THEN d'.$i.'.dateDistribution WHEN SIZE(b.assistanceBeneficiary) = 0 THEN :noDistribution ELSE :null END)'.' AS '.$criterion['field_string'].$i)
                     ->setParameter('noDistribution', 'noDistribution')
                     ->setParameter('null', null);
                 // The beneficiary answers the criteria if they didn't have a distribution after this date or if they never had a distribution at all
-                $userConditionsStatement->add($qb->expr()->eq('SIZE(b.distributionBeneficiary)', '0'));
+                $userConditionsStatement->add($qb->expr()->eq('SIZE(b.assistanceBeneficiary)', '0'));
                 $userConditionsStatement->add($qb->expr()->lte('d'.$i.'.dateDistribution', ':parameter'.$i));
             }
         }

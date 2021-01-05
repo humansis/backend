@@ -112,12 +112,12 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testDepositToInactiveSmartcard()
     {
         $depositor = $this->em->getRepository(User::class)->findOneBy([]);
-        $distributionBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
+        $assistanceBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
 
         /** @var Smartcard $smartcard */
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
         $smartcard->setState(Smartcard::STATE_INACTIVE);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $distributionBeneficiary, 1000, new \DateTime('now')));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 1000, new \DateTime('now')));
 
         $this->em->persist($smartcard);
         $this->em->flush();
@@ -133,10 +133,10 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testPurchase()
     {
         $depositor = $this->em->getRepository(User::class)->findOneBy([]);
-        $distributionBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
+        $assistanceBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $distributionBeneficiary, 600, new \DateTime('now')));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 600, new \DateTime('now')));
 
         $this->em->persist($smartcard);
         $this->em->flush();
@@ -169,11 +169,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testPurchaseFromEmptySmartcard()
     {
         $depositor = $this->em->getRepository(User::class)->findOneBy([]);
-        $distributionBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
+        $assistanceBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
         $smartcard->setState(Smartcard::STATE_INACTIVE);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $distributionBeneficiary, 100, new \DateTime('now')));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 100, new \DateTime('now')));
 
         $this->em->persist($smartcard);
         $this->em->flush();

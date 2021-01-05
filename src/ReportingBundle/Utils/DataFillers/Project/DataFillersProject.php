@@ -7,7 +7,7 @@ use \BeneficiaryBundle\Entity\Beneficiary;
 use \BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Person;
 use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use \DistributionBundle\Entity\DistributionBeneficiary;
+use \DistributionBundle\Entity\AssistanceBeneficiary;
 
 use \ProjectBundle\Entity\Donor;
 use \ProjectBundle\Entity\Project;
@@ -424,7 +424,7 @@ class DataFillersProject
     {
         $projects = $this->getProjects();
         foreach ($projects as $project) {
-            $this->repository = $this->em->getRepository(DistributionBeneficiary::class);
+            $this->repository = $this->em->getRepository(AssistanceBeneficiary::class);
             $qb = $this->repository->createQueryBuilder('db')
                 ->leftjoin('db.assistance', 'dd')
                 ->leftJoin('dd.project', 'p')

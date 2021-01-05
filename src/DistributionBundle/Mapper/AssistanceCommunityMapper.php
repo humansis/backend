@@ -6,7 +6,7 @@ namespace DistributionBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Mapper\CommunityMapper;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use TransactionBundle\Mapper\TransactionMapper;
 use VoucherBundle\Mapper\BookletMapper;
 
@@ -22,7 +22,7 @@ class AssistanceCommunityMapper extends AssistanceBeneficiaryMapper
         $this->communityMapper = $communityMapper;
     }
 
-    public function toFullArray(?DistributionBeneficiary $assistanceCommunity): ?array
+    public function toFullArray(?AssistanceBeneficiary $assistanceCommunity): ?array
     {
         if (!$assistanceCommunity) {
             return null;
@@ -31,7 +31,7 @@ class AssistanceCommunityMapper extends AssistanceBeneficiaryMapper
         $community = $assistanceCommunity->getBeneficiary();
         if (!$community instanceof Community) {
             $class = get_class($community);
-            throw new \InvalidArgumentException("DistributionBeneficiary #{$assistanceCommunity->getId()} is $class instead of ".Community::class);
+            throw new \InvalidArgumentException("AssistanceBeneficiary #{$assistanceCommunity->getId()} is $class instead of ".Community::class);
         }
 
         $flatBase = $this->toBaseArray($assistanceCommunity);

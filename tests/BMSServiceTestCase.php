@@ -12,11 +12,11 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\CommodityService;
 use DistributionBundle\Utils\ConfigurationLoader;
-use DistributionBundle\Utils\CriteriaDistributionService;
+use DistributionBundle\Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityManager;
 
 use ProjectBundle\Entity\Project;
@@ -62,8 +62,8 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var ConfigurationLoader $configurationLoader */
     protected $configurationLoader;
 
-    /** @var CriteriaDistributionService $criteriaDistributionService */
-    protected $criteriaDistributionService;
+    /** @var CriteriaAssistanceService $criteriaAssistanceService */
+    protected $criteriaAssistanceService;
 
     // VARIABLES
 

@@ -5,12 +5,12 @@ namespace ReportingBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ReportingDistribution
+ * ReportingAssistance
  *
  * @ORM\Table(name="reporting_distribution")
- * @ORM\Entity(repositoryClass="ReportingBundle\Repository\ReportingDistributionRepository")
+ * @ORM\Entity(repositoryClass="ReportingBundle\Repository\ReportingAssistanceRepository")
  */
-class ReportingDistribution
+class ReportingAssistance
 {
     /**
      * @var int
@@ -99,7 +99,7 @@ class ReportingDistribution
      * Set distribution
      *
      * @param \DistributionBundle\Entity\Assistance $distribution
-     * @return ReportingDistribution
+     * @return ReportingAssistance
      */
     public function setDistribution($distribution)
     {

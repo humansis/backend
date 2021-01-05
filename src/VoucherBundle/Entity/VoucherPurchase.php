@@ -51,7 +51,7 @@ class VoucherPurchase
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\VoucherPurchaseRecord", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
      *
-     * @SymfonyGroups({"FullVoucher", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
      */
     private $records;
 
@@ -60,7 +60,7 @@ class VoucherPurchase
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
      *
-     * @SymfonyGroups({"FullVoucher", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
      */
     private $createdAt;
 

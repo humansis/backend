@@ -38,7 +38,7 @@ class Voucher implements ExportableInterface
      * @var int
      *
      * @ORM\Column(name="value", type="integer")
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
      */
     private $value;
 
@@ -60,7 +60,7 @@ class Voucher implements ExportableInterface
      * @var \DateTime|null
      *
      * @ORM\Column(name="redeemed_at", type="datetime", nullable=true)
-     * @SymfonyGroups({"FullVoucher", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
      */
     private $redeemedAt;
 
@@ -118,7 +118,7 @@ class Voucher implements ExportableInterface
     }
 
     /**
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
      *
      * @return string|null
      */

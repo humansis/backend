@@ -34,7 +34,7 @@ class Assistance implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
     private $id;
 
@@ -42,7 +42,7 @@ class Assistance implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="assistance_type", type="enum_assistance_type")
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "FullBooklet", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "FullBooklet", "AssistanceOverview"})
      */
     private $assistanceType = AssistanceType::DISTRIBUTION;
 
@@ -51,7 +51,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=45)
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "FullBooklet", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "FullBooklet", "AssistanceOverview"})
      */
     private $name;
 
@@ -67,7 +67,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="date_distribution", type="date")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
     private $dateDistribution;
 
@@ -76,7 +76,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $location;
 
@@ -85,14 +85,14 @@ class Assistance implements ExportableInterface
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="distributions")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $project;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\SelectionCriteria", mappedBy="assistance")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $selectionCriteria;
 
@@ -101,7 +101,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $archived = 0;
 
@@ -110,12 +110,12 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="validated", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $validated = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingDistribution", mappedBy="distribution", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingAssistance", mappedBy="distribution", cascade={"persist", "remove"})
      **/
     private $reportingDistribution;
 
@@ -124,20 +124,20 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="target_type", type="enum_assistance_target_type")
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
     private $targetType;
 
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="assistance", cascade={"persist"})
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution", "DistributionOverview"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
     private $commodities;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", mappedBy="assistance")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="assistance")
      *
-     * @SymfonyGroups({"FullDistribution", "FullProject"})
+     * @SymfonyGroups({"FullAssistance", "FullProject"})
      */
     private $distributionBeneficiaries;
 
@@ -146,7 +146,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="completed", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $completed = 0;
 
@@ -173,7 +173,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(name="description", type="text", nullable=true)
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $description;
 
@@ -182,7 +182,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(type="integer", nullable=true)
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $householdsTargeted;
 
@@ -191,7 +191,7 @@ class Assistance implements ExportableInterface
      *
      * @ORM\Column(type="integer", nullable=true)
      *
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $individualsTargeted;
 
@@ -291,7 +291,7 @@ class Assistance implements ExportableInterface
 
     /**
      * Get updatedOn.
-     * @SymfonyGroups({"FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      *
      * @return string
      */
@@ -495,11 +495,11 @@ class Assistance implements ExportableInterface
     /**
      * Add reportingDistribution.
      *
-     * @param \ReportingBundle\Entity\ReportingDistribution $reportingDistribution
+     * @param \ReportingBundle\Entity\ReportingAssistance $reportingDistribution
      *
      * @return Assistance
      */
-    public function addReportingDistribution(\ReportingBundle\Entity\ReportingDistribution $reportingDistribution)
+    public function addReportingAssistance(\ReportingBundle\Entity\ReportingAssistance $reportingDistribution)
     {
         $this->reportingDistribution[] = $reportingDistribution;
 
@@ -509,11 +509,11 @@ class Assistance implements ExportableInterface
     /**
      * Remove reportingDistribution.
      *
-     * @param \ReportingBundle\Entity\ReportingDistribution $reportingDistribution
+     * @param \ReportingBundle\Entity\ReportingAssistance $reportingDistribution
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeReportingDistribution(\ReportingBundle\Entity\ReportingDistribution $reportingDistribution)
+    public function removeReportingAssistance(\ReportingBundle\Entity\ReportingAssistance $reportingDistribution)
     {
         return $this->reportingDistribution->removeElement($reportingDistribution);
     }
@@ -523,7 +523,7 @@ class Assistance implements ExportableInterface
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getReportingDistribution()
+    public function getReportingAssistance()
     {
         return $this->reportingDistribution;
     }
@@ -565,32 +565,32 @@ class Assistance implements ExportableInterface
     }
 
     /**
-     * Add distributionBeneficiary.
+     * Add assistanceBeneficiary.
      *
-     * @param \DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary
+     * @param \DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary
      *
      * @return Assistance
      */
-    public function addDistributionBeneficiary(\DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary)
+    public function addAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary)
     {
         if (null === $this->distributionBeneficiaries) {
             $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
         }
-        $this->distributionBeneficiaries[] = $distributionBeneficiary;
+        $this->distributionBeneficiaries[] = $assistanceBeneficiary;
 
         return $this;
     }
 
     /**
-     * Remove distributionBeneficiary.
+     * Remove assistanceBeneficiary.
      *
-     * @param \DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary
+     * @param \DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeDistributionBeneficiary(\DistributionBundle\Entity\DistributionBeneficiary $distributionBeneficiary)
+    public function removeAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary)
     {
-        return $this->distributionBeneficiaries->removeElement($distributionBeneficiary);
+        return $this->distributionBeneficiaries->removeElement($assistanceBeneficiary);
     }
 
     /**
@@ -814,28 +814,28 @@ class Assistance implements ExportableInterface
         }
 
         $amountSent = 0;
-        foreach ($this->getDistributionBeneficiaries() as $distributionBeneficiary) {
-            $amountSent += $this->getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary);
+        foreach ($this->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            $amountSent += $this->getCommoditySentAmountFromBeneficiary($commodity, $assistanceBeneficiary);
         }
         $percentage = $amountSent / $totalCommodityValue * 100;
 
         return round($percentage * 100) / 100;
     }
 
-    public function getCommoditySentAmountFromBeneficiary($commodity, $distributionBeneficiary)
+    public function getCommoditySentAmountFromBeneficiary($commodity, $assistanceBeneficiary)
     {
         $modalityType = $this->getCommodities()[0]->getModalityType()->getName();
         if ($modalityType === 'Mobile Money') {
-            $numberOfTransactions = count($distributionBeneficiary->getTransactions());
-            if (count($distributionBeneficiary->getTransactions()) > 0) {
-                $transaction = $distributionBeneficiary->getTransactions()[$numberOfTransactions - 1];
+            $numberOfTransactions = count($assistanceBeneficiary->getTransactions());
+            if (count($assistanceBeneficiary->getTransactions()) > 0) {
+                $transaction = $assistanceBeneficiary->getTransactions()[$numberOfTransactions - 1];
 
                 return ($transaction->getTransactionStatus() === 1 ? $commodity->getValue() : 0);
             } else {
                 return 0;
             }
         } elseif ($modalityType === 'QR Code Voucher') {
-            $booklets = $distributionBeneficiary->getBooklets();
+            $booklets = $assistanceBeneficiary->getBooklets();
             foreach ($booklets as $booklet) {
                 if ($booklet->getStatus() === 1 || $booklet->getStatus() === 2) {
                     return $booklet->getTotalValue();
@@ -847,10 +847,10 @@ class Assistance implements ExportableInterface
                     $commodityIndex = $index;
                 }
             }
-            if (!$distributionBeneficiary->getGeneralReliefs()) {
+            if (!$assistanceBeneficiary->getGeneralReliefs()) {
                 return 0;
             }
-            $correspondingGeneralRelief = $distributionBeneficiary->getGeneralReliefs()[$commodityIndex];
+            $correspondingGeneralRelief = $assistanceBeneficiary->getGeneralReliefs()[$commodityIndex];
 
             return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0);
         }

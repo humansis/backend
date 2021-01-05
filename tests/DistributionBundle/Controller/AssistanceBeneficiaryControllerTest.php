@@ -10,18 +10,18 @@ use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Utils\DistributionCSVService;
-use DistributionBundle\Utils\DistributionService;
+use DistributionBundle\Utils\AssistanceService;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
 use Tests\BMSServiceTestCase;
 
-class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
+class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
 {
     /**
      * @throws \Exception
@@ -39,7 +39,7 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
-    public function testCreateDistributionBeneficiary()
+    public function testCreateAssistanceBeneficiary()
     {
         //We check if there is an user in the Beneficiary to use him for the test :
         $beneficiary = $this->em->getRepository(Beneficiary::class)->findAll();
@@ -57,47 +57,47 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
             $this->markTestIncomplete("There is no distribution with the ID specified to execute the test.");
         }
 
-        // If everything is ok, we create a new distributionBeneficiary
-        $distributionBeneficiary = new DistributionBeneficiary();
-        $distributionBeneficiary->setBeneficiary($beneficiary[0])
+        // If everything is ok, we create a new assistanceBeneficiary
+        $assistanceBeneficiary = new AssistanceBeneficiary();
+        $assistanceBeneficiary->setBeneficiary($beneficiary[0])
             ->setAssistance($assistance[0])
             ->setRemoved(0);
 
-        $this->em->persist($distributionBeneficiary);
+        $this->em->persist($assistanceBeneficiary);
 
         $this->em->flush();
 
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->find($distributionBeneficiary->getId());
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->find($assistanceBeneficiary->getId());
 
-        if (!$distributionBeneficiary) {
-            print_r("\nThere was an error while creating the new distributionBeneficiary during the test.\n");
-            $this->markTestIncomplete("There was an error while creating the new distributionBeneficiary during the test.");
+        if (!$assistanceBeneficiary) {
+            print_r("\nThere was an error while creating the new assistanceBeneficiary during the test.\n");
+            $this->markTestIncomplete("There was an error while creating the new assistanceBeneficiary during the test.");
         }
 
         try {
-            $this->assertTrue($distributionBeneficiary instanceof DistributionBeneficiary);
+            $this->assertTrue($assistanceBeneficiary instanceof AssistanceBeneficiary);
         } catch (\Exception $exception) {
-            $this->em->remove($distributionBeneficiary);
+            $this->em->remove($assistanceBeneficiary);
             $this->em->flush();
 
-            $this->fail("\nThe mapping of fields of DistributionBeneficiary entity is not correct (1).\n");
+            $this->fail("\nThe mapping of fields of AssistanceBeneficiary entity is not correct (1).\n");
             return false;
         }
 
-        return $distributionBeneficiary;
+        return $assistanceBeneficiary;
     }
 
     /**
-     * @param DistributionBeneficiary $distributionBeneficiary
+     * @param AssistanceBeneficiary $assistanceBeneficiary
      * @return bool
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @depends testCreateDistributionBeneficiary
+     * @depends testCreateAssistanceBeneficiary
      */
-    public function testRemoveDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
+    public function testRemoveAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary)
     {
-        $beneficiaryId = $distributionBeneficiary->getBeneficiary()->getId();
-        $distributionId = $distributionBeneficiary->getAssistance()->getId();
+        $beneficiaryId = $assistanceBeneficiary->getBeneficiary()->getId();
+        $distributionId = $assistanceBeneficiary->getAssistance()->getId();
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
@@ -109,7 +109,7 @@ class DistributionBeneficiaryControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('POST', '/api/wsse/distributions/'. $distributionId .'/beneficiaries/'. $beneficiaryId .'/remove', $body);
         
-        $listDistributionBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
+        $listAssistanceBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 

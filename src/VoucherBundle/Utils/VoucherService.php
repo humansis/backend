@@ -144,7 +144,7 @@ class VoucherService
         foreach ($vouchers as $voucher) {
             $error = false;
             if (Booklet::UNASSIGNED == $voucher->getBooklet()->getStatus()
-                || null == $voucher->getBooklet()->getDistributionBeneficiary()) {
+                || null == $voucher->getBooklet()->getAssistanceBeneficiary()) {
                 $check->addUnassignedVoucher($voucher);
                 $error = true;
             }

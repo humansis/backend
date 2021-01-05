@@ -27,7 +27,7 @@ class Modality
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
-     * @SymfonyGroups({"FullModality", "FullModalityType", "FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullModality", "FullModalityType", "FullAssistance", "SmallAssistance"})
      */
     private $name;
 

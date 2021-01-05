@@ -10,7 +10,7 @@ use BeneficiaryBundle\Utils\BeneficiaryService;
 
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Utils\CriteriaDistributionService;
+use DistributionBundle\Utils\CriteriaAssistanceService;
 use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -127,9 +127,9 @@ class BeneficiaryController extends Controller
         $limit = $request->query->getInt('limit', 1000);
         $offset = $request->query->getInt('offset', 0);
 
-        /** @var CriteriaDistributionService $criteriaDistributionService */
-        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        $data = $criteriaDistributionService->getList($filters, $project, $targetType, $threshold, $limit, $offset);
+        /** @var CriteriaAssistanceService $criteriaAssistanceService */
+        $criteriaAssistanceService = $this->get('distribution.criteria_assistance_service');
+        $data = $criteriaAssistanceService->getList($filters, $project, $targetType, $threshold, $limit, $offset);
 
         return $this->json($data);
     }
@@ -175,9 +175,9 @@ class BeneficiaryController extends Controller
             throw new BadRequestHttpException('Nonexistent assistance target type: '.$targetType);
         }
 
-        /** @var CriteriaDistributionService $criteriaDistributionService */
-        $criteriaDistributionService = $this->get('distribution.criteria_distribution_service');
-        $receivers = $criteriaDistributionService->load($filters, $project, $targetType, $sector, $subSector, $threshold, true);
+        /** @var CriteriaAssistanceService $criteriaAssistanceService */
+        $criteriaAssistanceService = $this->get('distribution.criteria_assistance_service');
+        $receivers = $criteriaAssistanceService->load($filters, $project, $targetType, $sector, $subSector, $threshold, true);
 
         return $this->json($receivers);
     }
