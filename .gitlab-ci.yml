@@ -1,0 +1,174 @@
+image: artifactory.quanti.cz/docker/mysql-ssh
+
+variables:
+
+stages:
+ - test
+ - backup_db
+ - backup_code
+ - deploy_dev
+ - deploy_test
+ - deploy_stage
+ - deploy_prod
+
+.prepare_ssh: &prepare_ssh
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -p 22 ${HOSTNAME} >> ~/.ssh/known_hosts
+    - >-
+      cat <<EOF > ~/.ssh/config
+
+      Host ${HOSTNAME}
+        PasswordAuthentication no
+        PreferredAuthentications publickey
+      EOF
+
+.remove_key: &remove_key
+  after_script:
+    - rm -rf ~/.ssh/id_rsa
+
+test:
+  stage: test
+  image: artifactory.quanti.cz/docker/pin-php-test
+  services:
+    - name: mysql:5.7.26
+      alias: db
+  variables:
+    SYMFONY_VERSION: "3.4.*"
+    DB: db_test
+    MYSQL_ROOT_PASSWORD: "root"
+  before_script:
+    - composer self-update --1
+    - cp app/config/parameters.yml.test app/config/parameters.yml
+    - composer install
+    - php bin/console doctrine:database:create --env=test || true
+    - php bin/console doctrine:migrations:migrate -n --env=test
+    - php bin/console doctrine:fixtures:load -n --env=dev
+  script:
+    - ./vendor/bin/phpunit
+  except:
+    - tags
+
+backup-db:
+  stage: backup_db
+  variables:
+    RDS_HOSTNAME: ${RDS_HOSTNAME_PROD}
+  script:
+    - mysqldump --set-gtid-purged=OFF -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${RDS_DB_NAME_PROD} | pv > db.sql
+    - export DB_NAME=backup_$(date '+%Y_%m_%d')_${CI_PIPELINE_ID}
+    - mysql -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" -e "CREATE DATABASE ${DB_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+    - pv --bytes --eta --progress db.sql | mysql -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${DB_NAME}
+  after_script:
+    - rm db.sql
+  only:
+    - tags
+
+aws-db-snapshot:
+  stage: backup_db
+  image:
+    name: amazon/aws-cli
+    entrypoint: [""]
+  variables:
+    AWS_ACCESS_KEY_ID: ${aws_backup_db_access_key_id}
+    AWS_SECRET_ACCESS_KEY: ${aws_backup_db_secret_access_key}
+    AWS_DEFAULT_REGION: eu-central-1
+    RDS_INSTANCE: ${RDS_INSTANCE_PROD}
+  script:
+    - export SNAPSHOT_NAME=backup-$(date '+%Y-%m-%d')-${CI_PIPELINE_ID}
+    - aws rds create-db-snapshot --db-instance-identifier ${RDS_INSTANCE} --db-snapshot-identifier ${SNAPSHOT_NAME}
+    - aws rds wait db-snapshot-completed --db-snapshot-identifier ${SNAPSHOT_NAME}
+  only:
+    - tags
+
+backup-code:
+  stage: backup_code
+  variables:
+    HOSTNAME: apidev.humansis.org
+  <<: *prepare_ssh
+  script:
+    - ssh ubuntu@api.humansis.org "cd /var/www/html/; tar czf backup_$(date '+%Y-%m-%d').tar.gz bms_api/"
+  <<: *remove_key
+  only:
+    - tags
+
+deploy dev:
+  stage: deploy_dev
+  environment:
+    name: dev
+    url: https://apidev.humansis.org
+  variables:
+    HOSTNAME: apidev.humansis.org
+    ENVIRONMENT: dev
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: dev
+    CACHE_CLEAR_MODE: aggressive
+  <<: *prepare_ssh
+  script:
+    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+  <<: *remove_key
+  only:
+    - branches
+  when: manual
+
+deploy test:
+  stage: deploy_test
+  environment:
+    name: test
+    url: https://apitest.humansis.org
+  variables:
+    HOSTNAME: apitest.humansis.org
+    ENVIRONMENT: test
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: dev
+    CACHE_CLEAR_MODE: aggressive
+  <<: *prepare_ssh
+  script:
+    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+  <<: *remove_key
+  only:
+    - /^develop$/
+  except:
+    - tags
+
+deploy stage:
+  stage: deploy_stage
+  environment:
+    name: stage
+    url: https://apistage.humansis.org
+  variables:
+    HOSTNAME: apistage.humansis.org
+    ENVIRONMENT: stage
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  <<: *prepare_ssh
+  script:
+    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+  <<: *remove_key
+  only:
+    - /^release\/.*$/
+  except:
+    - tags
+
+deploy prod:
+  stage: deploy_prod
+  environment:
+    name: production
+    url: https://api.humansis.org
+  variables:
+    HOSTNAME: api.humansis.org
+    ENVIRONMENT: prod
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  <<: *prepare_ssh
+  script:
+    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+  <<: *remove_key
+  only:
+    - /^v.*$/
+  except:
+    - branches
+  when: manual
