@@ -3,7 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 
@@ -22,7 +22,7 @@ class GeneralReliefItem
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class GeneralReliefItem
      * @var \DateTime|null
      *
      * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $distributedAt;
 
@@ -39,16 +39,17 @@ class GeneralReliefItem
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $notes;
     
     /**
-     * @var DistributionBeneficiary
+     * @var AssistanceBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="generalReliefs", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="generalReliefs", cascade={"persist"})
+     * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
-    private $distributionBeneficiary;
+    private $assistanceBeneficiary;
 
 
     /**
@@ -126,23 +127,23 @@ class GeneralReliefItem
     /**
      * Get the value of Distribution Beneficiary
      *
-     * @return DistributionBeneficiary
+     * @return AssistanceBeneficiary
      */
-    public function getDistributionBeneficiary()
+    public function getAssistanceBeneficiary()
     {
-        return $this->distributionBeneficiary;
+        return $this->assistanceBeneficiary;
     }
  
     /**
      * Set the value of Distribution Beneficiary
      *
-     * @param DistributionBeneficiary distributionBeneficiary
+     * @param AssistanceBeneficiary assistanceBeneficiary
      *
      * @return self
      */
-    public function setDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
+    public function setAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary)
     {
-        $this->distributionBeneficiary = $distributionBeneficiary;
+        $this->assistanceBeneficiary = $assistanceBeneficiary;
  
         return $this;
     }

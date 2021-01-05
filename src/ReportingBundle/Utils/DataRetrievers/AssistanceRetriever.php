@@ -5,7 +5,7 @@ namespace ReportingBundle\Utils\DataRetrievers;
 use Doctrine\ORM\EntityManager;
 
 use function GuzzleHttp\Psr7\str;
-use ReportingBundle\Entity\ReportingDistribution;
+use ReportingBundle\Entity\ReportingAssistance;
 use \ProjectBundle\Entity\Project;
 use \DistributionBundle\Entity\Assistance;
 
@@ -46,7 +46,7 @@ class AssistanceRetriever extends AbstractDataRetriever
     public function getReportingValue(string $code, array $filters)
     {
         $qb = $this->em->createQueryBuilder()
-                        ->from(ReportingDistribution::class, 'rd')
+                        ->from(ReportingAssistance::class, 'rd')
                         ->leftjoin('rd.value', 'rv')
                         ->leftjoin('rd.indicator', 'ri')
                         ->leftjoin('rd.distribution', 'd')

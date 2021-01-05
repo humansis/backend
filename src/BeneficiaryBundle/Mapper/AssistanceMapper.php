@@ -5,10 +5,10 @@ namespace BeneficiaryBundle\Mapper;
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Repository\DistributionBeneficiaryRepository;
+use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 
 class AssistanceMapper
 {
@@ -22,18 +22,18 @@ class AssistanceMapper
     /** @var BeneficiaryMapper */
     private $beneficiaryMapper;
 
-    /** @var DistributionBeneficiaryRepository */
+    /** @var AssistanceBeneficiaryRepository */
     private $distributionBNFRepo;
 
     /**
      * AssistanceMapper constructor.
      *
      * @param BeneficiaryMapper                 $beneficiaryMapper
-     * @param DistributionBeneficiaryRepository $distributionBNFRepo
+     * @param AssistanceBeneficiaryRepository $distributionBNFRepo
      */
     public function __construct(
         BeneficiaryMapper $beneficiaryMapper,
-        DistributionBeneficiaryRepository $distributionBNFRepo
+        AssistanceBeneficiaryRepository $distributionBNFRepo
     ) {
         $this->beneficiaryMapper = $beneficiaryMapper;
         $this->distributionBNFRepo = $distributionBNFRepo;
@@ -65,12 +65,12 @@ class AssistanceMapper
         }
         /** @var AbstractBeneficiary[] $bnfs */
         $bnfs = $assistance->getDistributionBeneficiaries()->map(
-            function (DistributionBeneficiary $db) {
+            function (AssistanceBeneficiary $db) {
                 return $db->getBeneficiary();
             }
         );
         $dbs = [];
-        foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
+        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             $dbs[] = [
                 'beneficiary' => $this->beneficiaryMapper->toMinimalArrays($bnfs),
             ];
@@ -106,7 +106,7 @@ class AssistanceMapper
             'selection_criteria' => $this->transformSelectionCriteria($assistance->getSelectionCriteria()),
             'archived' => $assistance->getArchived(),
             'validated' => $assistance->getValidated(),
-            'reporting_distribution' => $assistance->getReportingDistribution(),
+            'reporting_distribution' => $assistance->getReportingAssistance(),
             'type' => self::TARGET_TYPE_TO_TYPE_MAPPING[$assistance->getTargetType()] ?? null,
             'assistance_type' => $assistance->getAssistanceType(),
             'target_type' => $assistance->getTargetType(),
@@ -163,7 +163,7 @@ class AssistanceMapper
             'selection_criteria' => $assistance->getSelectionCriteria(),
             'archived' => $assistance->getArchived(),
             'validated' => $assistance->getValidated(),
-            'reporting_distribution' => $assistance->getReportingDistribution(),
+            'reporting_distribution' => $assistance->getReportingAssistance(),
             'type' => AssistanceTargetType::INDIVIDUAL === $assistance->getTargetType() ? 1 : 0,
             'assistance_type' => $assistance->getAssistanceType(),
             'target_type' => $assistance->getTargetType(),

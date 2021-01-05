@@ -3,7 +3,7 @@
 namespace TransactionBundle\Utils\Provider;
 
 use CommonBundle\Entity\OrganizationServices;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
@@ -91,7 +91,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
     /**
      * Send money to one beneficiary
      * @param  string                  $phoneNumber
-     * @param  DistributionBeneficiary $distributionBeneficiary
+     * @param  AssistanceBeneficiary $assistanceBeneficiary
      * @param  float                   $amount
      * @param  string                  $currency
      * @return Transaction
@@ -99,11 +99,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      */
     public function sendMoneyToOne(
         string $phoneNumber,
-        DistributionBeneficiary $distributionBeneficiary,
+        AssistanceBeneficiary $assistanceBeneficiary,
         float $amount,
         string $currency
     ) {
-        $assistance = $distributionBeneficiary->getAssistance();
+        $assistance = $assistanceBeneficiary->getAssistance();
         $route = "/api/v1/sendmoney/nonwing/commit";
         $body = array(
             "amount"          => $amount,
@@ -117,7 +117,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             $sent = $this->sendRequest($assistance, "POST", $route, $body);
             if (property_exists($sent, 'error_code')) {
                 $transaction = $this->createTransaction(
-                    $distributionBeneficiary,
+                    $assistanceBeneficiary,
                     '',
                     new \DateTime(),
                     $currency . ' ' . $amount,
@@ -138,7 +138,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         }
         
         $transaction = $this->createTransaction(
-            $distributionBeneficiary,
+            $assistanceBeneficiary,
             $response->transaction_id,
             new \DateTime(),
             $response->amount,
@@ -158,7 +158,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
     public function updateStatusTransaction(Transaction $transaction): Transaction
     {
         try {
-            $response = $this->getStatus($transaction->getDistributionBeneficiary()->getAssistance(), $transaction->getTransactionId());
+            $response = $this->getStatus($transaction->getAssistanceBeneficiary()->getAssistance(), $transaction->getTransactionId());
         } catch (\Exception $e) {
             throw $e;
         }

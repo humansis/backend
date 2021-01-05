@@ -92,3 +92,60 @@ CREATE DEFINER=`bms_user`@`%` FUNCTION `LEVENSHTEIN`(`s1` VARCHAR(255), `s2` VAR
  RETURN c;
 END
 ```
+
+# Setting project development
+
+```
+git clone https://gitlab-public.quanti.cz/humansis/web-platform/backend customdir
+cd customdir
+cp docker-compose.yml.dist docker-compose.yml
+```
+
+Open `docker-compose.yml` and add:
+```
+php:
+    environment:
+        XDEBUG_CONFIG: 'remote_host=127.0.0.1'
+        PHP_IDE_CONFIG: 'serverName=localhost'
+        AWS_ACCESS_KEY: 'anyText'
+        AWS_SECRET_KEY: 'anyText'
+        SES_USERNAME: 'anyText'
+        SES_PASSWORD: 'anyText'
+        RDS_HOSTNAME: db
+        RDS_PORT: 3306
+        RDS_DB_NAME: bms
+        RDS_USERNAME: bms_user
+        RDS_PASSWORD: aA123
+        HID_SECRET: 'anyText'
+        GOOGLE_CLIENT: 'anyText'
+        MOBILE_MASTER_KEY: 'anyText'
+        MOBILE_MASTER_KEY_VERSION: 'anyText'
+```
+
+### Test interpret and docker environment
+- Run in terminal:
+  - start containers `docker-compose up -d`
+  - enter container `docker-compose exec php bash`
+  - create DB and run tests `cleanAndTest` Should be longer and ends without errors.
+
+### Configure PhpStorm project
+- run options > Edit Configurations...
+- Add PHPUnit
+- Command line > Interpreter > ...
+- Add "From Docker, ..."
+- set:
+  ```
+  server = Local Docker
+  Configuration files = ./docker-compose.yml
+  Env. variables = AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_MASTER_KEY_VERSION=0
+  Lifecycle = Always start a new container
+  ```
+- OK
+- set:
+  ```
+  Interpreter = recently created
+  Directory = customdir/tests
+  Preffered Coverage engine = XDebug
+  Env. variables = AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_MASTER_KEY_VERSION=0
+  ```
+- OK

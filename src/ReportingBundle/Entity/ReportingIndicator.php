@@ -61,7 +61,7 @@ class ReportingIndicator implements IndicatorInterface
     private $reportingProject;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingDistribution", mappedBy="indicator", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingAssistance", mappedBy="indicator", cascade={"persist"})
      **/
     private $reportingDistribution;
 
@@ -224,7 +224,7 @@ class ReportingIndicator implements IndicatorInterface
      * @param string $reportingDistribution
      * @return ReportingReference
      */
-    public function setReportingDistribution($reportingDistribution)
+    public function setReportingAssistance($reportingDistribution)
     {
         $this->reportingDistribution= $reportingDistribution;
 
@@ -236,7 +236,7 @@ class ReportingIndicator implements IndicatorInterface
      *
      * @return string
      */
-    public function getReportingDistribution()
+    public function getReportingAssistance()
     {
         return $this->reportingDistribution;
     }

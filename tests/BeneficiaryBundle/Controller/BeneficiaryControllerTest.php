@@ -182,12 +182,12 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $this->request('POST', '/api/wsse/beneficiaries/project/'.$projectId.'/number', $criteria);
-        $listDistributionBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
+        $listAssistanceBeneficiary = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
 
-        $this->assertIsArray($listDistributionBeneficiary);
-        $this->assertArrayHasKey('number', $listDistributionBeneficiary);
-        $this->assertIsInt($listDistributionBeneficiary['number']);
+        $this->assertIsArray($listAssistanceBeneficiary);
+        $this->assertArrayHasKey('number', $listAssistanceBeneficiary);
+        $this->assertIsInt($listAssistanceBeneficiary['number']);
     }
 }

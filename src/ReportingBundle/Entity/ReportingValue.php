@@ -53,7 +53,7 @@ class ReportingValue
     private $reportingProject;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingDistribution", mappedBy="value", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingAssistance", mappedBy="value", cascade={"persist"})
      **/
     private $reportingDistribution;
 
@@ -193,7 +193,7 @@ class ReportingValue
      * @param string $reportingDistribution
      * @return ReportingValue
      */
-    public function setReportingDistribution($reportingDistribution)
+    public function setReportingAssistance($reportingDistribution)
     {
         $this->reportingDistribution= $reportingDistribution;
 
@@ -205,7 +205,7 @@ class ReportingValue
      *
      * @return string
      */
-    public function getReportingDistribution()
+    public function getReportingAssistance()
     {
         return $this->reportingDistribution;
     }

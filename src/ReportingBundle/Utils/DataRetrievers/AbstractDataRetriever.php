@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManager;
 
 use Doctrine\ORM\QueryBuilder;
 use phpDocumentor\Reflection\Types\Object_;
-use ReportingBundle\Entity\ReportingDistribution;
+use ReportingBundle\Entity\ReportingAssistance;
 use \ProjectBundle\Entity\Project;
 use \DistributionBundle\Entity\Assistance;
 

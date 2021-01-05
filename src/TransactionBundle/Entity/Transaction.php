@@ -2,7 +2,7 @@
 
 namespace TransactionBundle\Entity;
 
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use UserBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 // use Symfony\Component\Serializer\Annotation as JMS_Type;
@@ -31,7 +31,7 @@ class Transaction
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      *
      */
     private $id;
@@ -41,7 +41,7 @@ class Transaction
      *
      * @ORM\Column(name="transaction_id", type="string", length=45)
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $transactionId;
 
@@ -50,7 +50,7 @@ class Transaction
      *
      * @ORM\Column(name="amount_sent", type="string")
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $amountSent;
 
@@ -59,7 +59,7 @@ class Transaction
      *
      * @ORM\Column(name="date_sent", type="datetime")
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $dateSent;
 
@@ -68,7 +68,7 @@ class Transaction
      *
      * @ORM\Column(name="transaction_status", type="smallint")
      *
-     * @SymfonyGroups({"ValidatedDistribution", "FullReceivers", "FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance", "FullReceivers", "FullAssistance", "SmallAssistance"})
      */
     private $transactionStatus;
 
@@ -77,7 +77,7 @@ class Transaction
      *
      * @ORM\Column(name="message", type="string", length=255, nullable=true)
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $message;
 
@@ -86,7 +86,7 @@ class Transaction
      *
      * @ORM\Column(name="money_received", type="boolean", nullable=true)
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $moneyReceived;
 
@@ -95,23 +95,24 @@ class Transaction
      *
      * @ORM\Column(name="pickup_date", type="datetime", nullable=true)
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $pickupDate;
 
     /**
-     * @var DistributionBeneficiary
+     * @var AssistanceBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="transactions", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="transactions", cascade={"persist"})
+     * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
-    private $distributionBeneficiary;
+    private $assistanceBeneficiary;
 
     /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      *
-     * @SymfonyGroups({"ValidatedDistribution"})
+     * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $updatedOn;
     
@@ -312,23 +313,23 @@ class Transaction
     /**
      * Get the value of Distribution Beneficiary
      *
-     * @return DistributionBeneficiary
+     * @return AssistanceBeneficiary
      */
-    public function getDistributionBeneficiary()
+    public function getAssistanceBeneficiary()
     {
-        return $this->distributionBeneficiary;
+        return $this->assistanceBeneficiary;
     }
  
     /**
      * Set the value of Distribution Beneficiary
      *
-     * @param DistributionBeneficiary distributionBeneficiary
+     * @param AssistanceBeneficiary assistanceBeneficiary
      *
      * @return self
      */
-    public function setDistributionBeneficiary(DistributionBeneficiary $distributionBeneficiary)
+    public function setAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary)
     {
-        $this->distributionBeneficiary = $distributionBeneficiary;
+        $this->assistanceBeneficiary = $assistanceBeneficiary;
  
         return $this;
     }
