@@ -393,6 +393,7 @@ class BeneficiaryService
     public function exportToCsv(string $type, string $countryIso3, $filters, $ids)
     {
         $households = null;
+        $exportableTable = [];
         if ($ids) {
             $households = $this->em->getRepository(Household::class)->getAllByIds($ids);
         } else if ($filters) {
@@ -402,7 +403,6 @@ class BeneficiaryService
         }
         
         if ($households) {
-            $exportableTable = [];
             foreach ($households as $household) {
                 foreach ($household->getBeneficiaries() as $beneficiary) {
                     array_push($exportableTable, $beneficiary);
