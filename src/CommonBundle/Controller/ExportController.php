@@ -26,6 +26,9 @@ use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
  */
 class ExportController extends Controller
 {
+    /** @var int maximum count of exported entities */
+    const EXPORT_LIMIT = 10000;
+
     /**
      * @Rest\Post("/export", name="export_data")
      *
