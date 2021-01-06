@@ -101,6 +101,14 @@ class ExportController extends Controller
                 }
                 $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
                 $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, $type);
+            } elseif ($request->query->get('smartcardDistribution')) {
+                $idDistribution = $request->query->get('smartcardDistribution');
+                $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
+                if ('pdf' === $type) {
+                    return $this->get('distribution.export.smartcard')->exportPdf($distribution);
+                } else {
+                    $filename = $this->get('distribution.export.smartcard')->exportSpreadsheet($distribution, $type);
+                }
             } elseif ($request->query->get('bookletCodes')) {
                 $ids = $request->request->get('ids');
                 $countryIso3 = $request->request->get("__country");

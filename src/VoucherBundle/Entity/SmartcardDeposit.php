@@ -14,7 +14,7 @@ use UserBundle\Entity\User;
  * Smartcard deposit.
  *
  * @ORM\Table(name="smartcard_deposit")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardDepositRepository")
  */
 class SmartcardDeposit
 {
