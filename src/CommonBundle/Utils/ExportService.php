@@ -3,8 +3,10 @@
 namespace CommonBundle\Utils;
 
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
+use CommonBundle\Controller\ExportController;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class ExportService.
@@ -65,6 +67,11 @@ class ExportService
     {
         if (0 === count($exportableTable)) {
             throw new \InvalidArgumentException('No data to export');
+        }
+
+        if (count($exportableTable) > ExportController::EXPORT_LIMIT) {
+            $count = count($exportableTable);
+            throw new BadRequestHttpException("Too much entities ($count) to export. Limit is ".ExportController::EXPORT_LIMIT);
         }
 
         $rows = $this->normalize($exportableTable);
