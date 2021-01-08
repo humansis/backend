@@ -34,12 +34,12 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $sourceFilePath = $this->getSourceFilepath($input);
+
         $countryCode = $this->getHelper('question')->ask($input, $output, $this->createCountryQuestion());
         $admLevel = $this->getHelper('question')->ask($input, $output, $this->createLevelQuestion());
 
         $targetFilepath = $this->createTargetFilepath($countryCode);
-        $sourceFilePath = $this->getSourceFilepath($input);
-
         $this->createTargetFileIfNeeded($targetFilepath, $admLevel, $input, $output);
 
         // VALIDATION
