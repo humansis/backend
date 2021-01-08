@@ -24,7 +24,6 @@ class SectorController extends Controller
 {
     /**
      * @Rest\Get("/sectors", name="get_all_sectors")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Sectors")
      *

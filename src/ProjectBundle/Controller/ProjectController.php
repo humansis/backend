@@ -83,7 +83,7 @@ class ProjectController extends Controller
 
     /**
      * @Rest\Get("/projects/{id}", name="get_one_project", requirements={"id"="\d+"})
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ') or is_granted('ROLE_DISTRIBUTION_CREATE')")
      *
      * @SWG\Tag(name="Projects")
      *
