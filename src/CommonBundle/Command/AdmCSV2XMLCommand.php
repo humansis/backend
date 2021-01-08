@@ -55,65 +55,23 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
 
         $progressBar = new ProgressBar($output, $count);
         $progressBar->start();
-
-        $admCodes = [];
-        $admCodeDuplicities = [];
-        $admParentCodeMissing = [];
-        $xml = new SimpleXMLElement(file_get_contents($targetFilepath));
-        foreach ($this->getCSVLines($sourceFilePath) as $line) {
-            $code = $line[$codeColumn];
-            $name = $line[$nameColumn];
-            $parent = $line[$parentCodeColumn];
-
-            // duplicity in file
-            if (isset($admCodes[$code])) {
-                if (isset($admCodeDuplicities[$code])) {
-                    $admCodeDuplicities[$code]['count']++;
-                } else {
-                    $admCodeDuplicities[$code] = [
-                        'name' => $name,
-                        'count' => 1,
-                    ];
-                }
-            } else {
-                $admCodes[$code] = true;
-            }
-
-            // parent existence
-            $xpath = $xml->xpath("//*[@code='$parent']");
-            if (count($xpath) < 1) {
-                if (isset($admParentCodeMissing[$parent])) {
-                    $admParentCodeMissing[$parent]['count']++;
-                } else {
-                    $admParentCodeMissing[$parent] = [
-                        'count' => 1,
-                    ];
-                }
-            }
-
-            $progressBar->advance();
+        try {
+            $this->validate(
+                $progressBar,
+                $targetFilepath,
+                $sourceFilePath,
+                $codeColumn,
+                $nameColumn,
+                $parentCodeColumn
+            );
+        } catch (\Exception $e) {
+            echo $e->getMessage()."\n";
+            return 1;
         }
         $progressBar->finish();
+        echo "\n";
 
-        if (count($admCodeDuplicities) !== 0) {
-            echo "\nCode duplicities:\n";
-            foreach ($admCodeDuplicities as $codeDuplicity => ['name'=>$name, 'count'=>$count]) {
-                echo "$codeDuplicity;$name;$count times\n";
-            }
-            return 1;
-        }
-        if (count($admParentCodeMissing) !== 0) {
-            echo "\nParent codes missing:\n";
-            foreach ($admParentCodeMissing as $codeMissing => ['count'=>$count]) {
-                echo "$codeMissing;$count times\n";
-            }
-            return 1;
-        }
-        echo "\nOK \n";
-        unset($admCodes);
-        unset($admCodeDuplicities);
-
-        $onlyValidation = new ConfirmationQuestion('Validation were OK, generate chenges?', false);
+        $onlyValidation = new ConfirmationQuestion('Validation were OK, generate changes? [Y/n] ', true);
         if (!$this->getHelper('question')->ask($input, $output, $onlyValidation)) {
             return;
         }
@@ -121,34 +79,15 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $progressBar = new ProgressBar($output, $count);
         $progressBar->start();
 
-        $xml = new SimpleXMLElement(file_get_contents($targetFilepath));
-
-        $added = 0;
-        $omitted = 0;
-        foreach ($this->getCSVLines($sourceFilePath) as $line) {
-            $parent = $line[$parentCodeColumn];
-            $code = $line[$codeColumn];
-            $name = $line[$nameColumn];
-
-            if (count($xml->xpath("//*[@code='$code']")) > 0) {
-                // already imported
-                $progressBar->advance();
-                $omitted++;
-                continue;
-            }
-
-            $xpath = "//*[@code='$parent']";
-
-            /** @var SimpleXMLElement $parentElement */
-            $parentElement = $xml->xpath($xpath)[0];
-            $adm = $parentElement->addChild($admLevel);
-            $adm->addAttribute('code', $code);
-            $adm->addAttribute('name', $name);
-            $added++;
-
-            $progressBar->advance();
-        }
-        $xml->saveXML($targetFilepath);
+        list($added, $omitted) = $this->saveNewLocations(
+            $targetFilepath,
+            $sourceFilePath,
+            $parentCodeColumn,
+            $codeColumn,
+            $nameColumn,
+            $progressBar,
+            $admLevel
+        );
 
         $progressBar->finish();
         echo "\nDONE, added $added, omitted $omitted\n";
@@ -328,5 +267,131 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
             'In which column are '.$need,
             $choices
         );
+    }
+
+    /**
+     * @param ProgressBar $progressBar
+     * @param string      $targetFilepath
+     * @param string      $sourceFilePath
+     * @param string      $codeColumnIndex
+     * @param string      $nameColumnIndex
+     * @param string      $parentCodeColumnIndex
+     *
+     * @throws \Exception
+     */
+    protected function validate(
+        ProgressBar $progressBar,
+        string $targetFilepath,
+        string $sourceFilePath,
+        string $codeColumnIndex,
+        string $nameColumnIndex,
+        string $parentCodeColumnIndex
+    ): void {
+        $admCodes = [];
+        $admCodeDuplicities = [];
+        $admParentCodeMissing = [];
+        $xml = new SimpleXMLElement(file_get_contents($targetFilepath));
+        foreach ($this->getCSVLines($sourceFilePath) as $line) {
+            $code = $line[$codeColumnIndex];
+            $name = $line[$nameColumnIndex];
+            $parent = $line[$parentCodeColumnIndex];
+
+            // duplicity in file
+            if (isset($admCodes[$code])) {
+                if (isset($admCodeDuplicities[$code])) {
+                    $admCodeDuplicities[$code]['count']++;
+                } else {
+                    $admCodeDuplicities[$code] = [
+                        'name' => $name,
+                        'count' => 1,
+                    ];
+                }
+            } else {
+                $admCodes[$code] = true;
+            }
+
+            // parent existence
+            $xpath = $xml->xpath("//*[@code='$parent']");
+            if (count($xpath) < 1) {
+                if (isset($admParentCodeMissing[$parent])) {
+                    $admParentCodeMissing[$parent]['count']++;
+                } else {
+                    $admParentCodeMissing[$parent] = [
+                        'count' => 1,
+                    ];
+                }
+            }
+
+            $progressBar->advance();
+        }
+
+        if (count($admCodeDuplicities) !== 0) {
+            echo "\nCode duplicities:\n";
+            foreach ($admCodeDuplicities as $codeDuplicity => ['name' => $name, 'count' => $count]) {
+                echo "$codeDuplicity;$name;$count times\n";
+            }
+            throw new \Exception("There are duplicities");
+        }
+        if (count($admParentCodeMissing) !== 0) {
+            echo "\nParent codes missing:\n";
+            foreach ($admParentCodeMissing as $codeMissing => ['count' => $count]) {
+                echo "$codeMissing;$count times\n";
+            }
+            throw new \Exception("There are missing parents");
+        }
+        unset($admCodes);
+        unset($admCodeDuplicities);
+}
+
+    /**
+     * @param string      $targetFilepath
+     * @param string      $sourceFilePath
+     * @param string      $parentCodeColumn
+     * @param string      $codeColumn
+     * @param string      $nameColumn
+     * @param ProgressBar $progressBar
+     * @param string      $admLevel
+     *
+     * @return int[]
+     */
+    private function saveNewLocations(
+        string $targetFilepath,
+        string $sourceFilePath,
+        string $parentCodeColumn,
+        string $codeColumn,
+        string $nameColumn,
+        ProgressBar $progressBar,
+        string $admLevel
+    ): array {
+        $xml = new SimpleXMLElement(file_get_contents($targetFilepath));
+
+        $added = 0;
+        $omitted = 0;
+        foreach ($this->getCSVLines($sourceFilePath) as $line) {
+            $parent = $line[$parentCodeColumn];
+            $code = $line[$codeColumn];
+            $name = $line[$nameColumn];
+
+            if (count($xml->xpath("//*[@code='$code']")) > 0) {
+                // already imported
+                $progressBar->advance();
+                $omitted++;
+                continue;
+            }
+
+            $xpath = "//*[@code='$parent']";
+
+            /** @var SimpleXMLElement $parentElement */
+            $parentElement = $xml->xpath($xpath)[0];
+            $adm = $parentElement->addChild($admLevel);
+            $adm->addAttribute('code', $code);
+            $adm->addAttribute('name', $name);
+            $added++;
+
+            $progressBar->advance();
+        }
+        $xml->saveXML($targetFilepath);
+
+        return array($added, $omitted);
     }
 }
