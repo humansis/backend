@@ -2,16 +2,16 @@
 
 namespace CommonBundle\Command;
 
-use Doctrine\DBAL\Connection;
-use PhpOffice\PhpSpreadsheet\Shared\XMLWriter;
+use SimpleXMLElement;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use XMLReader;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\Question;
 
 class AdmCSV2XMLCommand extends ContainerAwareCommand
 {
@@ -20,13 +20,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $this
             ->setName('app:adm:convert')
             ->setDescription('Check CSV file consistency and transform it into importable xml file')
-            ->addArgument('country', InputArgument::REQUIRED, 'Country code used for xml file generation')
-            ->addArgument('level', InputArgument::REQUIRED, 'ADM_ level, {adm1,adm2,adm3,adm4,adm5}')
             ->addArgument('sourceFile', InputArgument::REQUIRED, 'Source file in CSV format')
-            ->addOption('validate', null, InputArgument::OPTIONAL, 'Run only source file validations')
-            ->addArgument('name', InputArgument::REQUIRED, 'Column header with ADM name')
-            ->addArgument('parent', InputArgument::REQUIRED, 'Column header with ADM code of parent')
-            ->addArgument('code', InputArgument::REQUIRED, 'Column header with ADM code')
             ;
     }
 
@@ -40,8 +34,13 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $targetFilepath = $this->createTargetFilepath($input);
+        $countryCode = $this->getHelper('question')->ask($input, $output, $this->createCountryQuestion());
+        $admLevel = $this->getHelper('question')->ask($input, $output, $this->createLevelQuestion());
+
+        $targetFilepath = $this->createTargetFilepath($countryCode);
         $sourceFilePath = $this->getSourceFilepath($input);
+
+        $this->createTargetFileIfNeeded($targetFilepath, $admLevel, $input, $output);
 
         // VALIDATION
         echo "Validate $sourceFilePath";
@@ -49,12 +48,10 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $count = $this->getCount($sourceFilePath);
         echo " (file size is $count lines)\n";
 
-        $header = $this->getCSVHeader($sourceFilePath);
-        $codeColumn = array_search($input->getArgument('code'), $header);
-        $nameColumn = array_search($input->getArgument('name'), $header);
-        $parentCodeColumn = array_search($input->getArgument('parent'), $header);
-
-        echo "Columns: code=$codeColumn; name=$nameColumn; parent code=$parentCodeColumn\n";
+        // $header = $this->getCSVHeader($sourceFilePath);
+        $codeColumn = $this->getCodeColumnIndex($input, $output, $sourceFilePath);
+        $nameColumn = $this->getNameColumnIndex($input, $output, $sourceFilePath);
+        $parentCodeColumn = $this->getParentCodeColumnIndex($input, $output, $sourceFilePath);
 
         $progressBar = new ProgressBar($output, $count);
         $progressBar->start();
@@ -62,7 +59,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $admCodes = [];
         $admCodeDuplicities = [];
         $admParentCodeMissing = [];
-        $xml = new \SimpleXMLElement(file_get_contents($targetFilepath));
+        $xml = new SimpleXMLElement(file_get_contents($targetFilepath));
         foreach ($this->getCSVLines($sourceFilePath) as $line) {
             $code = $line[$codeColumn];
             $name = $line[$nameColumn];
@@ -116,10 +113,15 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         unset($admCodes);
         unset($admCodeDuplicities);
 
+        $onlyValidation = new ConfirmationQuestion('Validation were OK, generate chenges?', false);
+        if (!$this->getHelper('question')->ask($input, $output, $onlyValidation)) {
+            return;
+        }
+
         $progressBar = new ProgressBar($output, $count);
         $progressBar->start();
 
-        $xml = new \SimpleXMLElement(file_get_contents($targetFilepath));
+        $xml = new SimpleXMLElement(file_get_contents($targetFilepath));
 
         foreach ($this->getCSVLines($sourceFilePath) as $line) {
             $parent = $line[$parentCodeColumn];
@@ -128,9 +130,9 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
 
             $xpath = "//*[@code='$parent']";
 
-            /** @var \SimpleXMLElement $parentElement */
+            /** @var SimpleXMLElement $parentElement */
             $parentElement = $xml->xpath($xpath)[0];
-            $adm = $parentElement->addChild($input->getArgument('level'));
+            $adm = $parentElement->addChild($admLevel);
             $adm->addAttribute('code', $code);
             $adm->addAttribute('name', $name);
 
@@ -159,17 +161,9 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         return $filepath;
     }
 
-    private function createTargetFilepath(InputInterface $input): string
+    private function createTargetFilepath(string $countryCode): string
     {
-        $filepath = __DIR__.'/../Resources/locations/'.strtolower($input->getArgument('country')).'.xml';
-
-        if (!file_exists($filepath)) {
-            $f = fopen($filepath, 'w');
-            fwrite($f, "<?xml version=\"1.0\"?>\n<adm0 name=\"Mongolia\" code=\"MN\"></adm0>");
-            fclose($f);
-        }
-
-        return $filepath;
+        return __DIR__.'/../Resources/locations/'.$countryCode.'.xml';
     }
 
     private function getCount(string $filepath): int
@@ -202,5 +196,127 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
             }
         }
         fclose($file);
+    }
+
+    /**
+     * @return Question
+     */
+    protected function createCountryQuestion(): Question
+    {
+        $question = new Question('Country code in ISO3 format? (example: KHM) ');
+        $question->setValidator(function ($answer) {
+            if (!is_string($answer) || 3 != strlen($answer)) {
+                throw new \RuntimeException('Please use ISO3 format');
+            }
+
+            return $answer;
+        });
+        $question->setNormalizer(function ($value) {
+            return $value ? strtolower(trim($value)) : '';
+        });
+
+        return $question;
+    }
+
+    protected function createLevelQuestion(): Question
+    {
+        $question = new Question('Which level do you want import? (example: ADM2) ');
+        $question->setValidator(function ($answer) {
+            if (!is_string($answer) || 4 != strlen($answer) || !preg_match('/adm\d/', strtolower($answer))) {
+                throw new \RuntimeException('Please use ADMx format');
+            }
+
+            return $answer;
+        });
+        $question->setNormalizer(function ($value) {
+            return $value ? strtolower(trim($value)) : '';
+        });
+
+        return $question;
+    }
+
+    private function createCountryNameQuestion(): Question
+    {
+        $question = new Question('What is country name in EN? ');
+        $question->setValidator(function ($answer) {
+            if (!is_string($answer) || 2 < strlen($answer)) {
+                throw new \RuntimeException('Please use at least 3 letters');
+            }
+
+            return $answer;
+        });
+        return $question;
+    }
+
+    private function createCountryADM0Question(): Question
+    {
+        $question = new Question('What is ADM0/ISO2 country abbrev.? (example: CZ) ');
+        $question->setValidator(function ($answer) {
+            if (!is_string($answer) || 2 != strlen($answer)) {
+                throw new \RuntimeException('Please use ISO2 format');
+            }
+
+            return $answer;
+        });
+        $question->setNormalizer(function ($value) {
+            return $value ? strtoupper(trim($value)) : '';
+        });
+
+        return $question;
+    }
+
+    private function createTargetFileIfNeeded(string $targetFilepath, string $admLevel, InputInterface $input, OutputInterface $output): void
+    {
+        if (!file_exists($targetFilepath)) {
+            if ($admLevel === 'adm1') {
+                $countryName = $this->getHelper('question')->ask($input, $output, $this->createCountryNameQuestion());
+                $adm0Code = $this->getHelper('question')->ask($input, $output, $this->createCountryADM0Question());
+
+                $f = fopen($targetFilepath, 'w');
+                fwrite($f, "<?xml version=\"1.0\"?>\n<adm0 name=\"$countryName\" code=\"$adm0Code\"></adm0>");
+                fclose($f);
+            } else {
+                if (!file_exists($targetFilepath)) {
+                    throw new InvalidArgumentException('target file must exists: '.$targetFilepath);
+                }
+            }
+        }
+    }
+
+    private function getCodeColumnIndex(InputInterface $input, OutputInterface $output, string $sourceFilePath)
+    {
+        $header = $this->getCSVHeader($sourceFilePath);
+        $question = $this->columnChoice($sourceFilePath, 'codes', $header);
+        $answer = $this->getHelper('question')->ask($input, $output, $question);
+        return array_search($answer, $header);
+    }
+
+    private function getNameColumnIndex(InputInterface $input, OutputInterface $output, string $sourceFilePath)
+    {
+        $header = $this->getCSVHeader($sourceFilePath);
+        $question = $this->columnChoice($sourceFilePath, 'names', $header);
+        $answer = $this->getHelper('question')->ask($input, $output, $question);
+        return array_search($answer, $header);
+    }
+
+    private function getParentCodeColumnIndex(InputInterface $input, OutputInterface $output, string $sourceFilePath)
+    {
+        $header = $this->getCSVHeader($sourceFilePath);
+        $question = $this->columnChoice($sourceFilePath, 'parent codes', $header);
+        $answer = $this->getHelper('question')->ask($input, $output, $question);
+        return array_search($answer, $header);
+    }
+
+    private function columnChoice(string $csvFilePath, $need, $header): ChoiceQuestion
+    {
+        $choices = [];
+        foreach ($header as $label) {
+            $choices[] = $label;
+        }
+
+        return new ChoiceQuestion(
+            'In which column are '.$need,
+            $choices
+        );
     }
 }
