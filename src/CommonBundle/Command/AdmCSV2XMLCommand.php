@@ -188,7 +188,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
     {
         $question = new Question('What is country name in EN? ');
         $question->setValidator(function ($answer) {
-            if (!is_string($answer) || 2 < strlen($answer)) {
+            if (!is_string($answer) || 2 >= strlen($answer)) {
                 throw new \RuntimeException('Please use at least 3 letters');
             }
 
