@@ -123,10 +123,19 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
 
         $xml = new SimpleXMLElement(file_get_contents($targetFilepath));
 
+        $added = 0;
+        $omitted = 0;
         foreach ($this->getCSVLines($sourceFilePath) as $line) {
             $parent = $line[$parentCodeColumn];
             $code = $line[$codeColumn];
             $name = $line[$nameColumn];
+
+            if (count($xml->xpath("//*[@code='$code']")) > 0) {
+                // already imported
+                $progressBar->advance();
+                $omitted++;
+                continue;
+            }
 
             $xpath = "//*[@code='$parent']";
 
@@ -135,13 +144,14 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
             $adm = $parentElement->addChild($admLevel);
             $adm->addAttribute('code', $code);
             $adm->addAttribute('name', $name);
+            $added++;
 
             $progressBar->advance();
         }
         $xml->saveXML($targetFilepath);
 
         $progressBar->finish();
-        echo "\nDONE\n";
+        echo "\nDONE, added $added, omitted $omitted\n";
 
         return 0;
     }
