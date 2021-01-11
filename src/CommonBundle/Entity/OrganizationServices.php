@@ -173,7 +173,6 @@ class OrganizationServices implements \JsonSerializable
         return [
             'id' => $this->id,
             'enabled' => $this->enabled,
-            'parametersValue' => $this->parametersValue,
             'service' => $this->service,
         ];
     }

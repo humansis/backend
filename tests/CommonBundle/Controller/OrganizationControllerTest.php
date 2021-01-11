@@ -83,4 +83,38 @@ class OrganizationControllerTest extends BMSServiceTestCase
 
         return $newOrganization;
     }
+
+    /**
+     */
+    public function testGetOrganizationServices()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $crawler = $this->request('GET', '/api/wsse/organization/1/service');
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+
+        $organizationService = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertIsArray($organizationService, "Organization services must be array");
+
+        if (empty($organizationService)) {
+            $this->markTestIncomplete("The database is incomplete.");
+        }
+
+        foreach ($organizationService as $organizationService) {
+            $this->assertArrayHasKey('id', $organizationService);
+            $this->assertArrayHasKey('enabled', $organizationService);
+            $this->assertArrayHasKey('service', $organizationService);
+            $this->assertArrayNotHasKey('parametersValue', $organizationService);
+
+            $service = $organizationService['service'];
+
+            $this->assertArrayHasKey('id', $service);
+            $this->assertArrayHasKey('name', $service);
+            $this->assertArrayHasKey('country', $service);
+            $this->assertArrayHasKey('parameters', $service);
+        }
+    }
 }
