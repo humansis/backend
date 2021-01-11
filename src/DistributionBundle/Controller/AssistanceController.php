@@ -191,7 +191,7 @@ class AssistanceController extends Controller
      * Create a distribution.
      *
      * @Rest\Put("/distributions", name="add_distribution")
-     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR') or is_granted('ROLE_DISTRIBUTION_CREATE')")
      *
      * @SWG\Tag(name="Distributions")
      *
