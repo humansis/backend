@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
-use DistributionBundle\DBAL\AssistanceTargetTypeEnum;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
-use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Utils\CodeLists;
