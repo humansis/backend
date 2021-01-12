@@ -3,6 +3,7 @@
 namespace CommonBundle\Command;
 
 use CommonBundle\DataFixtures\LocationFixtures;
+use CommonBundle\Utils\LocationImporter;
 use CommonBundle\Utils\LocationService;
 use SimpleXMLElement;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -45,18 +46,23 @@ class AdmXML2DBCommand extends ContainerAwareCommand
         $countryFile = $this->getADMFiles()[$countryCode];
         echo "Importing file $countryFile\n";
 
-        $xml = new SimpleXMLElement(file_get_contents($countryFile));
-        $count = count($xml->xpath('//*'));
+        $importer = new LocationImporter($this->getContainer()->get('doctrine.orm.default_entity_manager'), $countryFile);
 
-        $progressBar = new ProgressBar($output, $count);
+        $progressBar = new ProgressBar($output, $importer->getCount());
         $progressBar->start();
 
-        $locationService->importADMFile($countryFile, null, function() use ($progressBar) {
+        foreach ($importer->importLocations() as $importStatus) {
             $progressBar->advance();
-        });
+
+            if (isset($importStatus['inconsistent'])) {
+                $oldName = $importStatus['inconsistent']['old'];
+                $newName = $importStatus['inconsistent']['new'];
+                echo "Duplicity code but name inconsistency, old=$oldName, new=$newName\n";
+            }
+        }
 
         $progressBar->finish();
-        echo "\nDONE\n";
+        echo "\nDONE, imported {$importer->getImportedLocations()}, omitted {$importer->getOmittedLocations()}\n";
 
         return 0;
     }
