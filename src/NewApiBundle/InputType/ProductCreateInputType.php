@@ -17,7 +17,7 @@ class ProductCreateInputType extends ProductUpdateInputType
     private $name;
 
     /**
-     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH"})
+     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
