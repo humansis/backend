@@ -18,6 +18,8 @@ use VoucherBundle\Entity\Vendor;
 
 class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 {
+    private const MAX_SMARTCARDS = 20;
+
     /** @var string */
     private $enviroment;
 
@@ -44,16 +46,12 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         // set up seed will make random values will be same for each run of fixtures
         srand(42);
 
-        foreach ([VendorFixtures::REF_VENDOR_KHM, VendorFixtures::REF_VENDOR_SYR] as $i => $ref) {
-            $this->generateSeed($manager, $this->getReference($ref));
-        }
+        /** @var Vendor $vendor */
+        $vendor = $this->getReference(VendorFixtures::REF_VENDOR_KHM);
 
-        $manager->flush();
-    }
-
-    private function generateSeed(ObjectManager $manager, Vendor $vendor)
-    {
-        for ($i = 0; $i < 20; ++$i) {
+        /** @var Assistance $assistance */
+        $assistance = $this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE);
+        foreach ($assistance->getDistributionBeneficiaries() as $ab) {
             $serialNumber = self::generateSerialNumber();
             if ($manager->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $serialNumber])) {
                 // fixtures already exists
@@ -61,19 +59,27 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             }
 
             $smartcard = new Smartcard($serialNumber, new DateTimeImmutable('now'));
-            $smartcard->setBeneficiary($this->randomEntity(Beneficiary::class, $manager));
             $smartcard->setState(self::generateState());
 
             for ($j = 0; $j < rand(0, 5); ++$j) {
                 $this->generatePurchase($j, $smartcard, $vendor, $manager);
             }
 
-            for ($j = 0; $j < rand(0, 5); ++$j) {
-                $this->generateDeposit($j, $smartcard, $manager);
-            }
+            $deposit = SmartcardDeposit::create(
+                $smartcard,
+                $this->randomEntity(User::class, $manager),
+                $ab,
+                rand(1, 10000),
+                new DateTimeImmutable('now')
+            );
+
+            $smartcard->setBeneficiary($ab->getBeneficiary());
+            $smartcard->addDeposit($deposit);
 
             $manager->persist($smartcard);
         }
+
+        $manager->flush();
     }
 
     private static function generateSerialNumber()
@@ -101,30 +107,6 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         }
 
         return $purchase;
-    }
-
-    private function generateDeposit($seed, Smartcard $smartcard, ObjectManager $manager): SmartcardDeposit
-    {
-        $value = rand(1, 10000);
-
-        return SmartcardDeposit::create(
-            $smartcard,
-            $this->randomEntity(User::class, $manager),
-            $this->getAssistanceBeneficiary($manager),
-            $value,
-            new DateTimeImmutable('now')
-        );
-    }
-
-    private function getAssistanceBeneficiary(ObjectManager $manager)
-    {
-        if (null === $this->assistanceBeneficiary) {
-            /** @var Assistance $assistance */
-            $assistance = $this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE);
-            $this->assistanceBeneficiary = $assistance->getDistributionBeneficiaries()->get(0);
-        }
-
-        return $this->assistanceBeneficiary;
     }
 
     private function randomEntity($classname, ObjectManager $manager)
