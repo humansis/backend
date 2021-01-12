@@ -4,6 +4,7 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
+use BeneficiaryBundle\Entity\Referral;
 use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Enum\Livelihood;
@@ -62,6 +63,18 @@ class HouseholdCodelistController extends AbstractController
     public function getLocationTypes(): JsonResponse
     {
         $data = CodeLists::mapEnum(HouseholdLocation::LOCATION_TYPES);
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/households/referrals/types")
+     *
+     * @return JsonResponse
+     */
+    public function referralTypes(): JsonResponse
+    {
+        $data = CodeLists::mapArray(Referral::REFERRALTYPES);
 
         return $this->json(new Paginator($data));
     }

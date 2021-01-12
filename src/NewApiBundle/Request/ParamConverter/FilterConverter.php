@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace NewApiBundle\Request\ParamConverter;
 
 use NewApiBundle\Exception\ConstraintViolationException;
-use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Request\FilterInputType\FilterInputTypeInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class InputTypeConverter implements ParamConverterInterface
+class FilterConverter implements ParamConverterInterface
 {
     /** @var ValidatorInterface */
     private $validator;
@@ -33,17 +30,22 @@ class InputTypeConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ParamConverter $configuration)
     {
-        $serializer = new Serializer([new ObjectNormalizer(null, null, null, new ReflectionExtractor()), new ArrayDenormalizer()]);
-        $inputType = $serializer->denormalize($request->request->all(), $configuration->getClass(), null, [
-            ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
-        ]);
+        $filter = $request->query->get('filter', []);
+        if (!is_array($filter)) {
+            throw new BadRequestHttpException('Query parameter filter must be an array.');
+        }
 
-        $errors = $this->validator->validate($inputType);
+        $classname = $configuration->getClass();
+
+        $object = new $classname();
+        $object->setFilter($filter);
+
+        $errors = $this->validator->validate($object);
         if (count($errors) > 0) {
             throw new ConstraintViolationException($errors);
         }
 
-        $request->attributes->set($configuration->getName(), $inputType);
+        $request->attributes->set($configuration->getName(), $object);
 
         return true;
     }
@@ -53,6 +55,12 @@ class InputTypeConverter implements ParamConverterInterface
      */
     public function supports(ParamConverter $configuration)
     {
-        return null !== $configuration->getClass() && in_array(InputTypeInterface::class, class_implements($configuration->getClass()));
+        if (null === $configuration->getClass()) {
+            return false;
+        }
+
+        $implements = class_implements($configuration->getClass());
+
+        return in_array(FilterInputTypeInterface::class, $implements);
     }
 }
