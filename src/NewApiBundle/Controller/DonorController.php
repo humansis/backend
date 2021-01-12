@@ -1,21 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\InputType\CountrySpecificCreateInputType;
-use NewApiBundle\InputType\CountrySpecificOrderInputType;
-use NewApiBundle\InputType\CountrySpecificUpdateInputType;
 use NewApiBundle\InputType\DonorCreateInputType;
 use NewApiBundle\InputType\DonorOrderInputType;
 use NewApiBundle\InputType\DonorUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Donor;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class DonorController extends AbstractController
 {

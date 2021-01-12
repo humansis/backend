@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
