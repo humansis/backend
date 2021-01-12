@@ -31,7 +31,7 @@ class CountryController extends Controller
         ], [
             'name' => 'Mongolia',
             'iso3' => 'MNG',
-            'currency' => 'USD',
+            'currency' => 'MNT',
         ],
     ];
 
