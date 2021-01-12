@@ -24,6 +24,7 @@ sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" \
   -e "s|%env(RDS_USERNAME)%|$3|g" \
   -e "s|%env(RDS_PASSWORD)%|$4|g" \
   -e "s|%env(MOBILE_MASTER_KEY)%|$5|g" \
-  -e "s|%env(MOBILE_MASTER_KEY_VERSION)%|$6|g" app/config/parameters.yml
+  -e "s|%env(MOBILE_APP_ID)%|$5|g" \
+  -e "s|%env(MOBILE_APP_VERSION)%|$6|g" app/config/parameters.yml
 
 sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" docker-compose.yml
