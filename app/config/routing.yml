@@ -25,7 +25,7 @@ control_path:
         template:    default/index.html.twig
 
 rest:
-    type: rest
+    type: annotation
     prefix: /api/{firewall}
     # prefix: /api
     resource: "routing_rest.yml"
@@ -33,6 +33,6 @@ rest:
         firewall: wsse
 
 rest-new:
-    type: rest
+    type: annotation
     prefix: /api/basic
     resource: "@NewApiBundle/Resources/config/routing.yml"
