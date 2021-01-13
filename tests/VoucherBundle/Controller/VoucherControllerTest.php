@@ -23,7 +23,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = $this->getContainer()->get('test.client');
 
         // We create a new booklet if we have not already created one
         $randomBookletCode = join('-', [rand(0, 999), rand(0, 999), rand(0, 999)]);
