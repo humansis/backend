@@ -20,7 +20,7 @@ class CountrySpecificUpdateInputType implements InputTypeInterface
     /**
      * @Assert\NotBlank
      * @Assert\NotNull
-     * @Assert\Choice({"number", "text"})
+     * @Assert\Choice({"number", "text"}, strict=true)
      */
     private $type;
 

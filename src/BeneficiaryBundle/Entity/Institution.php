@@ -44,7 +44,7 @@ class Institution extends AbstractBeneficiary
      *
      * @ORM\Column(name="type", type="string", length=255)
      * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
-     * @Assert\Choice(choices=BeneficiaryBundle\Entity\Institution::TYPE_ALL)
+     * @Assert\Choice(choices=BeneficiaryBundle\Entity\Institution::TYPE_ALL, strict=true)
      */
     private $type;
 
