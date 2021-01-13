@@ -1,17 +1,17 @@
 rest_user:
-    type: rest
+    type: annotation
     resource: "@UserBundle/Resources/config/routing.yml"
 
 rest_project:
-    type: rest
+    type: annotation
     resource: "@ProjectBundle/Resources/config/routing.yml"
 
 rest_beneficiary:
-    type: rest
+    type: annotation
     resource: "@BeneficiaryBundle/Resources/config/routing.yml"
 
 rest_distribution:
-    type: rest
+    type: annotation
     resource: "@DistributionBundle/Resources/config/routing.yml"
 
 rest_reporting:
