@@ -5,7 +5,7 @@ namespace Tests\BeneficiaryBundle\Model\Household;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdActivity;
 use BeneficiaryBundle\Model\Household\HouseholdActivityChangesCollection;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 use UserBundle\Entity\User;
 
 class HouseholdActivityChangeCollectionTest extends TestCase

@@ -41,8 +41,8 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var EntityManager $em */
     protected $em;
 
-    /** @var Container $container */
-    protected $container;
+    /** @var Container $containerMock */
+    private $containerMock;
 
     /** @var SerializerInterface */
     protected $serializer;
@@ -201,6 +201,11 @@ class BMSServiceTestCase extends KernelTestCase
         $this->client->request($method, $uri, $body, $files, (null === $headers) ? ['HTTP_COUNTRY' => 'KHM'] : $headers);
     }
 
+    protected function getContainer(): Container
+    {
+        return $this->containerMock;
+    }
+
 
     public function setDefaultSerializerName($serializerName)
     {
@@ -213,24 +218,24 @@ class BMSServiceTestCase extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->container = static::$kernel->getContainer();
+        $this->containerMock = static::$kernel->getContainer();
 
         //Preparing the EntityManager
-        $this->em = $this->container
+        $this->em = $this->getContainer()
             ->get('doctrine')
             ->getManager();
 
         //Mocking Serializer, Container
-        $this->serializer = $this->container
+        $this->serializer = $this->getContainer()
             ->get($this->defaultSerializerName);
 
         //Symdfony Validator
-        $this->validator = $this->container
+        $this->validator = $this->getContainer()
             ->get('validator');
 
         //setting the token_storage
-        $this->tokenStorage = $this->container->get('security.token_storage');
-        $this->householdService = $this->container->get('beneficiary.household_service');
+        $this->tokenStorage = $this->getContainer()->get('security.token_storage');
+        $this->householdService = $this->getContainer()->get('beneficiary.household_service');
     }
 
 
@@ -290,13 +295,13 @@ class BMSServiceTestCase extends KernelTestCase
 
     protected function mockContainer()
     {
-        $this->container = $this->getMockBuilder(Container::class)
+        $this->containerMock = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->container->method('get')
+        $this->containerMock->method('get')
             ->with($this->defaultSerializerName)
             ->will($this->returnValue($this->serializer));
-        return $this->container;
+        return $this->containerMock;
     }
 
     protected function getUserToken(User $user)

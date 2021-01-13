@@ -20,7 +20,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->setDefaultSerializerName("serializer");
         parent::setUpFunctionnal();
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = $this->getContainer()->get('test.client');
     }
 
 
@@ -48,7 +48,7 @@ class VendorControllerTest extends BMSServiceTestCase
     {
         // First step
         // Get salt for a new vendor => save the username with the salt in database (user disabled for now)
-        $return = $this->container->get('user.user_service')->getSalt($this->username);
+        $return = $this->getContainer()->get('user.user_service')->getSalt($this->username);
         // Check if the first step has been done correctly
         $this->assertArrayHasKey('user_id', $return);
         $this->assertArrayHasKey('salt', $return);

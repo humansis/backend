@@ -35,7 +35,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = $this->getContainer()->get('test.client');
     }
 
     /**
@@ -219,7 +219,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->em->clear();
         $project = $this->em->getRepository(Project::class)->findOneByName($projectName);
         if ($project instanceof Project) {
-            $this->container->get('project.project_service')->delete($project);
+            $this->getContainer()->get('project.project_service')->delete($project);
         }
     }
 }

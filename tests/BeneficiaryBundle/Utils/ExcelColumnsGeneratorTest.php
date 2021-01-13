@@ -3,7 +3,7 @@
 namespace Tests\BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class ExcelColumnsGeneratorTest extends TestCase
 {

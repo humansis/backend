@@ -18,7 +18,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = $this->getContainer()->get('test.client');
     }
 
     public function testList()
@@ -48,7 +48,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = $this->getContainer()->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/projects/'.$project->getId().'/assistances', [], [], ['country' => 'KHM']);
 
