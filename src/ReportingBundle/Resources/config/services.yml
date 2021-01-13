@@ -5,6 +5,18 @@ services:
         arguments: ['@doctrine.orm.entity_manager', '@service_container']
         public: true
 
+    reporting.code_indicator_command:
+        class: ReportingBundle\Command\ReportingCodeIndicatorAddCommand
+        public: true
+        tags:
+            - { name: 'console.command' }
+
+    reporting.data_indicator_command:
+        class: ReportingBundle\Command\ReportingDataIndicatorAddCommand
+        public: true
+        tags:
+            - { name: 'console.command' }
+
     ############################### Data Fillers ###############################
 
     reporting.data_fillers.reference:
