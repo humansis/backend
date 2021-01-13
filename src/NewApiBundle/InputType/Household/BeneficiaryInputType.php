@@ -59,7 +59,7 @@ class BeneficiaryInputType implements InputTypeInterface
     private $enParentsName;
 
     /**
-     * @Assert\Choice({"M", "F"})
+     * @Assert\Choice({"M", "F"}, strict=true)
      * @Assert\NotBlank
      * @Assert\NotNull
      */
@@ -78,14 +78,14 @@ class BeneficiaryInputType implements InputTypeInterface
     private $phones;
 
     /**
-     * @Assert\Choice(callback={"BeneficiaryBundle\Enum\ResidencyStatus", "all"})
+     * @Assert\Choice(callback={"BeneficiaryBundle\Enum\ResidencyStatus", "all"}, strict=true)
      * @Assert\NotBlank
      * @Assert\NotNull
      */
     private $residencyStatus;
 
     /**
-     * @Assert\Choice(callback="referralTypes")
+     * @Assert\Choice(callback="referralTypes", strict=true)
      * @Assert\Length(max="255")
      */
     private $referralType;
