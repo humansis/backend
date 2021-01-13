@@ -95,11 +95,11 @@ doctrine:
                 levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
                 levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
         metadata_cache_driver:
-            type: apcu
+            type: array
         result_cache_driver:
-            type: apcu
+            type: array
         query_cache_driver:
-            type: apcu
+            type: array
         hydrators:
             plain_values_hydrator: CommonBundle\Hydration\PlainValuesHydrator
 
