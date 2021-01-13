@@ -134,6 +134,7 @@ fos_rest:
         default_engine: twig
     routing_loader:
         default_format: json
+        routing_loader: false
     serializer:
         serialize_null: true
 
