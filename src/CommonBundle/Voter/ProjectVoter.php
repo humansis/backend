@@ -9,6 +9,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserProject;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class ProjectVoter
@@ -19,10 +20,10 @@ class ProjectVoter extends BMSVoter
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var \Monolog\Logger $logger */
+    /** @var LoggerInterface $logger */
     private $logger;
 
-    public function __construct(RoleHierarchy $roleHierarchy, EntityManagerInterface $entityManager, \Monolog\Logger $logger)
+    public function __construct(RoleHierarchy $roleHierarchy, EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         parent::__construct($roleHierarchy);
         $this->em = $entityManager;

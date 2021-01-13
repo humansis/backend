@@ -2,6 +2,7 @@
 
 namespace CommonBundle\Listener;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -11,10 +12,10 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class LoggerSubscriber implements EventSubscriberInterface
 {
 
-    /** @var \Monolog\Logger */
+    /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(\Monolog\Logger $logger)
+    public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
