@@ -11,6 +11,7 @@ use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
 use VoucherBundle\Entity\Vendor;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class DefaultVoter
@@ -27,7 +28,7 @@ class DefaultVoter extends BMSVoter
     /** @var RequestStack $requestStack */
     private $requestStack;
 
-    /** @var \Monolog\Logger $logger */
+    /** @var LoggerInterface $logger */
     private $logger;
 
     /**
@@ -35,9 +36,9 @@ class DefaultVoter extends BMSVoter
      * @param RoleHierarchy $roleHierarchy
      * @param EntityManagerInterface $entityManager
      * @param RequestStack $requestStack
-     * @param \Monolog\Logger $logger
+     * @param LoggerInterface $logger
      */
-    public function __construct(RoleHierarchy $roleHierarchy, EntityManagerInterface $entityManager, RequestStack $requestStack, \Monolog\Logger $logger)
+    public function __construct(RoleHierarchy $roleHierarchy, EntityManagerInterface $entityManager, RequestStack $requestStack, LoggerInterface $logger)
     {
         parent::__construct($roleHierarchy);
         $this->em = $entityManager;

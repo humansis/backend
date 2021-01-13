@@ -5,6 +5,11 @@ services:
         tags:
             - { name: 'console.command' }
 
+    # TODO: fix this, monolog.logger isnt loading
+    logger:
+        class: Psr\Log\NullLogger
+        public: true
+
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
