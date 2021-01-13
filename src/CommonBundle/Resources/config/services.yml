@@ -1,5 +1,9 @@
 services:
 
+    CommonBundle\Command\ClearCacheImportCommand:
+        public: true
+        tags:
+            - { name: 'console.command' }
 
 #######################################################################################
 ##                                       CRUD                                        ##
