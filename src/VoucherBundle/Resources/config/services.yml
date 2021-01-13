@@ -36,6 +36,7 @@ services:
 
     voucher.purchase_service:
         class: VoucherBundle\Model\PurchaseService
+        public: true
         arguments: [ '@doctrine.orm.entity_manager' ]
 
     smartcard_service:
