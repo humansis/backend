@@ -293,9 +293,9 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $emptyLines = 0;
         $xml = new SimpleXMLElement(file_get_contents($targetFilepath));
         foreach ($this->getCSVLines($sourceFilePath) as $line) {
-            $code = $line[$codeColumnIndex];
-            $name = $line[$nameColumnIndex];
-            $parent = $line[$parentCodeColumnIndex];
+            $code = trim($line[$codeColumnIndex]);
+            $name = trim($line[$nameColumnIndex]);
+            $parent = trim($line[$parentCodeColumnIndex]);
 
             if (empty($code)) {
                 ++$emptyLines;
@@ -303,18 +303,20 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
             }
 
             // duplicity in file
-            if (isset($admCodes[$code])) {
-                if (isset($admCodeDuplicities[$code])) {
-                    $admCodeDuplicities[$code]['count']++;
-                } else {
-                    $admCodeDuplicities[$code] = [
-                        'name' => $name,
-                        'count' => 1,
-                    ];
-                }
-            } else {
-                $admCodes[$code] = true;
-            }
+            // if (isset($admCodes[$code])) {
+            //     if (isset($admCodeDuplicities[$code])) {
+            //         $admCodeDuplicities[$code]['count']++;
+            //         $admCodeDuplicities[$code]['names'][] = $name;
+            //         array_unique($admCodeDuplicities[$code]['names']);
+            //     } else {
+            //         $admCodeDuplicities[$code] = [
+            //             'names' => [$name],
+            //             'count' => 1,
+            //         ];
+            //     }
+            // } else {
+            //     $admCodes[$code] = true;
+            // }
 
             // parent existence
             $xpath = $xml->xpath("//*[@code='$parent']");
@@ -331,13 +333,13 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
             $progressBar->advance();
         }
 
-        if (count($admCodeDuplicities) !== 0) {
-            echo "\nCode duplicities:\n";
-            foreach ($admCodeDuplicities as $codeDuplicity => ['name' => $name, 'count' => $count]) {
-                echo "$codeDuplicity;$name;$count times\n";
-            }
-            throw new \Exception("There are duplicities");
-        }
+        // if (count($admCodeDuplicities) !== 0) {
+        //     echo "\nCode duplicities:\n";
+        //     foreach ($admCodeDuplicities as $codeDuplicity => ['name' => $name, 'count' => $count]) {
+        //         echo "$codeDuplicity;$name;$count times\n";
+        //     }
+        //     throw new \Exception("There are duplicities");
+        // }
         if (count($admParentCodeMissing) !== 0) {
             echo "\nParent codes missing:\n";
             foreach ($admParentCodeMissing as $codeMissing => ['count' => $count]) {
@@ -377,9 +379,9 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $added = 0;
         $omitted = 0;
         foreach ($this->getCSVLines($sourceFilePath) as $line) {
-            $parent = $line[$parentCodeColumn];
-            $code = $line[$codeColumn];
-            $name = $line[$nameColumn];
+            $parent = trim($line[$parentCodeColumn]);
+            $code = trim($line[$codeColumn]);
+            $name = trim($line[$nameColumn]);
 
             if (count($xml->xpath("//*[@code='$code']")) > 0) {
                 // already imported
