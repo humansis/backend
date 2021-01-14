@@ -859,13 +859,61 @@
         <!--        <adm2 code="AM111" name="Idjevan"/>-->
         <adm2 code="AM11_01" name="Ijevan"/>
         <adm2 code="AM11_02" name="Tsaghkavan (belonging to Ijevan)"/>
-        <adm2 code="AM11012" name="Ayrum"/>
-        <adm2 code="AM11003" name="Dilijan"/>
+        <adm2 code="AM11012" name="Ayrum">
+            <adm3 code="AM11012_01" name="Ayrum"/>
+            <adm3 code="AM11012_02" name="Archis"/>
+            <adm3 code="AM11012_03" name="Bagratashen"/>
+            <adm3 code="AM11012_04" name="Debedavan"/>
+            <adm3 code="AM11012_05" name="Deghdzavan"/>
+            <adm3 code="AM11012_06" name="Lchkadzor"/>
+            <adm3 code="AM11012_07" name="Haghtanak"/>
+            <adm3 code="AM11012_08" name="Ptghavan"/>
+        </adm2>
+        <adm2 code="AM11003" name="Dilijan">
+            <adm3 code="AM11003_01" name="Dilijan"/>
+            <adm3 code="AM11003_02" name="Haghartsin"/>
+            <adm3 code="AM11003_03" name="Teghut"/>
+            <adm3 code="AM11003_04" name="Gosh"/>
+            <adm3 code="AM11003_05" name="Hovk"/>
+            <adm3 code="AM11003_06" name="Aghavnavank"/>
+            <adm3 code="AM11003_07" name="Khachardzan"/>
+        </adm2>
         <adm2 code="AM11034" name="Lusadzor"/>
         <adm2 code="AM11005" name="Azatamut"/>
-        <adm2 code="AM11004" name="Noyemberyan"/>
-        <adm2 code="AM11002" name="Berd"/>
-        <adm2 code="AM11041" name="Koghb"/>
+        <adm2 code="AM11004" name="Noyemberyan">
+            <adm3 code="AM11004_01" name="Noyemberyan"/>
+            <adm3 code="AM11004_02" name="Baghanis"/>
+            <adm3 code="AM11004_03" name="Barekamavan"/>
+            <adm3 code="AM11004_04" name="Berdavan"/>
+            <adm3 code="AM11004_05" name="Dovegh"/>
+            <adm3 code="AM11004_06" name="Koti"/>
+            <adm3 code="AM11004_07" name="Voskepar"/>
+            <adm3 code="AM11004_08" name="Voskevan"/>
+            <adm3 code="AM11004_09" name="Jujevan"/>
+        </adm2>
+        <adm2 code="AM11002" name="Berd">
+            <adm3 code="AM11002_01" name="Berd"/>
+            <adm3 code="AM11002_02" name="Aygepar"/>
+            <adm3 code="AM11002_03" name="Artsvaberd"/>
+            <adm3 code="AM11002_04" name="Mosesgegh"/>
+            <adm3 code="AM11002_05" name="Chinchin"/>
+            <adm3 code="AM11002_06" name="Tsaghkavan"/>
+            <adm3 code="AM11002_07" name="Nerqin Karmir Axbyur"/>
+            <adm3 code="AM11002_08" name="Norashen"/>
+            <adm3 code="AM11002_09" name="Choratan"/>
+            <adm3 code="AM11002_10" name="Chinari"/>
+            <adm3 code="AM11002_11" name="Varagavan"/>
+            <adm3 code="AM11002_12" name="Aygedzor"/>
+            <adm3 code="AM11002_13" name="Itsakar"/>
+            <adm3 code="AM11002_14" name="Navur"/>
+            <adm3 code="AM11002_15" name="Paravakar"/>
+            <adm3 code="AM11002_16" name="Verin Karmir Akhpyur"/>
+            <adm3 code="AM11002_17" name="Tavush"/>
+        </adm2>
+        <adm2 code="AM11041" name="Koghb">
+            <adm3 code="AM11041_18" name="Koghb"/>
+            <adm3 code="AM11041_19" name="Zorakan"/>
+        </adm2>
         <adm2 code="AM11006" name="Aknaghbyur"/>
         <adm2 code="AM11008" name="Acharkut"/>
         <adm2 code="AM11009" name="Aygehovit"/>
