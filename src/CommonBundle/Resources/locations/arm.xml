@@ -852,12 +852,61 @@
         <!--        <adm2 code="AM102" name="Vayk"/>-->
         <!--        <adm2 code="AM101" name="Yeghegnadzor"/>-->
         <adm2 code="AM10001" name="Yeghegnadzor"/>
-        <adm2 code="AM10002" name="Jermuk"/>
-        <adm2 code="AM10008" name="Areni"/>
-        <adm2 code="AM10015" name="Gladzor"/>
-        <adm2 code="AM10022" name="Zarritap"/>
-        <adm2 code="AM10003" name="Vayk"/>
-        <adm2 code="AM10021" name="Yeghegis"/>
+        <adm2 code="AM10002" name="Jermuk">
+            <adm3 code="AM10002_01" name="Jermuk"/>
+            <adm3 code="AM10002_02" name="Gndevaz"/>
+            <adm3 code="AM10002_03" name="Herher"/>
+            <adm3 code="AM10002_04" name="Karmrashen"/>
+        </adm2>
+        <adm2 code="AM10008" name="Areni">
+            <adm3 code="AM10008_01" name="Areni"/>
+            <adm3 code="AM10008_02" name="Agarakadzor"/>
+            <adm3 code="AM10008_03" name="Gnishik"/>
+            <adm3 code="AM10008_04" name="Chiva"/>
+            <adm3 code="AM10008_05" name="Aghavnadzor"/>
+            <adm3 code="AM10008_06" name="Yelpin"/>
+            <adm3 code="AM10008_07" name="Rind"/>
+            <adm3 code="AM10008_08" name="Arpi"/>
+            <adm3 code="AM10008_09" name="Khachik"/>
+        </adm2>
+        <adm2 code="AM10015" name="Gladzor">
+            <adm3 code="AM10015_01" name="Gladzor"/>
+            <adm3 code="AM10015_02" name="Getap"/>
+            <adm3 code="AM10015_03" name="Vernashen"/>
+        </adm2>
+        <adm2 code="AM10022" name="Zarritap">
+            <adm3 code="AM10022_01" name="Zaritap"/>
+            <adm3 code="AM10022_02" name="Artavan"/>
+            <adm3 code="AM10022_03" name="Khndzorut"/>
+            <adm3 code="AM10022_04" name="Saravan"/>
+            <adm3 code="AM10022_05" name="Bardzruni"/>
+            <adm3 code="AM10022_06" name="Martiros"/>
+            <adm3 code="AM10022_07" name="Sers"/>
+            <adm3 code="AM10022_08" name="Gomk"/>
+            <adm3 code="AM10022_09" name="Nor Aznaberd"/>
+        </adm2>
+        <adm2 code="AM10003" name="Vayk">
+            <adm3 code="AM10003_01" name="Vayk"/>
+            <adm3 code="AM10003_02" name="Azatek"/>
+            <adm3 code="AM10003_03" name="Por"/>
+            <adm3 code="AM10003_04" name="Arin"/>
+            <adm3 code="AM10003_05" name="Zedea"/>
+        </adm2>
+        <adm2 code="AM10021" name="Yeghegis">
+            <adm3 code="AM10021_01" name="Yeghegis"/>
+            <adm3 code="AM10021_02" name="Aghavnadzor"/>
+            <adm3 code="AM10021_03" name="Yeghegis"/>
+            <adm3 code="AM10021_04" name="Horbategh"/>
+            <adm3 code="AM10021_05" name="Salli"/>
+            <adm3 code="AM10021_06" name="Artabuynk"/>
+            <adm3 code="AM10021_07" name="Taratumb"/>
+            <adm3 code="AM10021_08" name="Hors"/>
+            <adm3 code="AM10021_09" name="Vardahovit"/>
+            <adm3 code="AM10021_10" name="Goghtanik"/>
+            <adm3 code="AM10021_11" name="Hermon"/>
+            <adm3 code="AM10021_12" name="Shatin"/>
+            <adm3 code="AM10021_13" name="Karaglukh"/>
+        </adm2>
         <adm2 code="AM10032" name="Malishka"/>
     </adm1>
     <adm1 code="AM11" name="Tavush">
