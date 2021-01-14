@@ -359,27 +359,62 @@
         <adm2 code="AM062" name="Tumanian"/>
     </adm1>
     <adm1 code="AM07" name="Kotayk">
-<!--        <adm2 code="AM072" name="Hrazdan"/>-->
-<!--        <adm2 code="AM073" name="Nairi"/>-->
-<!--        <adm2 code="AM071" name="Kotayk"/>-->
+        <!--        <adm2 code="AM072" name="Hrazdan"/>-->
+        <!--        <adm2 code="AM073" name="Nairi"/>-->
+        <!--        <adm2 code="AM071" name="Kotayk"/>-->
         <adm2 code="AM07002" name="Abovyan"/>
         <adm2 code="AM07013" name="Aramus"/>
         <adm2 code="AM07018" name="Balahovit"/>
         <adm2 code="AM07022" name="Geghadir"/>
         <adm2 code="AM07023" name="Geghashen"/>
-        <adm2 code="AM07004" name="Yeghvard"/>
+        <adm2 code="AM07004" name="Yeghvard">
+            <adm3 code="AM07004_01" name="Yeghvard"/>
+            <adm3 code="AM07004_02" name="Bujakan"/>
+            <adm3 code="AM07004_03" name="Zovuni"/>
+            <adm3 code="AM07004_04" name="Zoravan"/>
+            <adm3 code="AM07004_05" name="Aragyugh"/>
+            <adm3 code="AM07004_06" name="Saralanj"/>
+        </adm2>
         <adm2 code="AM07005" name="Tsaghkadzor"/>
         <adm2 code="AM07041" name="Hatsavan"/>
-        <adm2 code="AM07045" name="Meghradzor"/>
+        <adm2 code="AM07045" name="Meghradzor">
+            <adm3 code="AM07045_01" name="Meghradzor"/>
+            <adm3 code="AM07045_02" name="Aghavnadzor"/>
+            <adm3 code="AM07045_03" name="Artavaz"/>
+            <adm3 code="AM07045_04" name="Hankavan"/>
+            <adm3 code="AM07045_05" name="Marmarik"/>
+            <adm3 code="AM07045_06" name="Gorgoch"/>
+            <adm3 code="AM07045_07" name="Pyunik"/>
+        </adm2>
         <adm2 code="AM07048" name="Nor Geghi"/>
         <adm2 code="AM07052" name="Voghjaberd"/>
         <adm2 code="AM07054" name="Ptghni"/>
         <adm2 code="AM07060" name="Solak"/>
         <adm2 code="AM07064" name="Kanakeravan"/>
-        <adm2 code="AM07009" name="Akunk"/>
-        <adm2 code="AM07007" name="Charentsavan"/>
+        <adm2 code="AM07009" name="Akunk">
+            <adm3 code="AM07009_01" name="Akunk"/>
+            <adm3 code="AM07009_02" name="Zovashen"/>
+            <adm3 code="AM07009_03" name="Zar"/>
+            <adm3 code="AM07009_04" name="Kaputan"/>
+            <adm3 code="AM07009_05" name="Hatis"/>
+            <adm3 code="AM07009_06" name="Kotayk"/>
+            <adm3 code="AM07009_07" name="Nor gyugh"/>
+            <adm3 code="AM07009_08" name="Sevaberd"/>
+        </adm2>
+        <adm2 code="AM07007" name="Charentsavan">
+            <adm3 code="AM07007_01" name="Charentsavan"/>
+            <adm3 code="AM07007_02" name="Alapars"/>
+            <adm3 code="AM07007_03" name="Arzakan"/>
+            <adm3 code="AM07007_04" name="Bjni"/>
+            <adm3 code="AM07007_05" name="Karenis"/>
+            <adm3 code="AM07007_06" name="Fantan"/>
+        </adm2>
         <adm2 code="AM07014" name="Argel"/>
-        <adm2 code="AM07003" name="Byureghavan"/>
+        <adm2 code="AM07003" name="Byureghavan">
+            <adm3 code="AM07003_01" name="Byureghavan"/>
+            <adm3 code="AM07003_02" name="Nurnus"/>
+            <adm3 code="AM07003_03" name="Jraber"/>
+        </adm2>
         <adm2 code="AM07058" name="Getargel"/>
         <adm2 code="AM07032" name="Teghenik"/>
         <adm2 code="AM07034" name="Katnakhpyur"/>
@@ -398,7 +433,11 @@
         <adm2 code="AM07047" name="Nor Artamet"/>
         <adm2 code="AM07006" name="Nor Hachn"/>
         <adm2 code="AM07053" name="Proshyan"/>
-        <adm2 code="AM07057" name="Jrvezh"/>
+        <adm2 code="AM07057" name="Jrvezh">
+            <adm3 code="AM07057_01" name="Jrvezh"/>
+            <adm3 code="AM07057_02" name="Zovk"/>
+            <adm3 code="AM07057_03" name="Dzorakhpyur"/>
+        </adm2>
         <adm2 code="AM07063" name="Kaghsi"/>
         <adm2 code="AM07066" name="Karashamb"/>
     </adm1>
