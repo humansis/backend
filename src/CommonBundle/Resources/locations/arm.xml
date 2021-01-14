@@ -15,10 +15,10 @@
         <adm2 code="AM01012" name="Qanaker-Zeytun"/>
     </adm1>
     <adm1 code="AM02" name="Aragatsotn">
-<!--        <adm2 code="AM021" name="Ashtarak"/>-->
-<!--        <adm2 code="AM024" name="Talin"/>-->
-<!--        <adm2 code="AM023" name="Aragats"/>-->
-<!--        <adm2 code="AM022" name="Aparan"/>-->
+        <!--        <adm2 code="AM021" name="Ashtarak"/>-->
+        <!--        <adm2 code="AM024" name="Talin"/>-->
+        <!--        <adm2 code="AM023" name="Aragats"/>-->
+        <!--        <adm2 code="AM022" name="Aparan"/>-->
         <adm2 code="AM2001" name="Ashtarak"/>
         <adm2 code="AM02002" name="Aparan">
             <adm3 code="AM02002_01" name="Aparan"/>
@@ -247,11 +247,68 @@
         <adm2 code="AM04097" name="Ferik"/>
     </adm1>
     <adm1 code="AM05" name="Gegharkunik">
-        <adm2 code="AM054" name="Sevan"/>
-        <adm2 code="AM052" name="Karmir"/>
-        <adm2 code="AM055" name="Vardenis"/>
-        <adm2 code="AM051" name="Gavar"/>
-        <adm2 code="AM053" name="Martuni"/>
+<!--        <adm2 code="AM054" name="Sevan"/>-->
+<!--        <adm2 code="AM052" name="Karmir"/>-->
+<!--        <adm2 code="AM055" name="Vardenis"/>-->
+<!--        <adm2 code="AM051" name="Gavar"/>-->
+<!--        <adm2 code="AM053" name="Martuni"/>-->
+        <adm2 code="AM05_01" name="Shoghakat"/>
+        <adm2 code="AM05002" name="Chambarak"/>
+        <adm2 code="AM05005" name="Vardenis"/>
+        <adm2 code="AM05023" name="Geghamasar"/>
+        <adm2 code="AM05007" name="Akhpradzor"/>
+        <adm2 code="AM05008" name="Akunk"/>
+        <adm2 code="AM05014" name="Avazan"/>
+        <adm2 code="AM05013" name="Astghadzor"/>
+        <adm2 code="AM05016" name="Artsvanist"/>
+        <adm2 code="AM05020" name="Berdkunk"/>
+        <adm2 code="AM05021" name="Gandzak"/>
+        <adm2 code="AM05001" name="Gavar"/>
+        <adm2 code="AM05024" name="Geghamavan"/>
+        <adm2 code="AM05025" name="Gegharkunik"/>
+        <adm2 code="AM05026" name="Geghakar"/>
+        <adm2 code="AM05027" name="Geghhovit"/>
+        <adm2 code="AM05030" name="Ddmashen"/>
+        <adm2 code="AM05033" name="Yeranos"/>
+        <adm2 code="AM05034" name="Zolakar"/>
+        <adm2 code="AM05035" name="Zovaber"/>
+        <adm2 code="AM05038" name="Lanjakhpyur"/>
+        <adm2 code="AM05039" name="Lichk"/>
+        <adm2 code="AM05040" name="Lchashen"/>
+        <adm2 code="AM05042" name="Lchap"/>
+        <adm2 code="AM05043" name="Lusakunk"/>
+        <adm2 code="AM05044" name="Khachakhpyur"/>
+        <adm2 code="AM05045" name="Tsakkar"/>
+        <adm2 code="AM05046" name="Tsaghkashen"/>
+        <adm2 code="AM05047" name="Tsaghkunk"/>
+        <adm2 code="AM05049" name="Tsovagyugh"/>
+        <adm2 code="AM05050" name="Tsovazard"/>
+        <adm2 code="AM05051" name="Tsovak"/>
+        <adm2 code="AM05036" name="Tsovasar"/>
+        <adm2 code="AM05052" name="Tsovinar"/>
+        <adm2 code="AM05055" name="Karchakhpyur"/>
+        <adm2 code="AM05056" name="Karmirgyugh"/>
+        <adm2 code="AM05059" name="Hayravank"/>
+        <adm2 code="AM05060" name="Dzoragyugh"/>
+        <adm2 code="AM05062" name="Madina"/>
+        <adm2 code="AM05063" name="Martuni"/>
+        <adm2 code="AM05064" name="Maqenis"/>
+        <adm2 code="AM05065" name="Mets Masrik"/>
+        <adm2 code="AM05066" name="Nerkin Getashen"/>
+        <adm2 code="AM05069" name="Norakert"/>
+        <adm2 code="AM05070" name="Norashen"/>
+        <adm2 code="AM05071" name="Noratus"/>
+        <adm2 code="AM05075" name="Chkalovka"/>
+        <adm2 code="AM05078" name="Sarukhan"/>
+        <adm2 code="AM05079" name="Semyonovka"/>
+        <adm2 code="AM05082" name="Vaghashen"/>
+        <adm2 code="AM05004" name="Sevan"/>
+        <adm2 code="AM05083" name="Vanevan"/>
+        <adm2 code="AM05084" name="Vardadzor"/>
+        <adm2 code="AM05085" name="Vardenik"/>
+        <adm2 code="AM05086" name="Varser"/>
+        <adm2 code="AM05087" name="Verin Getashen"/>
+        <adm2 code="AM05089" name="Torfavan"/>
     </adm1>
     <adm1 code="AM06" name="Lori">
         <adm2 code="AM063" name="Spitak"/>
