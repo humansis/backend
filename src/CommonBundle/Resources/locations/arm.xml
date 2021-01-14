@@ -703,13 +703,150 @@
         <!--        <adm2 code="AM092" name="Kapan"/>-->
         <!--        <adm2 code="AM091" name="Goris"/>-->
         <!--        <adm2 code="AM094" name="Sisian"/>-->
-        <adm2 code="AM09028" name="Gorayk"/>
-        <adm2 code="AM09005" name="Meghri"/>
-        <adm2 code="AM09101" name="Tegh"/>
-        <adm2 code="AM09003" name="Goris"/>
-        <adm2 code="AM09006" name="Sisian"/>
-        <adm2 code="AM09007" name="Kajaran"/>
-        <adm2 code="AM09001" name="Kapan"/>
+        <adm2 code="AM09028" name="Gorayk">
+            <adm3 code="AM09028_01" name="Gorayk"/>
+            <adm3 code="AM09028_02" name="Tsghuk"/>
+            <adm3 code="AM09028_03" name="Sarnakunk"/>
+            <adm3 code="AM09028_04" name="Spandaryan"/>
+        </adm2>
+        <adm2 code="AM09005" name="Meghri">
+            <adm3 code="AM09005_01" name="Meghri"/>
+            <adm3 code="AM09005_02" name="Agarak"/>
+            <adm3 code="AM09005_03" name="Alvank"/>
+            <adm3 code="AM09005_04" name="Gudemnis"/>
+            <adm3 code="AM09005_05" name="Lehvaz"/>
+            <adm3 code="AM09005_06" name="Lichk"/>
+            <adm3 code="AM09005_07" name="Kartchevan"/>
+            <adm3 code="AM09005_08" name="Kuris"/>
+            <adm3 code="AM09005_09" name="Nrnadzor"/>
+            <adm3 code="AM09005_10" name="Shvanidzor"/>
+            <adm3 code="AM09005_11" name="Vahravar"/>
+            <adm3 code="AM09005_12" name="Vardanidzor"/>
+            <adm3 code="AM09005_13" name="Tashtun"/>
+            <adm3 code="AM09005_14" name="Aygedzor"/>
+            <adm3 code="AM09005_15" name="Tkhkut"/>
+        </adm2>
+        <adm2 code="AM09101" name="Tegh">
+            <adm3 code="AM09101_01" name="Tegh"/>
+            <adm3 code="AM09101_02" name="Aravus"/>
+            <adm3 code="AM09101_03" name="Khnatsakh"/>
+            <adm3 code="AM09101_04" name="Khoznavar"/>
+            <adm3 code="AM09101_05" name="Kornidzor"/>
+            <adm3 code="AM09101_06" name="Vaghatur"/>
+            <adm3 code="AM09101_07" name="Karashen"/>
+        </adm2>
+        <adm2 code="AM09003" name="Goris">
+            <adm3 code="AM09003_01" name="Goris"/>
+            <adm3 code="AM09003_02" name="Akner"/>
+            <adm3 code="AM09003_03" name="Bardzravan"/>
+            <adm3 code="AM09003_04" name="Khndzoresk"/>
+            <adm3 code="AM09003_05" name="Hartashen"/>
+            <adm3 code="AM09003_06" name="Nerkin Khndzoresk"/>
+            <adm3 code="AM09003_07" name="Shurnukh"/>
+            <adm3 code="AM09003_08" name="Vorotan"/>
+            <adm3 code="AM09003_09" name="Verishen"/>
+            <adm3 code="AM09003_10" name="Karahunj"/>
+            <adm3 code="AM09003_11" name="Dzorak"/>
+            <adm3 code="AM09003_12" name="Aghbulagh"/>
+            <adm3 code="AM09003_13" name="Vanand"/>
+        </adm2>
+        <adm2 code="AM09006" name="Sisian">
+            <adm3 code="AM09006_01" name="Sisian"/>
+            <adm3 code="AM09006_02" name="Akhlatyan"/>
+            <adm3 code="AM09006_03" name="Aghitu"/>
+            <adm3 code="AM09006_04" name="&#x531;&#x576;&#x563;&#x565;&#x572;&#x561;&#x56F;&#x578;&#x569;"/>
+            <adm3 code="AM09006_05" name="Ashotavan"/>
+            <adm3 code="AM09006_06" name="Arevis"/>
+            <adm3 code="AM09006_07" name="Balak"/>
+            <adm3 code="AM09006_08" name="Bnunis"/>
+            <adm3 code="AM09006_09" name="Brnakot"/>
+            <adm3 code="AM09006_10" name="Getatagh"/>
+            <adm3 code="AM09006_11" name="Dastakert"/>
+            <adm3 code="AM09006_12" name="Darbas"/>
+            <adm3 code="AM09006_13" name="Tanahat"/>
+            <adm3 code="AM09006_14" name="Tasik"/>
+            <adm3 code="AM09006_15" name="Ishkhanasar"/>
+            <adm3 code="AM09006_16" name="Ltsen"/>
+            <adm3 code="AM09006_17" name="Lor"/>
+            <adm3 code="AM09006_18" name="Hatsavan"/>
+            <adm3 code="AM09006_19" name="Mutsk"/>
+            <adm3 code="AM09006_20" name="Nzhdeh"/>
+            <adm3 code="AM09006_21" name="Noravan"/>
+            <adm3 code="AM09006_22" name="Shaghat"/>
+            <adm3 code="AM09006_23" name="Shamb"/>
+            <adm3 code="AM09006_24" name="Shaki"/>
+            <adm3 code="AM09006_25" name="Shenatagh"/>
+            <adm3 code="AM09006_26" name="Vorotnavan"/>
+            <adm3 code="AM09006_27" name="Salvard"/>
+            <adm3 code="AM09006_28" name="Vaghatin"/>
+            <adm3 code="AM09006_29" name="Tolors"/>
+            <adm3 code="AM09006_30" name="Torunik"/>
+            <adm3 code="AM09006_31" name="Tsghuni"/>
+            <adm3 code="AM09006_32" name="Uyts"/>
+        </adm2>
+        <adm2 code="AM09007" name="Kajaran">
+            <adm3 code="AM09007_01" name="Kajaran"/>
+            <adm3 code="AM09007_02" name="Andokavan"/>
+            <adm3 code="AM09007_03" name="Adjabadj"/>
+            <adm3 code="AM09007_04" name="Babikavan"/>
+            <adm3 code="AM09007_05" name="Geghavank"/>
+            <adm3 code="AM09007_06" name="Geghi"/>
+            <adm3 code="AM09007_07" name="Getishen"/>
+            <adm3 code="AM09007_08" name="Lernadzor"/>
+            <adm3 code="AM09007_09" name="Katnarat"/>
+            <adm3 code="AM09007_10" name="Kavchut"/>
+            <adm3 code="AM09007_11" name="Kard"/>
+            <adm3 code="AM09007_12" name="Kitsk"/>
+            <adm3 code="AM09007_13" name="Dzagikavan"/>
+            <adm3 code="AM09007_14" name="Nerkin Giratagh"/>
+            <adm3 code="AM09007_15" name="Nor Astghaberd"/>
+            <adm3 code="AM09007_16" name="Vocheti"/>
+            <adm3 code="AM09007_17" name="Verin Geghavank"/>
+            <adm3 code="AM09007_18" name="Verin Geghavank"/>
+            <adm3 code="AM09007_19" name="Pukhrut"/>
+            <adm3 code="AM09007_20" name="Kadjarants"/>
+            <adm3 code="AM09007_21" name="Karut"/>
+        </adm2>
+        <adm2 code="AM09001" name="Kapan">
+            <adm3 code="AM09001_01" name="Kapan"/>
+            <adm3 code="AM09001_02" name="Agarak"/>
+            <adm3 code="AM09001_03" name="Aghvani"/>
+            <adm3 code="AM09001_04" name="Achanan"/>
+            <adm3 code="AM09001_05" name="Antarashat"/>
+            <adm3 code="AM09001_06" name="Arajadzor"/>
+            <adm3 code="AM09001_07" name="Artsvanik"/>
+            <adm3 code="AM09001_08" name="Bargushat"/>
+            <adm3 code="AM09001_09" name="Geghanush"/>
+            <adm3 code="AM09001_10" name="Gomaran"/>
+            <adm3 code="AM09001_11" name="Davit Bek"/>
+            <adm3 code="AM09001_12" name="Ditsmayri"/>
+            <adm3 code="AM09001_13" name="Yegheg"/>
+            <adm3 code="AM09001_14" name="Yeghvard"/>
+            <adm3 code="AM09001_15" name="Khdrants"/>
+            <adm3 code="AM09001_16" name="Khordzor"/>
+            <adm3 code="AM09001_17" name="Tsav"/>
+            <adm3 code="AM09001_18" name="Kaghnut"/>
+            <adm3 code="AM09001_19" name="Dzorastan"/>
+            <adm3 code="AM09001_20" name="Chakaten"/>
+            <adm3 code="AM09001_21" name="Nerkin Khotanan"/>
+            <adm3 code="AM09001_22" name="Nerkin Hand"/>
+            <adm3 code="AM09001_23" name="Norashenik"/>
+            <adm3 code="AM09001_24" name="Shikahogh"/>
+            <adm3 code="AM09001_25" name="Shishkert"/>
+            <adm3 code="AM09001_26" name="Shrvenants"/>
+            <adm3 code="AM09001_27" name="Chapni"/>
+            <adm3 code="AM09001_28" name="Sznak"/>
+            <adm3 code="AM09001_29" name="Syunik"/>
+            <adm3 code="AM09001_30" name="Srashen"/>
+            <adm3 code="AM09001_31" name="Sevakar"/>
+            <adm3 code="AM09001_32" name="Vanek"/>
+            <adm3 code="AM09001_33" name="Vardavank"/>
+            <adm3 code="AM09001_34" name="Verin Khotanan"/>
+            <adm3 code="AM09001_35" name="Tandzaver"/>
+            <adm3 code="AM09001_36" name="Tavrus"/>
+            <adm3 code="AM09001_37" name="Uzhanis"/>
+            <adm3 code="AM09001_38" name="Okhtar"/>
+        </adm2>
     </adm1>
     <adm1 code="AM10" name="Vayots Dzor">
         <adm2 code="AM102" name="Vayk"/>
