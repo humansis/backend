@@ -1,14 +1,169 @@
 <?xml version="1.0"?>
 <adm0 name="Armenia" code="AM">
-    <adm1 code="AM01" name="Yerevan"/>
-    <adm1 code="AM02" name="Aragatsotn"/>
-    <adm1 code="AM03" name="Ararat"/>
-    <adm1 code="AM04" name="Armavir"/>
-    <adm1 code="AM05" name="Gegharkunik"/>
-    <adm1 code="AM06" name="Lori"/>
-    <adm1 code="AM07" name="Kotayk"/>
-    <adm1 code="AM08" name="Shirak"/>
-    <adm1 code="AM09" name="Syunik"/>
-    <adm1 code="AM10" name="Vayots Dzor"/>
-    <adm1 code="AM11" name="Tavush"/>
+    <adm1 code="AM01" name="Yerevan">
+        <adm2 code="AM01001" name="Achapnyak"/>
+        <adm2 code="AM01002" name="Avan"/>
+        <adm2 code="AM01003" name="Arabkir"/>
+        <adm2 code="AM01004" name="Davtashen"/>
+        <adm2 code="AM01005" name="Erebuni"/>
+        <adm2 code="AM01006" name="Kentron"/>
+        <adm2 code="AM01007" name="Malatia-Sebastia"/>
+        <adm2 code="AM01008" name="Nor Nork"/>
+        <adm2 code="AM01009" name="Nork-Marash"/>
+        <adm2 code="AM01010" name="Nubarashen"/>
+        <adm2 code="AM01011" name="Shengavit"/>
+        <adm2 code="AM01012" name="Qanaker-Zeytun"/>
+    </adm1>
+    <adm1 code="AM02" name="Aragatsotn">
+        <adm2 code="AM021" name="Ashtarak"/>
+        <adm2 code="AM024" name="Talin"/>
+        <adm2 code="AM023" name="Aragats"/>
+        <adm2 code="AM022" name="Aparan"/>
+    </adm1>
+    <adm1 code="AM03" name="Ararat">
+        <adm2 code="AM031" name="Ararat"/>
+        <adm2 code="AM033" name="Masis"/>
+        <adm2 code="AM032" name="Artashat"/>
+    </adm1>
+    <adm1 code="AM04" name="Armavir">
+        <adm2 code="AM04001" name="Armavir"/>
+        <adm2 code="AM04002" name="Ejmiatsin  "/>
+        <adm2 code="AM04003" name="Metsamor"/>
+        <adm2 code="AM04004" name="Aknalich"/>
+        <adm2 code="AM04005" name="Aknashen"/>
+        <adm2 code="AM04006" name="Aghavnatun"/>
+        <adm2 code="AM04007" name="Amasia"/>
+        <adm2 code="AM04008" name="Amberd"/>
+        <adm2 code="AM04009" name="Aygek"/>
+        <adm2 code="AM04010" name="Aygeshat"/>
+        <adm2 code="AM04011" name="Aygeshat"/>
+        <adm2 code="AM04012" name="Apaga"/>
+        <adm2 code="AM04013" name="Aratashen"/>
+        <adm2 code="AM04014" name="Aragats"/>
+        <adm2 code="AM04015" name="Arazap"/>
+        <adm2 code="AM04016" name="Araks &#10;(Vagharshapat)"/>
+        <adm2 code="AM04017" name="Araks(Armavir)"/>
+        <adm2 code="AM04018" name="Argavand"/>
+        <adm2 code="AM04019" name="Argina"/>
+        <adm2 code="AM04020" name="Armavir v. "/>
+        <adm2 code="AM04021" name="Arshaluys"/>
+        <adm2 code="AM04022" name="Artamet"/>
+        <adm2 code="AM04023" name="Artimet"/>
+        <adm2 code="AM04024" name="Artashar"/>
+        <adm2 code="AM04025" name="Arevadasht"/>
+        <adm2 code="AM04026" name="Arevashat"/>
+        <adm2 code="AM04027" name="Arevik"/>
+        <adm2 code="AM04028" name="Bagaran"/>
+        <adm2 code="AM04029" name="Baghramyan (Baghramyan)"/>
+        <adm2 code="AM04030" name="Baghramyan (Vagharshapat) "/>
+        <adm2 code="AM04031" name="Bambakashat"/>
+        <adm2 code="AM04032" name="Berkashat"/>
+        <adm2 code="AM04033" name="Gai"/>
+        <adm2 code="AM04034" name="Getashen"/>
+        <adm2 code="AM04035" name="Griboyedov"/>
+        <adm2 code="AM04036" name="Dalarik"/>
+        <adm2 code="AM04037" name="Dasht"/>
+        <adm2 code="AM04038" name="Dokhs"/>
+        <adm2 code="AM04039" name="Yeghegnut"/>
+        <adm2 code="AM04040" name="Yeraskhahun"/>
+        <adm2 code="AM04041" name="Yervandashat"/>
+        <adm2 code="AM04042" name="Zartonk"/>
+        <adm2 code="AM04043" name="Maisyan"/>
+        <adm2 code="AM04044" name="Lenughi"/>
+        <adm2 code="AM04045" name="Lernagog"/>
+        <adm2 code="AM04046" name="Lernamerdz"/>
+        <adm2 code="AM04047" name="Lukashin"/>
+        <adm2 code="AM04048" name="Lusagyugh"/>
+        <adm2 code="AM04049" name="Khanjian"/>
+        <adm2 code="AM04050" name="Khoronk"/>
+        <adm2 code="AM04051" name="Tsaghkalanj"/>
+        <adm2 code="AM04052" name="Tsaghkunk"/>
+        <adm2 code="AM04053" name="Tsiatsan"/>
+        <adm2 code="AM04054" name="Koghbavan"/>
+        <adm2 code="AM04055" name="Haytagh"/>
+        <adm2 code="AM04056" name="Haykashen"/>
+        <adm2 code="AM04057" name="Haykavan"/>
+        <adm2 code="AM04058" name="Hatsik"/>
+        <adm2 code="AM04059" name="Sardarapat"/>
+        <adm2 code="AM04060" name="Hovtamech"/>
+        <adm2 code="AM04061" name="Hushakert"/>
+        <adm2 code="AM04062" name="Aygevan"/>
+        <adm2 code="AM04063" name="Margara"/>
+        <adm2 code="AM04064" name="Metsamor"/>
+        <adm2 code="AM04065" name="Merdzavan"/>
+        <adm2 code="AM04066" name="Myasnikyan"/>
+        <adm2 code="AM04067" name="Mrgashat"/>
+        <adm2 code="AM04068" name="Mrgastan"/>
+        <adm2 code="AM04069" name="Musaler"/>
+        <adm2 code="AM04070" name="Nalbandyan"/>
+        <adm2 code="AM04071" name="Nor Armavir"/>
+        <adm2 code="AM04072" name="Nor Artagers"/>
+        <adm2 code="AM04073" name="Nor Kesaria"/>
+        <adm2 code="AM04074" name="Norakert"/>
+        <adm2 code="AM04075" name="Norapat"/>
+        <adm2 code="AM04076" name="Noravan"/>
+        <adm2 code="AM04077" name="Shahumyan"/>
+        <adm2 code="AM04078" name="Shahumyan Poultry Plant"/>
+        <adm2 code="AM04079" name="Shenavan"/>
+        <adm2 code="AM04080" name="Shenik"/>
+        <adm2 code="AM04081" name="Voskehat"/>
+        <adm2 code="AM04082" name="Ptghunk"/>
+        <adm2 code="AM04083" name="Janfida"/>
+        <adm2 code="AM04084" name="Jrashen"/>
+        <adm2 code="AM04085" name="Jrapat"/>
+        <adm2 code="AM04086" name="Jrarpi"/>
+        <adm2 code="AM04087" name="Geghakert"/>
+        <adm2 code="AM04088" name="Alashkert"/>
+        <adm2 code="AM04089" name="Vanand"/>
+        <adm2 code="AM04090" name="Vardanashen"/>
+        <adm2 code="AM04091" name="Talvorik"/>
+        <adm2 code="AM04092" name="Tandzut"/>
+        <adm2 code="AM04093" name="Taronik"/>
+        <adm2 code="AM04094" name="Parakar"/>
+        <adm2 code="AM04095" name="Pshatavan"/>
+        <adm2 code="AM04096" name="Karakert"/>
+        <adm2 code="AM04097" name="Ferik"/>
+    </adm1>
+    <adm1 code="AM05" name="Gegharkunik">
+        <adm2 code="AM054" name="Sevan"/>
+        <adm2 code="AM052" name="Karmir"/>
+        <adm2 code="AM055" name="Vardenis"/>
+        <adm2 code="AM051" name="Gavar"/>
+        <adm2 code="AM053" name="Martuni"/>
+    </adm1>
+    <adm1 code="AM06" name="Lori">
+        <adm2 code="AM063" name="Spitak"/>
+        <adm2 code="AM061" name="Gugark"/>
+        <adm2 code="AM065" name="Tashir"/>
+        <adm2 code="AM064" name="Stepanavan"/>
+        <adm2 code="AM062" name="Tumanian"/>
+    </adm1>
+    <adm1 code="AM07" name="Kotayk">
+        <adm2 code="AM072" name="Hrazdan"/>
+        <adm2 code="AM073" name="Nairi"/>
+        <adm2 code="AM071" name="Kotayk"/>
+    </adm1>
+    <adm1 code="AM08" name="Shirak">
+        <adm2 code="AM084" name="Ashotsk "/>
+        <adm2 code="AM082" name="Amasia"/>
+        <adm2 code="AM081" name="Akhuryan"/>
+        <adm2 code="AM083" name="Ani"/>
+        <adm2 code="AM085" name="Artik"/>
+    </adm1>
+    <adm1 code="AM09" name="Syunik">
+        <adm2 code="AM093" name="Meghri"/>
+        <adm2 code="AM092" name="Kapan"/>
+        <adm2 code="AM091" name="Goris"/>
+        <adm2 code="AM094" name="Sisian"/>
+    </adm1>
+    <adm1 code="AM10" name="Vayots Dzor">
+        <adm2 code="AM102" name="Vayk"/>
+        <adm2 code="AM101" name="Yeghegnadzor"/>
+    </adm1>
+    <adm1 code="AM11" name="Tavush">
+        <adm2 code="AM113" name="Tavush"/>
+        <adm2 code="AM112" name="Noyemberyan"/>
+        <adm2 code="AM114" name="Dilidjan"/>
+        <adm2 code="AM111" name="Idjevan"/>
+    </adm1>
 </adm0>
