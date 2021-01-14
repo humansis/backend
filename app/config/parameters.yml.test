@@ -20,4 +20,5 @@ parameters:
     google_client: ""
 
     mobile_app_master_key: "123456789ABCDEF"
-    mobile_app_version: "19700101"
+    mobile_app_version: "1"
+    mobile_app_id: "1A1234"
