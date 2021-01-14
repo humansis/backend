@@ -742,7 +742,7 @@ class Household extends AbstractBeneficiary
         $householdHead = null;
         /** @var Beneficiary $beneficiary */
         foreach ($this->getBeneficiaries() as $beneficiary) {
-            if ($beneficiary->getStatus() === true) { //TODO value should be in constant
+            if ($beneficiary->isHead()) {
                 $householdHead = $beneficiary;
                 break;
             }
