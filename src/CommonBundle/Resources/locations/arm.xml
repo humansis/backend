@@ -20,18 +20,57 @@
 <!--        <adm2 code="AM023" name="Aragats"/>-->
 <!--        <adm2 code="AM022" name="Aparan"/>-->
         <adm2 code="AM2001" name="Ashtarak"/>
-        <adm2 code="AM02002" name="Aparan"/>
+        <adm2 code="AM02002" name="Aparan">
+            <adm3 code="AM02002_01" name="Aparan"/>
+            <adm3 code="AM02002_02" name="Aragats"/>
+            <adm3 code="AM02002_03" name="Arayi"/>
+            <adm3 code="AM02002_04" name="Apnagyugh"/>
+            <adm3 code="AM02002_05" name="Yeghipatrush"/>
+            <adm3 code="AM02002_06" name="Yernjatap"/>
+            <adm3 code="AM02002_07" name="Ttujur"/>
+            <adm3 code="AM02002_08" name="Lusagyugh"/>
+            <adm3 code="AM02002_09" name="Tsaghkashen"/>
+            <adm3 code="AM02002_10" name="Kayk"/>
+            <adm3 code="AM02002_11" name="Hartavan"/>
+            <adm3 code="AM02002_12" name="Dzoraglukh"/>
+            <adm3 code="AM02002_13" name="Nigavan"/>
+            <adm3 code="AM02002_14" name="Shenavan"/>
+            <adm3 code="AM02002_15" name="Shoghakn"/>
+            <adm3 code="AM02002_16" name="Chknagh"/>
+            <adm3 code="AM02002_17" name="Jrambar"/>
+            <adm3 code="AM02002_18" name="Saralanj"/>
+            <adm3 code="AM02002_19" name="Vardenis"/>
+            <adm3 code="AM02002_20" name="Vardenut"/>
+            <adm3 code="AM02002_21" name="Kuchak"/>
+        </adm2>
         <adm2 code="AM02003" name="Talin"/>
         <adm2 code="AM02004" name="Agarak"/>
         <adm2 code="AM02005" name="Agarakavan"/>
-        <adm2 code="AM02006" name="Alagyaz"/>
+        <adm2 code="AM02006" name="Alagyaz">
+            <adm3 code="AM02006_01" name="Alagyaz"/>
+            <adm3 code="AM02006_02" name="Avshen"/>
+            <adm3 code="AM02006_03" name="Kaniashir"/>
+            <adm3 code="AM02006_04" name="Charchakis"/>
+            <adm3 code="AM02006_05" name="Mi&#x575;natun"/>
+            <adm3 code="AM02006_06" name="Mirak"/>
+            <adm3 code="AM02006_07" name="Shenkani"/>
+            <adm3 code="AM02006_08" name="Jamshlu"/>
+            <adm3 code="AM02006_09" name="Ryataza"/>
+            <adm3 code="AM02006_10" name="Sadunts"/>
+            <adm3 code="AM02006_11" name="Sipan"/>
+        </adm2>
         <adm2 code="AM02007" name="Akunk"/>
         <adm2 code="AM02008" name="Aghdzk"/>
         <adm2 code="AM02010" name="Antarut"/>
         <adm2 code="AM02011" name="Ashnak"/>
         <adm2 code="AM02012" name="Avan"/>
         <adm2 code="AM02013" name="Metsadzor"/>
-        <adm2 code="AM02016" name="Aragatsavan"/>
+        <adm2 code="AM02016" name="Aragatsavan">
+            <adm3 code="AM02016_01" name="Aragatsavan"/>
+            <adm3 code="AM02016_02" name="Arteni"/>
+            <adm3 code="AM02016_03" name="Getap"/>
+            <adm3 code="AM02016_04" name="Lusakn"/>
+        </adm2>
         <adm2 code="AM02017" name="Aragatsotn"/>
         <adm2 code="AM02019" name="Tatul"/>
         <adm2 code="AM02020" name="Artashavan"/>
@@ -52,7 +91,18 @@
         <adm2 code="AM02047" name="Tlik"/>
         <adm2 code="AM02048" name="Irind"/>
         <adm2 code="AM02050" name="Lernarot"/>
-        <adm2 code="AM02053" name="Tsaghkahovit"/>
+        <adm2 code="AM02053" name="Tsaghkahovit">
+            <adm3 code="AM02053_01" name="Tsaghkahovit"/>
+            <adm3 code="AM02053_02" name="Geghadir"/>
+            <adm3 code="AM02053_03" name="Geghadzor"/>
+            <adm3 code="AM02053_04" name="Gegharot"/>
+            <adm3 code="AM02053_05" name="Lernapar"/>
+            <adm3 code="AM02053_06" name="Berkarat"/>
+            <adm3 code="AM02053_07" name="Tsilkar"/>
+            <adm3 code="AM02053_08" name="Hnaberd"/>
+            <adm3 code="AM02053_09" name="Norashen"/>
+            <adm3 code="AM02053_10" name="Vardablur"/>
+        </adm2>
         <adm2 code="AM02055" name="Tsaghkasar"/>
         <adm2 code="AM02057" name="Katnakhpyur"/>
         <adm2 code="AM02058" name="Karbi"/>
