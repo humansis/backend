@@ -114,6 +114,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('projectIds', $result);
         $this->assertArrayHasKey('latitude', $result);
+        $this->assertArrayHasKey('householdHeadId', $result);
         $this->assertArrayHasKey('beneficiaryIds', $result);
         $this->assertArrayHasKey('incomeLevel', $result);
         $this->assertArrayHasKey('foodConsumptionScore', $result);
@@ -221,6 +222,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('projectIds', $result);
         $this->assertArrayHasKey('latitude', $result);
+        $this->assertArrayHasKey('householdHeadId', $result);
         $this->assertArrayHasKey('beneficiaryIds', $result);
         $this->assertArrayHasKey('incomeLevel', $result);
         $this->assertArrayHasKey('foodConsumptionScore', $result);
@@ -266,6 +268,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('projectIds', $result);
         $this->assertArrayHasKey('latitude', $result);
+        $this->assertArrayHasKey('householdHeadId', $result);
         $this->assertArrayHasKey('beneficiaryIds', $result);
         $this->assertArrayHasKey('incomeLevel', $result);
         $this->assertArrayHasKey('foodConsumptionScore', $result);
