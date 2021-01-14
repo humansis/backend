@@ -290,11 +290,17 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $admCodes = [];
         $admCodeDuplicities = [];
         $admParentCodeMissing = [];
+        $emptyLines = 0;
         $xml = new SimpleXMLElement(file_get_contents($targetFilepath));
         foreach ($this->getCSVLines($sourceFilePath) as $line) {
             $code = $line[$codeColumnIndex];
             $name = $line[$nameColumnIndex];
             $parent = $line[$parentCodeColumnIndex];
+
+            if (empty($code)) {
+                ++$emptyLines;
+                continue;
+            }
 
             // duplicity in file
             if (isset($admCodes[$code])) {
@@ -338,6 +344,9 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
                 echo "$codeMissing;$count times\n";
             }
             throw new \Exception("There are missing parents");
+        }
+        if ($emptyLines > 0) {
+            echo "There is $emptyLines lines without code\n";
         }
         unset($admCodes);
         unset($admCodeDuplicities);
