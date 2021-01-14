@@ -849,8 +849,16 @@
         </adm2>
     </adm1>
     <adm1 code="AM10" name="Vayots Dzor">
-        <adm2 code="AM102" name="Vayk"/>
-        <adm2 code="AM101" name="Yeghegnadzor"/>
+        <!--        <adm2 code="AM102" name="Vayk"/>-->
+        <!--        <adm2 code="AM101" name="Yeghegnadzor"/>-->
+        <adm2 code="AM10001" name="Yeghegnadzor"/>
+        <adm2 code="AM10002" name="Jermuk"/>
+        <adm2 code="AM10008" name="Areni"/>
+        <adm2 code="AM10015" name="Gladzor"/>
+        <adm2 code="AM10022" name="Zarritap"/>
+        <adm2 code="AM10003" name="Vayk"/>
+        <adm2 code="AM10021" name="Yeghegis"/>
+        <adm2 code="AM10032" name="Malishka"/>
     </adm1>
     <adm1 code="AM11" name="Tavush">
         <!--        <adm2 code="AM113" name="Tavush"/>-->
