@@ -352,11 +352,64 @@
         <adm2 code="AM05089" name="Torfavan"/>
     </adm1>
     <adm1 code="AM06" name="Lori">
-        <adm2 code="AM063" name="Spitak"/>
-        <adm2 code="AM061" name="Gugark"/>
-        <adm2 code="AM065" name="Tashir"/>
-        <adm2 code="AM064" name="Stepanavan"/>
-        <adm2 code="AM062" name="Tumanian"/>
+<!--        <adm2 code="AM063" name="Spitak"/>-->
+<!--        <adm2 code="AM061" name="Gugark"/>-->
+<!--        <adm2 code="AM065" name="Tashir"/>-->
+<!--        <adm2 code="AM064" name="Stepanavan"/>-->
+<!--        <adm2 code="AM062" name="Tumanian"/>-->
+        <adm2 code="AM06010" name="Aznvadzor"/>
+        <adm2 code="AM06015" name="Antaramut"/>
+        <adm2 code="AM06021" name="Arevashogh"/>
+        <adm2 code="AM06029" name="Gyulagarak"/>
+        <adm2 code="AM06044" name="Lori Berd"/>
+        <adm2 code="AM06059" name="Halavar"/>
+        <adm2 code="AM06066" name="Dzoragyugh"/>
+        <adm2 code="AM06075" name="Mets Parni"/>
+        <adm2 code="AM06086" name="Shenavan"/>
+        <adm2 code="AM06089" name="Chkalov"/>
+        <adm2 code="AM06097" name="Sarahart"/>
+        <adm2 code="AM06002" name="Alaverdi"/>
+        <adm2 code="AM06026" name="Antarashen"/>
+        <adm2 code="AM06023" name="Bazum"/>
+        <adm2 code="AM06030" name="Gogaran"/>
+        <adm2 code="AM06033" name="Darpas"/>
+        <adm2 code="AM06035" name="Dsegh"/>
+        <adm2 code="AM06040" name="Lernantsk"/>
+        <adm2 code="AM06042" name="Lernavan"/>
+        <adm2 code="AM06046" name="Lusakhpyur"/>
+        <adm2 code="AM06049" name="Tsaghkaber"/>
+        <adm2 code="AM06061" name="Hartagyugh"/>
+        <adm2 code="AM06068" name="Ghursali"/>
+        <adm2 code="AM06074" name="Metsavan"/>
+        <adm2 code="AM06087" name="Shirakamut"/>
+        <adm2 code="AM06095" name="Jrashen"/>
+        <adm2 code="AM06098" name="Saramech"/>
+        <adm2 code="AM06107" name="Pambak"/>
+        <adm2 code="AM06109" name="Karadzor"/>
+        <adm2 code="AM06003" name="Akhtala"/>
+        <adm2 code="AM06019" name="Arjut"/>
+        <adm2 code="AM06028" name="Geghasar"/>
+        <adm2 code="AM06031" name="Gugark"/>
+        <adm2 code="AM06034" name="Debet"/>
+        <adm2 code="AM06036" name="Yeghegnut"/>
+        <adm2 code="AM06041" name="Lernapat"/>
+        <adm2 code="AM06043" name="Lermontovo"/>
+        <adm2 code="AM06047" name="Khnkoyan"/>
+        <adm2 code="AM06052" name="Katnajur"/>
+        <adm2 code="AM06065" name="Dzoraget"/>
+        <adm2 code="AM06070" name="Margahovit"/>
+        <adm2 code="AM06083" name="Nor Khachakap"/>
+        <adm2 code="AM06084" name="Shahumyan"/>
+        <adm2 code="AM06088" name="Shnogh"/>
+        <adm2 code="AM06096" name="Saralanj"/>
+        <adm2 code="AM06100" name="Sarchapet"/>
+        <adm2 code="AM06102" name="Vahagnadzor"/>
+        <adm2 code="AM06103" name="Vahagni"/>
+        <adm2 code="AM06001" name="Vanadzor"/>
+        <adm2 code="AM06108" name="Karaberd"/>
+        <adm2 code="AM06112" name="Odzun"/>
+        <adm2 code="AM06_02" name="Tashir"/>
+        <adm2 code="AM06_03" name="Fioletovo"/>
     </adm1>
     <adm1 code="AM07" name="Kotayk">
         <!--        <adm2 code="AM072" name="Hrazdan"/>-->
