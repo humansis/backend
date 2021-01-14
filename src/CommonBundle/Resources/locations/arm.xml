@@ -699,10 +699,17 @@
         <adm2 code="AM08115" name="Pokr Mantash"/>
     </adm1>
     <adm1 code="AM09" name="Syunik">
-        <adm2 code="AM093" name="Meghri"/>
-        <adm2 code="AM092" name="Kapan"/>
-        <adm2 code="AM091" name="Goris"/>
-        <adm2 code="AM094" name="Sisian"/>
+        <!--        <adm2 code="AM093" name="Meghri"/>-->
+        <!--        <adm2 code="AM092" name="Kapan"/>-->
+        <!--        <adm2 code="AM091" name="Goris"/>-->
+        <!--        <adm2 code="AM094" name="Sisian"/>-->
+        <adm2 code="AM09028" name="Gorayk"/>
+        <adm2 code="AM09005" name="Meghri"/>
+        <adm2 code="AM09101" name="Tegh"/>
+        <adm2 code="AM09003" name="Goris"/>
+        <adm2 code="AM09006" name="Sisian"/>
+        <adm2 code="AM09007" name="Kajaran"/>
+        <adm2 code="AM09001" name="Kapan"/>
     </adm1>
     <adm1 code="AM10" name="Vayots Dzor">
         <adm2 code="AM102" name="Vayk"/>
