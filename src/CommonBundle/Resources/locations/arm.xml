@@ -853,9 +853,33 @@
         <adm2 code="AM101" name="Yeghegnadzor"/>
     </adm1>
     <adm1 code="AM11" name="Tavush">
-        <adm2 code="AM113" name="Tavush"/>
-        <adm2 code="AM112" name="Noyemberyan"/>
-        <adm2 code="AM114" name="Dilidjan"/>
-        <adm2 code="AM111" name="Idjevan"/>
+        <!--        <adm2 code="AM113" name="Tavush"/>-->
+        <!--        <adm2 code="AM112" name="Noyemberyan"/>-->
+        <!--        <adm2 code="AM114" name="Dilidjan"/>-->
+        <!--        <adm2 code="AM111" name="Idjevan"/>-->
+        <adm2 code="AM11_01" name="Ijevan"/>
+        <adm2 code="AM11_02" name="Tsaghkavan (belonging to Ijevan)"/>
+        <adm2 code="AM11012" name="Ayrum"/>
+        <adm2 code="AM11003" name="Dilijan"/>
+        <adm2 code="AM11034" name="Lusadzor"/>
+        <adm2 code="AM11005" name="Azatamut"/>
+        <adm2 code="AM11004" name="Noyemberyan"/>
+        <adm2 code="AM11002" name="Berd"/>
+        <adm2 code="AM11041" name="Koghb"/>
+        <adm2 code="AM11006" name="Aknaghbyur"/>
+        <adm2 code="AM11008" name="Acharkut"/>
+        <adm2 code="AM11009" name="Aygehovit"/>
+        <adm2 code="AM11013" name="Achajur"/>
+        <adm2 code="AM11020" name="Berkaber"/>
+        <adm2 code="AM11021" name="Gandzakar"/>
+        <adm2 code="AM11022" name="Getahovit"/>
+        <adm2 code="AM11026" name="Ditavan"/>
+        <adm2 code="AM11028" name="Yenokavan"/>
+        <adm2 code="AM11033" name="Lusahovit"/>
+        <adm2 code="AM11035" name="Khashtarak"/>
+        <adm2 code="AM11039" name="Kirants"/>
+        <adm2 code="AM11057" name="Sarigyugh"/>
+        <adm2 code="AM11058" name="Sevkar"/>
+        <adm2 code="AM11059" name="Vazashen"/>
     </adm1>
 </adm0>
