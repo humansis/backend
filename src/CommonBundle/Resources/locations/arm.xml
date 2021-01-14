@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<adm0 name="Armenia" code="AM">
+    <adm1 code="AM01" name="Yerevan"/>
+    <adm1 code="AM02" name="Aragatsotn"/>
+    <adm1 code="AM03" name="Ararat"/>
+    <adm1 code="AM04" name="Armavir"/>
+    <adm1 code="AM05" name="Gegharkunik"/>
+    <adm1 code="AM06" name="Lori"/>
+    <adm1 code="AM07" name="Kotayk"/>
+    <adm1 code="AM08" name="Shirak"/>
+    <adm1 code="AM09" name="Syunik"/>
+    <adm1 code="AM10" name="Vayots Dzor"/>
+    <adm1 code="AM11" name="Tavush"/>
+</adm0>
