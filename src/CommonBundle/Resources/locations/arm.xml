@@ -252,10 +252,51 @@
 <!--        <adm2 code="AM055" name="Vardenis"/>-->
 <!--        <adm2 code="AM051" name="Gavar"/>-->
 <!--        <adm2 code="AM053" name="Martuni"/>-->
-        <adm2 code="AM05_01" name="Shoghakat"/>
-        <adm2 code="AM05002" name="Chambarak"/>
-        <adm2 code="AM05005" name="Vardenis"/>
-        <adm2 code="AM05023" name="Geghamasar"/>
+        <adm2 code="AM05_01" name="Shoghakat">
+            <adm3 code="AM05_0101" name="Shoghakat"/>
+            <adm3 code="AM05_0102" name="Aghberk"/>
+            <adm3 code="AM05_0103" name="Artanish"/>
+            <adm3 code="AM05_0104" name="Drakhtik"/>
+            <adm3 code="AM05_0105" name="Tsapatagh"/>
+            <adm3 code="AM05_0106" name="Jil"/>
+        </adm2>
+        <adm2 code="AM05002" name="Chambarak">
+            <adm3 code="AM05002_01" name="Chambarak"/>
+            <adm3 code="AM05002_02" name="Aygut"/>
+            <adm3 code="AM05002_03" name="Antaramej"/>
+            <adm3 code="AM05002_04" name="Getik"/>
+            <adm3 code="AM05002_05" name="Dprabak"/>
+            <adm3 code="AM05002_06" name="Ttujur"/>
+            <adm3 code="AM05002_07" name="Kalavan"/>
+            <adm3 code="AM05002_08" name="Dzoravank"/>
+            <adm3 code="AM05002_09" name="Martuni"/>
+            <adm3 code="AM05002_10" name="Vahan"/>
+        </adm2>
+        <adm2 code="AM05005" name="Vardenis">
+            <adm3 code="AM05005_01" name="Vardenis"/>
+            <adm3 code="AM05005_02" name="Verin  Shorzha"/>
+            <adm3 code="AM05005_03" name="Nerkin Shorzha"/>
+            <adm3 code="AM05005_04" name="Ayrk"/>
+        </adm2>
+        <adm2 code="AM05023" name="Geghamasar">
+            <adm3 code="AM05023_01" name="Geghamasar"/>
+            <adm3 code="AM05023_02" name="Sotk"/>
+            <adm3 code="AM05023_03" name="Azat"/>
+            <adm3 code="AM05023_04" name="Avazan"/>
+            <adm3 code="AM05023_05" name="Areguni"/>
+            <adm3 code="AM05023_06" name="Arpunk"/>
+            <adm3 code="AM05023_07" name="Geghamabak"/>
+            <adm3 code="AM05023_08" name="Daranak"/>
+            <adm3 code="AM05023_09" name="Kakhakn"/>
+            <adm3 code="AM05023_10" name="Kut"/>
+            <adm3 code="AM05023_11" name="Kutakan"/>
+            <adm3 code="AM05023_12" name="Shatjrek"/>
+            <adm3 code="AM05023_13" name="Shatvan"/>
+            <adm3 code="AM05023_14" name="Jaghatsadzor"/>
+            <adm3 code="AM05023_15" name="Tretuk"/>
+            <adm3 code="AM05023_16" name="Pambak"/>
+            <adm3 code="AM05023_17" name="Pokr Masrik"/>
+        </adm2>
         <adm2 code="AM05007" name="Akhpradzor"/>
         <adm2 code="AM05008" name="Akunk"/>
         <adm2 code="AM05014" name="Avazan"/>
