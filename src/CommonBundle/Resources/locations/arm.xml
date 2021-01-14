@@ -569,10 +569,36 @@
         <!--        <adm2 code="AM084" name="Ashotsk"/>-->
         <!--        <adm2 code="AM082" name="Amasia"/>-->
         <!--        <adm2 code="AM081" name="Akhuryan"/>-->
-        <adm2 code="AM083" name="Ani"/>
+        <adm2 code="AM083" name="Ani">
+            <adm3 code="AM083_01" name="Maralik"/>
+            <adm3 code="AM083_02" name="Aghin"/>
+            <adm3 code="AM083_03" name="Aniavan"/>
+            <adm3 code="AM083_04" name="Anipemza"/>
+            <adm3 code="AM083_05" name="Bagravan"/>
+            <adm3 code="AM083_06" name="Gusanagyugh"/>
+            <adm3 code="AM083_07" name="Isahakyan"/>
+            <adm3 code="AM083_08" name="Lanjik"/>
+            <adm3 code="AM083_09" name="Lusakhpyur"/>
+            <adm3 code="AM083_10" name="Haykadzor"/>
+            <adm3 code="AM083_11" name="Dzithankov"/>
+            <adm3 code="AM083_12" name="Dzorakap"/>
+            <adm3 code="AM083_13" name="Shirakavan"/>
+            <adm3 code="AM083_14" name="Jrarpi"/>
+            <adm3 code="AM083_15" name="Sarnakhpyur"/>
+            <adm3 code="AM083_16" name="Sarakap"/>
+            <adm3 code="AM083_17" name="Karaberd"/>
+        </adm2>
         <!--        <adm2 code="AM085" name="Artik"/>-->
         <adm2 code="AM08001" name="Gyumri"/>
-        <adm2 code="AM08028" name="Arpi"/>
+        <adm2 code="AM08028" name="Arpi">
+            <adm3 code="AM08028_01" name="Alvar"/>
+            <adm3 code="AM08028_02" name="Garnarich"/>
+            <adm3 code="AM08028_03" name="Tsaghkut"/>
+            <adm3 code="AM08028_04" name="Aghvorik"/>
+            <adm3 code="AM08028_05" name="Zarishat"/>
+            <adm3 code="AM08028_06" name="Shaghik"/>
+            <adm3 code="AM08028_07" name="Ardenis"/>
+        </adm2>
         <adm2 code="AM08016" name="Arapi"/>
         <adm2 code="AM08023" name="Bayandur"/>
         <adm2 code="AM08031" name="Getap"/>
@@ -585,7 +611,15 @@
         <adm2 code="AM08105" name="Saratak"/>
         <adm2 code="AM08111" name="Tufashen"/>
         <adm2 code="AM08004" name="Azatan"/>
-        <adm2 code="AM08007" name="Akhuryan"/>
+        <adm2 code="AM08007" name="Akhuryan">
+            <adm3 code="AM08007_01" name="Aygebats"/>
+            <adm3 code="AM08007_02" name="Arevik"/>
+            <adm3 code="AM08007_03" name="Basen"/>
+            <adm3 code="AM08007_04" name="Kamo"/>
+            <adm3 code="AM08007_05" name="Karnut"/>
+            <adm3 code="AM08007_06" name="Hovit"/>
+            <adm3 code="AM08007_07" name="Jrarat"/>
+        </adm2>
         <adm2 code="AM08014" name="Anushavan"/>
         <adm2 code="AM08002" name="Artik"/>
         <adm2 code="AM08027" name="Beniamin"/>
@@ -593,14 +627,51 @@
         <adm2 code="AM08046" name="Lernakert"/>
         <adm2 code="AM08061" name="Haykavan"/>
         <adm2 code="AM08067" name="Horom"/>
-        <adm2 code="AM08078" name="Marmashen"/>
+        <adm2 code="AM08078" name="Marmashen">
+            <adm3 code="AM08078_01" name="Marmashen"/>
+            <adm3 code="AM08078_02" name="Kaps"/>
+            <adm3 code="AM08078_03" name="Karmrakar"/>
+            <adm3 code="AM08078_04" name="Krashen"/>
+            <adm3 code="AM08078_05" name="Hatsik"/>
+            <adm3 code="AM08078_06" name="Hovuni"/>
+            <adm3 code="AM08078_07" name="Lernut"/>
+            <adm3 code="AM08078_08" name="Mets  Sariar"/>
+            <adm3 code="AM08078_09" name="Shirak"/>
+            <adm3 code="AM08078_10" name="Jajur"/>
+            <adm3 code="AM08078_11" name="Jajuravan"/>
+            <adm3 code="AM08078_12" name="Vahramaberd"/>
+            <adm3 code="AM08078_13" name="Pokrashen"/>
+            <adm3 code="AM08078_14" name="Keti"/>
+        </adm2>
         <adm2 code="AM08087" name="Nor Kyank"/>
         <adm2 code="AM08102" name="Saralanj"/>
         <adm2 code="AM08107" name="Spandaryan"/>
         <adm2 code="AM08113" name="Panik"/>
         <adm2 code="AM08006" name="Akhurik"/>
-        <adm2 code="AM08010" name="Amasia"/>
-        <adm2 code="AM08015" name="Ashotsk"/>
+        <adm2 code="AM08010" name="Amasia">
+            <adm3 code="AM08010_01" name="Aregnadem"/>
+            <adm3 code="AM08010_02" name="Bandivan"/>
+            <adm3 code="AM08010_03" name="Byurakn"/>
+            <adm3 code="AM08010_04" name="Gtashen"/>
+            <adm3 code="AM08010_05" name="Kamkhut"/>
+            <adm3 code="AM08010_06" name="Hovtun"/>
+            <adm3 code="AM08010_07" name="Meghrashat"/>
+            <adm3 code="AM08010_08" name="Voghji"/>
+            <adm3 code="AM08010_09" name="Jradzor"/>
+        </adm2>
+        <adm2 code="AM08015" name="Ashotsk">
+            <adm3 code="AM08015_01" name="Ashotsk"/>
+            <adm3 code="AM08015_02" name="Bavra"/>
+            <adm3 code="AM08015_03" name="Zuygaghbyur"/>
+            <adm3 code="AM08015_04" name="Tavshut"/>
+            <adm3 code="AM08015_05" name="Karmravan"/>
+            <adm3 code="AM08015_06" name="Krasar"/>
+            <adm3 code="AM08015_07" name="Ghazanchi"/>
+            <adm3 code="AM08015_08" name="Mets Sepasar"/>
+            <adm3 code="AM08015_09" name="Saragyugh"/>
+            <adm3 code="AM08015_10" name="Sizavet"/>
+            <adm3 code="AM08015_11" name="Pokr Sepasar"/>
+        </adm2>
         <adm2 code="AM08021" name="Arevshat"/>
         <adm2 code="AM08030" name="Geghanist"/>
         <adm2 code="AM08062" name="Hayrenyats"/>
@@ -608,7 +679,22 @@
         <adm2 code="AM08079" name="Mets Mantash"/>
         <adm2 code="AM08083" name="Meghrashen"/>
         <adm2 code="AM08092" name="Voskehask"/>
-        <adm2 code="AM08104" name="Sarapat"/>
+        <adm2 code="AM08104" name="Sarapat">
+            <adm3 code="AM08104_01" name="Sarapat"/>
+            <adm3 code="AM08104_02" name="Arpeni"/>
+            <adm3 code="AM08104_03" name="Bashgyugh"/>
+            <adm3 code="AM08104_04" name="Goghovit"/>
+            <adm3 code="AM08104_05" name="Lerrnagyugh"/>
+            <adm3 code="AM08104_06" name="Kakavasar"/>
+            <adm3 code="AM08104_07" name="Hartashen"/>
+            <adm3 code="AM08104_08" name="Hoghmik"/>
+            <adm3 code="AM08104_09" name="Dzorashen"/>
+            <adm3 code="AM08104_10" name="Musayelyan"/>
+            <adm3 code="AM08104_11" name="Salut"/>
+            <adm3 code="AM08104_12" name="Vardaghbyur"/>
+            <adm3 code="AM08104_13" name="Tsoghamarg"/>
+            <adm3 code="AM08104_14" name="Pokr Sariar"/>
+        </adm2>
         <adm2 code="AM08110" name="Vardakar"/>
         <adm2 code="AM08115" name="Pokr Mantash"/>
     </adm1>
