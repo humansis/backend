@@ -143,10 +143,14 @@
         <adm2 code="AM02114" name="Orgov"/>
     </adm1>
     <adm1 code="AM03" name="Ararat">
-<!--        <adm2 code="AM031" name="Ararat"/>-->
-<!--        <adm2 code="AM033" name="Masis"/>-->
-<!--        <adm2 code="AM032" name="Artashat"/>-->
-        <adm2 code="AM03095" name="Urtsadzor"/>
+        <!--        <adm2 code="AM031" name="Ararat"/>-->
+        <!--        <adm2 code="AM033" name="Masis"/>-->
+        <!--        <adm2 code="AM032" name="Artashat"/>-->
+        <adm2 code="AM03095" name="Urtsadzor">
+            <adm3 code="AM03095_01" name="Urtsadzor"/>
+            <adm3 code="AM03095_02" name="Shaghap"/>
+            <adm3 code="AM03095_03" name="Lanjanist"/>
+        </adm2>
         <adm2 code="AM03005" name="Abovyan"/>
         <adm2 code="AM03006" name="Azatashen"/>
         <adm2 code="AM03001" name="Artashat"/>
