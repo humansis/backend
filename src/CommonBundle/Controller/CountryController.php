@@ -33,6 +33,11 @@ class CountryController extends Controller
             'iso3' => 'MNG',
             'currency' => 'MNT',
         ],
+        [
+            'name' => 'Armenia',
+            'iso3' => 'ARM',
+            'currency' => 'AMD',
+        ],
     ];
 
     /**
