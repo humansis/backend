@@ -17,7 +17,7 @@ use ProjectBundle\Entity\Project;
 
 class InstitutionFixture extends Fixture implements DependentFixtureInterface
 {
-    const COUNTRIES = ['KHM', 'SYR', 'UKR', 'ETH', 'MNG'];
+    const COUNTRIES = ['KHM', 'SYR', 'UKR', 'ETH', 'MNG', 'ARM'];
     const INSTITUTIONS = [
         [
             'name' => 'Local mayor office',

@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CountrySpecificCreateInputType extends CountrySpecificUpdateInputType
 {
     /**
-     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG"})
+     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
