@@ -266,7 +266,8 @@ class VoucherService
         }
 
         if ($exportableCount > ExportController::EXPORT_LIMIT) {
-            throw new BadRequestHttpException("Too much entities ($exportableCount) to export. Limit is ".ExportController::EXPORT_LIMIT);
+            $bookletCount = count($booklets);
+            throw new BadRequestHttpException("Too much entities ($exportableCount vouchers in $bookletCount booklets) to export. Limit is ".ExportController::EXPORT_LIMIT.' vouchers.');
         }
 
         // If csv type, return the response
@@ -276,8 +277,9 @@ class VoucherService
 
         $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
         if ($total > ExportController::EXPORT_LIMIT) {
-            throw new \Exception("Too much vouchers for the export (".$total."). Use csv for large exports. Otherwise, for ".
-            $type." export the data in batches of ".ExportController::EXPORT_LIMIT." vouchers or less");
+            $totalBooklets = $ids ? count($ids) : count($booklets);
+            throw new \Exception("Too much vouchers for the export ($total vouchers in $totalBooklets). ".
+            "Export the data in batches of ".ExportController::EXPORT_LIMIT." vouchers or less");
         }
         return $this->container->get('export_csv_service')->export($exportableTable->getResult(), 'bookletCodes', $type);
     }
