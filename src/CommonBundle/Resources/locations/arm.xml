@@ -143,9 +143,104 @@
         <adm2 code="AM02114" name="Orgov"/>
     </adm1>
     <adm1 code="AM03" name="Ararat">
-        <adm2 code="AM031" name="Ararat"/>
-        <adm2 code="AM033" name="Masis"/>
-        <adm2 code="AM032" name="Artashat"/>
+<!--        <adm2 code="AM031" name="Ararat"/>-->
+<!--        <adm2 code="AM033" name="Masis"/>-->
+<!--        <adm2 code="AM032" name="Artashat"/>-->
+        <adm2 code="AM03095" name="Urtsadzor"/>
+        <adm2 code="AM03005" name="Abovyan"/>
+        <adm2 code="AM03006" name="Azatashen"/>
+        <adm2 code="AM03001" name="Artashat"/>
+        <adm2 code="AM03002" name="Ararat"/>
+        <adm2 code="AM03003" name="Masis"/>
+        <adm2 code="AM03004" name="Vedi"/>
+        <adm2 code="AM03007" name="Azatavan"/>
+        <adm2 code="AM03008" name="Aygavan"/>
+        <adm2 code="AM03009" name="Aygazard"/>
+        <adm2 code="AM03010" name="Aygepat"/>
+        <adm2 code="AM03011" name="Aygestan"/>
+        <adm2 code="AM03012" name="Ayntap"/>
+        <adm2 code="AM03013" name="Avshar"/>
+        <adm2 code="AM03014" name="Aralez"/>
+        <adm2 code="AM03015" name="Ararat v."/>
+        <adm2 code="AM03016" name="Araksavan"/>
+        <adm2 code="AM03017" name="Arbat"/>
+        <adm2 code="AM03018" name="Argavand"/>
+        <adm2 code="AM03019" name="Armash"/>
+        <adm2 code="AM03020" name="Arevabuyr"/>
+        <adm2 code="AM03021" name="Arevshat"/>
+        <adm2 code="AM03022" name="Baghramyan"/>
+        <adm2 code="AM03023" name="Bardzrashen"/>
+        <adm2 code="AM03024" name="Berdik"/>
+        <adm2 code="AM03025" name="Berkanush"/>
+        <adm2 code="AM03026" name="Byuravan"/>
+        <adm2 code="AM03027" name="Burastan"/>
+        <adm2 code="AM03028" name="Geghanist"/>
+        <adm2 code="AM03029" name="Getazat"/>
+        <adm2 code="AM03030" name="Getapnya"/>
+        <adm2 code="AM03031" name="Goravan"/>
+        <adm2 code="AM03032" name="Dalar"/>
+        <adm2 code="AM03033" name="Dashtavan"/>
+        <adm2 code="AM03034" name="Dashtakar"/>
+        <adm2 code="AM03035" name="Darakert"/>
+        <adm2 code="AM03036" name="Darbnik"/>
+        <adm2 code="AM03037" name="Deghdzut"/>
+        <adm2 code="AM03038" name="Dimitrov"/>
+        <adm2 code="AM03039" name="Ditak"/>
+        <adm2 code="AM03040" name="Dvin"/>
+        <adm2 code="AM03041" name="Yeghegnavan"/>
+        <adm2 code="AM03042" name="Yeraskh"/>
+        <adm2 code="AM03043" name="Zangakatun"/>
+        <adm2 code="AM03044" name="Zorak"/>
+        <adm2 code="AM03045" name="Lanjazat"/>
+        <adm2 code="AM03046" name="Lanjar"/>
+        <adm2 code="AM03047" name="Lusashogh"/>
+        <adm2 code="AM03048" name="Lusarat"/>
+        <adm2 code="AM03049" name="Khachpar"/>
+        <adm2 code="AM03050" name="Kanachut"/>
+        <adm2 code="AM03051" name="Hayanist"/>
+        <adm2 code="AM03052" name="Hnaberd"/>
+        <adm2 code="AM03053" name="Hovtashat"/>
+        <adm2 code="AM03054" name="Hovtashen"/>
+        <adm2 code="AM03055" name="Ghukasavan"/>
+        <adm2 code="AM03056" name="Masis"/>
+        <adm2 code="AM03057" name="Marmarashen"/>
+        <adm2 code="AM03058" name="Mkhchyan"/>
+        <adm2 code="AM03059" name="Mrganush"/>
+        <adm2 code="AM03060" name="Mrgavan"/>
+        <adm2 code="AM03061" name="Mrgavet"/>
+        <adm2 code="AM03062" name="Narek"/>
+        <adm2 code="AM03063" name="Nizami"/>
+        <adm2 code="AM03064" name="Nshavan"/>
+        <adm2 code="AM03065" name="Noyakert"/>
+        <adm2 code="AM03066" name="Norabats"/>
+        <adm2 code="AM03067" name="Noramarg"/>
+        <adm2 code="AM03068" name="Norashen"/>
+        <adm2 code="AM03069" name="Nor Kharberd"/>
+        <adm2 code="AM03070" name="Nor Kyank"/>
+        <adm2 code="AM03071" name="Nor Kyurin"/>
+        <adm2 code="AM03072" name="Nor Ughi"/>
+        <adm2 code="AM03073" name="Shahumyan"/>
+        <adm2 code="AM03074" name="Vosketap"/>
+        <adm2 code="AM03075" name="Vostan"/>
+        <adm2 code="AM03076" name="Paruyr Sevak"/>
+        <adm2 code="AM03077" name="Jrahovit"/>
+        <adm2 code="AM03078" name="Jrashen"/>
+        <adm2 code="AM03079" name="Ranchpar"/>
+        <adm2 code="AM03080" name="Sayat Nova"/>
+        <adm2 code="AM03081" name="Sis"/>
+        <adm2 code="AM03082" name="Sisavan"/>
+        <adm2 code="AM03083" name="Sipanik"/>
+        <adm2 code="AM03084" name="Surenavan"/>
+        <adm2 code="AM03085" name="Vanashen"/>
+        <adm2 code="AM03086" name="Vardashat"/>
+        <adm2 code="AM03087" name="Vardashen"/>
+        <adm2 code="AM03088" name="Ginevet"/>
+        <adm2 code="AM03089" name="Verin Artashat"/>
+        <adm2 code="AM03090" name="Verin Dvin"/>
+        <adm2 code="AM03091" name="Taperakan"/>
+        <adm2 code="AM03092" name="Urtsalanj"/>
+        <adm2 code="AM03093" name="Pokr Vedi"/>
+        <adm2 code="AM03094" name="Kakhtsrashen"/>
     </adm1>
     <adm1 code="AM04" name="Armavir">
         <adm2 code="AM04001" name="Armavir"/>
