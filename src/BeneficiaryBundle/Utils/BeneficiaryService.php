@@ -334,7 +334,7 @@ class BeneficiaryService
      */
     public function remove(Beneficiary $beneficiary)
     {
-        if ($beneficiary->getStatus() === 1) {
+        if ($beneficiary->isHead()) {
             return false;
         }
 

@@ -105,7 +105,7 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getIsHead(): bool
     {
-        return 1 === $this->object->getStatus();
+        return $this->object->isHead();
     }
 
     public function getVulnerabilityCriteria(): array

@@ -461,6 +461,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * @param bool $status
      *
      * @return Beneficiary
+     * @deprecated use setHead() instead
      */
     public function setStatus($status): self
     {
@@ -473,10 +474,21 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * Get status.
      *
      * @return bool
+     * @deprecated use isHead() instead
      */
     public function getStatus(): bool
     {
         return $this->status;
+    }
+
+    public function setHead(bool $isHead): self
+    {
+        return $this->setStatus($isHead);
+    }
+
+    public function isHead(): bool
+    {
+        return $this->getStatus();
     }
 
     /**
@@ -670,7 +682,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "enGivenName" => $this->getEnGivenName(),
             "enFamilyName" => $this->getEnFamilyName(),
             "gender" => $valueGender,
-            "head" => $this->getStatus() === true ? "true" : "false",
+            "head" => $this->isHead() ? "true" : "false",
             "residencyStatus" => $this->getResidencyStatus(),
             "dateOfBirth" => $this->getDateOfBirthObject()->format('d-m-Y'),
             "vulnerabilityCriteria" => $valuescriteria,

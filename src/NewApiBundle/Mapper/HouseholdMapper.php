@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use NewApiBundle\Serializer\MapperInterface;
@@ -82,6 +83,18 @@ class HouseholdMapper implements MapperInterface
         return $this->object->getLatitude();
     }
 
+    public function getHouseholdHeadId(): int
+    {
+        foreach ($this->object->getBeneficiaries() as $beneficiary) {
+            /** @var Beneficiary $beneficiary */
+            if ($beneficiary->isHead()) {
+                return $beneficiary->getId();
+            }
+        }
+
+        throw new \LogicException('Household #'.$this->object->getId().' does not have HH head.');
+    }
+
     /**
      * @return int[]
      */
@@ -129,10 +142,12 @@ class HouseholdMapper implements MapperInterface
     {
         return $this->object->getSupportOrganizationName();
     }
+
     public function getIncomeSpentOnFood(): ?int
     {
         return $this->object->getIncomeSpentOnFood();
     }
+
     public function getHouseholdIncome(): ?int
     {
         return $this->object->getHouseholdIncome();

@@ -283,7 +283,7 @@ class HouseholdService
                 } catch (\Exception $exception) {
                     throw $exception;
                 }
-                if ($beneficiary->getStatus()) {
+                if ($beneficiary->isHead()) {
                     if ($hasHead) {
                         throw new \Exception("You have defined more than 1 head of household.");
                     }
