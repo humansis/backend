@@ -101,6 +101,16 @@ class Booklet implements ExportableInterface
      */
     private $countryISO3;
 
+    public static function statuses(): array
+    {
+        return [
+            self::UNASSIGNED,
+            self::DISTRIBUTED,
+            self::USED,
+            self::DEACTIVATED,
+        ];
+    }
+
     public function __construct()
     {
         $this->vouchers = new ArrayCollection();
