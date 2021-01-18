@@ -352,7 +352,7 @@ class AssistanceService
     public function complete(Assistance $assistance)
     {
         if (!empty($assistance)) {
-                $assistance->setCompleted(1)
+                $assistance->setCompleted()
                                 ->setUpdatedOn(new \DateTime);         
         }
 
@@ -664,11 +664,7 @@ class AssistanceService
         $generalReliefItem = $this->em->getRepository(GeneralReliefItem::class)->find(array_pop($griIds));
         $assistance = $generalReliefItem->getAssistanceBeneficiary()->getAssistance();
         $numberIncomplete = $this->em->getRepository(GeneralReliefItem::class)->countNonDistributed($assistance);
-        
-        if ($numberIncomplete === '0') {
-            $this->complete($assistance);
-        }
-        
+
         return array($successArray, $errorArray, $numberIncomplete);
     }
     

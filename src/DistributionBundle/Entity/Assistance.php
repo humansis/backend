@@ -360,7 +360,7 @@ class Assistance implements ExportableInterface
      *
      * @return Assistance
      */
-    public function setCompleted($completed)
+    public function setCompleted(bool $completed = true): self
     {
         $this->completed = $completed;
 
