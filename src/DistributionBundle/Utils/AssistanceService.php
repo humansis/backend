@@ -763,6 +763,10 @@ class AssistanceService
     {
         $exportableDistribution = $this->em->getRepository(Assistance::class)->findOneBy(['id' => $distributionId, 'archived' => false]);
 
+        if (!$exportableDistribution) {
+            throw new NotFoundHttpException("Assistance #$distributionId doesn't exist");
+        }
+
         $booklets = [];
 
         if ($exportableDistribution->getCommodities()[0]->getModalityType()->getName() === 'QR Code Voucher') {
