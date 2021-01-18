@@ -27,6 +27,7 @@
 		"ext-Zend-OPcache": "*",
 		"ext-json": "*",
 		"ext-xmlreader": "*",
+		"ext-simplexml": "*",
 		"aws/aws-sdk-php": "^3.90",
 		"beberlei/doctrineextensions": "^1.0",
 		"doctrine/doctrine-bundle": "^1.6",

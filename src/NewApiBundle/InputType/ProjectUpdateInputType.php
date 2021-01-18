@@ -28,7 +28,7 @@ class ProjectUpdateInputType implements InputTypeInterface
     private $internalId;
 
     /**
-     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH"})
+     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */

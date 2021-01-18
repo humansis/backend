@@ -80,6 +80,7 @@ services:
     CommonBundle\DataFixtures\LocationFixtures:
         arguments:
             - "@kernel"
+            - "@location_service"
         tags:
             - { name: doctrine.fixture.orm }
 
