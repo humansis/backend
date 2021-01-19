@@ -97,8 +97,12 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             return;
         }
 
-        $this->loadCommonAssistance($manager);
-        $this->loadSmartcardAssistance($manager);
+        $projects = $manager->getRepository(Project::class)->findAll();
+        foreach ($projects as $project) {
+            $this->loadCommonIndividualAssistance($manager, $project);
+            $this->loadCommonHouseholdAssistance($manager, $project);
+            $this->loadSmartcardAssistance($manager, $project);
+        }
     }
 
     public function getDependencies()
@@ -113,19 +117,26 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         return ['test'];
     }
 
-    private function loadCommonAssistance(ObjectManager $manager)
+    private function loadCommonIndividualAssistance(ObjectManager $manager, Project $project)
     {
-        $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => 'KHM']);
-
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
+        $data['target_type'] = AssistanceTargetType::INDIVIDUAL;
 
-        $this->distributionService->create('KHM', $data, 1);
+        $this->distributionService->create($project->getIso3(), $data, 1);
     }
 
-    private function loadSmartcardAssistance(ObjectManager $manager)
+    private function loadCommonHouseholdAssistance(ObjectManager $manager, Project $project)
     {
-        $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => 'KHM']);
+        $data = $this->assistanceArray;
+        $data['project']['id'] = $project->getId();
+        $data['target_type'] = AssistanceTargetType::HOUSEHOLD;
+
+        $this->distributionService->create($project->getIso3(), $data, 1);
+    }
+
+    private function loadSmartcardAssistance(ObjectManager $manager, Project $project)
+    {
         $modalityType = $manager->getRepository(ModalityType::class)->findOneBy(['name' => 'Smartcard']);
 
         $data = $this->assistanceArray;
@@ -156,7 +167,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             ],
         ];
 
-        $result = $this->distributionService->create('KHM', $data, 1);
+        $result = $this->distributionService->create($project->getIso3(), $data, 1);
 
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE, $result['distribution']);
     }
