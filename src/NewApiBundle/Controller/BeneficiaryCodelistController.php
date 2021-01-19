@@ -16,14 +16,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class BeneficiaryCodelistController extends AbstractController
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
     /**
      * @Rest\Get("/beneficiaries/residency-statuses")
      *
@@ -43,7 +35,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getVulnerabilityCriterion(): JsonResponse
     {
-        $criterion = $this->entityManager->getRepository(VulnerabilityCriterion::class)
+        $criterion = $this->getDoctrine()->getRepository(VulnerabilityCriterion::class)
             ->findAllActive();
 
         return $this->json(new Paginator(CodeLists::mapCriterion($criterion)));
