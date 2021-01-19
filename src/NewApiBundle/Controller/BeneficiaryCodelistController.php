@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Pagination\Paginator;
-use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Enum\PhoneTypes;
 use NewApiBundle\Utils\CodeLists;
@@ -16,6 +16,18 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class BeneficiaryCodelistController extends AbstractController
 {
+    /**
+     * @Rest\Get("/beneficiaries/referral-types")
+     *
+     * @return JsonResponse
+     */
+    public function getReferralTypes(): JsonResponse
+    {
+        $data = CodeLists::mapArray(Referral::REFERRALTYPES);
+
+        return $this->json(new Paginator($data));
+    }
+
     /**
      * @Rest\Get("/beneficiaries/residency-statuses")
      *
