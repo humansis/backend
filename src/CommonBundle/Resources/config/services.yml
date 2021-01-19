@@ -159,6 +159,13 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\TransactionFixtures:
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@transaction.khm_financial_provider"
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\ProductFixtures:
         arguments:
             - "@kernel"
