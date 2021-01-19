@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use NewApiBundle\Serializer\MapperInterface;
@@ -93,6 +94,13 @@ class HouseholdMapper implements MapperInterface
         }
 
         throw new \LogicException('Household #'.$this->object->getId().' does not have HH head.');
+    }
+
+    public function getCountrySpecificAnswerIds(): iterable
+    {
+        return array_map(function ($item) {
+            return $item->getId();
+        }, $this->object->getCountrySpecificAnswers()->toArray());
     }
 
     /**
