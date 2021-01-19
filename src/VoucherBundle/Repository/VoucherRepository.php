@@ -2,8 +2,8 @@
 
 namespace VoucherBundle\Repository;
 
-use VoucherBundle\DTO\PurchaseRedeemedBatch;
-use VoucherBundle\Entity\Vendor;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 
 /**
  * VoucherRepository
@@ -63,32 +63,17 @@ class VoucherRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getSingleScalarResult();
     }
 
-    /**
-     * @param Vendor $vendor
-     *
-     * @return PurchaseRedeemedBatch[]
-     */
-    public function getRedeemBatches(Vendor $vendor): array
+    public function countVoucherValue(array $voucherIds): int
     {
         $qb = $this->createQueryBuilder('v')
-            ->select('v.redeemedAt as batchDate, COUNT(p.id) as purchaseCount, SUM(pr.value) as purchaseRecordsValue')
-            ->join('v.voucherPurchase', 'p')
-            ->join('p.records', 'pr')
-            ->where('p.vendor = :vendor')
-            ->andWhere('v.redeemedAt is not null')
-            ->setParameter('vendor', $vendor)
-            ->groupBy('v.redeemedAt, p.vendor');
+            ->select('SUM(v.value)')
+            ->where('v.id IN (:voucherIds)')
+            ->setParameter('voucherIds', $voucherIds);
 
-        $batches = [];
-        foreach ($qb->getQuery()->getResult() as $batch) {
-            $batches[] = new PurchaseRedeemedBatch(
-                $batch['batchDate'],
-                $batch['purchaseCount'],
-                $batch['purchaseRecordsValue']
-            );
+        try {
+            return $qb->getQuery()->getSingleScalarResult();
+        } catch (NoResultException | NonUniqueResultException $e) {
+            return 0;
         }
-
-        return $batches;
     }
-
 }

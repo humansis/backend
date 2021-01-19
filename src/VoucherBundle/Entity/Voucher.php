@@ -2,14 +2,13 @@
 
 namespace VoucherBundle\Entity;
 
-use Doctrine\Common\Collections\Collection;
+use CommonBundle\Utils\ExportableInterface;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
-use CommonBundle\Utils\ExportableInterface;
-
 /**
- * Voucher
+ * Voucher.
  *
  * @ORM\Table(name="voucher")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherRepository")
@@ -57,12 +56,12 @@ class Voucher implements ExportableInterface
     private $voucherPurchase;
 
     /**
-     * @var \DateTime|null
+     * @var VoucherRedemptionBatch|null
      *
-     * @ORM\Column(name="redeemed_at", type="datetime", nullable=true)
-     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
+     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\VoucherRedemptionBatch", inversedBy="vouchers", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
      */
-    private $redeemedAt;
+    private $redemptionBatch;
 
     public function __construct(string $code, int $value, Booklet $booklet)
     {
@@ -81,12 +80,10 @@ class Voucher implements ExportableInterface
         return $this->id;
     }
 
-
-
     /**
      * Set value.
      *
-     * @param integer $value
+     * @param int $value
      *
      * @return Voucher
      */
@@ -100,21 +97,24 @@ class Voucher implements ExportableInterface
     /**
      * Get individual value.
      *
-     * @return integer
+     * @return int
      */
     public function getValue()
     {
         return $this->value;
     }
 
-    public function redeem(?\DateTimeInterface $when = null) : void
+    /**
+     * @return DateTimeInterface|null
+     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
+     */
+    public function getRedeemedAt(): ?DateTimeInterface
     {
-        $this->redeemedAt = $when ?? new \DateTime('now');
-    }
+        if (null !== $this->redemptionBatch) {
+            return $this->getRedemptionBatch()->getRedeemedAt();
+        }
 
-    public function getRedeemedAt(): ?\DateTimeInterface
-    {
-        return $this->redeemedAt;
+        return null;
     }
 
     /**
@@ -131,9 +131,9 @@ class Voucher implements ExportableInterface
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getUsedAtDate(): ?\DateTimeInterface
+    public function getUsedAtDate(): ?DateTimeInterface
     {
         if (!$this->getVoucherPurchase()) {
             return null;
@@ -187,6 +187,7 @@ class Voucher implements ExportableInterface
 
     /**
      * @param VoucherPurchase $purchase
+     *
      * @return $this
      */
     public function setVoucherPurchase(VoucherPurchase $purchase): self
@@ -197,7 +198,8 @@ class Voucher implements ExportableInterface
     }
 
     /**
-     * Returns an array representation of this class in order to prepare the export
+     * Returns an array representation of this class in order to prepare the export.
+     *
      * @return array
      */
     public function getMappedValueForExport(): array
@@ -206,5 +208,25 @@ class Voucher implements ExportableInterface
             'Booklet Number' => $this->getBooklet()->getCode(),
             'Voucher Codes' => $this->getCode(),
         ];
+    }
+
+    /**
+     * @return VoucherRedemptionBatch|null
+     */
+    public function getRedemptionBatch(): ?VoucherRedemptionBatch
+    {
+        return $this->redemptionBatch;
+    }
+
+    /**
+     * @param VoucherRedemptionBatch|null $redemptionBatch
+     *
+     * @return Voucher
+     */
+    public function setRedemptionBatch(?VoucherRedemptionBatch $redemptionBatch): Voucher
+    {
+        $this->redemptionBatch = $redemptionBatch;
+
+        return $this;
     }
 }

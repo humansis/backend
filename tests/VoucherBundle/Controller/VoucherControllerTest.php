@@ -1,12 +1,13 @@
 <?php
 namespace VoucherBundle\Tests\Controller;
 
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
-use VoucherBundle\Entity\VoucherPurchase;
 
 class VoucherControllerTest extends BMSServiceTestCase
 {
@@ -162,84 +163,21 @@ class VoucherControllerTest extends BMSServiceTestCase
         return $newVoucherReceived;
     }
 
-    public function testRedeemVoucher() : void
-    {
-        $booklet = $this->em->getRepository(Booklet::class)->findOneBy([]);
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([]);
-        $voucher = new Voucher(uniqid(), 1000, $booklet);
-        $voucher->setVoucherPurchase(VoucherPurchase::create($vendor, new \DateTime('now')));
-        $this->em->persist($voucher->getVoucherPurchase());
-        $this->em->persist($voucher);
-        $this->em->flush();
-
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $body = [
-            'id' => $voucher->getId(),
-        ];
-
-        // Using a fake header or else a country is gonna be put in the body
-        $crawler = $this->request('POST', '/api/wsse/vouchers/redeem', $body);
-        $newVoucherReceived = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-
-        /** @var Voucher $voucherSearch */
-        $voucherSearch = $this->em->getRepository(Voucher::class)->find($newVoucherReceived['id']);
-        $this->assertTrue($voucherSearch->getRedeemedAt() !== null, "Voucher has no redeem date");
-    }
-
-    public function testRedeemInvalidVoucher() : void
-    {
-        $booklet = $this->em->getRepository(Booklet::class)->findOneBy([]);
-        $voucher = new Voucher(uniqid(), 1000, $booklet);
-        $this->em->persist($voucher);
-        $this->em->flush();
-
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $body = [
-            'id' => $voucher->getId(),
-        ];
-
-        // Using a fake header or else a country is gonna be put in the body
-        $crawler = $this->request('POST', '/api/wsse/vouchers/redeem', $body);
-        $newVoucherReceived = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertFalse($this->client->getResponse()->isSuccessful(), "Request doesn't failed but it should: ".$this->client->getResponse()->getContent());
-        $this->assertFalse($this->client->getResponse()->isServerError(), "Request should fail but it ends with server error: ".$this->client->getResponse()->getContent());
-        $this->assertTrue($this->client->getResponse()->isClientError(), "Request should fail with client error: ".$this->client->getResponse()->getContent());
-    }
-
-    public function testGetRedeemedBatches(): void
+    /**
+     * @depends testValidBatchRedemption
+     *
+     * @param array $newBatchRedemption
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testGetRedeemedBatches(array $newBatchRedemption): void
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $voucher = $this->em->getRepository(Voucher::class)->findOneBy(['redeemedAt'=>null]);
-
-        $vendorId = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc'])->getId();
-        $purchase = new \VoucherBundle\InputType\VoucherPurchase();
-        $purchase->setProducts([[
-            'id' => 1,
-            'quantity' => 5.9,
-            'value' => 1000.05,
-        ]]);
-        $purchase->setVendorId($vendorId);
-        $purchase->setVouchers([$voucher]);
-        $purchase->setCreatedAt(new \DateTime());
-        $purchaseService = $this->container->get('voucher.purchase_service');
-        $p1 = $purchaseService->purchase($purchase);
-        $voucher->redeem();
-        $this->em->persist($p1);
-        $this->em->persist($p1);
-        $this->em->flush();
+        $vendorId = $newBatchRedemption['vendor'];
 
         $crawler = $this->request('GET', '/api/wsse/vouchers/purchases/redeemed-batches/' . $vendorId);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
@@ -292,7 +230,7 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->assertCount(0, $result['valid']);
     }
 
-    public function testValidBatchRedemption(): void
+    public function testValidBatchRedemption(): array
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
@@ -305,7 +243,7 @@ class VoucherControllerTest extends BMSServiceTestCase
             'status' => Booklet::DISTRIBUTED,
         ]);
         $vouchers = $this->em->getRepository(Voucher::class)->findBy([
-            'redeemedAt' => null,
+            'redemptionBatch' => null,
             'voucherPurchase' => null,
             'booklet' => $booklets,
         ]);
@@ -326,12 +264,87 @@ class VoucherControllerTest extends BMSServiceTestCase
         $batchToRedeem = [
             "vouchers" => array_map(function (Voucher $voucher) { return $voucher->getId(); }, $vouchers),
         ];
-        // $batchToRedeem['vouchers'][] = -1;
 
         $crawler = $this->request('POST', '/api/wsse/vouchers/purchases/redeem-batch/' . $vendorId, $batchToRedeem);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $result = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($result);
+        $this->assertIsArray($result);
+
+        $this->assertArrayHasKey('datetime', $result);
+        $this->assertArrayHasKey('date', $result);
+        $this->assertArrayHasKey('count', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('vendor', $result);
+        $this->assertArrayHasKey('redeemedAt', $result);
+        $this->assertArrayHasKey('redeemedBy', $result);
+        $this->assertArrayHasKey('voucherIds', $result);
+
+        $this->assertIsArray($result['voucherIds']);
+
+        return $result;
+    }
+
+    /**
+     * @depends testValidBatchRedemption
+     *
+     * @param array $newBatchRedemption
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testGetVoucherRedemptionBatch(array $newBatchRedemption)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $id = $newBatchRedemption['id'];
+
+        $this->request('GET', '/api/wsse/vouchers/purchases/redemption-batch/'.$id);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($result);
+
+        $this->assertArrayHasKey('datetime', $result);
+        $this->assertArrayHasKey('date', $result);
+        $this->assertArrayHasKey('count', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('vendor', $result);
+        $this->assertArrayHasKey('redeemedAt', $result);
+        $this->assertArrayHasKey('redeemedBy', $result);
+        $this->assertArrayHasKey('voucherIds', $result);
+
+        $this->assertIsArray($result['voucherIds']);
+    }
+
+    /**
+     * @depends testValidBatchRedemption
+     *
+     * @param array $newBatchRedemption
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testRedeemedVoucherReturnsRedeemedAt(array $newBatchRedemption)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $voucherId = current($newBatchRedemption['voucherIds']);
+
+        $this->request('GET', '/api/wsse/vouchers/'.$voucherId);
+        $voucher = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertNotNull($voucher['redeemed_at'], 'Redeemed voucher with id '.$voucherId.' should have redeemedAt not null');
     }
 
     public function testInvalidBatchRedemption(): void

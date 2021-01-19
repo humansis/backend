@@ -12,6 +12,7 @@ use Doctrine\ORM\Query;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use UserBundle\Entity\User;
 use VoucherBundle\DTO\RedemptionVoucherBatchCheck;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
@@ -113,16 +114,6 @@ class VoucherService
         return $this->em->getRepository(Voucher::class)->findAll();
     }
 
-    public function redeem(Voucher $voucher): void
-    {
-        if ($voucher->getVoucherPurchase() == null) {
-            throw new \InvalidArgumentException("Reddemed voucher must be used.");
-        }
-        $voucher->redeem();
-        $this->em->persist($voucher);
-        $this->em->flush();
-    }
-
     /**
      * @param VoucherRedemptionBatch $batch
      *
@@ -185,7 +176,7 @@ class VoucherService
         return $check;
     }
 
-    public function redeemBatch(VoucherRedemptionBatch $batch): void
+    public function redeemBatch(Vendor $vendor, VoucherRedemptionBatch $batch, User $redeemedBy): \VoucherBundle\Entity\VoucherRedemptionBatch
     {
         $check = $this->checkBatch($batch);
 
@@ -193,10 +184,20 @@ class VoucherService
             throw new \InvalidArgumentException("Invalid voucher batch");
         }
 
-        $redeemedAtDate = new \DateTime();
+        $repository = $this->em->getRepository(Voucher::class);
+
+        $voucherBatchValue = $repository->countVoucherValue($check->getValidVouchers());
+        $redemptionBatch = new \VoucherBundle\Entity\VoucherRedemptionBatch($vendor, $redeemedBy, $check->getValidVouchers(), $voucherBatchValue);
+
+        $this->em->persist($redemptionBatch);
+
         foreach ($check->getValidVouchers() as $voucher) {
-            $voucher->redeem($redeemedAtDate);
+            $voucher->setRedemptionBatch($redemptionBatch);
         }
+
+        $this->em->flush();
+
+        return $redemptionBatch;
     }
 
     /**
