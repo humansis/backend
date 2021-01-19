@@ -93,6 +93,11 @@ class BeneficiaryMapper implements MapperInterface
         }, $this->object->getPerson()->getPhones()->toArray());
     }
 
+    public function getResidencyStatus(): string
+    {
+        return $this->object->getResidencyStatus();
+    }
+
     public function getReferralType(): ?string
     {
         return $this->object->getPerson()->getReferral() ? $this->object->getPerson()->getReferral()->getType() : null;

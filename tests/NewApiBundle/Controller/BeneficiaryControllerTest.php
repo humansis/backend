@@ -61,6 +61,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('phoneIds', $result);
         $this->assertArrayHasKey('referralType', $result);
         $this->assertArrayHasKey('referralComment', $result);
+        $this->assertArrayHasKey('residencyStatus', $result);
         $this->assertArrayHasKey('isHead', $result);
         $this->assertArrayHasKey('vulnerabilityCriteria', $result);
     }
