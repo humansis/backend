@@ -94,6 +94,47 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertSame(1, $result['totalCount']);
     }
 
+    public function testGetBeneficiariesByAssistance()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $assistanceBeneficiary = $em->getRepository(\DistributionBundle\Entity\AssistanceBeneficiary::class)->findBy([])[0];
+
+        $this->request('GET', '/api/basic/assistances/'.$assistanceBeneficiary->getAssistance()->getId().'/beneficiaries?sort[]=nationalId');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": "*", 
+            "data": [
+                {
+                    "id": "*",
+                    "dateOfBirth": "*",
+                    "localFamilyName": "*",
+                    "localGivenName": "*",
+                    "localParentsName": "*",
+                    "enFamilyName": "*",
+                    "enGivenName": "*",
+                    "enParentsName": "*",
+                    "gender": "*",
+                    "nationalIds": "*",
+                    "phoneIds": "*",
+                    "referralType": "*",
+                    "referralComment": "*",
+                    "residencyStatus": "*",
+                    "isHead": "*",
+                    "vulnerabilityCriteria": "*"
+                }
+            ]}', $this->client->getResponse()->getContent());
+    }
+
     /**
      * @throws Exception
      */

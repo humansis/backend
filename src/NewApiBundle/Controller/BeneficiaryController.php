@@ -6,12 +6,41 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
+use NewApiBundle\InputType\BeneficiaryOrderInputType;
+use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class BeneficiaryController extends AbstractController
 {
+    /**
+     * @Rest\Get("/assistances/{id}/beneficiaries")
+     *
+     * @param Assistance                 $assistance
+     * @param BeneficiaryFilterInputType $filter
+     * @param BeneficiaryOrderInputType  $orderBy
+     * @param Pagination                 $pagination
+     *
+     * @return JsonResponse
+     */
+    public function beneficiariesByAssistance(
+        Assistance $assistance,
+        BeneficiaryFilterInputType $filter,
+        BeneficiaryOrderInputType $orderBy,
+        Pagination $pagination
+    ): JsonResponse
+    {
+        if ($assistance->getArchived()) {
+            throw $this->createNotFoundException();
+        }
+
+        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByAssistance($assistance, $filter, $orderBy, $pagination);
+
+        return $this->json($beneficiaries);
+    }
+
     /**
      * @Rest\Get("/beneficiaries/{id}")
      *
