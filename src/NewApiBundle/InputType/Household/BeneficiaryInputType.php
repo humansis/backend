@@ -87,14 +87,12 @@ class BeneficiaryInputType implements InputTypeInterface
     /**
      * @Assert\Choice(callback="referralTypes")
      * @Assert\Length(max="255")
-     * @Assert\NotBlank
      */
     private $referralType;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
-     * @Assert\NotBlank
      */
     private $referralComment;
 
