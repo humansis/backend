@@ -441,4 +441,32 @@ class BMSServiceTestCase extends KernelTestCase
 
         return true;
     }
+
+    /**
+     * Checks whether $expected array is fully contained in $actual array.
+     *
+     * @param        $expected
+     * @param        $actual
+     * @param string $message
+     */
+    public static function assertArrayFragment($expected, $actual, $message = '')
+    {
+        $constraint = new \CommonBundle\Utils\Test\Contraint\MatchArrayFragment($expected);
+
+        static::assertThat($actual, $constraint, $message);
+    }
+
+    /**
+     * Checks whether $expected json string is fully contained in $actual json string.
+     *
+     * @param        $expected
+     * @param        $actual
+     * @param string $message
+     */
+    public static function assertJsonFragment($expected, $actual, $message = '')
+    {
+        static::assertJson($expected);
+        static::assertJson($actual);
+        static::assertArrayFragment(json_decode($expected, true), json_decode($actual, true), $message);
+    }
 }
