@@ -21,7 +21,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     private const MAX_SMARTCARDS = 20;
 
     /** @var string */
-    private $enviroment;
+    private $environment;
 
     private $assistanceBeneficiary;
 
@@ -38,7 +38,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        if ('prod' === $this->enviroment) {
+        if ('prod' === $this->environment) {
             // this fixtures are not for production enviroment
             return;
         }
