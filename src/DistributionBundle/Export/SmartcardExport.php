@@ -41,15 +41,21 @@ class SmartcardExport
 
         $exportableTable = [];
         foreach ($assistanceBeneficiaries as $db) {
+            $commonFields = $db->getBeneficiary()->getCommonExportFields();
+
             /** @var SmartcardDeposit|null $deposit */
             $deposit = $this->em->getRepository(SmartcardDeposit::class)->findByDistributionBeneficiary($db);
             if ($deposit) {
-                $commonFields = $db->getBeneficiary()->getCommonExportFields();
-
                 $exportableTable[] = array_merge($commonFields, [
                     'Amount Sent' => $deposit->getValue(),
                     'Sent At' => $deposit->getCreatedAt()->format('d-m-Y'),
                     'Suspect Smartcard' => $deposit->getSmartcard()->isSuspicious() ? 'Yes' : 'No',
+                ]);
+            } else {
+                $exportableTable[] = array_merge($commonFields, [
+                    'Amount Sent' => null,
+                    'Sent At' => null,
+                    'Suspect Smartcard' => null,
                 ]);
             }
         }
