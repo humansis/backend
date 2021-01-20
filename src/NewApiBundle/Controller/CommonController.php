@@ -6,6 +6,7 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Pagination\Paginator;
+use DistributionBundle\Entity\ModalityType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,4 +54,23 @@ class CommonController extends AbstractController
         return $this->json(new Paginator($result));
     }
 
+    /**
+     * @Rest\Get("/icons")
+     *
+     * @return JsonResponse
+     */
+    public function icons(): JsonResponse
+    {
+        $data = [];
+
+        foreach ($this->getParameter('icons_modality_types') as $key => $svg) {
+            $data[] = ['key' => $key, 'svg' => $svg];
+        }
+
+        foreach ($this->getParameter('icons_sectors') as $key => $svg) {
+            $data[] = ['key' => $key, 'svg' => $svg];
+        }
+
+        return $this->json($data);
+    }
 }
