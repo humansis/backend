@@ -578,14 +578,7 @@ class AssistanceService
         $distributionArray = $distributions->getValues();
         $filteredArray = array();
         foreach ($distributionArray as $distribution) {
-            $commodities = $distribution->getCommodities();
-            $isQrVoucher = false;
-            foreach ($commodities as $commodity) {
-                if ($commodity->getModalityType()->getName() === "QR Code Voucher") {
-                    $isQrVoucher = true;
-                }
-            }
-            if ($isQrVoucher && !$distribution->getArchived()) {
+            if ($distribution->hasQRVoucherCommodity() && !$distribution->getArchived()) {
                 $filteredArray[] = $distribution;
             };
         }
@@ -761,7 +754,7 @@ class AssistanceService
 
         $booklets = [];
 
-        if ($exportableDistribution->getCommodities()[0]->getModalityType()->getName() === 'QR Code Voucher') {
+        if ($exportableDistribution->hasQRVoucherCommodity()) {
             foreach ($exportableDistribution->getDistributionBeneficiaries() as $assistanceBeneficiary) {
                     $activatedBooklets = $this->em->getRepository(Booklet::class)->getActiveBookletsByAssistanceBeneficiary($assistanceBeneficiary->getId());
                     if (count($activatedBooklets) > 0) {

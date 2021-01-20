@@ -59,7 +59,7 @@ class TransactionService
             throw $e;
         }
         
-        if ($assistance->getCommodities()[0]->getModalityType()->getName() === "Mobile Money") {
+        if ($assistance->hasMobileMoneyCommodity()) {
             $amountToSend = $assistance->getCommodities()[0]->getValue();
             $currencyToSend = $assistance->getCommodities()[0]->getUnit();
         } else {

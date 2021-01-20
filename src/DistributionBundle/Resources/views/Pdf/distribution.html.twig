@@ -131,13 +131,13 @@
                         <th>Date Of Birth</th>
                         <th>Residency Status</th>
                         <th>Vulnerabilities</th>
-                    {% elseif distribution.commodities[0].modalityType.name == 'QR Code Voucher' %}
+                    {% elseif distribution.hasQRVoucherCommodity() %}
                         <th>Booklet</th>
                         <th>Status</th>
                         <th>Used</th>
                         <th>Value</th>
                         <th>Purchased Items</th>
-                    {% elseif distribution.commodities[0].modalityType.name == 'Mobile Money' %}
+                    {% elseif distribution.hasMobileMoneyCommodity() %}
                         <th>Phone</th>
                         <th>Transaction Id</th>
                         <th>Status</th>
@@ -171,7 +171,7 @@
                                         <span> {{ vulnerability.fieldString }} </span>
                                     {% endfor %}
                                 </td>
-                            {% elseif distribution.commodities[0].modalityType.name == 'QR Code Voucher' %}
+                            {% elseif distribution.hasQRVoucherCommodity() %}
                                 <td>
                                     {% if booklets[assistanceBeneficiary.id] is defined %}
                                         {{ booklets[assistanceBeneficiary.id].code }}
@@ -217,7 +217,7 @@
                                         None
                                     {% endif %}
                                 </td>
-                            {% elseif distribution.commodities[0].modalityType.name == 'Mobile Money' %}
+                            {% elseif distribution.hasMobileMoneyCommodity() %}
                                 <td>
                                     <p>
                                         {% if assistanceBeneficiary.beneficiary.phones|length == 0 %}

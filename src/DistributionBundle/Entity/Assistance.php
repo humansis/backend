@@ -5,6 +5,7 @@ namespace DistributionBundle\Entity;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
+use DistributionBundle\Enum\AssistanceCommodity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use Doctrine\ORM\Mapping as ORM;
@@ -719,6 +720,28 @@ class Assistance implements ExportableInterface
         $this->subSector = $subSector;
     }
 
+    public function hasQRVoucherCommodity(): bool
+    {
+        /** @var Commodity $commodity */
+        foreach ($this->getCommodities() as $commodity) {
+            if (AssistanceCommodity::QR_VOUCHER === $commodity->getModalityType()->getName()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function hasMobileMoneyCommodity(): bool
+    {
+        /** @var Commodity $commodity */
+        foreach ($this->getCommodities() as $commodity) {
+            if (AssistanceCommodity::MOBILE_MONEY === $commodity->getModalityType()->getName()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function getMappedValueForExport(): array
     {
         // récuperer les criteria de selection  depuis l'objet selectioncriteria
@@ -824,8 +847,7 @@ class Assistance implements ExportableInterface
 
     public function getCommoditySentAmountFromBeneficiary($commodity, $assistanceBeneficiary)
     {
-        $modalityType = $this->getCommodities()[0]->getModalityType()->getName();
-        if ($modalityType === 'Mobile Money') {
+        if ($this->hasMobileMoneyCommodity()) {
             $numberOfTransactions = count($assistanceBeneficiary->getTransactions());
             if (count($assistanceBeneficiary->getTransactions()) > 0) {
                 $transaction = $assistanceBeneficiary->getTransactions()[$numberOfTransactions - 1];
@@ -834,7 +856,7 @@ class Assistance implements ExportableInterface
             } else {
                 return 0;
             }
-        } elseif ($modalityType === 'QR Code Voucher') {
+        } elseif ($this->hasQRVoucherCommodity()) {
             $booklets = $assistanceBeneficiary->getBooklets();
             foreach ($booklets as $booklet) {
                 if ($booklet->getStatus() === 1 || $booklet->getStatus() === 2) {
