@@ -119,7 +119,8 @@ php:
         HID_SECRET: 'anyText'
         GOOGLE_CLIENT: 'anyText'
         MOBILE_MASTER_KEY: 'anyText'
-        MOBILE_MASTER_KEY_VERSION: 'anyText'
+        MOBILE_APP_VERSION=0
+        MOBILE_APP_ID=0
 ```
 
 ### Test interpret and docker environment
@@ -137,7 +138,7 @@ php:
   ```
   server = Local Docker
   Configuration files = ./docker-compose.yml
-  Env. variables = AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_MASTER_KEY_VERSION=0
+  Env. variables = AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_APP_VERSION=0;MOBILE_APP_ID=0
   Lifecycle = Always start a new container
   ```
 - OK
@@ -146,6 +147,6 @@ php:
   Interpreter = recently created
   Directory = customdir/tests
   Preffered Coverage engine = XDebug
-  Env. variables = AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_MASTER_KEY_VERSION=0
+  Env. variables = AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_APP_VERSION=0;MOBILE_APP_ID=0
   ```
 - OK

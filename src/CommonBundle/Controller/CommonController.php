@@ -130,8 +130,9 @@ class CommonController extends Controller
     public function masterKeyOfflineApp()
     {
         return $this->json([
-            'key' => $this->getParameter('mobile_app_master_key'),
-            'version' => $this->getParameter('mobile_app_version'),
+            'MASTER_KEY' => $this->getParameter('mobile_app_master_key'),
+            'APP_VERSION' => $this->getParameter('mobile_app_version'),
+            'APP_ID' => $this->getParameter('mobile_app_id'),
         ]);
     }
 
