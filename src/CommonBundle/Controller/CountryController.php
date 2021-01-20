@@ -12,28 +12,32 @@ class CountryController extends Controller
 {
     // todo move to DB
     const COUNTRIES = [
-        [
+        'KHM' => [
             'name' => 'Cambodia',
             'iso3' => 'KHM',
             'currency' => 'KHR',
-        ], [
+        ],
+        'SYR' => [
             'name' => 'Syria',
             'iso3' => 'SYR',
             'currency' => 'SYP',
-        ], [
+        ],
+        'UKR' => [
             'name' => 'Ukraine',
             'iso3' => 'UKR',
             'currency' => 'UAH',
-        ], [
+        ],
+        'ETH' => [
             'name' => 'Ethiopia',
             'iso3' => 'ETH',
             'currency' => 'ETB',
-        ], [
+        ],
+        'MNG' => [
             'name' => 'Mongolia',
             'iso3' => 'MNG',
             'currency' => 'MNT',
         ],
-        [
+        'ARM' => [
             'name' => 'Armenia',
             'iso3' => 'ARM',
             'currency' => 'AMD',
