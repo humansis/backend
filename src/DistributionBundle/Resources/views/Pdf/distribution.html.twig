@@ -154,11 +154,7 @@
                             <td>{{ assistanceBeneficiary.beneficiary.localGivenName }} </td>
                             {% if not distribution.validated %}
                                 <td>
-                                    {% if assistanceBeneficiary.beneficiary.gender == constant('BeneficiaryBundle\Entity\Person::GENDER_FEMALE') %}
-                                        Female
-                                    {% elseif assistanceBeneficiary.beneficiary.gender == constant('BeneficiaryBundle\Entity\Person::GENDER_MALE') %}
-                                        Male
-                                    {% endif %}
+                                    {{ assistanceBeneficiary.beneficiary|gender }}
                                 </td>
                                 <td>
                                     {{ assistanceBeneficiary.beneficiary.dateOfBirth | date("m/d/Y") }}

@@ -1,5 +1,8 @@
 services:
 
+    DistributionBundle\Extension\BeneficiaryGenderExtension:
+        tags:
+            - { name: twig.extension }
 
 #######################################################################################
 ##                                       CRUD                                        ##
