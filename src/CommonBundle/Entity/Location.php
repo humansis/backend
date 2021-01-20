@@ -179,11 +179,11 @@ class Location
     public function getAdm2Id(): ?int
     {
         if (null !== $this->getAdm2()) {
-            return $this->getAdm2()->getAdm1()->getId();
+            return $this->getAdm2()->getId();
         } elseif (null !== $this->getAdm3()) {
-            return $this->getAdm3()->getAdm2()->getAdm1()->getId();
+            return $this->getAdm3()->getAdm2()->getId();
         } elseif (null !== $this->getAdm4()) {
-            return $this->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId();
+            return $this->getAdm4()->getAdm3()->getAdm2()->getId();
         }
 
         return null;
@@ -192,9 +192,9 @@ class Location
     public function getAdm3Id(): ?int
     {
         if (null !== $this->getAdm3()) {
-            return $this->getAdm3()->getAdm2()->getAdm1()->getId();
+            return $this->getAdm3()->getId();
         } elseif (null !== $this->getAdm4()) {
-            return $this->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId();
+            return $this->getAdm4()->getAdm3()->getId();
         }
 
         return null;
@@ -203,7 +203,7 @@ class Location
     public function getAdm4Id(): ?int
     {
         if (null !== $this->getAdm4()) {
-            return $this->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId();
+            return $this->getAdm4()->getId();
         }
 
         return null;
