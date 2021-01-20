@@ -4,6 +4,7 @@ namespace CommonBundle\DataFixtures;
 
 use DistributionBundle\Entity\Modality;
 use DistributionBundle\Entity\ModalityType;
+use DistributionBundle\Enum\AssistanceCommodity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -12,7 +13,7 @@ class ModalityFixtures extends Fixture
     private $data = [
         [
             'Cash', [
-                'Mobile Money',
+                AssistanceCommodity::MOBILE_MONEY,
                 'Cash',
                 'Smartcard',
                 // 'Electronic Bank Transfer',
@@ -22,7 +23,7 @@ class ModalityFixtures extends Fixture
         [
             'Voucher', [
                 // 'E-Voucher',
-                'QR Code Voucher',
+                AssistanceCommodity::QR_VOUCHER,
                 'Paper Voucher',
             ],
         ],

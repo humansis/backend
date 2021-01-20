@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\DistributedItem;
+use DistributionBundle\Enum\AssistanceCommodity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
@@ -168,9 +169,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
                 ->select('COUNT(DISTINCT db)');
 
-                if ($modalityType === 'Mobile Money') {
+                if (AssistanceCommodity::MOBILE_MONEY === $modalityType) {
                     $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
-                } else if ($modalityType === 'QR Code Voucher') {
+                } else if (AssistanceCommodity::QR_VOUCHER === $modalityType) {
                     $qb->innerJoin('db.booklets', 'b', Join::WITH, 'b.status = 1 OR b.status = 2');
                 } else {
                     $qb->innerJoin('db.generalReliefs', 'gr', Join::WITH, 'gr.distributedAt IS NOT NULL');

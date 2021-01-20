@@ -16,6 +16,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
+use DistributionBundle\Enum\AssistanceCommodity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\DistributionCSVService;
@@ -74,7 +75,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     "modality_type" => [
                         "id" => 1,
                     ],
-                    "type" => "Mobile Money",
+                    "type" => AssistanceCommodity::MOBILE_MONEY,
                     "unit" => "USD",
                     "value" => 150.1,
                     "description" => null
@@ -818,7 +819,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     'modality_type' => [
                         'id' => 1,
                     ],
-                    'type' => 'Mobile Money',
+                    'type' => AssistanceCommodity::MOBILE_MONEY,
                     'unit' => 'USD',
                     'value' => 100,
                     'description' => null,
@@ -944,7 +945,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     'modality_type' => [
                         'id' => 1,
                     ],
-                    'type' => 'Mobile Money',
+                    'type' => AssistanceCommodity::MOBILE_MONEY,
                     'unit' => 'USD',
                     'value' => 100,
                     'description' => null,

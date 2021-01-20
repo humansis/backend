@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Repository;
 use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
+use DistributionBundle\Enum\AssistanceCommodity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -274,9 +275,9 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->select('COUNT(DISTINCT b)');
         $this->whereInDistribution($qb, $distribution);
 
-        if ('Mobile Money' === $modalityType) {
+        if (AssistanceCommodity::MOBILE_MONEY === $modalityType) {
             $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
-        } else if ($modalityType === 'QR Code Voucher') {
+        } else if (AssistanceCommodity::QR_VOUCHER === $modalityType) {
             $qb->innerJoin('db.booklets', 'bo', Join::WITH, 'bo.status = 1 OR bo.status = 2');
         } else {
             $qb->innerJoin('db.generalReliefs', 'gr', Join::WITH, 'gr.distributedAt IS NOT NULL');
