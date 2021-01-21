@@ -81,6 +81,6 @@ class CountryController extends Controller
      */
     public function list()
     {
-        return $this->json(self::COUNTRIES);
+        return $this->json(array_values(self::COUNTRIES));
     }
 }
