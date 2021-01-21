@@ -20,7 +20,7 @@ use ProjectBundle\Entity\Project;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\HttpKernel\Kernel;
 
-class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
+class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface//, DependentFixtureInterface
 {
     private $householdTypes = [
         'single male family' => ['M-25'],
@@ -105,11 +105,9 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             echo "Project {$project->getId()}# {$project->getName()}/{$project->getIso3()}";
             $locationIndex = 0;
             foreach ($this->getTestingLocations($manager, $project->getIso3()) as $location) {
-                $this->createHousehold($manager, $location, $project);
-                if (0 == (++$locationIndex % 5)) {
-                    $manager->flush();
-                    break;
-                }
+                $this->createHouseholds($manager, $location, $project);
+                $this->createIndividuals($manager, $location, $project);
+                break;
             }
             echo "\n";
             $manager->flush();
@@ -155,58 +153,73 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
      *
      * @throws \Exception
      */
-    private function createHousehold(ObjectManager $manager, Location $location, Project $project)
+    private function createHouseholds(ObjectManager $manager, Location $location, Project $project)
     {
         foreach ($this->householdTypes as $typeName => $members) {
-            $household = new Household();
-
-            $household->setLongitude($this->householdTemplate['longitude']);
-            $household->setLatitude($this->householdTemplate['latitude']);
-            $household->setCopingStrategiesIndex($this->householdTemplate['coping_strategies_index']);
-            $household->setDebtLevel($this->householdTemplate['debt_level']);
-            $household->setFoodConsumptionScore($this->householdTemplate['food_consumption_score']);
-            $household->setIncomeLevel($this->householdTemplate['income_level']);
-
-            foreach ($members as $member) {
-                [$gender, $age] = explode('-', $member);
-                $bnfData = $this->replacePlaceholders($this->beneficiaryTemplate, [
-                    '{age}' => $age,
-                    '{project}' => $project->getName(),
-                    '{gender}' => 'F' === $gender ? 'Female' : 'Male',
-                    '{householdType}' => $typeName,
-                    '{country}' => $project->getIso3(),
-                ]);
-
-                $bnf = new Beneficiary();
-                $bnf->setHousehold($household);
-                $birthDate = new \DateTime();
-                $birthDate->modify("-$age year");
-                $bnf->setDateOfBirth($birthDate);
-                $bnf->setEnFamilyName($bnfData['en_family_name']);
-                $bnf->setEnGivenName($bnfData['en_given_name']);
-                $bnf->setLocalFamilyName($bnfData['local_family_name']);
-                $bnf->setLocalGivenName($bnfData['local_given_name']);
-                $bnf->setGender('F' === $gender ? 0 : 1);
-                $bnf->setStatus(0 == $household->getBeneficiaries()->count());
-                $bnf->setResidencyStatus($bnfData['residency_status']);
-
-                $household->addBeneficiary($bnf);
-                $manager->persist($bnf);
-            }
-
-            $householdLocation = $this->getHouseholdLocation($location);
-            $householdLocation->setHousehold($household);
-            $manager->persist($householdLocation);
-            $household->addHouseholdLocation($householdLocation);
-
-            $project->addHousehold($household);
-            $household->addProject($project);
-
-            $manager->persist($household);
-            echo '.';
+            $this->createHousehold($manager, $location, $project, $typeName, $members);
         }
-        $manager->persist($project);
     }
+
+
+    private function createIndividuals(ObjectManager $manager, Location $location, Project $project)
+    {
+        foreach ($this->householdTypes as $typeName => $members) {
+            foreach ($members as $member) {
+                $this->createHousehold($manager, $location, $project, "Individual", [$member]);
+            }
+        }
+    }
+
+    private function createHousehold(ObjectManager $manager, Location $location, Project $project, string $typeName, array $members)
+    {
+        $household = new Household();
+
+        $household->setLongitude($this->householdTemplate['longitude']);
+        $household->setLatitude($this->householdTemplate['latitude']);
+        $household->setCopingStrategiesIndex($this->householdTemplate['coping_strategies_index']);
+        $household->setDebtLevel($this->householdTemplate['debt_level']);
+        $household->setFoodConsumptionScore($this->householdTemplate['food_consumption_score']);
+        $household->setIncomeLevel($this->householdTemplate['income_level']);
+
+        foreach ($members as $member) {
+            [$gender, $age] = explode('-', $member);
+            $bnfData = $this->replacePlaceholders($this->beneficiaryTemplate, [
+                '{age}' => $age,
+                '{project}' => $project->getName(),
+                '{gender}' => 'F' === $gender ? 'Female' : 'Male',
+                '{householdType}' => $typeName,
+                '{country}' => $project->getIso3(),
+            ]);
+
+            $bnf = new Beneficiary();
+            $bnf->setHousehold($household);
+            $birthDate = new \DateTime();
+            $birthDate->modify("-$age year");
+            $bnf->setDateOfBirth($birthDate);
+            $bnf->setEnFamilyName($bnfData['en_family_name']);
+            $bnf->setEnGivenName($bnfData['en_given_name']);
+            $bnf->setLocalFamilyName($bnfData['local_family_name']);
+            $bnf->setLocalGivenName($bnfData['local_given_name']);
+            $bnf->setGender('F' === $gender ? 0 : 1);
+            $bnf->setStatus(0 == $household->getBeneficiaries()->count());
+            $bnf->setResidencyStatus($bnfData['residency_status']);
+
+            $household->addBeneficiary($bnf);
+            $manager->persist($bnf);
+        }
+
+        $householdLocation = $this->getHouseholdLocation($location);
+        $householdLocation->setHousehold($household);
+        $manager->persist($householdLocation);
+        $household->addHouseholdLocation($householdLocation);
+
+        $project->addHousehold($household);
+        $household->addProject($project);
+
+        $manager->persist($household);
+        echo '.';
+    }
+
 
     private function replacePlaceholders(array $data, array $replaces)
     {
