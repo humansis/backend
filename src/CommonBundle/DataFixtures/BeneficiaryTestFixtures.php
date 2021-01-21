@@ -20,7 +20,7 @@ use ProjectBundle\Entity\Project;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\HttpKernel\Kernel;
 
-class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface//, DependentFixtureInterface
+class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
     private $householdTypes = [
         'single male family' => ['M-25'],
@@ -157,6 +157,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface//
     {
         foreach ($this->householdTypes as $typeName => $members) {
             $this->createHousehold($manager, $location, $project, $typeName, $members);
+            $manager->flush();
         }
     }
 
@@ -167,6 +168,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface//
             foreach ($members as $member) {
                 $this->createHousehold($manager, $location, $project, "Individual", [$member]);
             }
+            $manager->flush();
         }
     }
 
@@ -205,6 +207,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface//
             $bnf->setResidencyStatus($bnfData['residency_status']);
 
             $household->addBeneficiary($bnf);
+            $bnf->addProject($project);
             $manager->persist($bnf);
         }
 
@@ -213,7 +216,6 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface//
         $manager->persist($householdLocation);
         $household->addHouseholdLocation($householdLocation);
 
-        $project->addHousehold($household);
         $household->addProject($project);
 
         $manager->persist($household);

@@ -12,6 +12,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\InstitutionOrderInputType;
 use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Project;
 
 /**
  * InstitutionRepository.
@@ -100,6 +101,17 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
         $this->getInstitutionLocation($qb);
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
         $locationRepository->whereCountry($qb, $countryISO3);
+    }
+
+    public function getUnarchivedByProject(Project $project)
+    {
+        $qb = $this->createQueryBuilder("comm");
+        $q = $qb->leftJoin("comm.projects", "p")
+            ->where("p = :project")
+            ->setParameter("project", $project)
+            ->andWhere("comm.archived = 0");
+
+        return $q->getQuery()->getResult();
     }
 
     public function findByParams(?string $iso3, ?InstitutionOrderInputType $orderBy = null, ?Pagination $pagination = null)
