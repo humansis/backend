@@ -73,4 +73,24 @@ class CommonController extends AbstractController
 
         return $this->json($data);
     }
+
+    /**
+     * @Rest\Get("/translations/{language}")
+     *
+     * @param string $language
+     *
+     * @return JsonResponse
+     */
+    public function translations(string $language): JsonResponse
+    {
+        $data = [];
+
+        foreach ($this->get('translator')->getCatalogue($language)->all() as $domain) {
+            foreach ($domain as $key => $value) {
+                $data[] = ['key' => $key, 'value' => $value];
+            }
+        }
+
+        return $this->json($data);
+    }
 }
