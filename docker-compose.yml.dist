@@ -13,8 +13,12 @@ networks:
 
 services:
     db:
-        image: mysql:5.7
-        command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+        image: mysql:8.0
+        command:
+            - '--character-set-server=utf8mb4'
+            - '--collation-server=utf8mb4_unicode_ci'
+            - '--log_bin_trust_function_creators=1'
+            - '--cte_max_recursion_depth=100000'
         volumes:
             - mysqldata:/var/lib/mysql
         networks:
