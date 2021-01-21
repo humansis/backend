@@ -11,7 +11,9 @@ use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
+use CommonBundle\Controller\ExportController;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use PhpOption\Tests\PhpOptionRepo;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -401,6 +403,11 @@ class BeneficiaryService
         } else {
             $exportableTable = $this->em->getRepository(Beneficiary::class)->getAllInCountry($countryIso3);	
         }
+
+        if (count($households) > ExportController::EXPORT_LIMIT) {
+            $count = count($households);
+            throw new BadRequestHttpException("Too much households ($count) to export. Limit is ".ExportController::EXPORT_LIMIT);
+        }
         
         if ($households) {
             foreach ($households as $household) {
@@ -409,6 +416,13 @@ class BeneficiaryService
                 }
             }
         }
+
+        if (count($exportableTable) > ExportController::EXPORT_LIMIT) {
+            $BNFcount = count($exportableTable);
+            $HHcount = count($households);
+            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is ".ExportController::EXPORT_LIMIT);
+        }
+
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
     }
 
