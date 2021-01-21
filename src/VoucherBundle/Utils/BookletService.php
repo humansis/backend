@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\InputType\BookletBatchCreateInputType;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -155,6 +156,69 @@ class BookletService
         return $booklet;
     }
 
+    public function createBooklets(BookletBatchCreateInputType $inputType)
+    {
+        $tempCode = uniqid('temp_code');
+
+        $project = $this->em->getRepository(\ProjectBundle\Entity\Project::class)->find($inputType->getProjectId());
+        if (!$project) {
+            throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists');
+        }
+
+        try {
+            $this->em->beginTransaction();
+
+            for ($i = 0; $i < $inputType->getQuantityOfBooklets(); ++$i) {
+                $bookletCode = sprintf('%s_%s_%s_batch%06d', $inputType->getIso3(), $project->getName(), date('d-m-Y'), $i);
+
+                $booklet = new Booklet();
+                $booklet
+                    ->setNumberVouchers($inputType->getQuantityOfVouchers())
+                    ->setCurrency($inputType->getCurrency())
+                    ->setStatus(Booklet::UNASSIGNED)
+                    ->setCountryISO3($inputType->getIso3())
+                    ->setProject($project)
+                    ->setCode($bookletCode)
+                    ->setPassword($inputType->getPassword());
+
+                $values = $inputType->getIndividualValues();
+                for ($j = 0; $j < $booklet->getNumberVouchers(); ++$j) {
+                    $value = $values[$j] ?? $values[count($values) - 1];
+                    $voucher = new Voucher($tempCode.'_'.$i.'_'.$j, $value, $booklet);
+                    $booklet->getVouchers()->add($voucher);
+
+                    $this->em->persist($voucher);
+                }
+
+                $this->em->persist($booklet);
+
+                if (0 === $i % 50) {
+                    $this->em->flush();
+                    $this->em->clear(Booklet::class);
+                    $this->em->clear(Voucher::class);
+                }
+            }
+
+            $this->em->flush();
+            $this->em->clear(Booklet::class);
+            $this->em->clear(Voucher::class);
+
+            //update voucher.code from temp_code to regular code
+            $this->em->getConnection()->executeQuery('
+                UPDATE voucher v
+                JOIN booklet b ON b.id=v.booklet_id
+                SET v.code=CONCAT(b.currency, v.value, "*", b.code, "-", v.id, IF(b.password, CONCAT("-", b.password), ""))
+                WHERE v.code LIKE ?
+            ', [$tempCode.'%']);
+
+            $this->em->commit();
+
+        } catch (\Exception $exception) {
+            $this->em->rollback();
+            throw $exception;
+        }
+    }
+
     /**
      * Get the last inserted ID in the Booklet table
      *
@@ -223,6 +287,7 @@ class BookletService
      *
      * @param string $countryCode
      * @param \ProjectBundle\Entity\Project $project
+     * @param int $count
      * @return string
      */
     protected function generateCode(string $countryCode, \ProjectBundle\Entity\Project $project)
