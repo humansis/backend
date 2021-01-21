@@ -121,20 +121,6 @@ class Household extends AbstractBeneficiary
     private $beneficiaries;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
-     */
-    private $projects;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(type="boolean", options={"default" : 0})
-     * @SymfonyGroups({"Activity"})
-     */
-    private $archived = 0;
-
-    /**
      * @var int|null
      *
      * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
