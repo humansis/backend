@@ -208,6 +208,7 @@ class AssistanceService
             $distribution->addCommodity($this->commodityService->create($distribution, $item, false));
         }
 
+        $listReceivers = [];
         if (AssistanceTargetType::COMMUNITY === $distribution->getTargetType()) {
             foreach ($distributionArray['communities'] as $id) {
                 $community = $this->container->get('doctrine')->getRepository(Community::class)->find($id);

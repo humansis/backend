@@ -2,6 +2,8 @@
 
 namespace CommonBundle\DataFixtures;
 
+use BeneficiaryBundle\Entity\Community;
+use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\Controller\CountryController;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
@@ -101,11 +103,13 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
-            echo $project->getName();
+            echo $project->getName()." ";
             $this->loadCommonIndividualAssistance($manager, $project);
             $this->loadCommonHouseholdAssistance($manager, $project);
+            $this->loadCommonInstitutionAssistance($manager, $project);
+            $this->loadCommonCommunityAssistance($manager, $project);
             $this->loadSmartcardAssistance($manager, $project);
-            echo ";\n";
+            echo "\n";
         }
     }
 
@@ -131,8 +135,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $country = CountryController::COUNTRIES[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $this->distributionService->create($project->getIso3(), $data, 1);
-            echo ".";
+            $this->distributionService->create($project->getIso3(), $data);
+            echo "B";
         }
     }
 
@@ -145,8 +149,54 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $country = CountryController::COUNTRIES[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $this->distributionService->create($project->getIso3(), $data, 1);
-            echo ",";
+            $this->distributionService->create($project->getIso3(), $data);
+            echo "H";
+        }
+    }
+
+    private function loadCommonInstitutionAssistance(ObjectManager $manager, Project $project)
+    {
+        $data = $this->assistanceArray;
+        $data['project']['id'] = $project->getId();
+        $data['target_type'] = AssistanceTargetType::INSTITUTION;
+        unset($data['selection_criteria']);
+
+        $data['institutions'] = [];
+        $institutions = $manager->getRepository(Institution::class)->getUnarchivedByProject($project);
+        if (empty($institutions)) {
+            echo 'i';
+            return;
+        }
+        $data['institutions'] = array_map(function (Institution $institution) { return $institution->getId(); }, $institutions);
+
+        $country = CountryController::COUNTRIES[$project->getIso3()];
+        foreach ($this->getCommodities($manager, $country) as $commodityArray) {
+            $data['commodities'] = [0 => $commodityArray];
+            $this->distributionService->create($project->getIso3(), $data);
+            echo "I";
+        }
+    }
+
+    private function loadCommonCommunityAssistance(ObjectManager $manager, Project $project)
+    {
+        $data = $this->assistanceArray;
+        $data['project']['id'] = $project->getId();
+        $data['target_type'] = AssistanceTargetType::COMMUNITY;
+        unset($data['selection_criteria']);
+
+        $data['communities'] = [];
+        $communities = $manager->getRepository(Community::class)->getUnarchivedByProject($project)->getQuery()->getResult();
+        if (empty($communities)) {
+            echo 'c';
+            return;
+        }
+        $data['communities'] = array_map(function (Community $community) { return $community->getId(); }, $communities);
+
+        $country = CountryController::COUNTRIES[$project->getIso3()];
+        foreach ($this->getCommodities($manager, $country) as $commodityArray) {
+            $data['commodities'] = [0 => $commodityArray];
+            $this->distributionService->create($project->getIso3(), $data);
+            echo "C";
         }
     }
 
