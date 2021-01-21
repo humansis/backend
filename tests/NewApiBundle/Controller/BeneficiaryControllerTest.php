@@ -223,10 +223,11 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('locationGroup', $result);
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('tentNumber', $result);
-        $this->assertArrayHasKey('adm1', $result);
-        $this->assertArrayHasKey('adm2', $result);
-        $this->assertArrayHasKey('adm3', $result);
-        $this->assertArrayHasKey('adm4', $result);
+        $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
     }
 
     /**
@@ -258,10 +259,11 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('number', $result);
         $this->assertArrayHasKey('street', $result);
         $this->assertArrayHasKey('postcode', $result);
-        $this->assertArrayHasKey('adm1', $result);
-        $this->assertArrayHasKey('adm2', $result);
-        $this->assertArrayHasKey('adm3', $result);
-        $this->assertArrayHasKey('adm4', $result);
+        $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
     }
 
     /**
@@ -295,9 +297,10 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('number', $result);
         $this->assertArrayHasKey('street', $result);
         $this->assertArrayHasKey('postcode', $result);
-        $this->assertArrayHasKey('adm1', $result);
-        $this->assertArrayHasKey('adm2', $result);
-        $this->assertArrayHasKey('adm3', $result);
-        $this->assertArrayHasKey('adm4', $result);
+        $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
     }
 }

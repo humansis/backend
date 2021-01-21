@@ -63,22 +63,27 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getAssistanceType();
     }
 
-    public function getAdm1(): ?int
+    public function getLocationId(): int
+    {
+        return $this->object->getLocation()->getId();
+    }
+
+    public function getAdm1Id(): ?int
     {
         return $this->object->getLocation()->getAdm1Id() ?: null;
     }
 
-    public function getAdm2(): ?int
+    public function getAdm2Id(): ?int
     {
         return $this->object->getLocation()->getAdm2Id() ?: null;
     }
 
-    public function getAdm3(): ?int
+    public function getAdm3Id(): ?int
     {
         return $this->object->getLocation()->getAdm3Id() ?: null;
     }
 
-    public function getAdm4(): ?int
+    public function getAdm4Id(): ?int
     {
         return $this->object->getLocation()->getAdm4Id() ?: null;
     }
