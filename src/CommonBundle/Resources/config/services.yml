@@ -119,6 +119,13 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\Beneficiaries\BeneficiaryBookletFixtures:
+        arguments:
+            - "@kernel"
+            - "@voucher.booklet_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\BeneficiaryTestFixtures:
         arguments:
             - "@kernel"
