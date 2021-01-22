@@ -2,6 +2,8 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use CommonBundle\Entity\Location;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Tests\BMSServiceTestCase;
 
@@ -293,5 +295,33 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('code', $result);
         $this->assertArrayHasKey('locationId', $result);
         $this->assertArrayHasKey('adm3Id', $result);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetLocations()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $location = $em->getRepository(Location::class)->findBy([])[0];
+
+        $this->request('GET', '/api/basic/locations?filter[id][]='.$location->getId());
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertSame(1, $result['totalCount']);
     }
 }

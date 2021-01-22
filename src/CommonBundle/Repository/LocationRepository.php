@@ -8,6 +8,8 @@ use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm1;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\LocationFilterInputType;
 
 /**
  * LocationRepository
@@ -90,5 +92,24 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     {
         $this->getAdm1($qb);
         $qb->select("adm1.countryISO3 as country");
+    }
+
+
+
+    /**
+     * @param LocationFilterInputType $filter
+     *
+     * @return Paginator
+     */
+    public function findByParams(LocationFilterInputType $filter): Paginator
+    {
+        $qbr = $this->createQueryBuilder('l');
+
+        if ($filter->hasIds()) {
+            $qbr->andWhere('l.id IN (:ids)')
+                ->setParameter('ids', $filter->getIds());
+        }
+
+        return new Paginator($qbr);
     }
 }

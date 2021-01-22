@@ -12,6 +12,7 @@ use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\InputType\LocationFilterInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -158,10 +159,25 @@ class LocationController extends AbstractController
      * @Rest\Get("/locations/{id}")
      *
      * @param Location $location
+     *
      * @return JsonResponse
      */
     public function item(Location $location)
     {
         return $this->json($location->getAdm());
+    }
+
+    /**
+     * @Rest\Get("/locations")
+     *
+     * @param LocationFilterInputType $filter
+     *
+     * @return JsonResponse
+     */
+    public function locations(LocationFilterInputType $filter)
+    {
+        $locations = $this->getDoctrine()->getRepository(Location::class)->findByParams($filter);
+
+        return $this->json($locations);
     }
 }
