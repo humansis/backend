@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class BeneficiaryController extends AbstractController
@@ -25,6 +26,19 @@ class BeneficiaryController extends AbstractController
         }
 
         return $this->json($beneficiary);
+    }
+    /**
+     * @Rest\Get("/beneficiaries")
+     *
+     * @param BeneficiaryFilterInputType $filter
+     *
+     * @return JsonResponse
+     */
+    public function beneficiaryies(BeneficiaryFilterInputType $filter): JsonResponse
+    {
+        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByParams($filter);
+
+        return $this->json($beneficiaries);
     }
 
     /**

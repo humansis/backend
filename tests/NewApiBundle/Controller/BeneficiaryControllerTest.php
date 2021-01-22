@@ -68,6 +68,34 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
+    public function testGetBeneficiaries()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $beneficiary = $em->getRepository(Beneficiary::class)->findBy([])[0];
+
+        $this->request('GET', '/api/basic/beneficiaries?filter[id][]='.$beneficiary->getId());
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertSame(1, $result['totalCount']);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testGetNationalId()
     {
         // Log a user in order to go through the security firewall
