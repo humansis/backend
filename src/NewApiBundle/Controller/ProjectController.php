@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\ProjectCreateInputType;
+use NewApiBundle\InputType\ProjectFilterInputType;
 use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
 use NewApiBundle\Request\Pagination;
@@ -68,13 +69,14 @@ class ProjectController extends AbstractController
     /**
      * @Rest\Get("/projects")
      *
-     * @param Request               $request
-     * @param Pagination            $pagination
-     * @param ProjectOrderInputType $orderBy
+     * @param Request                $request
+     * @param ProjectFilterInputType $filter
+     * @param ProjectOrderInputType  $orderBy
+     * @param Pagination             $pagination
      *
      * @return JsonResponse
      */
-    public function list(Request $request, Pagination $pagination, ProjectOrderInputType $orderBy): JsonResponse
+    public function list(Request $request, ProjectFilterInputType $filter, ProjectOrderInputType $orderBy, Pagination $pagination): JsonResponse
     {
         $countryIso3 = null;
 
@@ -83,7 +85,7 @@ class ProjectController extends AbstractController
             $countryIso3 = $request->headers->get('country');
         }
 
-        $projects = $this->getDoctrine()->getRepository(Project::class)->findByParams($countryIso3, $orderBy, $pagination);
+        $projects = $this->getDoctrine()->getRepository(Project::class)->findByParams($countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($projects);
     }

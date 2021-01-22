@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use ProjectBundle\Entity\Project;
 use Doctrine\ORM\Query\Expr\Join;
 use CommonBundle\Entity\Adm3;
@@ -666,5 +668,23 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->where('b.household = :household')
             ->setParameter('household', $household)
             ->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @param BeneficiaryFilterInputType $filterInputType
+     *
+     * @return Paginator
+     */
+    public function findByParams(BeneficiaryFilterInputType $filterInputType): Paginator
+    {
+        $qbr = $this->createQueryBuilder('b')
+            ->andWhere('b.archived = 0');
+
+        if ($filterInputType->hasIds()) {
+            $qbr->andWhere('b.id IN (:ids)')
+                ->setParameter('ids', $filterInputType->getIds());
+        }
+
+        return new Paginator($qbr);
     }
 }
