@@ -61,6 +61,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('phoneIds', $result);
         $this->assertArrayHasKey('referralType', $result);
         $this->assertArrayHasKey('referralComment', $result);
+        $this->assertArrayHasKey('residencyStatus', $result);
         $this->assertArrayHasKey('isHead', $result);
         $this->assertArrayHasKey('vulnerabilityCriteria', $result);
     }
@@ -91,6 +92,47 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertSame(1, $result['totalCount']);
+    }
+
+    public function testGetBeneficiariesByAssistance()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $assistanceBeneficiary = $em->getRepository(\DistributionBundle\Entity\AssistanceBeneficiary::class)->findBy([])[0];
+
+        $this->request('GET', '/api/basic/assistances/'.$assistanceBeneficiary->getAssistance()->getId().'/beneficiaries?sort[]=nationalId');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": "*", 
+            "data": [
+                {
+                    "id": "*",
+                    "dateOfBirth": "*",
+                    "localFamilyName": "*",
+                    "localGivenName": "*",
+                    "localParentsName": "*",
+                    "enFamilyName": "*",
+                    "enGivenName": "*",
+                    "enParentsName": "*",
+                    "gender": "*",
+                    "nationalIds": "*",
+                    "phoneIds": "*",
+                    "referralType": "*",
+                    "referralComment": "*",
+                    "residencyStatus": "*",
+                    "isHead": "*",
+                    "vulnerabilityCriteria": "*"
+                }
+            ]}', $this->client->getResponse()->getContent());
     }
 
     /**
@@ -181,10 +223,11 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('locationGroup', $result);
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('tentNumber', $result);
-        $this->assertArrayHasKey('adm1', $result);
-        $this->assertArrayHasKey('adm2', $result);
-        $this->assertArrayHasKey('adm3', $result);
-        $this->assertArrayHasKey('adm4', $result);
+        $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
     }
 
     /**
@@ -216,10 +259,11 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('number', $result);
         $this->assertArrayHasKey('street', $result);
         $this->assertArrayHasKey('postcode', $result);
-        $this->assertArrayHasKey('adm1', $result);
-        $this->assertArrayHasKey('adm2', $result);
-        $this->assertArrayHasKey('adm3', $result);
-        $this->assertArrayHasKey('adm4', $result);
+        $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
     }
 
     /**
@@ -253,9 +297,10 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('number', $result);
         $this->assertArrayHasKey('street', $result);
         $this->assertArrayHasKey('postcode', $result);
-        $this->assertArrayHasKey('adm1', $result);
-        $this->assertArrayHasKey('adm2', $result);
-        $this->assertArrayHasKey('adm3', $result);
-        $this->assertArrayHasKey('adm4', $result);
+        $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
     }
 }

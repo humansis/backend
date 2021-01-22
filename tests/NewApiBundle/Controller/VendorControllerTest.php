@@ -95,6 +95,10 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressNumber', $result);
         $this->assertArrayHasKey('addressPostcode', $result);
         $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
 
         return $result;
     }
@@ -141,6 +145,10 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressNumber', $result);
         $this->assertArrayHasKey('addressPostcode', $result);
         $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
 
         $this->assertEquals('edited', $result['shop']);
         $this->assertEquals('0000', $result['addressPostcode']);
@@ -182,6 +190,10 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressNumber', $result);
         $this->assertArrayHasKey('addressPostcode', $result);
         $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
 
         return $id;
     }

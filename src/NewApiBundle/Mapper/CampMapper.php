@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use DistributionBundle\Entity\Assistance;
+use BeneficiaryBundle\Entity\Camp;
 use NewApiBundle\Serializer\MapperInterface;
 
-class AssistanceMapper implements MapperInterface
+class CampMapper implements MapperInterface
 {
-    /** @var Assistance */
+    /** @var Camp */
     private $object;
 
     /**
@@ -16,7 +16,8 @@ class AssistanceMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Assistance && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        return
+            $object instanceof Camp && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
     }
 
     /**
@@ -24,13 +25,13 @@ class AssistanceMapper implements MapperInterface
      */
     public function populate(object $object)
     {
-        if ($object instanceof Assistance) {
+        if ($object instanceof Camp) {
             $this->object = $object;
 
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Assistance::class.', '.get_class($object).' given.');
+        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Camp::class.', '.get_class($object).' given.');
     }
 
     public function getId(): int
@@ -41,26 +42,6 @@ class AssistanceMapper implements MapperInterface
     public function getName(): string
     {
         return $this->object->getName();
-    }
-
-    public function getDateDistribution(): string
-    {
-        return $this->object->getDateDistribution()->format('Y-m-d');
-    }
-
-    public function getProjectId(): int
-    {
-        return $this->object->getProject()->getId();
-    }
-
-    public function getTarget(): string
-    {
-        return $this->object->getTargetType();
-    }
-
-    public function getType(): string
-    {
-        return $this->object->getAssistanceType();
     }
 
     public function getLocationId(): int
@@ -86,12 +67,5 @@ class AssistanceMapper implements MapperInterface
     public function getAdm4Id(): ?int
     {
         return $this->object->getLocation()->getAdm4Id() ?: null;
-    }
-
-    public function getCommodityIds(): array
-    {
-        return array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getCommodities()->toArray());
     }
 }

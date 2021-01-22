@@ -18,20 +18,15 @@ class CampAddressInputType implements InputTypeInterface
     private $tentNumber;
 
     /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="45")
-     * @Assert\NotBlank
-     * @Assert\NotNull
+     * @Assert\Valid
      */
-    private $name;
+    private $camp;
 
     /**
      * @Assert\Type("integer")
      * @Assert\GreaterThanOrEqual("0")
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
-    private $locationId;
+    private $campId;
 
     /**
      * @return string|null
@@ -50,34 +45,34 @@ class CampAddressInputType implements InputTypeInterface
     }
 
     /**
-     * @return string|null
+     * @return CampInputType|null
      */
-    public function getName()
+    public function getCamp()
     {
-        return $this->name;
+        return $this->camp;
     }
 
     /**
-     * @param string|null $name
+     * @param CampInputType|null $campInputType
      */
-    public function setName($name): void
+    public function setCamp(CampInputType $campInputType)
     {
-        $this->name = $name;
+        $this->camp = $campInputType;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getLocationId()
+    public function getCampId()
     {
-        return $this->locationId;
+        return $this->campId;
     }
 
     /**
-     * @param int $locationId
+     * @param int|null $campId
      */
-    public function setLocationId($locationId): void
+    public function setCampId($campId)
     {
-        $this->locationId = $locationId;
+        $this->campId = $campId;
     }
 }
