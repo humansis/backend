@@ -3,6 +3,7 @@
 namespace ProjectBundle\Repository;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\ProjectFilterInputType;
 use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\Request\Pagination;
 use UserBundle\Entity\User;
@@ -52,13 +53,19 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param string|null                $iso3
-     * @param ProjectOrderInputType|null $orderBy
-     * @param Pagination|null            $pagination
+     * @param string|null                 $iso3
+     * @param ProjectFilterInputType|null $filter
+     * @param ProjectOrderInputType|null  $orderBy
+     * @param Pagination|null             $pagination
      *
      * @return Paginator
      */
-    public function findByParams(?string $iso3, ?ProjectOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
+    public function findByParams(
+        ?string $iso3,
+        ?ProjectFilterInputType $filter,
+        ?ProjectOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator
     {
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.archived = 0');
@@ -66,6 +73,11 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
         if ($iso3) {
             $qb->andWhere('p.iso3 = :iso3');
             $qb->setParameter('iso3', $iso3);
+        }
+
+        if ($filter && $filter->hasIds()) {
+            $qb->andWhere('p.id IN (:ids)');
+            $qb->setParameter('ids', $filter->getIds());
         }
 
         if ($pagination) {

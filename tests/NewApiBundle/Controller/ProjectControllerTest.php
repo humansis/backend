@@ -178,6 +178,33 @@ class ProjectControllerTest extends BMSServiceTestCase
     /**
      * @depends testGet
      */
+    public function testGetList($id)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/projects?filter[id][]='.$id);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertSame(1, $result['totalCount']);
+        $this->assertSame($id, $result['data'][0]['id']);
+
+        return $id;
+    }
+
+    /**
+     * @depends testGet
+     */
     public function testDelete(int $id)
     {
         // Log a user in order to go through the security firewall
