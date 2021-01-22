@@ -9,9 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\BookletBatchCreateInputType;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
@@ -29,21 +27,21 @@ class BookletService
     /** @var ContainerInterface $container */
     private $container;
 
-    /** @var EventDispatcherInterface $eventDispatcher */
-    private $eventDispatcher;
+    /** @var BookletGenerator */
+    private $generator;
 
     /**
-     * UserService constructor.
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param BookletGenerator       $generator
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, EventDispatcherInterface $eventDispatcher)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, BookletGenerator $generator)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->generator = $generator;
     }
 
     /**
@@ -65,19 +63,11 @@ class BookletService
      * @param string $country
      * @param array $bookletData
      * @return int
+     * @deprecated
      */
     public function backgroundCreate($country, array $bookletData)
     {
-        $this->container->get('voucher.voucher_service')->cleanUp();
-
-        $this->eventDispatcher->addListener(KernelEvents::TERMINATE, function ($event) use ($country, $bookletData) {
-            try {
-                $this->create($country, $bookletData);
-            } catch (\Exception $e) {
-                $this->container->get('logger')->error($e);
-                $this->container->get('voucher.voucher_service')->cleanUp();
-            }
-        });
+        $this->create($country, $bookletData);
 
         return ["lastBooklet" => $this->getLastId(), "expectedNumber" => $bookletData['number_booklets']];
     }
@@ -88,135 +78,35 @@ class BookletService
      * @param array $bookletData
      * @return mixed
      * @throws \Exception
+     * @deprecated
      */
     public function create($countryISO3, array $bookletData)
     {
-        $bookletBatch = $this->getBookletBatch();
-        $currentBatch = $bookletBatch;
-        $lastVoucherId = $this->container->get('voucher.voucher_service')->getLastId();
-        for ($x = 0; $x < $bookletData['number_booklets']; $x++) {
-            // Create booklet
-            try {
-                $booklet = new Booklet();
-                $booklet
-                    ->setNumberVouchers($bookletData['number_vouchers'])
-                    ->setCurrency($bookletData['currency'])
-                    ->setStatus(Booklet::UNASSIGNED)
-                    ->setCountryISO3($countryISO3);
+        $inputType = new BookletBatchCreateInputType();
+        $inputType->setQuantityOfBooklets($bookletData['number_booklets']);
+        $inputType->setQuantityOfVouchers($bookletData['number_vouchers']);
+        $inputType->setProjectId($bookletData['project_id']);
+        $inputType->setIndividualValues($bookletData['individual_values']);
+        $inputType->setCurrency($bookletData['currency']);
+        $inputType->setPassword($bookletData['password'] ?? null);
+        $inputType->setIso3($countryISO3);
 
-                $code = null;
-                if (array_key_exists('project_id', $bookletData) && !empty($bookletData['project_id'])) {
-                    $project = $this->em->getRepository(\ProjectBundle\Entity\Project::class)->find($bookletData['project_id']);
-                    $booklet->setProject($project);
+        $this->createBooklets($inputType);
 
-                    $code = $this->generateCode($countryISO3, $project);
-                } else {
-                    $code = $this->generateCodeDeprecated($bookletData, $currentBatch, $bookletBatch);
-                }
-
-                $booklet->setCode($code);
-
-                if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
-                    $booklet->setPassword($bookletData['password']);
-                }
-
-                $this->em->persist($booklet);
-                $this->em->flush();
-
-                $currentBatch++;
-            } catch (\Exception $e) {
-                throw new \Exception('Error creating Booklet ' . $e->getMessage() . ' ' . $e->getLine());
-            }
-
-            // Create vouchers
-            try {
-                $voucherData = [
-                    'number_vouchers' => $bookletData['number_vouchers'],
-                    'bookletCode' => $code,
-                    'currency' => $bookletData['currency'],
-                    'booklet' => $booklet,
-                    'values' => $bookletData['individual_values'],
-                    'lastId' => $lastVoucherId
-                ];
-
-                $this->container->get('voucher.voucher_service')->create($voucherData, false);
-                $lastVoucherId += $bookletData['number_vouchers'];
-            } catch (\Exception $e) {
-                throw $e;
-            }
-
-            if ($x % 10 === 0) {
-                $this->em->flush();
-                $this->em->clear();
-            }
-        }
-        $this->em->flush();
-        $this->em->clear();
-
-        return $booklet;
+        return $this->em->getRepository(Booklet::class)->findOneBy([], ['id' => 'DESC'], 1);
     }
 
     public function createBooklets(BookletBatchCreateInputType $inputType)
     {
-        $tempCode = uniqid('temp_code');
-
-        $project = $this->em->getRepository(\ProjectBundle\Entity\Project::class)->find($inputType->getProjectId());
+        $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
         if (!$project) {
             throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists');
         }
 
-        try {
-            $this->em->beginTransaction();
-
-            for ($i = 0; $i < $inputType->getQuantityOfBooklets(); ++$i) {
-                $bookletCode = sprintf('%s_%s_%s_batch%06d', $inputType->getIso3(), $project->getName(), date('d-m-Y'), $i);
-
-                $booklet = new Booklet();
-                $booklet
-                    ->setNumberVouchers($inputType->getQuantityOfVouchers())
-                    ->setCurrency($inputType->getCurrency())
-                    ->setStatus(Booklet::UNASSIGNED)
-                    ->setCountryISO3($inputType->getIso3())
-                    ->setProject($project)
-                    ->setCode($bookletCode)
-                    ->setPassword($inputType->getPassword());
-
-                $values = $inputType->getValues();
-                for ($j = 0; $j < $booklet->getNumberVouchers(); ++$j) {
-                    $value = $values[$j] ?? $values[count($values) - 1];
-                    $voucher = new Voucher($tempCode.'_'.$i.'_'.$j, $value, $booklet);
-                    $booklet->getVouchers()->add($voucher);
-
-                    $this->em->persist($voucher);
-                }
-
-                $this->em->persist($booklet);
-
-                if (0 === $i % 50) {
-                    $this->em->flush();
-                    $this->em->clear(Booklet::class);
-                    $this->em->clear(Voucher::class);
-                }
-            }
-
-            $this->em->flush();
-            $this->em->clear(Booklet::class);
-            $this->em->clear(Voucher::class);
-
-            //update voucher.code from temp_code to regular code
-            $this->em->getConnection()->executeQuery('
-                UPDATE voucher v
-                JOIN booklet b ON b.id=v.booklet_id
-                SET v.code=CONCAT(b.currency, v.value, "*", b.code, "-", v.id, IF(b.password, CONCAT("-", b.password), ""))
-                WHERE v.code LIKE ?
-            ', [$tempCode.'%']);
-
-            $this->em->commit();
-
-        } catch (\Exception $exception) {
-            $this->em->rollback();
-            throw $exception;
-        }
+        $this->generator->generate(
+            $project, $inputType->getIso3(), $inputType->getQuantityOfBooklets(), $inputType->getQuantityOfVouchers(), $inputType->getCurrency(),
+            $inputType->getIndividualValues(), $inputType->getPassword()
+        );
     }
 
     /**
@@ -262,44 +152,6 @@ class BookletService
         } else {
             return 1;
         }
-    }
-
-    /**
-     * Generates a random code for a booklet
-     *
-     * @param array $bookletData
-     * @param int $currentBatch
-     * @param int $bookletBatch
-     * @return string
-     * @deprecated Use generateCode() instead.
-     */
-    private function generateCodeDeprecated(array $bookletData, int $currentBatch, int $bookletBatch)
-    {
-        // randomCode*bookletBatchNumber-lastBatchNumber-currentBooklet
-        $lastBatchNumber = $bookletBatch + ($bookletData['number_booklets'] - 1);
-        $fullCode = $bookletBatch . '-' . $lastBatchNumber . '-' . $currentBatch;
-
-        return $fullCode;
-    }
-
-    /**
-     * Generates a random code for a booklet
-     *
-     * @param string $countryCode
-     * @param \ProjectBundle\Entity\Project $project
-     * @param int $count
-     * @return string
-     */
-    protected function generateCode(string $countryCode, \ProjectBundle\Entity\Project $project)
-    {
-        $prefix = $countryCode . '_' . $project->getName() . '_' . date('d-m-Y') . '_batch';
-        $count = 0;
-
-        $booklet = $this->em->getRepository(Booklet::class)->findMaxByCodePrefix($prefix);
-        if ($booklet) {
-            $count = (int) substr($booklet->getCode(), -6);
-        }
-        return sprintf('%s%06d', $prefix, ++$count);
     }
 
     /**
@@ -402,10 +254,10 @@ class BookletService
     {
         $qrCode = $voucher->getCode();
         // To know if we need to add a new password or replace an existant one
-        preg_match('/^([A-Z]+)(\d+)\*[\d]+-[\d]+-[\d]+-[\d]+-([\dA-Z=+-\/]+)$/i', $qrCode, $matches);
+        preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_batch[\d]+-[\d]+(-[\dA-Z=+-\/]+)$/i', $qrCode, $matches);
 
         if ($matches === null || count($matches) < 3) {
-            preg_match('/^([A-Z]+)(\d+)\*[\d]+-[\d]+-[\d]+-[\d]+$/i', $qrCode, $matches);
+            preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_batch[\d]+-[\d]+$/i', $qrCode, $matches);
             if (!empty($password)) {
                 $qrCode .= '-' . $password;
             }
