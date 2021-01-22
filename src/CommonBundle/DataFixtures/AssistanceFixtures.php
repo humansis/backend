@@ -5,8 +5,8 @@ namespace CommonBundle\DataFixtures;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\Controller\CountryController;
-use DistributionBundle\DBAL\AssistanceTypeEnum;
-use DistributionBundle\Entity\Assistance;
+use CommonBundle\Entity\Location;
+use CommonBundle\Mapper\LocationMapper;
 use DistributionBundle\Entity\Modality;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
@@ -50,7 +50,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             'country_iso3' => 'KHM',
         ],
         'location_name' => '',
-        'name' => 'Battambang-9/13/2018',
         'project' => [
             'donors' => [],
             'donors_name' => [],
@@ -131,6 +130,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::INDIVIDUAL;
+        $data['location'] = $this->randomLocation($manager, $project->getIso3());
 
         $country = CountryController::COUNTRIES[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
@@ -145,6 +145,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::HOUSEHOLD;
+        $data['location'] = $this->randomLocation($manager, $project->getIso3());
 
         $country = CountryController::COUNTRIES[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
@@ -159,6 +160,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::INSTITUTION;
+        $data['location'] = $this->randomLocation($manager, $project->getIso3());
         unset($data['selection_criteria']);
 
         $data['institutions'] = [];
@@ -182,6 +184,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::COMMUNITY;
+        $data['location'] = $this->randomLocation($manager, $project->getIso3());
         unset($data['selection_criteria']);
 
         $data['communities'] = [];
@@ -258,5 +261,20 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         }
 
         return $commodities;
+    }
+
+    private function randomLocation(ObjectManager $manager, string $countryIso3): array
+    {
+        $mapper = new LocationMapper();
+        $locationArray = ['country_iso3' => $countryIso3];
+
+        $entities = $manager->getRepository(Location::class)->getByCountry($countryIso3);
+        if (0 === count($entities)) {
+            return $locationArray;
+        }
+
+        $i = rand(0, count($entities) - 1);
+
+        return array_merge($mapper->toFlatArray($entities[$i]), $locationArray);
     }
 }
