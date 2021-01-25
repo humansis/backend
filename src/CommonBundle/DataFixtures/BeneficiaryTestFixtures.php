@@ -100,6 +100,8 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             return;
         }
 
+        srand(42);
+
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
             echo "Project {$project->getId()}# {$project->getName()}/{$project->getIso3()}";

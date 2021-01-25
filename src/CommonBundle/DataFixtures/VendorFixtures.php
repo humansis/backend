@@ -36,6 +36,8 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             return;
         }
 
+        srand(42);
+
         $vendorSyr = $this->createSyrVendor($manager);
         $vendorKhm = $this->createKhmVendor($manager);
 

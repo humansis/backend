@@ -100,6 +100,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             return;
         }
 
+        srand(42);
+
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
             echo $project->getName()." ";
