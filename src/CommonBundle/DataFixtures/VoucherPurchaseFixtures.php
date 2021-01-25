@@ -67,12 +67,10 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
 
                 if ($ab->getBooklets()->count() < 1 || $ab->getBooklets()[0]->getVouchers()->count() < 3) {
                     echo "(booklet missing, ABnf#{$ab->getId()}) ";
-                    // var_dump($ab->getBooklets());
                     continue;
                 }
                 if ($ab->getBooklets()[0]->getVouchers()->count() < 3) {
                     echo "(vouchers missing, ABnf#{$ab->getId()}) ";
-                    // var_dump($ab->getBooklets()[0]->getVouchers());
                     continue;
                 }
 
@@ -143,13 +141,14 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
         return $entities[$i];
     }
 
-    public function getDependencies()
+    public function getDependencies(): array
     {
         return [
             BeneficiaryTestFixtures::class,
             VendorFixtures::class,
             AssistanceFixtures::class,
             BookletFixtures::class,
+            AssistanceValidationFixtures::class,
         ];
     }
 }
