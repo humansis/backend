@@ -33,8 +33,9 @@ test:
   stage: test
   image: artifactory.quanti.cz/docker/pin-php-test
   services:
-    - name: mysql:5.7.26
+    - name: mysql:8.0.21
       alias: db
+      command: ["--default-authentication-plugin=mysql_native_password", "--log-bin-trust-function-creators=ON"]
   variables:
     SYMFONY_VERSION: "3.4.*"
     DB: db_test
