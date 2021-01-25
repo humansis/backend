@@ -19,6 +19,7 @@ stages:
  - deploy_stage
  - deploy_prod
  - report_finished
+ - upload_db
 
 .prepare_ssh: &prepare_ssh
   before_script:
@@ -66,7 +67,7 @@ backup-db:
   variables:
     RDS_HOSTNAME: ${RDS_HOSTNAME_PROD}
   script:
-    - mysqldump --set-gtid-purged=OFF -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${RDS_DB_NAME_PROD} | pv > db.sql
+    - mysqldump --quick --skip-lock-tables --single-transaction --set-gtid-purged=OFF -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${RDS_DB_NAME_PROD} | pv > db.sql
     - export DB_NAME=backup_$(date '+%Y_%m_%d')_${CI_PIPELINE_ID}
     - mysql -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" -e "CREATE DATABASE ${DB_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
     - pv --bytes --eta --progress db.sql | mysql -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${DB_NAME}
@@ -150,7 +151,7 @@ report starting:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
     - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
-      when: on_success 
+      when: on_success
     - if: '$CI_COMMIT_TAG =~ /^v.*$/'
       when: on_success
     - when: never
@@ -220,6 +221,30 @@ report failure:
     - if: '$CI_COMMIT_TAG =~ /^v.*$/'
       when: on_failure
     - when: never
+
+deploy prod db to stage:
+  stage: upload_db
+  variables:
+    HOSTNAME: apistage.humansis.org
+    DATABASE_NAME: proddb
+  <<: *prepare_ssh
+  script:
+    - mysqldump --quick --skip-lock-tables --single-transaction --set-gtid-purged=OFF -h ${RDS_HOSTNAME_PROD} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${RDS_DB_NAME_PROD} | pv > db.sql
+    - mysql -h ${RDS_HOSTNAME_STAGE} -u ${RDS_USERNAME_STAGE} -p"${RDS_PASSWORD_STAGE}" -e "DROP DATABASE ${DATABASE_NAME}"
+    - mysql -h ${RDS_HOSTNAME_STAGE} -u ${RDS_USERNAME_STAGE} -p"${RDS_PASSWORD_STAGE}" -e "CREATE DATABASE ${DATABASE_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+    - pv --bytes --eta --progress db.sql | mysql -h ${RDS_HOSTNAME_STAGE} -u ${RDS_USERNAME_STAGE} -p"${RDS_PASSWORD_STAGE}" ${DATABASE_NAME}
+    - export command="sed -i -e \"s/${RDS_DB_NAME_STAGE}/${DATABASE_NAME}/g\" /var/www/html/bms_api/app/config/parameters.yml"
+    - ssh ubuntu@${HOSTNAME} $command
+    - ssh ubuntu@${HOSTNAME} "/var/www/html/bms_api/clear_cache.sh aggressive"
+    - ssh ubuntu@${HOSTNAME} "cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
+  after_script:
+    - rm db.sql
+    - rm -rf ~/.ssh/id_rsa
+  only:
+    - /^release\/.*$/
+  except:
+    - tags
+  when: manual
 
 ###############################################
 ### DEPLOY DCA
@@ -301,4 +326,3 @@ deploy prod DCA:
     - /^v.*$/
   except:
     - branches
-  when: manual
