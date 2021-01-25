@@ -61,10 +61,8 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
                 foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
                     $booklet = $bookletGenerator->current();
                     if (!$booklet || $booklet->getStatus() !== Booklet::UNASSIGNED) {
-                        echo "[{$booklet->getId()}/{$booklet->getStatus()}]x";
                         continue;
                     }
-                    echo "[{$booklet->getId()}/{$booklet->getStatus()}]";
                     $this->bookletService->assign($booklet, $assistance, $distributionBeneficiary->getBeneficiary());
                     $bookletGenerator->next();
                     echo '.';
@@ -96,6 +94,8 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
             BookletFixtures::class,
             BeneficiaryTestFixtures::class,
             ProjectFixtures::class,
+            InstitutionFixture::class,
+            CommunityFixture::class,
         ];
     }
 }

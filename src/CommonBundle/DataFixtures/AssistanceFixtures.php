@@ -131,6 +131,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::INDIVIDUAL;
         $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['date_distribution'] = $this->randomDate();
 
         $country = CountryController::COUNTRIES[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
@@ -146,6 +147,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::HOUSEHOLD;
         $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['date_distribution'] = $this->randomDate();
 
         $country = CountryController::COUNTRIES[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
@@ -161,12 +163,13 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::INSTITUTION;
         $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['date_distribution'] = $this->randomDate();
         unset($data['selection_criteria']);
 
         $data['institutions'] = [];
         $institutions = $manager->getRepository(Institution::class)->getUnarchivedByProject($project);
         if (empty($institutions)) {
-            echo 'i';
+            echo '(no I)';
             return;
         }
         $data['institutions'] = array_map(function (Institution $institution) { return $institution->getId(); }, $institutions);
@@ -185,12 +188,13 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::COMMUNITY;
         $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['date_distribution'] = $this->randomDate();
         unset($data['selection_criteria']);
 
         $data['communities'] = [];
         $communities = $manager->getRepository(Community::class)->getUnarchivedByProject($project)->getQuery()->getResult();
         if (empty($communities)) {
-            echo 'c';
+            echo '(no C)';
             return;
         }
         $data['communities'] = array_map(function (Community $community) { return $community->getId(); }, $communities);
@@ -276,5 +280,13 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $i = rand(0, count($entities) - 1);
 
         return array_merge($mapper->toFlatArray($entities[$i]), $locationArray);
+    }
+
+    private function randomDate(): string
+    {
+        $date = new \DateTime();
+        $date->modify('+100 days');
+        $date->modify('-'.rand(1, 200).' days');
+        return $date->format('d-m-Y');
     }
 }
