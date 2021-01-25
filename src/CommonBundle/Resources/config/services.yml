@@ -160,6 +160,12 @@ services:
             - "@distribution.assistance_service"
         tags:
             - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\VoucherPurchaseFixtures:
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+        tags:
+            - { name: doctrine.fixture.orm }
     
     CommonBundle\DataFixtures\OrganizationFixtures:
         arguments:

@@ -2,6 +2,7 @@
 
 namespace CommonBundle\DataFixtures;
 
+use CommonBundle\Controller\CountryController;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -13,11 +14,11 @@ use VoucherBundle\Entity\Vendor;
 
 class VendorFixtures extends Fixture implements DependentFixtureInterface
 {
-    private $countries = ["KHM", "UKR", "SYR", "ETH", "MNG", "ARM"];
-
     const REF_VENDOR_KHM = 'vendor_fixtures_khm';
     const REF_VENDOR_SYR = 'vendor_fixtures_syr';
     const REF_VENDOR_GENERIC = 'vendor_fixtures_generic';
+
+    const VENDOR_COUNT_PER_COUNTRY = 3;
 
     /** @var Kernel */
     private $kernel;
@@ -48,10 +49,10 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         $this->setReference(self::REF_VENDOR_SYR, $vendorSyr);
         $this->setReference(self::REF_VENDOR_KHM, $vendorKhm);
 
-        $genericVendors = [];
-        foreach ($this->countries as $country) {
-            foreach (range(1, 3) as $index) {
-                $genericVendors[] = $this->createGenericVendor($manager, $country);
+        foreach (CountryController::COUNTRIES as $country) {
+            foreach (range(1, self::VENDOR_COUNT_PER_COUNTRY) as $index) {
+                $vendor = $this->createGenericVendor($manager, $country['iso3']);
+                $this->setReference(self::REF_VENDOR_GENERIC.'_'.$country['iso3'].'_'.$index, $vendor);
             }
         }
         $manager->flush();

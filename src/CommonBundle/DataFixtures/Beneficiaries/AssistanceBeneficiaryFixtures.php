@@ -74,8 +74,11 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
                         $this->addCommsToAssistance($manager, $assistance, $project);
                         break;
                 }
+                $manager->persist($assistance);
                 echo "\n";
             }
+            $manager->persist($project);
+            $manager->flush();
         }
     }
 
@@ -98,11 +101,13 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
         $BNFs = $manager->getRepository(Beneficiary::class)->getUnarchivedByProject($project);
         echo "(".count($BNFs).") ";
         foreach ($BNFs as $beneficiary) {
-            $assistance->addAssistanceBeneficiary((new AssistanceBeneficiary())
+            $bnf = (new AssistanceBeneficiary())
                 ->setBeneficiary($beneficiary)
                 ->setAssistance($assistance)
                 ->setJustification('added randomly in fixtures')
-            );
+            ;
+            $assistance->addAssistanceBeneficiary($bnf);
+            $manager->persist($bnf);
             echo "B";
         }
     }
@@ -112,11 +117,13 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
         $HHs = $manager->getRepository(Household::class)->getUnarchivedByProject($project)->getQuery()->getResult();
         echo "(".count($HHs).") ";
         foreach ($HHs as $household) {
-            $assistance->addAssistanceBeneficiary((new AssistanceBeneficiary())
+            $bnf = (new AssistanceBeneficiary())
                 ->setBeneficiary($household)
                 ->setAssistance($assistance)
                 ->setJustification('added randomly in fixtures')
-            );
+            ;
+            $assistance->addAssistanceBeneficiary($bnf);
+            $manager->persist($bnf);
             echo "H";
         }
     }
@@ -126,11 +133,13 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
         $institutions = $manager->getRepository(Institution::class)->getUnarchivedByProject($project);
         echo "(".count($institutions).") ";
         foreach ($institutions as $institution) {
-            $assistance->addAssistanceBeneficiary((new AssistanceBeneficiary())
+            $bnf = (new AssistanceBeneficiary())
                 ->setBeneficiary($institution)
                 ->setAssistance($assistance)
                 ->setJustification('added randomly in fixtures')
-            );
+            ;
+            $assistance->addAssistanceBeneficiary($bnf);
+            $manager->persist($bnf);
             echo "I";
         }
     }
@@ -140,11 +149,14 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
         $communities = $manager->getRepository(Community::class)->getUnarchivedByProject($project)->getQuery()->getResult();
         echo "(".count($communities).") ";
         foreach ($communities as $community) {
-            $assistance->addAssistanceBeneficiary((new AssistanceBeneficiary())
+            $bnf = (new AssistanceBeneficiary())
                 ->setBeneficiary($community)
                 ->setAssistance($assistance)
+                ->setRemoved(false)
                 ->setJustification('added randomly in fixtures')
-            );
+            ;
+            $assistance->addAssistanceBeneficiary($bnf);
+            $manager->persist($bnf);
             echo "C";
         }
     }
