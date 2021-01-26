@@ -2,6 +2,12 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use BeneficiaryBundle\Entity\HouseholdLocation;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\CampAddressFilterInputType;
+use NewApiBundle\InputType\ResidenceAddressFilterInputType;
+use NewApiBundle\InputType\TemporarySettlementAddressFilterInputType;
+
 /**
  * HouseholdLocationRepository
  *
@@ -10,4 +16,51 @@ namespace BeneficiaryBundle\Repository;
  */
 class HouseholdLocationRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findCampAddressesByParams(CampAddressFilterInputType $filter): Paginator
+    {
+        $qbr = $this->createQueryBuilder('hl');
+
+        if ($filter) {
+            if ($filter->hasIds()) {
+                $qbr->andWhere('hl.id IN (:ids)')
+                    ->andWhere('hl.type = :type')
+                    ->setParameter('ids', $filter->getIds())
+                    ->setParameter('type', HouseholdLocation::LOCATION_TYPE_CAMP);
+            }
+        }
+
+        return new Paginator($qbr);
+    }
+
+    public function findResidenciesByParams(ResidenceAddressFilterInputType $filter): Paginator
+    {
+        $qbr = $this->createQueryBuilder('hl');
+
+        if ($filter) {
+            if ($filter->hasIds()) {
+                $qbr->andWhere('hl.id IN (:ids)')
+                    ->andWhere('hl.type = :type')
+                    ->setParameter('ids', $filter->getIds())
+                    ->setParameter('type', HouseholdLocation::LOCATION_TYPE_RESIDENCE);
+            }
+        }
+
+        return new Paginator($qbr);
+    }
+
+    public function findTemporarySettlementsByParams(TemporarySettlementAddressFilterInputType $filter): Paginator
+    {
+        $qbr = $this->createQueryBuilder('hl');
+
+        if ($filter) {
+            if ($filter->hasIds()) {
+                $qbr->andWhere('hl.id IN (:ids)')
+                    ->andWhere('hl.type = :type')
+                    ->setParameter('ids', $filter->getIds())
+                    ->setParameter('type', HouseholdLocation::LOCATION_TYPE_SETTLEMENT);
+            }
+        }
+
+        return new Paginator($qbr);
+    }
 }
