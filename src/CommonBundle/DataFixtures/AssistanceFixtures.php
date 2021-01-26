@@ -134,12 +134,13 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['target_type'] = AssistanceTargetType::INDIVIDUAL;
         $data['location'] = $this->randomLocation($manager, $project->getIso3());
         $data['date_distribution'] = $this->randomDate();
+        $data['selection_criteria'] = [];
 
         $country = CountryController::COUNTRIES[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $this->distributionService->create($project->getIso3(), $data);
-            echo "B";
+            $receivers = $this->distributionService->create($project->getIso3(), $data)['data'];
+            echo "Bx".count($receivers);
         }
     }
 
@@ -150,12 +151,13 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['target_type'] = AssistanceTargetType::HOUSEHOLD;
         $data['location'] = $this->randomLocation($manager, $project->getIso3());
         $data['date_distribution'] = $this->randomDate();
+        $data['selection_criteria'] = [];
 
         $country = CountryController::COUNTRIES[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $this->distributionService->create($project->getIso3(), $data);
-            echo "H";
+            $receivers = $this->distributionService->create($project->getIso3(), $data)['data'];
+            echo "Hx".count($receivers);
         }
     }
 
@@ -179,8 +181,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $country = CountryController::COUNTRIES[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $this->distributionService->create($project->getIso3(), $data);
-            echo "I";
+            $receivers = $this->distributionService->create($project->getIso3(), $data)['data'];
+            echo "Ix".count($receivers);
         }
     }
 
@@ -204,8 +206,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $country = CountryController::COUNTRIES[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $this->distributionService->create($project->getIso3(), $data);
-            echo "C";
+            $receivers = $this->distributionService->create($project->getIso3(), $data)['data'];
+            echo "Cx".count($receivers);
         }
     }
 

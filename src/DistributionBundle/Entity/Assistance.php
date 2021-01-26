@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Entity;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
