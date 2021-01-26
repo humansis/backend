@@ -140,10 +140,7 @@ fos_rest:
         formats:
             json : true
         failed_validation: HTTP_BAD_REQUEST
-        default_engine: twig
-    routing_loader:
-        default_format: json
-        routing_loader: false
+    routing_loader: false
     serializer:
         serialize_null: true
 
