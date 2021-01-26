@@ -18,8 +18,8 @@ use VoucherBundle\Utils\BookletService;
 class BookletFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
     private $defaultBooklet = [
-        "number_booklets" => 5,
-        "individual_values" => [200, 200, 200],
+        "number_booklets" => 3,
+        "individual_values" => [200, 400, 1000],
         "number_vouchers" => 3,
     ];
 

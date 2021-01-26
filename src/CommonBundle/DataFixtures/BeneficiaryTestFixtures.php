@@ -29,7 +29,6 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         'father with kids' => ['M-20', 'F-1', 'F-5', 'M-15'],
         'old couple' => ['M-60', 'F-55'],
         'grandparents with kids' => ['M-60', 'F-55', 'F-2', 'F-10'],
-        'big family' => ['M-20', 'F-18', 'F-1', 'F-5', 'M-15', 'M-60', 'F-55'],
     ];
 
     private $beneficiaryTemplate = [
@@ -105,12 +104,10 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
             echo "Project {$project->getId()}# {$project->getName()}/{$project->getIso3()}";
-            $locationIndex = 0;
-            foreach ($this->getTestingLocations($manager, $project->getIso3()) as $location) {
-                $this->createHouseholds($manager, $location, $project);
-                $this->createIndividuals($manager, $location, $project);
-                break;
-            }
+            $location = $this->randomLocation($manager, $project->getIso3());
+            $this->createHouseholds($manager, $location, $project);
+            $this->createIndividuals($manager, $location, $project);
+
             echo "\n";
             $manager->flush();
         }
@@ -148,6 +145,18 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         }
     }
 
+    private function randomLocation(ObjectManager $manager, string $countryIso3): ?Location
+    {
+        $entities = $manager->getRepository(Location::class)->getByCountry($countryIso3);
+        if (0 === count($entities)) {
+            return null;
+        }
+
+        $i = rand(0, count($entities) - 1);
+
+        return $entities[$i];
+    }
+
     /**
      * @param ObjectManager $manager
      * @param Location      $location
@@ -166,12 +175,14 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
 
     private function createIndividuals(ObjectManager $manager, Location $location, Project $project)
     {
-        foreach ($this->householdTypes as $typeName => $members) {
-            foreach ($members as $member) {
-                $this->createHousehold($manager, $location, $project, "Individual", [$member]);
-            }
-            $manager->flush();
+        $singles = [
+            $this->householdTypes['single male family'],
+            $this->householdTypes['single female family'],
+        ];
+        foreach ($singles as $singleFamily) {
+            $this->createHousehold($manager, $location, $project, "Individual", $singleFamily);
         }
+        $manager->flush();
     }
 
     private function createHousehold(ObjectManager $manager, Location $location, Project $project, string $typeName, array $members)
