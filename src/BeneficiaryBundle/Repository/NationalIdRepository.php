@@ -2,6 +2,9 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\NationalIdFilterInputType;
+
 /**
  * NationalIdRepository
  *
@@ -10,4 +13,17 @@ namespace BeneficiaryBundle\Repository;
  */
 class NationalIdRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findByParams(NationalIdFilterInputType $filter): Paginator
+    {
+        $qbr = $this->createQueryBuilder('n');
+
+        if ($filter) {
+            if ($filter->hasIds()) {
+                $qbr->andWhere('n.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
+        }
+
+        return new Paginator($qbr);
+    }
 }

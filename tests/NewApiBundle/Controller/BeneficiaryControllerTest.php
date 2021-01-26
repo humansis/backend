@@ -166,6 +166,29 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
+    public function testGetNationalIds()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $nationalId = $em->getRepository(NationalId::class)->findBy([])[0];
+
+        $this->request('GET', '/api/basic/beneficiaries/national-ids?filter[id][]='.$nationalId->getId());
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{"totalCount": 1, "data": [{"id": "*"}]}', $this->client->getResponse()->getContent());
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testGetPhone()
     {
         // Log a user in order to go through the security firewall
@@ -233,6 +256,36 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
+    public function testGetCamps()
+    {
+        $this->markTestSkipped('There is no camp');
+
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $campAddress = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_CAMP])[0];
+
+        $this->request('GET', '/api/basic/beneficiaries/addresses/camps?filter[id][]='.$campAddress->getId());
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertSame(1, $result['totalCount']);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testGetResidence()
     {
         // Log a user in order to go through the security firewall
@@ -264,6 +317,29 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm2Id', $result);
         $this->assertArrayHasKey('adm3Id', $result);
         $this->assertArrayHasKey('adm4Id', $result);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetResidences()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $residency = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE])[0];
+
+        $this->request('GET', '/api/basic/beneficiaries/addresses/residencies?filter[id][]='.$residency->getId());
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{"totalCount": 1, "data": [{"id": "*"}]}', $this->client->getResponse()->getContent());
     }
 
     /**
@@ -302,5 +378,30 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm2Id', $result);
         $this->assertArrayHasKey('adm3Id', $result);
         $this->assertArrayHasKey('adm4Id', $result);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetTemporarySettlements()
+    {
+        $this->markTestSkipped('There is no temporary settlement');
+
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $settlement = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT])[0];
+
+        $this->request('GET', '/api/basic/beneficiaries/addresses/temporary-settlements?filter[id][]='.$settlement->getId());
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{"totalCount": 1, "data": [{"id": "*"}]}', $this->client->getResponse()->getContent());
     }
 }
