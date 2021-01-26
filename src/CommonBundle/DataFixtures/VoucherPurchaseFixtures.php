@@ -4,26 +4,33 @@ namespace CommonBundle\DataFixtures;
 
 use DateTimeImmutable;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\VoucherPurchase;
+use VoucherBundle\Model\PurchaseService;
 
 class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterface
 {
+    const FRACTION_TO_SPENT = 3;
+
     /** @var string */
     private $environment;
 
+    /** @var PurchaseService */
+    private $purchaseService;
+
     /**
-     * @param string $environment
+     * @param string          $environment
+     * @param PurchaseService $purchaseService
      */
-    public function __construct(string $environment)
+    public function __construct(string $environment, PurchaseService $purchaseService)
     {
         $this->environment = $environment;
+        $this->purchaseService = $purchaseService;
     }
 
     /**
@@ -39,94 +46,82 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
         // set up seed will make random values will be same for each run of fixtures
         srand(42);
 
-        $assistances = $manager->getRepository(Assistance::class)->findBy([
-            'targetType' => AssistanceTargetType::INDIVIDUAL,
-            'validated' => true,
+        $booklets = $manager->getRepository(Booklet::class)->findBy([
+            'status' => Booklet::DISTRIBUTED,
         ]);
-        /** @var Assistance $assistance */
-        foreach ($assistances as $assistance) {
-
-            if ($assistance->getCommodities()[0]->getModalityType()->getModality()->getName() !== 'Voucher') {
-                echo $assistance->getId()."#".$assistance->getName().' ';
-                echo $assistance->getCommodities()[0]->getModalityType()->getModality()->getName()." is no voucher ass\n";
+        echo "Booklets to purchase: ".count($booklets).", make purchases for 1/".self::FRACTION_TO_SPENT."\n";
+        foreach ($booklets as $booklet) {
+            /** @var Assistance $assistance */
+            $assistance = $booklet->getAssistanceBeneficiary()->getAssistance();
+            if (!$assistance->getValidated()) {
                 continue;
             }
-            echo $assistance->getId()."#".$assistance->getName().' ';
 
-            $vendorCode = ($assistance->getId() % VendorFixtures::VENDOR_COUNT_PER_COUNTRY) + 1;
-            /** @var Vendor $vendor */
-            // $vendor = $this->getReference(VendorFixtures::REF_VENDOR_GENERIC.'_'.$assistance->getProject()->getIso3().'_'.$vendorCode);
-            $vendor = $manager->getRepository(Vendor::class)->findOneBy([]);
-
-            echo $assistance->getDistributionBeneficiaries()->count()."bnfs ";
-
-            // use only vouchers of 1/3 bnfs
-            $bnfCount = (int) $assistance->getDistributionBeneficiaries()->count() / 3;
-            /** @var AssistanceBeneficiary $ab */
-            foreach ($assistance->getDistributionBeneficiaries() as $ab) {
-
-                if ($ab->getBooklets()->count() < 1 || $ab->getBooklets()[0]->getVouchers()->count() < 3) {
-                    echo "(booklet missing, ABnf#{$ab->getId()}) ";
-                    continue;
-                }
-                if ($ab->getBooklets()[0]->getVouchers()->count() < 3) {
-                    echo "(vouchers missing, ABnf#{$ab->getId()}) ";
-                    continue;
-                }
-
-                switch (rand(0,3)) {
-                    case 0:
-                        $this->generatePurchase($vendor, [$ab->getBooklets()[0]->getVouchers()[0]], $manager);
-                        $this->generatePurchase($vendor, [$ab->getBooklets()[0]->getVouchers()[1]], $manager);
-                        $this->generatePurchase($vendor, [$ab->getBooklets()[0]->getVouchers()[2]], $manager);
-                        echo '3x1,';
-                        break;
-                    case 1:
-                        $this->generatePurchase($vendor, [$ab->getBooklets()[0]->getVouchers()[0]], $manager);
-                        echo '1x1,';
-                        break;
-                    case 2:
-                        $this->generatePurchase($vendor, [
-                            $ab->getBooklets()[0]->getVouchers()[0],
-                            $ab->getBooklets()[0]->getVouchers()[1]
-                        ], $manager);
-                        echo '1x2,';
-                        break;
-                    case 3:
-                        $this->generatePurchase($vendor, [
-                            $ab->getBooklets()[0]->getVouchers()[0],
-                            $ab->getBooklets()[0]->getVouchers()[1],
-                            $ab->getBooklets()[0]->getVouchers()[2]
-                        ], $manager);
-                        echo '1x3,';
-                        break;
-                    default:
-                        echo "|X|";
-                }
-
-                if ($bnfCount-- < 1) break;
+            if ($booklet->getId() % self::FRACTION_TO_SPENT !== 0) {
+                continue;
             }
-            echo "\n";
+
+            $vendorCode = ($booklet->getId() % VendorFixtures::VENDOR_COUNT_PER_COUNTRY) + 1;
+            /** @var Vendor $vendor */
+            $vendor = $this->getReference(VendorFixtures::REF_VENDOR_GENERIC.'_'.$assistance->getProject()->getIso3().'_'.$vendorCode);
+
+            if ($booklet->getVouchers()->count() < 3) {
+                echo "(too little vouchers, Booklet#{$booklet->getId()}) ";
+                continue;
+            }
+
+            switch (rand(0,3)) {
+                case 0:
+                    $this->generatePurchase($vendor, [$booklet->getVouchers()[0]], $manager);
+                    $this->generatePurchase($vendor, [$booklet->getVouchers()[1]], $manager);
+                    $this->generatePurchase($vendor, [$booklet->getVouchers()[2]], $manager);
+                    break;
+                case 1:
+                    $this->generatePurchase($vendor, [$booklet->getVouchers()[0]], $manager);
+                    break;
+                case 2:
+                    $this->generatePurchase($vendor, [
+                        $booklet->getVouchers()[0],
+                        $booklet->getVouchers()[1]
+                    ], $manager);
+                    break;
+                case 3:
+                    $this->generatePurchase($vendor, [
+                        $booklet->getVouchers()[0],
+                        $booklet->getVouchers()[1],
+                        $booklet->getVouchers()[2]
+                    ], $manager);
+                    break;
+            }
+
+            echo ".";
         }
+        echo "\n";
 
         $manager->flush();
     }
 
     private function generatePurchase(Vendor $vendor, array $vouchers, ObjectManager $manager): VoucherPurchase
     {
-        $purchase = VoucherPurchase::create($vendor, new DateTimeImmutable('now'));
+        $input = new \VoucherBundle\InputType\VoucherPurchase();
 
+        $products = [];
         for ($j = 0; $j < rand(1, 3); ++$j) {
             $quantity = rand(1, 10000);
             $value = rand(1, 10000);
-            $purchase->addRecord($this->randomEntity(Product::class, $manager), $quantity/100, $value/100);
+            $products[] = [
+                'id' => $this->randomEntity(Product::class, $manager),
+                'quantity' => $quantity/100,
+                'value' =>$value/100
+            ];
         }
+        $input->setProducts($products);
 
-        foreach ($vouchers as $voucher) {
-            $purchase->addVoucher($voucher);
-        }
+        $input->setCreatedAt(new DateTimeImmutable('now'));
+        $input->setVendorId($vendor->getId());
+        $input->setVouchers(array_map(function ($voucher) {return $voucher->getId(); }, $vouchers));
 
-        return $purchase;
+        return $this->purchaseService->purchase($input);
     }
 
     private function randomEntity($classname, ObjectManager $manager)

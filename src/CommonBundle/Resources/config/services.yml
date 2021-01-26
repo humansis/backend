@@ -171,6 +171,7 @@ services:
     CommonBundle\DataFixtures\VoucherPurchaseFixtures:
         arguments:
             - "@=service('kernel').getEnvironment()"
+            - "@voucher.purchase_service"
         tags:
             - { name: doctrine.fixture.orm }
     
