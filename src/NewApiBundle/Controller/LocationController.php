@@ -44,7 +44,7 @@ class LocationController extends AbstractController
      */
     public function countries(): JsonResponse
     {
-        return $this->json(new Paginator(CountryController::COUNTRIES));
+        return $this->json(new Paginator(array_values(CountryController::COUNTRIES)));
     }
 
     /**
