@@ -32,7 +32,7 @@ class BeneficiaryRepositoryTest extends KernelTestCase
     {
         return [
             '1 beneficiary' => [1, 1],
-            '4 beneficiaries' => [3, 4],
+            '4 beneficiaries' => [5, 4],
         ];
     }
 
