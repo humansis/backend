@@ -1,0 +1,3554 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="ru" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="VLUWEOx" resname="DISTRIBUTION SHEET">
+        <source>DISTRIBUTION SHEET</source>
+        <target>ورقة التوزيع</target>
+      </trans-unit>
+      <trans-unit id="RZid5J_" resname="Details">
+        <source>Details</source>
+        <target>تفاصيل</target>
+      </trans-unit>
+      <trans-unit id="qpQgWsG" resname="Project Name">
+        <source>Project Name</source>
+        <target>عنوان المشروع</target>
+      </trans-unit>
+      <trans-unit id="vAxwwF2" resname="Distribution Date">
+        <source>Distribution Date</source>
+        <target>تاريخ التوزيع</target>
+      </trans-unit>
+      <trans-unit id="6UY9zPB" resname="Place">
+        <source>Place</source>
+        <target>مكان</target>
+      </trans-unit>
+      <trans-unit id="EmCg3MG" resname="Item Description">
+        <source>Item Description</source>
+        <target>وصف السلعة</target>
+      </trans-unit>
+      <trans-unit id="K.w0cVc" resname="Approvals">
+        <source>Approvals</source>
+        <target>الموافقات</target>
+      </trans-unit>
+      <trans-unit id="zcz3NLT" resname="On behalf of">
+        <source>On behalf of</source>
+        <target>نيابة عن</target>
+      </trans-unit>
+      <trans-unit id="V8kighy" resname="On behalf of People in Need">
+        <source>On behalf of People in Need</source>
+        <target>نيابة عن منطمة الناس في حاجة</target>
+      </trans-unit>
+      <trans-unit id="3NHVIj9" resname="Name">
+        <source>Name</source>
+        <target>اسم</target>
+      </trans-unit>
+      <trans-unit id="bQMa8Q2" resname="Position">
+        <source>Position</source>
+        <target>المنصب</target>
+      </trans-unit>
+      <trans-unit id="X0.LddB" resname="Signature and Stamp">
+        <source>Signature and Stamp</source>
+        <target>توقيع وختم</target>
+      </trans-unit>
+      <trans-unit id="QHK6lzx" resname="Household Members">
+        <source>Household Members</source>
+        <target>أفراد الأسرة</target>
+      </trans-unit>
+      <trans-unit id="oBr_HLy" resname="№">
+        <source>№</source>
+        <target>الرقم</target>
+      </trans-unit>
+      <trans-unit id="J9iM8Zp" resname="FIRST NAME">
+        <source>FIRST NAME</source>
+        <target>الاسم الاول</target>
+      </trans-unit>
+      <trans-unit id="JVXARql" resname="FAMILY NAME">
+        <source>FAMILY NAME</source>
+        <target>اسم العائلة</target>
+      </trans-unit>
+      <trans-unit id="CJHweCD" resname="DATE OF BIRTH">
+        <source>DATE OF BIRTH</source>
+        <target>تاريخ الولادة</target>
+      </trans-unit>
+      <trans-unit id="QbuaQ3d" resname="ID No.">
+        <source>ID No.</source>
+        <target>رقم بطاقة الهوية</target>
+      </trans-unit>
+      <trans-unit id="IiL.etd" resname="PHONE NUMBER">
+        <source>PHONE NUMBER</source>
+        <target>رقم الهاتف</target>
+      </trans-unit>
+      <trans-unit id="PCHfRb3" resname="STATUS (Resident, IDP or Refugee">
+        <source>STATUS (Resident, IDP or Refugee</source>
+        <target>الحالة (المقيم ، النازح أو اللاجئ)</target>
+      </trans-unit>
+      <trans-unit id="pZ3Qho_" resname="Gender (M/F)">
+        <source>Gender (M/F)</source>
+        <target>الجنس (مذكر / مؤنث)</target>
+      </trans-unit>
+      <trans-unit id="RafFTIT" resname="SIGNATURE">
+        <source>SIGNATURE</source>
+        <target>التوقيع</target>
+      </trans-unit>
+      <trans-unit id="CPJxiHz" resname="M">
+        <source>M</source>
+        <target>مذكر</target>
+      </trans-unit>
+      <trans-unit id="9nqxCtT" resname="F">
+        <source>F</source>
+        <target>مؤنث</target>
+      </trans-unit>
+      <trans-unit id="1" resname="">
+        <source>active</source>
+        <target>نشيط</target>
+      </trans-unit>
+      <trans-unit id="2" resname="">
+        <source>activity_description</source>
+        <target>وصف النشاط</target>
+      </trans-unit>
+      <trans-unit id="3" resname="">
+        <source>activity_households_targeted</source>
+        <target>الأسر المستهدفة</target>
+      </trans-unit>
+      <trans-unit id="4" resname="">
+        <source>activity_individuals_targeted</source>
+        <target>الأفراد المستهدفين</target>
+      </trans-unit>
+      <trans-unit id="5" resname="">
+        <source>add</source>
+        <target>إضافة</target>
+      </trans-unit>
+      <trans-unit id="6" resname="">
+        <source>add_beneficiary_code</source>
+        <target>تحويلة</target>
+      </trans-unit>
+      <trans-unit id="7" resname="">
+        <source>add_beneficiary_done</source>
+        <target>ملخص الأسرة للإنشاء</target>
+      </trans-unit>
+      <trans-unit id="8" resname="">
+        <source>add_beneficiary_external_support</source>
+        <target>دعم خارجي</target>
+      </trans-unit>
+      <trans-unit id="9" resname="">
+        <source>add_beneficiary_occupation</source>
+        <target>الاحتلال</target>
+      </trans-unit>
+      <trans-unit id="10" resname="">
+        <source>add_beneficiary_project</source>
+        <target>يرجى إضافة هذه الأسرة إلى مشروع واحد أو أكثر</target>
+      </trans-unit>
+      <trans-unit id="11" resname="add_beneficiary_title">
+        <source>add_beneficiary_title</source>
+        <target>إضافة مستفيد</target>
+      </trans-unit>
+      <trans-unit id="12" resname="add_distribution_advanced_option">
+        <source>add_distribution_advanced_option</source>
+        <target>خيارات متقدمة</target>
+      </trans-unit>
+      <trans-unit id="13" resname="add_distribution_average">
+        <source>add_distribution_average</source>
+        <target>معدل</target>
+      </trans-unit>
+      <trans-unit id="14" resname="add_distribution_beneficiaries_reached">
+        <source>add_distribution_beneficiaries_reached</source>
+        <target>المستفيدون الذين تم الوصول إليهم</target>
+      </trans-unit>
+      <trans-unit id="15" resname="add_distribution_commodities_delivered">
+        <source>add_distribution_commodities_delivered</source>
+        <target>تم اعطاء</target>
+      </trans-unit>
+      <trans-unit id="16" resname="add_distribution_created">
+        <source>add_distribution_created</source>
+        <target>تم انشائه</target>
+      </trans-unit>
+      <trans-unit id="17" resname="add_distribution_date_before_today">
+        <source>add_distribution_date_before_today</source>
+        <target>خطأ أثناء إنشاء توزيع جديد ، يجب أن يكون تاريخ التوزيع بعد اليوم</target>
+      </trans-unit>
+      <trans-unit id="18" resname="add_distribution_date_inside_project">
+        <source>add_distribution_date_inside_project</source>
+        <target>خطأ أثناء إنشاء توزيع جديد ، يجب أن يكون تاريخ التوزيع الخاص بك داخل تواريخ المشروع</target>
+      </trans-unit>
+      <trans-unit id="19" resname="add_distribution_distributed_commodity">
+        <source>add_distribution_distributed_commodity</source>
+        <target>السلعة الموزعة</target>
+      </trans-unit>
+      <trans-unit id="20" resname="add_distribution_error_creating">
+        <source>add_distribution_error_creating</source>
+        <target>خطأ أثناء إنشاء توزيع جديد</target>
+      </trans-unit>
+      <trans-unit id="21" resname="add_distribution_high">
+        <source>add_distribution_high</source>
+        <target>متوسط</target>
+      </trans-unit>
+      <trans-unit id="22" resname="add_distribution_households_reached">
+        <source>add_distribution_households_reached</source>
+        <target>الأسر التي تم الوصول إليها</target>
+      </trans-unit>
+      <trans-unit id="23" resname="add_distribution_check_fields">
+        <source>add_distribution_check_fields</source>
+        <target>إملء معلومات التوزيع الجديدة قبل ، بما في ذلك قيمة السلع والقيمة الأدنى يجب أن تكون أعلى من 0.</target>
+      </trans-unit>
+      <trans-unit id="24" resname="add_distribution_low">
+        <source>add_distribution_low</source>
+        <target>منخفض</target>
+      </trans-unit>
+      <trans-unit id="25" resname="add_distribution_missing_commodity">
+        <source>add_distribution_missing_commodity</source>
+        <target>سلعة مفقودة</target>
+      </trans-unit>
+      <trans-unit id="26" resname="add_distribution_missing_date">
+        <source>add_distribution_missing_date</source>
+        <target>التاريخ مفقود</target>
+      </trans-unit>
+      <trans-unit id="27" resname="add_distribution_missing_location">
+        <source>add_distribution_missing_location</source>
+        <target>أضف مقاطعة</target>
+      </trans-unit>
+      <trans-unit id="28" resname="add_distribution_missing_selection_criteria">
+        <source>add_distribution_missing_selection_criteria</source>
+        <target>معيار الاختيار مفقود</target>
+      </trans-unit>
+      <trans-unit id="29" resname="add_distribution_missing_threshold">
+        <source>add_distribution_missing_threshold</source>
+        <target>يجب أن تكون قيمة الحد الفاصل أكبر من 0</target>
+      </trans-unit>
+      <trans-unit id="30" resname="add_distribution_multiple_modalities">
+        <source>add_distribution_multiple_modalities</source>
+        <target>لا يمكنك إضافة سلع غير موزعة بنفس الطريقة</target>
+      </trans-unit>
+      <trans-unit id="31" resname="add_distribution_no_beneficiaries">
+        <source>add_distribution_no_beneficiaries</source>
+        <target>يجب أن يكون عدد المستفيدين / الأسر التي تم الوصول إليها إيجابيًا</target>
+      </trans-unit>
+      <trans-unit id="32" resname="add_distribution_selection_criteria">
+        <source>add_distribution_selection_criteria</source>
+        <target>معيار الاختيار</target>
+      </trans-unit>
+      <trans-unit id="33" resname="add_distribution_text_explanation">
+        <source>add_distribution_text_explanation</source>
+        <target>سيختار النظام فقط المستفيدين / الأسر التي لديها درجة أعلى من درجة الاختيار الدنيا</target>
+      </trans-unit>
+      <trans-unit id="34" resname="add_distribution_threshold">
+        <source>add_distribution_threshold</source>
+        <target>درجة الاختيار الدنيا</target>
+      </trans-unit>
+      <trans-unit id="35" resname="add_distribution_very_high">
+        <source>add_distribution_very_high</source>
+        <target>عالي جدا</target>
+      </trans-unit>
+      <trans-unit id="36" resname="add_distribution_very_low">
+        <source>add_distribution_very_low</source>
+        <target>منخفظ جدا</target>
+      </trans-unit>
+      <trans-unit id="37" resname="add_distribution_zero">
+        <source>add_distribution_zero</source>
+        <target>عدد الأسر التي تم الوصول إليها أو المبلغ المطلوب توزيعه هو 0</target>
+      </trans-unit>
+      <trans-unit id="38" resname="add_project_new_distribution">
+        <source>add_project_new_distribution</source>
+        <target>توزيعة جديدة</target>
+      </trans-unit>
+      <trans-unit id="39" resname="add_project_title">
+        <source>add_project_title</source>
+        <target>مشروع جديد</target>
+      </trans-unit>
+      <trans-unit id="40" resname="address">
+        <source>address</source>
+        <target>عنوان</target>
+      </trans-unit>
+      <trans-unit id="41" resname="address_number">
+        <source>address_number</source>
+        <target>رقم العنوان</target>
+      </trans-unit>
+      <trans-unit id="42" resname="address_postcode">
+        <source>address_postcode</source>
+        <target>عنوان الرمز البريدي</target>
+      </trans-unit>
+      <trans-unit id="43" resname="address_street">
+        <source>address_street</source>
+        <target>عنوان الشارع</target>
+      </trans-unit>
+      <trans-unit id="44" resname="adm1">
+        <source>adm1</source>
+        <target>ADMINLEVELS.ar.adm1</target>
+      </trans-unit>
+      <trans-unit id="45" resname="adm2">
+        <source>adm2</source>
+        <target>ADMINLEVELS.ar.adm2</target>
+      </trans-unit>
+      <trans-unit id="46" resname="adm3">
+        <source>adm3</source>
+        <target>ADMINLEVELS.ar.adm3</target>
+      </trans-unit>
+      <trans-unit id="47" resname="adm4">
+        <source>adm4</source>
+        <target>ADMINLEVELS.ar.adm4</target>
+      </trans-unit>
+      <trans-unit id="48" resname="administrative_settings">
+        <source>administrative_settings</source>
+        <target>الإعدادات الإدارية</target>
+      </trans-unit>
+      <trans-unit id="49" resname="back">
+        <source>back</source>
+        <target>إلى الوراء</target>
+      </trans-unit>
+      <trans-unit id="50" resname="back_to_homepage">
+        <source>back_to_homepage</source>
+        <target>العودة إلى الصفحة الرئيسية</target>
+      </trans-unit>
+      <trans-unit id="51" resname="beneficiaries">
+        <source>beneficiaries</source>
+        <target>المستفيديين</target>
+      </trans-unit>
+      <trans-unit id="52" resname="beneficiary">
+        <source>beneficiary</source>
+        <target>المستفيد</target>
+      </trans-unit>
+      <trans-unit id="53" resname="beneficiary_add_list">
+        <source>beneficiary_add_list</source>
+        <target>أضف إلى المشروع</target>
+      </trans-unit>
+      <trans-unit id="54" resname="beneficiary_add_project">
+        <source>beneficiary_add_project</source>
+        <target>يرجى تحديد المشروع (المشاريع) الذي/الذين ترغب في إضافته/هم</target>
+      </trans-unit>
+      <trans-unit id="55" resname="beneficiary_add_project_title">
+        <source>beneficiary_add_project_title</source>
+        <target>إضافة المستفيدين إلى المشروع</target>
+      </trans-unit>
+      <trans-unit id="56" resname="beneficiary_added">
+        <source>beneficiary_added</source>
+        <target>تمت إضافة المستفيدين إلى المشروع المحدد</target>
+      </trans-unit>
+      <trans-unit id="57" resname="beneficiary_advanced_research">
+        <source>beneficiary_advanced_research</source>
+        <target>بحث متقدم</target>
+      </trans-unit>
+      <trans-unit id="58" resname="beneficiary_clear_all_research">
+        <source>beneficiary_clear_all_research</source>
+        <target>امسح الكل</target>
+      </trans-unit>
+      <trans-unit id="59" resname="beneficiary_count">
+        <source>beneficiary_count</source>
+        <target>عدد المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="60" resname="beneficiary_date_of_birth">
+        <source>beneficiary_date_of_birth</source>
+        <target>تاريخ الميلاد</target>
+      </trans-unit>
+      <trans-unit id="61" resname="beneficiary_en_family_name">
+        <source>beneficiary_en_family_name</source>
+        <target>اسم العائلة</target>
+      </trans-unit>
+      <trans-unit id="62" resname="beneficiary_en_given_name">
+        <source>beneficiary_en_given_name</source>
+        <target>(الاسم المعطى (الإنجليزية</target>
+      </trans-unit>
+      <trans-unit id="63" resname="beneficiary_en_name">
+        <source>beneficiary_en_name</source>
+        <target>(الاسم (انجليزي</target>
+      </trans-unit>
+      <trans-unit id="64" resname="beneficiary_error_address_number">
+        <source>beneficiary_error_address_number</source>
+        <target>يجب إدخال رقم العنوان</target>
+      </trans-unit>
+      <trans-unit id="65" resname="beneficiary_error_address_postcode">
+        <source>beneficiary_error_address_postcode</source>
+        <target>يجب إدخال الرمز البريدي للعنوان</target>
+      </trans-unit>
+      <trans-unit id="66" resname="beneficiary_error_address_street">
+        <source>beneficiary_error_address_street</source>
+        <target>يجب عليك إدخال شارع العنوان</target>
+      </trans-unit>
+      <trans-unit id="67" resname="beneficiary_error_birth_date">
+        <source>beneficiary_error_birth_date</source>
+        <target>يرجى تحديد تاريخ ميلاد صالح لـ</target>
+      </trans-unit>
+      <trans-unit id="68" resname="beneficiary_error_camp">
+        <source>beneficiary_error_camp</source>
+        <target>يجب عليك تحديد معسكر أو إنشاء معسكر</target>
+      </trans-unit>
+      <trans-unit id="69" resname="beneficiary_error_country_code">
+        <source>beneficiary_error_country_code</source>
+        <target>يرجى اختيار رمز البلد لرقم الهاتف ل</target>
+      </trans-unit>
+      <trans-unit id="70" resname="beneficiary_error_existing_country_code">
+        <source>beneficiary_error_existing_country_code</source>
+        <target>يرجى اختيار رمز البلد الحالي من القائمة ل</target>
+      </trans-unit>
+      <trans-unit id="71" resname="beneficiary_error_family_name">
+        <source>beneficiary_error_family_name</source>
+        <target>يجب إدخال اسم عائلة محلي لـ</target>
+      </trans-unit>
+      <trans-unit id="72" resname="beneficiary_error_gender">
+        <source>beneficiary_error_gender</source>
+        <target>يجب عليك إدخال الجنس من أجل</target>
+      </trans-unit>
+      <trans-unit id="73" resname="beneficiary_error_given_name">
+        <source>beneficiary_error_given_name</source>
+        <target>يجب إدخال اسم محلي معين لـ</target>
+      </trans-unit>
+      <trans-unit id="74" resname="beneficiary_error_head">
+        <source>beneficiary_error_head</source>
+        <target>رب الأسرة</target>
+      </trans-unit>
+      <trans-unit id="75" resname="beneficiary_error_location">
+        <source>beneficiary_error_location</source>
+        <target>يجب عليك تحديد موقع</target>
+      </trans-unit>
+      <trans-unit id="76" resname="beneficiary_error_location_type">
+        <source>beneficiary_error_location_type</source>
+        <target>يجب عليك تحديد نوع الموقع</target>
+      </trans-unit>
+      <trans-unit id="77" resname="beneficiary_error_member">
+        <source>beneficiary_error_member</source>
+        <target>عضو</target>
+      </trans-unit>
+      <trans-unit id="78" resname="beneficiary_error_phone">
+        <source>beneficiary_error_phone</source>
+        <target>يمكن أن يتكون الهاتف فقط من أرقام لـ</target>
+      </trans-unit>
+      <trans-unit id="79" resname="beneficiary_error_project">
+        <source>beneficiary_error_project</source>
+        <target>يجب عليك اختيار مشروع واحد على الأقل</target>
+      </trans-unit>
+      <trans-unit id="80" resname="beneficiary_error_tent">
+        <source>beneficiary_error_tent</source>
+        <target>يجب إدخال رقم خيمة</target>
+      </trans-unit>
+      <trans-unit id="81" resname="beneficiary_family_name">
+        <source>beneficiary_family_name</source>
+        <target>اسم العائلة</target>
+      </trans-unit>
+      <trans-unit id="82" resname="beneficiary_given_name">
+        <source>beneficiary_given_name</source>
+        <target>الاسم</target>
+      </trans-unit>
+      <trans-unit id="83" resname="beneficiary_head">
+        <source>beneficiary_head</source>
+        <target>رب الأسرة</target>
+      </trans-unit>
+      <trans-unit id="84" resname="beneficiary_id">
+        <source>beneficiary_id</source>
+        <target>رقم الشخصي للمستفيد</target>
+      </trans-unit>
+      <trans-unit id="85" resname="beneficiary_import_addFile">
+        <source>beneficiary_import_addFile</source>
+        <target>إضافة ملف أو سحب وإسقاط</target>
+      </trans-unit>
+      <trans-unit id="86" resname="beneficiary_import_addModal">
+        <source>beneficiary_import_addModal</source>
+        <target>add file</target>
+      </trans-unit>
+      <trans-unit id="87" resname="beneficiary_import_api">
+        <source>beneficiary_import_api</source>
+        <target>استيراد من مصدر بيانات خارجي</target>
+      </trans-unit>
+      <trans-unit id="88" resname="beneficiary_import_beneficiaries_imported">
+        <source>beneficiary_import_beneficiaries_imported</source>
+        <target>تم إضافة المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="89" resname="beneficiary_import_canceled">
+        <source>beneficiary_import_canceled</source>
+        <target>تم إلغاء الاستيراد</target>
+      </trans-unit>
+      <trans-unit id="90" resname="beneficiary_import_conversion_success">
+        <source>beneficiary_import_conversion_success</source>
+        <target>التحويل بنجاح!</target>
+      </trans-unit>
+      <trans-unit id="91" resname="beneficiary_import_convert">
+        <source>beneficiary_import_convert</source>
+        <target>تحويل الملف</target>
+      </trans-unit>
+      <trans-unit id="92" resname="beneficiary_import_csv">
+        <source>beneficiary_import_csv</source>
+        <target>تنزيل قالب csv</target>
+      </trans-unit>
+      <trans-unit id="93" resname="beneficiary_import_error_file">
+        <source>beneficiary_import_error_file</source>
+        <target>يجب عليك تحديد ملف</target>
+      </trans-unit>
+      <trans-unit id="94" resname="beneficiary_import_error_importing">
+        <source>beneficiary_import_error_importing</source>
+        <target>وقع خطأ عندالتحميل البيانات</target>
+      </trans-unit>
+      <trans-unit id="95" resname="beneficiary_import_error_selection">
+        <source>beneficiary_import_error_selection</source>
+        <target>يجب عليك تحديد خيار واحد على الأقل</target>
+      </trans-unit>
+      <trans-unit id="96" resname="beneficiary_import_file">
+        <source>beneficiary_import_file</source>
+        <target>استيراد من ملف</target>
+      </trans-unit>
+      <trans-unit id="97" resname="beneficiary_import_check_fields">
+        <source>beneficiary_import_check_fields</source>
+        <target>محتوى فارغ تثبت من أدخال جميع المعطيات و اختيار مشروع</target>
+      </trans-unit>
+      <trans-unit id="98" resname="beneficiary_import_response">
+        <source>beneficiary_import_response</source>
+        <target>استعد لاستعادة الملف</target>
+      </trans-unit>
+      <trans-unit id="99" resname="beneficiary_import_select_location">
+        <source>beneficiary_import_select_location</source>
+        <target>يجب تحديد الموقع وإضافة ملف قبل التحميل</target>
+      </trans-unit>
+      <trans-unit id="100" resname="beneficiary_import_select_project">
+        <source>beneficiary_import_select_project</source>
+        <target>يجب أن تختار مشروعا و ملفا قبل التحميل</target>
+      </trans-unit>
+      <trans-unit id="101" resname="beneficiary_import_title">
+        <source>beneficiary_import_title</source>
+        <target>استيراد بيانات المستفيد</target>
+      </trans-unit>
+      <trans-unit id="102" resname="beneficiary_import_warning">
+        <source>beneficiary_import_warning</source>
+        <target>تحذير: إذا كان الملف المقدم غير كامل ، عليك إكمال العنصر الناتج حتى ينجح الاستيراد.</target>
+      </trans-unit>
+      <trans-unit id="103" resname="beneficiary_justification_added">
+        <source>beneficiary_justification_added</source>
+        <target>مبرر لإضافة</target>
+      </trans-unit>
+      <trans-unit id="104" resname="beneficiary_justification_removed">
+        <source>beneficiary_justification_removed</source>
+        <target>مبرر لإزالة</target>
+      </trans-unit>
+      <trans-unit id="105" resname="beneficiary_local_family_name">
+        <source>beneficiary_local_family_name</source>
+        <target>اسم العائلة</target>
+      </trans-unit>
+      <trans-unit id="106" resname="beneficiary_local_given_name">
+        <source>beneficiary_local_given_name</source>
+        <target>(الاسم المحدد (محلي</target>
+      </trans-unit>
+      <trans-unit id="107" resname="beneficiary_local_name">
+        <source>beneficiary_local_name</source>
+        <target>(الاسم (محلي</target>
+      </trans-unit>
+      <trans-unit id="108" resname="beneficiary_member">
+        <source>beneficiary_member</source>
+        <target>فرد من العائلة</target>
+      </trans-unit>
+      <trans-unit id="109" resname="beneficiary_missing_selected_project">
+        <source>beneficiary_missing_selected_project</source>
+        <target>يجب أن تختار مشروعاقبل التحميل</target>
+      </trans-unit>
+      <trans-unit id="110" resname="beneficiary_personnal">
+        <source>beneficiary_personnal</source>
+        <target>معلومات شخصية</target>
+      </trans-unit>
+      <trans-unit id="111" resname="beneficiary_plural">
+        <source>beneficiary_plural</source>
+        <target>هؤلاء المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="112" resname="beneficiary_referral">
+        <source>beneficiary_referral</source>
+        <target>إحالة</target>
+      </trans-unit>
+      <trans-unit id="113" resname="beneficiary_referral_comment">
+        <source>beneficiary_referral_comment</source>
+        <target>تعليق</target>
+      </trans-unit>
+      <trans-unit id="114" resname="beneficiary_referral_question">
+        <source>beneficiary_referral_question</source>
+        <target>إضافة الإحالة</target>
+      </trans-unit>
+      <trans-unit id="115" resname="beneficiary_referral_type">
+        <source>beneficiary_referral_type</source>
+        <target>نوع الإحالة</target>
+      </trans-unit>
+      <trans-unit id="116" resname="beneficiary_referral_types">
+        <source>beneficiary_referral_types</source>
+        <target>REFERRALTYPES.ar</target>
+      </trans-unit>
+      <trans-unit id="117" resname="beneficiary_res_address">
+        <source>beneficiary_res_address</source>
+        <target>عنوان الإقامة</target>
+      </trans-unit>
+      <trans-unit id="118" resname="beneficiary_residency">
+        <source>beneficiary_residency</source>
+        <target>الإقامة</target>
+      </trans-unit>
+      <trans-unit id="119" resname="beneficiary_residency_status">
+        <source>beneficiary_residency_status</source>
+        <target>حالة الإقامة</target>
+      </trans-unit>
+      <trans-unit id="120" resname="beneficiary_residency_status_idp">
+        <source>beneficiary_residency_status_idp</source>
+        <target>IDP</target>
+      </trans-unit>
+      <trans-unit id="121" resname="beneficiary_residency_status_refugee">
+        <source>beneficiary_residency_status_refugee</source>
+        <target>لاجئ</target>
+      </trans-unit>
+      <trans-unit id="122" resname="beneficiary_residency_status_resident">
+        <source>beneficiary_residency_status_resident</source>
+        <target>مقيم</target>
+      </trans-unit>
+      <trans-unit id="123" resname="beneficiary_residency_status_returnee">
+        <source>beneficiary_residency_status_returnee</source>
+        <target>عائدون</target>
+      </trans-unit>
+      <trans-unit id="124" resname="beneficiary_select_api">
+        <source>beneficiary_select_api</source>
+        <target>اختر API</target>
+      </trans-unit>
+      <trans-unit id="125" resname="beneficiary_selected_project">
+        <source>beneficiary_selected_project</source>
+        <target>المستفيدين المختارين=</target>
+      </trans-unit>
+      <trans-unit id="126" resname="beneficiary_update_title">
+        <source>beneficiary_update_title</source>
+        <target>تحديث المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="127" resname="beneficiary_vulnerabilities">
+        <source>beneficiary_vulnerabilities</source>
+        <target>نقاط الضعف</target>
+      </trans-unit>
+      <trans-unit id="128" resname="booklet">
+        <source>booklet</source>
+        <target>كتيب</target>
+      </trans-unit>
+      <trans-unit id="129" resname="booklet_code">
+        <source>booklet_code</source>
+        <target>الرمز</target>
+      </trans-unit>
+      <trans-unit id="130" resname="booklet_deactivated">
+        <source>booklet_deactivated</source>
+        <target>معطل</target>
+      </trans-unit>
+      <trans-unit id="131" resname="booklet_define_password">
+        <source>booklet_define_password</source>
+        <target>تحديد كلمة المرور</target>
+      </trans-unit>
+      <trans-unit id="132" resname="booklet_export_codes">
+        <source>booklet_export_codes</source>
+        <target>رموز كتيب التصدير</target>
+      </trans-unit>
+      <trans-unit id="133" resname="booklet_individual_value">
+        <source>booklet_individual_value</source>
+        <target>القيمة الفردية</target>
+      </trans-unit>
+      <trans-unit id="134" resname="booklet_number_booklets">
+        <source>booklet_number_booklets</source>
+        <target>كمية من الكتيبات لخلق</target>
+      </trans-unit>
+      <trans-unit id="135" resname="booklet_number_vouchers">
+        <source>booklet_number_vouchers</source>
+        <target>كمية القسائم</target>
+      </trans-unit>
+      <trans-unit id="136" resname="booklet_password_pattern">
+        <source>booklet_password_pattern</source>
+        <target>يجب أن تتكون كلمة المرور من 4 أرقام</target>
+      </trans-unit>
+      <trans-unit id="137" resname="booklet_unassigned">
+        <source>booklet_unassigned</source>
+        <target>غير معين</target>
+      </trans-unit>
+      <trans-unit id="138" resname="booklet_update_password">
+        <source>booklet_update_password</source>
+        <target>تحديث كلمة المرور</target>
+      </trans-unit>
+      <trans-unit id="139" resname="booklet_used">
+        <source>booklet_used</source>
+        <target>مستخدم</target>
+      </trans-unit>
+      <trans-unit id="140" resname="booklets">
+        <source>booklets</source>
+        <target>كتيبات</target>
+      </trans-unit>
+      <trans-unit id="141" resname="cache_distribution_added">
+        <source>cache_distribution_added</source>
+        <target>التوزيع والمستفيدين من المشروع تم إضافتهم في ذاكرة التخزين المؤقت</target>
+      </trans-unit>
+      <trans-unit id="142" resname="cache_no_distribution">
+        <source>cache_no_distribution</source>
+        <target>لم يتم تخزين هذا التوزيع في ذاكرة التخزين المؤقت ، ولا يمكنك الحصول عليه خارج خدمة الانترنت.</target>
+      </trans-unit>
+      <trans-unit id="143" resname="cache_store_beneficiaries">
+        <source>cache_store_beneficiaries</source>
+        <target>وضع غير متصل بالشبكة</target>
+      </trans-unit>
+      <trans-unit id="144" resname="cache_stored_beneficiaries">
+        <source>cache_stored_beneficiaries</source>
+        <target>تم الحفظ في وضع عدم الاتصال</target>
+      </trans-unit>
+      <trans-unit id="145" resname="campName">
+        <source>campName</source>
+        <target>اسم المخيم</target>
+      </trans-unit>
+      <trans-unit id="146" resname="cancel">
+        <source>cancel</source>
+        <target>إلغاء</target>
+      </trans-unit>
+      <trans-unit id="147" resname="car">
+        <source>car</source>
+        <target>سيارة</target>
+      </trans-unit>
+      <trans-unit id="148" resname="close">
+        <source>close</source>
+        <target>إغلاق</target>
+      </trans-unit>
+      <trans-unit id="149" resname="commodity">
+        <source>commodity</source>
+        <target>السلع</target>
+      </trans-unit>
+      <trans-unit id="150" resname="commodity_cash">
+        <source>commodity_cash</source>
+        <target>السيولة النقدية</target>
+      </trans-unit>
+      <trans-unit id="151" resname="commodity_in_kind">
+        <source>commodity_in_kind</source>
+        <target>في النوع</target>
+      </trans-unit>
+      <trans-unit id="152" resname="commodity_kgs">
+        <source>commodity_kgs</source>
+        <target>كلغ</target>
+      </trans-unit>
+      <trans-unit id="153" resname="commodity_kit">
+        <source>commodity_kit</source>
+        <target>عدة</target>
+      </trans-unit>
+      <trans-unit id="154" resname="commodity_modality">
+        <source>commodity_modality</source>
+        <target>القيد</target>
+      </trans-unit>
+      <trans-unit id="155" resname="commodity_modality_agriculture">
+        <source>commodity_modality_agriculture</source>
+        <target>مجموعة الزراعية</target>
+      </trans-unit>
+      <trans-unit id="156" resname="commodity_modality_bread">
+        <source>commodity_modality_bread</source>
+        <target>خبز</target>
+      </trans-unit>
+      <trans-unit id="157" resname="commodity_modality_cash">
+        <source>commodity_modality_cash</source>
+        <target>المال المحمول</target>
+      </trans-unit>
+      <trans-unit id="158" resname="commodity_modality_dignity">
+        <source>commodity_modality_dignity</source>
+        <target>مجموعة الكرامة</target>
+      </trans-unit>
+      <trans-unit id="159" resname="commodity_modality_food">
+        <source>commodity_modality_food</source>
+        <target>طعام</target>
+      </trans-unit>
+      <trans-unit id="160" resname="commodity_modality_hygiene">
+        <source>commodity_modality_hygiene</source>
+        <target>سلة النظافة</target>
+      </trans-unit>
+      <trans-unit id="161" resname="commodity_modality_loan">
+        <source>commodity_modality_loan</source>
+        <target>قرض</target>
+      </trans-unit>
+      <trans-unit id="162" resname="commodity_modality_paper_voucher">
+        <source>commodity_modality_paper_voucher</source>
+        <target>قسيمة ورقة</target>
+      </trans-unit>
+      <trans-unit id="163" resname="commodity_modality_qr_voucher">
+        <source>commodity_modality_qr_voucher</source>
+        <target>قسيمة كود qr</target>
+      </trans-unit>
+      <trans-unit id="164" resname="commodity_modality_rte">
+        <source>commodity_modality_rte</source>
+        <target>RTE عدة</target>
+      </trans-unit>
+      <trans-unit id="165" resname="commodity_modality_shelter">
+        <source>commodity_modality_shelter</source>
+        <target>مجموعة المأوى</target>
+      </trans-unit>
+      <trans-unit id="166" resname="commodity_modality_wash">
+        <source>commodity_modality_wash</source>
+        <target>غسل عدة</target>
+      </trans-unit>
+      <trans-unit id="167" resname="commodity_smartcard">
+        <source>commodity_smartcard</source>
+        <target>البطاقة الذكية</target>
+      </trans-unit>
+      <trans-unit id="168" resname="commodity_value">
+        <source>commodity_value</source>
+        <target>كمية</target>
+      </trans-unit>
+      <trans-unit id="169" resname="commodity_value_voucher">
+        <source>commodity_value_voucher</source>
+        <target>القيمة الإجمالية للكتيب</target>
+      </trans-unit>
+      <trans-unit id="170" resname="Commune">
+        <source>Commune</source>
+        <target>البلدية</target>
+      </trans-unit>
+      <trans-unit id="171" resname="communities">
+        <source>communities</source>
+        <target>مجتمعات</target>
+      </trans-unit>
+      <trans-unit id="172" resname="community">
+        <source>community</source>
+        <target>مجتمع</target>
+      </trans-unit>
+      <trans-unit id="173" resname="complete">
+        <source>complete</source>
+        <target>اكتمال</target>
+      </trans-unit>
+      <trans-unit id="174" resname="copingStrategiesIndex">
+        <source>copingStrategiesIndex</source>
+        <target>مؤشر استراتيجيات المواجهة</target>
+      </trans-unit>
+      <trans-unit id="175" resname="country">
+        <source>country</source>
+        <target>البلد</target>
+      </trans-unit>
+      <trans-unit id="176" resname="country_khm">
+        <source>country_khm</source>
+        <target>كمبوديا</target>
+      </trans-unit>
+      <trans-unit id="177" resname="country_specific">
+        <source>country_specific</source>
+        <target>خيار خاص بالبلد</target>
+      </trans-unit>
+      <trans-unit id="178" resname="country_specific_field">
+        <source>country_specific_field</source>
+        <target>الميدان</target>
+      </trans-unit>
+      <trans-unit id="179" resname="country_syr">
+        <source>country_syr</source>
+        <target>سوريا</target>
+      </trans-unit>
+      <trans-unit id="180" resname="create">
+        <source>create</source>
+        <target>إنشاء</target>
+      </trans-unit>
+      <trans-unit id="181" resname="criteria">
+        <source>criteria</source>
+        <target>المعايير</target>
+      </trans-unit>
+      <trans-unit id="182" resname="criteria_operator">
+        <source>criteria_operator</source>
+        <target>الشروط</target>
+      </trans-unit>
+      <trans-unit id="183" resname="criteria_target">
+        <source>criteria_target</source>
+        <target>معايير الهدف</target>
+      </trans-unit>
+      <trans-unit id="184" resname="criteria_weight">
+        <source>criteria_weight</source>
+        <target>وزن النتيجة</target>
+      </trans-unit>
+      <trans-unit id="185" resname="currency">
+        <source>currency</source>
+        <target>العملة</target>
+      </trans-unit>
+      <trans-unit id="186" resname="currentAdm1">
+        <source>currentAdm1</source>
+        <target>الموقع الحالي</target>
+      </trans-unit>
+      <trans-unit id="187" resname="currentAdm2">
+        <source>currentAdm2</source>
+        <target>الموقع الحالي</target>
+      </trans-unit>
+      <trans-unit id="188" resname="currentAdm3">
+        <source>currentAdm3</source>
+        <target>الموقع الحالي</target>
+      </trans-unit>
+      <trans-unit id="189" resname="currentAdm4">
+        <source>currentAdm4</source>
+        <target>الموقع الحالي</target>
+      </trans-unit>
+      <trans-unit id="190" resname="currentLocation">
+        <source>currentLocation</source>
+        <target>الموقع الحالي</target>
+      </trans-unit>
+      <trans-unit id="191" resname="dashboard_current_activities">
+        <source>dashboard_current_activities</source>
+        <target>الأنشطة الحالية</target>
+      </trans-unit>
+      <trans-unit id="192" resname="dashboard_distribution_map">
+        <source>dashboard_distribution_map</source>
+        <target>خريطة التوزيع</target>
+      </trans-unit>
+      <trans-unit id="193" resname="dashboard_recent_distributions">
+        <source>dashboard_recent_distributions</source>
+        <target>التوزيعات الحديثة</target>
+      </trans-unit>
+      <trans-unit id="194" resname="dashboard_summary_1">
+        <source>dashboard_summary_1</source>
+        <target>تسجيلات المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="195" resname="dashboard_summary_1">
+        <source>dashboard_summary_1</source>
+        <target>مجموع المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="196" resname="dashboard_summary_2">
+        <source>dashboard_summary_2</source>
+        <target>المشاريع الناشطة</target>
+      </trans-unit>
+      <trans-unit id="197" resname="dashboard_summary_3">
+        <source>dashboard_summary_3</source>
+        <target>المستفيدين المسجلين</target>
+      </trans-unit>
+      <trans-unit id="198" resname="dashboard_summary_3">
+        <source>dashboard_summary_3</source>
+        <target>العائلات الملتزمة</target>
+      </trans-unit>
+      <trans-unit id="199" resname="dashboard_summary_4">
+        <source>dashboard_summary_4</source>
+        <target>معاملات القيمة الإجمالية</target>
+      </trans-unit>
+      <trans-unit id="200" resname="dashboard_summary_5">
+        <source>dashboard_summary_5</source>
+        <target>المستفيدين خدم</target>
+      </trans-unit>
+      <trans-unit id="201" resname="dashboard_summary_5">
+        <source>dashboard_summary_5</source>
+        <target>الأسر المستهدفة</target>
+      </trans-unit>
+      <trans-unit id="202" resname="dashboard_summary_6">
+        <source>dashboard_summary_6</source>
+        <target>توزيعات كاملة</target>
+      </trans-unit>
+      <trans-unit id="203" resname="data_mapping_title">
+        <source>data_mapping_title</source>
+        <target>تعيين أعمدة البيانات</target>
+      </trans-unit>
+      <trans-unit id="204" resname="data_verification_description_duplicates">
+        <source>data_verification_description_duplicates</source>
+        <target>تعرض لوحة التكرار المستفيدين في الملف الموجودين بالفعل في قاعدة البيانات في منزل آخر. إذا كان المستفيد
+          الحالي ليس رب أسرة ، يمكنك حذف احداهما ، أو حفظ كلاهما كمستفيدين مختلفين إذا كنت متأكداً من أنهم أشخاص
+          مختلفون.
+        </target>
+      </trans-unit>
+      <trans-unit id="205" resname="data_verification_description_end">
+        <source>data_verification_description_end</source>
+        <target>لن يتم إضافة التعديلات إلى قاعدة البيانات حتى نهاية عملية التحقق</target>
+      </trans-unit>
+      <trans-unit id="206" resname="data_verification_description_less">
+        <source>data_verification_description_less</source>
+        <target>.في ما يلي قائمة بالأسر المدرجة في قاعدة البيانات ولكن مع عدد أكبر من المستفيدين مقارنة بالملف المستورد.
+          يمكنك التحقق وتحديد الذين تريد استيرادهم في المنزل
+        </target>
+      </trans-unit>
+      <trans-unit id="207" resname="data_verification_description_more">
+        <source>data_verification_description_more</source>
+        <target>.في ما يلي قائمة بالأسر المدرجة في قاعدة البيانات ولكن مع عدد أقل من المستفيدين مقارنة بالملف المستورد.
+          يمكنك التحقق وتحديد الذين تريد استيرادهم في المنزل
+        </target>
+      </trans-unit>
+      <trans-unit id="208" resname="data_verification_description_typos">
+        <source>data_verification_description_typos</source>
+        <target>تعرض هذه اللوحة أي أخطاء كتابة مشكوك فيها تتعلق بالمستفيدين في ملف: إذا كان المستفيد المستورد يتطابق
+          بشكل وثيق مع آخر موجود بالفعل في قاعدة البيانات ، فسيتم عرضه هنا. يمكنك اختيار إما الحفاظ على القائمة ،
+          وتحديثها مع البيانات المستوردة أو حفظ كلاهما كمستفيدين منفصلين.
+        </target>
+      </trans-unit>
+      <trans-unit id="209" resname="data_verification_done">
+        <source>data_verification_done</source>
+        <target>تم التحقق من بياناتك</target>
+      </trans-unit>
+      <trans-unit id="210" resname="data_verification_error">
+        <source>data_verification_error</source>
+        <target>حدث خطأ في معالجة البيانات</target>
+      </trans-unit>
+      <trans-unit id="211" resname="data_verification_chip_actual">
+        <source>data_verification_chip_actual</source>
+        <target>المنزل المستهدف</target>
+      </trans-unit>
+      <trans-unit id="212" resname="data_verification_chip_add">
+        <source>data_verification_chip_add</source>
+        <target>للإضافة</target>
+      </trans-unit>
+      <trans-unit id="213" resname="data_verification_chip_existing">
+        <source>data_verification_chip_existing</source>
+        <target>موجدو</target>
+      </trans-unit>
+      <trans-unit id="214" resname="data_verification_chip_remove">
+        <source>data_verification_chip_remove</source>
+        <target>للحذف</target>
+      </trans-unit>
+      <trans-unit id="215" resname="data_verification_last_updated">
+        <source>data_verification_last_updated</source>
+        <target>Last updated</target>
+      </trans-unit>
+      <trans-unit id="216" resname="data_verification_snackbar_duplicate_corrected">
+        <source>data_verification_snackbar_duplicate_corrected</source>
+        <target>مشكلات التكرار المصححة</target>
+      </trans-unit>
+      <trans-unit id="217" resname="data_verification_snackbar_duplicate_no_corrected">
+        <source>data_verification_snackbar_duplicate_no_corrected</source>
+        <target>كل أخطاء التكرار التي لم يتم تصحيحها</target>
+      </trans-unit>
+      <trans-unit id="218" resname="data_verification_snackbar_less_corrected">
+        <source>data_verification_snackbar_less_corrected</source>
+        <target>تمت إزالة المستفيدين بنجاح</target>
+      </trans-unit>
+      <trans-unit id="219" resname="data_verification_snackbar_more_corrected">
+        <source>data_verification_snackbar_more_corrected</source>
+        <target>تمت إضافة المستفيدين بنجاح</target>
+      </trans-unit>
+      <trans-unit id="220" resname="data_verification_snackbar_typo_corrected">
+        <source>data_verification_snackbar_typo_corrected</source>
+        <target>مشكلات الكتابة التي تم تصحيحها</target>
+      </trans-unit>
+      <trans-unit id="221" resname="data_verification_snackbar_typo_no_corrected">
+        <source>data_verification_snackbar_typo_no_corrected</source>
+        <target>كل أخطاء الكتابة التي لم يتم تصحيحها</target>
+      </trans-unit>
+      <trans-unit id="222" resname="data_verification_step_duplicates">
+        <source>data_verification_step_duplicates</source>
+        <target>التأكد من التكرار</target>
+      </trans-unit>
+      <trans-unit id="223" resname="data_verification_step_info">
+        <source>data_verification_step_info</source>
+        <target>معلومات خطوة</target>
+      </trans-unit>
+      <trans-unit id="224" resname="data_verification_step_less">
+        <source>data_verification_step_less</source>
+        <target>للحذف</target>
+      </trans-unit>
+      <trans-unit id="225" resname="data_verification_step_more">
+        <source>data_verification_step_more</source>
+        <target>للإضافة</target>
+      </trans-unit>
+      <trans-unit id="226" resname="data_verification_step_typos">
+        <source>data_verification_step_typos</source>
+        <target>أخطاء في كتابة المعلومات</target>
+      </trans-unit>
+      <trans-unit id="227" resname="data_verification_title">
+        <source>data_verification_title</source>
+        <target>التحقق من صحة وصلاحية البيانات</target>
+      </trans-unit>
+      <trans-unit id="228" resname="date">
+        <source>date</source>
+        <target>تاريخ</target>
+      </trans-unit>
+      <trans-unit id="229" resname="dateOfBirth">
+        <source>dateOfBirth</source>
+        <target>تاريخ الميلاد</target>
+      </trans-unit>
+      <trans-unit id="230" resname="delete">
+        <source>delete</source>
+        <target>حذف</target>
+      </trans-unit>
+      <trans-unit id="231" resname="description">
+        <source>description</source>
+        <target>وصف</target>
+      </trans-unit>
+      <trans-unit id="232" resname="details">
+        <source>details</source>
+        <target>تفاصيل</target>
+      </trans-unit>
+      <trans-unit id="233" resname="direction">
+        <source>direction</source>
+        <target>rtl</target>
+      </trans-unit>
+      <trans-unit id="234" resname="disabled">
+        <source>disabled</source>
+        <target>معاق</target>
+      </trans-unit>
+      <trans-unit id="235" resname="disabledHeadOfHousehold">
+        <source>disabledHeadOfHousehold</source>
+        <target>معاق</target>
+      </trans-unit>
+      <trans-unit id="236" resname="distributed">
+        <source>distributed</source>
+        <target>وزعت</target>
+      </trans-unit>
+      <trans-unit id="237" resname="distribution">
+        <source>distribution</source>
+        <target>التوزيع</target>
+      </trans-unit>
+      <trans-unit id="238" resname="distribution_accept_changed">
+        <source>distribution_accept_changed</source>
+        <target>قبول التغييرات</target>
+      </trans-unit>
+      <trans-unit id="239" resname="distribution_add_beneficiaries">
+        <source>distribution_add_beneficiaries</source>
+        <target>إضافة المستفيدين لهذا التوزيع</target>
+      </trans-unit>
+      <trans-unit id="240" resname="distribution_add_justification">
+        <source>distribution_add_justification</source>
+        <target>إضافة التبرير</target>
+      </trans-unit>
+      <trans-unit id="241" resname="distribution_beneficiary_added">
+        <source>distribution_beneficiary_added</source>
+        <target>تم أضافة المستفيد</target>
+      </trans-unit>
+      <trans-unit id="242" resname="distribution_beneficiary_not_added">
+        <source>distribution_beneficiary_not_added</source>
+        <target>لم بتم أضافة المستفيد</target>
+      </trans-unit>
+      <trans-unit id="243" resname="distribution_cant_update">
+        <source>distribution_cant_update</source>
+        <target>لا يمكنك تحديث هذا التوزيع.</target>
+      </trans-unit>
+      <trans-unit id="244" resname="distribution_date">
+        <source>distribution_date</source>
+        <target>تاريخ التوزيع</target>
+      </trans-unit>
+      <trans-unit id="245" resname="distribution_details_export">
+        <source>distribution_details_export</source>
+        <target>قائمة التوزيع</target>
+      </trans-unit>
+      <trans-unit id="246" resname="distribution_details_import">
+        <source>distribution_details_import</source>
+        <target>الاستيراد والمقارنة</target>
+      </trans-unit>
+      <trans-unit id="247" resname="distribution_details_random">
+        <source>distribution_details_random</source>
+        <target>عينة عشوائية للتصدير</target>
+      </trans-unit>
+      <trans-unit id="248" resname="distribution_details_sample_size">
+        <source>distribution_details_sample_size</source>
+        <target>حجم العينة</target>
+      </trans-unit>
+      <trans-unit id="249" resname="distribution_details_validate">
+        <source>distribution_details_validate</source>
+        <target>التحقق والقفل</target>
+      </trans-unit>
+      <trans-unit id="250" resname="distribution_distribute">
+        <source>distribution_distribute</source>
+        <target>تعيين كما وزعت</target>
+      </trans-unit>
+      <trans-unit id="251" resname="distribution_edit">
+        <source>distribution_edit</source>
+        <target>تعديل التوزيع</target>
+      </trans-unit>
+      <trans-unit id="252" resname="distribution_enrolled_households">
+        <source>distribution_enrolled_households</source>
+        <target>العائلات الملتزمة</target>
+      </trans-unit>
+      <trans-unit id="253" resname="distribution_error_validate">
+        <source>distribution_error_validate</source>
+        <target>التوزيع فارغ ، يرجى ملءه قبل التحقق من صحته</target>
+      </trans-unit>
+      <trans-unit id="254" resname="distribution_id">
+        <source>distribution_id</source>
+        <target>معرف التوزيع</target>
+      </trans-unit>
+      <trans-unit id="255" resname="distribution_justify_added">
+        <source>distribution_justify_added</source>
+        <target>يرجى تقديم مبرر لإضافة المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="256" resname="distribution_justify_created">
+        <source>distribution_justify_created</source>
+        <target>يرجى تقديم مبرر لإنشاء المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="257" resname="distribution_justify_deleted">
+        <source>distribution_justify_deleted</source>
+        <target>يرجى تقديم مبرر لحذف المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="258" resname="distribution_last_modification">
+        <source>distribution_last_modification</source>
+        <target>آخر تعديل :</target>
+      </trans-unit>
+      <trans-unit id="259" resname="distribution_no_beneficiaries">
+        <source>distribution_no_beneficiaries</source>
+        <target>لم تتم إضافة أو إزالة أي مستفيدين. سيتم تحديث أي تغييرات يتم إجراؤها على المستفيدين المستوردين في
+          النظام.
+        </target>
+      </trans-unit>
+      <trans-unit id="260" resname="distribution_no_random_sample">
+        <source>distribution_no_random_sample</source>
+        <target>لا يمكن إنشاء عينة عشوائية ...</target>
+      </trans-unit>
+      <trans-unit id="261" resname="distribution_no_right_transaction">
+        <source>distribution_no_right_transaction</source>
+        <target>لا يحق لك أن تقوم بالصفقة ، اسأل مدير المشروع الخاص بك أو مدير بلدك</target>
+      </trans-unit>
+      <trans-unit id="262" resname="distribution_no_right_validate">
+        <source>distribution_no_right_validate</source>
+        <target>لا يحق لك التحقق من صحة التوزيع ، اسأل مدير المشروع الخاص بك</target>
+      </trans-unit>
+      <trans-unit id="263" resname="distribution_no_valid_commodity">
+        <source>distribution_no_valid_commodity</source>
+        <target>لم يتم اكتشاف سلعة صالحة لهذا التوزيع</target>
+      </trans-unit>
+      <trans-unit id="264" resname="distribution_not_modified">
+        <source>distribution_not_modified</source>
+        <target>هذا التوزيع لم يتم تعديله حتى الآن.</target>
+      </trans-unit>
+      <trans-unit id="265" resname="distribution_not_validated">
+        <source>distribution_not_validated</source>
+        <target>لا يمكن التحقق من صحة التوزيع</target>
+      </trans-unit>
+      <trans-unit id="266" resname="distribution_request_logs">
+        <source>distribution_request_logs</source>
+        <target>إرسل سجلات المعاملات عن طريق البريد الإلكتروني</target>
+      </trans-unit>
+      <trans-unit id="267" resname="distribution_select_beneficiaries">
+        <source>distribution_select_beneficiaries</source>
+        <target>يرجى تحديد المستفيدين من المشروع</target>
+      </trans-unit>
+      <trans-unit id="268" resname="distribution_show_data">
+        <source>distribution_show_data</source>
+        <target>عرض البيانات على أي حال</target>
+      </trans-unit>
+      <trans-unit id="269" resname="distribution_succes_completed">
+        <source>distribution_succes_completed</source>
+        <target>اكتمل التوزيع بنجاح!</target>
+      </trans-unit>
+      <trans-unit id="270" resname="distribution_type">
+        <source>distribution_type</source>
+        <target>العالمي</target>
+      </trans-unit>
+      <trans-unit id="271" resname="distribution_validate">
+        <source>distribution_validate</source>
+        <target>التحقق من صحة</target>
+      </trans-unit>
+      <trans-unit id="272" resname="distribution_validated">
+        <source>distribution_validated</source>
+        <target>تم التحقق من صحة التوزيع</target>
+      </trans-unit>
+      <trans-unit id="273" resname="distribution_validated_title">
+        <source>distribution_validated_title</source>
+        <target>توزيع التحقق من صحة</target>
+      </trans-unit>
+      <trans-unit id="274" resname="distribution_want_add">
+        <source>distribution_want_add</source>
+        <target>التي تريد إضافتها إلى</target>
+      </trans-unit>
+      <trans-unit id="275" resname="distributions">
+        <source>distributions</source>
+        <target>التوزيعات</target>
+      </trans-unit>
+      <trans-unit id="276" resname="done">
+        <source>done</source>
+        <target>تم</target>
+      </trans-unit>
+      <trans-unit id="277" resname="donor">
+        <source>donor</source>
+        <target>المانح</target>
+      </trans-unit>
+      <trans-unit id="278" resname="donor_fullname">
+        <source>donor_fullname</source>
+        <target>اسم المانح</target>
+      </trans-unit>
+      <trans-unit id="279" resname="donor_shortname">
+        <source>donor_shortname</source>
+        <target>الاسم المختصر</target>
+      </trans-unit>
+      <trans-unit id="280" resname="donors">
+        <source>donors</source>
+        <target>المانحين</target>
+      </trans-unit>
+      <trans-unit id="281" resname="duplicate">
+        <source>duplicate</source>
+        <target>التكرار</target>
+      </trans-unit>
+      <trans-unit id="282" resname="email">
+        <source>email</source>
+        <target>البريد الالكتروني</target>
+      </trans-unit>
+      <trans-unit id="283" resname="error_interceptor_msg">
+        <source>error_interceptor_msg</source>
+        <target>(وقع خطأ: لا يمكن الاستجابة (محتوى فارغ</target>
+      </trans-unit>
+      <trans-unit id="284" resname="export">
+        <source>export</source>
+        <target>تصدير</target>
+      </trans-unit>
+      <trans-unit id="285" resname="export_selected">
+        <source>export_selected</source>
+        <target>تصدير العناصر المحددة</target>
+      </trans-unit>
+      <trans-unit id="286" resname="FALSE">
+        <source>FALSE</source>
+        <target>خاطئة</target>
+      </trans-unit>
+      <trans-unit id="287" resname="false">
+        <source>false</source>
+        <target>خاطئة</target>
+      </trans-unit>
+      <trans-unit id="288" resname="female">
+        <source>female</source>
+        <target>مؤنث</target>
+      </trans-unit>
+      <trans-unit id="289" resname="foodConsumptionScore">
+        <source>foodConsumptionScore</source>
+        <target>درجة استهلاك الغذاء</target>
+      </trans-unit>
+      <trans-unit id="290" resname="forbidden">
+        <source>forbidden</source>
+        <target>الصفحة ممنوعة</target>
+      </trans-unit>
+      <trans-unit id="291" resname="forbidden_message">
+        <source>forbidden_message</source>
+        <target>عذرا , ليس لديك إذن للوصل إلى هذه الصفحة</target>
+      </trans-unit>
+      <trans-unit id="292" resname="gender">
+        <source>gender</source>
+        <target>الجنس</target>
+      </trans-unit>
+      <trans-unit id="293" resname="general_relief">
+        <source>general_relief</source>
+        <target>بند</target>
+      </trans-unit>
+      <trans-unit id="294" resname="general_settings">
+        <source>general_settings</source>
+        <target>ترتيب</target>
+      </trans-unit>
+      <trans-unit id="295" resname="group">
+        <source>group</source>
+        <target>المجموعة</target>
+      </trans-unit>
+      <trans-unit id="296" resname="hasNotBeenInDistributionsSince">
+        <source>hasNotBeenInDistributionsSince</source>
+        <target>لم يكن في التوزيع منذ</target>
+      </trans-unit>
+      <trans-unit id="297" resname="head">
+        <source>head</source>
+        <target>الرئيس</target>
+      </trans-unit>
+      <trans-unit id="298" resname="header_add">
+        <source>header_add-beneficiaries</source>
+        <target>إضافة المستفيد</target>
+      </trans-unit>
+      <trans-unit id="299" resname="header_add">
+        <source>header_add-distribution</source>
+        <target>إضافة توزيع</target>
+      </trans-unit>
+      <trans-unit id="300" resname="header_admin">
+        <source>header_admin</source>
+        <target>الإعدادات الإدارية</target>
+      </trans-unit>
+      <trans-unit id="301" resname="header_beneficiaries">
+        <source>header_beneficiaries</source>
+        <target>المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="302" resname="header_data">
+        <source>header_data-mapping</source>
+        <target>رسم الخرائط للبيانات</target>
+      </trans-unit>
+      <trans-unit id="303" resname="header_data">
+        <source>header_data-validation</source>
+        <target>تأكيد صحة البيانات</target>
+      </trans-unit>
+      <trans-unit id="304" resname="header_disconnect">
+        <source>header_disconnect</source>
+        <target>تسجيل الخروج</target>
+      </trans-unit>
+      <trans-unit id="305" resname="header_distributions">
+        <source>header_distributions</source>
+        <target>التوزيع</target>
+      </trans-unit>
+      <trans-unit id="306" resname="header_home">
+        <source>header_home</source>
+        <target>الصفحة الرئيسية</target>
+      </trans-unit>
+      <trans-unit id="307" resname="header_import">
+        <source>header_import</source>
+        <target>استيراد بيانات المستفيد</target>
+      </trans-unit>
+      <trans-unit id="308" resname="header_imported">
+        <source>header_imported</source>
+        <target>إستيراد بيانات المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="309" resname="header_language">
+        <source>header_language</source>
+        <target>اللغة</target>
+      </trans-unit>
+      <trans-unit id="310" resname="header_logs">
+        <source>header_logs</source>
+        <target>سجلات</target>
+      </trans-unit>
+      <trans-unit id="311" resname="header_profile">
+        <source>header_profile</source>
+        <target>المعطيات الشخصية</target>
+      </trans-unit>
+      <trans-unit id="312" resname="header_projects">
+        <source>header_projects</source>
+        <target>المشاريع</target>
+      </trans-unit>
+      <trans-unit id="313" resname="header_reports">
+        <source>header_reports</source>
+        <target>التقارير</target>
+      </trans-unit>
+      <trans-unit id="314" resname="header_settings">
+        <source>header_settings</source>
+        <target>ترتيب</target>
+      </trans-unit>
+      <trans-unit id="315" resname="header_update">
+        <source>header_update-beneficiary</source>
+        <target>تحديث المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="316" resname="header_vouchers">
+        <source>header_vouchers</source>
+        <target>قسائم</target>
+      </trans-unit>
+      <trans-unit id="317" resname="headOfHouseholdDateOfBirth">
+        <source>headOfHouseholdDateOfBirth</source>
+        <target>تاريخ الولادة</target>
+      </trans-unit>
+      <trans-unit id="318" resname="headOfHouseholdGender">
+        <source>headOfHouseholdGender</source>
+        <target>الجنس</target>
+      </trans-unit>
+      <trans-unit id="319" resname="history">
+        <source>history</source>
+        <target>التاريخ</target>
+      </trans-unit>
+      <trans-unit id="320" resname="home">
+        <source>home</source>
+        <target>الصفحة الرئيسية</target>
+      </trans-unit>
+      <trans-unit id="321" resname="household">
+        <source>household</source>
+        <target>الأسرة</target>
+      </trans-unit>
+      <trans-unit id="322" resname="household_assets">
+        <source>household_assets</source>
+        <target>ممتلكات</target>
+      </trans-unit>
+      <trans-unit id="323" resname="household_coping_strategies_index">
+        <source>household_coping_strategies_index</source>
+        <target>مؤشر استراتيجيات المواجهة</target>
+      </trans-unit>
+      <trans-unit id="324" resname="household_debt_level">
+        <source>household_debt_level</source>
+        <target>مستوى الدين</target>
+      </trans-unit>
+      <trans-unit id="325" resname="household_food_consumption_score">
+        <source>household_food_consumption_score</source>
+        <target>درجة استهلاك الغذاء</target>
+      </trans-unit>
+      <trans-unit id="326" resname="household_full_address">
+        <source>household_full_address</source>
+        <target>عنوان المنزل بالكامل:</target>
+      </trans-unit>
+      <trans-unit id="327" resname="household_id">
+        <source>household_id</source>
+        <target>معرف الأسرة</target>
+      </trans-unit>
+      <trans-unit id="328" resname="household_income">
+        <source>household_income</source>
+        <target>مستوى الدخل</target>
+      </trans-unit>
+      <trans-unit id="329" resname="household_income_level">
+        <source>household_income_level</source>
+        <target>INCOMELEVELS.arabic</target>
+      </trans-unit>
+      <trans-unit id="330" resname="household_info">
+        <source>household_info</source>
+        <target>ملخص المعلومات الخاصة بالمنزل :</target>
+      </trans-unit>
+      <trans-unit id="331" resname="household_livelihood">
+        <source>household_livelihood</source>
+        <target>الوظيفة</target>
+      </trans-unit>
+      <trans-unit id="332" resname="household_location">
+        <source>household_location</source>
+        <target>مكان الأسرة=</target>
+      </trans-unit>
+      <trans-unit id="333" resname="household_location_address">
+        <source>household_location_address</source>
+        <target>عنوان</target>
+      </trans-unit>
+      <trans-unit id="334" resname="household_location_camp">
+        <source>household_location_camp</source>
+        <target>معسكر</target>
+      </trans-unit>
+      <trans-unit id="335" resname="household_location_camp_name">
+        <source>household_location_camp_name</source>
+        <target>اسم المخيم</target>
+      </trans-unit>
+      <trans-unit id="336" resname="household_location_create_camp">
+        <source>household_location_create_camp</source>
+        <target>إنشاء معسكر</target>
+      </trans-unit>
+      <trans-unit id="337" resname="household_location_current_address">
+        <source>household_location_current_address</source>
+        <target>العنوان الحالي</target>
+      </trans-unit>
+      <trans-unit id="338" resname="household_location_current_location">
+        <source>household_location_current_location</source>
+        <target>الموقع الحالي</target>
+      </trans-unit>
+      <trans-unit id="339" resname="household_location_question">
+        <source>household_location_question</source>
+        <target>هل موقعك الحالي مختلف عن عنوانك؟</target>
+      </trans-unit>
+      <trans-unit id="340" resname="household_location_residence">
+        <source>household_location_residence</source>
+        <target>إقامة</target>
+      </trans-unit>
+      <trans-unit id="341" resname="household_location_resident_address">
+        <source>household_location_resident_address</source>
+        <target>عنوان الإقامة</target>
+      </trans-unit>
+      <trans-unit id="342" resname="household_location_resident_location">
+        <source>household_location_resident_location</source>
+        <target>موقع المقيمين</target>
+      </trans-unit>
+      <trans-unit id="343" resname="household_location_settlement">
+        <source>household_location_settlement</source>
+        <target>تسوية مؤقتة</target>
+      </trans-unit>
+      <trans-unit id="344" resname="household_location_tent">
+        <source>household_location_tent</source>
+        <target>خيمة</target>
+      </trans-unit>
+      <trans-unit id="345" resname="household_location_type">
+        <source>household_location_type</source>
+        <target>نوع الموقع</target>
+      </trans-unit>
+      <trans-unit id="346" resname="household_members">
+        <source>household_members</source>
+        <target>الأفراد</target>
+      </trans-unit>
+      <trans-unit id="347" resname="household_no_data_offline">
+        <source>household_no_data_offline</source>
+        <target>لا يمكن الوصول إلى هذه البيانات في وضع عدم الاتصال</target>
+      </trans-unit>
+      <trans-unit id="348" resname="household_sentence">
+        <source>household_sentence</source>
+        <target>الأسرة من</target>
+      </trans-unit>
+      <trans-unit id="349" resname="household_shelter_status">
+        <source>household_shelter_status</source>
+        <target>حالة المأوى</target>
+      </trans-unit>
+      <trans-unit id="350" resname="household_status">
+        <source>household_status</source>
+        <target>حالة الأسرة</target>
+      </trans-unit>
+      <trans-unit id="351" resname="household_summary_members">
+        <source>household_summary_members</source>
+        <target>أفراد الأسرة</target>
+      </trans-unit>
+      <trans-unit id="352" resname="household_support_date_received">
+        <source>household_support_date_received</source>
+        <target>تاريخ تلقي الدعم</target>
+      </trans-unit>
+      <trans-unit id="353" resname="household_support_organization">
+        <source>household_support_organization</source>
+        <target>منظمة الداعمة</target>
+      </trans-unit>
+      <trans-unit id="354" resname="household_support_received_other_org">
+        <source>household_support_received_other_org</source>
+        <target>نوع الدعم الخارجي المستلم</target>
+      </trans-unit>
+      <trans-unit id="355" resname="households">
+        <source>households</source>
+        <target>الأسرة</target>
+      </trans-unit>
+      <trans-unit id="356" resname="householdSize">
+        <source>householdSize</source>
+        <target>حجم الأسرة</target>
+      </trans-unit>
+      <trans-unit id="357" resname="characters">
+        <source>characters</source>
+        <target>حرف</target>
+      </trans-unit>
+      <trans-unit id="358" resname="id">
+        <source>id</source>
+        <target>هوية شخصية</target>
+      </trans-unit>
+      <trans-unit id="359" resname="import">
+        <source>import</source>
+        <target>استيراد</target>
+      </trans-unit>
+      <trans-unit id="360" resname="import_added">
+        <source>import_added</source>
+        <target>تم إضافتها</target>
+      </trans-unit>
+      <trans-unit id="361" resname="import_back_to_beneficiaries">
+        <source>import_back_to_beneficiaries</source>
+        <target>العودة إلى المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="362" resname="import_back_to_project">
+        <source>import_back_to_project</source>
+        <target>العودة إلى المشروع</target>
+      </trans-unit>
+      <trans-unit id="363" resname="import_created">
+        <source>import_created</source>
+        <target>تم إنشاؤها</target>
+      </trans-unit>
+      <trans-unit id="364" resname="import_deleted">
+        <source>import_deleted</source>
+        <target>سبتم حذفها</target>
+      </trans-unit>
+      <trans-unit id="365" resname="import_description">
+        <source>import_description</source>
+        <target>قم باستيراد الملف الذي يحتوي على التوزيع المعدّل. سيتم تحديث قاعدة البيانات بقائمة</target>
+      </trans-unit>
+      <trans-unit id="366" resname="import_distribution_no_right_update">
+        <source>import_distribution_no_right_update</source>
+        <target>لا يحق لك تحديث التوزيع ، اسأل مدير المشروع الخاص بك</target>
+      </trans-unit>
+      <trans-unit id="367" resname="import_distribution_updated">
+        <source>import_distribution_updated</source>
+        <target>تم تحديث التوزيع</target>
+      </trans-unit>
+      <trans-unit id="368" resname="import_select_new">
+        <source>import_select_new</source>
+        <target>اختر كل جديد</target>
+      </trans-unit>
+      <trans-unit id="369" resname="import_select_old">
+        <source>import_select_old</source>
+        <target>اختر كل القديم</target>
+      </trans-unit>
+      <trans-unit id="370" resname="import_updated">
+        <source>import_updated</source>
+        <target>سيتم تحديثها</target>
+      </trans-unit>
+      <trans-unit id="371" resname="incomeLevel">
+        <source>incomeLevel</source>
+        <target>مستوى الدخل</target>
+      </trans-unit>
+      <trans-unit id="372" resname="individual">
+        <source>individual</source>
+        <target>فرد</target>
+      </trans-unit>
+      <trans-unit id="373" resname="information">
+        <source>information</source>
+        <target>معلومات</target>
+      </trans-unit>
+      <trans-unit id="374" resname="institution">
+        <source>institution</source>
+        <target>المؤسسة</target>
+      </trans-unit>
+      <trans-unit id="375" resname="institution_contact_family_name">
+        <source>institution_contact_family_name</source>
+        <target>اسم عائلة الاتصال</target>
+      </trans-unit>
+      <trans-unit id="376" resname="institution_contact_name">
+        <source>institution_contact_name</source>
+        <target>اسم جهة الاتصال</target>
+      </trans-unit>
+      <trans-unit id="377" resname="institution_name">
+        <source>institution_name</source>
+        <target>اسم</target>
+      </trans-unit>
+      <trans-unit id="378" resname="institution_type_commerce">
+        <source>institution_type_commerce</source>
+        <target>مبنى تجاري آخر</target>
+      </trans-unit>
+      <trans-unit id="379" resname="institution_type_community_center">
+        <source>institution_type_community_center</source>
+        <target>مركز اجتماعي</target>
+      </trans-unit>
+      <trans-unit id="380" resname="institution_type_government">
+        <source>institution_type_government</source>
+        <target>مبنى أو هيكل حكومي آخر</target>
+      </trans-unit>
+      <trans-unit id="381" resname="institution_type_health">
+        <source>institution_type_health</source>
+        <target>مستشفى / مركز صحي</target>
+      </trans-unit>
+      <trans-unit id="382" resname="institution_type_production">
+        <source>institution_type_production</source>
+        <target>مستودع / مصنع</target>
+      </trans-unit>
+      <trans-unit id="383" resname="institution_type_school">
+        <source>institution_type_school</source>
+        <target>المدرسة</target>
+      </trans-unit>
+      <trans-unit id="384" resname="institutions">
+        <source>institutions</source>
+        <target>المؤسسات</target>
+      </trans-unit>
+      <trans-unit id="385" resname="is_required">
+        <source>is_required</source>
+        <target>مطلوب</target>
+      </trans-unit>
+      <trans-unit id="386" resname="justification">
+        <source>justification</source>
+        <target>مبرر</target>
+      </trans-unit>
+      <trans-unit id="387" resname="lactating">
+        <source>lactating</source>
+        <target>المرضعات</target>
+      </trans-unit>
+      <trans-unit id="388" resname="language">
+        <source>language</source>
+        <target>اللغة</target>
+      </trans-unit>
+      <trans-unit id="389" resname="latitude">
+        <source>latitude</source>
+        <target>خط العرض</target>
+      </trans-unit>
+      <trans-unit id="390" resname="livelihood">
+        <source>livelihood</source>
+        <target>سبل العيش</target>
+      </trans-unit>
+      <trans-unit id="391" resname="livelihood_agriculture_other">
+        <source>livelihood_agriculture_other</source>
+        <target>الزراعة - أخرى</target>
+      </trans-unit>
+      <trans-unit id="392" resname="livelihood_construction">
+        <source>livelihood_construction</source>
+        <target>اعمال بناء</target>
+      </trans-unit>
+      <trans-unit id="393" resname="livelihood_crops">
+        <source>livelihood_crops</source>
+        <target>الزراعة - المحاصيل</target>
+      </trans-unit>
+      <trans-unit id="394" resname="livelihood_education">
+        <source>livelihood_education</source>
+        <target>التعليم</target>
+      </trans-unit>
+      <trans-unit id="395" resname="livelihood_finance">
+        <source>livelihood_finance</source>
+        <target>التمويل والتأمين</target>
+      </trans-unit>
+      <trans-unit id="396" resname="livelihood_fishing">
+        <source>livelihood_fishing</source>
+        <target>الزراعة - الصيد</target>
+      </trans-unit>
+      <trans-unit id="397" resname="livelihood_garment">
+        <source>livelihood_garment</source>
+        <target>صناعة الملابس</target>
+      </trans-unit>
+      <trans-unit id="398" resname="livelihood_government">
+        <source>livelihood_government</source>
+        <target>الحكومة والمؤسسات العامة</target>
+      </trans-unit>
+      <trans-unit id="399" resname="livelihood_health">
+        <source>livelihood_health</source>
+        <target>الرعاىة الصحية</target>
+      </trans-unit>
+      <trans-unit id="400" resname="livelihood_home">
+        <source>livelihood_home</source>
+        <target>مهام منزلية</target>
+      </trans-unit>
+      <trans-unit id="401" resname="livelihood_legal">
+        <source>livelihood_legal</source>
+        <target>خدمات قانونية</target>
+      </trans-unit>
+      <trans-unit id="402" resname="livelihood_livestock">
+        <source>livelihood_livestock</source>
+        <target>الزراعة - الثروة الحيوانية</target>
+      </trans-unit>
+      <trans-unit id="403" resname="livelihood_manual">
+        <source>livelihood_manual</source>
+        <target>عمل يدوي</target>
+      </trans-unit>
+      <trans-unit id="404" resname="livelihood_manufacturing">
+        <source>livelihood_manufacturing</source>
+        <target>تصنيع</target>
+      </trans-unit>
+      <trans-unit id="405" resname="livelihood_military">
+        <source>livelihood_military</source>
+        <target>الجيش أو الشرطة</target>
+      </trans-unit>
+      <trans-unit id="406" resname="livelihood_mining">
+        <source>livelihood_mining</source>
+        <target>تعدين</target>
+      </trans-unit>
+      <trans-unit id="407" resname="livelihood_ngo">
+        <source>livelihood_ngo</source>
+        <target>المنظمات غير الحكومية وغير الربحية</target>
+      </trans-unit>
+      <trans-unit id="408" resname="livelihood_religious">
+        <source>livelihood_religious</source>
+        <target>خدمة دينية</target>
+      </trans-unit>
+      <trans-unit id="409" resname="livelihood_retail">
+        <source>livelihood_retail</source>
+        <target>التجزئه</target>
+      </trans-unit>
+      <trans-unit id="410" resname="livelihood_security">
+        <source>livelihood_security</source>
+        <target>صناعة الأمن</target>
+      </trans-unit>
+      <trans-unit id="411" resname="livelihood_service">
+        <source>livelihood_service</source>
+        <target>صناعة الخدمات وغيرهم من المهنيين</target>
+      </trans-unit>
+      <trans-unit id="412" resname="livelihood_telecom">
+        <source>livelihood_telecom</source>
+        <target>تكنولوجيا المعلومات والاتصالات</target>
+      </trans-unit>
+      <trans-unit id="413" resname="livelihood_tourism">
+        <source>livelihood_tourism</source>
+        <target>الضيافة والسياحة</target>
+      </trans-unit>
+      <trans-unit id="414" resname="livelihood_transportation">
+        <source>livelihood_transportation</source>
+        <target>وسائل النقل</target>
+      </trans-unit>
+      <trans-unit id="415" resname="location">
+        <source>location</source>
+        <target>الموقع</target>
+      </trans-unit>
+      <trans-unit id="416" resname="locationType">
+        <source>locationType</source>
+        <target>نوع الموقع</target>
+      </trans-unit>
+      <trans-unit id="417" resname="log_active_users_title">
+        <source>log_active_users_title</source>
+        <target>معظم المستخدمين النشطين</target>
+      </trans-unit>
+      <trans-unit id="418" resname="log_add_beneficiary">
+        <source>log_add_beneficiary</source>
+        <target>تمت إضافة المستفيديون</target>
+      </trans-unit>
+      <trans-unit id="419" resname="log_add_households">
+        <source>log_add_households</source>
+        <target>تمت إضافة العائلات</target>
+      </trans-unit>
+      <trans-unit id="420" resname="log_archive">
+        <source>log_archive</source>
+        <target>تمت الأرشفة</target>
+      </trans-unit>
+      <trans-unit id="421" resname="log_assign">
+        <source>log_assign</source>
+        <target>تعيين</target>
+      </trans-unit>
+      <trans-unit id="422" resname="log_beneficiary">
+        <source>log_beneficiary</source>
+        <target>المستفيد</target>
+      </trans-unit>
+      <trans-unit id="423" resname="log_booklet">
+        <source>log_booklet</source>
+        <target>كتيب</target>
+      </trans-unit>
+      <trans-unit id="424" resname="log_code">
+        <source>log_code</source>
+        <target>رموز</target>
+      </trans-unit>
+      <trans-unit id="425" resname="log_complete">
+        <source>log_complete</source>
+        <target>منجز</target>
+      </trans-unit>
+      <trans-unit id="426" resname="log_country">
+        <source>log_country</source>
+        <target>تفاصيل البلد</target>
+      </trans-unit>
+      <trans-unit id="427" resname="log_create">
+        <source>log_create</source>
+        <target>تم إنشاؤها</target>
+      </trans-unit>
+      <trans-unit id="428" resname="log_deactivate">
+        <source>log_deactivate</source>
+        <target>معطل</target>
+      </trans-unit>
+      <trans-unit id="429" resname="log_deactivate_booklets">
+        <source>log_deactivate_booklets</source>
+        <target>إبطال مفعولها</target>
+      </trans-unit>
+      <trans-unit id="430" resname="log_delete">
+        <source>log_delete</source>
+        <target>تم الحذف</target>
+      </trans-unit>
+      <trans-unit id="431" resname="log_delete_batch">
+        <source>log_delete_batch</source>
+        <target>تم حذف الدفعة</target>
+      </trans-unit>
+      <trans-unit id="432" resname="log_distribution">
+        <source>log_distribution</source>
+        <target>التوزيع</target>
+      </trans-unit>
+      <trans-unit id="433" resname="log_donor">
+        <source>log_donor</source>
+        <target>المانح</target>
+      </trans-unit>
+      <trans-unit id="434" resname="log_edit_general_relief_notes">
+        <source>log_edit_general_relief_notes</source>
+        <target>تمت إضافة ملاحظات عنصر الإغاثة العامة</target>
+      </trans-unit>
+      <trans-unit id="435" resname="log_family_name">
+        <source>log_family_name</source>
+        <target>اسم العائلة</target>
+      </trans-unit>
+      <trans-unit id="436" resname="log_field">
+        <source>log_field</source>
+        <target>حقل</target>
+      </trans-unit>
+      <trans-unit id="437" resname="log_field_action">
+        <source>log_field_action</source>
+        <target>عمل</target>
+      </trans-unit>
+      <trans-unit id="438" resname="log_field_country">
+        <source>log_field_country</source>
+        <target>بلد</target>
+      </trans-unit>
+      <trans-unit id="439" resname="log_field_date">
+        <source>log_field_date</source>
+        <target>تاريخ</target>
+      </trans-unit>
+      <trans-unit id="440" resname="log_field_details">
+        <source>log_field_details</source>
+        <target>تفاصيل</target>
+      </trans-unit>
+      <trans-unit id="441" resname="log_field_id">
+        <source>log_field_id</source>
+        <target>Id</target>
+      </trans-unit>
+      <trans-unit id="442" resname="log_field_object">
+        <source>log_field_object</source>
+        <target>موضوع</target>
+      </trans-unit>
+      <trans-unit id="443" resname="log_field_status">
+        <source>log_field_status</source>
+        <target>الحالة (المقيم ، النازح أو اللاجئ)</target>
+      </trans-unit>
+      <trans-unit id="444" resname="log_field_user">
+        <source>log_field_user</source>
+        <target>المستخدم</target>
+      </trans-unit>
+      <trans-unit id="445" resname="log_household">
+        <source>log_household</source>
+        <target>منزلي</target>
+      </trans-unit>
+      <trans-unit id="446" resname="log_import">
+        <source>log_import</source>
+        <target>تم استيرادها</target>
+      </trans-unit>
+      <trans-unit id="447" resname="log_import_beneficiaries_from_api">
+        <source>log_import_beneficiaries_from_api</source>
+        <target>تم استيرادها من Api</target>
+      </trans-unit>
+      <trans-unit id="448" resname="log_import_beneficiaries_from_syria_file">
+        <source>log_import_beneficiaries_from_syria_file</source>
+        <target>تم استيرادها من ملف سوريا</target>
+      </trans-unit>
+      <trans-unit id="449" resname="log_import_beneficiary">
+        <source>log_import_beneficiary</source>
+        <target>تم استيراد المستفيدون</target>
+      </trans-unit>
+      <trans-unit id="450" resname="log_name">
+        <source>log_name</source>
+        <target>اسم</target>
+      </trans-unit>
+      <trans-unit id="451" resname="log_no_details">
+        <source>log_no_details</source>
+        <target>لا توجد تفاصيل لعرضها</target>
+      </trans-unit>
+      <trans-unit id="452" resname="log_not_exists">
+        <source>log_not_exists</source>
+        <target>لم يعد موجودًا</target>
+      </trans-unit>
+      <trans-unit id="453" resname="log_number_booklets">
+        <source>log_number_booklets</source>
+        <target>عدد الكتيبات</target>
+      </trans-unit>
+      <trans-unit id="454" resname="log_number_vouchers">
+        <source>log_number_vouchers</source>
+        <target>عدد القسائم</target>
+      </trans-unit>
+      <trans-unit id="455" resname="log_old_id">
+        <source>log_old_id</source>
+        <target>المعرف السابق</target>
+      </trans-unit>
+      <trans-unit id="456" resname="log_organization">
+        <source>log_organization</source>
+        <target>منظمة</target>
+      </trans-unit>
+      <trans-unit id="457" resname="log_post_language">
+        <source>log_post_language</source>
+        <target>تم تغيير اللغة الافتراضية</target>
+      </trans-unit>
+      <trans-unit id="458" resname="log_post_password">
+        <source>log_post_password</source>
+        <target>تم تغيير كلمة المرور</target>
+      </trans-unit>
+      <trans-unit id="459" resname="log_product">
+        <source>log_product</source>
+        <target>المنتج</target>
+      </trans-unit>
+      <trans-unit id="460" resname="log_project">
+        <source>log_project</source>
+        <target>المشروع</target>
+      </trans-unit>
+      <trans-unit id="461" resname="log_remove_many">
+        <source>log_remove_many</source>
+        <target>تم الحذف</target>
+      </trans-unit>
+      <trans-unit id="462" resname="log_remove_one_beneficiary">
+        <source>log_remove_one_beneficiary</source>
+        <target>تمت إزالة مستفيد واحد</target>
+      </trans-unit>
+      <trans-unit id="463" resname="log_requests">
+        <source>log_requests</source>
+        <target>الطلبات</target>
+      </trans-unit>
+      <trans-unit id="464" resname="log_requests_country_title">
+        <source>log_requests_country_title</source>
+        <target>الطلبات لكل بلد</target>
+      </trans-unit>
+      <trans-unit id="465" resname="log_requests_day_title">
+        <source>log_requests_day_title</source>
+        <target>الطلبات في اليوم</target>
+      </trans-unit>
+      <trans-unit id="466" resname="log_scan">
+        <source>log_scan</source>
+        <target>تم مسحها ضوئياً</target>
+      </trans-unit>
+      <trans-unit id="467" resname="log_send_transaction">
+        <source>log_send_transaction</source>
+        <target>تم إرسال الأموال عبر الهاتف المحمول</target>
+      </trans-unit>
+      <trans-unit id="468" resname="log_send_verification_email">
+        <source>log_send_verification_email</source>
+        <target>تم ارسال الكود</target>
+      </trans-unit>
+      <trans-unit id="469" resname="log_set_general_relief_items_as_distributed">
+        <source>log_set_general_relief_items_as_distributed</source>
+        <target>تم توزيع عنصر الإغاثة العامة</target>
+      </trans-unit>
+      <trans-unit id="470" resname="log_status_200">
+        <source>log_status_200</source>
+        <target>نجاح</target>
+      </trans-unit>
+      <trans-unit id="471" resname="log_status_300">
+        <source>log_status_300</source>
+        <target>إعادة توجيهها</target>
+      </trans-unit>
+      <trans-unit id="472" resname="log_status_400">
+        <source>log_status_400</source>
+        <target>خطأ</target>
+      </trans-unit>
+      <trans-unit id="473" resname="log_status_401">
+        <source>log_status_401</source>
+        <target>لم تتم مصادقته</target>
+      </trans-unit>
+      <trans-unit id="474" resname="log_status_403">
+        <source>log_status_403</source>
+        <target>محظور</target>
+      </trans-unit>
+      <trans-unit id="475" resname="log_status_404">
+        <source>log_status_404</source>
+        <target>لا يوجد</target>
+      </trans-unit>
+      <trans-unit id="476" resname="log_status_rate_title">
+        <source>log_status_rate_title</source>
+        <target>معدل الحالة</target>
+      </trans-unit>
+      <trans-unit id="477" resname="log_time">
+        <source>log_time</source>
+        <target>الوقت</target>
+      </trans-unit>
+      <trans-unit id="478" resname="log_transaction">
+        <source>log_transaction</source>
+        <target>عملية تجارية</target>
+      </trans-unit>
+      <trans-unit id="479" resname="log_update">
+        <source>log_update</source>
+        <target>محدث</target>
+      </trans-unit>
+      <trans-unit id="480" resname="log_update_f_p">
+        <source>log_update_f_p</source>
+        <target>تم تعديل اتصال 3rd party</target>
+      </trans-unit>
+      <trans-unit id="481" resname="log_update_password">
+        <source>log_update_password</source>
+        <target>تم تحديث كلمة المرور</target>
+      </trans-unit>
+      <trans-unit id="482" resname="log_upload_image">
+        <source>log_upload_image</source>
+        <target>تم تحميل صورة</target>
+      </trans-unit>
+      <trans-unit id="483" resname="log_upload_logo">
+        <source>log_upload_logo</source>
+        <target>تم تحميل شعار</target>
+      </trans-unit>
+      <trans-unit id="484" resname="log_user">
+        <source>log_user</source>
+        <target>المستعمل</target>
+      </trans-unit>
+      <trans-unit id="485" resname="log_username">
+        <source>log_username</source>
+        <target>اسم المستخدم</target>
+      </trans-unit>
+      <trans-unit id="486" resname="log_users">
+        <source>log_users</source>
+        <target>المستخدمون</target>
+      </trans-unit>
+      <trans-unit id="487" resname="log_validate">
+        <source>log_validate</source>
+        <target>تم التحقق من صحتها</target>
+      </trans-unit>
+      <trans-unit id="488" resname="log_value">
+        <source>log_value</source>
+        <target>القيمة</target>
+      </trans-unit>
+      <trans-unit id="489" resname="log_vendor">
+        <source>log_vendor</source>
+        <target>بائع</target>
+      </trans-unit>
+      <trans-unit id="490" resname="log_voucher">
+        <source>log_voucher</source>
+        <target>قسيمة</target>
+      </trans-unit>
+      <trans-unit id="491" resname="login_bms">
+        <source>login_bms</source>
+        <target>نظام إدارة المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="492" resname="login_captcha_invalid">
+        <source>login_captcha_invalid</source>
+        <target>كلمة التحقق غير صالحة</target>
+      </trans-unit>
+      <trans-unit id="493" resname="login_password">
+        <source>login_password</source>
+        <target>*********</target>
+      </trans-unit>
+      <trans-unit id="494" resname="login_password">
+        <source>login_password</source>
+        <target>*********</target>
+      </trans-unit>
+      <trans-unit id="495" resname="login_prompt">
+        <source>login_prompt</source>
+        <target>الرجاء تسجيل الدخول</target>
+      </trans-unit>
+      <trans-unit id="496" resname="login_title">
+        <source>login_title</source>
+        <target>تسجيل الدخول</target>
+      </trans-unit>
+      <trans-unit id="497" resname="login_title_google">
+        <source>login_title_google</source>
+        <target>تسجيل الدخول عبر جوجل</target>
+      </trans-unit>
+      <trans-unit id="498" resname="login_title_hid">
+        <source>login_title_hid</source>
+        <target>تسجيل الدخول باستخدام HID</target>
+      </trans-unit>
+      <trans-unit id="499" resname="login_two_fa_invalid_code">
+        <source>login_two_fa_invalid_code</source>
+        <target>الرمز غير صحيح</target>
+      </trans-unit>
+      <trans-unit id="500" resname="login_two_fa_message">
+        <source>login_two_fa_message</source>
+        <target>هذا هو رمز المصادقة Humansis الخاص بك</target>
+      </trans-unit>
+      <trans-unit id="501" resname="logs">
+        <source>logs</source>
+        <target>سجلات</target>
+      </trans-unit>
+      <trans-unit id="502" resname="longitude">
+        <source>longitude</source>
+        <target>خط الطول</target>
+      </trans-unit>
+      <trans-unit id="503" resname="male">
+        <source>male</source>
+        <target>مذكر</target>
+      </trans-unit>
+      <trans-unit id="504" resname="map_legend_completed">
+        <source>map_legend_completed</source>
+        <target>منجز</target>
+      </trans-unit>
+      <trans-unit id="505" resname="map_legend_not_validated">
+        <source>map_legend_not_validated</source>
+        <target>ليس متاحا</target>
+      </trans-unit>
+      <trans-unit id="506" resname="map_legend_validated">
+        <source>map_legend_validated</source>
+        <target>التحقق من صحة</target>
+      </trans-unit>
+      <trans-unit id="507" resname="modal_add_multiple_title">
+        <source>modal_add_multiple_title</source>
+        <target>خلق جديد إبداع جديد</target>
+      </trans-unit>
+      <trans-unit id="508" resname="modal_add_no_value">
+        <source>modal_add_no_value</source>
+        <target>عليك بادخال قيمة عددية</target>
+      </trans-unit>
+      <trans-unit id="509" resname="modal_add_title">
+        <source>modal_add_title</source>
+        <target>إضافة جديد</target>
+      </trans-unit>
+      <trans-unit id="510" resname="modal_complete_distribution">
+        <source>modal_complete_distribution</source>
+        <target>هل أنت متأكد من أنك تريد إغلاق هذا التوزيع؟</target>
+      </trans-unit>
+      <trans-unit id="511" resname="modal_delete_beneficiary">
+        <source>modal_delete_beneficiary</source>
+        <target>إزالة المستفيد</target>
+      </trans-unit>
+      <trans-unit id="512" resname="modal_delete_beneficiary_sentence">
+        <source>modal_delete_beneficiary_sentence</source>
+        <target>أنت على وشك الإزالة</target>
+      </trans-unit>
+      <trans-unit id="513" resname="modal_delete_beneficiary_sentence_2">
+        <source>modal_delete_beneficiary_sentence_2</source>
+        <target>من هذا التوزيع</target>
+      </trans-unit>
+      <trans-unit id="514" resname="modal_delete_many">
+        <source>modal_delete_many</source>
+        <target>هذه العناصر</target>
+      </trans-unit>
+      <trans-unit id="515" resname="modal_delete_sentence">
+        <source>modal_delete_sentence</source>
+        <target>أنت على وشك الحذف</target>
+      </trans-unit>
+      <trans-unit id="516" resname="modal_delete_sentence_2">
+        <source>modal_delete_sentence_2</source>
+        <target>هل ترغب في الاستمرار ؟</target>
+      </trans-unit>
+      <trans-unit id="517" resname="modal_details_title">
+        <source>modal_details_title</source>
+        <target>تفاصيل هذا</target>
+      </trans-unit>
+      <trans-unit id="518" resname="modal_edit_title">
+        <source>modal_edit_title</source>
+        <target>تحرير هذا</target>
+      </trans-unit>
+      <trans-unit id="519" resname="modal_failure">
+        <source>modal_failure</source>
+        <target>بالفشل</target>
+      </trans-unit>
+      <trans-unit id="520" resname="modal_file_extension_error">
+        <source>modal_file_extension_error</source>
+        <target>يجب أن يكون امتداد الملف</target>
+      </trans-unit>
+      <trans-unit id="521" resname="modal_check_date">
+        <source>modal_check_date</source>
+        <target>الحقول غير الصالح: لا يمكن أن يكون تاريخ الانتهاء أقدم من تاريخ البدء</target>
+      </trans-unit>
+      <trans-unit id="522" resname="modal_check_fields">
+        <source>modal_check_fields</source>
+        <target>تحقق جيدا انك أدخلت جميع المعطيات</target>
+      </trans-unit>
+      <trans-unit id="523" resname="modal_language_actual">
+        <source>modal_language_actual</source>
+        <target>اللغة الحالية</target>
+      </trans-unit>
+      <trans-unit id="524" resname="modal_leave">
+        <source>modal_leave</source>
+        <target>غادر</target>
+      </trans-unit>
+      <trans-unit id="525" resname="modal_leave_sentence">
+        <source>modal_leave_sentence</source>
+        <target>هل تريد حقا أن تغادر مع عدم حفظ التغييرات؟</target>
+      </trans-unit>
+      <trans-unit id="526" resname="modal_no_file">
+        <source>modal_no_file</source>
+        <target>لم تقم باختيار ملف</target>
+      </trans-unit>
+      <trans-unit id="527" resname="modal_no_pending_requests">
+        <source>modal_no_pending_requests</source>
+        <target>لا توجد طلبات معلقة</target>
+      </trans-unit>
+      <trans-unit id="528" resname="modal_not_enough_strong">
+        <source>modal_not_enough_strong</source>
+        <target>كلمة المرور ليست قوية بما فيه الكفاية ... الحد الأدنى المطلوب: 8 أحرف ، وحرف صغير واحد ، وحجم واحد ،
+          ورقم 1
+        </target>
+      </trans-unit>
+      <trans-unit id="529" resname="modal_pending_requests">
+        <source>modal_pending_requests</source>
+        <target>الطلبات المعلقة</target>
+      </trans-unit>
+      <trans-unit id="530" resname="modal_pick_color">
+        <source>modal_pick_color</source>
+        <target>اختيار اللون</target>
+      </trans-unit>
+      <trans-unit id="531" resname="modal_request_error">
+        <source>modal_request_error</source>
+        <target>خطأ أثناء إرسال الطلب</target>
+      </trans-unit>
+      <trans-unit id="532" resname="modal_request_success">
+        <source>modal_request_success</source>
+        <target>تم ارساله</target>
+      </trans-unit>
+      <trans-unit id="533" resname="modal_required">
+        <source>modal_required</source>
+        <target>مطلوب</target>
+      </trans-unit>
+      <trans-unit id="534" resname="modal_save_language_as_default">
+        <source>modal_save_language_as_default</source>
+        <target>قم بتعيين هذه اللغة كلغتي المفضلة.</target>
+      </trans-unit>
+      <trans-unit id="535" resname="modal_success">
+        <source>modal_success</source>
+        <target>نجاح</target>
+      </trans-unit>
+      <trans-unit id="536" resname="modal_valid_email">
+        <source>modal_valid_email</source>
+        <target>من فضلك أدخل بريد الكتروني صحيح</target>
+      </trans-unit>
+      <trans-unit id="537" resname="modal_values_format_error">
+        <source>modal_values_format_error</source>
+        <target>إذا كنت تريد تعيين قيم فردية ، فاكتب القيم الرقمية مفصولة بفاصلات (بحد أقصى 5)</target>
+      </trans-unit>
+      <trans-unit id="538" resname="modal_warning_pending_requests_1">
+        <source>modal_warning_pending_requests_1</source>
+        <target>ابحث عن الطلبات التي قمت بإنشائها خلال وقت عدم الاتصال الخاص بك أدناه ، يمكنك إرسال تلك التي تريد
+          تطبيقها لتعديل قاعدة البيانات.
+        </target>
+      </trans-unit>
+      <trans-unit id="539" resname="modal_warning_pending_requests_2">
+        <source>modal_warning_pending_requests_2</source>
+        <target>تحذير: ستفشل الطلبات المرتبطة بعنصر أنشأته دون اتصال بشبكة الإنترنت !</target>
+      </trans-unit>
+      <trans-unit id="540" resname="months_short">
+        <source>months_short</source>
+        <target>يناير فبراير مارس إبريل مايو يونيه يوليه أغسطس سبتمبر أكتوبر نوفمبر ديسمبر</target>
+      </trans-unit>
+      <trans-unit id="541" resname="name">
+        <source>name</source>
+        <target>الاسم</target>
+      </trans-unit>
+      <trans-unit id="542" resname="national_id">
+        <source>national_id</source>
+        <target>الهوية الوطنية</target>
+      </trans-unit>
+      <trans-unit id="543" resname="national_id_birth_certificate">
+        <source>national_id_birth_certificate</source>
+        <target>شهادة الميلاد</target>
+      </trans-unit>
+      <trans-unit id="544" resname="national_id_camp">
+        <source>national_id_camp</source>
+        <target>معرف المخيم</target>
+      </trans-unit>
+      <trans-unit id="545" resname="national_id_card">
+        <source>national_id_card</source>
+        <target>رقم الهوية الوطنية</target>
+      </trans-unit>
+      <trans-unit id="546" resname="national_id_family_registry">
+        <source>national_id_family_registry</source>
+        <target>تسجيل الأسرة</target>
+      </trans-unit>
+      <trans-unit id="547" resname="national_id_license">
+        <source>national_id_license</source>
+        <target>رخصة السائق</target>
+      </trans-unit>
+      <trans-unit id="548" resname="national_id_number">
+        <source>national_id_number</source>
+        <target>رقم الهوية الوطنية</target>
+      </trans-unit>
+      <trans-unit id="549" resname="national_id_passport">
+        <source>national_id_passport</source>
+        <target>جواز سفر</target>
+      </trans-unit>
+      <trans-unit id="550" resname="national_id_social_service">
+        <source>national_id_social_service</source>
+        <target>بطاقة الخدمة الاجتماعية</target>
+      </trans-unit>
+      <trans-unit id="551" resname="national_id_type">
+        <source>national_id_type</source>
+        <target>نوع الهوية الوطنية</target>
+      </trans-unit>
+      <trans-unit id="552" resname="network_access_offline">
+        <source>network_access_offline</source>
+        <target>لا يمكن الوصول إلى هذه البيانات في وضع عدم الاتصال</target>
+      </trans-unit>
+      <trans-unit id="553" resname="network_manipulate_offline">
+        <source>network_manipulate_offline</source>
+        <target>لا يمكن معالجة هذه البيانات في وضع عدم الاتصال</target>
+      </trans-unit>
+      <trans-unit id="554" resname="network_no_connection">
+        <source>network_no_connection</source>
+        <target>لا يوجد اتصال شبكة</target>
+      </trans-unit>
+      <trans-unit id="555" resname="network_no_connection_reconnect">
+        <source>network_no_connection_reconnect</source>
+        <target>لا يوجد اتصال بالشبكة ، سيتم إرسال هذه البيانات بمجرد إعادة الاتصال</target>
+      </trans-unit>
+      <trans-unit id="556" resname="network_status_connected">
+        <source>network_status_connected</source>
+        <target>أنت الآن متصل بالشبكة</target>
+      </trans-unit>
+      <trans-unit id="557" resname="network_status_disconnected">
+        <source>network_status_disconnected</source>
+        <target>أنت الآن مفصول عن الشبكة</target>
+      </trans-unit>
+      <trans-unit id="558" resname="new">
+        <source>new</source>
+        <target>جديد</target>
+      </trans-unit>
+      <trans-unit id="559" resname="next">
+        <source>next</source>
+        <target>التالي</target>
+      </trans-unit>
+      <trans-unit id="560" resname="no_data">
+        <source>no_data</source>
+        <target>لايوجد بيانات</target>
+      </trans-unit>
+      <trans-unit id="561" resname="no_data_to_export">
+        <source>no_data_to_export</source>
+        <target>لا توجد بيانات للتصدير</target>
+      </trans-unit>
+      <trans-unit id="562" resname="not_connected_error">
+        <source>not_connected_error</source>
+        <target>الرجاء تسجيل الدخول</target>
+      </trans-unit>
+      <trans-unit id="563" resname="not_enough_rights">
+        <source>not_enough_rights</source>
+        <target>لا توجد حقوق كافية لطلب السجلات</target>
+      </trans-unit>
+      <trans-unit id="564" resname="not_found">
+        <source>not_found</source>
+        <target>الصفحة غير موجودة</target>
+      </trans-unit>
+      <trans-unit id="565" resname="not_found_message">
+        <source>not_found_message</source>
+        <target>عذرا , لا يمكن العثور على هذه الصفحة</target>
+      </trans-unit>
+      <trans-unit id="566" resname="notes">
+        <source>notes</source>
+        <target>ملاحظات</target>
+      </trans-unit>
+      <trans-unit id="567" resname="null_none">
+        <source>null_none</source>
+        <target>لا يوجد</target>
+      </trans-unit>
+      <trans-unit id="568" resname="null_not_distributed">
+        <source>null_not_distributed</source>
+        <target>غير موزعة</target>
+      </trans-unit>
+      <trans-unit id="569" resname="null_not_yet">
+        <source>null_not_yet</source>
+        <target>ليس بعد</target>
+      </trans-unit>
+      <trans-unit id="570" resname="null_not_yet_defined">
+        <source>null_not_yet_defined</source>
+        <target>لم يحدد بعد</target>
+      </trans-unit>
+      <trans-unit id="571" resname="number">
+        <source>number</source>
+        <target>الرقم</target>
+      </trans-unit>
+      <trans-unit id="572" resname="nutritionalIssues">
+        <source>nutritionalIssues</source>
+        <target>القضايا الغذائية</target>
+      </trans-unit>
+      <trans-unit id="573" resname="or">
+        <source>or</source>
+        <target>أو</target>
+      </trans-unit>
+      <trans-unit id="574" resname="organization_font">
+        <source>organization_font</source>
+        <target>الخط لتطبيقه على .pdf</target>
+      </trans-unit>
+      <trans-unit id="575" resname="organization_footer">
+        <source>organization_footer</source>
+        <target>.pdf محتوى تذييل الصفحة</target>
+      </trans-unit>
+      <trans-unit id="576" resname="organization_logo">
+        <source>organization_logo</source>
+        <target>شعار المنظمة</target>
+      </trans-unit>
+      <trans-unit id="577" resname="organization_name">
+        <source>organization_name</source>
+        <target>اسم المنظمة</target>
+      </trans-unit>
+      <trans-unit id="578" resname="organization_primary">
+        <source>organization_primary</source>
+        <target>اللون الأساسي للمنظمة</target>
+      </trans-unit>
+      <trans-unit id="579" resname="organization_secondary">
+        <source>organization_secondary</source>
+        <target>تنظيم اللون الثانوي</target>
+      </trans-unit>
+      <trans-unit id="580" resname="other">
+        <source>other</source>
+        <target>آخرى</target>
+      </trans-unit>
+      <trans-unit id="581" resname="password">
+        <source>password</source>
+        <target>كلمة المرور</target>
+      </trans-unit>
+      <trans-unit id="582" resname="phone">
+        <source>phone</source>
+        <target>الهاتف</target>
+      </trans-unit>
+      <trans-unit id="583" resname="phone_no">
+        <source>phone_no</source>
+        <target>رقم الهاتف</target>
+      </trans-unit>
+      <trans-unit id="584" resname="phone_prefix">
+        <source>phone_prefix</source>
+        <target>تحويلة</target>
+      </trans-unit>
+      <trans-unit id="585" resname="phone_proxy">
+        <source>phone_proxy</source>
+        <target>الوكيل</target>
+      </trans-unit>
+      <trans-unit id="586" resname="phone_type_landline">
+        <source>phone_type_landline</source>
+        <target>ارضي</target>
+      </trans-unit>
+      <trans-unit id="587" resname="phone_type_mobile">
+        <source>phone_type_mobile</source>
+        <target>محمول</target>
+      </trans-unit>
+      <trans-unit id="588" resname="placeholder_one_many">
+        <source>placeholder_one_many</source>
+        <target>اختر واحدة أو أكثر</target>
+      </trans-unit>
+      <trans-unit id="589" resname="pregnant">
+        <source>pregnant</source>
+        <target>حامل</target>
+      </trans-unit>
+      <trans-unit id="590" resname="product_image">
+        <source>product_image</source>
+        <target>صورة</target>
+      </trans-unit>
+      <trans-unit id="591" resname="products">
+        <source>products</source>
+        <target>منتجات</target>
+      </trans-unit>
+      <trans-unit id="592" resname="profile">
+        <source>profile</source>
+        <target>الملف الشخصي</target>
+      </trans-unit>
+      <trans-unit id="593" resname="profile_change_password">
+        <source>profile_change_password</source>
+        <target>تحتاج إلى تغيير كلمة المرور الخاصة بك</target>
+      </trans-unit>
+      <trans-unit id="594" resname="profile_change_phone">
+        <source>profile_change_phone</source>
+        <target>غير رقم الهاتف</target>
+      </trans-unit>
+      <trans-unit id="595" resname="profile_password_changed">
+        <source>profile_password_changed</source>
+        <target>تم تغيير كلمة المرور !</target>
+      </trans-unit>
+      <trans-unit id="596" resname="profile_password_would_not_be_changed">
+        <source>profile_password_would_not_be_changed</source>
+        <target>كلمتا المرور متطابقتان ، مع تجاهل التحديث</target>
+      </trans-unit>
+      <trans-unit id="597" resname="profile_phone_changed">
+        <source>profile_phone_changed</source>
+        <target>تم تغيير رقم الهاتف بنجاح</target>
+      </trans-unit>
+      <trans-unit id="598" resname="profile_phone_not_valid">
+        <source>profile_phone_not_valid</source>
+        <target>رقم الهاتف المقدم غير صالح</target>
+      </trans-unit>
+      <trans-unit id="599" resname="profile_two_fa_disable">
+        <source>profile_two_fa_disable</source>
+        <target>تعطيل</target>
+      </trans-unit>
+      <trans-unit id="600" resname="profile_two_fa_disabled">
+        <source>profile_two_fa_disabled</source>
+        <target>تم تعطيل المصادقة الثنائية</target>
+      </trans-unit>
+      <trans-unit id="601" resname="profile_two_fa_enable">
+        <source>profile_two_fa_enable</source>
+        <target>تمكين</target>
+      </trans-unit>
+      <trans-unit id="602" resname="profile_two_fa_enabled">
+        <source>profile_two_fa_enabled</source>
+        <target>تم تمكين المصادقة الثنائية بنجاح</target>
+      </trans-unit>
+      <trans-unit id="603" resname="profile_two_fa_information">
+        <source>profile_two_fa_information</source>
+        <target>تضيف المصادقة ذات العاملين طبقة إضافية من الأمان إلى حسابك من خلال طلب أكثر من كلمة مرور لتسجيل الدخول
+        </target>
+      </trans-unit>
+      <trans-unit id="604" resname="profile_two_fa_title">
+        <source>profile_two_fa_title</source>
+        <target>2 مصادقة العامل</target>
+      </trans-unit>
+      <trans-unit id="605" resname="profile_two_fa_warning">
+        <source>profile_two_fa_warning</source>
+        <target>تحتاج إلى رقم هاتف مسجل لتمكين المصادقة على مرحلتين</target>
+      </trans-unit>
+      <trans-unit id="606" resname="profile_user_hint_new_password">
+        <source>profile_user_hint_new_password</source>
+        <target>كلمة المرور الجديدة</target>
+      </trans-unit>
+      <trans-unit id="607" resname="profile_user_hint_new_password_again">
+        <source>profile_user_hint_new_password_again</source>
+        <target>أعد إدخال كلمة المرور الجديدة</target>
+      </trans-unit>
+      <trans-unit id="608" resname="profile_user_hint_new_phone_number">
+        <source>profile_user_hint_new_phone_number</source>
+        <target>رقم الهاتف</target>
+      </trans-unit>
+      <trans-unit id="609" resname="profile_user_hint_new_phone_prefix">
+        <source>profile_user_hint_new_phone_prefix</source>
+        <target>اختصار</target>
+      </trans-unit>
+      <trans-unit id="610" resname="profile_user_hint_old_password">
+        <source>profile_user_hint_old_password</source>
+        <target>كلمة المرور القديمة</target>
+      </trans-unit>
+      <trans-unit id="611" resname="profile_user_change_password">
+        <source>profile_user_change_password</source>
+        <target>تغيير كلمة المرور</target>
+      </trans-unit>
+      <trans-unit id="612" resname="profile_user_information">
+        <source>profile_user_information</source>
+        <target>معلومات المستخدم</target>
+      </trans-unit>
+      <trans-unit id="613" resname="project">
+        <source>project</source>
+        <target>المشروع</target>
+      </trans-unit>
+      <trans-unit id="614" resname="project_add">
+        <source>project_add</source>
+        <target>الرجاء إضافة مشروع جديد للبدء!</target>
+      </trans-unit>
+      <trans-unit id="615" resname="project_add_household">
+        <source>project_add_household</source>
+        <target>الرجاء إضافة بعض المستفيدين أولاً! ثم ستتمكن من إدارة بعض التوزيعات ...</target>
+      </trans-unit>
+      <trans-unit id="616" resname="project_click">
+        <source>project_click</source>
+        <target>انقر فوق</target>
+      </trans-unit>
+      <trans-unit id="617" resname="project_create">
+        <source>project_create</source>
+        <target>قم بإنشاء مشروع جديد</target>
+      </trans-unit>
+      <trans-unit id="618" resname="project_description">
+        <source>project_description</source>
+        <target>سوف يمكنك تعديل اسم المشروع حتى توزيعك الأول</target>
+      </trans-unit>
+      <trans-unit id="619" resname="project_end_date">
+        <source>project_end_date</source>
+        <target>تاريخ الانتهاء</target>
+      </trans-unit>
+      <trans-unit id="620" resname="project_go_import_beneficiaries">
+        <source>project_go_import_beneficiaries</source>
+        <target>استيراد المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="621" resname="project_internal_id">
+        <source>project_internal_id</source>
+        <target>الرقم الهوية الداخلية</target>
+      </trans-unit>
+      <trans-unit id="622" resname="project_name">
+        <source>project_name</source>
+        <target>اسم المشروع</target>
+      </trans-unit>
+      <trans-unit id="623" resname="project_no_distribution">
+        <source>project_no_distribution</source>
+        <target>هذا المشروع لا يحتوي على أي توزيع. اصنع اول واحد!</target>
+      </trans-unit>
+      <trans-unit id="624" resname="project_no_household">
+        <source>project_no_household</source>
+        <target>هذا المشروع لا يحتوي على أي منزل.</target>
+      </trans-unit>
+      <trans-unit id="625" resname="project_no_projects">
+        <source>project_no_projects</source>
+        <target>لا يحتوي هذا البلد حاليًا على أي مشاريع نشطة.</target>
+      </trans-unit>
+      <trans-unit id="626" resname="project_number_of_households">
+        <source>project_number_of_households</source>
+        <target>عدد الأسر</target>
+      </trans-unit>
+      <trans-unit id="627" resname="project_registered_households">
+        <source>project_registered_households</source>
+        <target>العائلات المسجلة</target>
+      </trans-unit>
+      <trans-unit id="628" resname="project_sectors_name">
+        <source>project_sectors_name</source>
+        <target>القطاعات</target>
+      </trans-unit>
+      <trans-unit id="629" resname="project_start_date">
+        <source>project_start_date</source>
+        <target>تاريخ البدء</target>
+      </trans-unit>
+      <trans-unit id="630" resname="project_target_households">
+        <source>project_target_households</source>
+        <target>العائلات المستهدفة</target>
+      </trans-unit>
+      <trans-unit id="631" resname="project_value">
+        <source>project_value</source>
+        <target>المبلغ الموزع</target>
+      </trans-unit>
+      <trans-unit id="632" resname="projects">
+        <source>projects</source>
+        <target>المشاريع</target>
+      </trans-unit>
+      <trans-unit id="633" resname="purchases">
+        <source>purchases</source>
+        <target>المشتريات</target>
+      </trans-unit>
+      <trans-unit id="634" resname="quantity">
+        <source>quantity</source>
+        <target>كمية</target>
+      </trans-unit>
+      <trans-unit id="635" resname="remove">
+        <source>remove</source>
+        <target>إزالة</target>
+      </trans-unit>
+      <trans-unit id="636" resname="report_active_project">
+        <source>report_active_project</source>
+        <target>مشروع نشط</target>
+      </trans-unit>
+      <trans-unit id="637" resname="report_active_projects">
+        <source>report_active_projects</source>
+        <target>المشاريع النشطة</target>
+      </trans-unit>
+      <trans-unit id="638" resname="report_age_breakdown">
+        <source>report_age_breakdown</source>
+        <target>انهيار العمر</target>
+      </trans-unit>
+      <trans-unit id="639" resname="report_apply">
+        <source>report_apply</source>
+        <target>تطبيق</target>
+      </trans-unit>
+      <trans-unit id="640" resname="report_country">
+        <source>report_country</source>
+        <target>البلد</target>
+      </trans-unit>
+      <trans-unit id="641" resname="report_country_report">
+        <source>report_country_report</source>
+        <target>تقرير البلد</target>
+      </trans-unit>
+      <trans-unit id="642" resname="report_disabled">
+        <source>report_disabled</source>
+        <target>معاق</target>
+      </trans-unit>
+      <trans-unit id="643" resname="report_distribution_report">
+        <source>report_distribution_report</source>
+        <target>تقرير التوزيع</target>
+      </trans-unit>
+      <trans-unit id="644" resname="report_distributions">
+        <source>report_distributions</source>
+        <target>التوزيعات</target>
+      </trans-unit>
+      <trans-unit id="645" resname="report_donors">
+        <source>report_donors</source>
+        <target>المانحون</target>
+      </trans-unit>
+      <trans-unit id="646" resname="report_enrolled_beneficiaries">
+        <source>report_enrolled_beneficiaries</source>
+        <target>المستفيدين المسجلين</target>
+      </trans-unit>
+      <trans-unit id="647" resname="report_enrolled_beneficiary">
+        <source>report_enrolled_beneficiary</source>
+        <target>المستفيد المسجل</target>
+      </trans-unit>
+      <trans-unit id="648" resname="report_filter_chose_periode">
+        <source>report_filter_chose_periode</source>
+        <target>اختر الفترة</target>
+      </trans-unit>
+      <trans-unit id="649" resname="report_filter_per_month">
+        <source>report_filter_per_month</source>
+        <target>كل شهر</target>
+      </trans-unit>
+      <trans-unit id="650" resname="report_filter_per_quarter">
+        <source>report_filter_per_quarter</source>
+        <target>كل ربع سنة</target>
+      </trans-unit>
+      <trans-unit id="651" resname="report_filter_per_year">
+        <source>report_filter_per_year</source>
+        <target>كل سنة</target>
+      </trans-unit>
+      <trans-unit id="652" resname="report_frequency_month">
+        <source>report_frequency_month</source>
+        <target>الشهر</target>
+      </trans-unit>
+      <trans-unit id="653" resname="report_frequency_quarter">
+        <source>report_frequency_quarter</source>
+        <target>ربع السنة</target>
+      </trans-unit>
+      <trans-unit id="654" resname="report_frequency_year">
+        <source>report_frequency_year</source>
+        <target>السنة</target>
+      </trans-unit>
+      <trans-unit id="655" resname="report_from">
+        <source>report_from</source>
+        <target>من</target>
+      </trans-unit>
+      <trans-unit id="656" resname="report_household">
+        <source>report_household</source>
+        <target>الأسرة</target>
+      </trans-unit>
+      <trans-unit id="657" resname="report_household_served">
+        <source>report_household_served</source>
+        <target>خدم الأسر</target>
+      </trans-unit>
+      <trans-unit id="658" resname="report_households">
+        <source>report_households</source>
+        <target>الأسر</target>
+      </trans-unit>
+      <trans-unit id="659" resname="report_lactating">
+        <source>report_lactating</source>
+        <target>المرضعات</target>
+      </trans-unit>
+      <trans-unit id="660" resname="report_loader">
+        <source>report_loader</source>
+        <target>المحمل</target>
+      </trans-unit>
+      <trans-unit id="661" resname="report_men">
+        <source>report_men</source>
+        <target>الرجال</target>
+      </trans-unit>
+      <trans-unit id="662" resname="report_missing_distribution">
+        <source>report_missing_distribution</source>
+        <target>لم تقم بتحديد التوزيع!</target>
+      </trans-unit>
+      <trans-unit id="663" resname="report_modality">
+        <source>report_modality</source>
+        <target>القيد</target>
+      </trans-unit>
+      <trans-unit id="664" resname="report_not_reached">
+        <source>report_not_reached</source>
+        <target>لم تصل</target>
+      </trans-unit>
+      <trans-unit id="665" resname="report_number_men_and_women">
+        <source>report_number_men_and_women</source>
+        <target>عدد الرجال والنساء</target>
+      </trans-unit>
+      <trans-unit id="666" resname="report_number_of_enrolled_beneficiaries">
+        <source>report_number_of_enrolled_beneficiaries</source>
+        <target>عدد المستفيدين المسجلين</target>
+      </trans-unit>
+      <trans-unit id="667" resname="report_nutritionalissues">
+        <source>report_nutritionalissues</source>
+        <target>القضايا الغذائية</target>
+      </trans-unit>
+      <trans-unit id="668" resname="report_percentage_of_beneficiaries">
+        <source>report_percentage_of_beneficiaries</source>
+        <target>نسبة المستفيدين</target>
+      </trans-unit>
+      <trans-unit id="669" resname="report_percentage_of_beneficiaries_reached">
+        <source>report_percentage_of_beneficiaries_reached</source>
+        <target>النسبة المئوية للمستفيدين الذين خدموا</target>
+      </trans-unit>
+      <trans-unit id="670" resname="report_percentage_of_vulnerabilities_served">
+        <source>report_percentage_of_vulnerabilities_served</source>
+        <target>النسبة المئوية للضعف في الخدمة</target>
+      </trans-unit>
+      <trans-unit id="671" resname="report_period_selected">
+        <source>report_period_selected</source>
+        <target>الفترة المختارة</target>
+      </trans-unit>
+      <trans-unit id="672" resname="report_project">
+        <source>report_project</source>
+        <target>تقرير المشروع</target>
+      </trans-unit>
+      <trans-unit id="673" resname="report_project_report">
+        <source>report_project_report</source>
+        <target>تقرير المشروع</target>
+      </trans-unit>
+      <trans-unit id="674" resname="report_select_frequency">
+        <source>report_select_frequency</source>
+        <target>اختر التكرار</target>
+      </trans-unit>
+      <trans-unit id="675" resname="report_soloparent">
+        <source>report_soloparent</source>
+        <target>الوالد منفرد</target>
+      </trans-unit>
+      <trans-unit id="676" resname="report_time">
+        <source>report_time</source>
+        <target>الوقت</target>
+      </trans-unit>
+      <trans-unit id="677" resname="report_to">
+        <source>report_to</source>
+        <target>إلى</target>
+      </trans-unit>
+      <trans-unit id="678" resname="report_total_distribution_value">
+        <source>report_total_distribution_value</source>
+        <target>إجمالي قيمة التوزيع</target>
+      </trans-unit>
+      <trans-unit id="679" resname="report_total_households">
+        <source>report_total_households</source>
+        <target>مجموع الأسر</target>
+      </trans-unit>
+      <trans-unit id="680" resname="report_total_number_of_distributions">
+        <source>report_total_number_of_distributions</source>
+        <target>إجمالي عدد التوزيعات</target>
+      </trans-unit>
+      <trans-unit id="681" resname="report_total_transactions_completed">
+        <source>report_total_transactions_completed</source>
+        <target>إجمالي المعاملات المنجزة</target>
+      </trans-unit>
+      <trans-unit id="682" resname="report_transactions_completed">
+        <source>report_transactions_completed</source>
+        <target>المعاملات المنجزة</target>
+      </trans-unit>
+      <trans-unit id="683" resname="report_upcoming_reporting">
+        <source>report_upcoming_reporting</source>
+        <target>التقارير القادمة</target>
+      </trans-unit>
+      <trans-unit id="684" resname="report_vulnerability_served">
+        <source>report_vulnerability_served</source>
+        <target>الضعف يخدم</target>
+      </trans-unit>
+      <trans-unit id="685" resname="report_women">
+        <source>report_women</source>
+        <target>النساء</target>
+      </trans-unit>
+      <trans-unit id="686" resname="reports">
+        <source>reports</source>
+        <target>تقارير</target>
+      </trans-unit>
+      <trans-unit id="687" resname="residencyStatus">
+        <source>residencyStatus</source>
+        <target>حالة الإقامة</target>
+      </trans-unit>
+      <trans-unit id="688" resname="rights">
+        <source>rights</source>
+        <target>الحقوق</target>
+      </trans-unit>
+      <trans-unit id="689" resname="role_user_admin">
+        <source>role_user_admin</source>
+        <target>مدير</target>
+      </trans-unit>
+      <trans-unit id="690" resname="role_user_country_manager">
+        <source>role_user_country_manager</source>
+        <target>مدير البلد</target>
+      </trans-unit>
+      <trans-unit id="691" resname="role_user_enumerator">
+        <source>role_user_enumerator</source>
+        <target>العداد</target>
+      </trans-unit>
+      <trans-unit id="692" resname="role_user_field_officer">
+        <source>role_user_field_officer</source>
+        <target>مسؤول ميداني</target>
+      </trans-unit>
+      <trans-unit id="693" resname="role_user_project_manager">
+        <source>role_user_project_manager</source>
+        <target>مدير مشروع</target>
+      </trans-unit>
+      <trans-unit id="694" resname="role_user_project_officer">
+        <source>role_user_project_officer</source>
+        <target>مسؤول مشروع</target>
+      </trans-unit>
+      <trans-unit id="695" resname="role_user_regional_manager">
+        <source>role_user_regional_manager</source>
+        <target>المدير الإقليمي</target>
+      </trans-unit>
+      <trans-unit id="696" resname="save">
+        <source>save</source>
+        <target>حفظ</target>
+      </trans-unit>
+      <trans-unit id="697" resname="sector">
+        <source>sector</source>
+        <target>القطاع</target>
+      </trans-unit>
+      <trans-unit id="698" resname="sector_cash_for_work">
+        <source>sector_cash_for_work</source>
+        <target>النقد مقابل العمل</target>
+      </trans-unit>
+      <trans-unit id="699" resname="sector_cccm">
+        <source>sector_cccm</source>
+        <target>معسكر التنسيق والإدارة</target>
+      </trans-unit>
+      <trans-unit id="700" resname="sector_education">
+        <source>sector_education</source>
+        <target>التعليم</target>
+      </trans-unit>
+      <trans-unit id="701" resname="sector_food">
+        <source>sector_food</source>
+        <target>أمن غذائي</target>
+      </trans-unit>
+      <trans-unit id="702" resname="sector_food_kits">
+        <source>sector_food_kits</source>
+        <target>سلة غذاء</target>
+      </trans-unit>
+      <trans-unit id="703" resname="sector_health">
+        <source>sector_health</source>
+        <target>الصحة</target>
+      </trans-unit>
+      <trans-unit id="704" resname="sector_logistics">
+        <source>sector_logistics</source>
+        <target>الخدمات اللوجستية</target>
+      </trans-unit>
+      <trans-unit id="705" resname="sector_nfi">
+        <source>sector_nfi</source>
+        <target>البنود غير الغذائية</target>
+      </trans-unit>
+      <trans-unit id="706" resname="sector_nutrition">
+        <source>sector_nutrition</source>
+        <target>تغذية</target>
+      </trans-unit>
+      <trans-unit id="707" resname="sector_protection">
+        <source>sector_protection</source>
+        <target>حماية</target>
+      </trans-unit>
+      <trans-unit id="708" resname="sector_recovery">
+        <source>sector_recovery</source>
+        <target>الانتعاش المبكر</target>
+      </trans-unit>
+      <trans-unit id="709" resname="sector_shelter">
+        <source>sector_shelter</source>
+        <target>مأوى</target>
+      </trans-unit>
+      <trans-unit id="710" resname="sector_telecom">
+        <source>sector_telecom</source>
+        <target>الاتصالات في حالات الطوارئ</target>
+      </trans-unit>
+      <trans-unit id="711" resname="sector_tvet">
+        <source>sector_tvet</source>
+        <target>التعليم التقني والمهني والتدريب</target>
+      </trans-unit>
+      <trans-unit id="712" resname="sector_water">
+        <source>sector_water</source>
+        <target>مياه الصرف الصحي</target>
+      </trans-unit>
+      <trans-unit id="713" resname="selected">
+        <source>selected</source>
+        <target>المحدد</target>
+      </trans-unit>
+      <trans-unit id="714" resname="settings">
+        <source>settings</source>
+        <target>الإعدادات</target>
+      </trans-unit>
+      <trans-unit id="715" resname="settings_country_specific_options">
+        <source>settings_country_specific_options</source>
+        <target>خيارات محددة للبلد</target>
+      </trans-unit>
+      <trans-unit id="716" resname="settings_created">
+        <source>settings_created</source>
+        <target>تم انشاء</target>
+      </trans-unit>
+      <trans-unit id="717" resname="settings_financial_provider">
+        <source>settings_financial_provider</source>
+        <target>مزود المالية</target>
+      </trans-unit>
+      <trans-unit id="718" resname="settings_log_button">
+        <source>settings_log_button</source>
+        <target>احصل على سجلات المستخدم عن طريق البريد الإلكتروني</target>
+      </trans-unit>
+      <trans-unit id="719" resname="settings_organization">
+        <source>settings_organization</source>
+        <target>مؤسستي</target>
+      </trans-unit>
+      <trans-unit id="720" resname="settings_print_starting">
+        <source>settings_print_starting</source>
+        <target>التحميل بدأ</target>
+      </trans-unit>
+      <trans-unit id="721" resname="settings_project_exists">
+        <source>settings_project_exists</source>
+        <target>مشروع بهذا الاسم يوجود بالفعل</target>
+      </trans-unit>
+      <trans-unit id="722" resname="snackbar_created_successfully">
+        <source>snackbar_created_successfully</source>
+        <target>تم الإنشاء بنجاح!</target>
+      </trans-unit>
+      <trans-unit id="723" resname="snackbar_error_creating">
+        <source>snackbar_error_creating</source>
+        <target>: حدث خطأ أثناء الإنشاء</target>
+      </trans-unit>
+      <trans-unit id="724" resname="snackbar_error_updating">
+        <source>snackbar_error_updating</source>
+        <target>: حدث خطأ أثناء التحديث</target>
+      </trans-unit>
+      <trans-unit id="725" resname="snackbar_change_password_done">
+        <source>snackbar_change_password_done</source>
+        <target>تم تغيير كلمة المرور</target>
+      </trans-unit>
+      <trans-unit id="726" resname="snackbar_change_password_fail">
+        <source>snackbar_change_password_fail</source>
+        <target>لا يمكن تغيير كلمة المرور ...</target>
+      </trans-unit>
+      <trans-unit id="727" resname="snackbar_change_password_not_possible">
+        <source>snackbar_change_password_not_possible</source>
+        <target>يجب أن تكون كلمة المرور أطول من رمز واحد ومتطابقة مع التحقق</target>
+      </trans-unit>
+      <trans-unit id="728" resname="snackbar_invalid_transaction_date">
+        <source>snackbar_invalid_transaction_date</source>
+        <target>انتهت مهلة المعاملة.</target>
+      </trans-unit>
+      <trans-unit id="729" resname="snackbar_no_data_export">
+        <source>snackbar_no_data_export</source>
+        <target>لا توجد بيانات للتصدير</target>
+      </trans-unit>
+      <trans-unit id="730" resname="snackbar_pdf_export_failed">
+        <source>snackbar_pdf_export_failed</source>
+        <target>لا يمكن تصدير ملف PDF لعدم وجود رسوم بيانية على صفحة الويب.</target>
+      </trans-unit>
+      <trans-unit id="731" resname="snackbar_pickup_error">
+        <source>snackbar_pickup_error</source>
+        <target>من المستحيل حاليًا التحقق من حالة الالتقاط</target>
+      </trans-unit>
+      <trans-unit id="732" resname="snackbar_saved_language">
+        <source>snackbar_saved_language</source>
+        <target>اللغة الافتراضية المحفوظة</target>
+      </trans-unit>
+      <trans-unit id="733" resname="snackbar_update">
+        <source>snackbar_update</source>
+        <target>تحديث متاح</target>
+      </trans-unit>
+      <trans-unit id="734" resname="snackbar_updated_successfully">
+        <source>snackbar_updated_successfully</source>
+        <target>!تم التحديث بنجاح</target>
+      </trans-unit>
+      <trans-unit id="735" resname="snackbar_verification_code">
+        <source>snackbar_verification_code</source>
+        <target>تم إرسال رمز التحقق في</target>
+      </trans-unit>
+      <trans-unit id="736" resname="snackbar_verification_code_error">
+        <source>snackbar_verification_code_error</source>
+        <target>لا يمكن إرسال الرمز:</target>
+      </trans-unit>
+      <trans-unit id="737" resname="snackbar_verification_code_wait_error">
+        <source>snackbar_verification_code_wait_error</source>
+        <target>تم إرسال الرمز الأخير قبل أقل من 10 ثوانٍ ، يجب عليك الانتظار.</target>
+      </trans-unit>
+      <trans-unit id="738" resname="soloParent">
+        <source>soloParent</source>
+        <target>الوالد منفردا</target>
+      </trans-unit>
+      <trans-unit id="739" resname="status">
+        <source>status</source>
+        <target>الحالة</target>
+      </trans-unit>
+      <trans-unit id="740" resname="summary">
+        <source>summary</source>
+        <target>ملخص</target>
+      </trans-unit>
+      <trans-unit id="741" resname="table_actions">
+        <source>table_actions</source>
+        <target>أفعال</target>
+      </trans-unit>
+      <trans-unit id="742" resname="table_assign">
+        <source>table_assign</source>
+        <target>تعيين</target>
+      </trans-unit>
+      <trans-unit id="743" resname="table_element_deleted">
+        <source>table_element_deleted</source>
+        <target>تم حذفها</target>
+      </trans-unit>
+      <trans-unit id="744" resname="table_element_updated">
+        <source>table_element_updated</source>
+        <target>تم تحديثها</target>
+      </trans-unit>
+      <trans-unit id="745" resname="table_filter">
+        <source>table_filter</source>
+        <target>البحث عن طريق الكلمات الرئيسية</target>
+      </trans-unit>
+      <trans-unit id="746" resname="table_filtered">
+        <source>table_filtered</source>
+        <target>العناصر التي تمت تصفيتها</target>
+      </trans-unit>
+      <trans-unit id="747" resname="table_first_page">
+        <source>table_first_page</source>
+        <target>الصفحة الأولى</target>
+      </trans-unit>
+      <trans-unit id="748" resname="table_items_per_page">
+        <source>table_items_per_page</source>
+        <target>العناصر في كل صفحة</target>
+      </trans-unit>
+      <trans-unit id="749" resname="table_last_page">
+        <source>table_last_page</source>
+        <target>الصفحة الاخيرة</target>
+      </trans-unit>
+      <trans-unit id="750" resname="table_logs_error">
+        <source>table_logs_error</source>
+        <target>لا يمكن إرسال السجلات</target>
+      </trans-unit>
+      <trans-unit id="751" resname="table_logs_success">
+        <source>table_logs_success</source>
+        <target>تم إرسال السجلات</target>
+      </trans-unit>
+      <trans-unit id="752" resname="table_next_page">
+        <source>table_next_page</source>
+        <target>الصفحة التالية</target>
+      </trans-unit>
+      <trans-unit id="753" resname="table_of_page">
+        <source>table_of_page</source>
+        <target>من</target>
+      </trans-unit>
+      <trans-unit id="754" resname="table_previous_page">
+        <source>table_previous_page</source>
+        <target>الصفحة السابقة</target>
+      </trans-unit>
+      <trans-unit id="755" resname="table_print">
+        <source>table_print</source>
+        <target>طباعة</target>
+      </trans-unit>
+      <trans-unit id="756" resname="table_selected">
+        <source>table_selected</source>
+        <target>العناصر المحددة</target>
+      </trans-unit>
+      <trans-unit id="757" resname="the">
+        <source>the</source>
+        <target>ال</target>
+      </trans-unit>
+      <trans-unit id="758" resname="this">
+        <source>this</source>
+        <target>هذه</target>
+      </trans-unit>
+      <trans-unit id="759" resname="time_just_now">
+        <source>time_just_now</source>
+        <target>فقط الآن</target>
+      </trans-unit>
+      <trans-unit id="760" resname="tooltip_add_beneficiaries">
+        <source>tooltip_add_beneficiaries</source>
+        <target>هذه الصفحة هي نموذج لإضافة أسرة جديدة إلى المنصة.</target>
+      </trans-unit>
+      <trans-unit id="761" resname="tooltip_add_distribution">
+        <source>tooltip_add_distribution</source>
+        <target>هذه الصفحة نموذج لإضافة توزيع جديد إلى مشروع. ستستخدم معايير الاختيار لتحديد الأسر أو المستفيدين الذين
+          سيشاركون فيها وإضافة كمية محددة من السلع المراد توزيعها.
+        </target>
+      </trans-unit>
+      <trans-unit id="762" resname="tooltip_admin">
+        <source>tooltip_admin</source>
+        <target>هذه الصفحة هي المكان الذي يمكنك فيه إدارة المستخدمين والمانحين وتفاصيل مؤسستك</target>
+      </trans-unit>
+      <trans-unit id="763" resname="tooltip_beneficiaries">
+        <source>tooltip_beneficiaries</source>
+        <target>هذه الصفحة هي حيث يمكن أن ترى جميع الأسر في البلد. إذا كان لديك الحق ، يمكنك إضافة أسر جديدة باستخدام
+          الزر "+" ، وإدارة الأسر وتصفية / بحث في القائمة.
+        </target>
+      </trans-unit>
+      <trans-unit id="764" resname="tooltip_dashboard">
+        <source>tooltip_dashboard</source>
+        <target>هذه الصفحة هي المكان الذي لديك نظرة عامة حول بعض الأرقام حول البلد ومشاريعه. هناك خريطة لتوضح لك توزيعات
+          البلد وملخص آخرها.
+        </target>
+      </trans-unit>
+      <trans-unit id="765" resname="tooltip_data">
+        <source>tooltip_data</source>
+        <target>هذه الصفحة هي ملخص للأسر التي قمت باستيرادها.</target>
+      </trans-unit>
+      <trans-unit id="766" resname="tooltip_data_validation">
+        <source>tooltip_data_validation</source>
+        <target>هذه الصفحة هي حيث يمكنك استيراد المستفيدين باستخدام ملف. يجب عليك التحقق من ملفك باتباع الخطوات.
+        </target>
+      </trans-unit>
+      <trans-unit id="767" resname="tooltip_distributions">
+        <source>tooltip_distributions</source>
+        <target>هذه الصفحة هي المكان الذي يمكنك أن ترى فيه جميع الأسر المعيشية للتوزيع. إذا كان لديك الحق ، يمكنك إضافة
+          أسر جديدة بها ملف أو عن طريق تحديد في القائمة ، وإدارة الأسر والتحقق من صحة التوزيع.
+        </target>
+      </trans-unit>
+      <trans-unit id="768" resname="tooltip_import">
+        <source>tooltip_import</source>
+        <target>هذه الصفحة هي المكان الذي يمكنك استيراد المستفيدين منه. يمكنك اختيار استيرادها باستخدام ملف أو API (مصدر
+          البيانات الخارجي) لاستيراد جميع الأسر المعيشية في بلدية معينة.
+        </target>
+      </trans-unit>
+      <trans-unit id="769" resname="tooltip_profile">
+        <source>tooltip_profile</source>
+        <target>هذه الصفحة هي المكان الذي يمكنك فيه تغيير كلمة المرور الخاصة بك.</target>
+      </trans-unit>
+      <trans-unit id="770" resname="tooltip_projects">
+        <source>tooltip_projects</source>
+        <target>هذه الصفحة هي المكان الذي يمكنك فيه مشاهدة جميع مشاريع البلاد (فقط تلك التي يمكنك الحق في رؤيتها). إذا
+          كان لديك الحق ، يمكنك إضافة توزيع جديد مع أسر المشروع وإدارة التوزيعات والمعاملات.
+        </target>
+      </trans-unit>
+      <trans-unit id="771" resname="tooltip_reports">
+        <source>tooltip_reports</source>
+        <target>تُستخدم هذه الصفحة للاطلاع على إحصائيات الدولة ، مثل متوسط ​​معاملات المشروعات وعدد التوزيعات ...
+        </target>
+      </trans-unit>
+      <trans-unit id="772" resname="tooltip_settings">
+        <source>tooltip_settings</source>
+        <target>هذه الصفحة هي المكان الذي ستتمكن فيه من إضافة مشروع جديد أو بلد معين أو اتصال طرف ثالث أو منتج أو بائع
+          وتعديلها وحذفها وفقًا لحقوقك
+        </target>
+      </trans-unit>
+      <trans-unit id="773" resname="tooltip_update_beneficiary">
+        <source>tooltip_update_beneficiary</source>
+        <target>هذه الصفحة هي نموذج لتحديث الأسرة المختارة.</target>
+      </trans-unit>
+      <trans-unit id="774" resname="tooltip_vouchers">
+        <source>tooltip_vouchers</source>
+        <target>هذه الصفحة هي المكان الذي يمكنك فيه إنشاء كتيبات قسائم وتعديلها وتعيينها وطباعتها</target>
+      </trans-unit>
+      <trans-unit id="775" resname="total">
+        <source>total</source>
+        <target>مجموع</target>
+      </trans-unit>
+      <trans-unit id="776" resname="total_unique">
+        <source>total_unique</source>
+        <target>إجمالي فريد</target>
+      </trans-unit>
+      <trans-unit id="777" resname="transaction_accept_prevention">
+        <source>transaction_accept_prevention</source>
+        <target>أنا أوافق على هذه الشروط.</target>
+      </trans-unit>
+      <trans-unit id="778" resname="transaction_again">
+        <source>transaction_again</source>
+        <target>أعد الإرسال</target>
+      </trans-unit>
+      <trans-unit id="779" resname="transaction_amount_distributed">
+        <source>transaction_amount_distributed</source>
+        <target>المبلغ الموزع</target>
+      </trans-unit>
+      <trans-unit id="780" resname="transaction_amount_done">
+        <source>transaction_amount_done</source>
+        <target>الكمية المرسلة</target>
+      </trans-unit>
+      <trans-unit id="781" resname="transaction_amount_total">
+        <source>transaction_amount_total</source>
+        <target>الكمية الإجمالية</target>
+      </trans-unit>
+      <trans-unit id="782" resname="transaction_amount_used">
+        <source>transaction_amount_used</source>
+        <target>المبلغ المستخدم</target>
+      </trans-unit>
+      <trans-unit id="783" resname="transaction_amount_waiting">
+        <source>transaction_amount_waiting</source>
+        <target>ما زال يتعين إرسالها</target>
+      </trans-unit>
+      <trans-unit id="784" resname="transaction_confirm">
+        <source>transaction_confirm</source>
+        <target>تأكيد المعاملة</target>
+      </trans-unit>
+      <trans-unit id="785" resname="transaction_confirm_button">
+        <source>transaction_confirm_button</source>
+        <target>التأكد</target>
+      </trans-unit>
+      <trans-unit id="786" resname="transaction_email_code">
+        <source>transaction_email_code</source>
+        <target>تم إرسال بريد إلكتروني يحتوي على رمز التحقق الخاص بك إلى:</target>
+      </trans-unit>
+      <trans-unit id="787" resname="transaction_id_transaction">
+        <source>transaction_id_transaction</source>
+        <target>معرف المعاملة.</target>
+      </trans-unit>
+      <trans-unit id="788" resname="transaction_info_export">
+        <source>transaction_info_export</source>
+        <target>إذا لم يكن للتوزيع أي معاملات ، فلن يتم تصدير أي ملف</target>
+      </trans-unit>
+      <trans-unit id="789" resname="transaction_inProgress">
+        <source>transaction_inProgress</source>
+        <target>المعاملة قيد التقدم ...</target>
+      </trans-unit>
+      <trans-unit id="790" resname="transaction_message">
+        <source>transaction_message</source>
+        <target>رسالة</target>
+      </trans-unit>
+      <trans-unit id="791" resname="transaction_no_transaction_sent">
+        <source>transaction_no_transaction_sent</source>
+        <target>لا توجد معاملة مكتملة ، لا يمكن تصديرها</target>
+      </trans-unit>
+      <trans-unit id="792" resname="transaction_paste_code">
+        <source>transaction_paste_code</source>
+        <target>الرجاء وضع الشفرة هنا والنقر على التأكد لمتابعة العملية:</target>
+      </trans-unit>
+      <trans-unit id="793" resname="transaction_pickupDate">
+        <source>transaction_pickupDate</source>
+        <target>اختر تاريخا</target>
+      </trans-unit>
+      <trans-unit id="794" resname="transaction_prevention">
+        <source>transaction_prevention</source>
+        <target>لا تزال هذه المنصة قيد التطوير وقد لا تكون وظيفة المعاملات النقدية عبر الإنترنت مستقرة تمامًا حتى الآن.
+          ينكر فريق التطوير المسؤولية عن أي أخطاء قد تحدث من حيث فقدان المال. بوضع علامة في المربع أدناه ، فإنك توافق
+          على استخدام النظام بمعرفة حدوده تمامًا وتحمل المسؤولية عن نتائج المعاملة.
+        </target>
+      </trans-unit>
+      <trans-unit id="795" resname="transaction_progress">
+        <source>transaction_progress</source>
+        <target>تقدم توزيع السلع:</target>
+      </trans-unit>
+      <trans-unit id="796" resname="transaction_progress">
+        <source>transaction_progress</source>
+        <target>تقدم عملية التوزيع:</target>
+      </trans-unit>
+      <trans-unit id="797" resname="transaction_progress">
+        <source>transaction_progress</source>
+        <target>تقدم المعاملة</target>
+      </trans-unit>
+      <trans-unit id="798" resname="transaction_refresh">
+        <source>transaction_refresh</source>
+        <target>تحقق من حالة التقاط</target>
+      </trans-unit>
+      <trans-unit id="799" resname="transaction_state_already_sent">
+        <source>transaction_state_already_sent</source>
+        <target>أرسلت</target>
+      </trans-unit>
+      <trans-unit id="800" resname="transaction_state_no_phone">
+        <source>transaction_state_no_phone</source>
+        <target>لا يوجد هاتف</target>
+      </trans-unit>
+      <trans-unit id="801" resname="transaction_state_not_sent">
+        <source>transaction_state_not_sent</source>
+        <target>لم ترسل</target>
+      </trans-unit>
+      <trans-unit id="802" resname="transaction_state_picked_up">
+        <source>transaction_state_picked_up</source>
+        <target>التقط</target>
+      </trans-unit>
+      <trans-unit id="803" resname="transaction_state_sending_failed">
+        <source>transaction_state_sending_failed</source>
+        <target>لقد تعذر الارسال</target>
+      </trans-unit>
+      <trans-unit id="804" resname="transaction_state_sent">
+        <source>transaction_state_sent</source>
+        <target>أرسلت</target>
+      </trans-unit>
+      <trans-unit id="805" resname="transaction_transaction">
+        <source>transaction_transaction</source>
+        <target>عملية تجارية</target>
+      </trans-unit>
+      <trans-unit id="806" resname="transaction_validate_distribution">
+        <source>transaction_validate_distribution</source>
+        <target>هل تريد حقًا التحقق من صحة هذا التوزيع؟</target>
+      </trans-unit>
+      <trans-unit id="807" resname="transaction_validation">
+        <source>transaction_validation</source>
+        <target>تأكيد التحقق من الصحة</target>
+      </trans-unit>
+      <trans-unit id="808" resname="TRUE">
+        <source>TRUE</source>
+        <target>صحيح</target>
+      </trans-unit>
+      <trans-unit id="809" resname="true">
+        <source>true</source>
+        <target>صحيح</target>
+      </trans-unit>
+      <trans-unit id="810" resname="type">
+        <source>type</source>
+        <target>النوع</target>
+      </trans-unit>
+      <trans-unit id="811" resname="unit">
+        <source>unit</source>
+        <target>وحدة</target>
+      </trans-unit>
+      <trans-unit id="812" resname="update">
+        <source>update</source>
+        <target>تحديث</target>
+      </trans-unit>
+      <trans-unit id="813" resname="user">
+        <source>user</source>
+        <target>المستخدم</target>
+      </trans-unit>
+      <trans-unit id="814" resname="user_only_one_country">
+        <source>user_only_one_country</source>
+        <target>يمكنك اختيار دولة واحدة فقط</target>
+      </trans-unit>
+      <trans-unit id="815" resname="user_password_question">
+        <source>user_password_question</source>
+        <target>تحديث كلمة المرور عند تسجيل الدخول المقبل</target>
+      </trans-unit>
+      <trans-unit id="816" resname="user_phone_number">
+        <source>user_phone_number</source>
+        <target>رقم الهاتف</target>
+      </trans-unit>
+      <trans-unit id="817" resname="user_phone_prefix">
+        <source>user_phone_prefix</source>
+        <target>اختصار</target>
+      </trans-unit>
+      <trans-unit id="818" resname="username">
+        <source>username</source>
+        <target>اسم المستخدم</target>
+      </trans-unit>
+      <trans-unit id="819" resname="users">
+        <source>users</source>
+        <target>المستخدمين</target>
+      </trans-unit>
+      <trans-unit id="820" resname="value">
+        <source>value</source>
+        <target>القيمة</target>
+      </trans-unit>
+      <trans-unit id="821" resname="vendor">
+        <source>vendor</source>
+        <target>بائع</target>
+      </trans-unit>
+      <trans-unit id="822" resname="vendors">
+        <source>vendors</source>
+        <target>الباعة</target>
+      </trans-unit>
+      <trans-unit id="823" resname="view">
+        <source>view</source>
+        <target>درس</target>
+      </trans-unit>
+      <trans-unit id="824" resname="voucher">
+        <source>voucher</source>
+        <target>قسائم</target>
+      </trans-unit>
+      <trans-unit id="825" resname="voucher_ask_code">
+        <source>voucher_ask_code</source>
+        <target>الرجاء مطالبة المستفيد بإدخال رمزه المكون من 4 أرقام هنا</target>
+      </trans-unit>
+      <trans-unit id="826" resname="voucher_assign">
+        <source>voucher_assign</source>
+        <target>تعيين قسائم</target>
+      </trans-unit>
+      <trans-unit id="827" resname="voucher_assign_title">
+        <source>voucher_assign_title</source>
+        <target>تخصيص كتيب للمستفيد</target>
+      </trans-unit>
+      <trans-unit id="828" resname="voucher_assigned_success">
+        <source>voucher_assigned_success</source>
+        <target>تم تعيين الكتيب إلى</target>
+      </trans-unit>
+      <trans-unit id="829" resname="voucher_assignment_cancelled">
+        <source>voucher_assignment_cancelled</source>
+        <target>تم إلغاء مهمة القسيمة</target>
+      </trans-unit>
+      <trans-unit id="830" resname="voucher_confirm">
+        <source>voucher_confirm</source>
+        <target>كتيب مخصص ل</target>
+      </trans-unit>
+      <trans-unit id="831" resname="voucher_created">
+        <source>voucher_created</source>
+        <target>تم إنشاء الكتيب</target>
+      </trans-unit>
+      <trans-unit id="832" resname="voucher_define_password">
+        <source>voucher_define_password</source>
+        <target>تحديد كلمة المرور لكتيب</target>
+      </trans-unit>
+      <trans-unit id="833" resname="voucher_for">
+        <source>voucher_for</source>
+        <target>إلى عن على</target>
+      </trans-unit>
+      <trans-unit id="834" resname="voucher_no_device">
+        <source>voucher_no_device</source>
+        <target>لا يوجد جهاز تم اكتشافه</target>
+      </trans-unit>
+      <trans-unit id="835" resname="voucher_no_permission">
+        <source>voucher_no_permission</source>
+        <target>لقد رفضت الوصول إلى الكاميرا</target>
+      </trans-unit>
+      <trans-unit id="836" resname="voucher_only_digits">
+        <source>voucher_only_digits</source>
+        <target>يجب أن تتكون كلمة المرور من 4 أرقام فقط</target>
+      </trans-unit>
+      <trans-unit id="837" resname="voucher_password_changed">
+        <source>voucher_password_changed</source>
+        <target>تم تغيير كلمة السر الخاصة بك</target>
+      </trans-unit>
+      <trans-unit id="838" resname="voucher_print_error">
+        <source>voucher_print_error</source>
+        <target>لا يمكنك طباعة كتيب إذا لم يكن لديه مستفيد</target>
+      </trans-unit>
+      <trans-unit id="839" resname="voucher_print_selection">
+        <source>voucher_print_selection</source>
+        <target>اختيار الطباعة</target>
+      </trans-unit>
+      <trans-unit id="840" resname="voucher_print_starting">
+        <source>voucher_print_starting</source>
+        <target>بدأ تنزيل القسيمة</target>
+      </trans-unit>
+      <trans-unit id="841" resname="voucher_purchased">
+        <source>voucher_purchased</source>
+        <target>البنود التي تم شراؤها</target>
+      </trans-unit>
+      <trans-unit id="842" resname="voucher_scan_text">
+        <source>voucher_scan_text</source>
+        <target>مسح كتيب رمز الاستجابة السريعة</target>
+      </trans-unit>
+      <trans-unit id="843" resname="voucher_select_beneficiary">
+        <source>voucher_select_beneficiary</source>
+        <target>عليك أن تختار المستفيد</target>
+      </trans-unit>
+      <trans-unit id="844" resname="voucher_select_distribution">
+        <source>voucher_select_distribution</source>
+        <target>يجب عليك اختيار التوزيع</target>
+      </trans-unit>
+      <trans-unit id="845" resname="voucher_select_project">
+        <source>voucher_select_project</source>
+        <target>يجب عليك اختيار مشروع</target>
+      </trans-unit>
+      <trans-unit id="846" resname="voucher_sending">
+        <source>voucher_sending</source>
+        <target>يتم إرسال البيانات</target>
+      </trans-unit>
+      <trans-unit id="847" resname="voucher_step">
+        <source>voucher_step</source>
+        <target>تم حذفها</target>
+      </trans-unit>
+      <trans-unit id="848" resname="vouchers_booklet">
+        <source>vouchers_booklet</source>
+        <target>قسيمة الكتيب</target>
+      </trans-unit>
+      <trans-unit id="849" resname="vulnerability_disabled">
+        <source>vulnerability_disabled</source>
+        <target>معاق</target>
+      </trans-unit>
+      <trans-unit id="850" resname="vulnerability_lactating">
+        <source>vulnerability_lactating</source>
+        <target>المرضعات</target>
+      </trans-unit>
+      <trans-unit id="851" resname="vulnerability_nutrional">
+        <source>vulnerability_nutrional</source>
+        <target>القضايا الغذائية</target>
+      </trans-unit>
+      <trans-unit id="852" resname="vulnerability_pregnant">
+        <source>vulnerability_pregnant</source>
+        <target>حامل</target>
+      </trans-unit>
+      <trans-unit id="853" resname="vulnerability_solo_parent">
+        <source>vulnerability_solo_parent</source>
+        <target>الوالد منفردا</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
