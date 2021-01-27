@@ -56,12 +56,12 @@ class ResidenceAddressMapper implements MapperInterface
         return $this->object->getAddress()->getNumber();
     }
 
-    public function getStreet(): string
+    public function getStreet(): ?string
     {
         return $this->object->getAddress()->getStreet();
     }
 
-    public function getPostcode(): string
+    public function getPostcode(): ?string
     {
         return $this->object->getAddress()->getPostcode();
     }
