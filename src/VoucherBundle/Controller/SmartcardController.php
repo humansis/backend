@@ -99,11 +99,16 @@ class SmartcardController extends Controller
 
         /** @var Smartcard $smartcard */
         $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
-        if ($smartcard) {
-            $smartcard->setSuspicious(false);
-        } else {
+        if (!$smartcard) {
             $smartcard = new Smartcard($serialNumber, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
             $smartcard->setState(Smartcard::STATE_ACTIVE);
+        }
+
+        if ($smartcard->getBeneficiary() && $smartcard->getBeneficiary()->getId() !== $request->get('beneficiaryId')) {
+            $smartcard->setSuspicious(true, sprintf('Beneficiary changed. #%s -> #%s',
+                $smartcard->getBeneficiary()->getId(),
+                $request->get('beneficiaryId')
+            ));
         }
 
         /** @var Beneficiary $beneficiary */
@@ -111,7 +116,7 @@ class SmartcardController extends Controller
         if ($beneficiary) {
             $smartcard->setBeneficiary($beneficiary);
         } else {
-            $smartcard->setSuspicious(true, '');
+            $smartcard->setSuspicious(true, 'Beneficiary does not exists');
         }
 
         $this->getDoctrine()->getManager()->persist($smartcard);
@@ -675,7 +680,8 @@ class SmartcardController extends Controller
                 return new Response("Inconsistent vendor and purchase' #{$purchase->getId()} vendor", Response::HTTP_BAD_REQUEST);
             }
             if (null !== $purchase->getRedeemedAt()) {
-                return new Response("Purchase' #{$purchase->getId()} was already redeemed at ".$purchase->getRedeemedAt()->format('Y-m-d H:i:s'), Response::HTTP_BAD_REQUEST);
+                return new Response("Purchase' #{$purchase->getId()} was already redeemed at ".$purchase->getRedeemedAt()->format('Y-m-d H:i:s'),
+                    Response::HTTP_BAD_REQUEST);
             }
 
             $purchase->setRedemptionBatch($redemptionBath);
