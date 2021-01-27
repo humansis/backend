@@ -1,0 +1,3812 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="VLUWEOx" resname="DISTRIBUTION SHEET">
+        <source>DISTRIBUTION SHEET</source>
+        <target>DISTRIBUTION SHEET</target>
+      </trans-unit>
+      <trans-unit id="RZid5J_" resname="Details">
+        <source>Details</source>
+        <target>Details</target>
+      </trans-unit>
+      <trans-unit id="qpQgWsG" resname="Project Name">
+        <source>Project Name</source>
+        <target>Project Name</target>
+      </trans-unit>
+      <trans-unit id="vAxwwF2" resname="Distribution Date">
+        <source>Distribution Date</source>
+        <target>Distribution Date</target>
+      </trans-unit>
+      <trans-unit id="6UY9zPB" resname="Place">
+        <source>Place</source>
+        <target>Place</target>
+      </trans-unit>
+      <trans-unit id="EmCg3MG" resname="Item Description">
+        <source>Item Description</source>
+        <target>Item Description</target>
+      </trans-unit>
+      <trans-unit id="K.w0cVc" resname="Approvals">
+        <source>Approvals</source>
+        <target>Approvals</target>
+      </trans-unit>
+      <trans-unit id="zcz3NLT" resname="On behalf of">
+        <source>On behalf of</source>
+        <target>On behalf of</target>
+      </trans-unit>
+      <trans-unit id="V8kighy" resname="On behalf of People in Need">
+        <source>On behalf of People in Need</source>
+        <target>On behalf of People in Need</target>
+      </trans-unit>
+      <trans-unit id="3NHVIj9" resname="Name">
+        <source>Name</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="bQMa8Q2" resname="Position">
+        <source>Position</source>
+        <target>Position</target>
+      </trans-unit>
+      <trans-unit id="X0.LddB" resname="Signature and Stamp">
+        <source>Signature and Stamp</source>
+        <target>Signature and Stamp</target>
+      </trans-unit>
+      <trans-unit id="dJOqWjY" resname="Household Head">
+        <source>Household Head</source>
+        <target>Household Head</target>
+      </trans-unit>
+      <trans-unit id="QHK6lzx" resname="Household Members">
+        <source>Household Members</source>
+        <target>Household Members</target>
+      </trans-unit>
+      <trans-unit id="oBr_HLy" resname="№">
+        <source>№</source>
+        <target>№</target>
+      </trans-unit>
+      <trans-unit id="J9iM8Zp" resname="FIRST NAME">
+        <source>FIRST NAME</source>
+        <target>FIRST NAME</target>
+      </trans-unit>
+      <trans-unit id="JVXARql" resname="FAMILY NAME">
+        <source>FAMILY NAME</source>
+        <target>FAMILY NAME</target>
+      </trans-unit>
+      <trans-unit id="CJHweCD" resname="DATE OF BIRTH">
+        <source>DATE OF BIRTH</source>
+        <target>DATE OF BIRTH</target>
+      </trans-unit>
+      <trans-unit id="QbuaQ3d" resname="ID No.">
+        <source>ID No.</source>
+        <target>ID No.</target>
+      </trans-unit>
+      <trans-unit id="IiL.etd" resname="PHONE NUMBER">
+        <source>PHONE NUMBER</source>
+        <target>PHONE NUMBER</target>
+      </trans-unit>
+      <trans-unit id="PCHfRb3" resname="STATUS (Resident, IDP or Refugee">
+        <source>STATUS (Resident, IDP or Refugee</source>
+        <target>STATUS (Resident, IDP or Refugee</target>
+      </trans-unit>
+      <trans-unit id="pZ3Qho_" resname="Gender (M/F)">
+        <source>Gender (M/F)</source>
+        <target>Gender (M/F)</target>
+      </trans-unit>
+      <trans-unit id="RafFTIT" resname="SIGNATURE">
+        <source>SIGNATURE</source>
+        <target>SIGNATURE</target>
+      </trans-unit>
+      <trans-unit id="CPJxiHz" resname="M">
+        <source>M</source>
+        <target>M</target>
+      </trans-unit>
+      <trans-unit id="9nqxCtT" resname="F">
+        <source>F</source>
+        <target>F</target>
+      </trans-unit>
+      <trans-unit id="L3..CFH"
+                  resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted&#10;the donation of the below specified items from People in Need. The below listed&#10;person agrees that their personal details will be processed by People in Need for the purpose of&#10;implementation of the project.">
+        <source>The below listed person confirm ...</source>
+        <target>The below listed person confirm by their signature of this Distribution List that they obtained and
+          accepted
+          the donation of the below specified items from People in Need. The below listed
+          person agrees that their personal details will be processed by People in Need for the purpose of
+          implementation of the project.
+        </target>
+      </trans-unit>
+      <trans-unit id="hIFv84P" resname="resident">
+        <source>resident</source>
+        <target>resident</target>
+      </trans-unit>
+      <trans-unit id="00vJDlK" resname="IDP">
+        <source>IDP</source>
+        <target>IDP</target>
+      </trans-unit>
+      <trans-unit id="8MkT7PE" resname="refugee">
+        <source>refugee</source>
+        <target>refugee</target>
+      </trans-unit>
+      <trans-unit id="1" resname="active">
+        <source>active</source>
+        <target>Active</target>
+      </trans-unit>
+      <trans-unit id="2" resname="activity">
+        <source>activity</source>
+        <target>Activity</target>
+      </trans-unit>
+      <trans-unit id="3" resname="activity_amount_completed">
+        <source>activity_amount_completed</source>
+        <target>Amount Completed</target>
+      </trans-unit>
+      <trans-unit id="4" resname="activity_description">
+        <source>activity_description</source>
+        <target>Activity Description</target>
+      </trans-unit>
+      <trans-unit id="5" resname="activity_details">
+        <source>activity_details</source>
+        <target>Activity Details</target>
+      </trans-unit>
+      <trans-unit id="6" resname="activity_households_targeted">
+        <source>activity_households_targeted</source>
+        <target>Households Targeted</target>
+      </trans-unit>
+      <trans-unit id="7" resname="activity_individuals_targeted">
+        <source>activity_individuals_targeted</source>
+        <target>Individuals Targeted</target>
+      </trans-unit>
+      <trans-unit id="8" resname="activity_progress">
+        <source>activity_progress</source>
+        <target>Activity Progress</target>
+      </trans-unit>
+      <trans-unit id="9" resname="activity_validated_title">
+        <source>activity_validated_title</source>
+        <target>Validated Activity</target>
+      </trans-unit>
+      <trans-unit id="10" resname="add">
+        <source>add</source>
+        <target>Add</target>
+      </trans-unit>
+      <trans-unit id="11" resname="add_beneficiary_code">
+        <source>add_beneficiary_code</source>
+        <target>Ext</target>
+      </trans-unit>
+      <trans-unit id="12" resname="add_beneficiary_done">
+        <source>add_beneficiary_done</source>
+        <target>Summary of Household to create</target>
+      </trans-unit>
+      <trans-unit id="13" resname="add_beneficiary_external_support">
+        <source>add_beneficiary_external_support</source>
+        <target>external support</target>
+      </trans-unit>
+      <trans-unit id="14" resname="add_beneficiary_occupation">
+        <source>add_beneficiary_occupation</source>
+        <target>Occupation</target>
+      </trans-unit>
+      <trans-unit id="15" resname="add_beneficiary_project">
+        <source>add_beneficiary_project</source>
+        <target>Please add this household to one or more project</target>
+      </trans-unit>
+      <trans-unit id="16" resname="add_beneficiary_title">
+        <source>add_beneficiary_title</source>
+        <target>add beneficiary</target>
+      </trans-unit>
+      <trans-unit id="17" resname="add_distribution_add_group">
+        <source>add_distribution_add_group</source>
+        <target>Add Group</target>
+      </trans-unit>
+      <trans-unit id="18" resname="add_distribution_advanced_option">
+        <source>add_distribution_advanced_option</source>
+        <target>Advanced options</target>
+      </trans-unit>
+      <trans-unit id="19" resname="add_distribution_average">
+        <source>add_distribution_average</source>
+        <target>Average</target>
+      </trans-unit>
+      <trans-unit id="20" resname="add_distribution_beneficiaries_reached">
+        <source>add_distribution_beneficiaries_reached</source>
+        <target>Beneficiaries reached</target>
+      </trans-unit>
+      <trans-unit id="21" resname="add_distribution_commodities_delivered">
+        <source>add_distribution_commodities_delivered</source>
+        <target>to be delivered</target>
+      </trans-unit>
+      <trans-unit id="22" resname="add_distribution_created">
+        <source>add_distribution_created</source>
+        <target>was created</target>
+      </trans-unit>
+      <trans-unit id="23" resname="add_distribution_date_before_today">
+        <source>add_distribution_date_before_today</source>
+        <target>Error while creating new distribution, your distribution date has to be after today</target>
+      </trans-unit>
+      <trans-unit id="24" resname="add_distribution_date_inside_project">
+        <source>add_distribution_date_inside_project</source>
+        <target>Error while creating new distribution, your distribution date has to be inside the project dates
+        </target>
+      </trans-unit>
+      <trans-unit id="25" resname="add_distribution_distributed_commodity">
+        <source>add_distribution_distributed_commodity</source>
+        <target>distributed commodity</target>
+      </trans-unit>
+      <trans-unit id="26" resname="add_distribution_error_creating">
+        <source>add_distribution_error_creating</source>
+        <target>Error while creating new distribution</target>
+      </trans-unit>
+      <trans-unit id="27" resname="add_distribution_high">
+        <source>add_distribution_high</source>
+        <target>High</target>
+      </trans-unit>
+      <trans-unit id="28" resname="add_distribution_households_reached">
+        <source>add_distribution_households_reached</source>
+        <target>Households reached</target>
+      </trans-unit>
+      <trans-unit id="29" resname="add_distribution_check_fields">
+        <source>add_distribution_check_fields</source>
+        <target>Fill the new distribution information before, including the commodity and a minimum selection score
+          value greater than 0.
+        </target>
+      </trans-unit>
+      <trans-unit id="30" resname="add_distribution_location_date">
+        <source>add_distribution_location_date</source>
+        <target>Location and date</target>
+      </trans-unit>
+      <trans-unit id="31" resname="add_distribution_low">
+        <source>add_distribution_low</source>
+        <target>Low</target>
+      </trans-unit>
+      <trans-unit id="32" resname="add_distribution_missing_commodity">
+        <source>add_distribution_missing_commodity</source>
+        <target>A commodity is missing</target>
+      </trans-unit>
+      <trans-unit id="33" resname="add_distribution_missing_criteria_group">
+        <source>add_distribution_missing_criteria_group</source>
+        <target>There are no criteria groups. Please add at least one criteria group.</target>
+      </trans-unit>
+      <trans-unit id="34" resname="add_distribution_missing_date">
+        <source>add_distribution_missing_date</source>
+        <target>The date is missing</target>
+      </trans-unit>
+      <trans-unit id="35" resname="add_distribution_missing_location">
+        <source>add_distribution_missing_location</source>
+        <target>Add a Province</target>
+      </trans-unit>
+      <trans-unit id="36" resname="add_distribution_missing_selection_criteria">
+        <source>add_distribution_missing_selection_criteria</source>
+        <target>A selection criterion is missing</target>
+      </trans-unit>
+      <trans-unit id="37" resname="add_distribution_missing_threshold">
+        <source>add_distribution_missing_threshold</source>
+        <target>The minimum selection score's value should be greater than 0</target>
+      </trans-unit>
+      <trans-unit id="38" resname="add_distribution_multiple_modalities">
+        <source>add_distribution_multiple_modalities</source>
+        <target>You cannot add commodities which are not distributed the same way</target>
+      </trans-unit>
+      <trans-unit id="39" resname="add_distribution_no_beneficiaries">
+        <source>add_distribution_no_beneficiaries</source>
+        <target>The number of reached beneficiaries/households must be positive</target>
+      </trans-unit>
+      <trans-unit id="40" resname="add_distribution_selection_criteria">
+        <source>add_distribution_selection_criteria</source>
+        <target>selection criteria</target>
+      </trans-unit>
+      <trans-unit id="41" resname="add_distribution_target">
+        <source>add_distribution_target</source>
+        <target>Target</target>
+      </trans-unit>
+      <trans-unit id="42" resname="add_distribution_text_explanation">
+        <source>add_distribution_text_explanation</source>
+        <target>The system will only select beneficiaries/households that have a score higher than the minimum selection
+          score
+        </target>
+      </trans-unit>
+      <trans-unit id="43" resname="add_distribution_threshold">
+        <source>add_distribution_threshold</source>
+        <target>Minimum selection score</target>
+      </trans-unit>
+      <trans-unit id="44" resname="add_distribution_very_high">
+        <source>add_distribution_very_high</source>
+        <target>Very high</target>
+      </trans-unit>
+      <trans-unit id="45" resname="add_distribution_very_low">
+        <source>add_distribution_very_low</source>
+        <target>Very low</target>
+      </trans-unit>
+      <trans-unit id="46" resname="add_distribution_zero">
+        <source>add_distribution_zero</source>
+        <target>The number of households reached or the amount to be distributed is 0</target>
+      </trans-unit>
+      <trans-unit id="47" resname="add_project_new_assistance">
+        <source>add_project_new_assistance</source>
+        <target>New Assistance</target>
+      </trans-unit>
+      <trans-unit id="48" resname="add_project_new_distribution">
+        <source>add_project_new_distribution</source>
+        <target>new distribution</target>
+      </trans-unit>
+      <trans-unit id="49" resname="add_project_title">
+        <source>add_project_title</source>
+        <target>new project</target>
+      </trans-unit>
+      <trans-unit id="50" resname="address">
+        <source>address</source>
+        <target>Address</target>
+      </trans-unit>
+      <trans-unit id="51" resname="address_number">
+        <source>address_number</source>
+        <target>Address Number</target>
+      </trans-unit>
+      <trans-unit id="52" resname="address_postcode">
+        <source>address_postcode</source>
+        <target>Address Postcode</target>
+      </trans-unit>
+      <trans-unit id="53" resname="address_street">
+        <source>address_street</source>
+        <target>Address Street</target>
+      </trans-unit>
+      <trans-unit id="54" resname="adm1">
+        <source>adm1</source>
+        <target>ADMINLEVELS.en.adm1</target>
+      </trans-unit>
+      <trans-unit id="55" resname="adm2">
+        <source>adm2</source>
+        <target>ADMINLEVELS.en.adm2</target>
+      </trans-unit>
+      <trans-unit id="56" resname="adm3">
+        <source>adm3</source>
+        <target>ADMINLEVELS.en.adm3</target>
+      </trans-unit>
+      <trans-unit id="57" resname="adm4">
+        <source>adm4</source>
+        <target>ADMINLEVELS.en.adm4</target>
+      </trans-unit>
+      <trans-unit id="58" resname="administrative_settings">
+        <source>administrative_settings</source>
+        <target>Administrative Settings</target>
+      </trans-unit>
+      <trans-unit id="59" resname="amount">
+        <source>amount</source>
+        <target>Amount</target>
+      </trans-unit>
+      <trans-unit id="60" resname="assistance_id">
+        <source>assistance_id</source>
+        <target>Assistance ID</target>
+      </trans-unit>
+      <trans-unit id="61" resname="assistance_type">
+        <source>assistance_type</source>
+        <target>Assistance Type</target>
+      </trans-unit>
+      <trans-unit id="62" resname="back">
+        <source>back</source>
+        <target>Back</target>
+      </trans-unit>
+      <trans-unit id="63" resname="back_to_homepage">
+        <source>back_to_homepage</source>
+        <target>Go back to homepage</target>
+      </trans-unit>
+      <trans-unit id="64" resname="beneficiaries">
+        <source>beneficiaries</source>
+        <target>beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="65" resname="beneficiary">
+        <source>beneficiary</source>
+        <target>Beneficiary</target>
+      </trans-unit>
+      <trans-unit id="66" resname="beneficiary_add_list">
+        <source>beneficiary_add_list</source>
+        <target>Add to project</target>
+      </trans-unit>
+      <trans-unit id="67" resname="beneficiary_add_project">
+        <source>beneficiary_add_project</source>
+        <target>Please select the project(s) in which you would like to add the</target>
+      </trans-unit>
+      <trans-unit id="68" resname="beneficiary_add_project_title">
+        <source>beneficiary_add_project_title</source>
+        <target>Add beneficiaries to a project</target>
+      </trans-unit>
+      <trans-unit id="69" resname="beneficiary_added">
+        <source>beneficiary_added</source>
+        <target>Beneficiaries added to the selected project</target>
+      </trans-unit>
+      <trans-unit id="70" resname="beneficiary_advanced_research">
+        <source>beneficiary_advanced_research</source>
+        <target>Advanced search</target>
+      </trans-unit>
+      <trans-unit id="71" resname="beneficiary_clear_all_research">
+        <source>beneficiary_clear_all_research</source>
+        <target>Clear all</target>
+      </trans-unit>
+      <trans-unit id="72" resname="beneficiary_count">
+        <source>beneficiary_count</source>
+        <target>Beneficiaries count</target>
+      </trans-unit>
+      <trans-unit id="73" resname="beneficiary_date_of_birth">
+        <source>beneficiary_date_of_birth</source>
+        <target>Date of Birth</target>
+      </trans-unit>
+      <trans-unit id="74" resname="beneficiary_en_family_name">
+        <source>beneficiary_en_family_name</source>
+        <target>family name (English)</target>
+      </trans-unit>
+      <trans-unit id="75" resname="beneficiary_en_given_name">
+        <source>beneficiary_en_given_name</source>
+        <target>First name (English)</target>
+      </trans-unit>
+      <trans-unit id="76" resname="beneficiary_en_name">
+        <source>beneficiary_en_name</source>
+        <target>name (English)</target>
+      </trans-unit>
+      <trans-unit id="77" resname="beneficiary_en_parent_name">
+        <source>beneficiary_en_parent_name</source>
+        <target>Parent name (English)</target>
+      </trans-unit>
+      <trans-unit id="78" resname="beneficiary_error_address_number">
+        <source>beneficiary_error_address_number</source>
+        <target>You must enter an address number</target>
+      </trans-unit>
+      <trans-unit id="79" resname="beneficiary_error_address_postcode">
+        <source>beneficiary_error_address_postcode</source>
+        <target>You must enter an address postcode</target>
+      </trans-unit>
+      <trans-unit id="80" resname="beneficiary_error_address_street">
+        <source>beneficiary_error_address_street</source>
+        <target>You must enter an address street</target>
+      </trans-unit>
+      <trans-unit id="81" resname="beneficiary_error_birth_date">
+        <source>beneficiary_error_birth_date</source>
+        <target>Please select a valid birth date for</target>
+      </trans-unit>
+      <trans-unit id="82" resname="beneficiary_error_camp">
+        <source>beneficiary_error_camp</source>
+        <target>You must select or create a camp</target>
+      </trans-unit>
+      <trans-unit id="83" resname="beneficiary_error_country_code">
+        <source>beneficiary_error_country_code</source>
+        <target>Please select a country code for the phone number for</target>
+      </trans-unit>
+      <trans-unit id="84" resname="beneficiary_error_existing_country_code">
+        <source>beneficiary_error_existing_country_code</source>
+        <target>Please select an existing country code from the list for</target>
+      </trans-unit>
+      <trans-unit id="85" resname="beneficiary_error_family_name">
+        <source>beneficiary_error_family_name</source>
+        <target>You must enter a local family name for</target>
+      </trans-unit>
+      <trans-unit id="86" resname="beneficiary_error_gender">
+        <source>beneficiary_error_gender</source>
+        <target>You must select a gender for</target>
+      </trans-unit>
+      <trans-unit id="87" resname="beneficiary_error_given_name">
+        <source>beneficiary_error_given_name</source>
+        <target>You must enter a local given name for</target>
+      </trans-unit>
+      <trans-unit id="88" resname="beneficiary_error_head">
+        <source>beneficiary_error_head</source>
+        <target>the head of household</target>
+      </trans-unit>
+      <trans-unit id="89" resname="beneficiary_error_location">
+        <source>beneficiary_error_location</source>
+        <target>You must select a location</target>
+      </trans-unit>
+      <trans-unit id="90" resname="beneficiary_error_location_type">
+        <source>beneficiary_error_location_type</source>
+        <target>You must chose a location type</target>
+      </trans-unit>
+      <trans-unit id="91" resname="beneficiary_error_member">
+        <source>beneficiary_error_member</source>
+        <target>member</target>
+      </trans-unit>
+      <trans-unit id="92" resname="beneficiary_error_phone">
+        <source>beneficiary_error_phone</source>
+        <target>Phone can only be composed of digits for</target>
+      </trans-unit>
+      <trans-unit id="93" resname="beneficiary_error_project">
+        <source>beneficiary_error_project</source>
+        <target>You must select at least one project</target>
+      </trans-unit>
+      <trans-unit id="94" resname="beneficiary_error_tent">
+        <source>beneficiary_error_tent</source>
+        <target>You must enter a tent number</target>
+      </trans-unit>
+      <trans-unit id="95" resname="beneficiary_family_name">
+        <source>beneficiary_family_name</source>
+        <target>Family Name</target>
+      </trans-unit>
+      <trans-unit id="96" resname="beneficiary_given_name">
+        <source>beneficiary_given_name</source>
+        <target>First name</target>
+      </trans-unit>
+      <trans-unit id="97" resname="beneficiary_head">
+        <source>beneficiary_head</source>
+        <target>Household Head</target>
+      </trans-unit>
+      <trans-unit id="98" resname="beneficiary_id">
+        <source>beneficiary_id</source>
+        <target>Beneficiary ID</target>
+      </trans-unit>
+      <trans-unit id="99" resname="beneficiary_import_addFile">
+        <source>beneficiary_import_addFile</source>
+        <target>add file or drag and drop</target>
+      </trans-unit>
+      <trans-unit id="100" resname="beneficiary_import_addModal">
+        <source>beneficiary_import_addModal</source>
+        <target>add file</target>
+      </trans-unit>
+      <trans-unit id="101" resname="beneficiary_import_api">
+        <source>beneficiary_import_api</source>
+        <target>import from external data source</target>
+      </trans-unit>
+      <trans-unit id="102" resname="beneficiary_import_beneficiaries_imported">
+        <source>beneficiary_import_beneficiaries_imported</source>
+        <target>beneficiaries inserted</target>
+      </trans-unit>
+      <trans-unit id="103" resname="beneficiary_import_canceled">
+        <source>beneficiary_import_canceled</source>
+        <target>import canceled</target>
+      </trans-unit>
+      <trans-unit id="104" resname="beneficiary_import_conversion_success">
+        <source>beneficiary_import_conversion_success</source>
+        <target>Conversion successfull!</target>
+      </trans-unit>
+      <trans-unit id="105" resname="beneficiary_import_convert">
+        <source>beneficiary_import_convert</source>
+        <target>convert file</target>
+      </trans-unit>
+      <trans-unit id="106" resname="beneficiary_import_csv">
+        <source>beneficiary_import_csv</source>
+        <target>download csv template</target>
+      </trans-unit>
+      <trans-unit id="107" resname="beneficiary_import_error_file">
+        <source>beneficiary_import_error_file</source>
+        <target>You must select a file</target>
+      </trans-unit>
+      <trans-unit id="108" resname="beneficiary_import_error_importing">
+        <source>beneficiary_import_error_importing</source>
+        <target>Error while importing data</target>
+      </trans-unit>
+      <trans-unit id="109" resname="beneficiary_import_error_selection">
+        <source>beneficiary_import_error_selection</source>
+        <target>You must select at least one choice</target>
+      </trans-unit>
+      <trans-unit id="110" resname="beneficiary_import_file">
+        <source>beneficiary_import_file</source>
+        <target>import from file</target>
+      </trans-unit>
+      <trans-unit id="111" resname="beneficiary_import_check_fields">
+        <source>beneficiary_import_check_fields</source>
+        <target>A field is empty or unset, please fill all inputs and select a project</target>
+      </trans-unit>
+      <trans-unit id="112" resname="beneficiary_import_response">
+        <source>beneficiary_import_response</source>
+        <target>Get ready to recover the file</target>
+      </trans-unit>
+      <trans-unit id="113" resname="beneficiary_import_select_location">
+        <source>beneficiary_import_select_location</source>
+        <target>You must select a location</target>
+      </trans-unit>
+      <trans-unit id="114" resname="beneficiary_import_select_project">
+        <source>beneficiary_import_select_project</source>
+        <target>You must select a project and add a file before uploading</target>
+      </trans-unit>
+      <trans-unit id="115" resname="beneficiary_import_title">
+        <source>beneficiary_import_title</source>
+        <target>Import beneficiary data</target>
+      </trans-unit>
+      <trans-unit id="116" resname="beneficiary_import_warning">
+        <source>beneficiary_import_warning</source>
+        <target>Warning: if the provided file is incomplete, the resulting one may need to be completed for the import
+          to succeed.
+        </target>
+      </trans-unit>
+      <trans-unit id="117" resname="beneficiary_justification_added">
+        <source>beneficiary_justification_added</source>
+        <target>Justification for adding</target>
+      </trans-unit>
+      <trans-unit id="118" resname="beneficiary_justification_removed">
+        <source>beneficiary_justification_removed</source>
+        <target>Justification for removing</target>
+      </trans-unit>
+      <trans-unit id="119" resname="beneficiary_local_family_name">
+        <source>beneficiary_local_family_name</source>
+        <target>family name (Local)</target>
+      </trans-unit>
+      <trans-unit id="120" resname="beneficiary_local_given_name">
+        <source>beneficiary_local_given_name</source>
+        <target>first name (Local)</target>
+      </trans-unit>
+      <trans-unit id="121" resname="beneficiary_local_name">
+        <source>beneficiary_local_name</source>
+        <target>name (Local)</target>
+      </trans-unit>
+      <trans-unit id="122" resname="beneficiary_local_parent_name">
+        <source>beneficiary_local_parent_name</source>
+        <target>Parent name (Local)</target>
+      </trans-unit>
+      <trans-unit id="123" resname="beneficiary_member">
+        <source>beneficiary_member</source>
+        <target>Member</target>
+      </trans-unit>
+      <trans-unit id="124" resname="beneficiary_missing_selected_project">
+        <source>beneficiary_missing_selected_project</source>
+        <target>You must select a project before uploading</target>
+      </trans-unit>
+      <trans-unit id="125" resname="beneficiary_personnal">
+        <source>beneficiary_personnal</source>
+        <target>personal information</target>
+      </trans-unit>
+      <trans-unit id="126" resname="beneficiary_plural">
+        <source>beneficiary_plural</source>
+        <target>these beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="127" resname="beneficiary_referral">
+        <source>beneficiary_referral</source>
+        <target>Referral</target>
+      </trans-unit>
+      <trans-unit id="128" resname="beneficiary_referral_comment">
+        <source>beneficiary_referral_comment</source>
+        <target>Comment</target>
+      </trans-unit>
+      <trans-unit id="129" resname="beneficiary_referral_question">
+        <source>beneficiary_referral_question</source>
+        <target>Add a referral</target>
+      </trans-unit>
+      <trans-unit id="130" resname="beneficiary_referral_type">
+        <source>beneficiary_referral_type</source>
+        <target>Referral type</target>
+      </trans-unit>
+      <trans-unit id="131" resname="beneficiary_referral_types">
+        <source>beneficiary_referral_types</source>
+        <target>REFERRALTYPES.en</target>
+      </trans-unit>
+      <trans-unit id="132" resname="beneficiary_res_address">
+        <source>beneficiary_res_address</source>
+        <target>Resident Address</target>
+      </trans-unit>
+      <trans-unit id="133" resname="beneficiary_residency">
+        <source>beneficiary_residency</source>
+        <target>residency</target>
+      </trans-unit>
+      <trans-unit id="134" resname="beneficiary_residency_status">
+        <source>beneficiary_residency_status</source>
+        <target>Residency status</target>
+      </trans-unit>
+      <trans-unit id="135" resname="beneficiary_residency_status_idp">
+        <source>beneficiary_residency_status_idp</source>
+        <target>IDP</target>
+      </trans-unit>
+      <trans-unit id="136" resname="beneficiary_residency_status_refugee">
+        <source>beneficiary_residency_status_refugee</source>
+        <target>refugee</target>
+      </trans-unit>
+      <trans-unit id="137" resname="beneficiary_residency_status_resident">
+        <source>beneficiary_residency_status_resident</source>
+        <target>resident</target>
+      </trans-unit>
+      <trans-unit id="138" resname="beneficiary_residency_status_returnee">
+        <source>beneficiary_residency_status_returnee</source>
+        <target>Returnee</target>
+      </trans-unit>
+      <trans-unit id="139" resname="beneficiary_select_api">
+        <source>beneficiary_select_api</source>
+        <target>Select API</target>
+      </trans-unit>
+      <trans-unit id="140" resname="beneficiary_selected_project">
+        <source>beneficiary_selected_project</source>
+        <target>selected beneficiaries:</target>
+      </trans-unit>
+      <trans-unit id="141" resname="beneficiary_update_title">
+        <source>beneficiary_update_title</source>
+        <target>Update Beneficiary</target>
+      </trans-unit>
+      <trans-unit id="142" resname="beneficiary_vulnerabilities">
+        <source>beneficiary_vulnerabilities</source>
+        <target>Vulnerabilities</target>
+      </trans-unit>
+      <trans-unit id="143" resname="booklet">
+        <source>booklet</source>
+        <target>Booklet</target>
+      </trans-unit>
+      <trans-unit id="144" resname="booklet_code">
+        <source>booklet_code</source>
+        <target>Code</target>
+      </trans-unit>
+      <trans-unit id="145" resname="booklet_deactivated">
+        <source>booklet_deactivated</source>
+        <target>Deactivated</target>
+      </trans-unit>
+      <trans-unit id="146" resname="booklet_define_password">
+        <source>booklet_define_password</source>
+        <target>Define a password</target>
+      </trans-unit>
+      <trans-unit id="147" resname="booklet_export_codes">
+        <source>booklet_export_codes</source>
+        <target>Export booklet codes</target>
+      </trans-unit>
+      <trans-unit id="148" resname="booklet_individual_value">
+        <source>booklet_individual_value</source>
+        <target>Individual value</target>
+      </trans-unit>
+      <trans-unit id="149" resname="booklet_number_booklets">
+        <source>booklet_number_booklets</source>
+        <target>Quantity of booklets</target>
+      </trans-unit>
+      <trans-unit id="150" resname="booklet_number_vouchers">
+        <source>booklet_number_vouchers</source>
+        <target>Quantity of vouchers</target>
+      </trans-unit>
+      <trans-unit id="151" resname="booklet_password_pattern">
+        <source>booklet_password_pattern</source>
+        <target>The password must be four digits</target>
+      </trans-unit>
+      <trans-unit id="152" resname="booklet_unassigned">
+        <source>booklet_unassigned</source>
+        <target>Unassigned</target>
+      </trans-unit>
+      <trans-unit id="153" resname="booklet_update_password">
+        <source>booklet_update_password</source>
+        <target>Update the password</target>
+      </trans-unit>
+      <trans-unit id="154" resname="booklet_used">
+        <source>booklet_used</source>
+        <target>Used</target>
+      </trans-unit>
+      <trans-unit id="155" resname="booklets">
+        <source>booklets</source>
+        <target>Booklets</target>
+      </trans-unit>
+      <trans-unit id="156" resname="cache_distribution_added">
+        <source>cache_distribution_added</source>
+        <target>Distribution and beneficiaries of the project added to the cache</target>
+      </trans-unit>
+      <trans-unit id="157" resname="cache_no_distribution">
+        <source>cache_no_distribution</source>
+        <target>This distribution isn't stored in the cache, you can't access it offline</target>
+      </trans-unit>
+      <trans-unit id="158" resname="cache_store_beneficiaries">
+        <source>cache_store_beneficiaries</source>
+        <target>Offline Mode</target>
+      </trans-unit>
+      <trans-unit id="159" resname="cache_stored_beneficiaries">
+        <source>cache_stored_beneficiaries</source>
+        <target>Saved For Offline Mode</target>
+      </trans-unit>
+      <trans-unit id="160" resname="campName">
+        <source>campName</source>
+        <target>Camp name</target>
+      </trans-unit>
+      <trans-unit id="161" resname="cancel">
+        <source>cancel</source>
+        <target>Cancel</target>
+      </trans-unit>
+      <trans-unit id="162" resname="car">
+        <source>car</source>
+        <target>Car</target>
+      </trans-unit>
+      <trans-unit id="163" resname="close">
+        <source>close</source>
+        <target>Close</target>
+      </trans-unit>
+      <trans-unit id="164" resname="commodity">
+        <source>commodity</source>
+        <target>Commodity</target>
+      </trans-unit>
+      <trans-unit id="165" resname="commodity_cash">
+        <source>commodity_cash</source>
+        <target>cash</target>
+      </trans-unit>
+      <trans-unit id="166" resname="commodity_in_kind">
+        <source>commodity_in_kind</source>
+        <target>in kind</target>
+      </trans-unit>
+      <trans-unit id="167" resname="commodity_kgs">
+        <source>commodity_kgs</source>
+        <target>Kgs</target>
+      </trans-unit>
+      <trans-unit id="168" resname="commodity_kit">
+        <source>commodity_kit</source>
+        <target>Kit</target>
+      </trans-unit>
+      <trans-unit id="169" resname="commodity_modality">
+        <source>commodity_modality</source>
+        <target>Modality</target>
+      </trans-unit>
+      <trans-unit id="170" resname="commodity_modality_activity">
+        <source>commodity_modality_activity</source>
+        <target>Activity item</target>
+      </trans-unit>
+      <trans-unit id="171" resname="commodity_modality_agriculture">
+        <source>commodity_modality_agriculture</source>
+        <target>Agricultural Kit</target>
+      </trans-unit>
+      <trans-unit id="172" resname="commodity_modality_bread">
+        <source>commodity_modality_bread</source>
+        <target>Bread</target>
+      </trans-unit>
+      <trans-unit id="173" resname="commodity_modality_business_grant">
+        <source>commodity_modality_business_grant</source>
+        <target>Business Grant</target>
+      </trans-unit>
+      <trans-unit id="174" resname="commodity_modality_cash">
+        <source>commodity_modality_cash</source>
+        <target>Mobile Money</target>
+      </trans-unit>
+      <trans-unit id="175" resname="commodity_modality_dignity">
+        <source>commodity_modality_dignity</source>
+        <target>Dignity kit</target>
+      </trans-unit>
+      <trans-unit id="176" resname="commodity_modality_food">
+        <source>commodity_modality_food</source>
+        <target>Food</target>
+      </trans-unit>
+      <trans-unit id="177" resname="commodity_modality_hygiene">
+        <source>commodity_modality_hygiene</source>
+        <target>Hygiene Kit</target>
+      </trans-unit>
+      <trans-unit id="178" resname="commodity_modality_loan">
+        <source>commodity_modality_loan</source>
+        <target>Loan</target>
+      </trans-unit>
+      <trans-unit id="179" resname="commodity_modality_nfi">
+        <source>commodity_modality_nfi</source>
+        <target>NFI Kit</target>
+      </trans-unit>
+      <trans-unit id="180" resname="commodity_modality_paper_voucher">
+        <source>commodity_modality_paper_voucher</source>
+        <target>Paper Voucher</target>
+      </trans-unit>
+      <trans-unit id="181" resname="commodity_modality_qr_voucher">
+        <source>commodity_modality_qr_voucher</source>
+        <target>QR Code Voucher</target>
+      </trans-unit>
+      <trans-unit id="182" resname="commodity_modality_rte">
+        <source>commodity_modality_rte</source>
+        <target>RTE Kit</target>
+      </trans-unit>
+      <trans-unit id="183" resname="commodity_modality_shelter">
+        <source>commodity_modality_shelter</source>
+        <target>Shelter tool kit</target>
+      </trans-unit>
+      <trans-unit id="184" resname="commodity_modality_wash">
+        <source>commodity_modality_wash</source>
+        <target>WASH Kit</target>
+      </trans-unit>
+      <trans-unit id="185" resname="commodity_modality_winterization">
+        <source>commodity_modality_winterization</source>
+        <target>Winterization Kit</target>
+      </trans-unit>
+      <trans-unit id="186" resname="commodity_smartcard">
+        <source>commodity_smartcard</source>
+        <target>smartcard</target>
+      </trans-unit>
+      <trans-unit id="187" resname="commodity_value">
+        <source>commodity_value</source>
+        <target>Quantity</target>
+      </trans-unit>
+      <trans-unit id="188" resname="commodity_value_voucher">
+        <source>commodity_value_voucher</source>
+        <target>Total value of the booklet</target>
+      </trans-unit>
+      <trans-unit id="189" resname="Commune">
+        <source>Commune</source>
+        <target>Commune</target>
+      </trans-unit>
+      <trans-unit id="190" resname="communities">
+        <source>communities</source>
+        <target>communities</target>
+      </trans-unit>
+      <trans-unit id="191" resname="community">
+        <source>community</source>
+        <target>community</target>
+      </trans-unit>
+      <trans-unit id="192" resname="complete">
+        <source>complete</source>
+        <target>Complete</target>
+      </trans-unit>
+      <trans-unit id="193" resname="copingStrategiesIndex">
+        <source>copingStrategiesIndex</source>
+        <target>Coping strategies index</target>
+      </trans-unit>
+      <trans-unit id="194" resname="country">
+        <source>country</source>
+        <target>Country</target>
+      </trans-unit>
+      <trans-unit id="195" resname="country_khm">
+        <source>country_khm</source>
+        <target>Cambodia</target>
+      </trans-unit>
+      <trans-unit id="196" resname="country_specific">
+        <source>country_specific</source>
+        <target>Country specific option</target>
+      </trans-unit>
+      <trans-unit id="197" resname="country_specific_field">
+        <source>country_specific_field</source>
+        <target>Field</target>
+      </trans-unit>
+      <trans-unit id="198" resname="country_syr">
+        <source>country_syr</source>
+        <target>Syria</target>
+      </trans-unit>
+      <trans-unit id="199" resname="create">
+        <source>create</source>
+        <target>Create</target>
+      </trans-unit>
+      <trans-unit id="200" resname="criteria">
+        <source>criteria</source>
+        <target>Criteria</target>
+      </trans-unit>
+      <trans-unit id="201" resname="criteria_operator">
+        <source>criteria_operator</source>
+        <target>Condition</target>
+      </trans-unit>
+      <trans-unit id="202" resname="criteria_target">
+        <source>criteria_target</source>
+        <target>Criteria Target</target>
+      </trans-unit>
+      <trans-unit id="203" resname="criteria_weight">
+        <source>criteria_weight</source>
+        <target>Score weight</target>
+      </trans-unit>
+      <trans-unit id="204" resname="currency">
+        <source>currency</source>
+        <target>Currency</target>
+      </trans-unit>
+      <trans-unit id="205" resname="currentAdm1">
+        <source>currentAdm1</source>
+        <target>Current location</target>
+      </trans-unit>
+      <trans-unit id="206" resname="currentAdm2">
+        <source>currentAdm2</source>
+        <target>Current location</target>
+      </trans-unit>
+      <trans-unit id="207" resname="currentAdm3">
+        <source>currentAdm3</source>
+        <target>Current location</target>
+      </trans-unit>
+      <trans-unit id="208" resname="currentAdm4">
+        <source>currentAdm4</source>
+        <target>Current location</target>
+      </trans-unit>
+      <trans-unit id="209" resname="currentLocation">
+        <source>currentLocation</source>
+        <target>Current location</target>
+      </trans-unit>
+      <trans-unit id="210" resname="dashboard_current_activities">
+        <source>dashboard_current_activities</source>
+        <target>Current Activities</target>
+      </trans-unit>
+      <trans-unit id="211" resname="dashboard_distribution_map">
+        <source>dashboard_distribution_map</source>
+        <target>distribution map</target>
+      </trans-unit>
+      <trans-unit id="212" resname="dashboard_recent_distributions">
+        <source>dashboard_recent_distributions</source>
+        <target>upcoming distributions</target>
+      </trans-unit>
+      <trans-unit id="213" resname="dashboard_summary_1">
+        <source>dashboard_summary_1</source>
+        <target>Beneficiary Registrations</target>
+      </trans-unit>
+      <trans-unit id="214" resname="dashboard_summary_1">
+        <source>dashboard_summary_1</source>
+        <target>total registrations</target>
+      </trans-unit>
+      <trans-unit id="215" resname="dashboard_summary_2">
+        <source>dashboard_summary_2</source>
+        <target>active projects</target>
+      </trans-unit>
+      <trans-unit id="216" resname="dashboard_summary_3">
+        <source>dashboard_summary_3</source>
+        <target>enrolled beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="217" resname="dashboard_summary_3">
+        <source>dashboard_summary_3</source>
+        <target>Enrolled Households</target>
+      </trans-unit>
+      <trans-unit id="218" resname="dashboard_summary_4">
+        <source>dashboard_summary_4</source>
+        <target>total value transactions</target>
+      </trans-unit>
+      <trans-unit id="219" resname="dashboard_summary_5">
+        <source>dashboard_summary_5</source>
+        <target>served beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="220" resname="dashboard_summary_5">
+        <source>dashboard_summary_5</source>
+        <target>Served Households</target>
+      </trans-unit>
+      <trans-unit id="221" resname="dashboard_summary_6">
+        <source>dashboard_summary_6</source>
+        <target>completed distributions</target>
+      </trans-unit>
+      <trans-unit id="222" resname="data_mapping_title">
+        <source>data_mapping_title</source>
+        <target>data columns mapping</target>
+      </trans-unit>
+      <trans-unit id="223" resname="data_verification_description_duplicates">
+        <source>data_verification_description_duplicates</source>
+        <target>The duplicate check page displays any potential duplicate beneficiary records in the database. If the
+          existing beneficiary is not a head of household, you can overwrite their information, ignored the changes, or
+          save both as different beneficiaries if you are sure they are different people.
+        </target>
+      </trans-unit>
+      <trans-unit id="224" resname="data_verification_description_end">
+        <source>data_verification_description_end</source>
+        <target>Modifications will NOT be added to the database until the end of the validation process</target>
+      </trans-unit>
+      <trans-unit id="225" resname="data_verification_description_less">
+        <source>data_verification_description_less</source>
+        <target>We found records which you’ve indicated you wish to remove from the database. Please select those which
+          you wish to remove.
+        </target>
+      </trans-unit>
+      <trans-unit id="226" resname="data_verification_description_more">
+        <source>data_verification_description_more</source>
+        <target>We found records that do not appear to exist in the database already. Please select those that you wish
+          to add to the project database.
+        </target>
+      </trans-unit>
+      <trans-unit id="227" resname="data_verification_description_typos">
+        <source>data_verification_description_typos</source>
+        <target>This panel will display any suspected data entry errors found in the imported beneficiary data. Please
+          choose whether to keep the existing one, update it with the imported data or save both as separate beneficiary
+          records.
+        </target>
+      </trans-unit>
+      <trans-unit id="228" resname="data_verification_done">
+        <source>data_verification_done</source>
+        <target>Your data has been verified</target>
+      </trans-unit>
+      <trans-unit id="229" resname="data_verification_error">
+        <source>data_verification_error</source>
+        <target>Error processing data</target>
+      </trans-unit>
+      <trans-unit id="230" resname="data_verification_chip_actual">
+        <source>data_verification_chip_actual</source>
+        <target>Household targeted</target>
+      </trans-unit>
+      <trans-unit id="231" resname="data_verification_chip_add">
+        <source>data_verification_chip_add</source>
+        <target>To add</target>
+      </trans-unit>
+      <trans-unit id="232" resname="data_verification_chip_existing">
+        <source>data_verification_chip_existing</source>
+        <target>Existing</target>
+      </trans-unit>
+      <trans-unit id="233" resname="data_verification_chip_remove">
+        <source>data_verification_chip_remove</source>
+        <target>To remove</target>
+      </trans-unit>
+      <trans-unit id="234" resname="data_verification_last_updated">
+        <source>data_verification_last_updated</source>
+        <target>Last updated</target>
+      </trans-unit>
+      <trans-unit id="235" resname="data_verification_snackbar_duplicate_corrected">
+        <source>data_verification_snackbar_duplicate_corrected</source>
+        <target>Duplicate issues corrected</target>
+      </trans-unit>
+      <trans-unit id="236" resname="data_verification_snackbar_duplicate_no_corrected">
+        <source>data_verification_snackbar_duplicate_no_corrected</source>
+        <target>Not all duplicated have been corrected</target>
+      </trans-unit>
+      <trans-unit id="237" resname="data_verification_snackbar_less_corrected">
+        <source>data_verification_snackbar_less_corrected</source>
+        <target>Beneficiaries removed with success</target>
+      </trans-unit>
+      <trans-unit id="238" resname="data_verification_snackbar_more_corrected">
+        <source>data_verification_snackbar_more_corrected</source>
+        <target>Beneficiaries added with success</target>
+      </trans-unit>
+      <trans-unit id="239" resname="data_verification_snackbar_typo_corrected">
+        <source>data_verification_snackbar_typo_corrected</source>
+        <target>Typo issues corrected</target>
+      </trans-unit>
+      <trans-unit id="240" resname="data_verification_snackbar_typo_no_corrected">
+        <source>data_verification_snackbar_typo_no_corrected</source>
+        <target>Not all typo issues have been corrected</target>
+      </trans-unit>
+      <trans-unit id="241" resname="data_verification_step_duplicates">
+        <source>data_verification_step_duplicates</source>
+        <target>Check for Duplicates</target>
+      </trans-unit>
+      <trans-unit id="242" resname="data_verification_step_info">
+        <source>data_verification_step_info</source>
+        <target>Step info</target>
+      </trans-unit>
+      <trans-unit id="243" resname="data_verification_step_less">
+        <source>data_verification_step_less</source>
+        <target>Remove Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="244" resname="data_verification_step_more">
+        <source>data_verification_step_more</source>
+        <target>Add Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="245" resname="data_verification_step_typos">
+        <source>data_verification_step_typos</source>
+        <target>Data Entry Inconsistencies</target>
+      </trans-unit>
+      <trans-unit id="246" resname="data_verification_title">
+        <source>data_verification_title</source>
+        <target>data verification and validation</target>
+      </trans-unit>
+      <trans-unit id="247" resname="date">
+        <source>date</source>
+        <target>date</target>
+      </trans-unit>
+      <trans-unit id="248" resname="dateOfBirth">
+        <source>dateOfBirth</source>
+        <target>Date of birth</target>
+      </trans-unit>
+      <trans-unit id="249" resname="delete">
+        <source>delete</source>
+        <target>Delete</target>
+      </trans-unit>
+      <trans-unit id="250" resname="description">
+        <source>description</source>
+        <target>description</target>
+      </trans-unit>
+      <trans-unit id="251" resname="details">
+        <source>details</source>
+        <target>Details</target>
+      </trans-unit>
+      <trans-unit id="252" resname="direction">
+        <source>direction</source>
+        <target>ltr</target>
+      </trans-unit>
+      <trans-unit id="253" resname="disabled">
+        <source>disabled</source>
+        <target>disabled</target>
+      </trans-unit>
+      <trans-unit id="254" resname="disabledHeadOfHousehold">
+        <source>disabledHeadOfHousehold</source>
+        <target>disabled</target>
+      </trans-unit>
+      <trans-unit id="255" resname="distributed">
+        <source>distributed</source>
+        <target>Distributed</target>
+      </trans-unit>
+      <trans-unit id="256" resname="distribution">
+        <source>distribution</source>
+        <target>Distribution</target>
+      </trans-unit>
+      <trans-unit id="257" resname="distribution_accept_changed">
+        <source>distribution_accept_changed</source>
+        <target>Accept Changes</target>
+      </trans-unit>
+      <trans-unit id="258" resname="distribution_add_beneficiaries">
+        <source>distribution_add_beneficiaries</source>
+        <target>Add beneficiaries to this distribution</target>
+      </trans-unit>
+      <trans-unit id="259" resname="distribution_add_justification">
+        <source>distribution_add_justification</source>
+        <target>Add justification</target>
+      </trans-unit>
+      <trans-unit id="260" resname="distribution_beneficiary_added">
+        <source>distribution_beneficiary_added</source>
+        <target>Beneficiary added</target>
+      </trans-unit>
+      <trans-unit id="261" resname="distribution_beneficiary_not_added">
+        <source>distribution_beneficiary_not_added</source>
+        <target>Beneficiary could not be added</target>
+      </trans-unit>
+      <trans-unit id="262" resname="distribution_cant_update">
+        <source>distribution_cant_update</source>
+        <target>You can't update this distribution.</target>
+      </trans-unit>
+      <trans-unit id="263" resname="distribution_complete">
+        <source>distribution_complete</source>
+        <target>Set as Completed</target>
+      </trans-unit>
+      <trans-unit id="264" resname="distribution_date">
+        <source>distribution_date</source>
+        <target>Date of distribution</target>
+      </trans-unit>
+      <trans-unit id="265" resname="distribution_details_export">
+        <source>distribution_details_export</source>
+        <target>distribution list</target>
+      </trans-unit>
+      <trans-unit id="266" resname="distribution_details_import">
+        <source>distribution_details_import</source>
+        <target>import &amp; compare</target>
+      </trans-unit>
+      <trans-unit id="267" resname="distribution_details_random">
+        <source>distribution_details_random</source>
+        <target>export random sample</target>
+      </trans-unit>
+      <trans-unit id="268" resname="distribution_details_sample_size">
+        <source>distribution_details_sample_size</source>
+        <target>Sample size</target>
+      </trans-unit>
+      <trans-unit id="269" resname="distribution_details_validate">
+        <source>distribution_details_validate</source>
+        <target>validate &amp; lock</target>
+      </trans-unit>
+      <trans-unit id="270" resname="distribution_distribute">
+        <source>distribution_distribute</source>
+        <target>set as distributed</target>
+      </trans-unit>
+      <trans-unit id="271" resname="distribution_edit">
+        <source>distribution_edit</source>
+        <target>Edit distribution</target>
+      </trans-unit>
+      <trans-unit id="272" resname="distribution_enrolled_households">
+        <source>distribution_enrolled_households</source>
+        <target>Enrolled Households</target>
+      </trans-unit>
+      <trans-unit id="273" resname="distribution_error_validate">
+        <source>distribution_error_validate</source>
+        <target>The distribution is empty, please fill it before to validate it</target>
+      </trans-unit>
+      <trans-unit id="274" resname="distribution_id">
+        <source>distribution_id</source>
+        <target>distributionID</target>
+      </trans-unit>
+      <trans-unit id="275" resname="distribution_justify_added">
+        <source>distribution_justify_added</source>
+        <target>Please provide a justification for adding beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="276" resname="distribution_justify_created">
+        <source>distribution_justify_created</source>
+        <target>Please provide a justification for creating beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="277" resname="distribution_justify_deleted">
+        <source>distribution_justify_deleted</source>
+        <target>Please provide a justification for deleting beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="278" resname="distribution_last_modification">
+        <source>distribution_last_modification</source>
+        <target>last modified :</target>
+      </trans-unit>
+      <trans-unit id="279" resname="distribution_no_beneficiaries">
+        <source>distribution_no_beneficiaries</source>
+        <target>No beneficiaries have been added or removed. Any changes made to the imported beneficiaries will be
+          updated in the system.
+        </target>
+      </trans-unit>
+      <trans-unit id="280" resname="distribution_no_random_sample">
+        <source>distribution_no_random_sample</source>
+        <target>Random sample can't be generated...</target>
+      </trans-unit>
+      <trans-unit id="281" resname="distribution_no_right_transaction">
+        <source>distribution_no_right_transaction</source>
+        <target>You haven't the right to realize the transaction, ask to your project manager or your country manager
+        </target>
+      </trans-unit>
+      <trans-unit id="282" resname="distribution_no_right_validate">
+        <source>distribution_no_right_validate</source>
+        <target>You haven't the right to validate the distribution, ask to your project manager</target>
+      </trans-unit>
+      <trans-unit id="283" resname="distribution_no_valid_commodity">
+        <source>distribution_no_valid_commodity</source>
+        <target>No valid commodity detected for this distribution.</target>
+      </trans-unit>
+      <trans-unit id="284" resname="distribution_not_modified">
+        <source>distribution_not_modified</source>
+        <target>This distribution has not been modified so far.</target>
+      </trans-unit>
+      <trans-unit id="285" resname="distribution_not_validated">
+        <source>distribution_not_validated</source>
+        <target>Distribution could not be validated</target>
+      </trans-unit>
+      <trans-unit id="286" resname="distribution_request_logs">
+        <source>distribution_request_logs</source>
+        <target>Send transaction logs by email</target>
+      </trans-unit>
+      <trans-unit id="287" resname="distribution_select_beneficiaries">
+        <source>distribution_select_beneficiaries</source>
+        <target>Please select the beneficiaries from the project</target>
+      </trans-unit>
+      <trans-unit id="288" resname="distribution_show_data">
+        <source>distribution_show_data</source>
+        <target>Show data anyway</target>
+      </trans-unit>
+      <trans-unit id="289" resname="distribution_succes_completed">
+        <source>distribution_succes_completed</source>
+        <target>Distribution successfully completed!</target>
+      </trans-unit>
+      <trans-unit id="290" resname="distribution_type">
+        <source>distribution_type</source>
+        <target>Target</target>
+      </trans-unit>
+      <trans-unit id="291" resname="distribution_validate">
+        <source>distribution_validate</source>
+        <target>Validate</target>
+      </trans-unit>
+      <trans-unit id="292" resname="distribution_validated">
+        <source>distribution_validated</source>
+        <target>Distribution has been validated</target>
+      </trans-unit>
+      <trans-unit id="293" resname="distribution_validated_title">
+        <source>distribution_validated_title</source>
+        <target>Validated distribution</target>
+      </trans-unit>
+      <trans-unit id="294" resname="distribution_want_add">
+        <source>distribution_want_add</source>
+        <target>that you want to add to the</target>
+      </trans-unit>
+      <trans-unit id="295" resname="distributions">
+        <source>distributions</source>
+        <target>distributions</target>
+      </trans-unit>
+      <trans-unit id="296" resname="done">
+        <source>done</source>
+        <target>Done</target>
+      </trans-unit>
+      <trans-unit id="297" resname="donor">
+        <source>donor</source>
+        <target>Donor</target>
+      </trans-unit>
+      <trans-unit id="298" resname="donor_fullname">
+        <source>donor_fullname</source>
+        <target>Donor\'s name</target>
+      </trans-unit>
+      <trans-unit id="299" resname="donor_shortname">
+        <source>donor_shortname</source>
+        <target>Shortname</target>
+      </trans-unit>
+      <trans-unit id="300" resname="donors">
+        <source>donors</source>
+        <target>donors</target>
+      </trans-unit>
+      <trans-unit id="301" resname="duplicate">
+        <source>duplicate</source>
+        <target>Duplicate</target>
+      </trans-unit>
+      <trans-unit id="302" resname="email">
+        <source>email</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="303" resname="error_interceptor_msg">
+        <source>error_interceptor_msg</source>
+        <target>An error occured, request has failed (Empty back response).</target>
+      </trans-unit>
+      <trans-unit id="304" resname="export">
+        <source>export</source>
+        <target>export</target>
+      </trans-unit>
+      <trans-unit id="305" resname="export_selected">
+        <source>export_selected</source>
+        <target>Export Selected Items</target>
+      </trans-unit>
+      <trans-unit id="306" resname="FALSE">
+        <source>FALSE</source>
+        <target>FALSE</target>
+      </trans-unit>
+      <trans-unit id="307" resname="false">
+        <source>false</source>
+        <target>FALSE</target>
+      </trans-unit>
+      <trans-unit id="308" resname="female">
+        <source>female</source>
+        <target>Female</target>
+      </trans-unit>
+      <trans-unit id="309" resname="foodConsumptionScore">
+        <source>foodConsumptionScore</source>
+        <target>Food consumption score</target>
+      </trans-unit>
+      <trans-unit id="310" resname="forbidden">
+        <source>forbidden</source>
+        <target>Forbidden Page</target>
+      </trans-unit>
+      <trans-unit id="311" resname="forbidden_message">
+        <source>forbidden_message</source>
+        <target>Sorry, you don't have permission to access this page</target>
+      </trans-unit>
+      <trans-unit id="312" resname="gender">
+        <source>gender</source>
+        <target>Gender</target>
+      </trans-unit>
+      <trans-unit id="313" resname="general_relief">
+        <source>general_relief</source>
+        <target>Item</target>
+      </trans-unit>
+      <trans-unit id="314" resname="general_settings">
+        <source>general_settings</source>
+        <target>Configuration</target>
+      </trans-unit>
+      <trans-unit id="315" resname="group">
+        <source>group</source>
+        <target>Group</target>
+      </trans-unit>
+      <trans-unit id="316" resname="hasNotBeenInDistributionsSince">
+        <source>hasNotBeenInDistributionsSince</source>
+        <target>has not been in a distribution since</target>
+      </trans-unit>
+      <trans-unit id="317" resname="head">
+        <source>head</source>
+        <target>Head</target>
+      </trans-unit>
+      <trans-unit id="318" resname="header_add">
+        <source>header_add</source>
+        <target>beneficiaries Add Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="319" resname="header_add">
+        <source>header_add</source>
+        <target>distribution Add Distribution</target>
+      </trans-unit>
+      <trans-unit id="320" resname="header_admin">
+        <source>header_admin</source>
+        <target>Administrative Settings</target>
+      </trans-unit>
+      <trans-unit id="321" resname="header_beneficiaries">
+        <source>header_beneficiaries</source>
+        <target>Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="322" resname="header_data">
+        <source>header_data</source>
+        <target>mapping Data Mapping</target>
+      </trans-unit>
+      <trans-unit id="323" resname="header_data">
+        <source>header_data</source>
+        <target>validation Data Validation</target>
+      </trans-unit>
+      <trans-unit id="324" resname="header_disconnect">
+        <source>header_disconnect</source>
+        <target>log out</target>
+      </trans-unit>
+      <trans-unit id="325" resname="header_distributions">
+        <source>header_distributions</source>
+        <target>distribution</target>
+      </trans-unit>
+      <trans-unit id="326" resname="header_home">
+        <source>header_home</source>
+        <target>Home</target>
+      </trans-unit>
+      <trans-unit id="327" resname="header_import">
+        <source>header_import</source>
+        <target>import beneficiary data</target>
+      </trans-unit>
+      <trans-unit id="328" resname="header_imported">
+        <source>header_imported</source>
+        <target>Imported beneficiaries data</target>
+      </trans-unit>
+      <trans-unit id="329" resname="header_language">
+        <source>header_language</source>
+        <target>Language</target>
+      </trans-unit>
+      <trans-unit id="330" resname="header_logs">
+        <source>header_logs</source>
+        <target>Logs</target>
+      </trans-unit>
+      <trans-unit id="331" resname="header_profile">
+        <source>header_profile</source>
+        <target>Profile</target>
+      </trans-unit>
+      <trans-unit id="332" resname="header_projects">
+        <source>header_projects</source>
+        <target>Projects</target>
+      </trans-unit>
+      <trans-unit id="333" resname="header_reports">
+        <source>header_reports</source>
+        <target>Reports</target>
+      </trans-unit>
+      <trans-unit id="334" resname="header_settings">
+        <source>header_settings</source>
+        <target>Configuration</target>
+      </trans-unit>
+      <trans-unit id="335" resname="header_update">
+        <source>header_update</source>
+        <target>beneficiary Update Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="336" resname="header_vouchers">
+        <source>header_vouchers</source>
+        <target>Vouchers</target>
+      </trans-unit>
+      <trans-unit id="337" resname="headOfHouseholdDateOfBirth">
+        <source>headOfHouseholdDateOfBirth</source>
+        <target>DATE OF BIRTH</target>
+      </trans-unit>
+      <trans-unit id="338" resname="headOfHouseholdGender">
+        <source>headOfHouseholdGender</source>
+        <target>Gender</target>
+      </trans-unit>
+      <trans-unit id="339" resname="history">
+        <source>history</source>
+        <target>history</target>
+      </trans-unit>
+      <trans-unit id="340" resname="home">
+        <source>home</source>
+        <target>home</target>
+      </trans-unit>
+      <trans-unit id="341" resname="household">
+        <source>household</source>
+        <target>Household</target>
+      </trans-unit>
+      <trans-unit id="342" resname="household_assets">
+        <source>household_assets</source>
+        <target>Assets</target>
+      </trans-unit>
+      <trans-unit id="343" resname="household_coping_strategies_index">
+        <source>household_coping_strategies_index</source>
+        <target>Coping strategies index</target>
+      </trans-unit>
+      <trans-unit id="344" resname="household_debt_level">
+        <source>household_debt_level</source>
+        <target>Debt level</target>
+      </trans-unit>
+      <trans-unit id="345" resname="household_food_consumption_score">
+        <source>household_food_consumption_score</source>
+        <target>Food consumption score</target>
+      </trans-unit>
+      <trans-unit id="346" resname="household_full_address">
+        <source>household_full_address</source>
+        <target>Full household address</target>
+      </trans-unit>
+      <trans-unit id="347" resname="household_id">
+        <source>household_id</source>
+        <target>Household ID</target>
+      </trans-unit>
+      <trans-unit id="348" resname="household_income">
+        <source>household_income</source>
+        <target>income level</target>
+      </trans-unit>
+      <trans-unit id="349" resname="household_income_level">
+        <source>household_income_level</source>
+        <target>INCOMELEVELS.english</target>
+      </trans-unit>
+      <trans-unit id="350" resname="household_income_spent_on_food">
+        <source>household_income_spent_on_food</source>
+        <target>Income spent on food</target>
+      </trans-unit>
+      <trans-unit id="351" resname="household_info">
+        <source>household_info</source>
+        <target>Household information summary</target>
+      </trans-unit>
+      <trans-unit id="352" resname="household_livelihood">
+        <source>household_livelihood</source>
+        <target>Livelihood</target>
+      </trans-unit>
+      <trans-unit id="353" resname="household_location">
+        <source>household_location</source>
+        <target>Household Location</target>
+      </trans-unit>
+      <trans-unit id="354" resname="household_location_address">
+        <source>household_location_address</source>
+        <target>Address</target>
+      </trans-unit>
+      <trans-unit id="355" resname="household_location_camp">
+        <source>household_location_camp</source>
+        <target>Camp</target>
+      </trans-unit>
+      <trans-unit id="356" resname="household_location_camp_name">
+        <source>household_location_camp_name</source>
+        <target>Camp name</target>
+      </trans-unit>
+      <trans-unit id="357" resname="household_location_create_camp">
+        <source>household_location_create_camp</source>
+        <target>Create a camp</target>
+      </trans-unit>
+      <trans-unit id="358" resname="household_location_current_address">
+        <source>household_location_current_address</source>
+        <target>Current address</target>
+      </trans-unit>
+      <trans-unit id="359" resname="household_location_current_location">
+        <source>household_location_current_location</source>
+        <target>Current location</target>
+      </trans-unit>
+      <trans-unit id="360" resname="household_location_question">
+        <source>household_location_question</source>
+        <target>Is your current location different than your address?</target>
+      </trans-unit>
+      <trans-unit id="361" resname="household_location_residence">
+        <source>household_location_residence</source>
+        <target>Residence</target>
+      </trans-unit>
+      <trans-unit id="362" resname="household_location_resident_address">
+        <source>household_location_resident_address</source>
+        <target>Resident address</target>
+      </trans-unit>
+      <trans-unit id="363" resname="household_location_resident_location">
+        <source>household_location_resident_location</source>
+        <target>Resident location</target>
+      </trans-unit>
+      <trans-unit id="364" resname="household_location_settlement">
+        <source>household_location_settlement</source>
+        <target>Temporary settlement</target>
+      </trans-unit>
+      <trans-unit id="365" resname="household_location_tent">
+        <source>household_location_tent</source>
+        <target>Tent number</target>
+      </trans-unit>
+      <trans-unit id="366" resname="household_location_type">
+        <source>household_location_type</source>
+        <target>Type of location</target>
+      </trans-unit>
+      <trans-unit id="367" resname="household_members">
+        <source>household_members</source>
+        <target>Members</target>
+      </trans-unit>
+      <trans-unit id="368" resname="household_no_data_offline">
+        <source>household_no_data_offline</source>
+        <target>This data can't be accessed offline</target>
+      </trans-unit>
+      <trans-unit id="369" resname="household_sentence">
+        <source>household_sentence</source>
+        <target>The household of</target>
+      </trans-unit>
+      <trans-unit id="370" resname="household_shelter_status">
+        <source>household_shelter_status</source>
+        <target>Shelter Status</target>
+      </trans-unit>
+      <trans-unit id="371" resname="household_status">
+        <source>household_status</source>
+        <target>Household status</target>
+      </trans-unit>
+      <trans-unit id="372" resname="household_summary_members">
+        <source>household_summary_members</source>
+        <target>Household Members</target>
+      </trans-unit>
+      <trans-unit id="373" resname="household_support_date_received">
+        <source>household_support_date_received</source>
+        <target>Support date received</target>
+      </trans-unit>
+      <trans-unit id="374" resname="household_support_organization">
+        <source>household_support_organization</source>
+        <target>Support organization</target>
+      </trans-unit>
+      <trans-unit id="375" resname="household_support_received_other_org">
+        <source>household_support_received_other_org</source>
+        <target>External Support Received Type</target>
+      </trans-unit>
+      <trans-unit id="376" resname="households">
+        <source>households</source>
+        <target>Household</target>
+      </trans-unit>
+      <trans-unit id="377" resname="householdSize">
+        <source>householdSize</source>
+        <target>Household size</target>
+      </trans-unit>
+      <trans-unit id="378" resname="characters">
+        <source>characters</source>
+        <target>Characters</target>
+      </trans-unit>
+      <trans-unit id="379" resname="id">
+        <source>id</source>
+        <target>Id</target>
+      </trans-unit>
+      <trans-unit id="380" resname="import">
+        <source>import</source>
+        <target>import</target>
+      </trans-unit>
+      <trans-unit id="381" resname="import_added">
+        <source>import_added</source>
+        <target>Added from existing beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="382" resname="import_back_to_beneficiaries">
+        <source>import_back_to_beneficiaries</source>
+        <target>Back to Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="383" resname="import_back_to_project">
+        <source>import_back_to_project</source>
+        <target>Back to Project</target>
+      </trans-unit>
+      <trans-unit id="384" resname="import_created">
+        <source>import_created</source>
+        <target>Newly created</target>
+      </trans-unit>
+      <trans-unit id="385" resname="import_deleted">
+        <source>import_deleted</source>
+        <target>Will be deleted</target>
+      </trans-unit>
+      <trans-unit id="386" resname="import_description">
+        <source>import_description</source>
+        <target>Import the file that contains the modified distribution. The database will be updated with the new list
+          of beneficiaries for this distribution when you will click on "update" after importing.
+        </target>
+      </trans-unit>
+      <trans-unit id="387" resname="import_distribution_no_right_update">
+        <source>import_distribution_no_right_update</source>
+        <target>You do not have the right to modify the distribution, ask your project manager</target>
+      </trans-unit>
+      <trans-unit id="388" resname="import_distribution_updated">
+        <source>import_distribution_updated</source>
+        <target>Distribution updated</target>
+      </trans-unit>
+      <trans-unit id="389" resname="import_select_new">
+        <source>import_select_new</source>
+        <target>Select all new</target>
+      </trans-unit>
+      <trans-unit id="390" resname="import_select_old">
+        <source>import_select_old</source>
+        <target>Select all old</target>
+      </trans-unit>
+      <trans-unit id="391" resname="import_updated">
+        <source>import_updated</source>
+        <target>Will be updated</target>
+      </trans-unit>
+      <trans-unit id="392" resname="incomeLevel">
+        <source>incomeLevel</source>
+        <target>income level</target>
+      </trans-unit>
+      <trans-unit id="393" resname="individual">
+        <source>individual</source>
+        <target>Individual</target>
+      </trans-unit>
+      <trans-unit id="394" resname="information">
+        <source>information</source>
+        <target>Information</target>
+      </trans-unit>
+      <trans-unit id="395" resname="institution">
+        <source>institution</source>
+        <target>institution</target>
+      </trans-unit>
+      <trans-unit id="396" resname="institution_contact_family_name">
+        <source>institution_contact_family_name</source>
+        <target>Contact family name</target>
+      </trans-unit>
+      <trans-unit id="397" resname="institution_contact_id_number">
+        <source>institution_contact_id_number</source>
+        <target>Contact ID number</target>
+      </trans-unit>
+      <trans-unit id="398" resname="institution_contact_id_type">
+        <source>institution_contact_id_type</source>
+        <target>Contact ID type</target>
+      </trans-unit>
+      <trans-unit id="399" resname="institution_contact_name">
+        <source>institution_contact_name</source>
+        <target>Contact name</target>
+      </trans-unit>
+      <trans-unit id="400" resname="institution_name">
+        <source>institution_name</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="401" resname="institution_type_commerce">
+        <source>institution_type_commerce</source>
+        <target>Other Commercial Building</target>
+      </trans-unit>
+      <trans-unit id="402" resname="institution_type_community_center">
+        <source>institution_type_community_center</source>
+        <target>Community Center</target>
+      </trans-unit>
+      <trans-unit id="403" resname="institution_type_government">
+        <source>institution_type_government</source>
+        <target>Other Government Building or Structure</target>
+      </trans-unit>
+      <trans-unit id="404" resname="institution_type_health">
+        <source>institution_type_health</source>
+        <target>Hospital/Health Centre</target>
+      </trans-unit>
+      <trans-unit id="405" resname="institution_type_production">
+        <source>institution_type_production</source>
+        <target>Warehouse/Factory</target>
+      </trans-unit>
+      <trans-unit id="406" resname="institution_type_school">
+        <source>institution_type_school</source>
+        <target>School</target>
+      </trans-unit>
+      <trans-unit id="407" resname="institutions">
+        <source>institutions</source>
+        <target>Institutions</target>
+      </trans-unit>
+      <trans-unit id="408" resname="is_required">
+        <source>is_required</source>
+        <target>is required</target>
+      </trans-unit>
+      <trans-unit id="409" resname="justification">
+        <source>justification</source>
+        <target>justification</target>
+      </trans-unit>
+      <trans-unit id="410" resname="lactating">
+        <source>lactating</source>
+        <target>lactating</target>
+      </trans-unit>
+      <trans-unit id="411" resname="language">
+        <source>language</source>
+        <target>language</target>
+      </trans-unit>
+      <trans-unit id="412" resname="latitude">
+        <source>latitude</source>
+        <target>Latitude</target>
+      </trans-unit>
+      <trans-unit id="413" resname="livelihood">
+        <source>livelihood</source>
+        <target>Livelihood</target>
+      </trans-unit>
+      <trans-unit id="414" resname="livelihood_agriculture_other">
+        <source>livelihood_agriculture_other</source>
+        <target>Agriculture – Other</target>
+      </trans-unit>
+      <trans-unit id="415" resname="livelihood_construction">
+        <source>livelihood_construction</source>
+        <target>Construction</target>
+      </trans-unit>
+      <trans-unit id="416" resname="livelihood_crops">
+        <source>livelihood_crops</source>
+        <target>Agriculture - Crops</target>
+      </trans-unit>
+      <trans-unit id="417" resname="livelihood_daily_labour">
+        <source>livelihood_daily_labour</source>
+        <target>Daily Labour</target>
+      </trans-unit>
+      <trans-unit id="418" resname="livelihood_education">
+        <source>livelihood_education</source>
+        <target>Education</target>
+      </trans-unit>
+      <trans-unit id="419" resname="livelihood_farming_agriculture">
+        <source>livelihood_farming_agriculture</source>
+        <target>Farming - Agriculture</target>
+      </trans-unit>
+      <trans-unit id="420" resname="livelihood_farming_livestock">
+        <source>livelihood_farming_livestock</source>
+        <target>Farming - Livestoc</target>
+      </trans-unit>
+      <trans-unit id="421" resname="livelihood_finance">
+        <source>livelihood_finance</source>
+        <target>Finance and Insurance</target>
+      </trans-unit>
+      <trans-unit id="422" resname="livelihood_fishing">
+        <source>livelihood_fishing</source>
+        <target>Agriculture – Fishing</target>
+      </trans-unit>
+      <trans-unit id="423" resname="livelihood_garment">
+        <source>livelihood_garment</source>
+        <target>Garment Industry</target>
+      </trans-unit>
+      <trans-unit id="424" resname="livelihood_government">
+        <source>livelihood_government</source>
+        <target>Government and Public Enterprise</target>
+      </trans-unit>
+      <trans-unit id="425" resname="livelihood_health">
+        <source>livelihood_health</source>
+        <target>Health Care</target>
+      </trans-unit>
+      <trans-unit id="426" resname="livelihood_home">
+        <source>livelihood_home</source>
+        <target>Home Duties</target>
+      </trans-unit>
+      <trans-unit id="427" resname="livelihood_home_duties">
+        <source>livelihood_home_duties</source>
+        <target>Home Duties</target>
+      </trans-unit>
+      <trans-unit id="428" resname="livelihood_legal">
+        <source>livelihood_legal</source>
+        <target>Legal Services</target>
+      </trans-unit>
+      <trans-unit id="429" resname="livelihood_livestock">
+        <source>livelihood_livestock</source>
+        <target>Agriculture - Livestock</target>
+      </trans-unit>
+      <trans-unit id="430" resname="livelihood_manual">
+        <source>livelihood_manual</source>
+        <target>Manual Labour</target>
+      </trans-unit>
+      <trans-unit id="431" resname="livelihood_manufacturing">
+        <source>livelihood_manufacturing</source>
+        <target>Manufacturing</target>
+      </trans-unit>
+      <trans-unit id="432" resname="livelihood_military">
+        <source>livelihood_military</source>
+        <target>Military or Police</target>
+      </trans-unit>
+      <trans-unit id="433" resname="livelihood_mining">
+        <source>livelihood_mining</source>
+        <target>Mining</target>
+      </trans-unit>
+      <trans-unit id="434" resname="livelihood_ngo">
+        <source>livelihood_ngo</source>
+        <target>NGO and Non Profit</target>
+      </trans-unit>
+      <trans-unit id="435" resname="livelihood_own_business">
+        <source>livelihood_own_business</source>
+        <target>Own Business</target>
+      </trans-unit>
+      <trans-unit id="436" resname="livelihood_religious">
+        <source>livelihood_religious</source>
+        <target>Religious Service</target>
+      </trans-unit>
+      <trans-unit id="437" resname="livelihood_retail">
+        <source>livelihood_retail</source>
+        <target>Retail</target>
+      </trans-unit>
+      <trans-unit id="438" resname="livelihood_security">
+        <source>livelihood_security</source>
+        <target>Security Industry</target>
+      </trans-unit>
+      <trans-unit id="439" resname="livelihood_service">
+        <source>livelihood_service</source>
+        <target>Service Industry and Other Professionals</target>
+      </trans-unit>
+      <trans-unit id="440" resname="livelihood_telecom">
+        <source>livelihood_telecom</source>
+        <target>IT and Telecommunications</target>
+      </trans-unit>
+      <trans-unit id="441" resname="livelihood_textiles">
+        <source>livelihood_textiles</source>
+        <target>Textiles</target>
+      </trans-unit>
+      <trans-unit id="442" resname="livelihood_tourism">
+        <source>livelihood_tourism</source>
+        <target>Hospitality and Tourism</target>
+      </trans-unit>
+      <trans-unit id="443" resname="livelihood_trading">
+        <source>livelihood_trading</source>
+        <target>Trading</target>
+      </trans-unit>
+      <trans-unit id="444" resname="livelihood_transportation">
+        <source>livelihood_transportation</source>
+        <target>Transportation</target>
+      </trans-unit>
+      <trans-unit id="445" resname="loading">
+        <source>loading</source>
+        <target>Loading</target>
+      </trans-unit>
+      <trans-unit id="446" resname="location">
+        <source>location</source>
+        <target>Location</target>
+      </trans-unit>
+      <trans-unit id="447" resname="locationType">
+        <source>locationType</source>
+        <target>Location type</target>
+      </trans-unit>
+      <trans-unit id="448" resname="log_active_users_title">
+        <source>log_active_users_title</source>
+        <target>Most active users</target>
+      </trans-unit>
+      <trans-unit id="449" resname="log_add_beneficiary">
+        <source>log_add_beneficiary</source>
+        <target>Added Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="450" resname="log_add_households">
+        <source>log_add_households</source>
+        <target>Added Households</target>
+      </trans-unit>
+      <trans-unit id="451" resname="log_archive">
+        <source>log_archive</source>
+        <target>Archived</target>
+      </trans-unit>
+      <trans-unit id="452" resname="log_assign">
+        <source>log_assign</source>
+        <target>Assigned</target>
+      </trans-unit>
+      <trans-unit id="453" resname="log_beneficiary">
+        <source>log_beneficiary</source>
+        <target>Beneficiary</target>
+      </trans-unit>
+      <trans-unit id="454" resname="log_booklet">
+        <source>log_booklet</source>
+        <target>Booklet</target>
+      </trans-unit>
+      <trans-unit id="455" resname="log_code">
+        <source>log_code</source>
+        <target>Code</target>
+      </trans-unit>
+      <trans-unit id="456" resname="log_complete">
+        <source>log_complete</source>
+        <target>Completed</target>
+      </trans-unit>
+      <trans-unit id="457" resname="log_country">
+        <source>log_country</source>
+        <target>Country Specifics</target>
+      </trans-unit>
+      <trans-unit id="458" resname="log_create">
+        <source>log_create</source>
+        <target>Created</target>
+      </trans-unit>
+      <trans-unit id="459" resname="log_deactivate">
+        <source>log_deactivate</source>
+        <target>Deactivated</target>
+      </trans-unit>
+      <trans-unit id="460" resname="log_deactivate_booklets">
+        <source>log_deactivate_booklets</source>
+        <target>Deactivated</target>
+      </trans-unit>
+      <trans-unit id="461" resname="log_delete">
+        <source>log_delete</source>
+        <target>Deleted</target>
+      </trans-unit>
+      <trans-unit id="462" resname="log_delete_batch">
+        <source>log_delete_batch</source>
+        <target>Batch Deleted</target>
+      </trans-unit>
+      <trans-unit id="463" resname="log_distribution">
+        <source>log_distribution</source>
+        <target>Distribution</target>
+      </trans-unit>
+      <trans-unit id="464" resname="log_donor">
+        <source>log_donor</source>
+        <target>Donor</target>
+      </trans-unit>
+      <trans-unit id="465" resname="log_edit_general_relief_notes">
+        <source>log_edit_general_relief_notes</source>
+        <target>General Relief Item Notes Added</target>
+      </trans-unit>
+      <trans-unit id="466" resname="log_family_name">
+        <source>log_family_name</source>
+        <target>Family name</target>
+      </trans-unit>
+      <trans-unit id="467" resname="log_field">
+        <source>log_field</source>
+        <target>Field</target>
+      </trans-unit>
+      <trans-unit id="468" resname="log_field_action">
+        <source>log_field_action</source>
+        <target>Action</target>
+      </trans-unit>
+      <trans-unit id="469" resname="log_field_country">
+        <source>log_field_country</source>
+        <target>Country</target>
+      </trans-unit>
+      <trans-unit id="470" resname="log_field_date">
+        <source>log_field_date</source>
+        <target>Date</target>
+      </trans-unit>
+      <trans-unit id="471" resname="log_field_details">
+        <source>log_field_details</source>
+        <target>Details:</target>
+      </trans-unit>
+      <trans-unit id="472" resname="log_field_id">
+        <source>log_field_id</source>
+        <target>Id</target>
+      </trans-unit>
+      <trans-unit id="473" resname="log_field_object">
+        <source>log_field_object</source>
+        <target>Object</target>
+      </trans-unit>
+      <trans-unit id="474" resname="log_field_status">
+        <source>log_field_status</source>
+        <target>STATUS (Resident, IDP or Refugee)</target>
+      </trans-unit>
+      <trans-unit id="475" resname="log_field_user">
+        <source>log_field_user</source>
+        <target>User</target>
+      </trans-unit>
+      <trans-unit id="476" resname="log_household">
+        <source>log_household</source>
+        <target>Household</target>
+      </trans-unit>
+      <trans-unit id="477" resname="log_import">
+        <source>log_import</source>
+        <target>Imported</target>
+      </trans-unit>
+      <trans-unit id="478" resname="log_import_beneficiaries_from_api">
+        <source>log_import_beneficiaries_from_api</source>
+        <target>Imported From Api</target>
+      </trans-unit>
+      <trans-unit id="479" resname="log_import_beneficiaries_from_syria_file">
+        <source>log_import_beneficiaries_from_syria_file</source>
+        <target>Imported From Syria File</target>
+      </trans-unit>
+      <trans-unit id="480" resname="log_import_beneficiary">
+        <source>log_import_beneficiary</source>
+        <target>Imported Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="481" resname="log_name">
+        <source>log_name</source>
+        <target>Name:</target>
+      </trans-unit>
+      <trans-unit id="482" resname="log_no_details">
+        <source>log_no_details</source>
+        <target>No details to display</target>
+      </trans-unit>
+      <trans-unit id="483" resname="log_not_exists">
+        <source>log_not_exists</source>
+        <target>Not exists anymore</target>
+      </trans-unit>
+      <trans-unit id="484" resname="log_number_booklets">
+        <source>log_number_booklets</source>
+        <target>Number of booklets</target>
+      </trans-unit>
+      <trans-unit id="485" resname="log_number_vouchers">
+        <source>log_number_vouchers</source>
+        <target>Number of vouchers</target>
+      </trans-unit>
+      <trans-unit id="486" resname="log_old_id">
+        <source>log_old_id</source>
+        <target>Previous id</target>
+      </trans-unit>
+      <trans-unit id="487" resname="log_organization">
+        <source>log_organization</source>
+        <target>Organization</target>
+      </trans-unit>
+      <trans-unit id="488" resname="log_post_language">
+        <source>log_post_language</source>
+        <target>Changed Default Language</target>
+      </trans-unit>
+      <trans-unit id="489" resname="log_post_password">
+        <source>log_post_password</source>
+        <target>Changed Password</target>
+      </trans-unit>
+      <trans-unit id="490" resname="log_product">
+        <source>log_product</source>
+        <target>Product</target>
+      </trans-unit>
+      <trans-unit id="491" resname="log_project">
+        <source>log_project</source>
+        <target>Project</target>
+      </trans-unit>
+      <trans-unit id="492" resname="log_remove_many">
+        <source>log_remove_many</source>
+        <target>Deleted</target>
+      </trans-unit>
+      <trans-unit id="493" resname="log_remove_one_beneficiary">
+        <source>log_remove_one_beneficiary</source>
+        <target>Removed One Beneficiary</target>
+      </trans-unit>
+      <trans-unit id="494" resname="log_requests">
+        <source>log_requests</source>
+        <target>Requests</target>
+      </trans-unit>
+      <trans-unit id="495" resname="log_requests_country_title">
+        <source>log_requests_country_title</source>
+        <target>Requests per country</target>
+      </trans-unit>
+      <trans-unit id="496" resname="log_requests_day_title">
+        <source>log_requests_day_title</source>
+        <target>Requests per day</target>
+      </trans-unit>
+      <trans-unit id="497" resname="log_scan">
+        <source>log_scan</source>
+        <target>Scanned</target>
+      </trans-unit>
+      <trans-unit id="498" resname="log_send_transaction">
+        <source>log_send_transaction</source>
+        <target>Mobile Money Sent</target>
+      </trans-unit>
+      <trans-unit id="499" resname="log_send_verification_email">
+        <source>log_send_verification_email</source>
+        <target>Code Sent</target>
+      </trans-unit>
+      <trans-unit id="500" resname="log_set_general_relief_items_as_distributed">
+        <source>log_set_general_relief_items_as_distributed</source>
+        <target>General Relief Item Distributed</target>
+      </trans-unit>
+      <trans-unit id="501" resname="log_status_200">
+        <source>log_status_200</source>
+        <target>Success</target>
+      </trans-unit>
+      <trans-unit id="502" resname="log_status_300">
+        <source>log_status_300</source>
+        <target>Redirected</target>
+      </trans-unit>
+      <trans-unit id="503" resname="log_status_400">
+        <source>log_status_400</source>
+        <target>Error</target>
+      </trans-unit>
+      <trans-unit id="504" resname="log_status_401">
+        <source>log_status_401</source>
+        <target>Unauthenticated</target>
+      </trans-unit>
+      <trans-unit id="505" resname="log_status_403">
+        <source>log_status_403</source>
+        <target>Forbidden</target>
+      </trans-unit>
+      <trans-unit id="506" resname="log_status_404">
+        <source>log_status_404</source>
+        <target>Not Found</target>
+      </trans-unit>
+      <trans-unit id="507" resname="log_status_rate_title">
+        <source>log_status_rate_title</source>
+        <target>Status rate</target>
+      </trans-unit>
+      <trans-unit id="508" resname="log_time">
+        <source>log_time</source>
+        <target>Time</target>
+      </trans-unit>
+      <trans-unit id="509" resname="log_transaction">
+        <source>log_transaction</source>
+        <target>Transaction</target>
+      </trans-unit>
+      <trans-unit id="510" resname="log_update">
+        <source>log_update</source>
+        <target>Updated</target>
+      </trans-unit>
+      <trans-unit id="511" resname="log_update_f_p">
+        <source>log_update_f_p</source>
+        <target>3rd party connection edited</target>
+      </trans-unit>
+      <trans-unit id="512" resname="log_update_password">
+        <source>log_update_password</source>
+        <target>Updated Password</target>
+      </trans-unit>
+      <trans-unit id="513" resname="log_upload_image">
+        <source>log_upload_image</source>
+        <target>Uploaded An Image</target>
+      </trans-unit>
+      <trans-unit id="514" resname="log_upload_logo">
+        <source>log_upload_logo</source>
+        <target>Uploaded A Logo</target>
+      </trans-unit>
+      <trans-unit id="515" resname="log_user">
+        <source>log_user</source>
+        <target>User</target>
+      </trans-unit>
+      <trans-unit id="516" resname="log_username">
+        <source>log_username</source>
+        <target>Username</target>
+      </trans-unit>
+      <trans-unit id="517" resname="log_users">
+        <source>log_users</source>
+        <target>Users</target>
+      </trans-unit>
+      <trans-unit id="518" resname="log_validate">
+        <source>log_validate</source>
+        <target>Validated</target>
+      </trans-unit>
+      <trans-unit id="519" resname="log_value">
+        <source>log_value</source>
+        <target>Value</target>
+      </trans-unit>
+      <trans-unit id="520" resname="log_vendor">
+        <source>log_vendor</source>
+        <target>Vendor</target>
+      </trans-unit>
+      <trans-unit id="521" resname="log_voucher">
+        <source>log_voucher</source>
+        <target>Voucher</target>
+      </trans-unit>
+      <trans-unit id="522" resname="login_bms">
+        <source>login_bms</source>
+        <target>Beneficiary management system</target>
+      </trans-unit>
+      <trans-unit id="523" resname="login_captcha_invalid">
+        <source>login_captcha_invalid</source>
+        <target>The captcha is invalid</target>
+      </trans-unit>
+      <trans-unit id="524" resname="login_password">
+        <source>login_password</source>
+        <target>*********</target>
+      </trans-unit>
+      <trans-unit id="525" resname="login_password">
+        <source>login_password</source>
+        <target>*********</target>
+      </trans-unit>
+      <trans-unit id="526" resname="login_prompt">
+        <source>login_prompt</source>
+        <target>Please log in</target>
+      </trans-unit>
+      <trans-unit id="527" resname="login_title">
+        <source>login_title</source>
+        <target>Login</target>
+      </trans-unit>
+      <trans-unit id="528" resname="login_title_google">
+        <source>login_title_google</source>
+        <target>Login with Google</target>
+      </trans-unit>
+      <trans-unit id="529" resname="login_title_hid">
+        <source>login_title_hid</source>
+        <target>Login with HID</target>
+      </trans-unit>
+      <trans-unit id="530" resname="login_two_fa_invalid_code">
+        <source>login_two_fa_invalid_code</source>
+        <target>Invalid code, please try again</target>
+      </trans-unit>
+      <trans-unit id="531" resname="login_two_fa_message">
+        <source>login_two_fa_message</source>
+        <target>This is your Humansis authentication code</target>
+      </trans-unit>
+      <trans-unit id="532" resname="logs">
+        <source>logs</source>
+        <target>Logs</target>
+      </trans-unit>
+      <trans-unit id="533" resname="longitude">
+        <source>longitude</source>
+        <target>Longitude</target>
+      </trans-unit>
+      <trans-unit id="534" resname="male">
+        <source>male</source>
+        <target>Male</target>
+      </trans-unit>
+      <trans-unit id="535" resname="map_legend_completed">
+        <source>map_legend_completed</source>
+        <target>completed</target>
+      </trans-unit>
+      <trans-unit id="536" resname="map_legend_not_validated">
+        <source>map_legend_not_validated</source>
+        <target>not validated</target>
+      </trans-unit>
+      <trans-unit id="537" resname="map_legend_validated">
+        <source>map_legend_validated</source>
+        <target>validated</target>
+      </trans-unit>
+      <trans-unit id="538" resname="modal_add_multiple_title">
+        <source>modal_add_multiple_title</source>
+        <target>Create new</target>
+      </trans-unit>
+      <trans-unit id="539" resname="modal_add_no_value">
+        <source>modal_add_no_value</source>
+        <target>You need to enter a value</target>
+      </trans-unit>
+      <trans-unit id="540" resname="modal_add_title">
+        <source>modal_add_title</source>
+        <target>Create a new</target>
+      </trans-unit>
+      <trans-unit id="541" resname="modal_complete_distribution">
+        <source>modal_complete_distribution</source>
+        <target>Are you sure you want to close this distribution?</target>
+      </trans-unit>
+      <trans-unit id="542" resname="modal_delete_beneficiary">
+        <source>modal_delete_beneficiary</source>
+        <target>Remove beneficiary</target>
+      </trans-unit>
+      <trans-unit id="543" resname="modal_delete_beneficiary_sentence">
+        <source>modal_delete_beneficiary_sentence</source>
+        <target>You are about to remove</target>
+      </trans-unit>
+      <trans-unit id="544" resname="modal_delete_beneficiary_sentence_2">
+        <source>modal_delete_beneficiary_sentence_2</source>
+        <target>from this distribution</target>
+      </trans-unit>
+      <trans-unit id="545" resname="modal_delete_many">
+        <source>modal_delete_many</source>
+        <target>these elements</target>
+      </trans-unit>
+      <trans-unit id="546" resname="modal_delete_sentence">
+        <source>modal_delete_sentence</source>
+        <target>You are about to delete</target>
+      </trans-unit>
+      <trans-unit id="547" resname="modal_delete_sentence_2">
+        <source>modal_delete_sentence_2</source>
+        <target>Do you wish to continue ?</target>
+      </trans-unit>
+      <trans-unit id="548" resname="modal_details_title">
+        <source>modal_details_title</source>
+        <target>Details of this</target>
+      </trans-unit>
+      <trans-unit id="549" resname="modal_edit_title">
+        <source>modal_edit_title</source>
+        <target>Edit this</target>
+      </trans-unit>
+      <trans-unit id="550" resname="modal_failure">
+        <source>modal_failure</source>
+        <target>Failure</target>
+      </trans-unit>
+      <trans-unit id="551" resname="modal_file_extension_error">
+        <source>modal_file_extension_error</source>
+        <target>The file extension must be</target>
+      </trans-unit>
+      <trans-unit id="552" resname="modal_check_date">
+        <source>modal_check_date</source>
+        <target>Invalid fields = Your start date cannot be older than the end date</target>
+      </trans-unit>
+      <trans-unit id="553" resname="modal_check_fields">
+        <source>modal_check_fields</source>
+        <target>Invalid fields = check you filled every field</target>
+      </trans-unit>
+      <trans-unit id="554" resname="modal_language_actual">
+        <source>modal_language_actual</source>
+        <target>Current language</target>
+      </trans-unit>
+      <trans-unit id="555" resname="modal_leave">
+        <source>modal_leave</source>
+        <target>Leave</target>
+      </trans-unit>
+      <trans-unit id="556" resname="modal_leave_sentence">
+        <source>modal_leave_sentence</source>
+        <target>Do you really want to leave with unsaved changes ?</target>
+      </trans-unit>
+      <trans-unit id="557" resname="modal_no_file">
+        <source>modal_no_file</source>
+        <target>No file chosen</target>
+      </trans-unit>
+      <trans-unit id="558" resname="modal_no_pending_requests">
+        <source>modal_no_pending_requests</source>
+        <target>There are no pending requests</target>
+      </trans-unit>
+      <trans-unit id="559" resname="modal_not_enough_strong">
+        <source>modal_not_enough_strong</source>
+        <target>The password is not strong enough... Minimum required = 8 characters, 1 lowercase, 1 uppercase, 1
+          numeric
+        </target>
+      </trans-unit>
+      <trans-unit id="560" resname="modal_pending_requests">
+        <source>modal_pending_requests</source>
+        <target>Pending Requests</target>
+      </trans-unit>
+      <trans-unit id="561" resname="modal_pick_color">
+        <source>modal_pick_color</source>
+        <target>Select a color</target>
+      </trans-unit>
+      <trans-unit id="562" resname="modal_request_error">
+        <source>modal_request_error</source>
+        <target>Error while sending request:</target>
+      </trans-unit>
+      <trans-unit id="563" resname="modal_request_success">
+        <source>modal_request_success</source>
+        <target>was sent</target>
+      </trans-unit>
+      <trans-unit id="564" resname="modal_required">
+        <source>modal_required</source>
+        <target>required</target>
+      </trans-unit>
+      <trans-unit id="565" resname="modal_save_language_as_default">
+        <source>modal_save_language_as_default</source>
+        <target>Set this as my default language</target>
+      </trans-unit>
+      <trans-unit id="566" resname="modal_success">
+        <source>modal_success</source>
+        <target>Success</target>
+      </trans-unit>
+      <trans-unit id="567" resname="modal_valid_email">
+        <source>modal_valid_email</source>
+        <target>Please enter a valid email address</target>
+      </trans-unit>
+      <trans-unit id="568" resname="modal_values_format_error">
+        <source>modal_values_format_error</source>
+        <target>If you want to set individual values, type numeric values separated by commas (max 5)</target>
+      </trans-unit>
+      <trans-unit id="569" resname="modal_warning_pending_requests_1">
+        <source>modal_warning_pending_requests_1</source>
+        <target>Find the requests you created during your offline time below, you can send those you want to apply to
+          modify the database.
+        </target>
+      </trans-unit>
+      <trans-unit id="570" resname="modal_warning_pending_requests_2">
+        <source>modal_warning_pending_requests_2</source>
+        <target>WARNING = Requests linked to an item you created offline will fail !</target>
+      </trans-unit>
+      <trans-unit id="571" resname="months_short">
+        <source>months_short</source>
+        <target>Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec</target>
+      </trans-unit>
+      <trans-unit id="572" resname="name">
+        <source>name</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="573" resname="national_id">
+        <source>national_id</source>
+        <target>National ID</target>
+      </trans-unit>
+      <trans-unit id="574" resname="national_id_birth_certificate">
+        <source>national_id_birth_certificate</source>
+        <target>Birth Certificate</target>
+      </trans-unit>
+      <trans-unit id="575" resname="national_id_camp">
+        <source>national_id_camp</source>
+        <target>Camp ID</target>
+      </trans-unit>
+      <trans-unit id="576" resname="national_id_card">
+        <source>national_id_card</source>
+        <target>National ID Number</target>
+      </trans-unit>
+      <trans-unit id="577" resname="national_id_family_registry">
+        <source>national_id_family_registry</source>
+        <target>Family Registration</target>
+      </trans-unit>
+      <trans-unit id="578" resname="national_id_license">
+        <source>national_id_license</source>
+        <target>Driver’s License</target>
+      </trans-unit>
+      <trans-unit id="579" resname="national_id_number">
+        <source>national_id_number</source>
+        <target>ID number</target>
+      </trans-unit>
+      <trans-unit id="580" resname="national_id_passport">
+        <source>national_id_passport</source>
+        <target>Passport</target>
+      </trans-unit>
+      <trans-unit id="581" resname="national_id_social_service">
+        <source>national_id_social_service</source>
+        <target>Social Service Card</target>
+      </trans-unit>
+      <trans-unit id="582" resname="national_id_type">
+        <source>national_id_type</source>
+        <target>ID Type</target>
+      </trans-unit>
+      <trans-unit id="583" resname="network_access_offline">
+        <source>network_access_offline</source>
+        <target>This data can't be accessed offline:</target>
+      </trans-unit>
+      <trans-unit id="584" resname="network_manipulate_offline">
+        <source>network_manipulate_offline</source>
+        <target>This data can't be manipulated offline:</target>
+      </trans-unit>
+      <trans-unit id="585" resname="network_no_connection">
+        <source>network_no_connection</source>
+        <target>No network connection</target>
+      </trans-unit>
+      <trans-unit id="586" resname="network_no_connection_reconnect">
+        <source>network_no_connection_reconnect</source>
+        <target>No network connection, this data will be sent once you are reconnected</target>
+      </trans-unit>
+      <trans-unit id="587" resname="network_status_connected">
+        <source>network_status_connected</source>
+        <target>You are now connected to the network</target>
+      </trans-unit>
+      <trans-unit id="588" resname="network_status_disconnected">
+        <source>network_status_disconnected</source>
+        <target>You are now disconnected from the network</target>
+      </trans-unit>
+      <trans-unit id="589" resname="new">
+        <source>new</source>
+        <target>New</target>
+      </trans-unit>
+      <trans-unit id="590" resname="next">
+        <source>next</source>
+        <target>Next</target>
+      </trans-unit>
+      <trans-unit id="591" resname="no_data">
+        <source>no_data</source>
+        <target>No data</target>
+      </trans-unit>
+      <trans-unit id="592" resname="no_data_to_export">
+        <source>no_data_to_export</source>
+        <target>No data to export</target>
+      </trans-unit>
+      <trans-unit id="593" resname="not_connected_error">
+        <source>not_connected_error</source>
+        <target>Please log in</target>
+      </trans-unit>
+      <trans-unit id="594" resname="not_enough_rights">
+        <source>not_enough_rights</source>
+        <target>Not enough rights to request logs</target>
+      </trans-unit>
+      <trans-unit id="595" resname="not_found">
+        <source>not_found</source>
+        <target>Page Not Found</target>
+      </trans-unit>
+      <trans-unit id="596" resname="not_found_message">
+        <source>not_found_message</source>
+        <target>Sorry, this page could not be found</target>
+      </trans-unit>
+      <trans-unit id="597" resname="notes">
+        <source>notes</source>
+        <target>Notes</target>
+      </trans-unit>
+      <trans-unit id="598" resname="null_none">
+        <source>null_none</source>
+        <target>None</target>
+      </trans-unit>
+      <trans-unit id="599" resname="null_not_distributed">
+        <source>null_not_distributed</source>
+        <target>not distributed</target>
+      </trans-unit>
+      <trans-unit id="600" resname="null_not_yet">
+        <source>null_not_yet</source>
+        <target>not yet</target>
+      </trans-unit>
+      <trans-unit id="601" resname="null_not_yet_defined">
+        <source>null_not_yet_defined</source>
+        <target>not yet defined</target>
+      </trans-unit>
+      <trans-unit id="602" resname="number">
+        <source>number</source>
+        <target>№</target>
+      </trans-unit>
+      <trans-unit id="603" resname="number_suffix_other">
+        <source>number_suffix_other</source>
+        <target>th</target>
+      </trans-unit>
+      <trans-unit id="604" resname="nutritionalIssues">
+        <source>nutritionalIssues</source>
+        <target>nutritional issues</target>
+      </trans-unit>
+      <trans-unit id="605" resname="or">
+        <source>or</source>
+        <target>or</target>
+      </trans-unit>
+      <trans-unit id="606" resname="organization_font">
+        <source>organization_font</source>
+        <target>font to apply to the pdf</target>
+      </trans-unit>
+      <trans-unit id="607" resname="organization_footer">
+        <source>organization_footer</source>
+        <target>pdf footer content</target>
+      </trans-unit>
+      <trans-unit id="608" resname="organization_logo">
+        <source>organization_logo</source>
+        <target>organization logo</target>
+      </trans-unit>
+      <trans-unit id="609" resname="organization_name">
+        <source>organization_name</source>
+        <target>organization name</target>
+      </trans-unit>
+      <trans-unit id="610" resname="organization_primary">
+        <source>organization_primary</source>
+        <target>organization primary color</target>
+      </trans-unit>
+      <trans-unit id="611" resname="organization_secondary">
+        <source>organization_secondary</source>
+        <target>organization secondary color</target>
+      </trans-unit>
+      <trans-unit id="612" resname="other">
+        <source>other</source>
+        <target>Other</target>
+      </trans-unit>
+      <trans-unit id="613" resname="password">
+        <source>password</source>
+        <target>Password</target>
+      </trans-unit>
+      <trans-unit id="614" resname="phone">
+        <source>phone</source>
+        <target>Phone</target>
+      </trans-unit>
+      <trans-unit id="615" resname="phone_no">
+        <source>phone_no</source>
+        <target>Phone No.</target>
+      </trans-unit>
+      <trans-unit id="616" resname="phone_prefix">
+        <source>phone_prefix</source>
+        <target>Ext</target>
+      </trans-unit>
+      <trans-unit id="617" resname="phone_proxy">
+        <source>phone_proxy</source>
+        <target>Proxy</target>
+      </trans-unit>
+      <trans-unit id="618" resname="phone_type_landline">
+        <source>phone_type_landline</source>
+        <target>Landline</target>
+      </trans-unit>
+      <trans-unit id="619" resname="phone_type_mobile">
+        <source>phone_type_mobile</source>
+        <target>Mobile</target>
+      </trans-unit>
+      <trans-unit id="620" resname="placeholder_one_many">
+        <source>placeholder_one_many</source>
+        <target>Select one or many</target>
+      </trans-unit>
+      <trans-unit id="621" resname="pregnant">
+        <source>pregnant</source>
+        <target>pregnant</target>
+      </trans-unit>
+      <trans-unit id="622" resname="price">
+        <source>price</source>
+        <target>Price</target>
+      </trans-unit>
+      <trans-unit id="623" resname="print">
+        <source>print</source>
+        <target>Print</target>
+      </trans-unit>
+      <trans-unit id="624" resname="product_image">
+        <source>product_image</source>
+        <target>Image</target>
+      </trans-unit>
+      <trans-unit id="625" resname="products">
+        <source>products</source>
+        <target>Products</target>
+      </trans-unit>
+      <trans-unit id="626" resname="profile">
+        <source>profile</source>
+        <target>Profile</target>
+      </trans-unit>
+      <trans-unit id="627" resname="profile_change_password">
+        <source>profile_change_password</source>
+        <target>You need to change your password</target>
+      </trans-unit>
+      <trans-unit id="628" resname="profile_change_phone">
+        <source>profile_change_phone</source>
+        <target>Change phone number</target>
+      </trans-unit>
+      <trans-unit id="629" resname="profile_password_changed">
+        <source>profile_password_changed</source>
+        <target>Password changed</target>
+      </trans-unit>
+      <trans-unit id="630" resname="profile_password_would_not_be_changed">
+        <source>profile_password_would_not_be_changed</source>
+        <target>The two passwords are identical, ignoring update.</target>
+      </trans-unit>
+      <trans-unit id="631" resname="profile_phone_changed">
+        <source>profile_phone_changed</source>
+        <target>Phone number successfully changed</target>
+      </trans-unit>
+      <trans-unit id="632" resname="profile_phone_not_valid">
+        <source>profile_phone_not_valid</source>
+        <target>The phone number introduced is not valid</target>
+      </trans-unit>
+      <trans-unit id="633" resname="profile_two_fa_disable">
+        <source>profile_two_fa_disable</source>
+        <target>Disable</target>
+      </trans-unit>
+      <trans-unit id="634" resname="profile_two_fa_disabled">
+        <source>profile_two_fa_disabled</source>
+        <target>Two factor authentication disabled</target>
+      </trans-unit>
+      <trans-unit id="635" resname="profile_two_fa_enable">
+        <source>profile_two_fa_enable</source>
+        <target>Enable</target>
+      </trans-unit>
+      <trans-unit id="636" resname="profile_two_fa_enabled">
+        <source>profile_two_fa_enabled</source>
+        <target>Two factor authentication successfully enabled</target>
+      </trans-unit>
+      <trans-unit id="637" resname="profile_two_fa_information">
+        <source>profile_two_fa_information</source>
+        <target>Two-factor authentication adds an additional layer of security to your account by requiring more than a
+          password to log in
+        </target>
+      </trans-unit>
+      <trans-unit id="638" resname="profile_two_fa_title">
+        <source>profile_two_fa_title</source>
+        <target>2 Factor Authentication</target>
+      </trans-unit>
+      <trans-unit id="639" resname="profile_two_fa_warning">
+        <source>profile_two_fa_warning</source>
+        <target>You need a registered telephone number to enable two-phase authentication</target>
+      </trans-unit>
+      <trans-unit id="640" resname="profile_user_hint_new_password">
+        <source>profile_user_hint_new_password</source>
+        <target>New password</target>
+      </trans-unit>
+      <trans-unit id="641" resname="profile_user_hint_new_password_again">
+        <source>profile_user_hint_new_password_again</source>
+        <target>Re-enter new password</target>
+      </trans-unit>
+      <trans-unit id="642" resname="profile_user_hint_new_phone_number">
+        <source>profile_user_hint_new_phone_number</source>
+        <target>PHONE NUMBER</target>
+      </trans-unit>
+      <trans-unit id="643" resname="profile_user_hint_new_phone_prefix">
+        <source>profile_user_hint_new_phone_prefix</source>
+        <target>Prefix</target>
+      </trans-unit>
+      <trans-unit id="644" resname="profile_user_hint_old_password">
+        <source>profile_user_hint_old_password</source>
+        <target>Old password</target>
+      </trans-unit>
+      <trans-unit id="645" resname="profile_user_change_password">
+        <source>profile_user_change_password</source>
+        <target>Change password</target>
+      </trans-unit>
+      <trans-unit id="646" resname="profile_user_information">
+        <source>profile_user_information</source>
+        <target>User information</target>
+      </trans-unit>
+      <trans-unit id="647" resname="project">
+        <source>project</source>
+        <target>project</target>
+      </trans-unit>
+      <trans-unit id="648" resname="project_add">
+        <source>project_add</source>
+        <target>Please add a new project to begin!</target>
+      </trans-unit>
+      <trans-unit id="649" resname="project_add_household">
+        <source>project_add_household</source>
+        <target>Please add some beneficiaries first! Then you will be able to manage some distributions...</target>
+      </trans-unit>
+      <trans-unit id="650" resname="project_click">
+        <source>project_click</source>
+        <target>Click on</target>
+      </trans-unit>
+      <trans-unit id="651" resname="project_create">
+        <source>project_create</source>
+        <target>Create a new project</target>
+      </trans-unit>
+      <trans-unit id="652" resname="project_description">
+        <source>project_description</source>
+        <target>You will be able to modify project's name until your first distribution.</target>
+      </trans-unit>
+      <trans-unit id="653" resname="project_end_date">
+        <source>project_end_date</source>
+        <target>End Date</target>
+      </trans-unit>
+      <trans-unit id="654" resname="project_go_import_beneficiaries">
+        <source>project_go_import_beneficiaries</source>
+        <target>Import Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="655" resname="project_internal_id">
+        <source>project_internal_id</source>
+        <target>Internal ID</target>
+      </trans-unit>
+      <trans-unit id="656" resname="project_name">
+        <source>project_name</source>
+        <target>Project's name</target>
+      </trans-unit>
+      <trans-unit id="657" resname="project_no_distribution">
+        <source>project_no_distribution</source>
+        <target>This project does not contain any distributions. Create your first one !</target>
+      </trans-unit>
+      <trans-unit id="658" resname="project_no_household">
+        <source>project_no_household</source>
+        <target>This project does not contain any households.</target>
+      </trans-unit>
+      <trans-unit id="659" resname="project_no_projects">
+        <source>project_no_projects</source>
+        <target>This country currently does not contain any active projects.</target>
+      </trans-unit>
+      <trans-unit id="660" resname="project_number_of_households">
+        <source>project_number_of_households</source>
+        <target>Number of Households</target>
+      </trans-unit>
+      <trans-unit id="661" resname="project_registered_households">
+        <source>project_registered_households</source>
+        <target>Registered Households</target>
+      </trans-unit>
+      <trans-unit id="662" resname="project_sectors_name">
+        <source>project_sectors_name</source>
+        <target>Sectors</target>
+      </trans-unit>
+      <trans-unit id="663" resname="project_start_date">
+        <source>project_start_date</source>
+        <target>Start Date</target>
+      </trans-unit>
+      <trans-unit id="664" resname="project_target_households">
+        <source>project_target_households</source>
+        <target>Target Households</target>
+      </trans-unit>
+      <trans-unit id="665" resname="project_value">
+        <source>project_value</source>
+        <target>Total Target Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="666" resname="projects">
+        <source>projects</source>
+        <target>projects</target>
+      </trans-unit>
+      <trans-unit id="667" resname="purchased_by">
+        <source>purchased_by</source>
+        <target>Purchased by</target>
+      </trans-unit>
+      <trans-unit id="668" resname="purchases">
+        <source>purchases</source>
+        <target>Purchases</target>
+      </trans-unit>
+      <trans-unit id="669" resname="quantity">
+        <source>quantity</source>
+        <target>Quantity</target>
+      </trans-unit>
+      <trans-unit id="670" resname="redeem">
+        <source>redeem</source>
+        <target>Redeem</target>
+      </trans-unit>
+      <trans-unit id="671" resname="remove">
+        <source>remove</source>
+        <target>Remove</target>
+      </trans-unit>
+      <trans-unit id="672" resname="report_active_project">
+        <source>report_active_project</source>
+        <target>active project</target>
+      </trans-unit>
+      <trans-unit id="673" resname="report_active_projects">
+        <source>report_active_projects</source>
+        <target>active projects</target>
+      </trans-unit>
+      <trans-unit id="674" resname="report_age_breakdown">
+        <source>report_age_breakdown</source>
+        <target>Age breakdown</target>
+      </trans-unit>
+      <trans-unit id="675" resname="report_apply">
+        <source>report_apply</source>
+        <target>apply</target>
+      </trans-unit>
+      <trans-unit id="676" resname="report_country">
+        <source>report_country</source>
+        <target>country</target>
+      </trans-unit>
+      <trans-unit id="677" resname="report_country_report">
+        <source>report_country_report</source>
+        <target>country report</target>
+      </trans-unit>
+      <trans-unit id="678" resname="report_disabled">
+        <source>report_disabled</source>
+        <target>Disabled</target>
+      </trans-unit>
+      <trans-unit id="679" resname="report_distribution_report">
+        <source>report_distribution_report</source>
+        <target>distribution report</target>
+      </trans-unit>
+      <trans-unit id="680" resname="report_distributions">
+        <source>report_distributions</source>
+        <target>Distributions</target>
+      </trans-unit>
+      <trans-unit id="681" resname="report_donors">
+        <source>report_donors</source>
+        <target>Donors</target>
+      </trans-unit>
+      <trans-unit id="682" resname="report_enrolled_beneficiaries">
+        <source>report_enrolled_beneficiaries</source>
+        <target>enrolled beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="683" resname="report_enrolled_beneficiary">
+        <source>report_enrolled_beneficiary</source>
+        <target>enrolled beneficiary</target>
+      </trans-unit>
+      <trans-unit id="684" resname="report_filter_chose_periode">
+        <source>report_filter_chose_periode</source>
+        <target>choose period</target>
+      </trans-unit>
+      <trans-unit id="685" resname="report_filter_per_month">
+        <source>report_filter_per_month</source>
+        <target>per month</target>
+      </trans-unit>
+      <trans-unit id="686" resname="report_filter_per_quarter">
+        <source>report_filter_per_quarter</source>
+        <target>per quarter</target>
+      </trans-unit>
+      <trans-unit id="687" resname="report_filter_per_year">
+        <source>report_filter_per_year</source>
+        <target>per year</target>
+      </trans-unit>
+      <trans-unit id="688" resname="report_frequency_month">
+        <source>report_frequency_month</source>
+        <target>Month</target>
+      </trans-unit>
+      <trans-unit id="689" resname="report_frequency_quarter">
+        <source>report_frequency_quarter</source>
+        <target>Quarter</target>
+      </trans-unit>
+      <trans-unit id="690" resname="report_frequency_year">
+        <source>report_frequency_year</source>
+        <target>Year</target>
+      </trans-unit>
+      <trans-unit id="691" resname="report_from">
+        <source>report_from</source>
+        <target>from</target>
+      </trans-unit>
+      <trans-unit id="692" resname="report_household">
+        <source>report_household</source>
+        <target>Household</target>
+      </trans-unit>
+      <trans-unit id="693" resname="report_household_served">
+        <source>report_household_served</source>
+        <target>Households served</target>
+      </trans-unit>
+      <trans-unit id="694" resname="report_households">
+        <source>report_households</source>
+        <target>Households</target>
+      </trans-unit>
+      <trans-unit id="695" resname="report_lactating">
+        <source>report_lactating</source>
+        <target>Lactating</target>
+      </trans-unit>
+      <trans-unit id="696" resname="report_loader">
+        <source>report_loader</source>
+        <target>Loader</target>
+      </trans-unit>
+      <trans-unit id="697" resname="report_men">
+        <source>report_men</source>
+        <target>Men</target>
+      </trans-unit>
+      <trans-unit id="698" resname="report_missing_distribution">
+        <source>report_missing_distribution</source>
+        <target>You did not select a distribution!</target>
+      </trans-unit>
+      <trans-unit id="699" resname="report_modality">
+        <source>report_modality</source>
+        <target>Modality</target>
+      </trans-unit>
+      <trans-unit id="700" resname="report_not_reached">
+        <source>report_not_reached</source>
+        <target>Not reached</target>
+      </trans-unit>
+      <trans-unit id="701" resname="report_number_men_and_women">
+        <source>report_number_men_and_women</source>
+        <target>Number men and women</target>
+      </trans-unit>
+      <trans-unit id="702" resname="report_number_of_enrolled_beneficiaries">
+        <source>report_number_of_enrolled_beneficiaries</source>
+        <target>Number of enrolled beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="703" resname="report_nutritionalissues">
+        <source>report_nutritionalissues</source>
+        <target>Nutritional Issues</target>
+      </trans-unit>
+      <trans-unit id="704" resname="report_percentage_of_beneficiaries">
+        <source>report_percentage_of_beneficiaries</source>
+        <target>Percentage of beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="705" resname="report_percentage_of_beneficiaries_reached">
+        <source>report_percentage_of_beneficiaries_reached</source>
+        <target>Percentage of beneficiaries reached</target>
+      </trans-unit>
+      <trans-unit id="706" resname="report_percentage_of_vulnerabilities_served">
+        <source>report_percentage_of_vulnerabilities_served</source>
+        <target>Percentage of vulnerabilities served</target>
+      </trans-unit>
+      <trans-unit id="707" resname="report_period_selected">
+        <source>report_period_selected</source>
+        <target>Period selected</target>
+      </trans-unit>
+      <trans-unit id="708" resname="report_project">
+        <source>report_project</source>
+        <target>Project Report</target>
+      </trans-unit>
+      <trans-unit id="709" resname="report_project_report">
+        <source>report_project_report</source>
+        <target>project report</target>
+      </trans-unit>
+      <trans-unit id="710" resname="report_select_frequency">
+        <source>report_select_frequency</source>
+        <target>Select frequency</target>
+      </trans-unit>
+      <trans-unit id="711" resname="report_soloparent">
+        <source>report_soloparent</source>
+        <target>Solo Parent</target>
+      </trans-unit>
+      <trans-unit id="712" resname="report_time">
+        <source>report_time</source>
+        <target>Time</target>
+      </trans-unit>
+      <trans-unit id="713" resname="report_to">
+        <source>report_to</source>
+        <target>to</target>
+      </trans-unit>
+      <trans-unit id="714" resname="report_total_distribution_value">
+        <source>report_total_distribution_value</source>
+        <target>Total distribution value</target>
+      </trans-unit>
+      <trans-unit id="715" resname="report_total_households">
+        <source>report_total_households</source>
+        <target>Total Households</target>
+      </trans-unit>
+      <trans-unit id="716" resname="report_total_number_of_distributions">
+        <source>report_total_number_of_distributions</source>
+        <target>Total Number Of Distributions</target>
+      </trans-unit>
+      <trans-unit id="717" resname="report_total_transactions_completed">
+        <source>report_total_transactions_completed</source>
+        <target>Total Transactions Completed</target>
+      </trans-unit>
+      <trans-unit id="718" resname="report_transactions_completed">
+        <source>report_transactions_completed</source>
+        <target>transactions completed</target>
+      </trans-unit>
+      <trans-unit id="719" resname="report_upcoming_reporting">
+        <source>report_upcoming_reporting</source>
+        <target>Upcoming reporting</target>
+      </trans-unit>
+      <trans-unit id="720" resname="report_vulnerability_served">
+        <source>report_vulnerability_served</source>
+        <target>Vulnerability Served</target>
+      </trans-unit>
+      <trans-unit id="721" resname="report_women">
+        <source>report_women</source>
+        <target>Women</target>
+      </trans-unit>
+      <trans-unit id="722" resname="reports">
+        <source>reports</source>
+        <target>reports</target>
+      </trans-unit>
+      <trans-unit id="723" resname="residencyStatus">
+        <source>residencyStatus</source>
+        <target>Residency status</target>
+      </trans-unit>
+      <trans-unit id="724" resname="rights">
+        <source>rights</source>
+        <target>Rights</target>
+      </trans-unit>
+      <trans-unit id="725" resname="role_user_admin">
+        <source>role_user_admin</source>
+        <target>Administrator</target>
+      </trans-unit>
+      <trans-unit id="726" resname="role_user_country_manager">
+        <source>role_user_country_manager</source>
+        <target>Country manager</target>
+      </trans-unit>
+      <trans-unit id="727" resname="role_user_enumerator">
+        <source>role_user_enumerator</source>
+        <target>Enumerator</target>
+      </trans-unit>
+      <trans-unit id="728" resname="role_user_field_officer">
+        <source>role_user_field_officer</source>
+        <target>Field officer</target>
+      </trans-unit>
+      <trans-unit id="729" resname="role_user_project_manager">
+        <source>role_user_project_manager</source>
+        <target>Project manager</target>
+      </trans-unit>
+      <trans-unit id="730" resname="role_user_project_officer">
+        <source>role_user_project_officer</source>
+        <target>Project officer</target>
+      </trans-unit>
+      <trans-unit id="731" resname="role_user_regional_manager">
+        <source>role_user_regional_manager</source>
+        <target>Regional manager</target>
+      </trans-unit>
+      <trans-unit id="732" resname="save">
+        <source>save</source>
+        <target>Save</target>
+      </trans-unit>
+      <trans-unit id="733" resname="sector">
+        <source>sector</source>
+        <target>Sector</target>
+      </trans-unit>
+      <trans-unit id="734" resname="sector_cash_for_work">
+        <source>sector_cash_for_work</source>
+        <target>Cash for Work</target>
+      </trans-unit>
+      <trans-unit id="735" resname="sector_cccm">
+        <source>sector_cccm</source>
+        <target>Camp coordination and management</target>
+      </trans-unit>
+      <trans-unit id="736" resname="sector_drr_diligence">
+        <source>sector_drr_diligence</source>
+        <target>DRR Diligence</target>
+      </trans-unit>
+      <trans-unit id="737" resname="sector_education">
+        <source>sector_education</source>
+        <target>Education</target>
+      </trans-unit>
+      <trans-unit id="738" resname="sector_education_tvet">
+        <source>sector_education_tvet</source>
+        <target>Education &amp; TVET</target>
+      </trans-unit>
+      <trans-unit id="739" resname="sector_food">
+        <source>sector_food</source>
+        <target>Food security</target>
+      </trans-unit>
+      <trans-unit id="740" resname="sector_food_kits">
+        <source>sector_food_kits</source>
+        <target>Food Kit</target>
+      </trans-unit>
+      <trans-unit id="741" resname="sector_health">
+        <source>sector_health</source>
+        <target>Health</target>
+      </trans-unit>
+      <trans-unit id="742" resname="sector_livelihoods">
+        <source>sector_livelihoods</source>
+        <target>Livelihood</target>
+      </trans-unit>
+      <trans-unit id="743" resname="sector_logistics">
+        <source>sector_logistics</source>
+        <target>Logistics</target>
+      </trans-unit>
+      <trans-unit id="744" resname="sector_mine_action">
+        <source>sector_mine_action</source>
+        <target>Mine action</target>
+      </trans-unit>
+      <trans-unit id="745" resname="sector_multipurpose_cash">
+        <source>sector_multipurpose_cash</source>
+        <target>Multi-Purpose Cash Assistance</target>
+      </trans-unit>
+      <trans-unit id="746" resname="sector_nfi">
+        <source>sector_nfi</source>
+        <target>NFIs</target>
+      </trans-unit>
+      <trans-unit id="747" resname="sector_nonspecific">
+        <source>sector_nonspecific</source>
+        <target>Non-specific sector</target>
+      </trans-unit>
+      <trans-unit id="748" resname="sector_nutrition">
+        <source>sector_nutrition</source>
+        <target>Nutrition</target>
+      </trans-unit>
+      <trans-unit id="749" resname="sector_protection">
+        <source>sector_protection</source>
+        <target>Protection</target>
+      </trans-unit>
+      <trans-unit id="750" resname="sector_recovery">
+        <source>sector_recovery</source>
+        <target>Early recovery</target>
+      </trans-unit>
+      <trans-unit id="751" resname="sector_shelter">
+        <source>sector_shelter</source>
+        <target>Shelter</target>
+      </trans-unit>
+      <trans-unit id="752" resname="sector_telecom">
+        <source>sector_telecom</source>
+        <target>Emergency telecommunications</target>
+      </trans-unit>
+      <trans-unit id="753" resname="sector_tvet">
+        <source>sector_tvet</source>
+        <target>TVET</target>
+      </trans-unit>
+      <trans-unit id="754" resname="sector_water">
+        <source>sector_water</source>
+        <target>WASH</target>
+      </trans-unit>
+      <trans-unit id="755" resname="selected">
+        <source>selected</source>
+        <target>selected</target>
+      </trans-unit>
+      <trans-unit id="756" resname="settings">
+        <source>settings</source>
+        <target>Settings</target>
+      </trans-unit>
+      <trans-unit id="757" resname="settings_country_specific_options">
+        <source>settings_country_specific_options</source>
+        <target>country specific options</target>
+      </trans-unit>
+      <trans-unit id="758" resname="settings_created">
+        <source>settings_created</source>
+        <target>created</target>
+      </trans-unit>
+      <trans-unit id="759" resname="settings_financial_provider">
+        <source>settings_financial_provider</source>
+        <target>Third party connections</target>
+      </trans-unit>
+      <trans-unit id="760" resname="settings_log_button">
+        <source>settings_log_button</source>
+        <target>Get user logs by email</target>
+      </trans-unit>
+      <trans-unit id="761" resname="settings_organization">
+        <source>settings_organization</source>
+        <target>My organization</target>
+      </trans-unit>
+      <trans-unit id="762" resname="settings_print_starting">
+        <source>settings_print_starting</source>
+        <target>Your download is starting</target>
+      </trans-unit>
+      <trans-unit id="763" resname="settings_project_exists">
+        <source>settings_project_exists</source>
+        <target>A project with this name already exists</target>
+      </trans-unit>
+      <trans-unit id="764" resname="snackbar_created_successfully">
+        <source>snackbar_created_successfully</source>
+        <target>Created successfully</target>
+      </trans-unit>
+      <trans-unit id="765" resname="snackbar_distribution_in_future">
+        <source>snackbar_distribution_in_future</source>
+        <target>The Date of the Distribution is in the future. You cannot proceed with this Transaction.</target>
+      </trans-unit>
+      <trans-unit id="766" resname="snackbar_error_creating">
+        <source>snackbar_error_creating</source>
+        <target>Error while creating</target>
+      </trans-unit>
+      <trans-unit id="767" resname="snackbar_error_updating">
+        <source>snackbar_error_updating</source>
+        <target>Error while updating</target>
+      </trans-unit>
+      <trans-unit id="768" resname="snackbar_change_password_done">
+        <source>snackbar_change_password_done</source>
+        <target>Password has been changed!</target>
+      </trans-unit>
+      <trans-unit id="769" resname="snackbar_change_password_fail">
+        <source>snackbar_change_password_fail</source>
+        <target>Could not change password...</target>
+      </trans-unit>
+      <trans-unit id="770" resname="snackbar_change_password_not_possible">
+        <source>snackbar_change_password_not_possible</source>
+        <target>Password must be longer than 1 character and match with verification</target>
+      </trans-unit>
+      <trans-unit id="771" resname="snackbar_invalid_transaction_date">
+        <source>snackbar_invalid_transaction_date</source>
+        <target>The transaction deadline is over.</target>
+      </trans-unit>
+      <trans-unit id="772" resname="snackbar_no_data_export">
+        <source>snackbar_no_data_export</source>
+        <target>No data to export</target>
+      </trans-unit>
+      <trans-unit id="773" resname="snackbar_pdf_export_failed">
+        <source>snackbar_pdf_export_failed</source>
+        <target>Cannot export PDF file because there are no graphs on web page.</target>
+      </trans-unit>
+      <trans-unit id="774" resname="snackbar_pickup_error">
+        <source>snackbar_pickup_error</source>
+        <target>It is currently impossible to check the pickup status</target>
+      </trans-unit>
+      <trans-unit id="775" resname="snackbar_saved_language">
+        <source>snackbar_saved_language</source>
+        <target>Default Language Saved</target>
+      </trans-unit>
+      <trans-unit id="776" resname="snackbar_update">
+        <source>snackbar_update</source>
+        <target>An update is available</target>
+      </trans-unit>
+      <trans-unit id="777" resname="snackbar_updated_successfully">
+        <source>snackbar_updated_successfully</source>
+        <target>Updated successfully</target>
+      </trans-unit>
+      <trans-unit id="778" resname="snackbar_verification_code">
+        <source>snackbar_verification_code</source>
+        <target>Verification code has been sent at</target>
+      </trans-unit>
+      <trans-unit id="779" resname="snackbar_verification_code_error">
+        <source>snackbar_verification_code_error</source>
+        <target>Could not send code:</target>
+      </trans-unit>
+      <trans-unit id="780" resname="snackbar_verification_code_wait_error">
+        <source>snackbar_verification_code_wait_error</source>
+        <target>The last code was sent less than 10 seconds ago, you should wait.</target>
+      </trans-unit>
+      <trans-unit id="781" resname="soloParent">
+        <source>soloParent</source>
+        <target>solo parent</target>
+      </trans-unit>
+      <trans-unit id="782" resname="status">
+        <source>status</source>
+        <target>Status</target>
+      </trans-unit>
+      <trans-unit id="783" resname="subsector">
+        <source>subsector</source>
+        <target>Subsector</target>
+      </trans-unit>
+      <trans-unit id="784" resname="summary">
+        <source>summary</source>
+        <target>summary</target>
+      </trans-unit>
+      <trans-unit id="785" resname="table_actions">
+        <source>table_actions</source>
+        <target>Actions</target>
+      </trans-unit>
+      <trans-unit id="786" resname="table_assign">
+        <source>table_assign</source>
+        <target>Assign</target>
+      </trans-unit>
+      <trans-unit id="787" resname="table_element_deleted">
+        <source>table_element_deleted</source>
+        <target>deleted</target>
+      </trans-unit>
+      <trans-unit id="788" resname="table_element_updated">
+        <source>table_element_updated</source>
+        <target>updated</target>
+      </trans-unit>
+      <trans-unit id="789" resname="table_filter">
+        <source>table_filter</source>
+        <target>Search by keyword</target>
+      </trans-unit>
+      <trans-unit id="790" resname="table_filtered">
+        <source>table_filtered</source>
+        <target>Items filtered</target>
+      </trans-unit>
+      <trans-unit id="791" resname="table_first_page">
+        <source>table_first_page</source>
+        <target>First page</target>
+      </trans-unit>
+      <trans-unit id="792" resname="table_items_per_page">
+        <source>table_items_per_page</source>
+        <target>Items per page</target>
+      </trans-unit>
+      <trans-unit id="793" resname="table_last_page">
+        <source>table_last_page</source>
+        <target>Last page</target>
+      </trans-unit>
+      <trans-unit id="794" resname="table_logs_error">
+        <source>table_logs_error</source>
+        <target>Logs could not be sent</target>
+      </trans-unit>
+      <trans-unit id="795" resname="table_logs_success">
+        <source>table_logs_success</source>
+        <target>Logs have been sent</target>
+      </trans-unit>
+      <trans-unit id="796" resname="table_next_page">
+        <source>table_next_page</source>
+        <target>Next page</target>
+      </trans-unit>
+      <trans-unit id="797" resname="table_of_page">
+        <source>table_of_page</source>
+        <target>of</target>
+      </trans-unit>
+      <trans-unit id="798" resname="table_previous_page">
+        <source>table_previous_page</source>
+        <target>Previous page</target>
+      </trans-unit>
+      <trans-unit id="799" resname="table_print">
+        <source>table_print</source>
+        <target>Print</target>
+      </trans-unit>
+      <trans-unit id="800" resname="table_selected">
+        <source>table_selected</source>
+        <target>Items selected</target>
+      </trans-unit>
+      <trans-unit id="801" resname="target_type">
+        <source>target_type</source>
+        <target>Target Type</target>
+      </trans-unit>
+      <trans-unit id="802" resname="the">
+        <source>the</source>
+        <target>the</target>
+      </trans-unit>
+      <trans-unit id="803" resname="this">
+        <source>this</source>
+        <target>this</target>
+      </trans-unit>
+      <trans-unit id="804" resname="time_just_now">
+        <source>time_just_now</source>
+        <target>Just now</target>
+      </trans-unit>
+      <trans-unit id="805" resname="tooltip_add_beneficiaries">
+        <source>tooltip_add_beneficiaries</source>
+        <target>This page is a form to add a new household to the platform.</target>
+      </trans-unit>
+      <trans-unit id="806" resname="tooltip_add_distribution">
+        <source>tooltip_add_distribution</source>
+        <target>This page a form to add a new distribution to a project. You will use selection criteria to determine
+          the households or beneficiaries who will take part in it and add a specific amount of commodities to be
+          distributed.
+        </target>
+      </trans-unit>
+      <trans-unit id="807" resname="tooltip_admin">
+        <source>tooltip_admin</source>
+        <target>This page is where you can manage users, donors and your organization's specifics</target>
+      </trans-unit>
+      <trans-unit id="808" resname="tooltip_beneficiaries">
+        <source>tooltip_beneficiaries</source>
+        <target>This page is where ou can see all the households in the country. If you have the right, you can add new
+          households with the "+" button, manage households and filter/research in the list.
+        </target>
+      </trans-unit>
+      <trans-unit id="809" resname="tooltip_dashboard">
+        <source>tooltip_dashboard</source>
+        <target>This page is where you have a global view on some figures about the country and its projects. There is a
+          map to show you the country's distributions and a summary of the last ones.
+        </target>
+      </trans-unit>
+      <trans-unit id="810" resname="tooltip_data">
+        <source>tooltip_data</source>
+        <target>This page is a summary of the households you have imported.</target>
+      </trans-unit>
+      <trans-unit id="811" resname="tooltip_data_validation">
+        <source>tooltip_data_validation</source>
+        <target>This page is where you can import beneficiaries using a file. You have to verify your file by following
+          the steps.
+        </target>
+      </trans-unit>
+      <trans-unit id="812" resname="tooltip_distributions">
+        <source>tooltip_distributions</source>
+        <target>This page is where you can see all distribution's households. If you have the right, you can add new
+          households with a file or by selecting in the list, manage households and validate the distribution.
+        </target>
+      </trans-unit>
+      <trans-unit id="813" resname="tooltip_import">
+        <source>tooltip_import</source>
+        <target>This page is where you can import beneficiaries. You can choose to import them using a file or the API
+          (the external data source) to import all the household of a specific commune.
+        </target>
+      </trans-unit>
+      <trans-unit id="814" resname="tooltip_profile">
+        <source>tooltip_profile</source>
+        <target>This page is where you can change your password.</target>
+      </trans-unit>
+      <trans-unit id="815" resname="tooltip_projects">
+        <source>tooltip_projects</source>
+        <target>This page is where you can see all the country's projects (only thoses that you have the right to see).
+          If you have the right, you can add a new distribution with the project's households, manage distributions and
+          transactions.
+        </target>
+      </trans-unit>
+      <trans-unit id="816" resname="tooltip_reports">
+        <source>tooltip_reports</source>
+        <target>This page is used to see the country's statistics, such as the average transactions of a projects,
+          number of distributions...
+        </target>
+      </trans-unit>
+      <trans-unit id="817" resname="tooltip_settings">
+        <source>tooltip_settings</source>
+        <target>This page is where you'll be able to add a new project, country specific, third party connection,
+          product, vendor, edit and delete them according to your rights
+        </target>
+      </trans-unit>
+      <trans-unit id="818" resname="tooltip_update_beneficiary">
+        <source>tooltip_update_beneficiary</source>
+        <target>This page is a form to update the selected household.</target>
+      </trans-unit>
+      <trans-unit id="819" resname="tooltip_vouchers">
+        <source>tooltip_vouchers</source>
+        <target>This page is where you can create, edit, assign and print vouchers booklets</target>
+      </trans-unit>
+      <trans-unit id="820" resname="total">
+        <source>total</source>
+        <target>Total</target>
+      </trans-unit>
+      <trans-unit id="821" resname="total_unique">
+        <source>total_unique</source>
+        <target>Total Unique</target>
+      </trans-unit>
+      <trans-unit id="822" resname="transaction_accept_prevention">
+        <source>transaction_accept_prevention</source>
+        <target>I agree to these terms.</target>
+      </trans-unit>
+      <trans-unit id="823" resname="transaction_again">
+        <source>transaction_again</source>
+        <target>Send again</target>
+      </trans-unit>
+      <trans-unit id="824" resname="transaction_amount_distributed">
+        <source>transaction_amount_distributed</source>
+        <target>Amount distributed</target>
+      </trans-unit>
+      <trans-unit id="825" resname="transaction_amount_done">
+        <source>transaction_amount_done</source>
+        <target>Amount sent</target>
+      </trans-unit>
+      <trans-unit id="826" resname="transaction_amount_total">
+        <source>transaction_amount_total</source>
+        <target>Total amount</target>
+      </trans-unit>
+      <trans-unit id="827" resname="transaction_amount_used">
+        <source>transaction_amount_used</source>
+        <target>Amount used</target>
+      </trans-unit>
+      <trans-unit id="828" resname="transaction_amount_waiting">
+        <source>transaction_amount_waiting</source>
+        <target>Amount picked up</target>
+      </trans-unit>
+      <trans-unit id="829" resname="transaction_confirm">
+        <source>transaction_confirm</source>
+        <target>Confirm the transaction</target>
+      </trans-unit>
+      <trans-unit id="830" resname="transaction_confirm_button">
+        <source>transaction_confirm_button</source>
+        <target>Confirm</target>
+      </trans-unit>
+      <trans-unit id="831" resname="transaction_email_code">
+        <source>transaction_email_code</source>
+        <target>An email containing your validation code has been sent to:</target>
+      </trans-unit>
+      <trans-unit id="832" resname="transaction_id_transaction">
+        <source>transaction_id_transaction</source>
+        <target>Transaction ID</target>
+      </trans-unit>
+      <trans-unit id="833" resname="transaction_info_export">
+        <source>transaction_info_export</source>
+        <target>If the distribution doesn't have any transactions, no file will be exported</target>
+      </trans-unit>
+      <trans-unit id="834" resname="transaction_inProgress">
+        <source>transaction_inProgress</source>
+        <target>Transaction in progress...</target>
+      </trans-unit>
+      <trans-unit id="835" resname="transaction_message">
+        <source>transaction_message</source>
+        <target>Message</target>
+      </trans-unit>
+      <trans-unit id="836" resname="transaction_no_transaction_sent">
+        <source>transaction_no_transaction_sent</source>
+        <target>No completed transaction, cannot export</target>
+      </trans-unit>
+      <trans-unit id="837" resname="transaction_paste_code">
+        <source>transaction_paste_code</source>
+        <target>Please paste the code here and click on 'Confirm' to proceed with the transaction</target>
+      </trans-unit>
+      <trans-unit id="838" resname="transaction_pickupDate">
+        <source>transaction_pickupDate</source>
+        <target>Pick up date</target>
+      </trans-unit>
+      <trans-unit id="839" resname="transaction_prevention">
+        <source>transaction_prevention</source>
+        <target>This platform is still under development and the online cash transaction functionality may not be fully
+          stable yet. The development team denies responsibility for any errors that may occur in terms of money loss.
+          By ticking the box below, you agree to use the system knowing fully well its limitations and take
+          responsibility for the results of the transaction.
+        </target>
+      </trans-unit>
+      <trans-unit id="840" resname="transaction_progress">
+        <source>transaction_progress</source>
+        <target>commodity distribution progress:</target>
+      </trans-unit>
+      <trans-unit id="841" resname="transaction_progress">
+        <source>transaction_progress</source>
+        <target>Distribution progress:</target>
+      </trans-unit>
+      <trans-unit id="842" resname="transaction_progress">
+        <source>transaction_progress</source>
+        <target>Transaction Progress</target>
+      </trans-unit>
+      <trans-unit id="843" resname="transaction_refresh">
+        <source>transaction_refresh</source>
+        <target>Check pickup status</target>
+      </trans-unit>
+      <trans-unit id="844" resname="transaction_state_already_sent">
+        <source>transaction_state_already_sent</source>
+        <target>Sent</target>
+      </trans-unit>
+      <trans-unit id="845" resname="transaction_state_no_phone">
+        <source>transaction_state_no_phone</source>
+        <target>No phone</target>
+      </trans-unit>
+      <trans-unit id="846" resname="transaction_state_not_sent">
+        <source>transaction_state_not_sent</source>
+        <target>Not sent</target>
+      </trans-unit>
+      <trans-unit id="847" resname="transaction_state_picked_up">
+        <source>transaction_state_picked_up</source>
+        <target>Picked up</target>
+      </trans-unit>
+      <trans-unit id="848" resname="transaction_state_sending_failed">
+        <source>transaction_state_sending_failed</source>
+        <target>Sending failed</target>
+      </trans-unit>
+      <trans-unit id="849" resname="transaction_state_sent">
+        <source>transaction_state_sent</source>
+        <target>Sent</target>
+      </trans-unit>
+      <trans-unit id="850" resname="transaction_transaction">
+        <source>transaction_transaction</source>
+        <target>Start transaction</target>
+      </trans-unit>
+      <trans-unit id="851" resname="transaction_validate_distribution">
+        <source>transaction_validate_distribution</source>
+        <target>Do you really want to validate this distribution ?</target>
+      </trans-unit>
+      <trans-unit id="852" resname="transaction_validation">
+        <source>transaction_validation</source>
+        <target>Confirm the validation</target>
+      </trans-unit>
+      <trans-unit id="853" resname="TRUE">
+        <source>TRUE</source>
+        <target>TRUE</target>
+      </trans-unit>
+      <trans-unit id="854" resname="true">
+        <source>true</source>
+        <target>TRUE</target>
+      </trans-unit>
+      <trans-unit id="855" resname="type">
+        <source>type</source>
+        <target>Type</target>
+      </trans-unit>
+      <trans-unit id="856" resname="unit">
+        <source>unit</source>
+        <target>Unit</target>
+      </trans-unit>
+      <trans-unit id="857" resname="update">
+        <source>update</source>
+        <target>Update</target>
+      </trans-unit>
+      <trans-unit id="858" resname="user">
+        <source>user</source>
+        <target>User</target>
+      </trans-unit>
+      <trans-unit id="859" resname="user_only_one_country">
+        <source>user_only_one_country</source>
+        <target>You can select only one country</target>
+      </trans-unit>
+      <trans-unit id="860" resname="user_password_question">
+        <source>user_password_question</source>
+        <target>Update password on next login</target>
+      </trans-unit>
+      <trans-unit id="861" resname="user_phone_number">
+        <source>user_phone_number</source>
+        <target>Phone number</target>
+      </trans-unit>
+      <trans-unit id="862" resname="user_phone_prefix">
+        <source>user_phone_prefix</source>
+        <target>Prefix</target>
+      </trans-unit>
+      <trans-unit id="863" resname="username">
+        <source>username</source>
+        <target>username</target>
+      </trans-unit>
+      <trans-unit id="864" resname="users">
+        <source>users</source>
+        <target>users</target>
+      </trans-unit>
+      <trans-unit id="865" resname="value">
+        <source>value</source>
+        <target>Value</target>
+      </trans-unit>
+      <trans-unit id="866" resname="vendor">
+        <source>vendor</source>
+        <target>Vendor</target>
+      </trans-unit>
+      <trans-unit id="867" resname="vendor_redeemed_batches">
+        <source>vendor_redeemed_batches</source>
+        <target>Redeemed Batches</target>
+      </trans-unit>
+      <trans-unit id="868" resname="vendor_redemption_summary">
+        <source>vendor_redemption_summary</source>
+        <target>Vendor Redemption Summary</target>
+      </trans-unit>
+      <trans-unit id="869" resname="vendor_see_history">
+        <source>vendor_see_history</source>
+        <target>See History</target>
+      </trans-unit>
+      <trans-unit id="870" resname="vendor_total_number_transactions">
+        <source>vendor_total_number_transactions</source>
+        <target>Total No. Transactions</target>
+      </trans-unit>
+      <trans-unit id="871" resname="vendor_total_value_transactions">
+        <source>vendor_total_value_transactions</source>
+        <target>Total Value Transactions</target>
+      </trans-unit>
+      <trans-unit id="872" resname="vendor_transaction_summary">
+        <source>vendor_transaction_summary</source>
+        <target>Vendor Transaction Summary</target>
+      </trans-unit>
+      <trans-unit id="873" resname="vendor_unpaid_transaction_value">
+        <source>vendor_unpaid_transaction_value</source>
+        <target>Unpaid Transaction Value</target>
+      </trans-unit>
+      <trans-unit id="874" resname="vendor_unpaid_transactions">
+        <source>vendor_unpaid_transactions</source>
+        <target>Unpaid Transactions</target>
+      </trans-unit>
+      <trans-unit id="875" resname="vendors">
+        <source>vendors</source>
+        <target>vendors</target>
+      </trans-unit>
+      <trans-unit id="876" resname="view">
+        <source>view</source>
+        <target>View</target>
+      </trans-unit>
+      <trans-unit id="877" resname="voucher">
+        <source>voucher</source>
+        <target>Vouchers</target>
+      </trans-unit>
+      <trans-unit id="878" resname="voucher_ask_code">
+        <source>voucher_ask_code</source>
+        <target>Please ask beneficiary to enter his 4 digits code here</target>
+      </trans-unit>
+      <trans-unit id="879" resname="voucher_assign">
+        <source>voucher_assign</source>
+        <target>Assign vouchers</target>
+      </trans-unit>
+      <trans-unit id="880" resname="voucher_assign_title">
+        <source>voucher_assign_title</source>
+        <target>Assign booklet to a beneficiary</target>
+      </trans-unit>
+      <trans-unit id="881" resname="voucher_assigned_success">
+        <source>voucher_assigned_success</source>
+        <target>The booklet has been assigned to</target>
+      </trans-unit>
+      <trans-unit id="882" resname="voucher_assignment_cancelled">
+        <source>voucher_assignment_cancelled</source>
+        <target>Voucher Assignment Cancelled</target>
+      </trans-unit>
+      <trans-unit id="883" resname="voucher_confirm">
+        <source>voucher_confirm</source>
+        <target>Booklet assigned to</target>
+      </trans-unit>
+      <trans-unit id="884" resname="voucher_created">
+        <source>voucher_created</source>
+        <target>The booklet has been created.</target>
+      </trans-unit>
+      <trans-unit id="885" resname="voucher_define_password">
+        <source>voucher_define_password</source>
+        <target>Define password for booklet</target>
+      </trans-unit>
+      <trans-unit id="886" resname="voucher_for">
+        <source>voucher_for</source>
+        <target>for</target>
+      </trans-unit>
+      <trans-unit id="887" resname="voucher_no_device">
+        <source>voucher_no_device</source>
+        <target>There is no device detected</target>
+      </trans-unit>
+      <trans-unit id="888" resname="voucher_no_permission">
+        <source>voucher_no_permission</source>
+        <target>You have denied access to the camera</target>
+      </trans-unit>
+      <trans-unit id="889" resname="voucher_only_digits">
+        <source>voucher_only_digits</source>
+        <target>Your password must be only 4 digits</target>
+      </trans-unit>
+      <trans-unit id="890" resname="voucher_password_changed">
+        <source>voucher_password_changed</source>
+        <target>Your password has been changed</target>
+      </trans-unit>
+      <trans-unit id="891" resname="voucher_print_error">
+        <source>voucher_print_error</source>
+        <target>You can't print a booklet if it has no beneficiary</target>
+      </trans-unit>
+      <trans-unit id="892" resname="voucher_print_selection">
+        <source>voucher_print_selection</source>
+        <target>Print selection</target>
+      </trans-unit>
+      <trans-unit id="893" resname="voucher_print_starting">
+        <source>voucher_print_starting</source>
+        <target>Your voucher download is starting</target>
+      </trans-unit>
+      <trans-unit id="894" resname="voucher_purchased">
+        <source>voucher_purchased</source>
+        <target>purchased items</target>
+      </trans-unit>
+      <trans-unit id="895" resname="voucher_scan_text">
+        <source>voucher_scan_text</source>
+        <target>Scan booklet QR code</target>
+      </trans-unit>
+      <trans-unit id="896" resname="voucher_select_beneficiary">
+        <source>voucher_select_beneficiary</source>
+        <target>You have to select a beneficiary</target>
+      </trans-unit>
+      <trans-unit id="897" resname="voucher_select_distribution">
+        <source>voucher_select_distribution</source>
+        <target>You have to select a distribution</target>
+      </trans-unit>
+      <trans-unit id="898" resname="voucher_select_project">
+        <source>voucher_select_project</source>
+        <target>You have to select a project</target>
+      </trans-unit>
+      <trans-unit id="899" resname="voucher_sending">
+        <source>voucher_sending</source>
+        <target>The data is being sent</target>
+      </trans-unit>
+      <trans-unit id="900" resname="voucher_step">
+        <source>voucher_step</source>
+        <target>will be assigned to</target>
+      </trans-unit>
+      <trans-unit id="901" resname="vouchers_booklet">
+        <source>vouchers_booklet</source>
+        <target>Voucher Booklet(s)</target>
+      </trans-unit>
+      <trans-unit id="902" resname="vulnerability">
+        <source>vulnerability</source>
+        <target>Vulnerability</target>
+      </trans-unit>
+      <trans-unit id="903" resname="vulnerability_disabled">
+        <source>vulnerability_disabled</source>
+        <target>disabled</target>
+      </trans-unit>
+      <trans-unit id="904" resname="vulnerability_lactating">
+        <source>vulnerability_lactating</source>
+        <target>lactating</target>
+      </trans-unit>
+      <trans-unit id="905" resname="vulnerability_nutrional">
+        <source>vulnerability_nutrional</source>
+        <target>nutritional issues</target>
+      </trans-unit>
+      <trans-unit id="906" resname="vulnerability_pregnant">
+        <source>vulnerability_pregnant</source>
+        <target>pregnant</target>
+      </trans-unit>
+      <trans-unit id="907" resname="vulnerability_solo_parent">
+        <source>vulnerability_solo_parent</source>
+        <target>solo parent</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
