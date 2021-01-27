@@ -247,7 +247,7 @@ class VoucherControllerTest extends BMSServiceTestCase
             'voucherPurchase' => null,
             'booklet' => $booklets,
         ]);
-        $purchaseService = $this->container->get('voucher.purchase_service');
+        $purchaseService = $this->getContainer()->get('voucher.purchase_service');
         $anyProduct = $this->em->getRepository(Product::class)->findOneBy([], ['id'=>'asc']);
         foreach ($vouchers as $voucher) {
             $purchaseInput = new \VoucherBundle\InputType\VoucherPurchase();

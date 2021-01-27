@@ -19,7 +19,7 @@ class BookletControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = $this->getContainer()->get('test.client');
     }
 
     public function testCreate()
@@ -29,7 +29,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = $this->getContainer()->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/booklets/batches', [
             'iso3' => 'KHM',
@@ -57,7 +57,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $booklet = $this->container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
+        $booklet = $this->getContainer()->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/booklets/'.$booklet->getId());
 
@@ -109,10 +109,16 @@ class BookletControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $booklet = $this->container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'desc'], 1)[0];
+        $booklet = $this->getContainer()->get('doctrine')->getRepository(Booklet::class)->findBy([
+            'status' => Booklet::UNASSIGNED,
+        ], ['id' => 'desc'], 1)[0];
 
         $this->request('DELETE', '/api/basic/booklets/'.$booklet->getId());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
 
-        $this->assertTrue($this->client->getResponse()->isEmpty());
+        $this->assertTrue($this->client->getResponse()->isEmpty(), "Delete request should answer empty body. Returned '{$this->client->getResponse()->getContent()}'");
     }
 }
