@@ -65,6 +65,7 @@ backup-db:
     - rm db.sql
   only:
     - tags
+  when: manual
 
 aws-db-snapshot:
   stage: backup_db
