@@ -32,18 +32,25 @@ class BookletService
     /** @var EventDispatcherInterface $eventDispatcher */
     private $eventDispatcher;
 
+    /** @var VoucherService */
+    private $voucherService;
+
     /**
      * UserService constructor.
-     * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     *
+     * @param EntityManagerInterface   $entityManager
+     * @param ValidatorInterface       $validator
+     * @param ContainerInterface       $container
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param VoucherService           $voucherService
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, EventDispatcherInterface $eventDispatcher)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, EventDispatcherInterface $eventDispatcher, VoucherService $voucherService)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
         $this->eventDispatcher = $eventDispatcher;
+        $this->voucherService = $voucherService;
     }
 
     /**
@@ -68,14 +75,14 @@ class BookletService
      */
     public function backgroundCreate($country, array $bookletData)
     {
-        $this->container->get('voucher.voucher_service')->cleanUp();
+        $this->voucherService->cleanUp();
 
         $this->eventDispatcher->addListener(KernelEvents::TERMINATE, function ($event) use ($country, $bookletData) {
             try {
                 $this->create($country, $bookletData);
             } catch (\Exception $e) {
                 $this->container->get('logger')->error($e);
-                $this->container->get('voucher.voucher_service')->cleanUp();
+                $this->voucherService->cleanUp();
             }
         });
 
@@ -93,7 +100,7 @@ class BookletService
     {
         $bookletBatch = $this->getBookletBatch();
         $currentBatch = $bookletBatch;
-        $lastVoucherId = $this->container->get('voucher.voucher_service')->getLastId();
+        $lastVoucherId = $this->voucherService->getLastId();
         for ($x = 0; $x < $bookletData['number_booklets']; $x++) {
             // Create booklet
             try {
@@ -139,7 +146,7 @@ class BookletService
                     'lastId' => $lastVoucherId
                 ];
 
-                $this->container->get('voucher.voucher_service')->create($voucherData, false);
+                $this->voucherService->create($voucherData, false);
                 $lastVoucherId += $bookletData['number_vouchers'];
             } catch (\Exception $e) {
                 throw $e;
@@ -363,7 +370,7 @@ class BookletService
                         'values' => $values,
                     ];
 
-                    $this->container->get('voucher.voucher_service')->create($voucherData);
+                    $this->voucherService->create($voucherData);
                 } catch (\Exception $e) {
                     throw new \Exception('Error creating vouchers');
                 }
@@ -372,7 +379,7 @@ class BookletService
                 $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
                 foreach ($vouchers as $voucher) {
                     if ($vouchersToRemove > 0) {
-                        $this->container->get('voucher.voucher_service')->deleteOneFromDatabase($voucher);
+                        $this->voucherService->deleteOneFromDatabase($voucher);
                         $vouchersToRemove -= 1;
                     }
                 }
@@ -545,7 +552,7 @@ class BookletService
         } elseif ($removeBooklet && $vouchers) {
             try {
                 // === if there are vouchers then delete those that are not used ===
-                $this->container->get('voucher.voucher_service')->deleteBatchVouchers($booklet);
+                $this->voucherService->deleteBatchVouchers($booklet);
                 $this->em->remove($booklet);
                 $this->em->flush();
             } catch (\Exception $exception) {

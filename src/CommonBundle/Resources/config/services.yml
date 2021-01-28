@@ -1,5 +1,12 @@
 services:
 
+    CommonBundle\Controller\:
+        resource: '../../Controller'
+        autowire: true
+        public: true
+        tags:
+            - { name: 'app.controller' }
+
     CommonBundle\Command\ClearCacheImportCommand:
         public: true
         tags:

@@ -33,6 +33,7 @@ use VoucherBundle\Repository\SmartcardPurchaseRepository;
 use VoucherBundle\Repository\VoucherPurchaseRepository;
 use VoucherBundle\Repository\VoucherRedemptionBatchRepository;
 use VoucherBundle\Repository\VoucherRepository;
+use VoucherBundle\Utils\VoucherService;
 
 /**
  * Class VoucherController
@@ -47,6 +48,19 @@ use VoucherBundle\Repository\VoucherRepository;
  */
 class VoucherController extends Controller
 {
+    /** @var VoucherService */
+    private $voucherService;
+
+    /**
+     * VoucherController constructor.
+     *
+     * @param VoucherService $voucherService
+     */
+    public function __construct(VoucherService $voucherService)
+    {
+        $this->voucherService = $voucherService;
+    }
+
     /**
      * Create a new Voucher.
      *
@@ -73,7 +87,8 @@ class VoucherController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
-     * @param Request $request
+     * @param Request        $request
+     *
      * @return Response
      */
     public function createAction(Request $request)
@@ -84,7 +99,7 @@ class VoucherController extends Controller
         $voucherData = $request->request->all();
 
         try {
-            $return = $this->get('voucher.voucher_service')->create($voucherData);
+            $return = $this->voucherService->create($voucherData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -125,7 +140,7 @@ class VoucherController extends Controller
     public function getAllAction()
     {
         try {
-            $vouchers = $this->get('voucher.voucher_service')->findAll();
+            $vouchers = $this->voucherService->findAll();
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -392,16 +407,15 @@ class VoucherController extends Controller
      *     description="All vendor purchases"
      * )
      *
-     * @param Vendor                  $vendor
+     * @param Vendor                 $vendor
      *
-     * @param VoucherRedemptionBatch  $newBatch
+     * @param VoucherRedemptionBatch $newBatch
      *
      * @return Response
      */
     public function checkRedemptionBatch(Vendor $vendor, VoucherRedemptionBatch $newBatch): Response
     {
-        $voucherService = $this->get('voucher.voucher_service');
-        return $this->json($voucherService->checkBatch($newBatch, $vendor));
+        return $this->json($this->voucherService->checkBatch($newBatch, $vendor));
     }
 
     /**
@@ -427,17 +441,15 @@ class VoucherController extends Controller
      *     description="All vendor purchases"
      * )
      *
-     * @param Vendor                  $vendor
+     * @param Vendor                 $vendor
      *
-     * @param VoucherRedemptionBatch  $newBatch
+     * @param VoucherRedemptionBatch $newBatch
      *
      * @return Response
      */
     public function redeemBatch(Vendor $vendor, VoucherRedemptionBatch $newBatch): Response
     {
-        $voucherService = $this->get('voucher.voucher_service');
-
-        $check = $voucherService->checkBatch($newBatch, $vendor);
+        $check = $this->voucherService->checkBatch($newBatch, $vendor);
 
         if ($check->hasInvalidVouchers()) {
             $message = $check->jsonSerialize();
@@ -450,7 +462,7 @@ class VoucherController extends Controller
             return new Response(json_encode($message), Response::HTTP_BAD_REQUEST);
         }
 
-        $redeemedBatch = $voucherService->redeemBatch($vendor, $newBatch, $this->getUser());
+        $redeemedBatch = $this->voucherService->redeemBatch($vendor, $newBatch, $this->getUser());
 
         return $this->json($redeemedBatch);
     }
@@ -468,13 +480,14 @@ class VoucherController extends Controller
      *     @SWG\Schema(type="boolean")
      * )
      *
-     * @param Voucher $voucher
+     * @param Voucher        $voucher
+     *
      * @return Response
      */
     public function deleteAction(Voucher $voucher)
     {
         try {
-            $isSuccess = $this->get('voucher.voucher_service')->deleteOneFromDatabase($voucher);
+            $isSuccess = $this->voucherService->deleteOneFromDatabase($voucher);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -495,13 +508,14 @@ class VoucherController extends Controller
      *     @SWG\Schema(type="boolean")
      * )
      *
-     * @param Booklet $booklet
+     * @param Booklet        $booklet
+     *
      * @return Response
      */
     public function deleteBatchAction(Booklet $booklet)
     {
         try {
-            $isSuccess = $this->get('voucher.voucher_service')->deleteBatchVouchers($booklet);
+            $isSuccess = $this->voucherService->deleteBatchVouchers($booklet);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

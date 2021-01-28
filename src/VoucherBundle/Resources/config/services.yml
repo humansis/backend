@@ -1,22 +1,29 @@
 services:
 
+    VoucherBundle\Controller\:
+        resource: '../../Controller'
+        autowire: true
+        public: true
+        tags:
+            - { name: 'app.controller' }
 
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
 
-    voucher.vendor_service:
-        class: VoucherBundle\Utils\VendorService
+    VoucherBundle\Utils\VendorService:
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container']
         public: true
 
     voucher.booklet_service:
-        class: VoucherBundle\Utils\BookletService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container', '@event_dispatcher']
+        alias: VoucherBundle\Utils\BookletService
         public: true
 
-    voucher.voucher_service:
-        class: VoucherBundle\Utils\VoucherService
+    VoucherBundle\Utils\BookletService:
+        autowire: true
+        public: true
+
+    VoucherBundle\Utils\VoucherService:
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
         public: true
 

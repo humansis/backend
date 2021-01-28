@@ -31,6 +31,7 @@ use VoucherBundle\Entity\Vendor;
 use VoucherBundle\InputType\VoucherPurchase;
 use VoucherBundle\Model\PurchaseService;
 use VoucherBundle\Utils\BookletService;
+use VoucherBundle\Utils\VoucherService;
 
 class AssistanceControllerTest extends BMSServiceTestCase
 {
@@ -380,7 +381,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             $this->em,
             $this->getContainer()->get('validator'),
             $this->getContainer(),
-            $this->getContainer()->get('event_dispatcher')
+            $this->getContainer()->get('event_dispatcher'),
+            $this->getContainer()->get(VoucherService::class)
         );
         $purchaseService = new PurchaseService($this->em);
 

@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use VoucherBundle\Utils\VoucherService;
 
 /**
  * Class ExportController
@@ -29,6 +30,19 @@ class ExportController extends Controller
     /** @var int maximum count of exported entities */
     const EXPORT_LIMIT = 10000;
 
+    /** @var VoucherService */
+    private $voucherService;
+
+    /**
+     * ExportController constructor.
+     *
+     * @param VoucherService $voucherService
+     */
+    public function __construct(VoucherService $voucherService)
+    {
+        $this->voucherService = $voucherService;
+    }
+
     /**
      * @Rest\Post("/export", name="export_data")
      *
@@ -44,7 +58,7 @@ class ExportController extends Controller
      *     description="HTTP_NO_CONTENT"
      * )
      *
-     * @param Request $request
+     * @param Request        $request
      *
      * @return Response
      *
@@ -117,12 +131,12 @@ class ExportController extends Controller
                 $countryIso3 = $request->request->get("__country");
                 $filters = $request->request->get('filters');
                 if ($type === 'pdf') {
-                    return $this->get('voucher.voucher_service')->exportToPdf($ids, $countryIso3, $filters);
+                    return $this->get(VoucherService::class)->exportToPdf($ids, $countryIso3, $filters);
                 }
                 if ($type === 'csv') {
-                    return $this->get('voucher.voucher_service')->exportToCsv($type, $countryIso3, $ids, $filters);
+                    return $this->get(VoucherService::class)->exportToCsv($type, $countryIso3, $ids, $filters);
                 }
-                $filename = $this->get('voucher.voucher_service')->exportToCsv($type, $countryIso3, $ids, $filters);
+                $filename = $this->get(VoucherService::class)->exportToCsv($type, $countryIso3, $ids, $filters);
             } elseif ($request->query->get('reporting')) {
                 $filename = $this->get('reporting.reporting_service')->exportToCsv($request->request, $type);
             } elseif ($request->query->get('generalreliefDistribution')) {
@@ -144,7 +158,7 @@ class ExportController extends Controller
                 $filename = $this->get('voucher.product_service')->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('vendors')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('voucher.vendor_service')->exportToCsv($type, $countryIso3);
+                $filename = $this->voucherService->exportToCsv($type, $countryIso3);
             }
 
             // Create binary file to send

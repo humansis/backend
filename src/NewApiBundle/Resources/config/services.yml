@@ -44,6 +44,10 @@ services:
     NewApiBundle\Serializer\MapperNormalizer:
         tags: [ 'serializer.normalizer' ]
 
+    NewApiBundle\Controller\:
+        resource: '../../Controller'
+        tags: [ 'app.controller' ]
+
     NewApiBundle\Mapper\:
         resource: '../../Mapper'
         tags: [ 'app.mapper' ]
