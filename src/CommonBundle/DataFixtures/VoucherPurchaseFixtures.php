@@ -15,7 +15,7 @@ use VoucherBundle\Model\PurchaseService;
 
 class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterface
 {
-    const FRACTION_TO_SPENT = 3;
+    const FRACTION_TO_SPENT = 5;
 
     /** @var string */
     private $environment;
@@ -70,21 +70,20 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
                 continue;
             }
 
-            switch (rand(0,3)) {
-                case 0:
+            switch ($vendorCode) {
+                case 1:
                     $this->generatePurchase($vendor, [$booklet->getVouchers()[0]], $manager);
                     $this->generatePurchase($vendor, [$booklet->getVouchers()[1]], $manager);
                     $this->generatePurchase($vendor, [$booklet->getVouchers()[2]], $manager);
-                    break;
-                case 1:
-                    $this->generatePurchase($vendor, [$booklet->getVouchers()[0]], $manager);
                     break;
                 case 2:
                     $this->generatePurchase($vendor, [
                         $booklet->getVouchers()[0],
                         $booklet->getVouchers()[1]
                     ], $manager);
+                    $this->generatePurchase($vendor, [$booklet->getVouchers()[2]], $manager);
                     break;
+                default:
                 case 3:
                     $this->generatePurchase($vendor, [
                         $booklet->getVouchers()[0],
