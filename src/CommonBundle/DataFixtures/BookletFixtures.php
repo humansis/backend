@@ -52,7 +52,7 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
             $recipientCount = $manager->getRepository(Beneficiary::class)->countAllInCountry($country['iso3']);
             $voucherAssistanceCount = count($manager->getRepository(Assistance::class)->getActiveByCountry($country['iso3']));
 
-            $count = $recipientCount*3;
+            $count = 200;
             echo "{$country['iso3']}: $count bnf: ";
             $data = $this->defaultBooklet;
             $data['__country'] = $country['iso3'];

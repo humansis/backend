@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
+use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Controller\CountryController;
 use CommonBundle\DataFixtures\BeneficiaryTestFixtures;
 use CommonBundle\DataFixtures\BookletFixtures;
@@ -60,10 +61,13 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
                 echo $project->getName()." - {$assistance->getId()}# {$assistance->getName()}: ({$assistance->getDistributionBeneficiaries()->count()} {$assistance->getTargetType()})";
                 foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
                     $booklet = $bookletGenerator->current();
-                    if (!$booklet || $booklet->getStatus() !== Booklet::UNASSIGNED) {
+                    if (null === $booklet) {
+                        echo '_';
+                        $bookletGenerator->next();
                         continue;
                     }
-                    $this->bookletService->assign($booklet, $assistance, $distributionBeneficiary->getBeneficiary());
+                    $this->bookletService->assign($booklet, $distributionBeneficiary->getAssistance(), $distributionBeneficiary->getBeneficiary());
+
                     $bookletGenerator->next();
                     echo '.';
                 }
@@ -79,6 +83,7 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
             'filter' => [Booklet::UNASSIGNED],
         ]])[1];
         foreach ($booklets as $booklet) {
+            if ($booklet->getStatus() !== Booklet::UNASSIGNED) continue;
             yield $booklet;
         }
     }
