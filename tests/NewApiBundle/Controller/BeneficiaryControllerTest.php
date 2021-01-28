@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Tests\BMSServiceTestCase;
@@ -403,5 +404,31 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
         $this->assertJsonFragment('{"totalCount": 1, "data": [{"id": "*"}]}', $this->client->getResponse()->getContent());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAddBeneficiaryToAssistance()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $assistance = $em->getRepository(Assistance::class)->findBy([])[0];
+        $beneficiary = $em->getRepository(Beneficiary::class)->findBy([])[0];
+
+        $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/beneficiaries', [
+            'beneficiaryIds' => [$beneficiary->getId()],
+            'justification' => 'test',
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
     }
 }
