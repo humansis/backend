@@ -7,6 +7,7 @@ namespace NewApiBundle\Controller;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
@@ -19,22 +20,26 @@ class AssistanceController extends AbstractController
     /**
      * @Rest\Get("/assistances")
      *
-     * @param Request                  $request
-     * @param Pagination               $pagination
-     * @param AssistanceOrderInputType $orderBy
+     * @param Request                   $request
+     * @param AssistanceFilterInputType $filter
+     * @param Pagination                $pagination
+     * @param AssistanceOrderInputType  $orderBy
      *
      * @return JsonResponse
      */
-    public function assistances(Request $request, Pagination $pagination, AssistanceOrderInputType $orderBy): JsonResponse
+    public function assistances(
+        Request $request,
+        AssistanceFilterInputType $filter,
+        Pagination $pagination,
+        AssistanceOrderInputType $orderBy
+    ): JsonResponse
     {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $upcoming = ($request->query->has('upcoming') && $request->query->getBoolean('upcoming'));
-
-        $assistances = $this->getDoctrine()->getRepository(Assistance::class)->findByParams(null, $countryIso3, $upcoming, $orderBy, $pagination);
+        $assistances = $this->getDoctrine()->getRepository(Assistance::class)->findByParams(null, $countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($assistances);
     }

@@ -12,6 +12,7 @@ use \DateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
@@ -240,18 +241,18 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param Project|null                  $project
-     * @param string|null                   $iso3
-     * @param bool|null                     $upcoming
-     * @param AssistanceOrderInputType|null $orderBy
-     * @param Pagination|null               $pagination
+     * @param Project|null                   $project
+     * @param string|null                    $iso3
+     * @param AssistanceFilterInputType|null $filter
+     * @param AssistanceOrderInputType|null  $orderBy
+     * @param Pagination|null                $pagination
      *
      * @return Paginator|Assistance[]
      */
     public function findByParams(
         ?Project $project,
         ?string $iso3 = null,
-        ?bool $upcoming = null,
+        ?AssistanceFilterInputType $filter = null,
         ?AssistanceOrderInputType $orderBy = null,
         ?Pagination $pagination = null
     ): Paginator {
@@ -269,9 +270,15 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter('iso3', $iso3);
         }
 
-        if (null !== $upcoming) {
-            $qb->andWhere('p.startDate > :now')
-            ->setParameter('now', new DateTime('now'));
+        if ($filter) {
+            if ($filter->hasIds()) {
+                $qb->andWhere('dd.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
+            if ($filter->hasUpcomingOnly() && $filter->getUpcomingOnly()) {
+                $qb->andWhere('p.startDate > :now')
+                    ->setParameter('now', new DateTime('now'));
+            }
         }
 
         if ($pagination) {
