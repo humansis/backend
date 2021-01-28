@@ -6,23 +6,16 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
-use CommonBundle\Controller\CountryController;
 use CommonBundle\DataFixtures\AssistanceFixtures;
 use CommonBundle\DataFixtures\BeneficiaryTestFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;
-use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\Modality;
 use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Enum\AssistanceType;
-use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -117,9 +110,14 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
     {
         $HHs = $manager->getRepository(Household::class)->getUnarchivedByProject($project)->getQuery()->getResult();
         echo "(".count($HHs).") ";
+        /** @var Household $household */
         foreach ($HHs as $household) {
+            if (!$household->getHouseholdHead()) {
+                echo 'h';
+                continue;
+            }
             $bnf = (new AssistanceBeneficiary())
-                ->setBeneficiary($household)
+                ->setBeneficiary($household->getHouseholdHead())
                 ->setAssistance($assistance)
                 ->setJustification('added randomly in fixtures')
             ;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Controller\CountryController;
 use CommonBundle\DataFixtures\BeneficiaryTestFixtures;
@@ -66,7 +67,15 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
                         $bookletGenerator->next();
                         continue;
                     }
-                    $this->bookletService->assign($booklet, $distributionBeneficiary->getAssistance(), $distributionBeneficiary->getBeneficiary());
+                    if (
+                        $distributionBeneficiary->getBeneficiary() instanceof Household
+                        && null !== $distributionBeneficiary->getBeneficiary()->getHouseholdHead())
+                    {
+                        $this->bookletService->assign($booklet, $distributionBeneficiary->getAssistance(), $distributionBeneficiary->getBeneficiary()->getHouseholdHead());
+                    }
+                    if ($distributionBeneficiary->getBeneficiary() instanceof Beneficiary) {
+                        $this->bookletService->assign($booklet, $distributionBeneficiary->getAssistance(), $distributionBeneficiary->getBeneficiary());
+                    }
 
                     $bookletGenerator->next();
                     echo '.';
