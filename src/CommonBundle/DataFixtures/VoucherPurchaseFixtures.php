@@ -50,6 +50,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
             'status' => Booklet::DISTRIBUTED,
         ]);
         echo "Booklets to purchase: ".count($booklets).", make purchases for 1/".self::FRACTION_TO_SPENT."\n";
+        $bookletIndex = 0;
         foreach ($booklets as $booklet) {
             /** @var Assistance $assistance */
             $assistance = $booklet->getAssistanceBeneficiary()->getAssistance();
@@ -61,7 +62,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
                 continue;
             }
 
-            $vendorCode = ($booklet->getId() % VendorFixtures::VENDOR_COUNT_PER_COUNTRY) + 1;
+            $vendorCode = ($bookletIndex++ % VendorFixtures::VENDOR_COUNT_PER_COUNTRY) + 1;
             /** @var Vendor $vendor */
             $vendor = $this->getReference(VendorFixtures::REF_VENDOR_GENERIC.'_'.$assistance->getProject()->getIso3().'_'.$vendorCode);
 
