@@ -4,7 +4,7 @@ namespace CommonBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 

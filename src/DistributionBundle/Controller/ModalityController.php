@@ -7,7 +7,7 @@ use DistributionBundle\Entity\Modality;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Utils\ModalityService;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;

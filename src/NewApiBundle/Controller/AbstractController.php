@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use NewApiBundle\Serializer\MapperInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 
 abstract class AbstractController extends Controller
 {

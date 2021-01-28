@@ -2,7 +2,7 @@
 
 namespace CommonBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 use FOS\RestBundle\Controller\Annotations as Rest;

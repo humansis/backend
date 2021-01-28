@@ -6,7 +6,7 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Utils\ExportService;
 use phpDocumentor\Reflection\TypeResolver;
 use ReportingBundle\Utils\Formatters\Formatter;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 
 
 use Symfony\Component\HttpFoundation\BinaryFileResponse;

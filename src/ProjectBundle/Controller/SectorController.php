@@ -7,7 +7,7 @@ use ProjectBundle\DTO\Sector;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\ProjectSector;
 use ProjectBundle\Mapper\SectorMapper;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 

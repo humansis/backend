@@ -5,7 +5,7 @@ namespace VoucherBundle\Controller;
 use BeneficiaryBundle\Entity\Beneficiary;
 
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;

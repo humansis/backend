@@ -10,7 +10,7 @@ use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableType;
 
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use BeneficiaryBundle\Entity\Community;

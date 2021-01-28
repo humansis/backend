@@ -6,7 +6,7 @@ namespace DistributionBundle\Controller;
 use DistributionBundle\Utils\CriteriaAssistanceService;
 
 use ProjectBundle\Entity\Project;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
