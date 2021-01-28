@@ -4,6 +4,7 @@ namespace VoucherBundle\Repository;
 
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\VendorFilterInputType;
 use NewApiBundle\InputType\VendorOrderInputType;
 use NewApiBundle\Request\Pagination;
 use UserBundle\Entity\User;
@@ -50,22 +51,36 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param string|null               $iso3
-     * @param VendorOrderInputType|null $orderBy
-     * @param Pagination|null           $pagination
+     * @param string|null                $iso3
+     * @param VendorFilterInputType|null $filter
+     * @param VendorOrderInputType|null  $orderBy
+     * @param Pagination|null            $pagination
      *
      * @return Paginator
      */
-    public function findByParams(?string $iso3, ?VendorOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
+    public function findByParams(
+        ?string $iso3,
+        ?VendorFilterInputType $filter = null,
+        ?VendorOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator
     {
         $qb = $this->createQueryBuilder('v')
+            ->leftJoin('v.location', 'l')
             ->andWhere('v.archived = 0');
 
-        if ($iso3) {
-            $qb->leftJoin('v.location', 'l');
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        $locationRepository->whereCountry($qb, $iso3);
 
-            $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-            $locationRepository->whereCountry($qb, $iso3);
+        if ($filter) {
+            if ($filter->hasFulltext()) {
+                $qb->andWhere('v.shop LIKE :fulltext OR
+                               v.name LIKE :fulltext OR
+                               v.addressNumber LIKE :fulltext OR
+                               v.addressPostcode LIKE :fulltext OR
+                               v.addressStreet LIKE :fulltext')
+                    ->setParameter('fulltext', $filter->getFulltext());
+            }
         }
 
         if ($pagination) {
@@ -97,6 +112,9 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                         break;
                     case VendorOrderInputType::SORT_BY_ADDRESS_POSTCODE:
                         $qb->orderBy('v.addressPostcode', $direction);
+                        break;
+                    case VendorOrderInputType::SORT_BY_LOCATION:
+                        $qb->orderBy('v.location', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);
