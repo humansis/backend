@@ -266,7 +266,7 @@ PUT(/distributions)
 ```
 
 ## Create
-PUT(/distributionBeneficiary)
+PUT(/assistanceBeneficiary)
 
 ## Body
 

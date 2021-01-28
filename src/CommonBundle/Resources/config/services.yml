@@ -80,6 +80,7 @@ services:
     CommonBundle\DataFixtures\LocationFixtures:
         arguments:
             - "@kernel"
+            - "@location_service"
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -135,7 +136,7 @@ services:
     CommonBundle\DataFixtures\AssistanceFixtures:
         arguments:
             - "@kernel"
-            - "@distribution.distribution_service"
+            - "@distribution.assistance_service"
         tags:
             - { name: doctrine.fixture.orm }
     
@@ -155,6 +156,13 @@ services:
     CommonBundle\DataFixtures\SmartcardFixtures:
         arguments:
             - "@=service('kernel').getEnvironment()"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\TransactionFixtures:
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@transaction.khm_financial_provider"
         tags:
             - { name: doctrine.fixture.orm }
 

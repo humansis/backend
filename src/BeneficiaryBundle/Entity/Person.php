@@ -28,7 +28,7 @@ class Person
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
      */
     private $id;
 
@@ -36,7 +36,7 @@ class Person
      * @var string|null
      *
      * @ORM\Column(name="enGivenName", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBooklet", "FullBeneficiary"})
      */
     private $enGivenName;
 
@@ -44,7 +44,7 @@ class Person
      * @var string|null
      *
      * @ORM\Column(name="enFamilyName", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
      */
     private $enFamilyName;
 
@@ -52,7 +52,7 @@ class Person
      * @var string|null
      *
      * @ORM\Column(name="localGivenName", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBooklet", "FullBeneficiary"})
      * @Assert\NotBlank(message="The local given name is required.")
      */
     private $localGivenName;
@@ -61,7 +61,7 @@ class Person
      * @var string|null
      *
      * @ORM\Column(name="localFamilyName", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
      * @Assert\NotBlank(message="The local family name is required.")
      */
     private $localFamilyName;
@@ -70,7 +70,7 @@ class Person
      * @var int|null
      *
      * @ORM\Column(name="gender", type="smallint", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
      * @Assert\NotBlank(message="The gender is required.")
      */
     private $gender;
@@ -79,7 +79,7 @@ class Person
      * @var DateTime|null
      *
      * @ORM\Column(name="dateOfBirth", type="date", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
      * @Assert\NotBlank(message="The date of birth is required.")
      */
     private $dateOfBirth;
@@ -102,21 +102,21 @@ class Person
     /**
      * @var Phone[]|Collection
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="person", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
      */
     private $phones;
 
     /**
      * @var NationalId[]|Collection
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="person", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
      */
     private $nationalIds;
 
     /**
      * @var Referral|null
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Referral", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedDistribution", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedAssistance", "FullBeneficiary"})
      */
     private $referral;
 
@@ -124,7 +124,7 @@ class Person
      * @var string|null
      *
      * @ORM\Column(name="local_parents_name", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBooklet", "FullBeneficiary"})
      */
     private $localParentsName;
 
@@ -132,7 +132,7 @@ class Person
      * @var string|null
      *
      * @ORM\Column(name="en_parents_name", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedDistribution", "FullBooklet", "FullBeneficiary"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBooklet", "FullBeneficiary"})
      */
     private $enParentsName;
 

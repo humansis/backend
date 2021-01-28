@@ -3,9 +3,10 @@
 namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\InputType\BookletBatchCreateInputType;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -155,6 +156,69 @@ class BookletService
         return $booklet;
     }
 
+    public function createBooklets(BookletBatchCreateInputType $inputType)
+    {
+        $tempCode = uniqid('temp_code');
+
+        $project = $this->em->getRepository(\ProjectBundle\Entity\Project::class)->find($inputType->getProjectId());
+        if (!$project) {
+            throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists');
+        }
+
+        try {
+            $this->em->beginTransaction();
+
+            for ($i = 0; $i < $inputType->getQuantityOfBooklets(); ++$i) {
+                $bookletCode = sprintf('%s_%s_%s_batch%06d', $inputType->getIso3(), $project->getName(), date('d-m-Y'), $i);
+
+                $booklet = new Booklet();
+                $booklet
+                    ->setNumberVouchers($inputType->getQuantityOfVouchers())
+                    ->setCurrency($inputType->getCurrency())
+                    ->setStatus(Booklet::UNASSIGNED)
+                    ->setCountryISO3($inputType->getIso3())
+                    ->setProject($project)
+                    ->setCode($bookletCode)
+                    ->setPassword($inputType->getPassword());
+
+                $values = $inputType->getIndividualValues();
+                for ($j = 0; $j < $booklet->getNumberVouchers(); ++$j) {
+                    $value = $values[$j] ?? $values[count($values) - 1];
+                    $voucher = new Voucher($tempCode.'_'.$i.'_'.$j, $value, $booklet);
+                    $booklet->getVouchers()->add($voucher);
+
+                    $this->em->persist($voucher);
+                }
+
+                $this->em->persist($booklet);
+
+                if (0 === $i % 50) {
+                    $this->em->flush();
+                    $this->em->clear(Booklet::class);
+                    $this->em->clear(Voucher::class);
+                }
+            }
+
+            $this->em->flush();
+            $this->em->clear(Booklet::class);
+            $this->em->clear(Voucher::class);
+
+            //update voucher.code from temp_code to regular code
+            $this->em->getConnection()->executeQuery('
+                UPDATE voucher v
+                JOIN booklet b ON b.id=v.booklet_id
+                SET v.code=CONCAT(b.currency, v.value, "*", b.code, "-", v.id, IF(b.password, CONCAT("-", b.password), ""))
+                WHERE v.code LIKE ?
+            ', [$tempCode.'%']);
+
+            $this->em->commit();
+
+        } catch (\Exception $exception) {
+            $this->em->rollback();
+            throw $exception;
+        }
+    }
+
     /**
      * Get the last inserted ID in the Booklet table
      *
@@ -223,6 +287,7 @@ class BookletService
      *
      * @param string $countryCode
      * @param \ProjectBundle\Entity\Project $project
+     * @param int $count
      * @return string
      */
     protected function generateCode(string $countryCode, \ProjectBundle\Entity\Project $project)
@@ -443,19 +508,12 @@ class BookletService
             throw new \Exception("This booklet has already been distributed, used or is actually deactivated");
         }
 
-        $distributionBeneficiary = $this->em->getRepository(DistributionBeneficiary::class)->findOneBy(
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(
             ['beneficiary' => $beneficiary, "assistance" => $assistance]
         );
-        $booklet->setDistributionBeneficiary($distributionBeneficiary)
+        $booklet->setAssistanceBeneficiary($assistanceBeneficiary)
             ->setStatus(Booklet::DISTRIBUTED);
         $this->em->merge($booklet);
-
-        $beneficiariesWithoutBooklets = $this->em->getRepository(DistributionBeneficiary::class)->countWithoutBooklet($assistance);
-
-        if ($beneficiariesWithoutBooklets === '1') {
-            $assistance->setCompleted(true);
-            $this->em->merge($assistance);
-        }
 
         $this->em->flush();
 
@@ -540,8 +598,8 @@ class BookletService
 
     public function getPdfHtml(Booklet $booklet, string $voucherHtmlSeparation)
     {
-        $name = $booklet->getDistributionBeneficiary() ?
-            $booklet->getDistributionBeneficiary()->getBeneficiary()->getLocalFamilyName() :
+        $name = $booklet->getAssistanceBeneficiary() ?
+            $booklet->getAssistanceBeneficiary()->getBeneficiary()->getLocalFamilyName() :
             '_______';
         $currency = $booklet->getCurrency();
         $bookletQrCode = $booklet->getCode();
@@ -604,14 +662,14 @@ class BookletService
      */
     public function exportVouchersDistributionToCsv(Assistance $assistance, string $type)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
             ->findByAssistance($assistance);
 
         $beneficiaries = array();
         $exportableTable = array();
-        foreach ($distributionBeneficiaries as $distributionBeneficiary) {
-            $beneficiary = $distributionBeneficiary->getBeneficiary();
-            $booklets = $distributionBeneficiary->getBooklets();
+        foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
+            $beneficiary = $assistanceBeneficiary->getBeneficiary();
+            $booklets = $assistanceBeneficiary->getBooklets();
             $transactionBooklet = null;
             if (count($booklets) > 0) {
                 foreach ($booklets as $booklet) {
@@ -647,8 +705,8 @@ class BookletService
                     "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
                     "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
                     "Purchased items" => $products,
-                    "Removed" => $distributionBeneficiary->getRemoved() ? 'Yes' : 'No',
-                    "Justification for adding/removing" => $distributionBeneficiary->getJustification(),
+                    "Removed" => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
+                    "Justification for adding/removing" => $assistanceBeneficiary->getJustification(),
                 ))
             );
         }

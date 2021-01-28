@@ -51,8 +51,9 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($summary);
-        $this->assertArrayHasKey('key', $summary);
-        $this->assertArrayHasKey('version', $summary);
+        $this->assertArrayHasKey('MASTER_KEY', $summary);
+        $this->assertArrayHasKey('APP_VERSION', $summary);
+        $this->assertArrayHasKey('APP_ID', $summary);
     }
 
     public function testMobileMasterKeyForVendorAppExists()
@@ -67,7 +68,8 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($summary);
-        $this->assertArrayHasKey('key', $summary);
-        $this->assertArrayHasKey('version', $summary);
+        $this->assertArrayHasKey('MASTER_KEY', $summary);
+        $this->assertArrayHasKey('APP_VERSION', $summary);
+        $this->assertArrayHasKey('APP_ID', $summary);
     }
 }

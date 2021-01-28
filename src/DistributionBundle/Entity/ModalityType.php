@@ -17,7 +17,7 @@ class ModalityType
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullModalityType", "FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullModalityType", "FullAssistance", "SmallAssistance"})
      */
     private $id;
 
@@ -25,7 +25,7 @@ class ModalityType
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @SymfonyGroups({"FullModalityType", "FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullModalityType", "FullAssistance", "SmallAssistance"})
      */
     private $name;
 
@@ -33,7 +33,7 @@ class ModalityType
      * @var Modality
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Modality", inversedBy="modalityTypes")
-     * @SymfonyGroups({"FullModalityType", "FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullModalityType", "FullAssistance", "SmallAssistance"})
      */
     private $modality;
 

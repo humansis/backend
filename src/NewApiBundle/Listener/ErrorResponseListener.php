@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NewApiBundle\Listener;
 
 use GuzzleHttp\Psr7\Response;
@@ -57,6 +59,6 @@ class ErrorResponseListener
             $data['debug'] = $flattenException->toArray();
         }
 
-        $event->setResponse(JsonResponse::create($data));
+        $event->setResponse(JsonResponse::create($data, $data['code']));
     }
 }

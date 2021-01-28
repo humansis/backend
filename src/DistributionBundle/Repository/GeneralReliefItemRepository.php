@@ -16,7 +16,7 @@ class GeneralReliefItemRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder("gri");
         $q = $qb->select("COUNT(DISTINCT gri)")
-                ->leftJoin("gri.distributionBeneficiary", "db")
+                ->leftJoin("gri.assistanceBeneficiary", "db")
                 ->leftJoin("db.assistance", "dd")
                 ->where("dd = :distribution")
                 ->setParameter("distribution", $assistance)

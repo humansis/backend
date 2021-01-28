@@ -7,7 +7,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Entity\ModalityType;
-use DistributionBundle\Utils\DistributionService;
+use DistributionBundle\Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -78,7 +78,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
     private $kernel;
 
-    public function __construct(Kernel $kernel, DistributionService $distributionService)
+    public function __construct(Kernel $kernel, AssistanceService $distributionService)
     {
         $this->distributionService = $distributionService;
         $this->kernel = $kernel;
@@ -97,8 +97,12 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             return;
         }
 
-        $this->loadCommonAssistance($manager);
-        $this->loadSmartcardAssistance($manager);
+        $projects = $manager->getRepository(Project::class)->findAll();
+        foreach ($projects as $project) {
+            $this->loadCommonIndividualAssistance($manager, $project);
+            $this->loadCommonHouseholdAssistance($manager, $project);
+            $this->loadSmartcardAssistance($manager, $project);
+        }
     }
 
     public function getDependencies()
@@ -113,19 +117,26 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         return ['test'];
     }
 
-    private function loadCommonAssistance(ObjectManager $manager)
+    private function loadCommonIndividualAssistance(ObjectManager $manager, Project $project)
     {
-        $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => 'KHM']);
-
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
+        $data['target_type'] = AssistanceTargetType::INDIVIDUAL;
 
-        $this->distributionService->create('KHM', $data, 1);
+        $this->distributionService->create($project->getIso3(), $data, 1);
     }
 
-    private function loadSmartcardAssistance(ObjectManager $manager)
+    private function loadCommonHouseholdAssistance(ObjectManager $manager, Project $project)
     {
-        $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => 'KHM']);
+        $data = $this->assistanceArray;
+        $data['project']['id'] = $project->getId();
+        $data['target_type'] = AssistanceTargetType::HOUSEHOLD;
+
+        $this->distributionService->create($project->getIso3(), $data, 1);
+    }
+
+    private function loadSmartcardAssistance(ObjectManager $manager, Project $project)
+    {
         $modalityType = $manager->getRepository(ModalityType::class)->findOneBy(['name' => 'Smartcard']);
 
         $data = $this->assistanceArray;
@@ -156,7 +167,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             ],
         ];
 
-        $result = $this->distributionService->create('KHM', $data, 1);
+        $result = $this->distributionService->create($project->getIso3(), $data, 1);
 
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE, $result['distribution']);
     }

@@ -10,7 +10,7 @@ use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use CommonBundle\Utils\LocationService;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\ModalityType;
@@ -29,10 +29,10 @@ use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 
 /**
- * Class DistributionService
+ * Class AssistanceService
  * @package DistributionBundle\Utils
  */
-class DistributionService
+class AssistanceService
 {
 
     /** @var EntityManagerInterface $em */
@@ -53,8 +53,8 @@ class DistributionService
     /** @var ConfigurationLoader $configurationLoader */
     private $configurationLoader;
 
-    /** @var CriteriaDistributionService $criteriaDistributionService */
-    private $criteriaDistributionService;
+    /** @var CriteriaAssistanceService $criteriaAssistanceService */
+    private $criteriaAssistanceService;
 
     /** @var AbstractRetriever $retriever */
     private $retriever;
@@ -63,14 +63,14 @@ class DistributionService
     private $container;
 
     /**
-     * DistributionService constructor.
+     * AssistanceService constructor.
      * @param EntityManagerInterface $entityManager
      * @param Serializer $serializer
      * @param ValidatorInterface $validator
      * @param LocationService $locationService
      * @param CommodityService $commodityService
      * @param ConfigurationLoader $configurationLoader
-     * @param CriteriaDistributionService $criteriaDistributionService
+     * @param CriteriaAssistanceService $criteriaAssistanceService
      * @param string $classRetrieverString
      * @param ContainerInterface $container
      * @throws \Exception
@@ -82,7 +82,7 @@ class DistributionService
         LocationService $locationService,
         CommodityService $commodityService,
         ConfigurationLoader $configurationLoader,
-        CriteriaDistributionService $criteriaDistributionService,
+        CriteriaAssistanceService $criteriaAssistanceService,
         string $classRetrieverString,
         ContainerInterface $container
     ) {
@@ -92,7 +92,7 @@ class DistributionService
         $this->locationService = $locationService;
         $this->commodityService = $commodityService;
         $this->configurationLoader = $configurationLoader;
-        $this->criteriaDistributionService = $criteriaDistributionService;
+        $this->criteriaAssistanceService = $criteriaAssistanceService;
         $this->container = $container;
         try {
             $class = new \ReflectionClass($classRetrieverString);
@@ -132,7 +132,7 @@ class DistributionService
             if ($commodity->getModalityType()->isGeneralRelief()) {
                 foreach ($beneficiaries as $beneficiary) {
                     $generalRelief = new GeneralReliefItem();
-                    $generalRelief->setDistributionBeneficiary($beneficiary);
+                    $generalRelief->setAssistanceBeneficiary($beneficiary);
                     $this->em->persist($generalRelief);
                 }
             }
@@ -211,22 +211,22 @@ class DistributionService
         if (AssistanceTargetType::COMMUNITY === $distribution->getTargetType()) {
             foreach ($distributionArray['communities'] as $id) {
                 $community = $this->container->get('doctrine')->getRepository(Community::class)->find($id);
-                $distributionBeneficiary = (new DistributionBeneficiary())
+                $assistanceBeneficiary = (new AssistanceBeneficiary())
                     ->setAssistance($distribution)
                     ->setBeneficiary($community)
                     ->setRemoved(0);
 
-                $this->em->persist($distributionBeneficiary);
+                $this->em->persist($assistanceBeneficiary);
                 $listReceivers[] = $community->getId();
             }
         } elseif (AssistanceTargetType::INSTITUTION === $distribution->getTargetType()) {
             foreach ($distributionArray['institutions'] as $id) {
                 $institution = $this->container->get('doctrine')->getRepository(Institution::class)->find($id);
-                $distributionBeneficiary = (new DistributionBeneficiary())
+                $assistanceBeneficiary = (new AssistanceBeneficiary())
                     ->setAssistance($distribution)
                     ->setBeneficiary($institution)
                     ->setRemoved(0);
-                $this->em->persist($distributionBeneficiary);
+                $this->em->persist($assistanceBeneficiary);
 
                 $listReceivers[] = $institution->getId();
             }
@@ -239,7 +239,7 @@ class DistributionService
                         \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
                     ]);
                     $criterion->setGroupNumber($i);
-                    $this->criteriaDistributionService->save($distribution, $criterion, false);
+                    $this->criteriaAssistanceService->save($distribution, $criterion, false);
                     $criteria[$i][$j] = $criterionArray;
                 }
             }
@@ -271,7 +271,7 @@ class DistributionService
         $criteria['criteria'] = $criteria['selection_criteria'];
         $criteria['countryIso3'] = $countryISO3;
 
-        return $this->container->get('distribution.criteria_distribution_service')->load($criteria, $project, $targetType, $sector, $subsector, $threshold, false);
+        return $this->container->get('distribution.criteria_assistance_service')->load($criteria, $project, $targetType, $sector, $subsector, $threshold, false);
     }
 
     /**
@@ -286,13 +286,13 @@ class DistributionService
             /** @var Beneficiary $beneficiary */
             $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver);
 
-            $distributionBeneficiary = (new DistributionBeneficiary())
+            $assistanceBeneficiary = (new AssistanceBeneficiary())
                 ->setAssistance($assistance)
                 ->setBeneficiary($beneficiary)
                 ->setRemoved(0)
                 ->setVulnerabilityScores(json_encode($scores));
 
-            $this->em->persist($distributionBeneficiary);
+            $this->em->persist($assistanceBeneficiary);
         }
     }
 
@@ -352,7 +352,7 @@ class DistributionService
     public function complete(Assistance $assistance)
     {
         if (!empty($assistance)) {
-                $assistance->setCompleted(1)
+                $assistance->setCompleted()
                                 ->setUpdatedOn(new \DateTime);         
         }
 
@@ -528,7 +528,7 @@ class DistributionService
      */
     public function countAllBeneficiaries(string $country)
     {
-        $count = (int) $this->em->getRepository(DistributionBeneficiary::class)->countAll($country);
+        $count = (int) $this->em->getRepository(AssistanceBeneficiary::class)->countAll($country);
         return $count;
     }
     
@@ -610,13 +610,13 @@ class DistributionService
     public function createGeneralReliefItems(Assistance $assistance)
     {
         $distributionBeneficiaries = $assistance->getDistributionBeneficiaries();
-        foreach ($distributionBeneficiaries as $index => $distributionBeneficiary) {
+        foreach ($distributionBeneficiaries as $index => $assistanceBeneficiary) {
             $$index = new GeneralReliefItem();
-            $$index->setDistributionBeneficiary($distributionBeneficiary);
-            $distributionBeneficiary->addGeneralRelief($$index);
+            $$index->setAssistanceBeneficiary($assistanceBeneficiary);
+            $assistanceBeneficiary->addGeneralRelief($$index);
 
             $this->em->persist($$index);
-            $this->em->merge($distributionBeneficiary);
+            $this->em->merge($assistanceBeneficiary);
         }
         $this->em->flush();
     }
@@ -662,13 +662,9 @@ class DistributionService
 
         // Checks if the distribution is completed
         $generalReliefItem = $this->em->getRepository(GeneralReliefItem::class)->find(array_pop($griIds));
-        $assistance = $generalReliefItem->getDistributionBeneficiary()->getAssistance();
+        $assistance = $generalReliefItem->getAssistanceBeneficiary()->getAssistance();
         $numberIncomplete = $this->em->getRepository(GeneralReliefItem::class)->countNonDistributed($assistance);
-        
-        if ($numberIncomplete === '0') {
-            $this->complete($assistance);
-        }
-        
+
         return array($successArray, $errorArray, $numberIncomplete);
     }
     
@@ -679,12 +675,12 @@ class DistributionService
      */
     public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type)
     {
-        $distributionBeneficiaries = $this->em->getRepository(DistributionBeneficiary::class)->findByAssistance($assistance);
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
 
         $generalreliefs = array();
         $exportableTable = array();
         foreach ($distributionBeneficiaries as $db) {
-            $generalrelief = $this->em->getRepository(GeneralReliefItem::class)->findOneByDistributionBeneficiary($db);
+            $generalrelief = $this->em->getRepository(GeneralReliefItem::class)->findOneByAssistanceBeneficiary($db);
 
             if ($generalrelief) {
                 array_push($generalreliefs, $generalrelief);
@@ -692,7 +688,7 @@ class DistributionService
         }
 
         foreach ($generalreliefs as $generalrelief) {
-            $beneficiary = $generalrelief->getDistributionBeneficiary()->getBeneficiary();
+            $beneficiary = $generalrelief->getAssistanceBeneficiary()->getBeneficiary();
             $commodityNames = implode(', ',
                 array_map(
                     function($commodity) { return  $commodity->getModalityType()->getName(); }, 
@@ -716,8 +712,8 @@ class DistributionService
                     "Value" => $commodityValues,
                     "Distributed At" => $generalrelief->getDistributedAt(),
                     "Notes Distribution" => $generalrelief->getNotes(),
-                    "Removed" => $generalrelief->getDistributionBeneficiary()->getRemoved() ? 'Yes' : 'No',
-                    "Justification for adding/removing" => $generalrelief->getDistributionBeneficiary()->getJustification(),
+                    "Removed" => $generalrelief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
+                    "Justification for adding/removing" => $generalrelief->getAssistanceBeneficiary()->getJustification(),
                 ))
             );
         }
@@ -766,8 +762,8 @@ class DistributionService
         $booklets = [];
 
         if ($exportableDistribution->getCommodities()[0]->getModalityType()->getName() === 'QR Code Voucher') {
-            foreach ($exportableDistribution->getDistributionBeneficiaries() as $distributionBeneficiary) {
-                    $activatedBooklets = $this->em->getRepository(Booklet::class)->getActiveBookletsByDistributionBeneficiary($distributionBeneficiary->getId());
+            foreach ($exportableDistribution->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+                    $activatedBooklets = $this->em->getRepository(Booklet::class)->getActiveBookletsByAssistanceBeneficiary($assistanceBeneficiary->getId());
                     if (count($activatedBooklets) > 0) {
                         $products = $this->em->getRepository(Product::class)->getNameByBooklet($activatedBooklets[0]->getId());
                         $products = array_map(
@@ -783,7 +779,7 @@ class DistributionService
                             "currency" => $activatedBooklets[0]->getCurrency(),
                             "usedAt" => $activatedBooklets[0]->getUsedAt()
                         ];
-                        $booklets[$distributionBeneficiary->getId()] = $booklet;
+                        $booklets[$assistanceBeneficiary->getId()] = $booklet;
                     }
             }
         }
@@ -828,11 +824,11 @@ class DistributionService
         foreach ($assistance->getSelectionCriteria() as $criterion) {
             $this->em->remove($criterion);
         }
-        foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
-            foreach ($distributionBeneficiary->getGeneralReliefs() as $relief) {
+        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            foreach ($assistanceBeneficiary->getGeneralReliefs() as $relief) {
                 $this->em->remove($relief);
             }
-            $this->em->remove($distributionBeneficiary);
+            $this->em->remove($assistanceBeneficiary);
         }
 
         $this->em->remove($assistance);

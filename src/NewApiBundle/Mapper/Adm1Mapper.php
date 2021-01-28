@@ -52,4 +52,9 @@ class Adm1Mapper implements MapperInterface
     {
         return $this->object->getCountryISO3();
     }
+
+    public function getLocationId(): int
+    {
+        return $this->object->getLocation()->getId();
+    }
 }

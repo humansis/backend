@@ -39,7 +39,7 @@ class TransactionMapper
             $transaction,
             'json',
             [
-                'groups' => ['ValidatedDistribution'],
+                'groups' => ['ValidatedAssistance'],
                 'datetime_format' => 'd-m-Y H:i',
             ]
         );

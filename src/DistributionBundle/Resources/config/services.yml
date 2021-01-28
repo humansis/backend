@@ -1,12 +1,15 @@
 services:
 
+    DistributionBundle\Extension\BeneficiaryGenderExtension:
+        tags:
+            - { name: twig.extension }
 
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
 
-    distribution.distribution_service:
-        class: DistributionBundle\Utils\DistributionService
+    distribution.assistance_service:
+        class: DistributionBundle\Utils\AssistanceService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
@@ -15,12 +18,12 @@ services:
             - '@location_service'
             - '@distribution.commodity_service'
             - '@distribution.configuration_loader'
-            - '@distribution.criteria_distribution_service'
+            - '@distribution.criteria_assistance_service'
             - '%distribution.retriever%'
             - '@service_container'
 
-    distribution.distribution_beneficiary_service:
-        class: DistributionBundle\Utils\DistributionBeneficiaryService
+    distribution.assistance_beneficiary_service:
+        class: DistributionBundle\Utils\AssistanceBeneficiaryService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
@@ -28,8 +31,8 @@ services:
             - '@validator'
             - '@service_container'
 
-    distribution.criteria_distribution_service:
-        class: DistributionBundle\Utils\CriteriaDistributionService
+    distribution.criteria_assistance_service:
+        class: DistributionBundle\Utils\CriteriaAssistanceService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
@@ -107,6 +110,11 @@ services:
             - '@validator'
             - "@request_validator"
             - "@beneficiary.csv_to_array_mapper"
+
+    distribution.export.smartcard:
+        class: DistributionBundle\Export\SmartcardExport
+        arguments: [ '@export_csv_service', '@doctrine.orm.entity_manager', '@templating' , '@pdf_service' ]
+        public: true
 
     distribution.export.smartcard_invoice:
         class: DistributionBundle\Export\SmartcardInvoiceExport

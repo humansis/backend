@@ -2,11 +2,18 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
+use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Adm3;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\HouseholdFilterInputType;
+use NewApiBundle\InputType\HouseholdOrderInputType;
+use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Query\Expr\Join;
@@ -157,8 +164,144 @@ class HouseholdRepository extends AbstractCriteriaRepository
         return $query->getResult();
     }
 
+    /**
+     * @param string                       $iso3
+     * @param HouseholdFilterInputType     $filter
+     * @param HouseholdOrderInputType|null $orderBy
+     * @param Pagination|null              $pagination
+     *
+     * @return Paginator|Household[]
+     */
+    public function findByParams(
+        string $iso3,
+        HouseholdFilterInputType $filter,
+        HouseholdOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator {
+        $qb = $this->createQueryBuilder('hh')
+            ->leftJoin('hh.householdLocations', 'hl')
+            ->leftJoin('hl.campAddress', 'ca')
+            ->leftJoin('ca.camp', 'c')
+            ->leftJoin('hl.address', 'ad')
+            ->leftJoin(Location::class, 'l', Join::WITH, 'l.id = COALESCE(IDENTITY(c.location, \'id\'), IDENTITY(ad.location, \'id\'))')
+            ->leftJoin('l.adm4', 'adm4')
+            ->leftJoin('l.adm3', 'locAdm3')
+            ->leftJoin('l.adm2', 'locAdm2')
+            ->leftJoin('l.adm1', 'locAdm1')
+            ->leftJoin(Adm3::class, 'adm3', Join::WITH, 'adm3.id = COALESCE(IDENTITY(adm4.adm3, \'id\'), locAdm3.id)')
+            ->leftJoin(Adm2::class, 'adm2', Join::WITH, 'adm2.id = COALESCE(IDENTITY(adm3.adm2, \'id\'), locAdm2.id)')
+            ->leftJoin(Adm1::class, 'adm1', Join::WITH, 'adm1.id = COALESCE(IDENTITY(adm2.adm1, \'id\'), locAdm1.id)')
+            ->leftJoin('hh.beneficiaries', 'b')
+            ->leftJoin('hh.projects', 'p')
+            ->leftJoin('b.vulnerabilityCriteria', 'vb')
+            ->leftJoin('b.person', 'per')
+            ->leftJoin('per.nationalIds', 'ni')
+            ->leftJoin('per.referral', 'r')
+            ->leftJoin('hh.beneficiaries', 'head')
+            ->leftJoin('head.person', 'headper')
+            ->andWhere('head.status = 1')
+            ->andWhere('hh.archived = 0')
+            ->andWhere('adm1.countryISO3 = :iso3')
+            ->setParameter('iso3', $iso3);
 
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
 
+        if ($filter->hasFulltext()) {
+            $qb->andWhere("CONCAT(
+                        COALESCE(hh.id, ''),
+                        COALESCE(per.enFamilyName, ''),
+                        COALESCE(per.enGivenName, ''),
+                        COALESCE(per.localFamilyName, ''),
+                        COALESCE(per.localGivenName, ''),
+                        COALESCE(p.name, ''),
+                        COALESCE(adm1.name, ''),
+                        COALESCE(adm2.name, ''),
+                        COALESCE(adm3.name, ''),
+                        COALESCE(adm4.name, ''),
+                        COALESCE(vb.fieldString, ''),
+                        COALESCE(ni.idNumber, '')
+                    ) LIKE :fulltext")
+                ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+        }
+
+        if ($filter->hasGender()) {
+            $qb->andWhere('per.gender = :gender')
+                ->setParameter('gender', 'M' === $filter->getGender() ? 1 : 0);
+        }
+
+        if ($filter->hasProjects()) {
+            $qb->andWhere('p.id IN (:projects)')
+                ->setParameter('projects', $filter->getProjects());
+        }
+
+        if ($filter->hasVulnerabilities()) {
+            $qb->andWhere('vb.id IN (:vulnerabilities)')
+                ->setParameter('vulnerabilities', $filter->getVulnerabilities());
+        }
+
+        if ($filter->hasNationalIds()) {
+            $qb->andWhere('ni.id IN (:nationalIds)')
+                ->setParameter('nationalIds', $filter->getNationalIds());
+        }
+
+        if ($filter->hasResidencyStatuses()) {
+            $qb->andWhere('b.residencyStatus IN (:residencyStatuses)')
+                ->setParameter('residencyStatuses', $filter->getResidencyStatuses());
+        }
+
+        if ($filter->hasReferralTypes()) {
+            $qb->andWhere('r.type IN (:referrals)')
+                ->setParameter('referrals', $filter->getReferralTypes());
+        }
+
+        if ($filter->hasLivelihoods()) {
+            $qb->andWhere('hh.livelihood IN (:livelihoods)')
+                ->setParameter('livelihoods', $filter->getLivelihoods());
+        }
+
+        if ($filter->hasLocations()) {
+            $qb->andWhere('l.id  IN (:locations)')
+                ->setParameter('locations', $filter->getLocations());
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case HouseholdOrderInputType::SORT_BY_CURRENT_HOUSEHOLD_LOCATION:
+                        $qb->addGroupBy('adm1')->addOrderBy('adm1.name', $direction);
+                        break;
+                    case HouseholdOrderInputType::SORT_BY_LOCAL_FIRST_NAME:
+                        $qb->addGroupBy('headper.localGivenName')->addOrderBy('headper.localGivenName', $direction);
+                        break;
+                    case HouseholdOrderInputType::SORT_BY_LOCAL_FAMILY_NAME:
+                        $qb->addGroupBy('headper.localFamilyName')->addOrderBy('headper.localFamilyName', $direction);
+                        break;
+                    case HouseholdOrderInputType::SORT_BY_DEPENDENTS:
+                        $qb->addOrderBy('COUNT(DISTINCT b)', $direction);
+                        break;
+                    case HouseholdOrderInputType::SORT_BY_PROJECTS:
+                        $qb->addGroupBy('p')->addOrderBy('p.name', $direction);
+                        break;
+                    case HouseholdOrderInputType::SORT_BY_VULNERABILITIES:
+                        $qb->addGroupBy('vb')->addOrderBy('vb.fieldString', $direction);
+                        break;
+                    case HouseholdOrderInputType::SORT_BY_NATIONAL_ID:
+                        $qb->addGroupBy('ni')->addOrderBy('ni.idNumber', $direction);
+                        break;
+                    case HouseholdOrderInputType::SORT_BY_ID:
+                        $qb->addOrderBy('hh.id', $direction);
+                        break;
+                }
+            }
+
+            $qb->addGroupBy('hh.id');
+        }
+
+        return new Paginator($qb, false);
+    }
 
     /**
      * Get all Household by country

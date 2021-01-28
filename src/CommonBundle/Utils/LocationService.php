@@ -16,8 +16,10 @@ use BeneficiaryBundle\Entity\Camp;
 use CommonBundle\InputType\Country;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectManager;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 /**
  * Class LocationService
@@ -288,4 +290,5 @@ class LocationService
 
         return $response;
     }
+
 }

@@ -27,7 +27,7 @@ class Project implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
+     * @SymfonyGroups({"FullProject", "FullDonor", "FullAssistance", "SmallAssistance", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
      */
     private $id;
 
@@ -36,7 +36,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @SymfonyGroups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
+     * @SymfonyGroups({"FullProject", "FullDonor", "FullAssistance", "SmallAssistance", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
      */
     private $name;
 
@@ -45,7 +45,7 @@ class Project implements ExportableInterface
      *
      * @ORM\Column(name="internalId", type="string", length=255, nullable=true)
      *
-     * @SymfonyGroups({"FullProject", "FullDonor", "FullDistribution", "SmallDistribution", "FullHousehold", "SmallHousehold", "FullUser"})
+     * @SymfonyGroups({"FullProject", "FullDonor", "FullAssistance", "SmallAssistance", "FullHousehold", "SmallHousehold", "FullUser"})
      */
     private $internalId;
 
@@ -111,7 +111,7 @@ class Project implements ExportableInterface
     /**
      * @ORM\OneToMany(targetEntity="ProjectBundle\Entity\ProjectSector", mappedBy="project", cascade={"persist"}, orphanRemoval=true)
      *
-     * @SymfonyGroups({"FullProject", "FullDistribution", "SmallDistribution"})
+     * @SymfonyGroups({"FullProject", "FullAssistance", "SmallAssistance"})
      */
     private $sectors;
 

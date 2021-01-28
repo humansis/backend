@@ -54,7 +54,7 @@ class CommonController extends Controller
 
             $total_beneficiary_served = $this->get('beneficiary.beneficiary_service')->countAllServed($country);
 
-            $total_completed_distributions = $this->get('distribution.distribution_service')->countCompleted($country);
+            $total_completed_distributions = $this->get('distribution.assistance_service')->countCompleted($country);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -130,8 +130,9 @@ class CommonController extends Controller
     public function masterKeyOfflineApp()
     {
         return $this->json([
-            'key' => $this->getParameter('mobile_app_master_key'),
-            'version' => $this->getParameter('mobile_app_version'),
+            'MASTER_KEY' => $this->getParameter('mobile_app_master_key'),
+            'APP_VERSION' => $this->getParameter('mobile_app_version'),
+            'APP_ID' => $this->getParameter('mobile_app_id'),
         ]);
     }
 

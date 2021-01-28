@@ -41,3 +41,6 @@ services:
         arguments:
             - "@serializer"
         public: true
+
+    VoucherBundle\Mapper\VoucherRedemptionBatchMapper:
+        tags: [ 'app.mapper' ]

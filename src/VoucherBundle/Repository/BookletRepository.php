@@ -6,6 +6,9 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\BookletFilterInputType;
+use NewApiBundle\InputType\BookletOrderInputType;
+use NewApiBundle\Request\Pagination;
 use VoucherBundle\Entity\Booklet;
 
 /**
@@ -57,11 +60,11 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getResult();
     }
 
-    public function getActiveBookletsByDistributionBeneficiary(int $distributionBeneficiaryId) {
+    public function getActiveBookletsByAssistanceBeneficiary(int $assistanceBeneficiaryId) {
         $qb = $this->createQueryBuilder('b');
         
         $qb->andWhere('db.id = :id')
-                ->setParameter('id', $distributionBeneficiaryId)
+                ->setParameter('id', $assistanceBeneficiaryId)
                 ->leftJoin('b.distribution_beneficiary', 'db')
                 ->andWhere('b.status != :status')
                     ->setParameter('status', 3);
@@ -223,5 +226,110 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter('country', $countryISO3);
 
         return $q->getQuery()->getResult();
+    }
+
+    /**
+     * @param string                     $iso3
+     * @param BookletFilterInputType     $filter
+     * @param BookletOrderInputType|null $orderBy
+     * @param Pagination|null            $pagination
+     *
+     * @return Paginator|Booklet[]
+     */
+    public function findByParams(
+        string $iso3,
+        BookletFilterInputType $filter,
+        ?BookletOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator {
+        $qb = $this->createQueryBuilder('b')
+            ->leftJoin('b.distribution_beneficiary', 'db')
+            ->leftJoin('b.vouchers', 'v')
+            ->leftJoin('db.beneficiary', 'bf')
+            ->leftJoin('db.assistance', 'd')
+            ->andWhere('b.status != :status')
+            ->andWhere('b.countryISO3 = :country')
+            ->setParameter('status', Booklet::DEACTIVATED)
+            ->setParameter('country', $iso3);
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($filter->hasFulltext()) {
+            $subQueryForName = $this->_em->createQueryBuilder()
+                ->select('p.id')
+                ->from(Beneficiary::class, 'bnf1')
+                ->leftJoin('bnf1.person', 'p')
+                ->andWhere('p.id = IDENTITY(db.beneficiary)')
+                ->andWhere('(p.localGivenName LIKE :fulltext OR
+                                p.localFamilyName LIKE :fulltext OR
+                                p.enGivenName LIKE :fulltext OR
+                                p.enFamilyName LIKE :fulltext
+                            )')
+                ->setParameter('fulltext', '%'.$filter->getFulltext().'%')
+                ->getDQL();
+
+            $qb->andWhere("CONCAT(
+                             COALESCE(b.code, ''),
+                             COALESCE(b.currency, ''),
+                             COALESCE(b.status, ''),
+                             COALESCE(d.name, '')
+                         ) LIKE :fulltext OR EXISTS ($subQueryForName)")
+                ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+        }
+
+        if ($filter->hasCurrencies()) {
+            $qb->andWhere('b.currency IN (:currencies)')
+                ->setParameter('currencies', $filter->getCurrencies());
+        }
+
+        if ($filter->hasStatuses()) {
+            $qb->andWhere('b.status IN (:statuses)')
+                ->setParameter('statuses', $filter->getStatuses());
+        }
+
+        if ($filter->hasDistributions()) {
+            $qb->andWhere('d.id IN (:distributions)')
+                ->setParameter('distributions', $filter->getDistributions());
+        }
+
+        if ($filter->hasBeneficiaries()) {
+            $qb->andWhere('bf.id  IN (:beneficiaries)')
+                ->setParameter('beneficiaries', $filter->getBeneficiaries());
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case BookletOrderInputType::SORT_BY_CODE:
+                        $qb->addGroupBy('b.code')->addOrderBy('b.code', $direction);
+                        break;
+                    case BookletOrderInputType::SORT_BY_NUMBER_VOUCHERS:
+                        $qb->addGroupBy('b.numberVouchers')->addOrderBy('b.numberVouchers', $direction);
+                        break;
+                    case BookletOrderInputType::SORT_BY_VALUE:
+                        $qb->addGroupBy('v')->addOrderBy('v.value', $direction);
+                        break;
+                    case BookletOrderInputType::SORT_BY_CURRENCY:
+                        $qb->addGroupBy('b.currency')->addOrderBy('b.currency', $direction);
+                        break;
+                    case BookletOrderInputType::SORT_BY_STATUS:
+                        $qb->addGroupBy('b.status')->addOrderBy('b.status', $direction);
+                        break;
+                    case BookletOrderInputType::SORT_BY_BENEFICIARY:
+                        $qb->addGroupBy('db.beneficiary')->addOrderBy('IDENTITY(db.beneficiary)', $direction);
+                        break;
+                    case BookletOrderInputType::SORT_BY_DISTRIBUTION:
+                        $qb->addGroupBy('d')->addOrderBy('d.name', $direction);
+                        break;
+                }
+            }
+
+            $qb->addGroupBy('b.id');
+        }
+
+        return new Paginator($qb, false);
     }
 }

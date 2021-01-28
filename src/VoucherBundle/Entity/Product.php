@@ -22,7 +22,7 @@ class Product implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullProduct", "ValidatedDistribution", "FullVoucher"})
+     * @SymfonyGroups({"FullProduct", "ValidatedAssistance", "FullVoucher"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Product implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @SymfonyGroups({"FullProduct", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullProduct", "ValidatedAssistance"})
      */
     private $name;
 
@@ -46,7 +46,7 @@ class Product implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="image", type="string", length=255)
-     * @SymfonyGroups({"FullProduct", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullProduct", "ValidatedAssistance"})
      */
     private $image;
 

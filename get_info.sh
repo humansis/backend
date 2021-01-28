@@ -2,29 +2,19 @@
 
 cp build_info.json.dist web/build_info.json
 
-COMMIT=`git rev-parse --short HEAD`
+COMMIT=$CI_COMMIT_SHORT_SHA
 TAG=`git describe --tags`
+BRANCH=$CI_COMMIT_REF_NAME
 
-if [[ $TAG =~ ^v.*$ ]]; then
+if [[ $CI_COMMIT_TAG =~ ^v.*$ ]]; then
   BRANCH="master"
-elif [[ $TAG =~ ^deploy.*$ ]]; then
-  BRANCH="dev deploy"
-elif [[ $TRAVIS_BRANCH == "develop" ]]; then
-  BRANCH="develop"
-else
-  BRANCH=`git symbolic-ref HEAD | cut -d/ -f3-`
+  TAG=$CI_COMMIT_TAG
 fi
 
 if [[ $BRANCH == "master" ]]; then
     APPVERSION=$TAG
-elif [[ $BRANCH == "develop" ]]; then
-    APPVERSION=$COMMIT
-elif [[ $BRANCH =~ ^release\/.*$ ]]; then
-    APPVERSION=$COMMIT
-elif [[ $TAG =~ ^deploy.*$ ]]; then
-    APPVERSION=$COMMIT
 else
-    APPVERSION=$BRANCH
+    APPVERSION=$COMMIT
 fi
 
 sed -i -e "s|__COMMIT_HASH__|$COMMIT|g" web/build_info.json

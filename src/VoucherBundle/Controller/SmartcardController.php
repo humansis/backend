@@ -5,7 +5,7 @@ namespace VoucherBundle\Controller;
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -367,7 +367,7 @@ class SmartcardController extends Controller
             throw new BadRequestHttpException('Distribution does not exists.');
         }
 
-        $distributionBeneficiary = $this->getDoctrine()->getRepository(DistributionBeneficiary::class)->findByDistributionAndBeneficiary(
+        $assistanceBeneficiary = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
             $distribution,
             $smartcard->getBeneficiary()
         );
@@ -375,7 +375,7 @@ class SmartcardController extends Controller
         $deposit = SmartcardDeposit::create(
             $smartcard,
             $this->getUser(),
-            $distributionBeneficiary,
+            $assistanceBeneficiary,
             (float) $request->request->get('value'),
             \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))
         );

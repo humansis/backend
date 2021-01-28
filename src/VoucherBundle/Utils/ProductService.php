@@ -4,7 +4,7 @@ namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Logs;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\ProductCreateInputType;
 use NewApiBundle\InputType\ProductUpdateInputType;

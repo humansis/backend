@@ -9,6 +9,7 @@ use Doctrine\ORM\NoResultException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -30,6 +31,7 @@ use VoucherBundle\InputType\VoucherPurchase;
 use VoucherBundle\InputType\VoucherRedemptionBatch;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 use VoucherBundle\Repository\VoucherPurchaseRepository;
+use VoucherBundle\Repository\VoucherRedemptionBatchRepository;
 use VoucherBundle\Repository\VoucherRepository;
 
 /**
@@ -150,7 +152,7 @@ class VoucherController extends Controller
      *     description="List of purchased vouchers",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=VoucherPurchaseRecord::class, groups={"ValidatedDistribution"}))
+     *         @SWG\Items(ref=@Model(type=VoucherPurchaseRecord::class, groups={"ValidatedAssistance"}))
      *     )
      * )
      * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
@@ -164,7 +166,7 @@ class VoucherController extends Controller
         $vouchers = $this->getDoctrine()->getRepository(VoucherPurchaseRecord::class)->findPurchasedByBeneficiary($beneficiary);
 
         $json = $this->get('serializer')
-            ->serialize($vouchers, 'json', ['groups' => ['ValidatedDistribution'], 'datetime_format' => 'd-m-Y H:m:i']);
+            ->serialize($vouchers, 'json', ['groups' => ['ValidatedAssistance'], 'datetime_format' => 'd-m-Y H:m:i']);
 
         return new Response($json);
     }
@@ -329,65 +331,15 @@ class VoucherController extends Controller
     }
 
     /**
-     * When a voucher is returned to humanitarian
+     * @Rest\Get("/vouchers/purchases/redemption-batch/{id}", name="voucher_redemption_batch")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
-     * @Rest\Post("/vouchers/redeem", name="redeem_vouchers")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
-     * @SWG\Tag(name="Vouchers")
-     *
-     * @SWG\Parameter(name="voucher",
-     *     in="body",
-     *     description="return vouchers to humanitarians",
-     *     required=true,
-     *     @SWG\Schema(
-     *      @SWG\Property(
-     *           property="id",
-     *           type="integer",
-     *           description="voucher id",
-     *           example="1234",
-     *         )
-     *     )
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="SUCCESS",
-     * )
-     *
-     * @SWG\Response(
-     *     response=400,
-     *     description="BAD_REQUEST"
-     * )
-     *
-     * @param Request           $request
-     *
-     * @return Response
+     * @param \VoucherBundle\Entity\VoucherRedemptionBatch $redemptionBatch
+     * @return JsonResponse
      */
-    public function redeemAction(Request $request)
+    public function getRedemptionBatch(\VoucherBundle\Entity\VoucherRedemptionBatch $redemptionBatch): JsonResponse
     {
-        $voucherRepository = $this->getDoctrine()->getRepository(Voucher::class);
-
-        $voucherData = $request->request->all();
-        unset($voucherData['__country']);
-
-        if (!isset($voucherData['id'])) {
-            return new Response("Missing parameter 'id'", Response::HTTP_BAD_REQUEST);
-        }
-
-        /** @var Voucher|null $voucher */
-        $voucher = $voucherRepository->find($voucherData['id']);
-
-        if (!$voucher) {
-            return new Response("There is no voucher with id '{$voucherData['id']}'", Response::HTTP_BAD_REQUEST);
-        }
-        try {
-            $this->get('voucher.voucher_service')->redeem($voucher);
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-
-        $json = $this->get('serializer')->serialize($voucher, 'json', ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']);
-        return new Response($json);
+        return $this->json($redemptionBatch);
     }
 
     /**
@@ -410,11 +362,11 @@ class VoucherController extends Controller
      */
     public function getRedeemedBatches(Vendor $vendor): Response
     {
-        /** @var VoucherRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(Voucher::class);
-        $summaryBatches = $repository->getRedeemBatches($vendor);
+        /** @var VoucherRedemptionBatchRepository $repository */
+        $repository = $this->getDoctrine()->getManager()
+            ->getRepository(\VoucherBundle\Entity\VoucherRedemptionBatch::class);
 
-        return $this->json($summaryBatches);
+        return $this->json($repository->getAllByVendor($vendor));
     }
 
     /**
@@ -498,8 +450,9 @@ class VoucherController extends Controller
             return new Response(json_encode($message), Response::HTTP_BAD_REQUEST);
         }
 
-        $voucherService->redeemBatch($newBatch);
-        return $this->json(true);
+        $redeemedBatch = $voucherService->redeemBatch($vendor, $newBatch, $this->getUser());
+
+        return $this->json($redeemedBatch);
     }
 
     /**
@@ -529,9 +482,9 @@ class VoucherController extends Controller
         return new Response(json_encode($isSuccess));
     }
 
-
     /**
-     * Delete a batch of vouchers
+     * This endpoint actually deletes all vouchers in provided Booklet
+     *
      * @Rest\Delete("/vouchers/delete_batch/{id}", name="delete_batch_vouchers")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      * @SWG\Tag(name="Vouchers")

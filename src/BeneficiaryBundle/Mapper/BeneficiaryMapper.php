@@ -97,7 +97,7 @@ class BeneficiaryMapper
         return $this->serializer->normalize(
             $beneficiary,
             'json',
-            ['groups' => ['ValidatedDistribution'], 'datetime_format' => 'd-m-Y H:i:s']
+            ['groups' => ['ValidatedAssistance'], 'datetime_format' => 'd-m-Y H:i:s']
         );
     }
 

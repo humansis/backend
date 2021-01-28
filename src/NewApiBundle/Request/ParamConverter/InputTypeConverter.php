@@ -9,6 +9,8 @@ use NewApiBundle\Request\InputTypeInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -31,8 +33,10 @@ class InputTypeConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ParamConverter $configuration)
     {
-        $serializer = new Serializer([new ObjectNormalizer()]);
-        $inputType = $serializer->denormalize($request->request->all(), $configuration->getClass());
+        $serializer = new Serializer([new ObjectNormalizer(null, null, null, new ReflectionExtractor()), new ArrayDenormalizer()]);
+        $inputType = $serializer->denormalize($request->request->all(), $configuration->getClass(), null, [
+            ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+        ]);
 
         $errors = $this->validator->validate($inputType);
         if (count($errors) > 0) {

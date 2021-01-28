@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Entity;
 
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -29,7 +29,7 @@ class Booklet implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
     private $id;
 
@@ -37,7 +37,7 @@ class Booklet implements ExportableInterface
      * @var Project|null
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
-     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
     private $project;
 
@@ -45,7 +45,7 @@ class Booklet implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
-     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
     private $code;
 
@@ -61,7 +61,7 @@ class Booklet implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="currency", type="string", length=255)
-     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
     private $currency;
 
@@ -69,7 +69,7 @@ class Booklet implements ExportableInterface
      * @var int|null
      *
      * @ORM\Column(name="status", type="integer", nullable=true)
-     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
     private $status;
 
@@ -83,13 +83,13 @@ class Booklet implements ExportableInterface
 
     /**
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", orphanRemoval=true)
-     * @SymfonyGroups({"FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
     private $vouchers;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\DistributionBeneficiary", inversedBy="booklets")
-     * @SymfonyGroups({"FullBooklet"})
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="booklets")
+     * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
     private $distribution_beneficiary;
 
@@ -101,11 +101,30 @@ class Booklet implements ExportableInterface
      */
     private $countryISO3;
 
+    public static function statuses(): array
+    {
+        return [
+            self::UNASSIGNED,
+            self::DISTRIBUTED,
+            self::USED,
+            self::DEACTIVATED,
+        ];
+    }
+
     public function __construct()
     {
         $this->vouchers = new ArrayCollection();
     }
 
+    /**
+     * @deprecated use getAssistanceBeneficiary instead if you can
+     * @SymfonyGroups({"FullBooklet"})
+     * @return AssistanceBeneficiary|null
+     */
+    public function getDistributionBeneficiary(): ?AssistanceBeneficiary
+    {
+        return $this->getAssistanceBeneficiary();
+    }
 
     /**
      * Get id.
@@ -288,14 +307,14 @@ class Booklet implements ExportableInterface
         return $this;
     }
 
-    public function getDistributionBeneficiary(): ?DistributionBeneficiary
+    public function getAssistanceBeneficiary(): ?AssistanceBeneficiary
     {
         return $this->distribution_beneficiary;
     }
 
-    public function setDistributionBeneficiary(DistributionBeneficiary $distribution_beneficiary): self
+    public function setAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary): self
     {
-        $this->distribution_beneficiary = $distribution_beneficiary;
+        $this->distribution_beneficiary = $assistanceBeneficiary;
 
         return $this;
     }
@@ -317,11 +336,11 @@ class Booklet implements ExportableInterface
         }
 
         $password = empty($this->getPassword()) ? 'No' : 'Yes';
-        $distribution = $this->getDistributionBeneficiary() ?
-            $this->getDistributionBeneficiary()->getAssistance()->getName() :
+        $distribution = $this->getAssistanceBeneficiary() ?
+            $this->getAssistanceBeneficiary()->getAssistance()->getName() :
             null;
-        $beneficiary = $this->getDistributionBeneficiary() ?
-            $this->getDistributionBeneficiary()->getBeneficiary()->getLocalGivenName() :
+        $beneficiary = $this->getAssistanceBeneficiary() ?
+            $this->getAssistanceBeneficiary()->getBeneficiary()->getLocalGivenName() :
             null;
 
         $finalArray = [

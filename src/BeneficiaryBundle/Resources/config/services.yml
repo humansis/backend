@@ -87,7 +87,7 @@ services:
     BeneficiaryBundle\Mapper\AssistanceMapper:
         arguments:
             - '@BeneficiaryBundle\Mapper\BeneficiaryMapper'
-            - "@=service('doctrine.orm.entity_manager').getRepository('DistributionBundle:DistributionBeneficiary')"
+            - "@=service('doctrine.orm.entity_manager').getRepository('DistributionBundle:AssistanceBeneficiary')"
         public: true
 
     BeneficiaryBundle\Mapper\PhoneMapper:
@@ -111,7 +111,7 @@ services:
             - "@request_validator"
             - "@validator"
             - "@service_container"
-            - "@distribution.distribution_beneficiary_service"
+            - "@distribution.assistance_beneficiary_service"
         public: true
 
     beneficiary.country_specific_service:

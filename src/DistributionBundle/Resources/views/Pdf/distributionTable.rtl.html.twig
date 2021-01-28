@@ -400,36 +400,36 @@ implementation of the project.'|trans }}
                 <td class="label member">{{ 'M'|trans }}</td>
             </tr>
 
-            {% for distributionBeneficiary in distribution.distributionBeneficiaries %}
+            {% for assistanceBeneficiary in distribution.distributionBeneficiaries %}
                 <tr>
                     <td class="signature"></td>
-                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 65, 1000, 1) }}</td>
-                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 65, 1000, 0) }}</td>
-                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 18, 64, 1) }}</td>
-                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 18, 64, 0) }}</td>
-                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 5, 17, 1) }}</td>
-                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 5, 17, 0) }}</td>
-                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 2, 4, 1) }}</td>
-                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 2, 4, 0) }}</td>
-                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 0, 1, 1) }}</td>
-                    <td>{{ _self.calcBeneficiaries(distributionBeneficiary.beneficiary.houseHold.beneficiaries, 0, 1, 0) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 65, 1000, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 65, 1000, 0) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 18, 64, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 18, 64, 0) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 5, 17, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 5, 17, 0) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 2, 4, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 2, 4, 0) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 0, 1, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 0, 1, 0) }}</td>
                     <td class="gender">
-                        {% if distributionBeneficiary.beneficiary.gender == '0' %}
+                        {% if assistanceBeneficiary.beneficiary.gender == '0' %}
                             {{ 'F'|trans }}
-                        {% elseif distributionBeneficiary.beneficiary.gender == '1' %}
+                        {% elseif assistanceBeneficiary.beneficiary.gender == '1' %}
                             {{ 'M'|trans }}
                         {% endif %}
                     </td>
-                    <td>{{ distributionBeneficiary.beneficiary.residencyStatus |trans }}</td>
+                    <td>{{ assistanceBeneficiary.beneficiary.residencyStatus |trans }}</td>
                     <td>
-                        {% for phone in distributionBeneficiary.beneficiary.phones %}
+                        {% for phone in assistanceBeneficiary.beneficiary.phones %}
                             {{ phone.prefix }}{{ phone.number }} <br>
                         {% endfor %}
                     </td>
-                    <td>{{ distributionBeneficiary.beneficiary.id }}</td>
-                    <td>{{ distributionBeneficiary.beneficiary.dateOfBirth | date("m/d/Y") }}</td>
-                    <td>{{ distributionBeneficiary.beneficiary.localFamilyName }}</td>
-                    <td>{{ distributionBeneficiary.beneficiary.localGivenName }}</td>
+                    <td>{{ assistanceBeneficiary.beneficiary.id }}</td>
+                    <td>{{ assistanceBeneficiary.beneficiary.dateOfBirth | date("m/d/Y") }}</td>
+                    <td>{{ assistanceBeneficiary.beneficiary.localFamilyName }}</td>
+                    <td>{{ assistanceBeneficiary.beneficiary.localGivenName }}</td>
                     <td>{{ loop.index }}</td>
                 </tr>
             {% endfor %}

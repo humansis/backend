@@ -11,7 +11,9 @@ use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
+use CommonBundle\Controller\ExportController;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use PhpOption\Tests\PhpOptionRepo;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -20,7 +22,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
-use DistributionBundle\Utils\DistributionBeneficiaryService;
+use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Entity\Assistance;
 
 class BeneficiaryService
@@ -43,7 +45,7 @@ class BeneficiaryService
     /** @var Beneficiary $beneficiary */
     private $beneficiary;
 
-    /** @var DistributionBeneficiaryService $dbs */
+    /** @var AssistanceBeneficiaryService $dbs */
     private $dbs;
 
 
@@ -53,7 +55,7 @@ class BeneficiaryService
         RequestValidator $requestValidator,
         ValidatorInterface $validator,
         ContainerInterface $container,
-        DistributionBeneficiaryService $distributionBeneficiary
+        AssistanceBeneficiaryService $assistanceBeneficiary
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -61,7 +63,7 @@ class BeneficiaryService
         $this->validator = $validator;
         $this->container = $container;
         $this->beneficiary = new Beneficiary();
-        $this->dbs = $distributionBeneficiary;
+        $this->dbs = $assistanceBeneficiary;
     }
 
 
@@ -334,7 +336,7 @@ class BeneficiaryService
      */
     public function remove(Beneficiary $beneficiary)
     {
-        if ($beneficiary->getStatus() === 1) {
+        if ($beneficiary->isHead()) {
             return false;
         }
 
@@ -393,6 +395,7 @@ class BeneficiaryService
     public function exportToCsv(string $type, string $countryIso3, $filters, $ids)
     {
         $households = null;
+        $exportableTable = [];
         if ($ids) {
             $households = $this->em->getRepository(Household::class)->getAllByIds($ids);
         } else if ($filters) {
@@ -400,15 +403,26 @@ class BeneficiaryService
         } else {
             $exportableTable = $this->em->getRepository(Beneficiary::class)->getAllInCountry($countryIso3);	
         }
+
+        if (count($households) > ExportController::EXPORT_LIMIT) {
+            $count = count($households);
+            throw new BadRequestHttpException("Too much households ($count) to export. Limit is ".ExportController::EXPORT_LIMIT);
+        }
         
         if ($households) {
-            $exportableTable = [];
             foreach ($households as $household) {
                 foreach ($household->getBeneficiaries() as $beneficiary) {
                     array_push($exportableTable, $beneficiary);
                 }
             }
         }
+
+        if (count($exportableTable) > ExportController::EXPORT_LIMIT) {
+            $BNFcount = count($exportableTable);
+            $HHcount = count($households);
+            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is ".ExportController::EXPORT_LIMIT);
+        }
+
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
     }
 

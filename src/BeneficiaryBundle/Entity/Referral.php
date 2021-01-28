@@ -37,7 +37,7 @@ class Referral
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedAssistance"})
      */
     private $type;
 
@@ -45,7 +45,7 @@ class Referral
      * @var string
      *
      * @ORM\Column(name="comment", type="string", length=255)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedAssistance"})
      */
     private $comment;
 

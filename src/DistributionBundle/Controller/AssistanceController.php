@@ -5,13 +5,13 @@ namespace DistributionBundle\Controller;
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\AssistanceMapper;
-use DistributionBundle\Entity\DistributionBeneficiary;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use DistributionBundle\Mapper\AssistanceCommunityMapper;
 use DistributionBundle\Mapper\AssistanceInstitutionMapper;
-use DistributionBundle\Utils\DistributionBeneficiaryService;
-use DistributionBundle\Utils\DistributionService;
+use DistributionBundle\Utils\AssistanceBeneficiaryService;
+use DistributionBundle\Utils\AssistanceService;
 use DistributionBundle\Utils\DistributionCsvService;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -59,7 +59,7 @@ class AssistanceController extends Controller
      *     description="List of distributed items to beneficiary",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=Assistance::class, groups={"DistributionOverview"}))
+     *         @SWG\Items(ref=@Model(type=Assistance::class, groups={"AssistanceOverview"}))
      *     )
      * )
      * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
@@ -72,7 +72,7 @@ class AssistanceController extends Controller
         $distributions = $this->getDoctrine()->getRepository(Assistance::class)->findDistributedToBeneficiary($beneficiary);
 
         $json = $this->get('serializer')
-            ->serialize($distributions, 'json', ['groups' => ["DistributionOverview"]]);
+            ->serialize($distributions, 'json', ['groups' => ["AssistanceOverview"]]);
 
         return new Response($json);
     }
@@ -95,7 +95,7 @@ class AssistanceController extends Controller
      *     description="List of distributed items to household",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=Assistance::class, groups={"DistributionOverview"}))
+     *         @SWG\Items(ref=@Model(type=Assistance::class, groups={"AssistanceOverview"}))
      *     )
      * )
      * @SWG\Response(response=400, description="HTTP_BAD_REQUEST")
@@ -132,9 +132,9 @@ class AssistanceController extends Controller
         if ($request->query->get("size")) {
             $numberToDisplay = $request->query->get("size");
 
-            /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-            $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-            $receivers = $distributionBeneficiaryService->getRandomBeneficiaries($assistance, $numberToDisplay);
+            /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+            $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+            $receivers = $assistanceBeneficiaryService->getRandomBeneficiaries($assistance, $numberToDisplay);
 
             $json = $this->get('serializer')
                 ->serialize(
@@ -173,15 +173,15 @@ class AssistanceController extends Controller
      */
     public function validateAction(Assistance $assistance)
     {
-        /** @var DistributionService $distributionService */
-        $distributionService = $this->get('distribution.distribution_service');
+        /** @var AssistanceService $distributionService */
+        $distributionService = $this->get('distribution.assistance_service');
         $assistance = $distributionService->validateDistribution($assistance);
 
         $json = $this->get('serializer')
             ->serialize(
                 $assistance,
                 'json',
-                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['FullAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -191,7 +191,7 @@ class AssistanceController extends Controller
      * Create a distribution.
      *
      * @Rest\Put("/distributions", name="add_distribution")
-     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR')")
+     * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR') or is_granted('ROLE_DISTRIBUTION_CREATE')")
      *
      * @SWG\Tag(name="Distributions")
      *
@@ -219,7 +219,7 @@ class AssistanceController extends Controller
         $distributionArray = $request->request->all();
 
         try {
-            $listReceivers = $this->get('distribution.distribution_service')
+            $listReceivers = $this->get('distribution.assistance_service')
                 ->create($distributionArray['__country'], $distributionArray);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
@@ -229,7 +229,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $listReceivers,
                 'json',
-                ['groups' => ['FullReceivers', 'FullDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['FullReceivers', 'FullAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -244,7 +244,7 @@ class AssistanceController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="The object distribution beneficiary added",
-     *     @Model(type=DistributionBeneficiary::class)
+     *     @Model(type=AssistanceBeneficiary::class)
      * )
      *
      * @param Request    $request
@@ -260,9 +260,9 @@ class AssistanceController extends Controller
         $data = $request->request->all();
 
         try {
-            /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-            $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-            $assistanceBeneficiaries = $distributionBeneficiaryService->addBeneficiaries($assistance, $data);
+            /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+            $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+            $assistanceBeneficiaries = $assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -293,10 +293,10 @@ class AssistanceController extends Controller
     {
         $deletionData = $request->request->all();
 
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
 
-        $return = $distributionBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
+        $return = $assistanceBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
 
         return new Response(json_encode($return));
     }
@@ -312,7 +312,7 @@ class AssistanceController extends Controller
      *     description="Filtered distributions",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallAssistance"}))
      *     )
      * )
      *
@@ -323,7 +323,7 @@ class AssistanceController extends Controller
     {
         $country = $request->request->get('__country');
         try {
-            $distributions = $this->get('distribution.distribution_service')->getActiveDistributions($country);
+            $distributions = $this->get('distribution.assistance_service')->getActiveDistributions($country);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -334,7 +334,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistanceMapper->toFullArrays($distributions),
                 'json',
-                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['SmallAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json);
@@ -350,7 +350,7 @@ class AssistanceController extends Controller
      * @SWG\Response(
      *     response=200,
      *     description="one distribution",
-     *     @Model(type=Assistance::class, groups={"SmallDistribution"})
+     *     @Model(type=Assistance::class, groups={"SmallAssistance"})
      * )
      *
      * @param Assistance $assistance
@@ -364,7 +364,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistanceMapper->toFullArray($assistance),
                 'json',
-                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['FullAssistance'], 'datetime_format' => 'd-m-Y']
             );
         return new Response($json);
     }
@@ -391,16 +391,16 @@ class AssistanceController extends Controller
      */
     public function getDistributionBeneficiariesAction(Assistance $assistance)
     {
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionBeneficiaries($assistance);
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        $distributionBeneficiaries = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
 
         $json = $this->get('serializer')
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
                 [
-                    'groups' => ["ValidatedDistribution"],
+                    'groups' => ["ValidatedAssistance"],
                     'datetime_format' => 'd-m-Y H:i',
                 ]
             );
@@ -434,8 +434,8 @@ class AssistanceController extends Controller
             throw new NotFoundHttpException('There is no Community assistance with #'.$assistance->getId());
         }
 
-        /** @var DistributionBeneficiaryService $assistanceBeneficiaryService */
-        $assistanceBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
         $assistanceCommunities = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
 
         $mapper = $this->get(AssistanceCommunityMapper::class);
@@ -468,8 +468,8 @@ class AssistanceController extends Controller
             throw new NotFoundHttpException('There is no Institution assistance with #'.$assistance->getId());
         }
 
-        /** @var DistributionBeneficiaryService $assistanceBeneficiaryService */
-        $assistanceBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
         $assistanceInstitutions = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
 
         $mapper = $this->get(AssistanceInstitutionMapper::class);
@@ -524,15 +524,15 @@ class AssistanceController extends Controller
      */
     public function getDistributionAssignableBeneficiariesAction(Assistance $assistance)
     {
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        $distributionBeneficiaries = $distributionBeneficiaryService->getDistributionAssignableBeneficiaries($assistance);
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        $distributionBeneficiaries = $assistanceBeneficiaryService->getDistributionAssignableBeneficiaries($assistance);
         
         $json = $this->get('serializer')
             ->serialize(
                 $distributionBeneficiaries,
                 'json',
-                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y H:m:i']
+                ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']
             );
 
         return new Response($json);
@@ -573,14 +573,14 @@ class AssistanceController extends Controller
     {
         $distributionArray = $request->request->all();
         try {
-            $assistance = $this->get('distribution.distribution_service')
+            $assistance = $this->get('distribution.assistance_service')
                 ->edit($assistance, $distributionArray);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         $json = $this->get('serializer')
-            ->serialize($assistance, 'json', ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']);
+            ->serialize($assistance, 'json', ['groups' => ['FullAssistance'], 'datetime_format' => 'd-m-Y']);
         return new Response($json, Response::HTTP_OK);
     }
 
@@ -608,7 +608,7 @@ class AssistanceController extends Controller
      */
     public function delete(Assistance $assistance)
     {
-        $this->get('distribution.distribution_service')->delete($assistance);
+        $this->get('distribution.assistance_service')->delete($assistance);
 
         return $this->json([], Response::HTTP_NO_CONTENT);
     }
@@ -638,7 +638,7 @@ class AssistanceController extends Controller
     public function archiveAction(Assistance $distribution)
     {
         try {
-            $archivedDistribution = $this->get('distribution.distribution_service')
+            $archivedDistribution = $this->get('distribution.assistance_service')
                 ->archived($distribution);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
@@ -674,7 +674,7 @@ class AssistanceController extends Controller
     public function completeAction(Assistance $distribution)
     {
         try {
-            $completedDistribution = $this->get('distribution.distribution_service')
+            $completedDistribution = $this->get('distribution.assistance_service')
                 ->complete($distribution);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
@@ -698,7 +698,7 @@ class AssistanceController extends Controller
      *     description="OK",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallAssistance"}))
      *     )
      * )
      *
@@ -715,7 +715,7 @@ class AssistanceController extends Controller
     {
         try {
             $distributions = $project->getDistributions();
-            $filtered = $this->get('distribution.distribution_service')->filterDistributions($distributions);
+            $filtered = $this->get('distribution.assistance_service')->filterDistributions($distributions);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -726,7 +726,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistanceMapper->toFullArrays($filtered),
                 'json',
-                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['SmallAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -746,7 +746,7 @@ class AssistanceController extends Controller
      *     description="OK",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallAssistance"}))
      *     )
      * )
      *
@@ -763,7 +763,7 @@ class AssistanceController extends Controller
     {
         try {
             $distributions = $project->getDistributions();
-            $filtered = $this->get('distribution.distribution_service')->filterDistributions($distributions);
+            $filtered = $this->get('distribution.assistance_service')->filterDistributions($distributions);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -774,7 +774,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistanceMapper->toOldMobileArrays($filtered),
                 'json',
-                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['SmallAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -794,7 +794,7 @@ class AssistanceController extends Controller
      *     description="OK",
      *     @SWG\Schema(
      *          type="array",
-     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallDistribution"}))
+     *          @SWG\Items(ref=@Model(type=Assistance::class, groups={"SmallAssistance"}))
      *     )
      * )
      *
@@ -826,7 +826,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $assistanceMapper->toOldMobileArrays($filtered),
                 'json',
-                ['groups' => ['SmallDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['SmallAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -858,7 +858,7 @@ class AssistanceController extends Controller
     {
         try {
             $distributions = $project->getDistributions();
-            $filtered = $this->get('distribution.distribution_service')->filterQrVoucherDistributions($distributions);
+            $filtered = $this->get('distribution.assistance_service')->filterQrVoucherDistributions($distributions);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -867,7 +867,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $filtered,
                 'json',
-                ['groups' => ['FullDistribution'], 'datetime_format' => 'd-m-Y']
+                ['groups' => ['FullAssistance'], 'datetime_format' => 'd-m-Y']
             );
 
         return new Response($json, Response::HTTP_OK);
@@ -911,9 +911,9 @@ class AssistanceController extends Controller
      */
     public function importBeneficiariesAction(Request $request, Assistance $assistance)
     {
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
-        $beneficiaries = $distributionBeneficiaryService->getBeneficiaries($assistance);
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        $beneficiaries = $assistanceBeneficiaryService->getBeneficiaries($assistance);
 
         $countryIso3 =  $request->request->get('__country');
 
@@ -982,8 +982,8 @@ class AssistanceController extends Controller
      */
     public function getBeneficiariesInProjectAction(Project $project, Request $request)
     {
-        /** @var DistributionBeneficiaryService $distributionBeneficiaryService */
-        $distributionBeneficiaryService = $this->get('distribution.distribution_beneficiary_service');
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
         if (!$request->request->has('target')) {
             return new Response('You must defined a target', 500);
         }
@@ -992,7 +992,7 @@ class AssistanceController extends Controller
         $target = strtolower($target);
 
         try {
-            $beneficiariesInProject = $distributionBeneficiaryService->getAllBeneficiariesInProject($project, $target);
+            $beneficiariesInProject = $assistanceBeneficiaryService->getAllBeneficiariesInProject($project, $target);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -1029,7 +1029,7 @@ class AssistanceController extends Controller
         $generalReliefs = $request->request->get('generalReliefs');
         try {
             foreach ($generalReliefs as $generalRelief) {
-                $this->get('distribution.distribution_service')
+                $this->get('distribution.assistance_service')
                 ->editGeneralReliefItemNotes($generalRelief['id'], $generalRelief['notes']);
             }
         } catch (\Exception $e) {
@@ -1068,7 +1068,7 @@ class AssistanceController extends Controller
         $griIds = $request->request->get('ids');
 
         try {
-            $response = $this->get('distribution.distribution_service')
+            $response = $this->get('distribution.assistance_service')
                 ->setGeneralReliefItemsAsDistributed($griIds);
         } catch (\Exception $e) {
             $this->container->get('logger')->error('exception', [$e->getMessage()]);
@@ -1079,7 +1079,7 @@ class AssistanceController extends Controller
             ->serialize(
                 $response,
                 'json',
-                ['groups' => ["ValidatedDistribution"], 'datetime_format' => 'd-m-Y H:m:i']
+                ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']
             );
 
         return new Response($json, Response::HTTP_OK);

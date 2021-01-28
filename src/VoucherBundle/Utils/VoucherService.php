@@ -2,12 +2,17 @@
 
 namespace VoucherBundle\Utils;
 
+use CommonBundle\Controller\ExportController;
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableType;
 use CommonBundle\InputType\RequestConverter;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use UserBundle\Entity\User;
 use VoucherBundle\DTO\RedemptionVoucherBatchCheck;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
@@ -109,16 +114,6 @@ class VoucherService
         return $this->em->getRepository(Voucher::class)->findAll();
     }
 
-    public function redeem(Voucher $voucher): void
-    {
-        if ($voucher->getVoucherPurchase() == null) {
-            throw new \InvalidArgumentException("Reddemed voucher must be used.");
-        }
-        $voucher->redeem();
-        $this->em->persist($voucher);
-        $this->em->flush();
-    }
-
     /**
      * @param VoucherRedemptionBatch $batch
      *
@@ -144,7 +139,7 @@ class VoucherService
         foreach ($vouchers as $voucher) {
             $error = false;
             if (Booklet::UNASSIGNED == $voucher->getBooklet()->getStatus()
-                || null == $voucher->getBooklet()->getDistributionBeneficiary()) {
+                || null == $voucher->getBooklet()->getAssistanceBeneficiary()) {
                 $check->addUnassignedVoucher($voucher);
                 $error = true;
             }
@@ -181,7 +176,7 @@ class VoucherService
         return $check;
     }
 
-    public function redeemBatch(VoucherRedemptionBatch $batch): void
+    public function redeemBatch(Vendor $vendor, VoucherRedemptionBatch $batch, User $redeemedBy): \VoucherBundle\Entity\VoucherRedemptionBatch
     {
         $check = $this->checkBatch($batch);
 
@@ -189,10 +184,20 @@ class VoucherService
             throw new \InvalidArgumentException("Invalid voucher batch");
         }
 
-        $redeemedAtDate = new \DateTime();
+        $repository = $this->em->getRepository(Voucher::class);
+
+        $voucherBatchValue = $repository->countVoucherValue($check->getValidVouchers());
+        $redemptionBatch = new \VoucherBundle\Entity\VoucherRedemptionBatch($vendor, $redeemedBy, $check->getValidVouchers(), $voucherBatchValue);
+
+        $this->em->persist($redemptionBatch);
+
         foreach ($check->getValidVouchers() as $voucher) {
-            $voucher->redeem($redeemedAtDate);
+            $voucher->setRedemptionBatch($redemptionBatch);
         }
+
+        $this->em->flush();
+
+        return $redemptionBatch;
     }
 
     /**
@@ -243,11 +248,10 @@ class VoucherService
     public function exportToCsv(string $type, string $countryIso3, $ids, $filters)
     {
         $booklets = null;
-        $maxExport = 50000;
-        $limit = $type === 'csv' ? null : $maxExport;
 
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
+            $exportableCount = $this->em->getRepository(Voucher::class)->countByBookletsIds($ids);
         } else if ($filters) {
             /** @var DataTableType $dataTableFilter */
             $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
@@ -257,19 +261,26 @@ class VoucherService
         }
         
         // If we only have the booklets, get the vouchers
-        if ($booklets) {
+        if ($booklets !== null) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets);
+            $exportableCount = $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
+        }
+
+        if ($exportableCount > ExportController::EXPORT_LIMIT) {
+            $bookletCount = count($booklets);
+            throw new BadRequestHttpException("Too much entities ($exportableCount vouchers in $bookletCount booklets) to export. Limit is ".ExportController::EXPORT_LIMIT.' vouchers.');
         }
 
         // If csv type, return the response
-        if (!$limit) {
+        if ('csv' === $type) {
             return $this->csvExport($exportableTable);
         }
 
         $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
-        if ($total > $limit) {
-            throw new \Exception("Too much vouchers for the export (".$total."). Use csv for large exports. Otherwise, for ".
-            $type." export the data in batches of ".$maxExport." vouchers or less");
+        if ($total > ExportController::EXPORT_LIMIT) {
+            $totalBooklets = $ids ? count($ids) : count($booklets);
+            throw new \Exception("Too much vouchers for the export ($total vouchers in $totalBooklets). ".
+            "Export the data in batches of ".ExportController::EXPORT_LIMIT." vouchers or less");
         }
         return $this->container->get('export_csv_service')->export($exportableTable->getResult(), 'bookletCodes', $type);
     }

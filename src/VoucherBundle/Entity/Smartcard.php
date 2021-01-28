@@ -28,7 +28,7 @@ class Smartcard
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"SmartcardOverview", "ValidatedDistribution"})
+     * @SymfonyGroups({"SmartcardOverview", "ValidatedAssistance"})
      */
     private $id = 0;
 
@@ -36,7 +36,7 @@ class Smartcard
      * @var string serial number / UID
      *
      * @ORM\Column(name="code", type="string", length=14, unique=true, nullable=false)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard", "ValidatedDistribution"})
+     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard", "ValidatedAssistance"})
      */
     private $serialNumber;
 

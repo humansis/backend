@@ -15,12 +15,12 @@ use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
- * DistributionBeneficiary.
+ * AssistanceBeneficiary.
  *
  * @ORM\Table(name="distribution_beneficiary")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\DistributionBeneficiaryRepository")
+ * @ORM\Entity(repositoryClass="DistributionBundle\Repository\AssistanceBeneficiaryRepository")
  */
-class DistributionBeneficiary
+class AssistanceBeneficiary
 {
     /**
      * @var int
@@ -28,7 +28,7 @@ class DistributionBeneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet"})
+     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet"})
      */
     private $id;
 
@@ -37,15 +37,16 @@ class DistributionBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="distributionBeneficiaries")
      * @ORM\JoinColumn(name="assistance_id")
-     * @SymfonyGroups({"FullDistributionBeneficiary", "FullBooklet"})
+     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullBooklet"})
      */
     private $assistance;
 
     /**
      * @var AbstractBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="distributionBeneficiary")
-     * @SymfonyGroups({"FullDistributionBeneficiary", "FullDistribution", "SmallDistribution", "ValidatedDistribution", "FullBooklet", "FullProject"})
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="assistanceBeneficiary")
+     * @ORM\JoinColumn(name="beneficiary_id")
+     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet", "FullProject"})
      * @SymfonyMaxDepth(3)
      */
     private $beneficiary;
@@ -53,8 +54,8 @@ class DistributionBeneficiary
     /**
      * @var Transaction[]
      *
-     * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      * @SymfonyMaxDepth(1)
      */
     private $transactions;
@@ -63,22 +64,22 @@ class DistributionBeneficiary
      * @var Booklet
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $booklets;
 
     /**
      * @var GeneralReliefItem
      *
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $generalReliefs;
 
     /**
      * @var SmartcardDeposit[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="distributionBeneficiary", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @ORM\OrderBy({"createdAt": "ASC"})
      */
     private $smartcardDeposits;
@@ -102,7 +103,7 @@ class DistributionBeneficiary
      *
      * @ORM\Column(name="justification", type="string", length=511, nullable=true)
      *
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $justification;
 
@@ -111,7 +112,7 @@ class DistributionBeneficiary
      *
      * @ORM\Column(name="removed", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $removed;
 
@@ -126,7 +127,7 @@ class DistributionBeneficiary
     }
 
     /**
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      * @return bool|null true, if smartcard money was already distributed/deposited to beneficiary. Null, if distribution is not about smartcard.
      */
     public function getSmartcardDistributed(): ?bool
@@ -142,7 +143,7 @@ class DistributionBeneficiary
     }
 
     /**
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullDistribution", "SmallDistribution", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      *
      * @return \DateTimeInterface|null
      */
@@ -160,7 +161,7 @@ class DistributionBeneficiary
      *
      * @param Assistance|null $assistance
      *
-     * @return DistributionBeneficiary
+     * @return AssistanceBeneficiary
      */
     public function setAssistance(Assistance $assistance = null)
     {
@@ -184,7 +185,7 @@ class DistributionBeneficiary
      *
      * @param AbstractBeneficiary|null $beneficiary
      *
-     * @return DistributionBeneficiary
+     * @return AssistanceBeneficiary
      */
     public function setBeneficiary(AbstractBeneficiary $beneficiary = null)
     {
@@ -267,7 +268,7 @@ class DistributionBeneficiary
     {
         if (!$this->booklets->contains($booklet)) {
             $this->booklets[] = $booklet;
-            $booklet->setDistributionBeneficiary($this);
+            $booklet->setAssistanceBeneficiary($this);
         }
 
         return $this;
@@ -278,8 +279,8 @@ class DistributionBeneficiary
         if ($this->booklets->contains($booklet)) {
             $this->booklets->removeElement($booklet);
             // set the owning side to null (unless already changed)
-            if ($booklet->getDistributionBeneficiary() === $this) {
-                $booklet->setDistributionBeneficiary(null);
+            if ($booklet->getAssistanceBeneficiary() === $this) {
+                $booklet->setAssistanceBeneficiary(null);
             }
         }
 

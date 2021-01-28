@@ -38,7 +38,7 @@ class VoucherPurchaseRecord
      * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Product")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullVoucher", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
      */
     private $product;
 
@@ -46,7 +46,7 @@ class VoucherPurchaseRecord
      * @var mixed
      *
      * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
      */
     private $value;
 
@@ -54,7 +54,7 @@ class VoucherPurchaseRecord
      * @var mixed
      *
      * @ORM\Column(name="quantity", type="decimal", precision=10, scale=2, nullable=true)
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedDistribution"})
+     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
      */
     private $quantity;
 
