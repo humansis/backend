@@ -86,10 +86,10 @@ aws-db-snapshot:
 backup-code:
   stage: backup_code
   variables:
-    HOSTNAME: apidev.humansis.org
+    HOSTNAME: api.humansis.org
   <<: *prepare_ssh
   script:
-    - ssh ubuntu@api.humansis.org "cd /var/www/html/; tar czf backup_$(date '+%Y-%m-%d').tar.gz bms_api/"
+    - ssh ubuntu@${HOSTNAME} "cd /var/www/html/; tar czf backup_$(date '+%Y-%m-%d').tar.gz bms_api/"
   <<: *remove_key
   only:
     - tags
