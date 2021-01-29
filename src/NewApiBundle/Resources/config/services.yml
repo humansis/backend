@@ -44,6 +44,11 @@ services:
     NewApiBundle\Component\Country\Countries:
         arguments: [ '%app.countries%' ]
 
+    NewApiBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: [ 'app.controller' ]
+
     NewApiBundle\Serializer\MapperNormalizer:
         tags: [ 'serializer.normalizer' ]
 

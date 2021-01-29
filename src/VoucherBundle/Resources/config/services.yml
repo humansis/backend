@@ -1,5 +1,9 @@
 services:
 
+    VoucherBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: [ 'app.controller' ]
 
 #######################################################################################
 ##                                       CRUD                                        ##
