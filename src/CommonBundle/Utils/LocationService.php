@@ -3,10 +3,8 @@
 
 namespace CommonBundle\Utils;
 
-use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\InputType\LocationType;
-use BeneficiaryBundle\Utils\HouseholdService;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
@@ -16,10 +14,9 @@ use BeneficiaryBundle\Entity\Camp;
 use CommonBundle\InputType\Country;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\InputType\AddressCreateInputType;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 /**
  * Class LocationService
@@ -94,6 +91,8 @@ class LocationService
     }
 
     /**
+     * @deprecated Use getLocationByAddressInputType()
+     *
      * @param Country $country
      * @param LocationType|null $locationType
      * @return Location|null
@@ -291,4 +290,50 @@ class LocationService
         return $response;
     }
 
+    /**
+     * @param AddressCreateInputType $addressCreateInputType
+     * @return Location|null
+     */
+    public function getLocationByAddressInputType(AddressCreateInputType $addressCreateInputType): ?Location
+    {
+        // Define location array
+        $adm1 = null;
+        $adm2 = null;
+        $adm3 = null;
+        $adm4 = null;
+
+        if ($addressCreateInputType->getAdm4Id() !== null) {
+            $adm4 = $this->em->getRepository(Adm4::class)->find($addressCreateInputType->getAdm4Id());
+
+            if ($adm4 instanceof Adm4) {
+                return $adm4->getLocation();
+            }
+        }
+
+        if ($addressCreateInputType->getAdm3Id() !== null) {
+            $adm3 = $this->em->getRepository(Adm3::class)->find($addressCreateInputType->getAdm3Id());
+
+            if ($adm3 instanceof Adm3) {
+                return $adm3->getLocation();
+            }
+        }
+
+        if ($addressCreateInputType->getAdm2Id() !== null) {
+            $adm2 = $this->em->getRepository(Adm2::class)->find($addressCreateInputType->getAdm2Id());
+
+            if ($adm2 instanceof Adm2) {
+                return $adm2->getLocation();
+            }
+        }
+
+        if ($addressCreateInputType->getAdm1Id() !== null) {
+            $adm1 = $this->em->getRepository(Adm1::class)->find($addressCreateInputType->getAdm1Id());
+
+            if ($adm1 instanceof Adm1) {
+                return $adm1->getLocation();
+            }
+        }
+
+        return null;
+    }
 }
