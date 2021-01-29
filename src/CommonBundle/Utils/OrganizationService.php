@@ -54,7 +54,7 @@ class OrganizationService
             $organization->setLogo($organizationArray["logo"]);
         }
 
-        $this->em->merge($organization);
+        $this->em->persist($organization);
         $this->em->flush();
 
         return $organization;
@@ -91,7 +91,7 @@ class OrganizationService
             ->setParametersValue($data["parameters"]);
 
         $this->toggleService($organizationServices, $data["enabled"]);
-        $this->em->merge($organizationServices);
+        $this->em->persist($organizationServices);
         $this->em->flush();
 
         return $organizationServices;

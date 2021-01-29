@@ -381,7 +381,7 @@ class BookletService
             if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
                 $booklet->setPassword($bookletData['password']);
             }
-            $this->em->merge($booklet);
+            $this->em->persist($booklet);
 
             $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
             $values = array_key_exists('individual_values', $bookletData) ? $bookletData['individual_values'] : [];
@@ -426,7 +426,7 @@ class BookletService
         }
         $voucher->setCode($qrCode);
 
-        $this->em->merge($voucher);
+        $this->em->persist($voucher);
     }
 
 
@@ -440,7 +440,7 @@ class BookletService
     {
         $booklet->setStatus(Booklet::DEACTIVATED);
 
-        $this->em->merge($booklet);
+        $this->em->persist($booklet);
         $this->em->flush();
 
         return "Booklet has been deactivated";
@@ -457,7 +457,7 @@ class BookletService
         foreach ($bookletCodes as $bookletCode) {
             $booklet = $this->em->getRepository(Booklet::class)->findOneByCode($bookletCode);
             $booklet->setStatus(Booklet::DEACTIVATED);
-            $this->em->merge($booklet);
+            $this->em->persist($booklet);
         }
 
         $this->em->flush();
@@ -486,7 +486,7 @@ class BookletService
         foreach ($vouchers as $voucher) {
             $this->updateVoucherCode($voucher, $password, null, null);
         }
-        $this->em->merge($booklet);
+        $this->em->persist($booklet);
         $this->em->flush();
 
         return "Password has been set";
@@ -513,7 +513,7 @@ class BookletService
         );
         $booklet->setAssistanceBeneficiary($assistanceBeneficiary)
             ->setStatus(Booklet::DISTRIBUTED);
-        $this->em->merge($booklet);
+        $this->em->persist($booklet);
 
         $this->em->flush();
 
