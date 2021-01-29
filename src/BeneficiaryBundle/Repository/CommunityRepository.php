@@ -7,6 +7,8 @@ use CommonBundle\Entity\Location;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\CommunityFilterType;
+use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 
 /**
@@ -235,5 +237,57 @@ class CommunityRepository extends \Doctrine\ORM\EntityRepository
         $this->getCommunityLocation($qb);
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
         $locationRepository->whereCountry($qb, $countryISO3);
+    }
+
+    /**
+     * @param string $countryIso3
+     * @param CommunityFilterType|null $filter
+     * @param Pagination|null $pagination
+     *
+     * @return Paginator
+     */
+    public function findByParams(string $countryIso3, ?CommunityFilterType $filter, ?Pagination $pagination = null): Paginator
+    {
+        // Recover global information for the page
+        $qb = $this->createQueryBuilder("comm");
+
+        // We join information that is needed for the filters
+        $q = $qb->andWhere("comm.archived = 0");
+
+        $this->whereCommunityInCountry($q, $countryIso3);
+
+        $filterIndex = 0;
+
+        if (!is_null($filter)) {
+            if ($filter->hasFulltext()) {
+                // TODO
+            }
+            // filter per names in array
+            if ($filter->hasName()) {
+                foreach ($filter->getName() as $value) {
+                    $q->andWhere('comm.name LIKE :name'.$filterIndex);
+                    $q->setParameter('name'.$filterIndex, $value);
+                    ++$filterIndex;
+                }
+            }
+            // filter per project names in array
+            if ($filter->hasProjectName()) {
+                $projectAlias = "project$filterIndex";
+                $q->join('comm.projects', $projectAlias);
+                foreach ($filter->getProjectName() as $value) {
+                    $q->orWhere("$projectAlias.name LIKE :projectName$filterIndex");
+                    $q->setParameter('projectName'.$filterIndex, $value);
+                    ++$filterIndex;
+                }
+            }
+        }
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+
+        return new Paginator($qb);
     }
 }
