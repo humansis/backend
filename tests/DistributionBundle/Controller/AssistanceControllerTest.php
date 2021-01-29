@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
 use Tests\BMSServiceTestCase;
 use TransactionBundle\Entity\Transaction;
+use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\InputType\VoucherPurchase;
 use VoucherBundle\Model\PurchaseService;
@@ -394,6 +395,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'currency' => 'USD',
             'individual_values' => range(100, 110)
         ]);
+        $booklet = $this->em->getRepository(Booklet::class)->find($booklet->getId());
         $bookletService->assign($booklet, $firstAssistanceBeneficiary->getAssistance(), $firstAssistanceBeneficiary->getBeneficiary());
 
         $bookletBig = $bookletService->create('KHM', [
@@ -403,6 +405,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'currency' => 'EUR',
             'individual_values' => range(200, 220)
         ]);
+        $bookletBig = $this->em->getRepository(Booklet::class)->find($bookletBig->getId());
         $bookletService->assign($bookletBig, $firstAssistanceBeneficiary->getAssistance(), $firstAssistanceBeneficiary->getBeneficiary());
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([]);

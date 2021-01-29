@@ -116,7 +116,7 @@ class ProductService
         $product->setUnit($productData['unit'])
             ->setImage($productData['image']);
 
-        $this->em->merge($product);
+        $this->em->persist($product);
         $this->em->flush();
 
         return $product;
@@ -152,7 +152,7 @@ class ProductService
     {
         $product->setArchived(true);
 
-        $this->em->merge($product);
+        $this->em->persist($product);
         $this->em->flush();
 
         return "Product suppressed";
