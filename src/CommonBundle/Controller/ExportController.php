@@ -2,7 +2,15 @@
 
 namespace CommonBundle\Controller;
 
+use BeneficiaryBundle\Utils\BeneficiaryService;
+use BeneficiaryBundle\Utils\CountrySpecificService;
+use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Export\SmartcardExport;
+use DistributionBundle\Utils\AssistanceBeneficiaryService;
+use DistributionBundle\Utils\AssistanceService;
+use ProjectBundle\Utils\DonorService;
+use ReportingBundle\Utils\ReportingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
@@ -12,6 +20,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use TransactionBundle\Utils\TransactionService;
+use UserBundle\Utils\UserService;
+use VoucherBundle\Utils\BookletService;
+use VoucherBundle\Utils\ProductService;
 use VoucherBundle\Utils\VoucherService;
 
 /**
@@ -32,15 +44,81 @@ class ExportController extends Controller
 
     /** @var VoucherService */
     private $voucherService;
+    /** @var AssistanceService */
+    private $assistanceService;
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+    /** @var TransactionService */
+    private $transactionService;
+    /** @var UserService */
+    private $userService;
+    /** @var SmartcardExport */
+    private $smartcardExport;
+    /** @var DonorService */
+    private $donorService;
+    /** @var BookletService */
+    private $bookletService;
+    /** @var ProductService */
+    private $productService;
+    /** @var ProductService */
+    private $projectService;
+    /** @var CountrySpecificService */
+    private $countrySpecificService;
+    /** @var AssistanceBeneficiaryService */
+    private $assistanceBeneficiaryService;
+    /** @var HouseholdExportCSVService */
+    private $householdExportCSVService;
+    /** @var ReportingService */
+    private $reportingService;
 
     /**
      * ExportController constructor.
      *
-     * @param VoucherService $voucherService
+     * @param VoucherService               $voucherService
+     * @param AssistanceService            $assistanceService
+     * @param BeneficiaryService           $beneficiaryService
+     * @param TransactionService           $transactionService
+     * @param UserService                  $userService
+     * @param SmartcardExport              $smartcardExport
+     * @param DonorService                 $donorService
+     * @param BookletService               $bookletService
+     * @param ProductService               $productService
+     * @param ProductService               $projectService
+     * @param CountrySpecificService       $countrySpecificService
+     * @param AssistanceBeneficiaryService $assistanceBeneficiaryService
+     * @param HouseholdExportCSVService    $householdExportCSVService
+     * @param ReportingService             $reportingService
      */
-    public function __construct(VoucherService $voucherService)
-    {
+    public function __construct(
+        VoucherService $voucherService,
+        AssistanceService $assistanceService,
+        BeneficiaryService $beneficiaryService,
+        TransactionService $transactionService,
+        UserService $userService,
+        SmartcardExport $smartcardExport,
+        DonorService $donorService,
+        BookletService $bookletService,
+        ProductService $productService,
+        ProductService $projectService,
+        CountrySpecificService $countrySpecificService,
+        AssistanceBeneficiaryService $assistanceBeneficiaryService,
+        HouseholdExportCSVService $householdExportCSVService,
+        ReportingService $reportingService
+    ) {
         $this->voucherService = $voucherService;
+        $this->assistanceService = $assistanceService;
+        $this->beneficiaryService = $beneficiaryService;
+        $this->transactionService = $transactionService;
+        $this->userService = $userService;
+        $this->smartcardExport = $smartcardExport;
+        $this->donorService = $donorService;
+        $this->bookletService = $bookletService;
+        $this->productService = $productService;
+        $this->projectService = $projectService;
+        $this->countrySpecificService = $countrySpecificService;
+        $this->assistanceBeneficiaryService = $assistanceBeneficiaryService;
+        $this->householdExportCSVService = $householdExportCSVService;
+        $this->reportingService = $reportingService;
     }
 
     /**
@@ -74,88 +152,88 @@ class ExportController extends Controller
             if ($request->query->get('distributions')) {
                 $idProject = $request->query->get('distributions');
                 if ($type === 'pdf') {
-                    return $this->get('distribution.assistance_service')->exportToPdf($idProject);
+                    return $this->assistanceService->exportToPdf($idProject);
                 }
-                $filename = $this->get('distribution.assistance_service')->exportToCsv($idProject, $type);
+                $filename = $this->assistanceService->exportToCsv($idProject, $type);
             } elseif ($request->query->get('officialDistributions')) {
                 $idProject = $request->query->get('officialDistributions');
                 if ($type === 'pdf') {
-                    return $this->get('distribution.assistance_service')->exportToPdf($idProject);
+                    return $this->assistanceService->exportToPdf($idProject);
                 }
-                $filename = $this->get('distribution.assistance_service')->exportToOfficialCsv($idProject, $type);
+                $filename = $this->assistanceService->exportToOfficialCsv($idProject, $type);
             } elseif ($request->query->get('beneficiaries')) {
                 $countryIso3 = $request->request->get("__country");
                 $filters = $request->request->get('filters');
                 $ids = $request->request->get('ids');
-                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv($type, $countryIso3, $filters, $ids);
+                $filename = $this->beneficiaryService->exportToCsv($type, $countryIso3, $filters, $ids);
             } elseif ($request->query->get('beneficiariesInDistribution')) {
                 $idDistribution = $request->query->get('beneficiariesInDistribution');
                 if ($type === 'pdf') {
-                    return $this->get('distribution.assistance_service')->exportOneToPdf($idDistribution);
+                    return $this->assistanceService->exportOneToPdf($idDistribution);
                 }
-                $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
-                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsvBeneficiariesInDistribution($distribution, $type);
+                $distribution = $this->assistanceService->findOneById($idDistribution);
+                $filename = $this->beneficiaryService->exportToCsvBeneficiariesInDistribution($distribution, $type);
             } elseif ($request->query->get('users')) {
-                $filename = $this->get('user.user_service')->exportToCsv($type);
+                $filename = $this->userService->exportToCsv($type);
             } elseif ($request->query->get('countries')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('beneficiary.country_specific_service')->exportToCsv($type, $countryIso3);
+                $filename = $this->countrySpecificService->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('donors')) {
-                $filename = $this->get('project.donor_service')->exportToCsv($type);
+                $filename = $this->donorService->exportToCsv($type);
             } elseif ($request->query->get('projects')) {
                 $country = $request->query->get('projects');
-                $filename = $this->get('project.project_service')->exportToCsv($country, $type);
+                $filename = $this->projectService->exportToCsv($country, $type);
             } elseif ($request->query->get('distributionSample')) {
                 $arrayObjectBeneficiary = $request->request->get('sample');
-                $filename = $this->get('distribution.assistance_beneficiary_service')->exportToCsv($arrayObjectBeneficiary, $type);
+                $filename = $this->assistanceBeneficiaryService->exportToCsv($arrayObjectBeneficiary, $type);
             } elseif ($request->query->get('householdsTemplate')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
+                $filename = $this->householdExportCSVService->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('transactionDistribution')) {
                 $idDistribution = $request->query->get('transactionDistribution');
                 if ($type === 'pdf') {
-                    return $this->get('distribution.assistance_service')->exportOneToPdf($idDistribution);
+                    return $this->assistanceService->exportOneToPdf($idDistribution);
                 }
-                $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
-                $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, $type);
+                $distribution = $this->assistanceService->findOneById($idDistribution);
+                $filename = $this->transactionService->exportToCsv($distribution, $type);
             } elseif ($request->query->get('smartcardDistribution')) {
                 $idDistribution = $request->query->get('smartcardDistribution');
-                $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
+                $distribution = $this->assistanceService->findOneById($idDistribution);
                 if ('pdf' === $type) {
-                    return $this->get('distribution.export.smartcard')->exportPdf($distribution);
+                    return $this->smartcardExport->exportPdf($distribution);
                 } else {
-                    $filename = $this->get('distribution.export.smartcard')->exportSpreadsheet($distribution, $type);
+                    $filename = $this->smartcardExport->exportSpreadsheet($distribution, $type);
                 }
             } elseif ($request->query->get('bookletCodes')) {
                 $ids = $request->request->get('ids');
                 $countryIso3 = $request->request->get("__country");
                 $filters = $request->request->get('filters');
                 if ($type === 'pdf') {
-                    return $this->get(VoucherService::class)->exportToPdf($ids, $countryIso3, $filters);
+                    return $this->voucherService->exportToPdf($ids, $countryIso3, $filters);
                 }
                 if ($type === 'csv') {
-                    return $this->get(VoucherService::class)->exportToCsv($type, $countryIso3, $ids, $filters);
+                    return $this->voucherService->exportToCsv($type, $countryIso3, $ids, $filters);
                 }
-                $filename = $this->get(VoucherService::class)->exportToCsv($type, $countryIso3, $ids, $filters);
+                $filename = $this->voucherService->exportToCsv($type, $countryIso3, $ids, $filters);
             } elseif ($request->query->get('reporting')) {
-                $filename = $this->get('reporting.reporting_service')->exportToCsv($request->request, $type);
+                $filename = $this->reportingService->exportToCsv($request->request, $type);
             } elseif ($request->query->get('generalreliefDistribution')) {
                 $idDistribution = $request->query->get('generalreliefDistribution');
                 if ($type === 'pdf') {
-                    return $this->get('distribution.assistance_service')->exportOneToPdf($idDistribution);
+                    return $this->assistanceService->exportOneToPdf($idDistribution);
                 }
-                $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
-                $filename = $this->get('distribution.assistance_service')->exportGeneralReliefDistributionToCsv($distribution, $type);
+                $distribution = $this->assistanceService->findOneById($idDistribution);
+                $filename = $this->assistanceService->exportGeneralReliefDistributionToCsv($distribution, $type);
             } elseif ($request->query->get('voucherDistribution')) {
                 $idDistribution = $request->query->get('voucherDistribution');
                 if ($type === 'pdf') {
-                    return $this->get('distribution.assistance_service')->exportOneToPdf($idDistribution);
+                    return $this->assistanceService->exportOneToPdf($idDistribution);
                 }
-                $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
-                $filename = $this->get('voucher.booklet_service')->exportVouchersDistributionToCsv($distribution, $type);
+                $distribution = $this->assistanceService->findOneById($idDistribution);
+                $filename = $this->bookletService->exportVouchersDistributionToCsv($distribution, $type);
             } elseif ($request->query->get('products')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('voucher.product_service')->exportToCsv($type, $countryIso3);
+                $filename = $this->productService->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('vendors')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->voucherService->exportToCsv($type, $countryIso3);
