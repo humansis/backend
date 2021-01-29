@@ -236,8 +236,8 @@ abstract class DefaultFinancialProvider
         $user->addTransaction($transaction);
         
         $this->em->persist($transaction);
-        $this->em->merge($assistanceBeneficiary);
-        $this->em->merge($user);
+        $this->em->persist($assistanceBeneficiary);
+        $this->em->persist($user);
         $this->em->flush();
         
         return $transaction;
