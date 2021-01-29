@@ -294,7 +294,7 @@ class TransactionService
                 ->setPassword($data['password'])
                 ->setCountry($data['__country']);
 
-            $this->em->merge($FP);
+            $this->em->persist($FP);
             $this->em->flush();
         }
 

@@ -156,7 +156,7 @@ class UserService
                     $userProject->setRights($roles[0])
                         ->setUser($user)
                         ->setProject($project);
-                    $this->em->merge($userProject);
+                    $this->em->persist($userProject);
                 }
             }
         }
@@ -167,7 +167,7 @@ class UserService
                 $userCountry->setUser($user)
                     ->setIso3($country)
                     ->setRights($roles[0]);
-                $this->em->merge($userCountry);
+                $this->em->persist($userCountry);
             }
         }
 
@@ -352,7 +352,7 @@ class UserService
         
         $user->setPassword($userData['password']);
 
-        $this->em->merge($user);
+        $this->em->persist($user);
 
         if (key_exists('projects', $userData)) {
             foreach ($userData['projects'] as $project) {
@@ -363,7 +363,7 @@ class UserService
                     $userProject->setRights($roles[0])
                         ->setUser($user)
                         ->setProject($project);
-                    $this->em->merge($userProject);
+                    $this->em->persist($userProject);
                 }
             }
         }
@@ -374,7 +374,7 @@ class UserService
                 $userCountry->setUser($user)
                     ->setIso3($country)
                     ->setRights($roles[0]);
-                $this->em->merge($userCountry);
+                $this->em->persist($userCountry);
             }
         }
 
@@ -406,7 +406,7 @@ class UserService
 
         $user->setPassword($newPassword)
             ->setChangePassword(0);
-        $this->em->merge($user);
+        $this->em->persist($user);
         $this->em->flush();
 
         return $user;
@@ -596,7 +596,7 @@ class UserService
     {
         $user->setLanguage($language);
 
-        $this->em->merge($user);
+        $this->em->persist($user);
         $this->em->flush();
 
         return $user;
