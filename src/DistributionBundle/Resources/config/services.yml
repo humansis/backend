@@ -1,4 +1,13 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    DistributionBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: [ 'app.controller' ]
 
     DistributionBundle\Extension\BeneficiaryGenderExtension:
         tags:
