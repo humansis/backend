@@ -30,6 +30,7 @@ class PhoneInputType implements InputTypeInterface
      * @Assert\Length(max="45")
      * @Assert\NotBlank
      * @Assert\NotNull
+     * @Assert\Choice(callback={"NewApiBundle\Enum\PhoneTypes", "values"}, strict=true, groups={"Strict"})
      */
     private $type;
 
