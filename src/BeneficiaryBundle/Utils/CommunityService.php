@@ -14,6 +14,7 @@ use CommonBundle\Utils\LocationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use NewApiBundle\InputType\CommunityCreateInputType;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -103,6 +104,8 @@ class CommunityService
     }
 
     /**
+     * @deprecated Since added method createCommunity TODO Remove after migrate new application
+     *
      * @param GeneralInputType\Country   $country
      * @param InputType\NewCommunityType $communityType
      *
@@ -264,5 +267,58 @@ class CommunityService
             $this->em->remove($community->getAddress());
             $community->setAddress($newAddress);
         }
+    }
+
+    /**
+     * @param CommunityCreateInputType $inputType
+     *
+     * @return Community
+     */
+    public function createCommunity(CommunityCreateInputType $inputType): Community
+    {
+        $community = new Community();
+        $community->setName($inputType->getContactFamilyName());
+        $community->setLongitude($inputType->getLongtitude());
+        $community->setLatitude($inputType->getLongtitude());
+
+        if (!is_null($inputType->getAddress())) {
+
+            $location = $this->locationService->getLocationByAddressInputType($inputType->getAddress());
+
+            $address = Address::create(
+                $inputType->getAddress()->getStreet(),
+                $inputType->getAddress()->getNumber(),
+                $inputType->getAddress()->getPostcode(),
+                $location
+            );
+
+            $community->setAddress($address);
+        }
+
+        if (!is_null($inputType->getNationalIdCard())) {
+            $nationalIdCard = new NationalId();
+
+            $nationalIdCard->setIdNumber($inputType->getNationalIdCard()->getNumber());
+            $nationalIdCard->setIdType($inputType->getNationalIdCard()->getType());
+
+            $community->setNationalId($nationalIdCard);
+        }
+
+        if (!is_null($inputType->getPhone())) {
+            $phone = new Phone();
+
+            $phone->setPrefix($inputType->getPhone()->getPrefix());
+            $phone->setNumber($inputType->getPhone()->getNumber());
+            $phone->setType($inputType->getPhone()->getType());
+            $phone->setProxy($inputType->getPhone()->getProxy());
+
+            $community->setPhone($phone);
+        }
+
+
+        $this->em->persist($community);
+        $this->em->flush();
+
+        return $community;
     }
 }
