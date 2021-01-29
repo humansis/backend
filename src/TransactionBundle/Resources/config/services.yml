@@ -1,4 +1,14 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    TransactionBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: [ 'app.controller' ]
+
     transaction.transaction_service:
         class: TransactionBundle\Utils\TransactionService
         public: true
@@ -17,6 +27,9 @@ services:
     transaction.khm_financial_provider:
         class: TransactionBundle\Utils\Provider\KHMFinancialProvider
         parent: transaction.default_financial_provider
+        autowire: false
+        autoconfigure: false
+        public: true
 
     TransactionBundle\Mapper\TransactionMapper:
         arguments:
