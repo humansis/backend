@@ -54,7 +54,7 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $adm1 = $locationService->getAllAdm1($filters['__country']);
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $adm1,
                 'json',
@@ -86,7 +86,7 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $adm2 = $locationService->getAllAdm2($filters['adm1']);
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $adm2,
                 'json',
@@ -118,7 +118,7 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $adm3 = $locationService->getAllAdm3($filters['adm2']);
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $adm3,
                 'json',
@@ -150,7 +150,7 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $adm4 = $locationService->getAllAdm4($filters['adm3']);
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $adm4,
                 'json',
@@ -182,7 +182,7 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $camps = $locationService->getAllCamps($filters);
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $camps,
                 'json',
@@ -212,7 +212,7 @@ class LocationController extends Controller
         $locationService = $this->get('location_service');
         $location = $locationService->getCodeOfUpcomingDistribution($filters['__country']);
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $location,
                 'json',

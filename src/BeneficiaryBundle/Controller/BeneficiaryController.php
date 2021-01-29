@@ -67,7 +67,7 @@ class BeneficiaryController extends Controller
     public function getAllVulnerabilityCriteriaAction()
     {
         $vulnerabilityCriteria = $this->get('beneficiary.beneficiary_service')->getAllVulnerabilityCriteria();
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize($vulnerabilityCriteria, 'json');
 
         return new Response($json);
@@ -227,7 +227,7 @@ class BeneficiaryController extends Controller
             $this->container->get('logger')->error('exception', [$exception->getMessage()]);
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('serializer')
+        $json = $this->serializer
         ->serialize(
                 $newBeneficiary,
                 'json', ['groups' => ['FullBeneficiary'], 'datetime_format' => 'd-m-Y H:i:s']);
@@ -297,7 +297,7 @@ class BeneficiaryController extends Controller
             return new Response("Beneficiary was archived", Response::HTTP_NOT_FOUND);
         }
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
         ->serialize(
             $Beneficiary,
             'json',
@@ -338,7 +338,7 @@ class BeneficiaryController extends Controller
      */
     public function beneficiary(Smartcard $smartcard): Response
     {
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize($smartcard->getBeneficiary(), 'json', ['groups' => ['FullBeneficiary'], 'datetime_format' => 'd-m-Y H:i:s']);
 
         return new Response($json);

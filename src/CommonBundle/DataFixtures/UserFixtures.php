@@ -105,7 +105,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     ];
 
     /**
-     * Load data fixtures with the passed EntityManager
+     * Load data fixtures with the passed EntityManagerInterface
      *
      * @param ObjectManager $manager
      * @throws \Exception

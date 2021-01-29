@@ -94,7 +94,7 @@ class VoucherController extends Controller
     public function createAction(Request $request)
     {
         /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
+        $serializer = $this->serializer;
 
         $voucherData = $request->request->all();
 
@@ -145,7 +145,7 @@ class VoucherController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('serializer')->serialize($vouchers, 'json', ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']);
+        $json = $this->serializer->serialize($vouchers, 'json', ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']);
         return new Response($json);
     }
 
@@ -180,7 +180,7 @@ class VoucherController extends Controller
     {
         $vouchers = $this->getDoctrine()->getRepository(VoucherPurchaseRecord::class)->findPurchasedByBeneficiary($beneficiary);
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize($vouchers, 'json', ['groups' => ['ValidatedAssistance'], 'datetime_format' => 'd-m-Y H:m:i']);
 
         return new Response($json);
@@ -214,7 +214,7 @@ class VoucherController extends Controller
      */
     public function getSingleVoucherAction(Voucher $voucher)
     {
-        $json = $this->get('serializer')->serialize($voucher, 'json', ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']);
+        $json = $this->serializer->serialize($voucher, 'json', ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']);
 
         return new Response($json);
     }
@@ -289,7 +289,7 @@ class VoucherController extends Controller
             }
         }
 
-        $json = $this->get('serializer')->serialize($newVouchers, 'json',
+        $json = $this->serializer->serialize($newVouchers, 'json',
             ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']);
 
         return new Response($json);
@@ -321,7 +321,7 @@ class VoucherController extends Controller
         $this->container->get('logger')->error('headers', $request->headers->all());
         $this->container->get('logger')->error('content', [$request->getContent()]);
 
-        $data = $this->get('serializer')->deserialize($request->getContent(), VoucherPurchase::class.'[]', 'json');
+        $data = $this->serializer->deserialize($request->getContent(), VoucherPurchase::class.'[]', 'json');
 
         $errors = $this->get('validator')->validate($data, [
             new All([new Type(['type' => VoucherPurchase::class])]),

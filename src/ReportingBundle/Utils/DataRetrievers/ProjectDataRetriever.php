@@ -2,7 +2,7 @@
 
 namespace ReportingBundle\Utils\DataRetrievers;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 use Doctrine\ORM\QueryBuilder;
 use ProjectBundle\Entity\Project;
@@ -15,15 +15,15 @@ use ReportingBundle\Entity\ReportingProject;
 class ProjectDataRetriever extends AbstractDataRetriever
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
      * ProjectDataRetriever constructor.
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }

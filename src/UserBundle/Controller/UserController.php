@@ -3,8 +3,7 @@
 namespace UserBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\View\View;
-
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -13,8 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use UserBundle\Adapter\UserAdapter;
 use UserBundle\Entity\User;
+use UserBundle\Utils\UserService;
 
 /**
  * Class UserController
@@ -22,6 +21,22 @@ use UserBundle\Entity\User;
  */
 class UserController extends Controller
 {
+    /** @var SerializerInterface */
+    private $serializer;
+    /** @var UserService */
+    private $userService;
+
+    /**
+     * UserController constructor.
+     *
+     * @param Serializer  $serializer
+     * @param UserService $userService
+     */
+    public function __construct(Serializer $serializer, UserService $userService)
+    {
+        $this->serializer = $serializer;
+        $this->userService = $userService;
+    }
 
     /**
      * Log a user with its username and salted password. Create a new one if not in the db (remove this part for prod env)
@@ -88,7 +103,7 @@ class UserController extends Controller
         // }
 
         try {
-            $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
+            $user = $this->container->userService->login($username, $saltedPassword);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
@@ -97,10 +112,7 @@ class UserController extends Controller
             return new Response('You cannot connect on this site, please use the app.', Response::HTTP_FORBIDDEN);
         }
 
-        /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
-
-        $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
+        $userJson = $this->serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
         return new Response($userJson);
     }
 
@@ -159,7 +171,7 @@ class UserController extends Controller
         $saltedPassword = $request->request->get('password');
 
         try {
-            $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
+            $user = $this->container->userService->login($username, $saltedPassword);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
@@ -168,11 +180,11 @@ class UserController extends Controller
             return new Response('You cannot connect on this site, please use the app.', Response::HTTP_FORBIDDEN);
         }
 
-        $userJson = $this->get('serializer')->serialize($user, 'json', ['groups' => ['FullUser']]);
+        $userJson = $this->serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
 
         // add available countries to user
         $object = json_decode($userJson);
-        $object->available_countries = $this->container->get('user.user_service')->getCountries($user);
+        $object->available_countries = $this->container->userService->getCountries($user);
 
         return new JsonResponse($object);
     }
@@ -211,7 +223,7 @@ class UserController extends Controller
     public function getSaltAction($username)
     {
         try {
-            $salt = $this->get('user.user_service')->getSalt($username);
+            $salt = $this->userService->getSalt($username);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
@@ -334,7 +346,7 @@ class UserController extends Controller
     public function initializeAction($username)
     {
         try {
-            $salt = $this->get('user.user_service')->initialize($username);
+            $salt = $this->userService->initialize($username);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
@@ -373,22 +385,19 @@ class UserController extends Controller
      */
     public function createAction(Request $request)
     {
-        /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
-
         $userData = $request->request->all();
 
         try {
-            $return = $this->get('user.user_service')->create($userData);
+            $return = $this->userService->create($userData);
 
-            $userJson = $serializer->serialize(
+            $userJson = $this->serializer->serialize(
                 $return,
                 'json',
                 ['groups' => ['FullUser']]
             );
             return new Response($userJson);
         } catch (\Exception $exception) {
-            $this->get('user.user_service')->deleteByUsername($userData['username']);
+            $this->userService->deleteByUsername($userData['username']);
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -415,7 +424,7 @@ class UserController extends Controller
     {
         $user = $this->getUser();
         if ($user instanceof User) {
-            $user = $this->get('serializer')->serialize($user, 'json', ['groups' => ['FullUser']]);
+            $user = $this->serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
             return new Response($user, Response::HTTP_OK);
         }
         return new Response(null, Response::HTTP_UNAUTHORIZED);
@@ -451,8 +460,8 @@ class UserController extends Controller
         $limit = ($request->query->has('limit'))? $request->query->get('limit') : null;
         $offset = ($request->query->has('offset'))? $request->query->get('offset') : null;
 
-        $users = $this->get('user.user_service')->findAll($limit, $offset);
-        $json = $this->get('serializer')->serialize($users, 'json', ['groups' => ['FullUser']]);
+        $users = $this->userService->findAll($limit, $offset);
+        $json = $this->serializer->serialize($users, 'json', ['groups' => ['FullUser']]);
 
         return new Response($json, Response::HTTP_OK);
     }
@@ -486,8 +495,8 @@ class UserController extends Controller
     {
         $limit = ($request->query->has('limit'))? $request->query->get('limit') : null;
         $offset = ($request->query->has('offset'))? $request->query->get('offset') : null;
-        $users = $this->get('user.user_service')->findWebUsers($limit, $offset);
-        $json = $this->get('serializer')->serialize($users, 'json', ['groups' => ['FullUser']]);
+        $users = $this->userService->findWebUsers($limit, $offset);
+        $json = $this->serializer->serialize($users, 'json', ['groups' => ['FullUser']]);
         return new Response($json, Response::HTTP_OK);
     }
 
@@ -515,9 +524,9 @@ class UserController extends Controller
      */
     public function showProjectsAction(User $user)
     {
-        $projects = $this->get('user.user_service')->findAllProjects($user);
+        $projects = $this->userService->findAllProjects($user);
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize($projects, 'json');
 
         return new Response($json, Response::HTTP_OK);
@@ -558,8 +567,8 @@ class UserController extends Controller
     public function updateAction(Request $request, User $user)
     {
         $userData = $request->request->all();
-        $userNew = $this->get('user.user_service')->update($user, $userData);
-        $json = $this->get('serializer')->serialize($userNew, 'json', ['groups' => ['FullUser']]);
+        $userNew = $this->userService->update($user, $userData);
+        $json = $this->serializer->serialize($userNew, 'json', ['groups' => ['FullUser']]);
         return new Response($json);
     }
 
@@ -590,8 +599,8 @@ class UserController extends Controller
     public function postLanguageAction(Request $request, User $user)
     {
         $language = $request->request->get('language');
-        $userUpdated = $this->get('user.user_service')->updateLanguage($user, $language);
-        $json = $this->get('serializer')->serialize($userUpdated, 'json', ['groups'=>['FullUser']]);
+        $userUpdated = $this->userService->updateLanguage($user, $language);
+        $json = $this->serializer->serialize($userUpdated, 'json', ['groups'=>['FullUser']]);
         return new Response($json);
     }
 
@@ -640,12 +649,12 @@ class UserController extends Controller
         $oldPassword = $request->request->get('oldPassword');
         $newPassword = $request->request->get('newPassword');
         try {
-            $user = $this->get('user.user_service')->updatePassword($user, $oldPassword, $newPassword);
+            $user = $this->userService->updatePassword($user, $oldPassword, $newPassword);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_UNAUTHORIZED);
         }
 
-        $userJson = $this->get('serializer')->serialize(
+        $userJson = $this->serializer->serialize(
             $user,
             'json',
             ['groups' => ['FullUser']]
@@ -672,7 +681,7 @@ class UserController extends Controller
      */
     public function deleteAction(User $user)
     {
-        $isSuccess = $this->get('user.user_service')->delete($user);
+        $isSuccess = $this->userService->delete($user);
 
         return new JsonResponse($isSuccess);
     }
@@ -696,7 +705,7 @@ class UserController extends Controller
     public function getLogAction(User $user)
     {
         $userConnected = $this->getUser();
-        $attach = $this->get('user.user_service')->getLog($user, $userConnected);
+        $attach = $this->userService->getLog($user, $userConnected);
 
         return new JsonResponse($attach);
     }
@@ -721,13 +730,13 @@ class UserController extends Controller
             $code = $request->request->get('code');
             $environment = $request->request->get('environment');
 
-            $user = $this->get('user.user_service')->loginHumanitarian($code, $environment);
+            $user = $this->userService->loginHumanitarian($code, $environment);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
         
         /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
+        $serializer = $this->serializer;
         $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
         return new Response($userJson);
     }
@@ -751,13 +760,13 @@ class UserController extends Controller
         try {
             $token = $request->request->get('token');
 
-            $user = $this->get('user.user_service')->loginGoogle($token);
+            $user = $this->userService->loginGoogle($token);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
         
         /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
+        $serializer = $this->serializer;
         $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
         return new Response($userJson);
     }
@@ -781,13 +790,13 @@ class UserController extends Controller
         try {
             $code = $request->request->get('code');
             $environment = $request->request->get('environment');
-            $user = $this->get('user.user_service')->loginLinkedIn($code, $environment);
+            $user = $this->userService->loginLinkedIn($code, $environment);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
         
         /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
+        $serializer = $this->serializer;
         $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
         return new Response($userJson);
     }

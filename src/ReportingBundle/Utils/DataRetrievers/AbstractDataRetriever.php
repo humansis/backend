@@ -2,7 +2,7 @@
 
 namespace ReportingBundle\Utils\DataRetrievers;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 use Doctrine\ORM\QueryBuilder;
 use phpDocumentor\Reflection\Types\Object_;

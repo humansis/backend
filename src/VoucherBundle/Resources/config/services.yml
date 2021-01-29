@@ -9,14 +9,15 @@ services:
         public: true
         tags: [ 'app.controller' ]
 
+    VoucherBundle\Utils\:
+        resource: '../../Utils'
+
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
 
-    VoucherBundle\Utils\:
-        resource: '../../Utils'
-        autowire: true
-        public: true
+    Knp\Bundle\GaufretteBundle\FilesystemMap:
+        alias: knp_gaufrette.filesystem_map
 
     voucher.booklet_service:
         alias: VoucherBundle\Utils\BookletService
@@ -26,8 +27,10 @@ services:
         alias: VoucherBundle\Utils\ProductService
 
     common.upload_service:
-        class: CommonBundle\Utils\UploadService
-        arguments: ['%aws_access_key_id%', '%aws_secret_access_key%', '%aws_s3_region%', '@service_container' ]
+        alias: CommonBundle\Utils\UploadService
+
+    CommonBundle\Utils\UploadService:
+        arguments: [ '%aws_access_key_id%', '%aws_secret_access_key%', '%aws_s3_region%', '@service_container' ]
         public: true
 
     voucher.purchase_service:
@@ -39,8 +42,6 @@ services:
         public: true
 
     VoucherBundle\Mapper\BookletMapper:
-        arguments:
-            - "@serializer"
         public: true
 
     VoucherBundle\Mapper\VoucherRedemptionBatchMapper:

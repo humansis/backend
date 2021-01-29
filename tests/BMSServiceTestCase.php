@@ -17,7 +17,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\CommodityService;
 use DistributionBundle\Utils\ConfigurationLoader;
 use DistributionBundle\Utils\CriteriaAssistanceService;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -38,7 +38,7 @@ class BMSServiceTestCase extends KernelTestCase
 
     // SERVICES
 
-    /** @var EntityManager $em */
+    /** @var EntityManagerInterface $em */
     protected $em;
 
     /** @var Container $containerMock */
@@ -220,7 +220,7 @@ class BMSServiceTestCase extends KernelTestCase
 
         $this->containerMock = static::$kernel->getContainer();
 
-        //Preparing the EntityManager
+        //Preparing the EntityManagerInterface
         $this->em = $this->getContainer()
             ->get('doctrine')
             ->getManager();
@@ -241,7 +241,7 @@ class BMSServiceTestCase extends KernelTestCase
 
     public function setUpUnitTest()
     {
-        //EntityManager mocking
+        //EntityManagerInterface mocking
         $this->mockEntityManager(['getRepository']);
         //Serializer mocking
         $this->mockSerializer();
@@ -263,9 +263,9 @@ class BMSServiceTestCase extends KernelTestCase
     }
 
     /**
-     * Mock the EntityManager with the given functions
+     * Mock the EntityManagerInterface with the given functions
      * @param array $requiredFunctions [names of functions to setup on the mock]
-     * @return EntityManager {[MockClass]       [a mock instance of EntityManager]
+     * @return EntityManagerInterface {[MockClass]       [a mock instance of EntityManager]
      */
     protected function mockEntityManager(array $requiredFunctions)
     {

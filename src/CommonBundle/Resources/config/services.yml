@@ -9,6 +9,9 @@ services:
         public: true
         tags: [ 'app.controller' ]
 
+    CommonBundle\Utils\:
+        resource: '../../Utils'
+
     CommonBundle\Command\ClearCacheImportCommand:
         public: true
         tags:
@@ -24,35 +27,24 @@ services:
 #######################################################################################
 
     location_service:
-        class: CommonBundle\Utils\LocationService
+        alias: CommonBundle\Utils\LocationService
         public: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - "@request_validator"
 
     organization_service:
-        class: CommonBundle\Utils\OrganizationService
+        alias: CommonBundle\Utils\OrganizationService
         public: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - "@service_container"
 
     export_csv_service:
-        class: CommonBundle\Utils\ExportService
+        alias: CommonBundle\Utils\ExportService
         public: true
 
     pdf_service:
-        class: CommonBundle\Utils\PdfService
+        alias: CommonBundle\Utils\PdfService
         public: true
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            
+
     log_service:
-        class: CommonBundle\Utils\LogService
+        alias: CommonBundle\Utils\LogService
         public: true
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@request_validator"
 
     CommonBundle\Mapper\LocationMapper:
         public: true
@@ -61,28 +53,18 @@ services:
 ##                                     LISTENER                                      ##
 #######################################################################################
     CommonBundle\Listener\RequestListener:
-        arguments:
-        - "@doctrine.orm.entity_manager"
-        - "@service_container"
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
     CommonBundle\Listener\ResponseListener:
-        arguments:
-        - "@doctrine.orm.entity_manager"
-        - "@service_container"
         tags:
         - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
     CommonBundle\InputType\RequestConverter:
-        arguments:
-            - '@validator'
         tags:
             - { name: request.param_converter, converter: input_types_converter }
 
     CommonBundle\Listener\LoggerSubscriber:
-        arguments:
-            - '@logger'
         tags:
             - { name: kernel.event_subscriber }
 
@@ -268,6 +250,4 @@ services:
 #######################################################################################
 
     CommonBundle\Utils\ExportService:
-        class: CommonBundle\Utils\ExportService
-        autowire: true
         public: true

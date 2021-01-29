@@ -2,12 +2,9 @@
 
 namespace ReportingBundle\Utils;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use ReportingBundle\Entity\ReportingIndicator;
-use ReportingBundle\Utils\Model\IndicatorInterface;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class ReportingService

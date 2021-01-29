@@ -52,7 +52,7 @@ class OrganizationController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('serializer')->serialize($organizations, 'json', ['groups' => ['FullOrganization']]);
+        $json = $this->serializer->serialize($organizations, 'json', ['groups' => ['FullOrganization']]);
         
         return new Response($json);
     }
@@ -94,7 +94,7 @@ class OrganizationController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $organizationJson = $this->get('serializer')
+        $organizationJson = $this->serializer
             ->serialize($organization, 'json', ['groups' => ['FullOrganization']]);
 
         return new Response($organizationJson);
@@ -196,7 +196,7 @@ class OrganizationController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $responseJson = $this->get('serializer')
+        $responseJson = $this->serializer
             ->serialize($response, 'json', ['groups' => ['FullOrganization']]);
 
         return new Response($responseJson);
@@ -236,7 +236,7 @@ class OrganizationController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $responseJson = $this->get('serializer')
+        $responseJson = $this->serializer
             ->serialize($response, 'json', ['groups' => ['FullOrganization']]);
 
         return new Response($responseJson);

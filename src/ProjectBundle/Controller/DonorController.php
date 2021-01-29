@@ -41,7 +41,7 @@ class DonorController extends Controller
     {
         $donors = $this->get('project.donor_service')->findAll();
 
-        $donorsJson = $this->get('serializer')
+        $donorsJson = $this->serializer
             ->serialize($donors, 'json', ['groups' => ['FullDonor'], 'datetime_format' => 'd-m-Y H:i:s']);
         return new Response($donorsJson);
     }
@@ -83,7 +83,7 @@ class DonorController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $donorJson = $this->get('serializer')
+        $donorJson = $this->serializer
             ->serialize($donor, 'json', ['groups' => ['FullDonor'], 'datetime_format' => 'd-m-Y H:i:s']);
 
         return new Response($donorJson);
@@ -127,7 +127,7 @@ class DonorController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $donorJson = $this->get('serializer')
+        $donorJson = $this->serializer
             ->serialize($donor, 'json', ['groups' => ['FullDonor'], 'datetime_format' => 'd-m-Y H:i:s']);
 
         return new Response($donorJson);

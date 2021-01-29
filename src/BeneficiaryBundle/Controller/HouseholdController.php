@@ -71,7 +71,7 @@ class HouseholdController extends Controller
             throw $this->createAccessDeniedException('You do not have permission to access this resource.');
         }
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $household,
                 'json',
@@ -109,7 +109,7 @@ class HouseholdController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $households,
                 'json',
@@ -173,7 +173,7 @@ class HouseholdController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $household,
                 'json',
@@ -239,7 +239,7 @@ class HouseholdController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $household,
                 'json',
@@ -314,7 +314,7 @@ class HouseholdController extends Controller
         }
 
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize($return, 'json', ['groups' => ['FullHousehold'], 'datetime_format' => 'd-m-Y']);
         return new Response($json);
     }
@@ -338,7 +338,7 @@ class HouseholdController extends Controller
         /** @var HouseholdService $householdService */
         $householdService = $this->get("beneficiary.household_service");
         $household = $householdService->remove($household);
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $household,
                 'json',
@@ -397,7 +397,7 @@ class HouseholdController extends Controller
         try {
             $response = $this->get('beneficiary.api_import_service')->import($countryIso3, $provider, $params, $project);
 
-            $json = $this->get('serializer')
+            $json = $this->serializer
                 ->serialize($response, 'json');
 
             return new Response($json);
@@ -505,7 +505,7 @@ class HouseholdController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $households,
                 'json',
@@ -544,7 +544,7 @@ class HouseholdController extends Controller
         $activities = $this->getDoctrine()->getRepository(HouseholdActivity::class)->findByHousehold($household);
 
         $changes = new HouseholdActivityChangesCollection($activities, new FilteredHouseholdChangeFactory());
-        $changes = $this->get('serializer')->serialize($changes, 'json', ['groups' => ['HouseholdChanges']]);
+        $changes = $this->serializer->serialize($changes, 'json', ['groups' => ['HouseholdChanges']]);
 
         return new Response($changes);
     }

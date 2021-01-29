@@ -9,7 +9,7 @@ use ReportingBundle\Utils\DataRetrievers\CountryDataRetriever;
 use ReportingBundle\Utils\DataRetrievers\ProjectDataRetriever;
 use ReportingBundle\Utils\DataRetrievers\AssistanceRetriever;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class Computer
@@ -19,7 +19,7 @@ class Computer implements ComputerInterface
 {
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
     /**
@@ -30,10 +30,10 @@ class Computer implements ComputerInterface
 
     /**
      * Computer constructor.
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      * @param ProjectDataRetriever $project
      */
-    public function __construct(EntityManager $em, ProjectDataRetriever $project)
+    public function __construct(EntityManagerInterface $em, ProjectDataRetriever $project)
     {
         $this->em = $em;
         $this->project = $project;

@@ -2,7 +2,7 @@
 
 namespace ReportingBundle\Utils\DataFillers\Country;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 use ReportingBundle\Utils\DataFillers\DataFillers;
 use ReportingBundle\Entity\ReportingIndicator;
@@ -23,7 +23,7 @@ class DataFillersCountry extends DataFillers
 {
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
     /**
@@ -33,9 +33,9 @@ class DataFillersCountry extends DataFillers
 
     /**
      * DataFillersCountry constructor.
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }

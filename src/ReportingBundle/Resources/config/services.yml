@@ -9,9 +9,11 @@ services:
         public: true
         tags: [ 'app.controller' ]
 
+    ReportingBundle\Utils\:
+        resource: '../../Utils'
+
     reporting.reporting_service:
-        class: ReportingBundle\Utils\ReportingService
-        arguments: ['@doctrine.orm.entity_manager', '@service_container']
+        alias: ReportingBundle\Utils\ReportingService
         public: true
 
     reporting.code_indicator_command:
@@ -29,60 +31,50 @@ services:
     ############################### Data Fillers ###############################
 
     reporting.data_fillers.reference:
-        class: ReportingBundle\Utils\DataFillers\DataFillersIndicator
-        arguments: ['@doctrine.orm.entity_manager']
+        alias: ReportingBundle\Utils\DataFillers\DataFillersIndicator
         public: true
 
     reporting.data_fillers.default:
-        class: ReportingBundle\Utils\DataFillers\DataFillers
-        arguments: ['@doctrine.orm.entity_manager']
+        alias: ReportingBundle\Utils\DataFillers\DataFillers
         public: true
 
     reporting.data_fillers.country:
-        class: ReportingBundle\Utils\DataFillers\Country\DataFillersCountry
-        arguments: ['@doctrine.orm.entity_manager']
+        alias: ReportingBundle\Utils\DataFillers\Country\DataFillersCountry
         public: true
 
     reporting.data_fillers.project:
-        class: ReportingBundle\Utils\DataFillers\Project\DataFillersProject
-        arguments: ['@doctrine.orm.entity_manager']
+        alias: ReportingBundle\Utils\DataFillers\Project\DataFillersProject
         public: true
 
     reporting.data_fillers.distribution:
-        class: ReportingBundle\Utils\DataFillers\Distribution\DataFillersDistribution
-        arguments: ['@doctrine.orm.entity_manager']
+        alias: ReportingBundle\Utils\DataFillers\Distribution\DataFillersDistribution
         public: true
 
     ################################## Computers ##################################
 
     reporting.computer:
-        class: ReportingBundle\Utils\Computers\Computer
-        arguments: ['@doctrine.orm.entity_manager', '@reporting.data_retrievers.project']
+        alias: ReportingBundle\Utils\Computers\Computer
 
     ############################### Data Retrievers ###############################
 
     reporting.data_retrievers.country:
-        class: ReportingBundle\Utils\DataRetrievers\CountryDataRetriever
-        arguments: ['@doctrine.orm.entity_manager']
+        alias: ReportingBundle\Utils\DataRetrievers\CountryDataRetriever
         public: true
 
     reporting.data_retrievers.project:
-        class: ReportingBundle\Utils\DataRetrievers\ProjectDataRetriever
-        arguments: ['@doctrine.orm.entity_manager']
+        alias: ReportingBundle\Utils\DataRetrievers\ProjectDataRetriever
         public: true
 
     reporting.data_retrievers.distribution:
-        class: ReportingBundle\Utils\DataRetrievers\AssistanceRetriever
-        arguments: ['@doctrine.orm.entity_manager', '@reporting.data_retrievers.project']
+        alias: ReportingBundle\Utils\DataRetrievers\AssistanceRetriever
         public: true
 
     ################################## Formatters ##################################
 
     reporting.formatter:
-        class: ReportingBundle\Utils\Formatters\Formatter
+        alias: ReportingBundle\Utils\Formatters\Formatter
 
     ################################## Finders ##################################
 
     reporting.finder:
-        class: ReportingBundle\Utils\Finders\Finder
-        arguments: ['@doctrine.orm.entity_manager']
+        alias: ReportingBundle\Utils\Finders\Finder

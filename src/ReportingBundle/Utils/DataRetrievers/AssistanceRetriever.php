@@ -2,7 +2,7 @@
 
 namespace ReportingBundle\Utils\DataRetrievers;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 use function GuzzleHttp\Psr7\str;
 use ReportingBundle\Entity\ReportingAssistance;
@@ -16,7 +16,7 @@ use \DistributionBundle\Entity\Assistance;
 class AssistanceRetriever extends AbstractDataRetriever
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -27,10 +27,10 @@ class AssistanceRetriever extends AbstractDataRetriever
 
     /**
      * AssistanceRetrievers constructor.
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      * @param ProjectDataRetriever $project
      */
-    public function __construct(EntityManager $em, ProjectDataRetriever $project)
+    public function __construct(EntityManagerInterface $em, ProjectDataRetriever $project)
     {
         $this->em = $em;
         $this->project = $project;

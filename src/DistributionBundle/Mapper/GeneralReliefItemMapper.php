@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace DistributionBundle\Mapper;
 
 use DistributionBundle\Entity\GeneralReliefItem;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 
 class GeneralReliefItemMapper
 {

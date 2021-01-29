@@ -160,7 +160,7 @@ class SmartcardController extends Controller
      */
     public function info(Smartcard $smartcard, Request $request): Response
     {
-        $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
+        $json = $this->serializer->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
     }
@@ -287,7 +287,7 @@ class SmartcardController extends Controller
         $this->getDoctrine()->getManager()->persist($smartcard);
         $this->getDoctrine()->getManager()->flush();
 
-        $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
+        $json = $this->serializer->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
     }
@@ -385,7 +385,7 @@ class SmartcardController extends Controller
         $this->getDoctrine()->getManager()->persist($smartcard);
         $this->getDoctrine()->getManager()->flush();
 
-        $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
+        $json = $this->serializer->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
     }
@@ -434,7 +434,7 @@ class SmartcardController extends Controller
         $this->container->get('logger')->error('content', [$request->getContent()]);
 
         /** @var SmartcardPurchaseInput $data */
-        $data = $this->get('serializer')->deserialize($request->getContent(), SmartcardPurchaseInput::class, 'json');
+        $data = $this->serializer->deserialize($request->getContent(), SmartcardPurchaseInput::class, 'json');
 
         $errors = $this->get('validator')->validate($data);
         if (count($errors) > 0) {
@@ -456,7 +456,7 @@ class SmartcardController extends Controller
 
         $this->get('voucher.purchase_service')->purchaseSmartcard($smartcard, $data);
 
-        $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
+        $json = $this->serializer->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
     }

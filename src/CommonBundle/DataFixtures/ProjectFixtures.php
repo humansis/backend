@@ -42,7 +42,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
     }
 
     /**
-     * Load data fixtures with the passed EntityManager
+     * Load data fixtures with the passed EntityManagerInterface
      *
      * @param ObjectManager $manager
      * @throws \Exception

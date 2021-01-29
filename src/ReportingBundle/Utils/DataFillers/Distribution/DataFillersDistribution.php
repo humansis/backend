@@ -2,7 +2,7 @@
 
 namespace ReportingBundle\Utils\DataFillers\Distribution;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 use ReportingBundle\Utils\DataFillers\DataFillers;
@@ -22,7 +22,7 @@ class DataFillersDistribution extends DataFillers
 {
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
     /**
@@ -33,9 +33,9 @@ class DataFillersDistribution extends DataFillers
 
     /**
      * DataFillersDistribution constructor.
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }

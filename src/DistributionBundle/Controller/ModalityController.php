@@ -45,7 +45,7 @@ class ModalityController extends Controller
         $modalityService = $this->get('distribution.modality_service');
         $all = $modalityService->getAll();
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $all,
                 'json',
@@ -79,7 +79,7 @@ class ModalityController extends Controller
         $modalityService = $this->get('distribution.modality_service');
         $all = $modalityService->getAllModalityTypes($modality);
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $all,
                 'json',

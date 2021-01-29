@@ -5,7 +5,7 @@ namespace ReportingBundle\Utils\Finders;
 use ReportingBundle\Utils\Finders\FinderInterface;
 use ReportingBundle\Entity\ReportingIndicator;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class Finder
@@ -15,7 +15,7 @@ class Finder implements FinderInterface
 {
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
     /**
@@ -26,9 +26,9 @@ class Finder implements FinderInterface
 
     /**
      * Finder constructor.
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }

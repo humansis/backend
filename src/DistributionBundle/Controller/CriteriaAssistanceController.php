@@ -3,6 +3,7 @@
 
 namespace DistributionBundle\Controller;
 
+use DistributionBundle\Mapper\CampMapper;
 use DistributionBundle\Utils\CriteriaAssistanceService;
 
 use ProjectBundle\Entity\Project;
@@ -10,10 +11,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class CriteriaAssistanceController
@@ -28,6 +28,26 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  */
 class CriteriaAssistanceController extends Controller
 {
+    /** @var CriteriaAssistanceService */
+    private $criteriaAssistanceService;
+    /** @var SerializerInterface */
+    private $serializer;
+    /** @var CampMapper */
+    private $campMapper;
+
+    /**
+     * CriteriaAssistanceController constructor.
+     *
+     * @param CriteriaAssistanceService $criteriaAssistanceService
+     * @param SerializerInterface       $serializer
+     * @param CampMapper                $campMapper
+     */
+    public function __construct(CriteriaAssistanceService $criteriaAssistanceService, SerializerInterface $serializer, CampMapper $campMapper)
+    {
+        $this->criteriaAssistanceService = $criteriaAssistanceService;
+        $this->serializer = $serializer;
+        $this->campMapper = $campMapper;
+    }
 
     /**
      * @Rest\Get("/distributions/criteria", name="get_criteria_celection")
@@ -80,13 +100,11 @@ class CriteriaAssistanceController extends Controller
      */
     public function getCriteriaAction(Request $request)
     {
-        /** @var CriteriaAssistanceService $criteriaAssistanceService */
-        $criteriaAssistanceService = $this->get('distribution.criteria_assistance_service');
         $filters = $request->request->all();
         $countryISO3 = $filters['__country'];
-        $criteria = $criteriaAssistanceService->getAll($countryISO3);
+        $criteria = $this->criteriaAssistanceService->getAll($countryISO3);
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $criteria,
                 'json',
@@ -160,12 +178,11 @@ class CriteriaAssistanceController extends Controller
 
         /** @var CriteriaAssistanceService $criteriaAssistanceService */
         try {
-            $criteriaAssistanceService = $this->get('distribution.criteria_assistance_service');
-            $camps = $criteriaAssistanceService->getCamps($countryIso3);
+            $camps = $this->criteriaAssistanceService->getCamps($countryIso3);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return $this->json($this->get(\DistributionBundle\Mapper\CampMapper::class)->toArrays($camps));
+        return $this->json($this->campMapper->toArrays($camps));
     }
 }

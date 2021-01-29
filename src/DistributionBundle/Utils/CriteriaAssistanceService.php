@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use ProjectBundle\Entity\Project;
 use BeneficiaryBundle\Entity\Camp;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 
 /**
  * Class CriteriaAssistanceService

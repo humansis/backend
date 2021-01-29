@@ -12,81 +12,49 @@ services:
         public: true
         tags: [ 'app.controller' ]
 
+    BeneficiaryBundle\Utils\:
+        resource: '../../Utils'
+
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
 
+    RA\RequestValidatorBundle\RequestValidator\RequestValidator:
+        alias: request_validator
+
     beneficiary.household_service:
-        class: BeneficiaryBundle\Utils\HouseholdService
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@serializer"
-            - "@beneficiary.beneficiary_service"
-            - "@request_validator"
-            - "@location_service"
-            - "@validator"
-            - "@service_container"
+        alias: BeneficiaryBundle\Utils\HouseholdService
         public: true
 
     beneficiary.institution_service:
-        class: BeneficiaryBundle\Utils\InstitutionService
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@serializer"
-            - "@beneficiary.beneficiary_service"
-            - "@request_validator"
-            - "@location_service"
-            - "@validator"
-            - "@service_container"
+        alias: BeneficiaryBundle\Utils\InstitutionService
         public: true
 
     beneficiary.community_service:
-        class: BeneficiaryBundle\Utils\CommunityService
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@serializer"
-            - "@beneficiary.beneficiary_service"
-            - "@request_validator"
-            - "@location_service"
-            - "@validator"
-            - "@service_container"
-            - "@CommonBundle\\Mapper\\LocationMapper"
+        alias: BeneficiaryBundle\Utils\CommunityService
         public: true
 
     beneficiary.repository:
-        class: BeneficiaryBundle\Repository\BeneficiaryRepository
+        alias: BeneficiaryBundle\Repository\BeneficiaryRepository
+
+    BeneficiaryBundle\Repository\BeneficiaryRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - BeneficiaryBundle\Entity\Beneficiary
 
     BeneficiaryBundle\Mapper\CommunityMapper:
-        arguments:
-            - '@BeneficiaryBundle\Mapper\AddressMapper'
-            - '@BeneficiaryBundle\Mapper\NationalIdMapper'
-            - '@CommonBundle\Mapper\LocationMapper'
-            - '@BeneficiaryBundle\Mapper\PersonMapper'
-            - '@ProjectBundle\Mapper\ProjectMapper'
         public: true
 
     BeneficiaryBundle\Mapper\InstitutionMapper:
-        arguments:
-            - '@BeneficiaryBundle\Mapper\AddressMapper'
-            - '@BeneficiaryBundle\Mapper\NationalIdMapper'
-            - '@BeneficiaryBundle\Mapper\PersonMapper'
-            - '@ProjectBundle\Mapper\ProjectMapper'
         public: true
 
     BeneficiaryBundle\Mapper\AddressMapper:
-        arguments:
-            - '@CommonBundle\Mapper\LocationMapper'
         public: true
 
     BeneficiaryBundle\Mapper\NationalIdMapper:
         public: true
 
     BeneficiaryBundle\Mapper\BeneficiaryMapper:
-        arguments:
-            - "@serializer"
         public: true
 
     BeneficiaryBundle\Mapper\AssistanceMapper:
@@ -99,39 +67,27 @@ services:
         public: false
 
     BeneficiaryBundle\Mapper\PersonMapper:
-        arguments:
-            - '@BeneficiaryBundle\Mapper\PhoneMapper'
-            - '@BeneficiaryBundle\Mapper\NationalIdMapper'
-            - '@BeneficiaryBundle\Mapper\ProfileMapper'
         public: false
 
     BeneficiaryBundle\Mapper\ProfileMapper:
         public: false
 
     beneficiary.beneficiary_service:
-        class: BeneficiaryBundle\Utils\BeneficiaryService
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@serializer"
-            - "@request_validator"
-            - "@validator"
-            - "@service_container"
-            - "@distribution.assistance_beneficiary_service"
+        alias: BeneficiaryBundle\Utils\BeneficiaryService
         public: true
 
     beneficiary.country_specific_service:
-        class: BeneficiaryBundle\Utils\CountrySpecificService
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@service_container"
+        alias: BeneficiaryBundle\Utils\CountrySpecificService
         public: true
 
-    beneficiary.vulnerability_resolver:
-        class: BeneficiaryBundle\Model\Vulnerability\Resolver
+    BeneficiaryBundle\Model\Vulnerability\Resolver:
         arguments:
             - "%vulnerability_weightingFile%"
             - "%vulnerability_scoringFileTemplate%"
             - "@beneficiary.repository"
+
+    beneficiary.vulnerability_resolver:
+        alias: BeneficiaryBundle\Model\Vulnerability\Resolver
         public: true
 
 

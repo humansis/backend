@@ -38,7 +38,7 @@ class CountrySpecificController extends Controller
     {
         $countrySpecifics = $this->get('beneficiary.country_specific_service')->getAll($request->get('__country'));
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $countrySpecifics,
                 'json',
@@ -66,7 +66,7 @@ class CountrySpecificController extends Controller
         $countrySpecific = $this->get('beneficiary.country_specific_service')
             ->create($request->request->get('__country'), $request->request->all());
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize($countrySpecific,'json', ['groups' => ['FullCountrySpecific']]);
 
         return new Response($json);
@@ -92,7 +92,7 @@ class CountrySpecificController extends Controller
         $countrySpecific = $this->get('beneficiary.country_specific_service')
             ->update($countrySpecific, $request->request->get('__country'), $request->request->all());
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize(
                 $countrySpecific,
                 'json',

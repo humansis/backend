@@ -276,7 +276,7 @@ class BeneficiaryFixtures extends Fixture
 
 
     /**
-     * Load data fixtures with the passed EntityManager
+     * Load data fixtures with the passed EntityManagerInterface
      *
      * @param ObjectManager $manager
      */

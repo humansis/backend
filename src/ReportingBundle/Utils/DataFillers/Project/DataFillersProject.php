@@ -14,7 +14,7 @@ use \ProjectBundle\Entity\Project;
 use \ReportingBundle\Entity\ReportingIndicator;
 use \ReportingBundle\Entity\ReportingProject;
 use \ReportingBundle\Entity\ReportingValue;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 use ReportingBundle\Utils\Model\IndicatorInterface;
 
@@ -26,15 +26,15 @@ class DataFillersProject
 {
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
      * DataFillersProject constructor.
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }

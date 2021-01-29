@@ -6,7 +6,7 @@ namespace BeneficiaryBundle\Mapper;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface as Serializer;
 
 class BeneficiaryMapper
 {

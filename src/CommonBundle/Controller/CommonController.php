@@ -2,6 +2,10 @@
 
 namespace CommonBundle\Controller;
 
+use BeneficiaryBundle\Utils\BeneficiaryService;
+use CommonBundle\Utils\LogService;
+use DistributionBundle\Utils\AssistanceService;
+use ProjectBundle\Utils\ProjectService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use BeneficiaryBundle\Entity\Household;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
@@ -10,6 +14,7 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class CommonController
@@ -24,6 +29,39 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CommonController extends Controller
 {
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+    /** @var ProjectService */
+    private $projectService;
+    /** @var AssistanceService */
+    private $assistanceService;
+    /** @var LogService */
+    private $logService;
+    /** @var SerializerInterface */
+    private $serializer;
+
+    /**
+     * CommonController constructor.
+     *
+     * @param BeneficiaryService $beneficiaryService
+     * @param ProjectService $projectService
+     * @param AssistanceService $assistanceService
+     * @param LogService $logService
+     * @param SerializerInterface $serializer
+     */
+    public function __construct(
+        BeneficiaryService $beneficiaryService,
+        ProjectService $projectService,
+        AssistanceService $assistanceService,
+        LogService $logService,
+        SerializerInterface $serializer
+    ) {
+        $this->beneficiaryService = $beneficiaryService;
+        $this->projectService = $projectService;
+        $this->assistanceService = $assistanceService;
+        $this->logService = $logService;
+        $this->serializer = $serializer;
+    }
 
     /**
      * @Rest\Get("/summary", name="get_summary")
@@ -47,14 +85,14 @@ class CommonController extends Controller
         $country = $request->request->get('__country');
         
         try {
-            $total_beneficiaries = $this->get('beneficiary.beneficiary_service')->countAll($country);
-            $active_projects = $this->get('project.project_service')->countActive($country);
+            $total_beneficiaries = $this->beneficiaryService->countAll($country);
+            $active_projects = $this->projectService->countActive($country);
             $enrolled_households = $this->getDoctrine()->getRepository(Household::class)
                 ->countUnarchivedByCountryProjects($country);
 
-            $total_beneficiary_served = $this->get('beneficiary.beneficiary_service')->countAllServed($country);
+            $total_beneficiary_served = $this->beneficiaryService->countAllServed($country);
 
-            $total_completed_distributions = $this->get('distribution.assistance_service')->countCompleted($country);
+            $total_completed_distributions = $this->assistanceService->countCompleted($country);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -88,12 +126,12 @@ class CommonController extends Controller
     public function getLogs(Request $request)
     {
         try {
-            $logs = $this->get('log_service')->getLogs();
+            $logs = $this->logService->getLogs();
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('serializer')->serialize($logs, 'json', ['groups' => ['FullLogs'], 'datetime_format' => 'd-m-Y H:i']);
+        $json = $this->serializer->serialize($logs, 'json', ['groups' => ['FullLogs'], 'datetime_format' => 'd-m-Y H:i']);
         
         return new Response($json);
     }

@@ -2,11 +2,11 @@
 
 namespace VoucherBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-
+use CommonBundle\Utils\UploadService;
+use Knp\Bundle\GaufretteBundle\FilesystemMap;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -14,8 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Product;
-use Gaufrette\Adapter\AwsS3;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use VoucherBundle\Utils\ProductService;
 
 /**
  * Class ProductController
@@ -30,6 +29,37 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 class ProductController extends Controller
 {
+    /** @var SerializerInterface */
+    private $serializer;
+    /** @var ProductService */
+    private $productService;
+    /**
+     * knp_gaufrette.filesystem_map
+     * @var FilesystemMap
+     */
+    private $gaufretteFilesystemMap;
+    /** @var UploadService */
+    private $uploadService;
+
+    /**
+     * ProductController constructor.
+     *
+     * @param Serializer $serializer
+     * @param ProductService $productService
+     * @param FilesystemMap $gaufretteFilesystemMap
+     * @param UploadService $uploadService
+     */
+    public function __construct(
+        Serializer $serializer,
+        ProductService $productService,
+        FilesystemMap $gaufretteFilesystemMap,
+        UploadService $uploadService
+    ) {
+        $this->serializer = $serializer;
+        $this->productService = $productService;
+        $this->gaufretteFilesystemMap = $gaufretteFilesystemMap;
+        $this->uploadService = $uploadService;
+    }
 
     /**
      * Create a new Product.
@@ -62,18 +92,15 @@ class ProductController extends Controller
      */
     public function createAction(Request $request)
     {
-        /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
-
         $productData = $request->request->all();
 
         try {
-            $return = $this->get('voucher.product_service')->createFromArray($productData);
+            $return = $this->productService->createFromArray($productData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $productJson = $serializer->serialize(
+        $productJson = $this->serializer->serialize(
             $return,
             'json',
             ['groups' => ['FullProduct']]
@@ -112,13 +139,13 @@ class ProductController extends Controller
     public function getAction(Request $request)
     {
         /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
+        $serializer = $this->serializer;
 
         $body = $request->request->all();
         $countryIso3 = $body['__country'];
 
         try {
-            $return = $this->get('voucher.product_service')->findAll($countryIso3);
+            $return = $this->productService->findAll($countryIso3);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -197,12 +224,12 @@ class ProductController extends Controller
     public function updateAction(Product $product, Request $request)
     {
         /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
+        $serializer = $this->serializer;
 
         $productData = $request->request->all();
 
         try {
-            $return = $this->get('voucher.product_service')->updateFromArray($product, $productData);
+            $return = $this->productService->updateFromArray($product, $productData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -247,7 +274,7 @@ class ProductController extends Controller
     public function deleteAction(Product $product)
     {
         try {
-            $return = $this->get('voucher.product_service')->archive($product);
+            $return = $this->productService->archive($product);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -288,8 +315,8 @@ class ProductController extends Controller
             return new Response('The image type must be gif, png or jpg.', Response::HTTP_BAD_REQUEST);
         }
 
-        $adapter = $this->container->get('knp_gaufrette.filesystem_map')->get('products')->getAdapter();
-        $filename = $this->get('common.upload_service')->uploadImage($file, $adapter);
+        $adapter = $this->gaufretteFilesystemMap->get('products')->getAdapter();
+        $filename = $this->uploadService->uploadImage($file, $adapter);
         $bucketName = $this->getParameter('aws_s3_bucket_name');
         $region = $this->getParameter('aws_s3_region');
 

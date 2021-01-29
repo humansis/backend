@@ -69,7 +69,7 @@ class TransactionController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize($response, 'json', ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']);
         return new Response($json);
     }
@@ -235,7 +235,7 @@ class TransactionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize($response, 'json');
 
         return new Response($json);
@@ -266,7 +266,7 @@ class TransactionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $json = $this->get('serializer')
+        $json = $this->serializer
             ->serialize($response, 'json');
 
         return new Response($json);

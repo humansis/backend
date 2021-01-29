@@ -9,12 +9,12 @@ services:
         public: true
         tags: [ 'app.controller' ]
 
+    TransactionBundle\Utils\:
+        resource: '../../Utils'
+
     transaction.transaction_service:
-        class: TransactionBundle\Utils\TransactionService
+        alias: TransactionBundle\Utils\TransactionService
         public: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@service_container'
 
     transaction.default_financial_provider:
         class: TransactionBundle\Utils\Provider\DefaultFinancialProvider

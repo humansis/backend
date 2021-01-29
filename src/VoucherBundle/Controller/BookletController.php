@@ -102,7 +102,7 @@ class BookletController extends Controller
     public function createBookletSyncAction(Request $request)
     {
         /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
+        $serializer = $this->serializer;
 
         $bookletData = $request->request->all();
 
@@ -190,7 +190,7 @@ class BookletController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $json = $this->get('serializer')->serialize(
+        $json = $this->serializer->serialize(
             $booklets,
             'json',
             ['groups' => ["FullBooklet"]]
@@ -230,7 +230,7 @@ class BookletController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('serializer')->serialize($booklets, 'json', ['groups' => ['FullBooklet']]);
+        $json = $this->serializer->serialize($booklets, 'json', ['groups' => ['FullBooklet']]);
         return new Response($json);
     }
 
@@ -303,7 +303,7 @@ class BookletController extends Controller
             ];
         }
 
-        $json = $this->get('serializer')->serialize($bookletPasswords, 'json', ['groups' => ['FullBooklet']]);
+        $json = $this->serializer->serialize($bookletPasswords, 'json', ['groups' => ['FullBooklet']]);
         return new Response($json);
     }
 
@@ -362,7 +362,7 @@ class BookletController extends Controller
      */
     public function getSingleBookletAction(Booklet $booklet)
     {
-        $json = $this->get('serializer')->serialize($booklet, 'json', ['groups' => ['FullBooklet']]);
+        $json = $this->serializer->serialize($booklet, 'json', ['groups' => ['FullBooklet']]);
 
         return new Response($json);
     }
@@ -409,7 +409,7 @@ class BookletController extends Controller
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('serializer')->serialize($newBooklet, 'json', ['groups' => ['FullBooklet']]);
+        $json = $this->serializer->serialize($newBooklet, 'json', ['groups' => ['FullBooklet']]);
         return new Response($json);
     }
 
