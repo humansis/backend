@@ -1,36 +1,29 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
 
     VoucherBundle\Controller\:
         resource: '../../Controller'
-        autowire: true
         public: true
-        tags:
-            - { name: 'app.controller' }
+        tags: [ 'app.controller' ]
 
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
 
-    VoucherBundle\Utils\VendorService:
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container']
+    VoucherBundle\Utils\:
+        resource: '../../Utils'
+        autowire: true
         public: true
 
     voucher.booklet_service:
         alias: VoucherBundle\Utils\BookletService
         public: true
 
-    VoucherBundle\Utils\BookletService:
-        autowire: true
-        public: true
-
-    VoucherBundle\Utils\VoucherService:
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
-        public: true
-
     voucher.product_service:
-        class: VoucherBundle\Utils\ProductService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
-        public: true
+        alias: VoucherBundle\Utils\ProductService
 
     common.upload_service:
         class: CommonBundle\Utils\UploadService

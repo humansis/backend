@@ -7,6 +7,11 @@ services:
         autoconfigure: true
         public: false
 
+    BeneficiaryBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: [ 'app.controller' ]
+
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
