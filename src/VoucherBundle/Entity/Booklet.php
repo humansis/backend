@@ -82,7 +82,7 @@ class Booklet implements ExportableInterface
     public $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", cascade={"persist"}, orphanRemoval=true)
      * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
     private $vouchers;

@@ -671,7 +671,7 @@ class AssistanceService
             $assistanceBeneficiary->addGeneralRelief($$index);
 
             $this->em->persist($$index);
-            $this->em->merge($assistanceBeneficiary);
+            $this->em->persist($assistanceBeneficiary);
         }
         $this->em->flush();
     }
@@ -709,7 +709,7 @@ class AssistanceService
                 array_push($errorArray, $griId);
             } else {
                 $gri->setDistributedAt(new \DateTime());
-                $this->em->merge($gri);
+                $this->em->persist($gri);
                 array_push($successArray, $gri);
             }
         }

@@ -435,7 +435,7 @@ class DistributionCSVService
             if ($assistanceBeneficiaryToUpdate->getRemoved()) {
                 $assistanceBeneficiaryToUpdate->setRemoved(0)
                     ->setJustification('');
-                $this->em->merge($assistanceBeneficiaryToUpdate);
+                $this->em->persist($assistanceBeneficiaryToUpdate);
             }
             $toUpdate->setEnGivenName($beneficiaryToUpdate['enGivenName']);
             $toUpdate->setEnFamilyName($beneficiaryToUpdate['enFamilyName']);
@@ -494,7 +494,7 @@ class DistributionCSVService
                 $toUpdate->addNationalId($newNationalId);
             }
 
-            $this->em->merge($toUpdate);
+            $this->em->persist($toUpdate);
 
         }
 
