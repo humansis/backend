@@ -41,6 +41,11 @@ services:
         autoconfigure: true
         public: false
 
+    NewApiBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: [ 'app.controller' ]
+
     NewApiBundle\Serializer\MapperNormalizer:
         tags: [ 'serializer.normalizer' ]
 

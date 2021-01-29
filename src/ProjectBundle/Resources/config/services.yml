@@ -1,5 +1,13 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
 
+    ProjectBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: [ 'app.controller' ]
 
 #######################################################################################
 ##                                       CRUD                                        ##
