@@ -2,6 +2,10 @@
 
 namespace DistributionBundle\Repository;
 
+use DistributionBundle\Entity\Commodity;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\CommodityFilterInputType;
+
 /**
  * CommodityRepository
  *
@@ -10,4 +14,17 @@ namespace DistributionBundle\Repository;
  */
 class CommodityRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param CommodityFilterInputType $filter
+     *
+     * @return Paginator|Commodity[]
+     */
+    public function findByParams(CommodityFilterInputType $filter): Paginator
+    {
+        $qbr = $this->createQueryBuilder('c')
+                ->andWhere('c.id IN (:ids)')
+                ->setParameter('ids', $filter->getIds());
+
+        return new Paginator($qbr);
+    }
 }
