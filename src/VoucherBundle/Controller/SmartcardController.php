@@ -57,6 +57,8 @@ class SmartcardController extends Controller
     private $validator;
     /** @var PurchaseService */
     private $purchaseService;
+    /** @var SmartcardMapper */
+    private $smartcardMapper;
 
     /**
      * SmartcardController constructor.
@@ -65,16 +67,19 @@ class SmartcardController extends Controller
      * @param LoggerInterface     $logger
      * @param ValidatorInterface  $validator
      * @param PurchaseService     $purchaseService
+     * @param SmartcardMapper     $smartcardMapper
      */
     public function __construct(SerializerInterface $serializer, LoggerInterface $logger,
                                 ValidatorInterface $validator,
-                                PurchaseService $purchaseService
+                                PurchaseService $purchaseService,
+                                SmartcardMapper $smartcardMapper
     )
     {
         $this->serializer = $serializer;
         $this->logger = $logger;
         $this->validator = $validator;
         $this->purchaseService = $purchaseService;
+        $this->smartcardMapper = $smartcardMapper;
     }
 
     /**
@@ -156,9 +161,7 @@ class SmartcardController extends Controller
         $this->getDoctrine()->getManager()->persist($smartcard);
         $this->getDoctrine()->getManager()->flush();
 
-        $mapper = $this->get(SmartcardMapper::class);
-
-        return $this->json($mapper->toFullArray($smartcard));
+        return $this->json($this->smartcardMapper->toFullArray($smartcard));
     }
 
     /**
