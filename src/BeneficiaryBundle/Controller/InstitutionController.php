@@ -4,6 +4,8 @@ namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Mapper\InstitutionMapper;
 use BeneficiaryBundle\Utils\InstitutionService;
+use Exception;
+use InvalidArgumentException;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,15 +31,19 @@ class InstitutionController extends Controller
 {
     /** @var InstitutionMapper */
     private $institutionMapper;
+    /** @var InstitutionService */
+    private $institutionService;
 
     /**
      * InstitutionController constructor.
      *
-     * @param InstitutionMapper $institutionMapper
+     * @param InstitutionMapper  $institutionMapper
+     * @param InstitutionService $institutionService
      */
-    public function __construct(InstitutionMapper $institutionMapper)
+    public function __construct(InstitutionMapper $institutionMapper, InstitutionService $institutionService)
     {
         $this->institutionMapper = $institutionMapper;
+        $this->institutionService = $institutionService;
     }
 
     /**
@@ -84,12 +90,9 @@ class InstitutionController extends Controller
      */
     public function allAction(GlobalInputType\Country $country, GlobalInputType\DataTableType $dataTableType)
     {
-        /** @var InstitutionService $institutionService */
-        $institutionService = $this->get('beneficiary.institution_service');
-
         try {
-            $institutions = $institutionService->getAll($country, $dataTableType);
-        } catch (\Exception $e) {
+            $institutions = $this->institutionService->getAll($country, $dataTableType);
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -139,18 +142,15 @@ class InstitutionController extends Controller
      */
     public function createAction(GlobalInputType\Country $country, InputType\NewInstitutionType $newInstitution)
     {
-        /** @var InstitutionService $institutionService */
-        $institutionService = $this->get('beneficiary.institution_service');
-
         try {
-            $institution = $institutionService->createDeprecated($country, $newInstitution);
+            $institution = $this->institutionService->createDeprecated($country, $newInstitution);
             $this->getDoctrine()->getManager()->persist($institution);
             $this->getDoctrine()->getManager()->flush();
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -198,18 +198,15 @@ class InstitutionController extends Controller
      */
     public function updateAction(GlobalInputType\Country $country, InputType\UpdateInstitutionType $institutionType, Institution $institution)
     {
-        /** @var InstitutionService $institutionService */
-        $institutionService = $this->get('beneficiary.institution_service');
-
         try {
-            $institution = $institutionService->updateDeprecated($country, $institution, $institutionType);
+            $institution = $this->institutionService->updateDeprecated($country, $institution, $institutionType);
             $this->getDoctrine()->getManager()->persist($institution);
             $this->getDoctrine()->getManager()->flush();
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -232,10 +229,7 @@ class InstitutionController extends Controller
      */
     public function deleteAction(Institution $institution)
     {
-        /** @var InstitutionService $institutionService */
-        $institutionService = $this->get("beneficiary.institution_service");
-
-        $institution = $institutionService->remove($institution);
+        $institution = $this->institutionService->remove($institution);
         return $this->json($this->institutionMapper->toFullArray($institution));
     }
 

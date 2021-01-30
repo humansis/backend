@@ -26,10 +26,6 @@ services:
     RA\RequestValidatorBundle\RequestValidator\RequestValidator:
         alias: request_validator
 
-    beneficiary.institution_service:
-        alias: BeneficiaryBundle\Utils\InstitutionService
-        public: true
-
     beneficiary.repository:
         alias: BeneficiaryBundle\Repository\BeneficiaryRepository
 
