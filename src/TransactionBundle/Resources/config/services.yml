@@ -12,10 +12,6 @@ services:
     TransactionBundle\Utils\:
         resource: '../../Utils'
 
-    transaction.transaction_service:
-        alias: TransactionBundle\Utils\TransactionService
-        public: true
-
     transaction.default_financial_provider:
         class: TransactionBundle\Utils\Provider\DefaultFinancialProvider
         public: true

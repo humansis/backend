@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use TransactionBundle\Entity\Transaction;
+use TransactionBundle\Utils\TransactionService;
 
 /**
  * Class TransactionController
@@ -30,6 +31,8 @@ class TransactionController extends Controller
 {
     /** @var AssistanceBeneficiaryMapper */
     private $assistanceBeneficiaryMapper;
+    /** @var TransactionService */
+    private $transactionService;
 
     /**
      * TransactionController constructor.
@@ -70,13 +73,13 @@ class TransactionController extends Controller
 
         $code = trim(preg_replace('/\s+/', ' ', $code));
 
-        $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code, $user, $assistance);
+        $validatedTransaction = $this->transactionService->verifyCode($code, $user, $assistance);
         if (! $validatedTransaction) {
             return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
         }
         
         try {
-            $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $assistance, $user);
+            $response = $this->transactionService->sendMoney($countryISO3, $assistance, $user);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -106,7 +109,7 @@ class TransactionController extends Controller
     {
         $user = $this->getUser();
         try {
-            $this->get('transaction.transaction_service')->sendVerifyEmail($user, $assistance);
+            $this->transactionService->sendVerifyEmail($user, $assistance);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -134,7 +137,7 @@ class TransactionController extends Controller
         $countryISO3 = $request->request->get('__country');
 
         try {
-            $beneficiaries = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $assistance);
+            $beneficiaries = $this->transactionService->updateTransactionStatus($countryISO3, $assistance);
             return $this->json($this->assistanceBeneficiaryMapper->toMinimalTransactionArrays($beneficiaries));
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -160,7 +163,7 @@ class TransactionController extends Controller
     {
         $user = $this->getUser();
         try {
-            $this->get('transaction.transaction_service')->sendLogsEmail($user, $assistance);
+            $this->transactionService->sendLogsEmail($user, $assistance);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -188,7 +191,7 @@ class TransactionController extends Controller
         $countryISO3 = $request->request->get('__country');
 
         try {
-            $response = $this->get('transaction.transaction_service')->testConnection($countryISO3, $assistance);
+            $response = $this->transactionService->testConnection($countryISO3, $assistance);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -215,7 +218,7 @@ class TransactionController extends Controller
         $user = $this->getUser();
 
         try {
-            $response = $this->get('transaction.transaction_service')->checkProgression($user, $assistance);
+            $response = $this->transactionService->checkProgression($user, $assistance);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -242,7 +245,7 @@ class TransactionController extends Controller
         $country = $request->request->all()['__country'];
 
         try {
-            $response = $this->get('transaction.transaction_service')->getFinancialCredential($country);
+            $response = $this->transactionService->getFinancialCredential($country);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -273,7 +276,7 @@ class TransactionController extends Controller
         $data = $request->request->all();
 
         try {
-            $response = $this->get('transaction.transaction_service')->updateFinancialCredential($data);
+            $response = $this->transactionService->updateFinancialCredential($data);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
