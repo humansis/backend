@@ -14,6 +14,7 @@ use DistributionBundle\Utils\CriteriaAssistanceService;
 use Exception;
 use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Entity\Project;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,6 +36,8 @@ class BeneficiaryController extends Controller
     private $serializer;
     /** @var CriteriaAssistanceService */
     private $criteriaAssistanceService;
+    /** @var LoggerInterface */
+    private $logger;
 
     /**
      * BeneficiaryController constructor.
@@ -42,14 +45,17 @@ class BeneficiaryController extends Controller
      * @param BeneficiaryService        $beneficiaryService
      * @param SerializerInterface       $serializer
      * @param CriteriaAssistanceService $criteriaAssistanceService
+     * @param LoggerInterface           $logger
      */
     public function __construct(BeneficiaryService $beneficiaryService, SerializerInterface $serializer,
-                                CriteriaAssistanceService $criteriaAssistanceService
+                                CriteriaAssistanceService $criteriaAssistanceService,
+                                LoggerInterface $logger
     )
     {
         $this->beneficiaryService = $beneficiaryService;
         $this->serializer = $serializer;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
+        $this->logger = $logger;
     }
 
     /**
@@ -235,16 +241,16 @@ class BeneficiaryController extends Controller
      */
     public function updateAction(Request $request, Beneficiary $beneficiary)
     {
-        $this->container->get('logger')->error('beneficiary', [$beneficiary->getId()]);
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
+        $this->logger->error('beneficiary', [$beneficiary->getId()]);
+        $this->logger->error('headers', $request->headers->all());
+        $this->logger->error('content', [$request->getContent()]);
 
         $beneficiaryData = $request->request->all();
 
         try {
             $newBeneficiary = $this->beneficiaryService->update($beneficiary, $beneficiaryData);
         } catch (Exception $exception) {
-            $this->container->get('logger')->error('exception', [$exception->getMessage()]);
+            $this->logger->error('exception', [$exception->getMessage()]);
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         $json = $this->serializer

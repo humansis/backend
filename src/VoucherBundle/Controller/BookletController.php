@@ -433,15 +433,15 @@ class BookletController extends Controller
      */
     public function deactivateBookletsAction(Request $request)
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
+        $this->logger->error('headers', $request->headers->all());
+        $this->logger->error('content', [$request->getContent()]);
 
         try {
             $data = $request->request->all();
             $bookletCodes = $data['bookletCodes'];
             $this->get('voucher.booklet_service')->deactivateMany($bookletCodes);
         } catch (\Exception $exception) {
-            $this->container->get('logger')->error('exception', [$exception->getMessage()]);
+            $this->logger->error('exception', [$exception->getMessage()]);
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -579,16 +579,16 @@ class BookletController extends Controller
      */
     public function assignAction(Request $request, Assistance $assistance, Beneficiary $beneficiary)
     {
-        $this->container->get('logger')->error('Assistance, Beneficiary', [$assistance->getId(), $beneficiary->getId()]);
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
+        $this->logger->error('Assistance, Beneficiary', [$assistance->getId(), $beneficiary->getId()]);
+        $this->logger->error('headers', $request->headers->all());
+        $this->logger->error('content', [$request->getContent()]);
 
         $code = $request->request->get('code');
         $booklet = $this->get('voucher.booklet_service')->getOne($code);
         try {
             $return = $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
         } catch (\Exception $exception) {
-            $this->container->get('logger')->error('exception', [$exception->getMessage()]);
+            $this->logger->error('exception', [$exception->getMessage()]);
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 

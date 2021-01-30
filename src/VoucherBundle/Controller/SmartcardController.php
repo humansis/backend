@@ -11,6 +11,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
@@ -46,15 +47,19 @@ class SmartcardController extends Controller
 {
     /** @var SerializerInterface */
     private $serializer;
+    /** @var LoggerInterface */
+    private $logger;
 
     /**
      * SmartcardController constructor.
      *
      * @param SerializerInterface $serializer
+     * @param LoggerInterface     $logger
      */
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(SerializerInterface $serializer, \Psr\Log\LoggerInterface $logger)
     {
         $this->serializer = $serializer;
+        $this->logger = $logger;
     }
 
     /**
@@ -106,8 +111,8 @@ class SmartcardController extends Controller
      */
     public function register(Request $request): Response
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
+        $this->logger->error('headers', $request->headers->all());
+        $this->logger->error('content', [$request->getContent()]);
 
         $serialNumber = strtoupper($request->get('serialNumber'));
 
@@ -275,9 +280,9 @@ class SmartcardController extends Controller
      */
     public function change(Smartcard $smartcard, Request $request): Response
     {
-        $this->container->get('logger')->error('Smartcard', [$smartcard->getId()]);
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
+        $this->logger->error('Smartcard', [$smartcard->getId()]);
+        $this->logger->error('headers', $request->headers->all());
+        $this->logger->error('content', [$request->getContent()]);
 
         $newState = $smartcard->getState();
         if ($request->request->has('state')) {
@@ -360,8 +365,8 @@ class SmartcardController extends Controller
      */
     public function deposit(Request $request): Response
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
+        $this->logger->error('headers', $request->headers->all());
+        $this->logger->error('content', [$request->getContent()]);
 
         $serialNumber = $request->get('serialNumber');
 
@@ -444,15 +449,15 @@ class SmartcardController extends Controller
      */
     public function purchase(Request $request): Response
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
+        $this->logger->error('headers', $request->headers->all());
+        $this->logger->error('content', [$request->getContent()]);
 
         /** @var SmartcardPurchaseInput $data */
         $data = $this->serializer->deserialize($request->getContent(), SmartcardPurchaseInput::class, 'json');
 
         $errors = $this->get('validator')->validate($data);
         if (count($errors) > 0) {
-            $this->container->get('logger')->error('validation errors: '.((string) $errors));
+            $this->logger->error('validation errors: '.((string) $errors));
             throw new \RuntimeException((string) $errors);
         }
 

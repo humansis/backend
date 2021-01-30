@@ -81,7 +81,7 @@ class BookletService
             try {
                 $this->create($country, $bookletData);
             } catch (\Exception $e) {
-                $this->container->get('logger')->error($e);
+                $this->logger->error($e);
                 $this->voucherService->cleanUp();
             }
         });

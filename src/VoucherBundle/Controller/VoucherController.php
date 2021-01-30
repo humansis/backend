@@ -10,6 +10,7 @@ use Doctrine\ORM\NoResultException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -54,17 +55,21 @@ class VoucherController extends Controller
     private $voucherService;
     /** @var SerializerInterface */
     private $serializer;
+    /** @var LoggerInterface */
+    private $logger;
 
     /**
      * VoucherController constructor.
      *
-     * @param VoucherService $voucherService
-     * @param Serializer     $serializer
+     * @param VoucherService  $voucherService
+     * @param Serializer      $serializer
+     * @param LoggerInterface $logger
      */
-    public function __construct(VoucherService $voucherService, Serializer $serializer)
+    public function __construct(VoucherService $voucherService, Serializer $serializer, LoggerInterface $logger)
     {
         $this->voucherService = $voucherService;
         $this->serializer = $serializer;
+        $this->logger = $logger;
     }
 
     /**
@@ -324,8 +329,8 @@ class VoucherController extends Controller
      */
     public function purchase(Request $request)
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
+        $this->logger->error('headers', $request->headers->all());
+        $this->logger->error('content', [$request->getContent()]);
 
         $data = $this->serializer->deserialize($request->getContent(), VoucherPurchase::class.'[]', 'json');
 
@@ -335,7 +340,7 @@ class VoucherController extends Controller
         ]);
 
         if (count($errors) > 0) {
-            $this->container->get('logger')->error('validation errors: '.((string) $errors));
+            $this->logger->error('validation errors: '.((string) $errors));
             return new Response((string) $errors, Response::HTTP_BAD_REQUEST);
         }
 
@@ -346,7 +351,7 @@ class VoucherController extends Controller
 
             return new Response(json_encode(true));
         } catch (EntityNotFoundException $ex) {
-            $this->container->get('logger')->error('Entity not found: ', [$ex->getMessage()]);
+            $this->logger->error('Entity not found: ', [$ex->getMessage()]);
             return new Response($ex->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
