@@ -20,6 +20,7 @@ use BeneficiaryBundle\Utils\DataVerifier\TypoVerifier;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -36,7 +37,7 @@ class HouseholdCSVService
     /** @var CSVToArrayMapper $CSVToArrayMapper */
     private $CSVToArrayMapper;
 
-    /** @var Container $container */
+    /** @var ContainerInterface $container */
     private $container;
 
     /** @var BeneficiaryService $beneficiaryService */
@@ -56,14 +57,14 @@ class HouseholdCSVService
      * @param HouseholdService $householdService
      * @param BeneficiaryService $beneficiaryService
      * @param CSVToArrayMapper $CSVToArrayMapper
-     * @param Container $container
+     * @param ContainerInterface $container
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         HouseholdService $householdService,
         BeneficiaryService $beneficiaryService,
         CSVToArrayMapper $CSVToArrayMapper,
-        Container $container
+        ContainerInterface $container
     ) {
         $this->em = $entityManager;
         $this->householdService = $householdService;

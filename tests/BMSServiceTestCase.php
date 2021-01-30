@@ -235,7 +235,7 @@ class BMSServiceTestCase extends KernelTestCase
 
         //setting the token_storage
         $this->tokenStorage = $this->getContainer()->get('security.token_storage');
-        $this->householdService = $this->getContainer()->get('beneficiary.household_service');
+        $this->householdService = $this->getContainer()->get(HouseholdService::class);
     }
 
 

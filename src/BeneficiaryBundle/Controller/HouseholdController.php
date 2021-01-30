@@ -44,6 +44,20 @@ class HouseholdController extends Controller
 {
     /** @var SerializerInterface */
     private $serializer;
+    /** @var HouseholdService */
+    private $householdService;
+
+    /**
+     * HouseholdController constructor.
+     *
+     * @param SerializerInterface $serializer
+     * @param HouseholdService    $householdService
+     */
+    public function __construct(SerializerInterface $serializer, HouseholdService $householdService)
+    {
+        $this->serializer = $serializer;
+        $this->householdService = $householdService;
+    }
 
     /**
      * @Rest\Get("/households/{id}")
@@ -105,11 +119,9 @@ class HouseholdController extends Controller
     public function allAction(Request $request)
     {
         $filters = $request->request->all();
-        /** @var HouseholdService $householdService */
-        $householdService = $this->get('beneficiary.household_service');
 
         try {
-            $households = $householdService->getAll($filters['__country'], $filters);
+            $households = $this->householdService->getAll($filters['__country'], $filters);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -167,10 +179,8 @@ class HouseholdController extends Controller
         $householdArray = $requestArray['household'];
         $householdArray['__country'] = $requestArray['__country'];
 
-        /** @var HouseholdService $householdService */
-        $householdService = $this->get('beneficiary.household_service');
         try {
-            $household = $householdService->createOrEdit($householdArray, $projectsArray, null);
+            $household = $this->householdService->createOrEdit($householdArray, $projectsArray, null);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
@@ -233,10 +243,8 @@ class HouseholdController extends Controller
         $householdArray = $requestArray['household'];
         $householdArray['__country'] = $requestArray['__country'];
 
-        /** @var HouseholdService $householdService */
-        $householdService = $this->get('beneficiary.household_service');
         try {
-            $household = $householdService->createOrEdit($householdArray, $projectsArray, $household);
+            $household = $this->householdService->createOrEdit($householdArray, $projectsArray, $household);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
@@ -339,9 +347,7 @@ class HouseholdController extends Controller
      */
     public function deleteAction(Household $household)
     {
-        /** @var HouseholdService $householdService */
-        $householdService = $this->get("beneficiary.household_service");
-        $household = $householdService->remove($household);
+        $household = $this->householdService->remove($household);
         $json = $this->serializer
             ->serialize(
                 $household,
@@ -367,10 +373,8 @@ class HouseholdController extends Controller
     public function removeManyAction(Request $request)
     {
         try {
-            /** @var HouseholdService $householdService */
-            $householdService = $this->get("beneficiary.household_service");
             $ids = $request->request->get('ids');
-            $response = $householdService->removeMany($ids);
+            $response = $this->householdService->removeMany($ids);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -502,10 +506,8 @@ class HouseholdController extends Controller
     public function getImportedAction(Request $request)
     {
         $householdsArray = $request->request->all();
-        /** @var HouseholdService $householdService */
-        $householdService = $this->get('beneficiary.household_service');
         try {
-            $households = $householdService->getAllImported($householdsArray);
+            $households = $this->householdService->getAllImported($householdsArray);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

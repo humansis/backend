@@ -5,6 +5,7 @@ namespace CommonBundle\Controller;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 use BeneficiaryBundle\Utils\CountrySpecificService;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
+use BeneficiaryBundle\Utils\HouseholdService;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Export\SmartcardExport;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
@@ -70,6 +71,8 @@ class ExportController extends Controller
     private $householdExportCSVService;
     /** @var ReportingService */
     private $reportingService;
+    /** @var HouseholdService */
+    private $householdService;
 
     /**
      * ExportController constructor.
@@ -165,7 +168,7 @@ class ExportController extends Controller
                 $countryIso3 = $request->request->get("__country");
                 $filters = $request->request->get('filters');
                 $ids = $request->request->get('ids');
-                $filename = $this->beneficiaryService->exportToCsv($type, $countryIso3, $filters, $ids);
+                $filename = $this->householdService->exportToCsv($type, $countryIso3, $filters, $ids);
             } elseif ($request->query->get('beneficiariesInDistribution')) {
                 $idDistribution = $request->query->get('beneficiariesInDistribution');
                 if ($type === 'pdf') {

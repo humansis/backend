@@ -129,7 +129,7 @@ services:
     CommonBundle\DataFixtures\BeneficiaryTestFixtures:
         arguments:
             - "@kernel"
-            - "@beneficiary.household_service"
+            - BeneficiaryBundle\Utils\HouseholdService
         tags:
             - { name: doctrine.fixture.orm }
 
