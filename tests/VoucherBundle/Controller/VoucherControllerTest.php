@@ -8,6 +8,7 @@ use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
+use VoucherBundle\Model\PurchaseService;
 
 class VoucherControllerTest extends BMSServiceTestCase
 {

@@ -35,6 +35,7 @@ use VoucherBundle\Entity\Vendor;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\SmartcardRedemtionBatch as RedemptionBatchInput;
 use VoucherBundle\Mapper\SmartcardMapper;
+use VoucherBundle\Model\PurchaseService;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 /**
@@ -54,6 +55,8 @@ class SmartcardController extends Controller
     private $logger;
     /** @var ValidatorInterface */
     private $validator;
+    /** @var PurchaseService */
+    private $purchaseService;
 
     /**
      * SmartcardController constructor.
@@ -61,14 +64,17 @@ class SmartcardController extends Controller
      * @param SerializerInterface $serializer
      * @param LoggerInterface     $logger
      * @param ValidatorInterface  $validator
+     * @param PurchaseService     $purchaseService
      */
     public function __construct(SerializerInterface $serializer, LoggerInterface $logger,
-                                ValidatorInterface $validator
+                                ValidatorInterface $validator,
+                                PurchaseService $purchaseService
     )
     {
         $this->serializer = $serializer;
         $this->logger = $logger;
         $this->validator = $validator;
+        $this->purchaseService = $purchaseService;
     }
 
     /**
@@ -482,7 +488,7 @@ class SmartcardController extends Controller
             $this->getDoctrine()->getManager()->flush();
         }
 
-        $this->get('voucher.purchase_service')->purchaseSmartcard($smartcard, $data);
+        $this->purchaseService->purchaseSmartcard($smartcard, $data);
 
         $json = $this->serializer->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
 

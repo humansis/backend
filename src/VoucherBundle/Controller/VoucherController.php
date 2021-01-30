@@ -33,6 +33,7 @@ use VoucherBundle\Entity\VoucherPurchaseRecord;
 use VoucherBundle\InputType\SmartcardRedemtionBatch;
 use VoucherBundle\InputType\VoucherPurchase;
 use VoucherBundle\InputType\VoucherRedemptionBatch;
+use VoucherBundle\Model\PurchaseService;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 use VoucherBundle\Repository\VoucherPurchaseRepository;
 use VoucherBundle\Repository\VoucherRedemptionBatchRepository;
@@ -60,19 +61,28 @@ class VoucherController extends Controller
     private $logger;
     /** @var ValidatorInterface */
     private $validator;
+    /** @var PurchaseService */
+    private $purchaseService;
 
     /**
      * VoucherController constructor.
      *
-     * @param VoucherService  $voucherService
-     * @param Serializer      $serializer
-     * @param LoggerInterface $logger
+     * @param VoucherService     $voucherService
+     * @param Serializer         $serializer
+     * @param LoggerInterface    $logger
+     * @param ValidatorInterface $validator
+     * @param PurchaseService    $purchaseService
      */
-    public function __construct(VoucherService $voucherService, Serializer $serializer, LoggerInterface $logger)
+    public function __construct(VoucherService $voucherService, Serializer $serializer, LoggerInterface $logger,
+                                ValidatorInterface $validator,
+                                PurchaseService $purchaseService
+    )
     {
         $this->voucherService = $voucherService;
         $this->serializer = $serializer;
         $this->logger = $logger;
+        $this->validator = $validator;
+        $this->purchaseService = $purchaseService;
     }
 
     /**
@@ -295,7 +305,7 @@ class VoucherController extends Controller
                     $input->setCreatedAt(new DateTime($voucherData['used_at']));
                 }
 
-                $voucherPurchase = $this->get('voucher.purchase_service')->purchase($input);
+                $voucherPurchase = $this->purchaseService->purchase($input);
 
                 $newVouchers[] = $voucherPurchase->getVouchers()->current();
             } catch (Exception $exception) {
@@ -349,7 +359,7 @@ class VoucherController extends Controller
 
         try {
             foreach ($data as $item) {
-                $this->get('voucher.purchase_service')->purchase($item);
+                $this->purchaseService->purchase($item);
             }
 
             return new Response(json_encode(true));

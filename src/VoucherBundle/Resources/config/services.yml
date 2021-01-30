@@ -34,10 +34,8 @@ services:
         arguments: [ '%aws_access_key_id%', '%aws_secret_access_key%', '%aws_s3_region%', '@service_container' ]
         public: true
 
-    voucher.purchase_service:
-        class: VoucherBundle\Model\PurchaseService
+    VoucherBundle\Model\PurchaseService:
         public: true
-        arguments: [ '@doctrine.orm.entity_manager' ]
 
     VoucherBundle\Mapper\SmartcardMapper:
         public: true
