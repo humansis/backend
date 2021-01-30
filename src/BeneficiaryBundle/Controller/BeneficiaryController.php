@@ -11,6 +11,7 @@ use BeneficiaryBundle\Utils\BeneficiaryService;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Utils\CriteriaAssistanceService;
+use Exception;
 use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -23,10 +24,28 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Serializer\SerializerInterface;
 use VoucherBundle\Entity\Smartcard;
 
 class BeneficiaryController extends Controller
 {
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+    /** @var SerializerInterface */
+    private $serializer;
+
+    /**
+     * BeneficiaryController constructor.
+     *
+     * @param BeneficiaryService  $beneficiaryService
+     * @param SerializerInterface $serializer
+     */
+    public function __construct(BeneficiaryService $beneficiaryService, SerializerInterface $serializer)
+    {
+        $this->beneficiaryService = $beneficiaryService;
+        $this->serializer = $serializer;
+    }
+
     /**
      * @Rest\Get("/beneficiaries/residency-statuses")
      *
@@ -66,7 +85,7 @@ class BeneficiaryController extends Controller
      */
     public function getAllVulnerabilityCriteriaAction()
     {
-        $vulnerabilityCriteria = $this->get('beneficiary.beneficiary_service')->getAllVulnerabilityCriteria();
+        $vulnerabilityCriteria = $this->beneficiaryService->getAllVulnerabilityCriteria();
         $json = $this->serializer
             ->serialize($vulnerabilityCriteria, 'json');
 
@@ -222,8 +241,8 @@ class BeneficiaryController extends Controller
         $beneficiaryData = $request->request->all();
 
         try {
-            $newBeneficiary = $this->get('beneficiary.beneficiary_service')->update($beneficiary, $beneficiaryData);
-        } catch (\Exception $exception) {
+            $newBeneficiary = $this->beneficiaryService->update($beneficiary, $beneficiaryData);
+        } catch (Exception $exception) {
             $this->container->get('logger')->error('exception', [$exception->getMessage()]);
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

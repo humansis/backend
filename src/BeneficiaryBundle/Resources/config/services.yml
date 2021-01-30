@@ -72,10 +72,6 @@ services:
     BeneficiaryBundle\Mapper\ProfileMapper:
         public: false
 
-    beneficiary.beneficiary_service:
-        alias: BeneficiaryBundle\Utils\BeneficiaryService
-        public: true
-
     beneficiary.country_specific_service:
         alias: BeneficiaryBundle\Utils\CountrySpecificService
         public: true
@@ -129,7 +125,7 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
-            - "@beneficiary.beneficiary_service"
+            - Beneficiary\Utils\BeneficiaryService
             - "@beneficiary.csv_to_array_mapper"
             - "@service_container"
         public: true
