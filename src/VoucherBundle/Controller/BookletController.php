@@ -6,8 +6,10 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\InputType;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\Common\Collections\Collection;
+use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -19,6 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Entity\Booklet;
+use VoucherBundle\Utils\BookletService;
 
 /**
  * Class BookletController
@@ -35,6 +38,24 @@ class BookletController extends Controller
 {
     /** @var SerializerInterface */
     private $serializer;
+    /** @var BookletService */
+    private $bookletService;
+    /** @var LoggerInterface */
+    private $logger;
+
+    /**
+     * BookletController constructor.
+     *
+     * @param Serializer      $serializer
+     * @param BookletService  $bookletService
+     * @param LoggerInterface $logger
+     */
+    public function __construct(Serializer $serializer, BookletService $bookletService, LoggerInterface $logger)
+    {
+        $this->serializer = $serializer;
+        $this->bookletService = $bookletService;
+        $this->logger = $logger;
+    }
 
     /**
      * Create a new Booklet.
@@ -69,7 +90,7 @@ class BookletController extends Controller
     {
         $bookletData = $request->request->all();
 
-        $lastBooklet = $this->get('voucher.booklet_service')->backgroundCreate($request->request->get('__country'), $bookletData);
+        $lastBooklet = $this->bookletService->backgroundCreate($request->request->get('__country'), $bookletData);
 
         return new JsonResponse($lastBooklet);
     }
@@ -111,8 +132,8 @@ class BookletController extends Controller
         $bookletData = $request->request->all();
 
         try {
-            $return = $this->get('voucher.booklet_service')->create($request->request->get('__country'), $bookletData);
-        } catch (\Exception $exception) {
+            $return = $this->bookletService->create($request->request->get('__country'), $bookletData);
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -157,8 +178,8 @@ class BookletController extends Controller
     public function getNumberOfInsertedBooklets(Request $request, Booklet $booklet)
     {
         try {
-            $nbBooklets = $this->get('voucher.booklet_service')->getNumberOfInsertedBooklets($request->request->get('__country'), $booklet->getId());
-        } catch (\Exception $exception) {
+            $nbBooklets = $this->bookletService->getNumberOfInsertedBooklets($request->request->get('__country'), $booklet->getId());
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -190,8 +211,8 @@ class BookletController extends Controller
     {
 
         try {
-            $booklets = $this->get('voucher.booklet_service')->getAll($country, $filterType);
-        } catch (\Exception $e) {
+            $booklets = $this->bookletService->getAll($country, $filterType);
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         $json = $this->serializer->serialize(
@@ -229,8 +250,8 @@ class BookletController extends Controller
     public function getDeactivatedAction(Request $request)
     {
         try {
-            $booklets = $this->get('voucher.booklet_service')->findDeactivated();
-        } catch (\Exception $exception) {
+            $booklets = $this->bookletService->findDeactivated();
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -294,8 +315,8 @@ class BookletController extends Controller
     public function getProtectedAction(Request $request)
     {
         try {
-            $booklets = $this->get('voucher.booklet_service')->findProtected();
-        } catch (\Exception $exception) {
+            $booklets = $this->bookletService->findProtected();
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -408,8 +429,8 @@ class BookletController extends Controller
         $bookletData = $request->request->all();
 
         try {
-            $newBooklet = $this->get('voucher.booklet_service')->update($booklet, $bookletData);
-        } catch (\Exception $exception) {
+            $newBooklet = $this->bookletService->update($booklet, $bookletData);
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -439,8 +460,8 @@ class BookletController extends Controller
         try {
             $data = $request->request->all();
             $bookletCodes = $data['bookletCodes'];
-            $this->get('voucher.booklet_service')->deactivateMany($bookletCodes);
-        } catch (\Exception $exception) {
+            $this->bookletService->deactivateMany($bookletCodes);
+        } catch (Exception $exception) {
             $this->logger->error('exception', [$exception->getMessage()]);
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -488,8 +509,8 @@ class BookletController extends Controller
     public function deactivateAction(Booklet $booklet)
     {
         try {
-            $this->get('voucher.booklet_service')->deactivate($booklet);
-        } catch (\Exception $exception) {
+            $this->bookletService->deactivate($booklet);
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -514,8 +535,8 @@ class BookletController extends Controller
     public function deleteAction(Booklet $booklet)
     {
         try {
-            $this->get('voucher.booklet_service')->deleteBookletFromDatabase($booklet);
-        } catch (\Exception $exception) {
+            $this->bookletService->deleteBookletFromDatabase($booklet);
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -541,14 +562,14 @@ class BookletController extends Controller
     {
         $password = $request->request->get('password');
         $code = $request->request->get('code');
-        $booklet = $this->get('voucher.booklet_service')->getOne($code);
+        $booklet = $this->bookletService->getOne($code);
         if (!isset($password) || empty($password)) {
             return new Response("The password is missing", Response::HTTP_BAD_REQUEST);
         }
 
         try {
-            $return = $this->get('voucher.booklet_service')->updatePassword($booklet, $password);
-        } catch (\Exception $exception) {
+            $return = $this->bookletService->updatePassword($booklet, $password);
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -584,10 +605,10 @@ class BookletController extends Controller
         $this->logger->error('content', [$request->getContent()]);
 
         $code = $request->request->get('code');
-        $booklet = $this->get('voucher.booklet_service')->getOne($code);
+        $booklet = $this->bookletService->getOne($code);
         try {
-            $return = $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
-        } catch (\Exception $exception) {
+            $return = $this->bookletService->assign($booklet, $assistance, $beneficiary);
+        } catch (Exception $exception) {
             $this->logger->error('exception', [$exception->getMessage()]);
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -645,8 +666,8 @@ class BookletController extends Controller
         $bookletIds = $bookletData['bookletIds'];
 
         try {
-            return $this->get('voucher.booklet_service')->printMany($bookletIds);
-        } catch (\Exception $exception) {
+            return $this->bookletService->printMany($bookletIds);
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
@@ -674,10 +695,9 @@ class BookletController extends Controller
     public function printBookletAction(Booklet $booklet)
     {
         try {
-            return $this->get('voucher.booklet_service')->generatePdf([$booklet]);
-            ;
-        } catch (\Exception $e) {
-            throw new \Exception($e);
+            return $this->bookletService->generatePdf([$booklet]);
+        } catch (Exception $e) {
+            throw new Exception($e);
         }
     }
 }

@@ -36,9 +36,10 @@ class VoucherService
 
     /**
      * UserService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
      */
     public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
     {
@@ -256,7 +257,7 @@ class VoucherService
         } else if ($filters) {
             /** @var DataTableType $dataTableFilter */
             $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
+            $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryIso3, $dataTableFilter->getLimitMinimum(), $dataTableFilter->getPageSize(), $dataTableFilter->getSort(), $dataTableFilter->getFilter())[1];
         } else {
             $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
         }
@@ -301,7 +302,7 @@ class VoucherService
         } else if ($filters) {
             /** @var DataTableType $dataTableFilter */
             $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
+            $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryIso3, $dataTableFilter->getLimitMinimum(), $dataTableFilter->getPageSize(), $dataTableFilter->getSort(), $dataTableFilter->getFilter())[1];
         } else {
             $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
         }

@@ -20,10 +20,6 @@ services:
     Knp\Bundle\GaufretteBundle\FilesystemMap:
         alias: knp_gaufrette.filesystem_map
 
-    voucher.booklet_service:
-        alias: VoucherBundle\Utils\BookletService
-        public: true
-
     voucher.product_service:
         alias: VoucherBundle\Utils\ProductService
 
