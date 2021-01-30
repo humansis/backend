@@ -18,6 +18,7 @@ use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
+use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\DistributionCSVService;
 use DistributionBundle\Utils\AssistanceService;
 use ProjectBundle\Entity\Project;
@@ -644,7 +645,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         //assistance will be used in the function "parseCSV" to get all the beneficiaries in a project :
         $assistance = $this->em->getRepository(Assistance::class)->findOneById($distribution['id']);
-        $assistanceBeneficiaryService = $this->getContainer()->get('distribution.assistance_beneficiary_service');
+        $assistanceBeneficiaryService = $this->getContainer()->get(AssistanceBeneficiaryService::class);
 
         //beneficiaries contains all beneficiaries in a distribution :
         $beneficiaries = $assistanceBeneficiaryService->getBeneficiaries($assistance);

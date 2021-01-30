@@ -181,9 +181,6 @@ class AssistanceController extends Controller
     {
         if ($request->query->get("size")) {
             $numberToDisplay = $request->query->get("size");
-
-            /** @var AssistanceBeneficiaryService $this->assistanceBeneficiaryService */
-            $this->assistanceBeneficiaryService = $this->assistanceBeneficiaryService;
             $receivers = $this->assistanceBeneficiaryService->getRandomBeneficiaries($assistance, $numberToDisplay);
 
             $json = $this->serializer

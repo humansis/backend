@@ -51,9 +51,6 @@ services:
             - '%distribution.retriever%'
             - '@service_container'
 
-    distribution.assistance_beneficiary_service:
-        alias: DistributionBundle\Utils\AssistanceBeneficiaryService
-
     distribution.configuration_loader:
         alias: DistributionBundle\Utils\ConfigurationLoader
         public: true

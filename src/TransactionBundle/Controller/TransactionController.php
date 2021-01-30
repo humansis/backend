@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
+use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -38,10 +39,14 @@ class TransactionController extends Controller
      * TransactionController constructor.
      *
      * @param AssistanceBeneficiaryMapper $assistanceBeneficiaryMapper
+     * @param TransactionService          $transactionService
      */
-    public function __construct(AssistanceBeneficiaryMapper $assistanceBeneficiaryMapper)
+    public function __construct(AssistanceBeneficiaryMapper $assistanceBeneficiaryMapper,
+                                TransactionService $transactionService
+    )
     {
         $this->assistanceBeneficiaryMapper = $assistanceBeneficiaryMapper;
+        $this->transactionService = $transactionService;
     }
 
     /**
@@ -80,7 +85,7 @@ class TransactionController extends Controller
         
         try {
             $response = $this->transactionService->sendMoney($countryISO3, $assistance, $user);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
@@ -110,7 +115,7 @@ class TransactionController extends Controller
         $user = $this->getUser();
         try {
             $this->transactionService->sendVerifyEmail($user, $assistance);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return new Response("Email sent");
@@ -139,7 +144,7 @@ class TransactionController extends Controller
         try {
             $beneficiaries = $this->transactionService->updateTransactionStatus($countryISO3, $assistance);
             return $this->json($this->assistanceBeneficiaryMapper->toMinimalTransactionArrays($beneficiaries));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -164,7 +169,7 @@ class TransactionController extends Controller
         $user = $this->getUser();
         try {
             $this->transactionService->sendLogsEmail($user, $assistance);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return new Response("Email sent");
@@ -192,7 +197,7 @@ class TransactionController extends Controller
 
         try {
             $response = $this->transactionService->testConnection($countryISO3, $assistance);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return new Response("Connection successful: " . json_encode($response));
@@ -219,7 +224,7 @@ class TransactionController extends Controller
 
         try {
             $response = $this->transactionService->checkProgression($user, $assistance);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return new Response(json_encode($response));
@@ -246,7 +251,7 @@ class TransactionController extends Controller
 
         try {
             $response = $this->transactionService->getFinancialCredential($country);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -277,7 +282,7 @@ class TransactionController extends Controller
 
         try {
             $response = $this->transactionService->updateFinancialCredential($data);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
