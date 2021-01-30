@@ -5,6 +5,7 @@ namespace ProjectBundle\Controller;
 
 
 use ProjectBundle\Entity\Donor;
+use ProjectBundle\Utils\DonorService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +13,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class DonorController
@@ -19,6 +21,22 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  */
 class DonorController extends Controller
 {
+    /** @var SerializerInterface */
+    private $serializer;
+    /** @var DonorService */
+    private $donorService;
+
+    /**
+     * DonorController constructor.
+     *
+     * @param SerializerInterface $serializer
+     * @param DonorService        $donorService
+     */
+    public function __construct(SerializerInterface $serializer, DonorService $donorService)
+    {
+        $this->serializer = $serializer;
+        $this->donorService = $donorService;
+    }
 
     /**
      * @Rest\Get("/donors", name="get_all_donor")
@@ -39,7 +57,7 @@ class DonorController extends Controller
      */
     public function getAllAction()
     {
-        $donors = $this->get('project.donor_service')->findAll();
+        $donors = $this->donorService->findAll();
 
         $donorsJson = $this->serializer
             ->serialize($donors, 'json', ['groups' => ['FullDonor'], 'datetime_format' => 'd-m-Y H:i:s']);
@@ -78,7 +96,7 @@ class DonorController extends Controller
         $donorArray = $request->request->all();
 
         try {
-            $donor = $this->get('project.donor_service')->createFromArray($donorArray);
+            $donor = $this->donorService->createFromArray($donorArray);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -122,7 +140,7 @@ class DonorController extends Controller
         $donorArray = $request->request->all();
 
         try {
-            $donor = $this->get('project.donor_service')->edit($donor, $donorArray);
+            $donor = $this->donorService->edit($donor, $donorArray);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -156,7 +174,7 @@ class DonorController extends Controller
     public function deleteAction(Donor $donor)
     {
         try {
-            $valid = $this->get('project.donor_service')->delete($donor);
+            $valid = $this->donorService->delete($donor);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
