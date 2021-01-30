@@ -103,7 +103,7 @@ class UserController extends Controller
         // }
 
         try {
-            $user = $this->container->userService->login($username, $saltedPassword);
+            $user = $this->userService->login($username, $saltedPassword);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
@@ -171,7 +171,7 @@ class UserController extends Controller
         $saltedPassword = $request->request->get('password');
 
         try {
-            $user = $this->container->userService->login($username, $saltedPassword);
+            $user = $this->userService->login($username, $saltedPassword);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
