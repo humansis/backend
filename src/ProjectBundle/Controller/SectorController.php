@@ -22,6 +22,19 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  */
 class SectorController extends Controller
 {
+    /** @var SectorMapper */
+    private $sectorMapper;
+
+    /**
+     * SectorController constructor.
+     *
+     * @param SectorMapper $sectorMapper
+     */
+    public function __construct(SectorMapper $sectorMapper)
+    {
+        $this->sectorMapper = $sectorMapper;
+    }
+
     /**
      * @Rest\Get("/sectors", name="get_all_sectors")
      *
@@ -39,10 +52,9 @@ class SectorController extends Controller
      */
     public function getAllAction()
     {
-        $sectorMapper = $this->get(SectorMapper::class);
         $sectors = $this->get('project.sector_service')->getSubsBySector();
 
-        return $this->json($sectorMapper->listToSubArrays($sectors));
+        return $this->json($this->sectorMapper->listToSubArrays($sectors));
     }
 
     /**
@@ -65,7 +77,6 @@ class SectorController extends Controller
      */
     public function projectSectors(Project $project)
     {
-        $sectorMapper = $this->get(SectorMapper::class);
         $all = $this->get('project.sector_service')->getSubsBySector();
         $projectSectorDTOs = [];
 
@@ -75,6 +86,6 @@ class SectorController extends Controller
                 $projectSectorDTOs[$projectSector->getSector()] = $all[$projectSector->getSector()];
             }
         }
-        return $this->json($sectorMapper->listToSubArrays($projectSectorDTOs));
+        return $this->json($this->sectorMapper->listToSubArrays($projectSectorDTOs));
     }
 }

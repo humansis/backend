@@ -3,16 +3,9 @@
 namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Mapper\InstitutionMapper;
-use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\InstitutionService;
-use CommonBundle\Response\CommonBinaryFileResponse;
-
-use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\InputType as GlobalInputType;
@@ -23,10 +16,6 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Throwable;
 
 /**
  * @SWG\Parameter(
@@ -38,6 +27,19 @@ use Throwable;
  */
 class InstitutionController extends Controller
 {
+    /** @var InstitutionMapper */
+    private $institutionMapper;
+
+    /**
+     * InstitutionController constructor.
+     *
+     * @param InstitutionMapper $institutionMapper
+     */
+    public function __construct(InstitutionMapper $institutionMapper)
+    {
+        $this->institutionMapper = $institutionMapper;
+    }
+
     /**
      * @Rest\Get("/institutions/{id}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
@@ -58,9 +60,7 @@ class InstitutionController extends Controller
             return new Response("Institution was archived", Response::HTTP_NOT_FOUND);
         }
 
-        /** @var InstitutionMapper $institutionMapper */
-        $institutionMapper = $this->get(InstitutionMapper::class);
-        return $this->json($institutionMapper->toFullArray($institution));
+        return $this->json($this->institutionMapper->toFullArray($institution));
     }
 
     /**
@@ -86,8 +86,6 @@ class InstitutionController extends Controller
     {
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get('beneficiary.institution_service');
-        /** @var InstitutionMapper $institutionMapper */
-        $institutionMapper = $this->get(InstitutionMapper::class);
 
         try {
             $institutions = $institutionService->getAll($country, $dataTableType);
@@ -97,7 +95,7 @@ class InstitutionController extends Controller
 
         return $this->json([
             0 => $institutions[0],
-            1 => $institutionMapper->toFullArrays($institutions[1]),
+            1 => $this->institutionMapper->toFullArrays($institutions[1]),
         ]);
     }
 
@@ -143,8 +141,7 @@ class InstitutionController extends Controller
     {
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get('beneficiary.institution_service');
-        /** @var InstitutionMapper $institutionMapper */
-        $institutionMapper = $this->get(InstitutionMapper::class);
+
         try {
             $institution = $institutionService->createDeprecated($country, $newInstitution);
             $this->getDoctrine()->getManager()->persist($institution);
@@ -157,7 +154,7 @@ class InstitutionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return $this->json($institutionMapper->toFullArray($institution));
+        return $this->json($this->institutionMapper->toFullArray($institution));
     }
 
 
@@ -203,8 +200,7 @@ class InstitutionController extends Controller
     {
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get('beneficiary.institution_service');
-        /** @var InstitutionMapper $institutionMapper */
-        $institutionMapper = $this->get(InstitutionMapper::class);
+
         try {
             $institution = $institutionService->updateDeprecated($country, $institution, $institutionType);
             $this->getDoctrine()->getManager()->persist($institution);
@@ -217,7 +213,7 @@ class InstitutionController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return $this->json($institutionMapper->toFullArray($institution));
+        return $this->json($this->institutionMapper->toFullArray($institution));
     }
 
     /**
@@ -238,11 +234,9 @@ class InstitutionController extends Controller
     {
         /** @var InstitutionService $institutionService */
         $institutionService = $this->get("beneficiary.institution_service");
-        /** @var InstitutionMapper $institutionMapper */
-        $institutionMapper = $this->get(InstitutionMapper::class);
 
         $institution = $institutionService->remove($institution);
-        return $this->json($institutionMapper->toFullArray($institution));
+        return $this->json($this->institutionMapper->toFullArray($institution));
     }
 
 }

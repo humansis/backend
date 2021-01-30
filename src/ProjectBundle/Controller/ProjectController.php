@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use ProjectBundle\Entity\Project;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\View\View;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -27,6 +26,19 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  */
 class ProjectController extends Controller
 {
+    /** @var ProjectMapper */
+    private $projectMapper;
+
+    /**
+     * ProjectController constructor.
+     *
+     * @param ProjectMapper $projectMapper
+     */
+    public function __construct(ProjectMapper $projectMapper)
+    {
+        $this->projectMapper = $projectMapper;
+    }
+
     /**
      * Get projects
      * @Rest\Get("/projects", name="get_all_projects")
@@ -50,9 +62,9 @@ class ProjectController extends Controller
     {
         $user = $this->getUser();
         $projects = $this->get('project.project_service')->findAll($request->request->get('__country'), $user);
-        $projectMapper = $this->get(ProjectMapper::class);
 
-        return $this->json($projectMapper->toFullArrays($projects));
+
+        return $this->json($this->projectMapper->toFullArrays($projects));
     }
 
     /**
@@ -102,8 +114,8 @@ class ProjectController extends Controller
      */
     public function getOneAction(Project $project)
     {
-        $projectMapper = $this->get(ProjectMapper::class);
-        return $this->json($projectMapper->toFullArray($project));
+
+        return $this->json($this->projectMapper->toFullArray($project));
     }
 
     /**
@@ -143,8 +155,8 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $projectMapper = $this->get(ProjectMapper::class);
-        return $this->json($projectMapper->toFullArray($project));
+
+        return $this->json($this->projectMapper->toFullArray($project));
     }
 
     /**
@@ -185,8 +197,8 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $projectMapper = $this->get(ProjectMapper::class);
-        return $this->json($projectMapper->toFullArray($project));
+
+        return $this->json($this->projectMapper->toFullArray($project));
     }
 
     /**

@@ -11,7 +11,6 @@ use CommonBundle\InputType\DataTableType;
 
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use BeneficiaryBundle\Entity\Community;
 
@@ -19,15 +18,23 @@ use BeneficiaryBundle\Entity\Community;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Throwable;
 
 class CommunityController extends Controller
 {
+    /** @var CommunityMapper */
+    private $communityMapper;
+
+    /**
+     * CommunityController constructor.
+     *
+     * @param CommunityMapper $communityMapper
+     */
+    public function __construct(CommunityMapper $communityMapper)
+    {
+        $this->communityMapper = $communityMapper;
+    }
+
     /**
      * @Rest\Get("/communities/{id}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
@@ -48,9 +55,7 @@ class CommunityController extends Controller
             return new Response("Community was archived", Response::HTTP_NOT_FOUND);
         }
 
-        /** @var CommunityMapper $communityMapper */
-        $communityMapper = $this->get(CommunityMapper::class);
-        return $this->json($communityMapper->toFullArray($community));
+        return $this->json($this->communityMapper->toFullArray($community));
     }
 
     /**
@@ -76,8 +81,6 @@ class CommunityController extends Controller
     {
         /** @var CommunityService $communityService */
         $communityService = $this->get('beneficiary.community_service');
-        /** @var CommunityMapper $communityMapper */
-        $communityMapper = $this->get(CommunityMapper::class);
 
         try {
             $communities = $communityService->getAll($country, $dataTableType);
@@ -87,7 +90,7 @@ class CommunityController extends Controller
 
         return $this->json([
             0 => $communities[0],
-            1 => $communityMapper->toFullArrays($communities[1])
+            1 => $this->communityMapper->toFullArrays($communities[1])
         ]);
     }
 
@@ -133,8 +136,7 @@ class CommunityController extends Controller
     {
         /** @var CommunityService $communityService */
         $communityService = $this->get('beneficiary.community_service');
-        /** @var CommunityMapper $communityMapper */
-        $communityMapper = $this->get(CommunityMapper::class);
+
         try {
             $community = $communityService->createDeprecated($country, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
@@ -147,7 +149,7 @@ class CommunityController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return $this->json($communityMapper->toFullArray($community));
+        return $this->json($this->communityMapper->toFullArray($community));
     }
 
 
@@ -193,8 +195,7 @@ class CommunityController extends Controller
     {
         /** @var CommunityService $communityService */
         $communityService = $this->get('beneficiary.community_service');
-        /** @var CommunityMapper $communityMapper */
-        $communityMapper = $this->get(CommunityMapper::class);
+
         try {
             $community = $communityService->updateDeprecated($country, $community, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
@@ -207,7 +208,7 @@ class CommunityController extends Controller
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return $this->json($communityMapper->toFullArray($community));
+        return $this->json($this->communityMapper->toFullArray($community));
     }
 
     /**
@@ -228,9 +229,8 @@ class CommunityController extends Controller
     {
         /** @var CommunityService $communityService */
         $communityService = $this->get("beneficiary.community_service");
-        /** @var CommunityMapper $communityMapper */
-        $communityMapper = $this->get(CommunityMapper::class);
+
         $community = $communityService->remove($community);
-        return $this->json($communityMapper->toFullArray($community));
+        return $this->json($this->communityMapper->toFullArray($community));
     }
 }

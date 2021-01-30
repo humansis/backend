@@ -28,6 +28,18 @@ use TransactionBundle\Entity\Transaction;
  */
 class TransactionController extends Controller
 {
+    /** @var AssistanceBeneficiaryMapper */
+    private $assistanceBeneficiaryMapper;
+
+    /**
+     * TransactionController constructor.
+     *
+     * @param AssistanceBeneficiaryMapper $assistanceBeneficiaryMapper
+     */
+    public function __construct(AssistanceBeneficiaryMapper $assistanceBeneficiaryMapper)
+    {
+        $this->assistanceBeneficiaryMapper = $assistanceBeneficiaryMapper;
+    }
 
     /**
      * Send money to distribution beneficiaries via country financial provider
@@ -120,10 +132,10 @@ class TransactionController extends Controller
     public function updateTransactionStatusAction(Request $request, Assistance $assistance)
     {
         $countryISO3 = $request->request->get('__country');
-        $assistanceBeneficiaryMapper = $this->get(AssistanceBeneficiaryMapper::class);
+
         try {
             $beneficiaries = $this->get('transaction.transaction_service')->updateTransactionStatus($countryISO3, $assistance);
-            return $this->json($assistanceBeneficiaryMapper->toMinimalTransactionArrays($beneficiaries));
+            return $this->json($this->assistanceBeneficiaryMapper->toMinimalTransactionArrays($beneficiaries));
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
