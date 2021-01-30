@@ -21,6 +21,8 @@ abstract class AbstractFilterInputType implements FilterInputTypeInterface
                 throw new BadRequestHttpException($key.' is not valid filter name');
             }
 
+            $value = $this->recursiveNormalize($value);
+
             $this->$key = $value;
             $this->filter[$key] = true;
         }
@@ -38,5 +40,22 @@ abstract class AbstractFilterInputType implements FilterInputTypeInterface
         }
 
         return null;
+    }
+
+    private function recursiveNormalize($value)
+    {
+        if (is_array($value)) {
+            foreach ($value as $i => $v) {
+                $value[$i] = $this->recursiveNormalize($v);
+            }
+        } elseif (is_numeric($value)) {
+            if (ctype_digit($value)) {
+                $value = (int) $value;
+            } else {
+                $value = (float) $value;
+            }
+        }
+
+        return $value;
     }
 }

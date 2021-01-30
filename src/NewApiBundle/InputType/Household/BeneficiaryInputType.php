@@ -9,6 +9,9 @@ use BeneficiaryBundle\Entity\Referral;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @Assert\GroupSequence({"BeneficiaryInputType", "Strict"})
+ */
 class BeneficiaryInputType implements InputTypeInterface
 {
     /**

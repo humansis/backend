@@ -2,11 +2,11 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use DistributionBundle\Entity\Assistance;
 use Exception;
-use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
-class AssistanceControllerTest extends BMSServiceTestCase
+class AssistanceStatisticsControllerTest extends BMSServiceTestCase
 {
     /**
      * @throws Exception
@@ -21,6 +21,31 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->client = $this->container->get('test.client');
     }
 
+    public function testStatistics()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var Assistance $assistance */
+        $assistance = $this->container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
+
+        $this->request('GET', '/api/basic/assistances/'.$assistance->getId().'/statistics');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "id": '.$assistance->getId().',
+            "numberOfBeneficiaries": "*",
+            "summaryOfTotalItems": "*",
+            "summaryOfDistributedItems": "*",
+            "summaryOfUsedItems": "*"
+        }', $this->client->getResponse()->getContent());
+    }
+
     public function testList()
     {
         // Log a user in order to go through the security firewall
@@ -28,36 +53,18 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/assistances');
+        /** @var Assistance $assistance */
+        $assistance = $this->container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('totalCount', $result);
-        $this->assertArrayHasKey('data', $result);
-    }
-
-    public function testAsisstancesByProject()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
-
-        $this->request('GET', '/api/basic/projects/'.$project->getId().'/assistances');
-
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $this->request('GET', '/api/basic/assistances/statistics?filter[id][]='.$assistance->getId(), ['country' => 'KHM']);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);

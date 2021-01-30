@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * @Assert\GroupSequence({"BookletBatchCreateInputType", "Strict"})
+ * @Assert\GroupSequence({"BookletBatchCreateInputType", "PrimaryValidation", "SecondaryValidation"})
  */
 class BookletBatchCreateInputType implements InputTypeInterface
 {
@@ -37,16 +37,16 @@ class BookletBatchCreateInputType implements InputTypeInterface
     private $quantityOfVouchers;
 
     /**
-     * @Assert\Type("array")
      * @Assert\NotNull
+     * @Assert\Type("array", groups={"PrimaryValidation"})
      * @Assert\All(
      *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"}),
-     *         @Assert\GreaterThan(0, groups={"Strict"}),
+     *         @Assert\Type("integer", groups={"SecondaryValidation"}),
+     *         @Assert\GreaterThan(0, groups={"SecondaryValidation"}),
      *     },
-     *     groups={"Strict"}
+     *     groups={"SecondaryValidation"}
      * )
-     * @Assert\Callback({"NewApiBundle\InputType\BookletBatchCreateInputType", "validateIndividualValues"}, groups={"Strict"}),
+     * @Assert\Callback({"NewApiBundle\InputType\BookletBatchCreateInputType", "validateIndividualValues"}, groups={"SecondaryValidation"}),
      */
     private $individualValues;
 

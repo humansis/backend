@@ -7,17 +7,18 @@ use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"ResidenceAddressFilterInputType", "Strict"})
+ * @Assert\GroupSequence({"AssistanceStatisticsFilterInputType", "PrimaryValidation", "SecondaryValidation"})
  */
-class ResidenceAddressFilterInputType extends AbstractFilterInputType
+class AssistanceStatisticsFilterInputType extends AbstractFilterInputType
 {
     /**
-     * @Assert\Type("array")
+     * @Assert\NotNull
+     * @Assert\Type("array", groups={"PrimaryValidation"})
      * @Assert\All(
      *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
+     *         @Assert\Type("int", groups={"SecondaryValidation"})
      *     },
-     *     groups={"Strict"}
+     *     groups={"SecondaryValidation"}
      * )
      */
     protected $id;

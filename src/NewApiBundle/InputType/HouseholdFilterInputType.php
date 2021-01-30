@@ -7,6 +7,9 @@ use BeneficiaryBundle\Entity\Referral;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @Assert\GroupSequence({"HouseholdFilterInputType", "Strict"})
+ */
 class HouseholdFilterInputType extends AbstractFilterInputType
 {
     /**

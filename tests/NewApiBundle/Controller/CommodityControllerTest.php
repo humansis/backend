@@ -2,10 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
+use DistributionBundle\Entity\Commodity;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Tests\BMSServiceTestCase;
@@ -23,6 +20,47 @@ class CommodityControllerTest extends BMSServiceTestCase
 
         // Get a Client instance for simulate a browser
         $this->client = $this->container->get('test.client');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetCommodities()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $commodity1 = $em->getRepository(Commodity::class)->findBy([])[0];
+        $commodity2 = $em->getRepository(Commodity::class)->findBy([])[1];
+
+        $this->request('GET', '/api/basic/assistances/commodities?filter[id][]='.$commodity1->getId().'&filter[id][]='.$commodity2->getId());
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": 2, 
+            "data": [
+                {
+                    "id": '.$commodity1->getId().',
+                    "modalityType": "*",
+                    "unit": "*",
+                    "value": "*",
+                    "description": "*"
+                },
+                {
+                    "id": '.$commodity2->getId().',
+                    "modalityType": "*",
+                    "unit": "*",
+                    "value": "*",
+                    "description": "*"
+                }
+            ]}', $this->client->getResponse()->getContent());
     }
 
     /**

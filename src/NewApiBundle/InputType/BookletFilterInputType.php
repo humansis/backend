@@ -6,6 +6,9 @@ namespace NewApiBundle\InputType;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @Assert\GroupSequence({"BookletFilterInputType", "Strict"})
+ */
 class BookletFilterInputType extends AbstractFilterInputType
 {
     /**
