@@ -12,6 +12,7 @@ use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\CampAddressFilterInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
+use NewApiBundle\InputType\PhoneFilterInputType;
 use NewApiBundle\InputType\ResidenceAddressFilterInputType;
 use NewApiBundle\InputType\TemporarySettlementAddressFilterInputType;
 use NewApiBundle\Request\Pagination;
@@ -69,6 +70,20 @@ class BeneficiaryController extends AbstractController
     public function nationalId(NationalId $nationalId): JsonResponse
     {
         return $this->json($nationalId);
+    }
+
+    /**
+     * @Rest\Get("/beneficiaries/phones")
+     *
+     * @param PhoneFilterInputType $filter
+     *
+     * @return JsonResponse
+     */
+    public function phones(PhoneFilterInputType $filter): JsonResponse
+    {
+        $params = $this->getDoctrine()->getRepository(Phone::class)->findByParams($filter);
+
+        return $this->json($params);
     }
 
     /**

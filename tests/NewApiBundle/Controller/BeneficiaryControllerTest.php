@@ -219,6 +219,33 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
+    public function testGetPhones()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $phone1 = $em->getRepository(Phone::class)->findBy([])[0];
+        $phone2 = $em->getRepository(Phone::class)->findBy([])[1];
+
+        $this->request('GET', '/api/basic/beneficiaries/phones?filter[id][]='.$phone1->getId().'&filter[id][]='.$phone2->getId());
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": 2, 
+            "data": [{"id": '.$phone1->getId().'}, {"id": '.$phone2->getId().'}
+            ]}', $this->client->getResponse()->getContent());
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testGetCamp()
     {
         $this->markTestSkipped('There is no camp');

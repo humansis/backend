@@ -2,6 +2,10 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use BeneficiaryBundle\Entity\Phone;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\PhoneFilterInputType;
+
 /**
  * PhoneRepository
  *
@@ -10,4 +14,17 @@ namespace BeneficiaryBundle\Repository;
  */
 class PhoneRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param PhoneFilterInputType $filter
+     *
+     * @return Paginator|Phone[]
+     */
+    public function findByParams(PhoneFilterInputType $filter): Paginator
+    {
+        $qbr = $this->createQueryBuilder('p')
+            ->andWhere('p.id IN (:ids)')
+            ->setParameter('ids', $filter->getIds());
+
+        return new Paginator($qbr);
+    }
 }
