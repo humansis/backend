@@ -143,7 +143,7 @@ services:
     CommonBundle\DataFixtures\Beneficiaries\CommunityFixture:
         arguments:
             - "@=service('kernel').getEnvironment()"
-            - "@beneficiary.community_service"
+            - BeneficiaryBundle\Utils\CommunityService
         tags:
             - { name: doctrine.fixture.orm }
 

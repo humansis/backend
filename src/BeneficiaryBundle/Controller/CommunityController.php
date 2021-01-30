@@ -9,6 +9,8 @@ use BeneficiaryBundle\Utils\CommunityService;
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableType;
 
+use Exception;
+use InvalidArgumentException;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,15 +26,19 @@ class CommunityController extends Controller
 {
     /** @var CommunityMapper */
     private $communityMapper;
+    /** @var CommunityService */
+    private $communityService;
 
     /**
      * CommunityController constructor.
      *
-     * @param CommunityMapper $communityMapper
+     * @param CommunityMapper  $communityMapper
+     * @param CommunityService $communityService
      */
-    public function __construct(CommunityMapper $communityMapper)
+    public function __construct(CommunityMapper $communityMapper, CommunityService $communityService)
     {
         $this->communityMapper = $communityMapper;
+        $this->communityService = $communityService;
     }
 
     /**
@@ -79,12 +85,9 @@ class CommunityController extends Controller
      */
     public function allAction(Country $country, DataTableType $dataTableType)
     {
-        /** @var CommunityService $communityService */
-        $communityService = $this->get('beneficiary.community_service');
-
         try {
-            $communities = $communityService->getAll($country, $dataTableType);
-        } catch (\Exception $e) {
+            $communities = $this->communityService->getAll($country, $dataTableType);
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -134,18 +137,15 @@ class CommunityController extends Controller
      */
     public function createAction(Country $country, NewCommunityType $communityType)
     {
-        /** @var CommunityService $communityService */
-        $communityService = $this->get('beneficiary.community_service');
-
         try {
-            $community = $communityService->createDeprecated($country, $communityType);
+            $community = $this->communityService->createDeprecated($country, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
             $this->getDoctrine()->getManager()->flush();
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -193,18 +193,15 @@ class CommunityController extends Controller
      */
     public function updateAction(Country $country, Community $community, UpdateCommunityType $communityType)
     {
-        /** @var CommunityService $communityService */
-        $communityService = $this->get('beneficiary.community_service');
-
         try {
-            $community = $communityService->updateDeprecated($country, $community, $communityType);
+            $community = $this->communityService->updateDeprecated($country, $community, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
             $this->getDoctrine()->getManager()->flush();
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             return new Response(json_encode($exception->getMessage()), Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $exception) {
             return new Response(json_encode(current($exception->getErrors())), Response::HTTP_BAD_REQUEST);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 

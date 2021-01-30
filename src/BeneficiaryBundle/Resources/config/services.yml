@@ -30,10 +30,6 @@ services:
         alias: BeneficiaryBundle\Utils\InstitutionService
         public: true
 
-    beneficiary.community_service:
-        alias: BeneficiaryBundle\Utils\CommunityService
-        public: true
-
     beneficiary.repository:
         alias: BeneficiaryBundle\Repository\BeneficiaryRepository
 
