@@ -26,10 +26,6 @@ services:
 ##                                       CRUD                                        ##
 #######################################################################################
 
-    organization_service:
-        alias: CommonBundle\Utils\OrganizationService
-        public: true
-
     export_csv_service:
         alias: CommonBundle\Utils\ExportService
         public: true

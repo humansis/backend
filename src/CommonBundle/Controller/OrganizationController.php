@@ -5,6 +5,8 @@ namespace CommonBundle\Controller;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Entity\OrganizationServices;
 
+use CommonBundle\Utils\OrganizationService;
+use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -14,6 +16,7 @@ use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class OrganizationController
@@ -21,6 +24,22 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class OrganizationController extends Controller
 {
+    /** @var OrganizationService */
+    private $organizationService;
+    /** @var SerializerInterface */
+    private $serializer;
+
+    /**
+     * OrganizationController constructor.
+     *
+     * @param OrganizationService $organizationService
+     * @param SerializerInterface $serializer
+     */
+    public function __construct(OrganizationService $organizationService, SerializerInterface $serializer)
+    {
+        $this->organizationService = $organizationService;
+        $this->serializer = $serializer;
+    }
 
     /**
      * @Rest\Get("/organization", name="get_organization")
@@ -47,8 +66,8 @@ class OrganizationController extends Controller
     public function getOrganizationAction(Request $request)
     {
         try {
-            $organizations = $this->get('organization_service')->get();
-        } catch (\Exception $exception) {
+            $organizations = $this->organizationService->get();
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
@@ -89,8 +108,8 @@ class OrganizationController extends Controller
         $organizationArray = $request->request->all();
 
         try {
-            $organization = $this->get('organization_service')->edit($organization, $organizationArray);
-        } catch (\Exception $exception) {
+            $organization = $this->organizationService->edit($organization, $organizationArray);
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -165,8 +184,8 @@ class OrganizationController extends Controller
     public function printTemplateAction()
     {
         try {
-            return $this->get('organization_service')->printTemplate();
-        } catch (\Exception $exception) {
+            return $this->organizationService->printTemplate();
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
@@ -191,8 +210,8 @@ class OrganizationController extends Controller
     public function getOrganizationServicesAction(Organization $organization)
     {
         try {
-            $response = $this->get('organization_service')->getOrganizationServices($organization);
-        } catch (\Exception $exception) {
+            $response = $this->organizationService->getOrganizationServices($organization);
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -231,8 +250,8 @@ class OrganizationController extends Controller
     {
         $data = $request->request->all();
         try {
-            $response = $this->get('organization_service')->editOrganizationServices($organizationServices, $data);
-        } catch (\Exception $exception) {
+            $response = $this->organizationService->editOrganizationServices($organizationServices, $data);
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
