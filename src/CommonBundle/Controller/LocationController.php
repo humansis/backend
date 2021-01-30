@@ -2,6 +2,7 @@
 
 namespace CommonBundle\Controller;
 
+use CommonBundle\Utils\LocationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
@@ -15,7 +16,7 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use BeneficiaryBundle\Entity\Camp;
-
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class LocationController
@@ -30,6 +31,22 @@ use BeneficiaryBundle\Entity\Camp;
  */
 class LocationController extends Controller
 {
+    /** @var SerializerInterface */
+    private $serializer;
+    /** @var LocationService */
+    private $locationService;
+
+    /**
+     * LocationController constructor.
+     *
+     * @param SerializerInterface $serializer
+     * @param LocationService     $locationService
+     */
+    public function __construct(SerializerInterface $serializer, LocationService $locationService)
+    {
+        $this->serializer = $serializer;
+        $this->locationService = $locationService;
+    }
 
     /**
      * @Rest\Get("/location/adm1", name="all_adm1")
@@ -51,8 +68,7 @@ class LocationController extends Controller
     public function getAllAdm1(Request $request)
     {
         $filters = $request->request->all();
-        $locationService = $this->get('location_service');
-        $adm1 = $locationService->getAllAdm1($filters['__country']);
+        $adm1 = $this->locationService->getAllAdm1($filters['__country']);
 
         $json = $this->serializer
             ->serialize(
@@ -83,8 +99,7 @@ class LocationController extends Controller
     public function getAllAdm2(Request $request)
     {
         $filters = $request->request->all();
-        $locationService = $this->get('location_service');
-        $adm2 = $locationService->getAllAdm2($filters['adm1']);
+        $adm2 = $this->locationService->getAllAdm2($filters['adm1']);
 
         $json = $this->serializer
             ->serialize(
@@ -115,8 +130,7 @@ class LocationController extends Controller
     public function getAllAdm3(Request $request)
     {
         $filters = $request->request->all();
-        $locationService = $this->get('location_service');
-        $adm3 = $locationService->getAllAdm3($filters['adm2']);
+        $adm3 = $this->locationService->getAllAdm3($filters['adm2']);
 
         $json = $this->serializer
             ->serialize(
@@ -147,8 +161,7 @@ class LocationController extends Controller
     public function getAllAdm4(Request $request)
     {
         $filters = $request->request->all();
-        $locationService = $this->get('location_service');
-        $adm4 = $locationService->getAllAdm4($filters['adm3']);
+        $adm4 = $this->locationService->getAllAdm4($filters['adm3']);
 
         $json = $this->serializer
             ->serialize(
@@ -179,8 +192,7 @@ class LocationController extends Controller
     public function getAllCamps(Request $request)
     {
         $filters = $request->request->all();
-        $locationService = $this->get('location_service');
-        $camps = $locationService->getAllCamps($filters);
+        $camps = $this->locationService->getAllCamps($filters);
 
         $json = $this->serializer
             ->serialize(
@@ -209,8 +221,7 @@ class LocationController extends Controller
     {
         $filters = $request->request->all();
 
-        $locationService = $this->get('location_service');
-        $location = $locationService->getCodeOfUpcomingDistribution($filters['__country']);
+        $location = $this->locationService->getCodeOfUpcomingDistribution($filters['__country']);
 
         $json = $this->serializer
             ->serialize(

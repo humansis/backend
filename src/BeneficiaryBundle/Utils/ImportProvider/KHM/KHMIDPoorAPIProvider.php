@@ -14,11 +14,13 @@ use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Utils\ImportProvider\DefaultAPIProvider;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use CommonBundle\Entity\Location;
 use CommonBundle\Entity\OrganizationServices;
 use CommonBundle\Entity\Service;
 use CommonBundle\Utils\LocationService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -51,20 +53,22 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
 
     /**
      * KHMApiProvider constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param LocationService        $locationService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
-        ContainerInterface $container
+        ContainerInterface $container,
+        LocationService $locationService
     ) {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container= $container;
-        $this->locationService = $this->container->get('location_service');
-    }
+        $this->locationService = $locationService;}
 
     /**
      * Import beneficiaries from API
@@ -72,7 +76,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
      * @param array $params
      * @param Project $project
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function importData(string $countryIso3, array $params, Project $project)
     {
@@ -80,21 +84,21 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
             $householdsArray = $this->importByCountryCode($params);
 
             if (array_key_exists('error', $householdsArray) && array_key_exists('message', $householdsArray)) {
-                throw new \Exception($householdsArray['message']);
+                throw new Exception($householdsArray['message']);
             }
 
             return $this->parseData($householdsArray, $countryIso3, $project);
         } elseif (!key_exists('locationCode (KHXXXXXX)', $params)) {
-            throw new \Exception("Missing locationCode in the request");
+            throw new Exception("Missing locationCode in the request");
         } else {
-            throw new \Exception("Error occured with the request");
+            throw new Exception("Error occured with the request");
         }
     }
 
     /**
      * @param array $params
      * @return array|string
-     * @throws \Exception
+     * @throws Exception
      */
     private function importByCountryCode(array $params)
     {
@@ -104,14 +108,14 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
         $organizationIDPoor = $this->em->getRepository(OrganizationServices::class)->findOneByService("IDPoor API");
 
         if (! $organizationIDPoor->getEnabled()) {
-            throw new \Exception("This service is not enabled for the organization");
+            throw new Exception("This service is not enabled for the organization");
         }
 
         $email = urlencode($organizationIDPoor->getParameterValue('email'));
         $token = $organizationIDPoor->getParameterValue('token');
 
         if (!$email || !$token) {
-            throw new \Exception("This service has no parameters specified");
+            throw new Exception("This service has no parameters specified");
         }
 
         // $route = $locationCodeNum . ".json?email=james.happell%40peopleinneed.cz&token=K45nDocxQ5sEFfqSWwDm-2DxskYEDYFe";
@@ -173,7 +177,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
             }
 
             return $householdsArray;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
@@ -183,7 +187,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
      * @param string $countryIso3
      * @param Project $project
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function parseData(array $householdsArray, string $countryIso3, Project $project)
     {
@@ -201,13 +205,13 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
                 } elseif ($hhArray["status"] === "update") {
                     $countUpdated++;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw $e;
             }
             
             try {
                 $countBeneficiaries += $this->insertBeneficiaries($household, $beneficiariesInHousehold);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw $e;
             }
 
@@ -289,7 +293,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
      * @param Household $household
      * @param array $beneficiariesInHousehold
      * @return int|void
-     * @throws \Exception
+     * @throws Exception
      */
     private function insertBeneficiaries(Household $household, array $beneficiariesInHousehold)
     {
@@ -299,12 +303,12 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
             foreach ($beneficiariesInHousehold as $beneficiaryToSave) {
                 try {
                     $beneficiary = $this->createBeneficiary($household, $beneficiaryToSave);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     throw $e;
                 }
                 if ($beneficiary->isHead()) {
                     if ($hasHead) {
-                        throw new \Exception("You have defined more than 1 head of household.");
+                        throw new Exception("You have defined more than 1 head of household.");
                     }
                     $hasHead = true;
                 }
@@ -369,7 +373,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
             $beneficiary = new Beneficiary();
             $beneficiary->setHousehold($household);
             $beneficiary->setGender($beneficiaryArray["gender"])
-                        ->setDateOfBirth(new \DateTime($beneficiaryArray["dateOfBirth"])) // From API so no formatting
+                        ->setDateOfBirth(new DateTime($beneficiaryArray["dateOfBirth"])) // From API so no formatting
                         ->setlocalFamilyName($beneficiaryArray["localFamilyName"])
                         ->setlocalGivenName($beneficiaryArray["localGivenName"])
                         ->setStatus($beneficiaryArray["status"])
@@ -388,14 +392,14 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
     /**
      * @param array $village
      * @param string $locationCode
-     * @return \CommonBundle\Entity\Location|null
-     * @throws \Exception
+     * @return Location|null
+     * @throws Exception
      */
     private function saveAdm4(array $village, string $locationCode)
     {
         $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $locationCode]);
         if ($adm3 == null) {
-            throw new \Exception("Adm3 was not found.");
+            throw new Exception("Adm3 was not found.");
         }
         
         $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(['name' => $village['VillageName'], 'adm3' => $adm3]);
@@ -416,7 +420,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
      * @param  string $type type of the request ("GET", "POST", etc.)
      * @param  string $route url of the request
      * @return mixed  response
-     * @throws \Exception
+     * @throws Exception
      */
     public function sendRequest(string $type, string $route)
     {

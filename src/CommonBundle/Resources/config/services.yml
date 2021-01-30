@@ -26,10 +26,6 @@ services:
 ##                                       CRUD                                        ##
 #######################################################################################
 
-    location_service:
-        alias: CommonBundle\Utils\LocationService
-        public: true
-
     organization_service:
         alias: CommonBundle\Utils\OrganizationService
         public: true
@@ -78,9 +74,6 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\LocationFixtures:
-        arguments:
-            - "@kernel"
-            - "@location_service"
         tags:
             - { name: doctrine.fixture.orm }
 

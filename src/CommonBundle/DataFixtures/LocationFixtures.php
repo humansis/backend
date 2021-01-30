@@ -13,6 +13,7 @@ use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class LocationFixtures extends Fixture implements FixtureGroupInterface
 {
@@ -25,7 +26,7 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
     /** @var LocationService */
     private $locationService;
 
-    public function __construct(Kernel $kernel, LocationService $locationService)
+    public function __construct(KernelInterface $kernel, LocationService $locationService)
     {
         $this->env = $kernel->getEnvironment();
         $this->locationService = $locationService;

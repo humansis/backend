@@ -44,7 +44,7 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@serializer'
             - '@validator'
-            - '@location_service'
+            - '@CommonBundle\Utils\LocationService'
             - '@distribution.commodity_service'
             - '@distribution.configuration_loader'
             - '@DistributionBundle\Utils\CriteriaAssistanceService'
