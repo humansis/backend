@@ -7,6 +7,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class DefaultController
@@ -14,6 +15,19 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class DefaultController extends Controller
 {
+    /** @var KernelInterface */
+    private $kernel;
+
+    /**
+     * DefaultController constructor.
+     *
+     * @param KernelInterface $kernel
+     */
+    public function __construct(KernelInterface $kernel)
+    {
+        $this->kernel = $kernel;
+    }
+
     /**
      * @Rest\Get("/version", name="api_version")
      *
@@ -28,7 +42,7 @@ class DefaultController extends Controller
      */
     public function getVersion()
     {
-        $rootDir = $this->container->get('kernel')->getRootDir();
+        $rootDir = $this->kernel->getRootDir();
 
         $composerJsonLocation = sprintf('%s/../composer.json', $rootDir);
 
