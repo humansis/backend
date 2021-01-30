@@ -6,6 +6,7 @@ namespace Tests\UserBundle\Controller;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
+use UserBundle\Utils\UserService;
 
 class UserControllerTest extends BMSServiceTestCase
 {
@@ -51,7 +52,7 @@ class UserControllerTest extends BMSServiceTestCase
     {
         // First step
         // Get salt for a new user => save the username with the salt in database (user disabled for now)
-        $return = $this->getContainer()->get('user.user_service')->getSalt($this->username);
+        $return = $this->getContainer()->get(UserService::class)->getSalt($this->username);
         // Check if the first step has been done correctly
         $this->assertArrayHasKey('user_id', $return);
         $this->assertArrayHasKey('salt', $return);

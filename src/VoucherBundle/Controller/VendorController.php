@@ -13,6 +13,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use UserBundle\Utils\UserService;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Booklet;
 use UserBundle\Entity\User;
@@ -35,17 +36,21 @@ class VendorController extends Controller
     private $vendorService;
     /** @var SerializerInterface */
     private $serializer;
+    /** @var UserService */
+    private $userService;
 
     /**
      * VendorController constructor.
      *
      * @param VendorService $vendorService
      * @param Serializer    $serializer
+     * @param UserService   $userService
      */
-    public function __construct(VendorService $vendorService, Serializer $serializer)
+    public function __construct(VendorService $vendorService, Serializer $serializer, UserService $userService)
     {
         $this->vendorService = $vendorService;
         $this->serializer = $serializer;
+        $this->userService = $userService;
     }
 
     /**
@@ -369,7 +374,7 @@ class VendorController extends Controller
         $saltedPassword = $request->request->get('salted_password');
         
         try {
-            $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
+            $user = $this->userService->login($username, $saltedPassword);
             $vendor = $this->vendorService->login($user);
         } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);

@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Exception;
 use NewApiBundle\InputType\VendorCreateInputType;
 use NewApiBundle\InputType\VendorUpdateInputType;
 use RuntimeException;
@@ -24,6 +25,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
+use UserBundle\Utils\UserService;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\VoucherPurchase;
 
@@ -42,31 +44,37 @@ class VendorService
     /** @var LocationService $locationService */
     private $locationService;
 
+    /** @var UserService */
+    private $userService;
+
     /**
      * UserService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
-     * @param LocationService $locationService
+     * @param ValidatorInterface     $validator
+     * @param LocationService        $locationService
+     * @param ContainerInterface     $container
+     * @param UserService            $userService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         LocationService $locationService,
-        ContainerInterface $container
+        ContainerInterface $container,
+        UserService $userService
     ) {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
         $this->locationService = $locationService;
-    }
+        $this->userService = $userService;}
 
     /**
      * Creates a new Vendor entity
      *
      * @param array $vendorData
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function createFromArray($countryISO3, array $vendorData)
     {
@@ -75,7 +83,7 @@ class VendorService
         $vendorSaved = $userSaved instanceof User ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
 
         if (!($vendorSaved instanceof Vendor)) {
-            $user = $this->container->get('user.user_service')->create(
+            $user = $this->userService->create(
                 [
                     'username' => $username,
                     'email' => $username,
@@ -108,7 +116,7 @@ class VendorService
             $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUser($user);
             return $createdVendor;
         } else {
-            throw new \Exception('A vendor with this username already exists.');
+            throw new Exception('A vendor with this username already exists.');
         }
     }
 
@@ -126,7 +134,7 @@ class VendorService
             throw new RuntimeException('Vendor with username '.$inputType->getUsername().' already exists');
         }
 
-        $user = $this->container->get('user.user_service')->create(
+        $user = $this->userService->create(
             [
                 'username' => $inputType->getUsername(),
                 'email' => $inputType->getUsername(),
@@ -211,8 +219,8 @@ class VendorService
             }
             $this->em->persist($vendor);
             $this->em->flush();
-        } catch (\Exception $e) {
-            throw new \Exception('Error updating Vendor');
+        } catch (Exception $e) {
+            throw new Exception('Error updating Vendor');
         }
 
         return $vendor;
@@ -257,7 +265,7 @@ class VendorService
      * @param Vendor $vendor
      * @param bool $archiveVendor
      * @return Vendor
-     * @throws \Exception
+     * @throws Exception
      */
     public function archiveVendor(Vendor $vendor, bool $archiveVendor = true)
     {
@@ -265,8 +273,8 @@ class VendorService
             $vendor->setArchived($archiveVendor);
             $this->em->persist($vendor);
             $this->em->flush();
-        } catch (\Exception $exception) {
-            throw new \Exception('Error archiving Vendor');
+        } catch (Exception $exception) {
+            throw new Exception('Error archiving Vendor');
         }
         return $vendor;
     }
@@ -285,7 +293,7 @@ class VendorService
             try {
                 $this->em->remove($vendor);
                 $this->em->flush();
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 return $exception;
             }
         }
@@ -294,13 +302,13 @@ class VendorService
 
     /**
        * @param User $user
-       * @throws \Exception
+       * @throws Exception
        */
     public function login(User $user)
     {
         $vendor = $this->em->getRepository(Vendor::class)->findOneByUser($user);
         if (!$vendor) {
-            throw new \Exception('You cannot log if you are not a vendor', Response::HTTP_BAD_REQUEST);
+            throw new Exception('You cannot log if you are not a vendor', Response::HTTP_BAD_REQUEST);
         }
 
         return $vendor;
@@ -311,7 +319,7 @@ class VendorService
         try {
             $voucherPurchases = $this->em->getRepository(VoucherPurchase::class)->findByVendor($vendor);
             if (0 === count($voucherPurchases)) {
-                throw new \Exception('This vendor has no voucher. Try syncing with the server.');
+                throw new Exception('This vendor has no voucher. Try syncing with the server.');
             }
             $totalValue = 0;
             foreach ($voucherPurchases as $voucherPurchase) {
@@ -373,7 +381,7 @@ class VendorService
 
             $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'invoice');
             return $response;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
 
