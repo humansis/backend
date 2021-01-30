@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Constraints\Valid;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Vendor;
@@ -57,6 +58,8 @@ class VoucherController extends Controller
     private $serializer;
     /** @var LoggerInterface */
     private $logger;
+    /** @var ValidatorInterface */
+    private $validator;
 
     /**
      * VoucherController constructor.
@@ -334,7 +337,7 @@ class VoucherController extends Controller
 
         $data = $this->serializer->deserialize($request->getContent(), VoucherPurchase::class.'[]', 'json');
 
-        $errors = $this->get('validator')->validate($data, [
+        $errors = $this->validator->validate($data, [
             new All([new Type(['type' => VoucherPurchase::class])]),
             new Valid(),
         ]);

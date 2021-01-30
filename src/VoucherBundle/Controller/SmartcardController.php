@@ -4,6 +4,7 @@ namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Organization;
+use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityNotFoundException;
@@ -12,6 +13,7 @@ use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
@@ -24,6 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
@@ -49,17 +52,23 @@ class SmartcardController extends Controller
     private $serializer;
     /** @var LoggerInterface */
     private $logger;
+    /** @var ValidatorInterface */
+    private $validator;
 
     /**
      * SmartcardController constructor.
      *
      * @param SerializerInterface $serializer
      * @param LoggerInterface     $logger
+     * @param ValidatorInterface  $validator
      */
-    public function __construct(SerializerInterface $serializer, \Psr\Log\LoggerInterface $logger)
+    public function __construct(SerializerInterface $serializer, LoggerInterface $logger,
+                                ValidatorInterface $validator
+    )
     {
         $this->serializer = $serializer;
         $this->logger = $logger;
+        $this->validator = $validator;
     }
 
     /**
@@ -372,7 +381,7 @@ class SmartcardController extends Controller
 
         $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
         if (!$smartcard) {
-            $smartcard = new Smartcard($serialNumber, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
+            $smartcard = new Smartcard($serialNumber, DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
             $smartcard->setState(Smartcard::STATE_ACTIVE);
             $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
         }
@@ -396,7 +405,7 @@ class SmartcardController extends Controller
             $this->getUser(),
             $assistanceBeneficiary,
             (float) $request->request->get('value'),
-            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))
+            DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))
         );
 
         $smartcard->addDeposit($deposit);
@@ -455,17 +464,17 @@ class SmartcardController extends Controller
         /** @var SmartcardPurchaseInput $data */
         $data = $this->serializer->deserialize($request->getContent(), SmartcardPurchaseInput::class, 'json');
 
-        $errors = $this->get('validator')->validate($data);
+        $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $this->logger->error('validation errors: '.((string) $errors));
-            throw new \RuntimeException((string) $errors);
+            throw new RuntimeException((string) $errors);
         }
 
         $serialNumber = $request->get('serialNumber');
 
         $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
         if (!$smartcard) {
-            $smartcard = new Smartcard($serialNumber, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
+            $smartcard = new Smartcard($serialNumber, DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
             $smartcard->setState(Smartcard::STATE_ACTIVE);
             $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
 
@@ -689,7 +698,7 @@ class SmartcardController extends Controller
 
         $redemptionBath = new SmartcardRedemptionBatch(
             $vendor,
-            new \DateTime(),
+            new DateTime(),
             $this->getUser(),
             $repository->countPurchasesValue($purchases),
             $purchases
