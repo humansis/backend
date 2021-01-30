@@ -33,17 +33,23 @@ class BeneficiaryController extends Controller
     private $beneficiaryService;
     /** @var SerializerInterface */
     private $serializer;
+    /** @var CriteriaAssistanceService */
+    private $criteriaAssistanceService;
 
     /**
      * BeneficiaryController constructor.
      *
-     * @param BeneficiaryService  $beneficiaryService
-     * @param SerializerInterface $serializer
+     * @param BeneficiaryService        $beneficiaryService
+     * @param SerializerInterface       $serializer
+     * @param CriteriaAssistanceService $criteriaAssistanceService
      */
-    public function __construct(BeneficiaryService $beneficiaryService, SerializerInterface $serializer)
+    public function __construct(BeneficiaryService $beneficiaryService, SerializerInterface $serializer,
+                                CriteriaAssistanceService $criteriaAssistanceService
+    )
     {
         $this->beneficiaryService = $beneficiaryService;
         $this->serializer = $serializer;
+        $this->criteriaAssistanceService = $criteriaAssistanceService;
     }
 
     /**
@@ -146,9 +152,7 @@ class BeneficiaryController extends Controller
         $limit = $request->query->getInt('limit', 1000);
         $offset = $request->query->getInt('offset', 0);
 
-        /** @var CriteriaAssistanceService $criteriaAssistanceService */
-        $criteriaAssistanceService = $this->get('distribution.criteria_assistance_service');
-        $data = $criteriaAssistanceService->getList($filters, $project, $targetType, $threshold, $limit, $offset);
+        $data = $this->criteriaAssistanceService->getList($filters, $project, $targetType, $threshold, $limit, $offset);
 
         return $this->json($data);
     }
@@ -193,10 +197,7 @@ class BeneficiaryController extends Controller
         if (!in_array($targetType, AssistanceTargetType::values())) {
             throw new BadRequestHttpException('Nonexistent assistance target type: '.$targetType);
         }
-
-        /** @var CriteriaAssistanceService $criteriaAssistanceService */
-        $criteriaAssistanceService = $this->get('distribution.criteria_assistance_service');
-        $receivers = $criteriaAssistanceService->load($filters, $project, $targetType, $sector, $subSector, $threshold, true);
+        $receivers = $this->criteriaAssistanceService->load($filters, $project, $targetType, $sector, $subSector, $threshold, true);
 
         return $this->json($receivers);
     }

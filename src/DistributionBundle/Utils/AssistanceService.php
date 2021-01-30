@@ -272,7 +272,7 @@ class AssistanceService
         $criteria['criteria'] = $criteria['selection_criteria'];
         $criteria['countryIso3'] = $countryISO3;
 
-        return $this->container->get('distribution.criteria_assistance_service')->load($criteria, $project, $targetType, $sector, $subsector, $threshold, false);
+        return $this->criteriaAssistanceService->load($criteria, $project, $targetType, $sector, $subsector, $threshold, false);
     }
 
     /**

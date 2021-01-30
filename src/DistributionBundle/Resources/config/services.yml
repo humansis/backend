@@ -47,16 +47,12 @@ services:
             - '@location_service'
             - '@distribution.commodity_service'
             - '@distribution.configuration_loader'
-            - '@distribution.criteria_assistance_service'
+            - DistributionBundle\Utils\CriteriaAssistanceService
             - '%distribution.retriever%'
             - '@service_container'
 
     distribution.assistance_beneficiary_service:
         alias: DistributionBundle\Utils\AssistanceBeneficiaryService
-
-    distribution.criteria_assistance_service:
-        alias: DistributionBundle\Utils\CriteriaAssistanceService
-        public: true
 
     distribution.configuration_loader:
         alias: DistributionBundle\Utils\ConfigurationLoader
