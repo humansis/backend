@@ -29,6 +29,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
 /**
@@ -41,6 +42,9 @@ use Throwable;
  */
 class HouseholdController extends Controller
 {
+    /** @var SerializerInterface */
+    private $serializer;
+
     /**
      * @Rest\Get("/households/{id}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
