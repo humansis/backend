@@ -5,6 +5,7 @@ namespace Tests\ProjectBundle\Controller;
 use BeneficiaryBundle\Entity\Household;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Utils\ProjectService;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\UserProject;
@@ -219,7 +220,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->em->clear();
         $project = $this->em->getRepository(Project::class)->findOneByName($projectName);
         if ($project instanceof Project) {
-            $this->getContainer()->get('project.project_service')->delete($project);
+            $this->getContainer()->get(ProjectService::class)->delete($project);
         }
     }
 }

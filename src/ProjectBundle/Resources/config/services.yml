@@ -16,10 +16,6 @@ services:
 ##                                       CRUD                                        ##
 #######################################################################################
 
-    project.project_service:
-        alias: ProjectBundle\Utils\ProjectService
-        public: true
-
     project.donor_service:
         alias: ProjectBundle\Utils\DonorService
         public: true

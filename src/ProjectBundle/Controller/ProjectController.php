@@ -3,7 +3,9 @@
 namespace ProjectBundle\Controller;
 
 
+use Exception;
 use ProjectBundle\Mapper\ProjectMapper;
+use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,15 +30,19 @@ class ProjectController extends Controller
 {
     /** @var ProjectMapper */
     private $projectMapper;
+    /** @var ProjectService */
+    private $projectService;
 
     /**
      * ProjectController constructor.
      *
-     * @param ProjectMapper $projectMapper
+     * @param ProjectMapper  $projectMapper
+     * @param ProjectService $projectService
      */
-    public function __construct(ProjectMapper $projectMapper)
+    public function __construct(ProjectMapper $projectMapper, ProjectService $projectService)
     {
         $this->projectMapper = $projectMapper;
+        $this->projectService = $projectService;
     }
 
     /**
@@ -61,8 +67,7 @@ class ProjectController extends Controller
     public function getAllAction(Request $request)
     {
         $user = $this->getUser();
-        $projects = $this->get('project.project_service')->findAll($request->request->get('__country'), $user);
-
+        $projects = $this->projectService->findAll($request->request->get('__country'), $user);
 
         return $this->json($this->projectMapper->toFullArrays($projects));
     }
@@ -151,8 +156,8 @@ class ProjectController extends Controller
         $user = $this->getUser();
 
         try {
-            $project = $this->get('project.project_service')->createFromArray($country, $projectArray, $user);
-        } catch (\Exception $e) {
+            $project = $this->projectService->createFromArray($country, $projectArray, $user);
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -193,8 +198,8 @@ class ProjectController extends Controller
     {
         $projectArray = $request->request->all();
         try {
-            $project = $this->get('project.project_service')->edit($project, $projectArray);
-        } catch (\Exception $e) {
+            $project = $this->projectService->edit($project, $projectArray);
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -224,8 +229,8 @@ class ProjectController extends Controller
     public function deleteAction(Project $project)
     {
         try {
-            $this->get('project.project_service')->delete($project);
-        } catch (\Exception $e) {
+            $this->projectService->delete($project);
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
@@ -263,8 +268,8 @@ class ProjectController extends Controller
     {
         $beneficiaries = $request->request->get('beneficiaries');
         try {
-            $result = $this->get('project.project_service')->addMultipleHouseholds($project, $beneficiaries);
-        } catch (\Exception $e) {
+            $result = $this->projectService->addMultipleHouseholds($project, $beneficiaries);
+        } catch (Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
