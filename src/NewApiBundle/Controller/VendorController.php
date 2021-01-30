@@ -19,6 +19,19 @@ use VoucherBundle\Utils\VendorService;
 
 class VendorController extends AbstractController
 {
+    /** @var VendorService */
+    private $vendorService;
+
+    /**
+     * VendorController constructor.
+     *
+     * @param VendorService $vendorService
+     */
+    public function __construct(VendorService $vendorService)
+    {
+        $this->vendorService = $vendorService;
+    }
+
     /**
      * @Rest\Get("/vendors/{id}")
      *
@@ -62,15 +75,14 @@ class VendorController extends AbstractController
      * @Rest\Post("/vendors")
      *
      * @param VendorCreateInputType $inputType
-     * @param VendorService         $vendorService
      *
      * @return JsonResponse
      *
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    public function create(VendorCreateInputType $inputType, VendorService $vendorService): JsonResponse
+    public function create(VendorCreateInputType $inputType): JsonResponse
     {
-        $object = $vendorService->create($inputType);
+        $object = $this->vendorService->create($inputType);
 
         return $this->json($object);
     }
@@ -80,18 +92,17 @@ class VendorController extends AbstractController
      *
      * @param Vendor                $vendor
      * @param VendorUpdateInputType $inputType
-     * @param VendorService         $vendorService
      *
      * @return JsonResponse
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    public function update(Vendor $vendor, VendorUpdateInputType $inputType, VendorService $vendorService): JsonResponse
+    public function update(Vendor $vendor, VendorUpdateInputType $inputType): JsonResponse
     {
         if ($vendor->getArchived()) {
             throw new BadRequestHttpException('Unable to update archived vendor.');
         }
 
-        $object = $vendorService->update($vendor, $inputType);
+        $object = $this->vendorService->update($vendor, $inputType);
 
         return $this->json($object);
     }
@@ -100,15 +111,14 @@ class VendorController extends AbstractController
      * @Rest\Delete("/vendors/{id}")
      *
      * @param Vendor        $vendor
-     * @param VendorService $vendorService
      *
      * @return JsonResponse
      *
      * @throws Exception
      */
-    public function delete(Vendor $vendor, VendorService $vendorService): JsonResponse
+    public function delete(Vendor $vendor): JsonResponse
     {
-        $vendorService->archiveVendor($vendor, true);
+        $this->vendorService->archiveVendor($vendor, true);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -117,14 +127,13 @@ class VendorController extends AbstractController
      * @Rest\Get("/vendors/{id}/invoice")
      *
      * @param Vendor        $vendor
-     * @param VendorService $vendorService
      *
      * @return Response
      *
      * @throws Exception
      */
-    public function invoice(Vendor $vendor, VendorService $vendorService): Response
+    public function invoice(Vendor $vendor): Response
     {
-        return $vendorService->printInvoice($vendor);
+        return $this->vendorService->printInvoice($vendor);
     }
 }

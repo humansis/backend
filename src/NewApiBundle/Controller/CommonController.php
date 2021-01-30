@@ -5,15 +5,45 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Utils\BeneficiaryService;
 use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Entity\ModalityType;
+use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use ProjectBundle\Utils\ProjectService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CommonController extends AbstractController
 {
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+    /** @var ProjectService */
+    private $projectService;
+    /** @var AssistanceService */
+    private $assistanceService;
+    /** @var TranslatorInterface */
+    private $translator;
+
+    /**
+     * CommonController constructor.
+     *
+     * @param BeneficiaryService $beneficiaryService
+     * @param ProjectService     $projectService
+     * @param AssistanceService  $assistanceService
+     * @param TranslatorInterface         $translator
+     */
+    public function __construct(BeneficiaryService $beneficiaryService, ProjectService $projectService, AssistanceService $assistanceService,
+                                TranslatorInterface $translator
+    )
+    {
+        $this->beneficiaryService = $beneficiaryService;
+        $this->projectService = $projectService;
+        $this->assistanceService = $assistanceService;
+        $this->translator = $translator;
+    }
+
     /**
      * @Rest\Get("/summaries")
      *
@@ -32,19 +62,19 @@ class CommonController extends AbstractController
         foreach ($request->query->get('code', []) as $code) {
             switch ($code) {
                 case 'total_registrations':
-                    $result[] = ['code' => $code, 'value' => $this->get('beneficiary.beneficiary_service')->countAll($countryIso3)];
+                    $result[] = ['code' => $code, 'value' => $this->beneficiaryService->countAll($countryIso3)];
                     break;
                 case 'active_projects':
-                    $result[] = ['code' => $code, 'value' => $this->get('project.project_service')->countActive($countryIso3)];
+                    $result[] = ['code' => $code, 'value' => $this->projectService->countActive($countryIso3)];
                     break;
                 case 'enrolled_beneficiaries':
                     $result[] = ['code' => $code, 'value' => $this->getDoctrine()->getRepository(Household::class)->countUnarchivedByCountryProjects($countryIso3)];
                     break;
                 case 'served_beneficiaries':
-                    $result[] = ['code' => $code, 'value' => $this->get('beneficiary.beneficiary_service')->countAllServed($countryIso3)];
+                    $result[] = ['code' => $code, 'value' => $this->beneficiaryService->countAllServed($countryIso3)];
                     break;
                 case 'completed_assistances':
-                    $result[] = ['code' => $code, 'value' => $this->get('distribution.assistance_service')->countCompleted($countryIso3)];
+                    $result[] = ['code' => $code, 'value' => $this->assistanceService->countCompleted($countryIso3)];
                     break;
                 default:
                     throw new BadRequestHttpException('Invalid query parameter code.'.$code);
@@ -85,7 +115,7 @@ class CommonController extends AbstractController
     {
         $data = [];
 
-        foreach ($this->get('translator')->getCatalogue($language)->all('messages') as $key => $value) {
+        foreach ($this->translator->getCatalogue($language)->all('messages') as $key => $value) {
             $data[$key] = $value;
         }
 

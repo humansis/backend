@@ -13,6 +13,7 @@ use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Utils\ProjectService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +21,19 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ProjectController extends AbstractController
 {
+    /** @var ProjectService */
+    private $projectService;
+
+    /**
+     * ProjectController constructor.
+     *
+     * @param ProjectService $projectService
+     */
+    public function __construct(ProjectService $projectService)
+    {
+        $this->projectService = $projectService;
+    }
+
     /**
      * @Rest\Get("/projects/{id}/summaries")
      *
@@ -97,7 +111,7 @@ class ProjectController extends AbstractController
      */
     public function create(ProjectCreateInputType $inputType): JsonResponse
     {
-        $object = $this->get('project.project_service')->create($inputType, $this->getUser());
+        $object = $this->projectService->create($inputType, $this->getUser());
 
         return $this->json($object);
     }
@@ -116,7 +130,7 @@ class ProjectController extends AbstractController
             throw new BadRequestHttpException('Unable to update archived project.');
         }
 
-        $object = $this->get('project.project_service')->update($project, $inputType);
+        $object = $this->projectService->update($project, $inputType);
 
         return $this->json($object);
     }
@@ -130,7 +144,7 @@ class ProjectController extends AbstractController
      */
     public function delete(Project $project): JsonResponse
     {
-        $this->get('project.project_service')->delete($project);
+        $this->projectService->delete($project);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Utils\CountrySpecificService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\CountrySpecificCreateInputType;
 use NewApiBundle\InputType\CountrySpecificFilterInputType;
@@ -18,6 +19,19 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CountrySpecificController extends AbstractController
 {
+    /** @var CountrySpecificService */
+    private $countrySpecificService;
+
+    /**
+     * CountrySpecificController constructor.
+     *
+     * @param CountrySpecificService $countrySpecificService
+     */
+    public function __construct(CountrySpecificService $countrySpecificService)
+    {
+        $this->countrySpecificService = $countrySpecificService;
+    }
+
     /**
      * @Rest\Get("/country-specifics/{id}")
      *
@@ -102,7 +116,7 @@ class CountrySpecificController extends AbstractController
      */
     public function delete(CountrySpecific $object): JsonResponse
     {
-        $this->get('beneficiary.country_specific_service')->delete($object);
+        $this->countrySpecificService->delete($object);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

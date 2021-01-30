@@ -3,6 +3,7 @@
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Utils\HouseholdService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdFilterInputType;
@@ -15,6 +16,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class HouseholdController extends AbstractController
 {
+    /** @var HouseholdService */
+    private $householdService;
+
+    /**
+     * HouseholdController constructor.
+     *
+     * @param HouseholdService $householdService
+     */
+    public function __construct(HouseholdService $householdService)
+    {
+        $this->householdService = $householdService;
+    }
+
     /**
      * @Rest\Get("/households/{id}")
      *
@@ -62,7 +76,7 @@ class HouseholdController extends AbstractController
      */
     public function create(HouseholdCreateInputType $inputType): JsonResponse
     {
-        $object = $this->get('beneficiary.household_service')->create($inputType);
+        $object = $this->householdService->create($inputType);
 
         return $this->json($object);
     }
@@ -77,7 +91,7 @@ class HouseholdController extends AbstractController
      */
     public function update(Household $household, HouseholdUpdateInputType $inputType): JsonResponse
     {
-        $object = $this->get('beneficiary.household_service')->update($household, $inputType);
+        $object = $this->householdService->update($household, $inputType);
 
         return $this->json($object);
     }
@@ -91,7 +105,7 @@ class HouseholdController extends AbstractController
      */
     public function delete(Household $household): JsonResponse
     {
-        $this->get('beneficiary.household_service')->remove($household);
+        $this->householdService->remove($household);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

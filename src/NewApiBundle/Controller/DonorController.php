@@ -10,11 +10,25 @@ use NewApiBundle\InputType\DonorOrderInputType;
 use NewApiBundle\InputType\DonorUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Donor;
+use ProjectBundle\Utils\DonorService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class DonorController extends AbstractController
 {
+    /** @var DonorService */
+    private $donorService;
+
+    /**
+     * DonorController constructor.
+     *
+     * @param DonorService $donorService
+     */
+    public function __construct(DonorService $donorService)
+    {
+        $this->donorService = $donorService;
+    }
+
     /**
      * @Rest\Get("/donors/{id}")
      *
@@ -52,7 +66,7 @@ class DonorController extends AbstractController
      */
     public function create(DonorCreateInputType $inputType): JsonResponse
     {
-        $donor = $this->get('project.donor_service')->create($inputType);
+        $donor = $this->donorService->create($inputType);
 
         return $this->json($donor);
     }
@@ -67,7 +81,7 @@ class DonorController extends AbstractController
      */
     public function update(Donor $donor, DonorUpdateInputType $inputType): JsonResponse
     {
-        $this->get('project.donor_service')->update($donor, $inputType);
+        $this->donorService->update($donor, $inputType);
 
         return $this->json($donor);
     }
@@ -81,7 +95,7 @@ class DonorController extends AbstractController
      */
     public function delete(Donor $object): JsonResponse
     {
-        $this->get('project.donor_service')->delete($object);
+        $this->donorService->delete($object);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
