@@ -7,6 +7,7 @@ use ProjectBundle\DTO\Sector;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\ProjectSector;
 use ProjectBundle\Mapper\SectorMapper;
+use ProjectBundle\Utils\SectorService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,15 +25,19 @@ class SectorController extends Controller
 {
     /** @var SectorMapper */
     private $sectorMapper;
+    /** @var SectorService */
+    private $sectorService;
 
     /**
      * SectorController constructor.
      *
-     * @param SectorMapper $sectorMapper
+     * @param SectorMapper  $sectorMapper
+     * @param SectorService $sectorService
      */
-    public function __construct(SectorMapper $sectorMapper)
+    public function __construct(SectorMapper $sectorMapper, SectorService $sectorService)
     {
         $this->sectorMapper = $sectorMapper;
+        $this->sectorService = $sectorService;
     }
 
     /**
@@ -52,7 +57,7 @@ class SectorController extends Controller
      */
     public function getAllAction()
     {
-        $sectors = $this->get('project.sector_service')->getSubsBySector();
+        $sectors = $this->sectorService->getSubsBySector();
 
         return $this->json($this->sectorMapper->listToSubArrays($sectors));
     }
@@ -77,7 +82,7 @@ class SectorController extends Controller
      */
     public function projectSectors(Project $project)
     {
-        $all = $this->get('project.sector_service')->getSubsBySector();
+        $all = $this->sectorService->getSubsBySector();
         $projectSectorDTOs = [];
 
         /** @var ProjectSector $projectSector */

@@ -24,10 +24,6 @@ services:
         alias: ProjectBundle\Utils\DonorService
         public: true
 
-    project.sector_service:
-        alias: ProjectBundle\Utils\SectorService
-        public: true
-
     ProjectBundle\Mapper\ProjectMapper:
         public: true
 

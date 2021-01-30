@@ -61,7 +61,7 @@ services:
 
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:
-            - "@project.sector_service"
+            - "@ProjectBundle\\Utils\\SectorService"
 
     NewApiBundle\Controller\BeneficiaryCodelistController:
         arguments:
