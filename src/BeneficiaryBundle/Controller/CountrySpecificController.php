@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Controller;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Utils\CountrySpecificService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -21,6 +22,19 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CountrySpecificController extends Controller
 {
+    /** @var CountrySpecificService */
+    private $countrySpecificService;
+
+    /**
+     * CountrySpecificController constructor.
+     *
+     * @param CountrySpecificService $countrySpecificService
+     */
+    public function __construct(CountrySpecificService $countrySpecificService)
+    {
+        $this->countrySpecificService = $countrySpecificService;
+    }
+
     /**
      * @Rest\Get("/country_specifics", name="all_country_specifics")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
@@ -36,7 +50,7 @@ class CountrySpecificController extends Controller
      */
     public function getCountrySpecificsAction(Request $request)
     {
-        $countrySpecifics = $this->get('beneficiary.country_specific_service')->getAll($request->get('__country'));
+        $countrySpecifics = $this->countrySpecificService->getAll($request->get('__country'));
 
         $json = $this->serializer
             ->serialize(
@@ -63,7 +77,7 @@ class CountrySpecificController extends Controller
      */
     public function createAction(Request $request)
     {
-        $countrySpecific = $this->get('beneficiary.country_specific_service')
+        $countrySpecific = $this->countrySpecificService
             ->create($request->request->get('__country'), $request->request->all());
 
         $json = $this->serializer
@@ -89,7 +103,7 @@ class CountrySpecificController extends Controller
      */
     public function updateAction(Request $request, CountrySpecific $countrySpecific)
     {
-        $countrySpecific = $this->get('beneficiary.country_specific_service')
+        $countrySpecific = $this->countrySpecificService
             ->update($countrySpecific, $request->request->get('__country'), $request->request->all());
 
         $json = $this->serializer
@@ -125,7 +139,7 @@ class CountrySpecificController extends Controller
     public function deleteAction(CountrySpecific $countrySpecific)
     {
         try {
-            $valid = $this->get('beneficiary.country_specific_service')->delete($countrySpecific);
+            $valid = $this->countrySpecificService->delete($countrySpecific);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
