@@ -6,6 +6,9 @@ namespace NewApiBundle\InputType;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @Assert\GroupSequence({"NationalIdFilterInputType", "Strict"})
+ */
 class NationalIdFilterInputType extends AbstractFilterInputType
 {
     /**
