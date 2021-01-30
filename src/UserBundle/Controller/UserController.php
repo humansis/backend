@@ -184,7 +184,7 @@ class UserController extends Controller
 
         // add available countries to user
         $object = json_decode($userJson);
-        $object->available_countries = $this->container->userService->getCountries($user);
+        $object->available_countries = $this->userService->getCountries($user);
 
         return new JsonResponse($object);
     }

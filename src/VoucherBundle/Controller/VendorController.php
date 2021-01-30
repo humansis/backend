@@ -3,6 +3,8 @@
 namespace VoucherBundle\Controller;
 
 
+use Exception;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -31,15 +33,19 @@ class VendorController extends Controller
 {
     /** @var VendorService */
     private $vendorService;
+    /** @var SerializerInterface */
+    private $serializer;
 
     /**
      * VendorController constructor.
      *
      * @param VendorService $vendorService
+     * @param Serializer    $serializer
      */
-    public function __construct(VendorService $vendorService)
+    public function __construct(VendorService $vendorService, Serializer $serializer)
     {
         $this->vendorService = $vendorService;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -82,7 +88,7 @@ class VendorController extends Controller
 
         try {
             $return = $this->vendorService->createFromArray($vendorData['__country'], $vendorData);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -125,7 +131,7 @@ class VendorController extends Controller
     {
         try {
             $vendors = $this->vendorService->findAll($request->get('__country'));
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -237,7 +243,7 @@ class VendorController extends Controller
 
         try {
             $newVendor = $this->vendorService->updateFromArray($vendorData['__country'], $vendor, $vendorData);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -273,7 +279,7 @@ class VendorController extends Controller
     {
         try {
             $archivedVendor = $this->vendorService->archiveVendor($vendor);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -303,7 +309,7 @@ class VendorController extends Controller
     {
         try {
             $isSuccess = $this->vendorService->deleteFromDatabase($vendor);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
@@ -365,7 +371,7 @@ class VendorController extends Controller
         try {
             $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
             $vendor = $this->vendorService->login($user);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
         
@@ -401,7 +407,7 @@ class VendorController extends Controller
     {
         try {
             return $this->vendorService->printInvoice($vendor);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }

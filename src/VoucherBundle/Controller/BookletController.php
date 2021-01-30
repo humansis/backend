@@ -8,6 +8,7 @@ use DistributionBundle\Entity\Assistance;
 use Doctrine\Common\Collections\Collection;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -32,6 +33,9 @@ use VoucherBundle\Entity\Booklet;
  */
 class BookletController extends Controller
 {
+    /** @var SerializerInterface */
+    private $serializer;
+
     /**
      * Create a new Booklet.
      *

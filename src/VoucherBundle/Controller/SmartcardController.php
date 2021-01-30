@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Serializer\SerializerInterface;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
@@ -43,6 +44,19 @@ use VoucherBundle\Repository\SmartcardPurchaseRepository;
  */
 class SmartcardController extends Controller
 {
+    /** @var SerializerInterface */
+    private $serializer;
+
+    /**
+     * SmartcardController constructor.
+     *
+     * @param SerializerInterface $serializer
+     */
+    public function __construct(SerializerInterface $serializer)
+    {
+        $this->serializer = $serializer;
+    }
+
     /**
      * Register smartcard to system and assign to beneficiary.
      *

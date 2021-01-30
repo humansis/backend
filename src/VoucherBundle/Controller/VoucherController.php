@@ -3,6 +3,7 @@
 namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DateTime;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -10,6 +11,7 @@ use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -50,15 +52,19 @@ class VoucherController extends Controller
 {
     /** @var VoucherService */
     private $voucherService;
+    /** @var SerializerInterface */
+    private $serializer;
 
     /**
      * VoucherController constructor.
      *
      * @param VoucherService $voucherService
+     * @param Serializer     $serializer
      */
-    public function __construct(VoucherService $voucherService)
+    public function __construct(VoucherService $voucherService, Serializer $serializer)
     {
         $this->voucherService = $voucherService;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -100,7 +106,7 @@ class VoucherController extends Controller
 
         try {
             $return = $this->voucherService->create($voucherData);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -141,7 +147,7 @@ class VoucherController extends Controller
     {
         try {
             $vouchers = $this->voucherService->findAll();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -278,7 +284,7 @@ class VoucherController extends Controller
                 $input->setVendorId($voucherData['vendorId']);
 
                 if (isset($voucherData['used_at'])) {
-                    $input->setCreatedAt(new \DateTime($voucherData['used_at']));
+                    $input->setCreatedAt(new DateTime($voucherData['used_at']));
                 }
 
                 $voucherPurchase = $this->get('voucher.purchase_service')->purchase($input);
@@ -488,7 +494,7 @@ class VoucherController extends Controller
     {
         try {
             $isSuccess = $this->voucherService->deleteOneFromDatabase($voucher);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -516,7 +522,7 @@ class VoucherController extends Controller
     {
         try {
             $isSuccess = $this->voucherService->deleteBatchVouchers($booklet);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         
