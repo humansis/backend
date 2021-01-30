@@ -60,10 +60,6 @@ services:
             - '@doctrine.orm.entity_manager'
             - '%distribution.criteria%'
 
-    distribution.modality_service:
-        alias: DistributionBundle\Utils\ModalityService
-        public: true
-
     distribution.commodity_service:
         alias: DistributionBundle\Utils\CommodityService
         public: true

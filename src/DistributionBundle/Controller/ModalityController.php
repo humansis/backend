@@ -14,6 +14,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class ModalityController
@@ -21,6 +22,22 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  */
 class ModalityController extends Controller
 {
+    /** @var SerializerInterface */
+    private $serializer;
+    /** @var ModalityService */
+    private $modalityService;
+
+    /**
+     * ModalityController constructor.
+     *
+     * @param SerializerInterface $serializer
+     * @param ModalityService     $modalityService
+     */
+    public function __construct(SerializerInterface $serializer, ModalityService $modalityService)
+    {
+        $this->serializer = $serializer;
+        $this->modalityService = $modalityService;
+    }
 
     /**
      * @Rest\Get("/modalities")
@@ -41,9 +58,7 @@ class ModalityController extends Controller
      */
     public function getAllAction()
     {
-        /** @var ModalityService $modalityService */
-        $modalityService = $this->get('distribution.modality_service');
-        $all = $modalityService->getAll();
+        $all = $this->modalityService->getAll();
 
         $json = $this->serializer
             ->serialize(
@@ -75,9 +90,7 @@ class ModalityController extends Controller
      */
     public function getAllModalityTypesAction(Modality $modality)
     {
-        /** @var ModalityService $modalityService */
-        $modalityService = $this->get('distribution.modality_service');
-        $all = $modalityService->getAllModalityTypes($modality);
+        $all = $this->modalityService->getAllModalityTypes($modality);
 
         $json = $this->serializer
             ->serialize(
