@@ -38,20 +38,26 @@ class AssistanceBeneficiaryService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var AssistanceService */
+    private $assistanceService;
 
     /**
      * AssistanceBeneficiaryService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param Serializer             $serializer
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param AssistanceService      $assistanceService
      */
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container,
+                                AssistanceService $assistanceService)
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->container = $container;
+        $this->assistanceService = $assistanceService;
     }
 
     /**
@@ -212,7 +218,7 @@ class AssistanceBeneficiaryService
         }
 
         if ($assistance->getValidated()) {
-            $assistance = $this->container->get('distribution.assistance_service')->setCommoditiesToNewBeneficiaries($assistance,
+            $assistance = $this->assistanceService->setCommoditiesToNewBeneficiaries($assistance,
                 $assistanceBeneficiaries);
         }
 

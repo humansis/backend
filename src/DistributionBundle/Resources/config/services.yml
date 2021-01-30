@@ -47,7 +47,7 @@ services:
             - '@location_service'
             - '@distribution.commodity_service'
             - '@distribution.configuration_loader'
-            - DistributionBundle\Utils\CriteriaAssistanceService
+            - '@DistributionBundle\Utils\CriteriaAssistanceService'
             - '%distribution.retriever%'
             - '@service_container'
 
